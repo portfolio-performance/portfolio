@@ -320,6 +320,9 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelClientFilterDialogMessage;
+    public static String LabelClientFilterDialogTitle;
+    public static String LabelClientFilterNew;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;

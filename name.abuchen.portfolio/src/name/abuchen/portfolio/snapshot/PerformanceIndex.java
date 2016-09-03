@@ -7,6 +7,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -26,7 +28,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
-import name.abuchen.portfolio.snapshot.filter.PortfolioPlusClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
 
@@ -67,9 +68,8 @@ public class PerformanceIndex
     public static PerformanceIndex forAccount(Client client, CurrencyConverter converter, Account account,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        Classification classification = new Classification(null, null);
-        classification.addAssignment(new Assignment(account));
-        return forClassification(client, converter, classification, reportInterval, warnings);
+        Client pseudoClient = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account)).filter(client);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forPortfolio(Client client, CurrencyConverter converter, Portfolio portfolio,
@@ -82,7 +82,7 @@ public class PerformanceIndex
     public static PerformanceIndex forPortfolioPlusAccount(Client client, CurrencyConverter converter,
                     Portfolio portfolio, ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        Client pseudoClient = new PortfolioPlusClientFilter(portfolio).filter(client);
+        Client pseudoClient = new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount()).filter(client);
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 

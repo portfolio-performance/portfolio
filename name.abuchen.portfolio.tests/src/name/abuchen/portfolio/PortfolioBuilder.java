@@ -51,22 +51,22 @@ public class PortfolioBuilder
         return portfolio;
     }
 
-    public PortfolioBuilder buy(Security security, String date, long shares, int amount)
+    public PortfolioBuilder buy(Security security, String date, long shares, long amount)
     {
         return buysell(Type.BUY, security, date, shares, amount, 0);
     }
 
-    public PortfolioBuilder sell(Security security, String date, long shares, int amount)
+    public PortfolioBuilder sell(Security security, String date, long shares, long amount)
     {
         return buysell(Type.SELL, security, date, shares, amount, 0);
     }
 
-    public PortfolioBuilder sell(Security security, String date, long shares, int amount, int fees)
+    public PortfolioBuilder sell(Security security, String date, long shares, long amount, int fees)
     {
         return buysell(Type.SELL, security, date, shares, amount, fees);
     }
 
-    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, int amount, int fees)
+    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, int fees)
     {
         if (portfolio.getReferenceAccount() == null)
         {
