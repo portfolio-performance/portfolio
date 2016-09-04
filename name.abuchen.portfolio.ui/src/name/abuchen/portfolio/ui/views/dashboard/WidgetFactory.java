@@ -38,6 +38,17 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
+    TOTAL_SUM(Messages.LabelTotalSum,
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        PerformanceIndex index = data.calculate(ds, period);
+                                        int length = index.getTotals().length;
+                                        return index.getTotals()[length - 1];
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange,
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
