@@ -20,6 +20,7 @@ import org.eclipse.e4.ui.model.application.MApplicationElement;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.Selector;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
@@ -36,6 +37,7 @@ import org.osgi.service.prefs.BackingStoreException;
 public class LifeCycleManager
 {
     private static final String MODEL_VERSION = "model.version"; //$NON-NLS-1$
+    private static final String FORCE_CLEAR_PERSISTED_STATE = "model.forceClearPersistedState"; //$NON-NLS-1$
 
     @Inject
     @Preference(nodePath = "name.abuchen.portfolio.bootstrap")
@@ -50,6 +52,7 @@ public class LifeCycleManager
         checkForJava8();
         removeClearPersistedStateFlag();
         checkForModelChanges();
+        checkForRequestToClearPersistedState();
         setupEventLoopAdvisor(context);
     }
 
@@ -103,7 +106,30 @@ public class LifeCycleManager
             logger.info(MessageFormat.format(
                             "Detected model change from version {0} to version {1}; clearing persisted state", //$NON-NLS-1$
                             modelVersion.toString(), programVersion.toString()));
-            System.setProperty("clearPersistedState", "true"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
+        }
+    }
+
+    private void checkForRequestToClearPersistedState()
+    {
+        boolean forceClearPersistedState = Boolean
+                        .parseBoolean(preferences.get(FORCE_CLEAR_PERSISTED_STATE, Boolean.FALSE.toString()));
+
+        if (forceClearPersistedState)
+        {
+            logger.info(MessageFormat.format("Clearing persisted state due to ''{0}=true''", //$NON-NLS-1$
+                            FORCE_CLEAR_PERSISTED_STATE));
+            System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
+
+            try
+            {
+                preferences.remove(FORCE_CLEAR_PERSISTED_STATE);
+                preferences.flush();
+            }
+            catch (BackingStoreException e)
+            {
+                logger.error(e);
+            }
         }
     }
 
