@@ -302,6 +302,7 @@ public class DashboardView extends AbstractHistoricView
                 subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
             manager.add(subMenu);
             manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft, a -> createNewColumn(column, columnControl)));
             manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
         }).hook();
 
@@ -504,6 +505,20 @@ public class DashboardView extends AbstractHistoricView
 
         buildColumn(container, column);
 
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
+                        .applyTo(container);
+        container.layout(true);
+    }
+
+    private void createNewColumn(Dashboard.Column beforeColumn, Composite beforeColumnControl)
+    {
+        int index = dashboard.getColumns().indexOf(beforeColumn);
+        
+        Dashboard.Column newColumn = new Dashboard.Column();
+        dashboard.getColumns().add(index, newColumn);
+        
+        buildColumn(container, newColumn).moveAbove(beforeColumnControl);
+        
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);

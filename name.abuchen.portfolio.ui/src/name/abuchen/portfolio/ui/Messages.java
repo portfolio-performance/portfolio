@@ -429,6 +429,7 @@ public class Messages extends NLS
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
+    public static String MenuAddNewDashboardColumnLeft;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
