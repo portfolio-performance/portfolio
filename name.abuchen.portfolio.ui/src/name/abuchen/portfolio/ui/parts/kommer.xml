@@ -36232,7 +36232,7 @@
   <accounts>
     <account>
       <uuid>e068fb14-2554-427e-b2d0-30dcc6e15717</uuid>
-      <name>${Kommer_SecuritiesAccount}</name>
+      <name>${Kommer_DepositAccount}</name>
       <currencyCode>EUR</currencyCode>
       <isRetired>false</isRetired>
       <transactions>
@@ -36395,7 +36395,7 @@
           <crossEntry class="buysell">
             <portfolio>
               <uuid>dc6fac85-6c6e-47f1-a968-2b5b84d90997</uuid>
-              <name>Portfolio</name>
+              <name>${Kommer_BrokerageAccount}</name>
               <isRetired>false</isRetired>
               <referenceAccount reference="../../../../.."/>
               <transactions>
