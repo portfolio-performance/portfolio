@@ -22,11 +22,13 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DividendsView extends AbstractFinanceView
 {
     private static final String KEY_TAB = DividendsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
     private static final String KEY_YEAR = DividendsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
+    private static final String KEY_USE_GROSS_VALUE = DividendsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
 
     @Inject
     private Client client;
@@ -50,9 +52,15 @@ public class DividendsView extends AbstractFinanceView
         LocalDate now = LocalDate.now();
         if (year <= now.getYear() - 10 || year > now.getYear())
             year = now.getYear() - 2;
-
         model.updateWith(year);
-        model.addUpdateListener(() -> preferences.setValue(KEY_YEAR, model.getStartYear()));
+
+        boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
+        model.setUseGrossValue(useGrossValue);
+
+        model.addUpdateListener(() -> {
+            preferences.setValue(KEY_YEAR, model.getStartYear());
+            preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
+        });
     }
 
     @Override
@@ -92,15 +100,8 @@ public class DividendsView extends AbstractFinanceView
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
-                Action action = new Action(Messages.LabelUseGrossDividends)
-                {
-                    @Override
-                    public void run()
-                    {
-                        model.setUseGrossValue(!model.usesGrossValue());
-                        model.recalculate();
-                    }
-                };
+                Action action = new SimpleAction(Messages.LabelUseGrossDividends,
+                                a -> model.setUseGrossValue(!model.usesGrossValue()));
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
             }

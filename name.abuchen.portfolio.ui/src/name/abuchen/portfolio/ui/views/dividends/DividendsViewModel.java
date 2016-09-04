@@ -101,6 +101,8 @@ public class DividendsViewModel
     public void setUseGrossValue(boolean useGrossValue)
     {
         this.useGrossValue = useGrossValue;
+        calculate();
+        fireUpdateChange();
     }
 
     /**
