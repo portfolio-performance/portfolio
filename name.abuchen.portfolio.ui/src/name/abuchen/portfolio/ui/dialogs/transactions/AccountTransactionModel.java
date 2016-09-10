@@ -523,14 +523,20 @@ public class AccountTransactionModel extends AbstractModel
                         : getAccountCurrencyCode();
     }
 
+    /**
+     * Returns exchange rate label in direct (price) notation.
+     */
     public String getExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getSecurityCurrencyCode(), getAccountCurrencyCode()); //$NON-NLS-1$
     }
 
+    /**
+     * Returns exchange rate label in indirect (quantity) notation.
+     */
     public String getInverseExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getSecurityCurrencyCode(), getAccountCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getAccountCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
     }
 
     public AccountTransaction.Type getType()

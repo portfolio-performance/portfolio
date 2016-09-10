@@ -149,7 +149,7 @@ public class ExchangeRatesListView extends AbstractListView
             }
 
             String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
-                            series.getTermCurrency(), series.getBaseCurrency(), series.getProvider().getName());
+                            series.getBaseCurrency(), series.getTermCurrency(), series.getProvider().getName());
 
             chart.getTitle().setText(title);
             chart.addDateSeries(dates, values, Colors.TOTALS, title);

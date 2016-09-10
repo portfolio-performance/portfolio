@@ -345,13 +345,19 @@ public class AccountTransferModel extends AbstractModel
         return targetAccount != null ? targetAccount.getCurrencyCode() : ""; //$NON-NLS-1$
     }
 
+    /**
+     * Returns exchange rate label in direct (price) notation.
+     */
     public String getExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getTargetAccountCurrency(), getSourceAccountCurrency()); //$NON-NLS-1$
+        return String.format("%s/%s", getSourceAccountCurrency(), getTargetAccountCurrency()); //$NON-NLS-1$
     }
 
+    /**
+     * Returns exchange rate label in indirect (quantity) notation.
+     */
     public String getInverseExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getSourceAccountCurrency(), getTargetAccountCurrency()); //$NON-NLS-1$
+        return String.format("%s/%s", getTargetAccountCurrency(), getSourceAccountCurrency()); //$NON-NLS-1$
     }
 }

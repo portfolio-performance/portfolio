@@ -543,14 +543,20 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public abstract String getTransactionCurrencyCode();
 
+    /**
+     * Returns exchange rate label in direct (price) notation.
+     */
     public String getExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getTransactionCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getSecurityCurrencyCode(), getTransactionCurrencyCode()); //$NON-NLS-1$
     }
 
+    /**
+     * Returns exchange rate label in indirect (quantity) notation.
+     */
     public String getInverseExchangeRateCurrencies()
     {
-        return String.format("%s/%s", getSecurityCurrencyCode(), getTransactionCurrencyCode()); //$NON-NLS-1$
+        return String.format("%s/%s", getTransactionCurrencyCode(), getSecurityCurrencyCode()); //$NON-NLS-1$
     }
 
     public PortfolioTransaction.Type getType()
