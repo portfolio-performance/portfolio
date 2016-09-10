@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money.impl;
 
+import static org.hamcrest.number.IsCloseTo.closeTo;
 import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
 import static org.junit.Assert.assertThat;
 
@@ -35,5 +36,22 @@ public class GBXExchangeRateProviderTest
         // GBP -> GBX
         ExchangeRateTimeSeries gbp_gbx = factory.getTimeSeries("GBP", "GBX");
         assertThat(gbp_gbx.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal(100.0)));
+
+        // GBX -> USD
+        // default value EUR -> GBP is 0.72666
+        // default value EUR -> USD is 1.0836
+        double calculatedRate = 0.01d * (1 / 0.72666d) * 1.0836d;
+
+        ExchangeRateTimeSeries gbx_usd = factory.getTimeSeries("GBX", "USD");
+        assertThat(gbx_usd.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+                        closeTo(calculatedRate, 0.00000001));
+
+        // USD -> GBX
+        calculatedRate = (1 / 1.0836d) * 0.72666d * 100;
+
+        ExchangeRateTimeSeries usd_gbx = factory.getTimeSeries("USD", "GBX");
+        assertThat(usd_gbx.lookupRate(LocalDate.now()).get().getValue().doubleValue(),
+                        closeTo(calculatedRate, 0.00000001));
+
     }
 }

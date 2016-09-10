@@ -68,15 +68,46 @@ public class GBXExchangeRateProvider implements ExchangeRateProvider
         {
             return gbp2gbx;
         }
-        else if (GBX.equals(baseCurrency) && CurrencyUnit.EUR.equals(termCurrency))
+        else if (GBX.equals(baseCurrency))
         {
-            ExchangeRateTimeSeries series = factory.getTimeSeries(GBP, CurrencyUnit.EUR);
-            return new ChainedExchangeRateTimeSeries(gbx2gbp, series);
+            if (CurrencyUnit.EUR.equals(termCurrency))
+            {
+                ExchangeRateTimeSeries series = factory.getTimeSeries(GBP, CurrencyUnit.EUR);
+                return new ChainedExchangeRateTimeSeries(gbx2gbp, series);
+            }
+            else
+            {
+                // We continue to hack here b/c we know that ECB provides
+                // everything we know to and from EUR. However, when adding more
+                // providers, this will not work anymore. We need something like
+                // Dijkstra's shortest path algorithm implemented outside of
+                // rate provider.
+
+                ExchangeRateTimeSeries eur2term = factory.getTimeSeries(CurrencyUnit.EUR, termCurrency);
+                if (eur2term == null)
+                    return null;
+
+                ExchangeRateTimeSeries gbp2eur = factory.getTimeSeries(GBP, CurrencyUnit.EUR);
+                return new ChainedExchangeRateTimeSeries(gbx2gbp, gbp2eur, eur2term);
+            }
+
         }
-        else if (CurrencyUnit.EUR.equals(baseCurrency) && GBX.equals(termCurrency))
+        else if (GBX.equals(termCurrency))
         {
-            ExchangeRateTimeSeries series = factory.getTimeSeries(CurrencyUnit.EUR, GBP);
-            return new ChainedExchangeRateTimeSeries(series, gbp2gbx);
+            if (CurrencyUnit.EUR.equals(baseCurrency))
+            {
+                ExchangeRateTimeSeries series = factory.getTimeSeries(CurrencyUnit.EUR, GBP);
+                return new ChainedExchangeRateTimeSeries(series, gbp2gbx);
+            }
+            else
+            {
+                ExchangeRateTimeSeries base2eur = factory.getTimeSeries(baseCurrency, CurrencyUnit.EUR);
+                if (base2eur == null)
+                    return null;
+
+                ExchangeRateTimeSeries eur2gbp = factory.getTimeSeries(CurrencyUnit.EUR, GBP);
+                return new ChainedExchangeRateTimeSeries(base2eur, eur2gbp, gbp2gbx);
+            }
         }
         else
         {

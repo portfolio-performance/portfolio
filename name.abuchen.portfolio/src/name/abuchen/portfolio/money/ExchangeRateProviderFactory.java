@@ -18,7 +18,7 @@ public class ExchangeRateProviderFactory
 
     public ExchangeRateProviderFactory()
     {
-        providers = new ArrayList<ExchangeRateProvider>();
+        providers = new ArrayList<>();
         Iterator<ExchangeRateProvider> registeredProvider = ServiceRegistry.lookupProviders(ExchangeRateProvider.class);
         while (registeredProvider.hasNext())
         {
@@ -35,7 +35,7 @@ public class ExchangeRateProviderFactory
 
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
-        List<ExchangeRateTimeSeries> series = new ArrayList<ExchangeRateTimeSeries>();
+        List<ExchangeRateTimeSeries> series = new ArrayList<>();
         for (ExchangeRateProvider p : providers)
             series.addAll(p.getAvailableTimeSeries());
         return series;
