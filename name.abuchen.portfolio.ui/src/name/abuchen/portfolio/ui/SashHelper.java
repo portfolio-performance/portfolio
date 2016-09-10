@@ -61,9 +61,7 @@ public class SashHelper
             try
             {
                 String[] parts = config.split(","); //$NON-NLS-1$
-                int[] widths = new int[parts.length];
-                for (int ii = 0; ii < widths.length; ii++)
-                    widths[ii] = Integer.parseInt(parts[ii]);
+                int[] widths = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
 
                 defaultWidths = widths;
             }

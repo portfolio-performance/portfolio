@@ -34,7 +34,6 @@ import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
@@ -221,7 +220,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     @Override
-    protected int[] getDefaultWeights(Control[] children)
+    protected int[] getDefaultWeights(int numOfChildren)
     {
         return new int[] { 50, 50 };
     }

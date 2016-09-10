@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.widgets.Composite;
@@ -30,17 +32,17 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 
     protected abstract void createTopTable(Composite parent);
 
-    protected int[] getDefaultWeights(Control[] children)
+    protected int[] getDefaultWeights(int numOfChildren)
     {
-        int[] weights = new int[children.length];
+        int[] weights = new int[numOfChildren];
         for (int ii = 0; ii < weights.length; ii++)
-            weights[ii] = (int) Math.pow(2, ii * 2 + 1);
+            weights[ii] = (int) Math.pow(2, 1 + (ii * 2));
         return weights;
     }
 
     private void doSetWeights(final SashForm sash)
     {
-        Control[] children = sash.getChildren();
+        int numOfChildren = (int) Arrays.stream(sash.getChildren()).filter(c -> !(c instanceof Sash)).count();
         int[] weights = null;
 
         String config = getPart().getPreferenceStore().getString(identifier);
@@ -49,12 +51,8 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
             try
             {
                 String[] parts = config.split(","); //$NON-NLS-1$
-                if (children.length == parts.length)
-                {
-                    weights = new int[children.length];
-                    for (int ii = 0; ii < weights.length; ii++)
-                        weights[ii] = Integer.parseInt(parts[ii]);
-                }
+                if (numOfChildren == parts.length)
+                    weights = Arrays.stream(parts).mapToInt(Integer::parseInt).toArray();
             }
             catch (NumberFormatException ignore)
             {
@@ -65,7 +63,7 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 
         // otherwise: setup default weights
         if (weights == null)
-            weights = getDefaultWeights(children);
+            weights = getDefaultWeights(numOfChildren);
 
         sash.setWeights(weights);
     }
