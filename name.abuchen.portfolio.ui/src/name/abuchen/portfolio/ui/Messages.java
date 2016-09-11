@@ -322,6 +322,7 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
     public static String LabelClientFilterNew;

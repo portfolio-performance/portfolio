@@ -116,7 +116,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addFilterButton(ToolBar toolBar)
     {
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), filter -> {
+        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(), filter -> {
             Client filteredClient = filter.filter(getClient());
             ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
                             LocalDate.now());

@@ -87,7 +87,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
         addCalendarButton(toolBar);
 
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), filter -> notifyModelUpdated());
+        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+                        filter -> notifyModelUpdated());
 
         Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
                         .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
