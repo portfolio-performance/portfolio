@@ -14,6 +14,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -36,7 +37,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MonthEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
 public class ConsumerPriceIndexListView extends AbstractListView implements ModificationListener
@@ -180,7 +180,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         indices.getTable().setHeaderVisible(true);
         indices.getTable().setLinesVisible(true);
 
-        indices.setContentProvider(new SimpleListContentProvider());
+        indices.setContentProvider(ArrayContentProvider.getInstance());
 
         indices.setInput(getClient().getConsumerPriceIndices());
         indices.refresh();

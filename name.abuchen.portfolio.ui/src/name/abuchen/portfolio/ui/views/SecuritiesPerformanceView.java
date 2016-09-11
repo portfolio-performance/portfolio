@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -66,7 +67,6 @@ import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -238,7 +238,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         records.getTable().setHeaderVisible(true);
         records.getTable().setLinesVisible(true);
 
-        records.setContentProvider(new SimpleListContentProvider());
+        records.setContentProvider(ArrayContentProvider.getInstance());
 
         records.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
@@ -864,7 +864,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setContentProvider(new SimpleListContentProvider());
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
     }
 
     @Override

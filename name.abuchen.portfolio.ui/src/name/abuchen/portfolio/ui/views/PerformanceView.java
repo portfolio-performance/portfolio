@@ -48,7 +48,6 @@ import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 public class PerformanceView extends AbstractHistoricView
@@ -426,7 +425,7 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount.getTable().setHeaderVisible(true);
         earningsByAccount.getTable().setLinesVisible(true);
 
-        earningsByAccount.setContentProvider(new SimpleListContentProvider());
+        earningsByAccount.setContentProvider(ArrayContentProvider.getInstance());
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);

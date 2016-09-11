@@ -18,6 +18,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -73,7 +74,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
@@ -187,7 +187,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }
     }
 
-    
     @Inject
     private ExchangeRateProviderFactory factory;
 
@@ -197,7 +196,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer events;
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
-    
+
     private List<Predicate<Security>> filter = new ArrayList<>();
 
     private Watchlist watchlist;
@@ -409,7 +408,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return false;
             }
         });
-        
+
         securities.addFilter(new ViewerFilter()
         {
             @Override
@@ -417,10 +416,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             {
                 for (Predicate<Security> predicate : filter)
                 {
-                    if(!predicate.test((Security) element))
-                    {
-                        return false;
-                    }
+                    if (!predicate.test((Security) element)) { return false; }
                 }
 
                 return true;
@@ -546,7 +542,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices.getTable().setHeaderVisible(true);
         prices.getTable().setLinesVisible(true);
 
-        prices.setContentProvider(new SimpleListContentProvider(true));
+        prices.setContentProvider(ArrayContentProvider.getInstance());
 
         hookContextMenu(prices.getTable(), manager -> fillPricesContextMenu(manager));
 
@@ -798,7 +794,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setContentProvider(new SimpleListContentProvider(true));
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
 
         hookContextMenu(transactions.getControl(), this::transactionMenuAboutToShow);
 
@@ -922,6 +918,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Date.format(((SecurityEvent) element).getDate());
             }
         });
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -951,7 +948,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events.getTable().setHeaderVisible(true);
         events.getTable().setLinesVisible(true);
 
-        events.setContentProvider(new SimpleListContentProvider(true));
+        events.setContentProvider(ArrayContentProvider.getInstance());
 
         return container;
     }

@@ -6,6 +6,7 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -23,7 +24,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewQuotesPage extends AbstractWizardPage
@@ -113,7 +113,7 @@ public class PreviewQuotesPage extends AbstractWizardPage
         layout.setColumnData(column, new ColumnPixelData(80, true));
 
         tableViewer.setLabelProvider(new TransactionLabelProvider());
-        tableViewer.setContentProvider(new SimpleListContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         // bindings
 

@@ -81,7 +81,6 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -261,7 +260,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         table.setLinesVisible(true);
 
         tableViewer.setLabelProvider(new ImportLabelProvider(importer));
-        tableViewer.setContentProvider(new SimpleListContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         table.addMouseListener(new MouseListener()
         {

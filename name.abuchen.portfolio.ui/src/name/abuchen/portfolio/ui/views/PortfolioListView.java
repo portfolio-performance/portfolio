@@ -11,6 +11,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -41,7 +42,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -227,7 +227,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolios.getTable().setHeaderVisible(true);
         portfolios.getTable().setLinesVisible(true);
 
-        portfolios.setContentProvider(new SimpleListContentProvider());
+        portfolios.setContentProvider(ArrayContentProvider.getInstance());
         setInput();
 
         portfolios.addSelectionChangedListener(new ISelectionChangedListener()

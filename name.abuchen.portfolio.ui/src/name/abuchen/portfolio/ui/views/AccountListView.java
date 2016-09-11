@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -67,7 +68,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
@@ -278,7 +278,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
 
-        accounts.setContentProvider(new SimpleListContentProvider());
+        accounts.setContentProvider(ArrayContentProvider.getInstance());
         resetInput();
         accounts.refresh();
 
@@ -579,7 +579,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setContentProvider(new SimpleListContentProvider());
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
 
         hookContextMenu(transactions.getTable(), this::fillTransactionsContextMenu);
 

@@ -8,6 +8,7 @@ import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -30,7 +31,6 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 
 public class BookmarksListTab implements SettingsView.Tab, ModificationListener
@@ -99,7 +99,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         bookmarks.getTable().setHeaderVisible(true);
         bookmarks.getTable().setLinesVisible(true);
 
-        bookmarks.setContentProvider(new SimpleListContentProvider());
+        bookmarks.setContentProvider(ArrayContentProvider.getInstance());
 
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();

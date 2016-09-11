@@ -66,7 +66,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -220,7 +219,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         compositeTable.setLayout(layout);
 
         tableViewer = new TableViewer(compositeTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        tableViewer.setContentProvider(new SimpleListContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         Table table = tableViewer.getTable();
         table.setHeaderVisible(true);
@@ -232,7 +231,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         layout = new TableColumnLayout();
         errorTable.setLayout(layout);
         errorTableViewer = new TableViewer(errorTable, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI);
-        errorTableViewer.setContentProvider(new SimpleListContentProvider());
+        errorTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         table = errorTableViewer.getTable();
         table.setHeaderVisible(true);
