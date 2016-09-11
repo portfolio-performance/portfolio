@@ -189,15 +189,14 @@ public class InvestmentPlan implements Named, Adaptable
         return next;
     }
 
+    public LocalDate getDateOfNextTransactionToBeGenerated()
+    {
+        return transactions.isEmpty() ? start : next(getLastDate());
+    }
+
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)
     {
-        LocalDate transactionDate = null;
-
-        if (transactions.isEmpty())
-            transactionDate = start;
-        else
-            transactionDate = next(getLastDate());
-
+        LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
         List<PortfolioTransaction> newlyCreated = new ArrayList<PortfolioTransaction>();
 
         LocalDate now = LocalDate.now();

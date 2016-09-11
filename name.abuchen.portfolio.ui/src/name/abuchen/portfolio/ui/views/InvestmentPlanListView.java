@@ -13,6 +13,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -313,11 +314,20 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             {
                 CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
                 List<PortfolioTransaction> latest = plan.generateTransactions(converter);
-                markDirty();
 
-                plans.refresh();
-                transactions.markTransactions(latest);
-                transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+                if (latest.isEmpty())
+                {
+                    MessageDialog.openInformation(getActiveShell(), Messages.LabelInfo,
+                                    MessageFormat.format(Messages.InvestmentPlanInfoNoTransactionsGenerated,
+                                                    Values.Date.format(plan.getDateOfNextTransactionToBeGenerated())));
+                }
+                else
+                {
+                    markDirty();
+                    plans.refresh();
+                    transactions.markTransactions(latest);
+                    transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+                }
             }
         });
 

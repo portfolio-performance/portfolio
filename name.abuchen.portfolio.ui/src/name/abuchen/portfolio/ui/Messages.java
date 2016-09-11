@@ -286,6 +286,7 @@ public class Messages extends NLS
     public static String IntroOpenWIKIText;
     public static String IntroReadNews;
     public static String IntroReadNewsText;
+    public static String InvestmentPlanInfoNoTransactionsGenerated;
     public static String InvestmentPlanIntervalLabel;
     public static String InvestmentPlanMenuCreate;
     public static String InvestmentPlanMenuDelete;
