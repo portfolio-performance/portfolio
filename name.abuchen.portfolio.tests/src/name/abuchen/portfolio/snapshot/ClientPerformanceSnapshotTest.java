@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
-import java.util.Map;
 
 import org.junit.Test;
 
@@ -67,10 +66,9 @@ public class ClientPerformanceSnapshotTest
         assertNotNull(categories);
         assertThat(categories.size(), is(ClientPerformanceSnapshot.CategoryType.values().length));
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
-        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1050_00)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -93,10 +91,9 @@ public class ClientPerformanceSnapshotTest
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1050_00)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -119,11 +116,10 @@ public class ClientPerformanceSnapshotTest
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
-        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1050_00)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -153,9 +149,8 @@ public class ClientPerformanceSnapshotTest
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 50_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getPositions().size(), is(1));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 50_00)));
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().size(), is(1));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -182,11 +177,10 @@ public class ClientPerformanceSnapshotTest
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(), is(Money.of(CurrencyUnit.EUR, 100_00)));
-        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1100_00)));
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, 100_00)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1100_00)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
@@ -215,12 +209,11 @@ public class ClientPerformanceSnapshotTest
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
 
-        Map<CategoryType, Category> result = snapshot.getCategoryMap();
-        assertThat(result.get(CategoryType.INITIAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
-        assertThat(result.get(CategoryType.EARNINGS).getValuation(), is(Money.of(CurrencyUnit.EUR, 0)));
-        assertThat(result.get(CategoryType.CAPITAL_GAINS).getValuation(),
+        assertThat(snapshot.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1000_00)));
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
                         is(Money.of(CurrencyUnit.EUR, 100_00 + (110_00 - 99_00))));
-        assertThat(result.get(CategoryType.FINAL_VALUE).getValuation(), is(Money.of(CurrencyUnit.EUR, 1210_00)));
+        assertThat(snapshot.getValue(CategoryType.FINAL_VALUE), is(Money.of(CurrencyUnit.EUR, 1210_00)));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)

@@ -4,11 +4,11 @@ import java.text.MessageFormat;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -26,10 +26,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
-import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -40,12 +42,14 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 public class PerformanceView extends AbstractHistoricView
 {
@@ -57,6 +61,8 @@ public class PerformanceView extends AbstractHistoricView
     private StatementOfAssetsViewer snapshotEnd;
     private TableViewer earnings;
     private TableViewer earningsByAccount;
+    private TableViewer taxes;
+    private TableViewer fees;
 
     @Override
     protected String getDefaultTitle()
@@ -95,6 +101,8 @@ public class PerformanceView extends AbstractHistoricView
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
+        taxes.setInput(snapshot.getTaxes());
+        fees.setInput(snapshot.getFees());
     }
 
     @Override
@@ -112,8 +120,10 @@ public class PerformanceView extends AbstractHistoricView
         createCalculationItem(folder, Messages.PerformanceTabCalculation);
         snapshotStart = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtStart);
         snapshotEnd = createStatementOfAssetsItem(folder, Messages.PerformanceTabAssetsAtEnd);
-        createEarningsItem(folder, Messages.PerformanceTabEarnings);
+        earnings = createTransactionViewer(folder, Messages.PerformanceTabEarnings);
         createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
+        taxes = createTransactionViewer(folder, Messages.PerformanceTabTaxes);
+        fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
 
         folder.setSelection(0);
 
@@ -243,16 +253,16 @@ public class PerformanceView extends AbstractHistoricView
         new SecurityContextMenu(this).menuAboutToShow(manager, security);
     }
 
-    private void createEarningsItem(CTabFolder folder, String title)
+    private TableViewer createTransactionViewer(CTabFolder folder, String title)
     {
         Composite container = new Composite(folder, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        earnings = new TableViewer(container, SWT.FULL_SELECTION);
+        TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@earnings3", //$NON-NLS-1$
-                        getPreferenceStore(), earnings, layout);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + '@' + title,
+                        getPreferenceStore(), transactionViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -260,10 +270,28 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((Transaction) element).getDate());
+                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.UP); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()), SWT.UP);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
+                                : ((PortfolioTransaction) t).getType().toString();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            Transaction t = ((TransactionPair<?>) e).getTransaction();
+            return t instanceof AccountTransaction ? ((AccountTransaction) t).getType().toString()
+                            : ((PortfolioTransaction) t).getType().toString();
+        }));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -272,10 +300,11 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                return Values.Money.format(((Transaction) element).getMonetaryAmount(), getClient().getBaseCurrency());
+                return Values.Money.format(((TransactionPair<?>) element).getTransaction().getMonetaryAmount(),
+                                getClient().getBaseCurrency());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getMonetaryAmount()));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
@@ -284,11 +313,26 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                Transaction t = (Transaction) element;
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
                 return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(t -> ((Transaction) t).getUnitSum(Unit.Type.TAX)));
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.TAX)));
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.FEE)));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
@@ -297,58 +341,41 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                Transaction transaction = (Transaction) element;
-                if (transaction.getSecurity() != null)
-                    return transaction.getSecurity().getName();
-
-                for (Account account : getClient().getAccounts())
-                {
-                    if (account.getTransactions().contains(transaction))
-                        return account.getName();
-                }
-
-                return null;
+                TransactionPair<?> pair = (TransactionPair<?>) element;
+                return pair.getTransaction().getSecurity() != null ? pair.getTransaction().getSecurity().getName()
+                                : pair.getOwner().toString();
             }
 
             @Override
             public Image getImage(Object element)
             {
-                Transaction transaction = (Transaction) element;
+                Transaction transaction = ((TransactionPair<?>) element).getTransaction();
                 return transaction.getSecurity() != null ? Images.SECURITY.image() : Images.ACCOUNT.image();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "security")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            TransactionPair<?> pair = (TransactionPair<?>) e;
+            return pair.getTransaction().getSecurity() != null ? pair.getTransaction().getSecurity().getName()
+                            : pair.getOwner().toString();
+        }));
         support.addColumn(column);
 
-        column = new Column("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Transaction) element).getNote();
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((Transaction) e).getNote();
-                return note != null && note.length() > 0 ? Images.NOTE.image() : null;
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
+        column = new NoteColumn();
+        column.setEditingSupport(null);
         support.addColumn(column);
 
         support.createColumns();
 
-        earnings.getTable().setHeaderVisible(true);
-        earnings.getTable().setLinesVisible(true);
+        transactionViewer.getTable().setHeaderVisible(true);
+        transactionViewer.getTable().setLinesVisible(true);
 
-        earnings.setContentProvider(new SimpleListContentProvider());
+        transactionViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
         item.setControl(container);
+
+        return transactionViewer;
     }
 
     private void createEarningsByAccountsItem(CTabFolder folder, String title)
@@ -483,53 +510,36 @@ public class PerformanceView extends AbstractHistoricView
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabCalculation))
-            {
-                @Override
-                public void run()
-                {
-                    new TreeViewerCSVExporter(calculation).export(Messages.PerformanceTabCalculation + ".csv"); //$NON-NLS-1$
-                }
-            });
+            final String fileSuffix = ".csv"; //$NON-NLS-1$
 
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtStart))
-            {
-                @Override
-                public void run()
-                {
-                    new TableViewerCSVExporter(snapshotStart.getTableViewer())
-                                    .export(Messages.PerformanceTabAssetsAtStart + ".csv"); //$NON-NLS-1$
-                }
-            });
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabCalculation),
+                            a -> new TreeViewerCSVExporter(calculation)
+                                            .export(Messages.PerformanceTabCalculation + fileSuffix)));
 
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtEnd))
-            {
-                @Override
-                public void run()
-                {
-                    new TableViewerCSVExporter(snapshotEnd.getTableViewer())
-                                    .export(Messages.PerformanceTabAssetsAtEnd + ".csv"); //$NON-NLS-1$
-                }
-            });
+            manager.add(new SimpleAction(
+                            MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtStart),
+                            a -> new TableViewerCSVExporter(snapshotStart.getTableViewer())
+                                            .export(Messages.PerformanceTabAssetsAtStart + fileSuffix)));
 
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarnings))
-            {
-                @Override
-                public void run()
-                {
-                    new TableViewerCSVExporter(earnings).export(Messages.PerformanceTabEarnings + ".csv"); //$NON-NLS-1$
-                }
-            });
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabAssetsAtEnd),
+                            a -> new TableViewerCSVExporter(snapshotEnd.getTableViewer())
+                                            .export(Messages.PerformanceTabAssetsAtEnd + fileSuffix)));
 
-            manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarningsByAccount))
-            {
-                @Override
-                public void run()
-                {
-                    new TableViewerCSVExporter(earningsByAccount)
-                                    .export(Messages.PerformanceTabEarningsByAccount + ".csv"); //$NON-NLS-1$
-                }
-            });
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarnings),
+                            a -> new TableViewerCSVExporter(earnings)
+                                            .export(Messages.PerformanceTabEarnings + fileSuffix)));
+
+            manager.add(new SimpleAction(
+                            MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabEarningsByAccount),
+                            a -> new TableViewerCSVExporter(earningsByAccount)
+                                            .export(Messages.PerformanceTabEarningsByAccount + fileSuffix)));
+
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabTaxes),
+                            a -> new TableViewerCSVExporter(taxes).export(Messages.PerformanceTabTaxes + fileSuffix)));
+
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabFees),
+                            a -> new TableViewerCSVExporter(fees).export(Messages.PerformanceTabFees + fileSuffix)));
+
         }
     }
 

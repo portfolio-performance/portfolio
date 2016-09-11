@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -106,8 +107,11 @@ public class ClientPerformanceSnapshot
     private final ReportingPeriod period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
-    private EnumMap<CategoryType, Category> categories;
-    private List<Transaction> earnings;
+
+    private final EnumMap<CategoryType, Category> categories = new EnumMap<>(CategoryType.class);
+    private final List<TransactionPair<?>> earnings = new ArrayList<>();
+    private final List<TransactionPair<?>> fees = new ArrayList<>();
+    private final List<TransactionPair<?>> taxes = new ArrayList<>();
     private double irr;
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
@@ -122,8 +126,6 @@ public class ClientPerformanceSnapshot
         this.period = period;
         this.snapshotStart = ClientSnapshot.create(client, converter, period.getStartDate());
         this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEndDate());
-        this.categories = new EnumMap<>(CategoryType.class);
-        this.earnings = new ArrayList<>();
 
         calculate();
     }
@@ -153,9 +155,19 @@ public class ClientPerformanceSnapshot
         return categories.get(categoryType).getValuation();
     }
 
-    public List<Transaction> getEarnings()
+    public List<TransactionPair<?>> getEarnings()
     {
         return earnings;
+    }
+
+    public List<TransactionPair<?>> getFees()
+    {
+        return fees;
+    }
+
+    public List<TransactionPair<?>> getTaxes()
+    {
+        return taxes;
     }
 
     public double getPerformanceIRR()
@@ -186,11 +198,6 @@ public class ClientPerformanceSnapshot
         }
 
         return delta.toMoney();
-    }
-
-    /* package */EnumMap<CategoryType, Category> getCategoryMap()
-    {
-        return categories;
     }
 
     private void calculate()
@@ -270,12 +277,12 @@ public class ClientPerformanceSnapshot
 
     private void addEarnings()
     {
-        MutableMoney earnings = MutableMoney.of(converter.getTermCurrency());
-        MutableMoney otherEarnings = MutableMoney.of(converter.getTermCurrency());
-        MutableMoney fees = MutableMoney.of(converter.getTermCurrency());
-        MutableMoney taxes = MutableMoney.of(converter.getTermCurrency());
-        MutableMoney deposits = MutableMoney.of(converter.getTermCurrency());
-        MutableMoney removals = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mEarnings = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mOtherEarnings = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mFees = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mTaxes = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mDeposits = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mRemovals = MutableMoney.of(converter.getTermCurrency());
 
         Map<Security, MutableMoney> earningsBySecurity = new HashMap<>();
 
@@ -290,24 +297,28 @@ public class ClientPerformanceSnapshot
                 {
                     case DIVIDENDS:
                     case INTEREST:
-                        addEarningTransaction(t, earnings, otherEarnings, taxes, earningsBySecurity);
+                        addEarningTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
                     case INTEREST_CHARGE:
-                        earnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mEarnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        break;
                     case DEPOSIT:
-                        deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case REMOVAL:
-                        removals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case FEES:
-                        fees.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mFees.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case TAXES:
-                        taxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mTaxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        taxes.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case TAX_REFUND:
-                        taxes.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mTaxes.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        taxes.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case BUY:
                     case SELL:
@@ -328,16 +339,27 @@ public class ClientPerformanceSnapshot
                 if (!period.containsTransaction().test(t))
                     continue;
 
-                fees.add(t.getUnitSum(Unit.Type.FEE, converter));
-                taxes.add(t.getUnitSum(Unit.Type.TAX, converter));
+                Money unit = t.getUnitSum(Unit.Type.FEE, converter);
+                if (!unit.isZero())
+                {
+                    mFees.add(unit);
+                    fees.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
+                }
+
+                unit = t.getUnitSum(Unit.Type.TAX, converter);
+                if (!unit.isZero())
+                {
+                    mTaxes.add(unit);
+                    taxes.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
+                }
 
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
-                        deposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case DELIVERY_OUTBOUND:
-                        removals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case BUY:
                     case SELL:
@@ -351,7 +373,7 @@ public class ClientPerformanceSnapshot
         }
 
         Category earningsCategory = categories.get(CategoryType.EARNINGS);
-        earningsCategory.valuation = earnings.toMoney();
+        earningsCategory.valuation = mEarnings.toMoney();
         earningsCategory.positions = earningsBySecurity.entrySet().stream()
                         //
                         .filter(entry -> !entry.getValue().isZero())
@@ -359,34 +381,39 @@ public class ClientPerformanceSnapshot
                         .sorted((p1, p2) -> p1.getLabel().compareToIgnoreCase(p2.getLabel())) //
                         .collect(Collectors.toList());
 
-        if (!otherEarnings.isZero())
-            earningsCategory.positions.add(new Position(Messages.LabelInterest, otherEarnings.toMoney()));
+        if (!mOtherEarnings.isZero())
+            earningsCategory.positions.add(new Position(Messages.LabelInterest, mOtherEarnings.toMoney()));
 
-        categories.get(CategoryType.FEES).valuation = fees.toMoney();
+        categories.get(CategoryType.FEES).valuation = mFees.toMoney();
 
-        categories.get(CategoryType.TAXES).valuation = taxes.toMoney();
+        categories.get(CategoryType.TAXES).valuation = mTaxes.toMoney();
 
-        categories.get(CategoryType.TRANSFERS).valuation = deposits.toMoney().subtract(removals.toMoney());
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, deposits.toMoney()));
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, removals.toMoney()));
+        categories.get(CategoryType.TRANSFERS).valuation = mDeposits.toMoney().subtract(mRemovals.toMoney());
+        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, mDeposits.toMoney()));
+        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, mRemovals.toMoney()));
     }
 
-    private void addEarningTransaction(AccountTransaction transaction, MutableMoney earnings,
-                    MutableMoney otherEarnings, MutableMoney taxes, Map<Security, MutableMoney> earningsBySecurity)
+    private void addEarningTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
+                    MutableMoney mOtherEarnings, MutableMoney mTaxes, Map<Security, MutableMoney> earningsBySecurity)
     {
-        this.earnings.add(transaction);
+        this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
 
         Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDate()));
         Money earned = transaction.getGrossValue().with(converter.at(transaction.getDate()));
 
-        earnings.add(earned);
-        taxes.add(tax);
+        mEarnings.add(earned);
+
+        if (!tax.isZero())
+        {
+            mTaxes.add(tax);
+            taxes.add(new TransactionPair<AccountTransaction>(account, transaction));
+        }
 
         if (transaction.getSecurity() != null)
             earningsBySecurity.computeIfAbsent(transaction.getSecurity(),
                             k -> MutableMoney.of(converter.getTermCurrency())).add(earned);
         else
-            otherEarnings.add(earned);
+            mOtherEarnings.add(earned);
     }
 
     private void addCurrencyGains()

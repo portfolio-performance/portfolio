@@ -208,11 +208,13 @@ public abstract class Transaction implements Annotated
         this.shares = shares;
     }
 
+    @Override
     public String getNote()
     {
         return note;
     }
 
+    @Override
     public void setNote(String note)
     {
         this.note = note;
@@ -247,22 +249,22 @@ public abstract class Transaction implements Annotated
                             unit.getType().toString(), unit.getAmount().getCurrencyCode(), currencyCode));
 
         if (units == null)
-            units = new ArrayList<Unit>();
+            units = new ArrayList<>();
         units.add(unit);
     }
 
     public void addUnits(Stream<Unit> items)
     {
         if (units == null)
-            units = new ArrayList<Unit>();
+            units = new ArrayList<>();
 
-        items.forEach(u -> units.add(u));
+        items.forEach(units::add);
     }
 
     public void removeUnit(Unit unit)
     {
         if (units == null)
-            units = new ArrayList<Unit>();
+            units = new ArrayList<>();
         units.remove(unit);
     }
 
@@ -284,8 +286,6 @@ public abstract class Transaction implements Annotated
                         .collect(MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
                             if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
                                 return unit.getAmount();
-                            // else if (unit.getForex() != null)
-                            // return unit.getForex().with(converter.at(date));
                             else
                                 return unit.getAmount().with(converter.at(date));
                         }));
