@@ -231,6 +231,7 @@ public class Messages extends NLS
     public static String DialogConssitencyChecksMessage;
     public static String DialogTaxonomyNamePrompt;
     public static String DialogTaxonomyNameTitle;
+    public static String DialogTitlePickDate;
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
@@ -365,6 +366,7 @@ public class Messages extends NLS
     public static String LabelPortfolioPerformance;
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
+    public static String LabelPortfolioTimeMachine;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
@@ -404,6 +406,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssetsHoldings;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
+    public static String LabelToday;
     public static String LabelTotalSum;
     public static String LabelTotalValuePercent;
     public static String LabelTransactions;
@@ -459,6 +462,7 @@ public class Messages extends NLS
     public static String MenuNewReportingPeriod;
     public static String MenuNewWidget;
     public static String MenuOpenSecurityOnSite;
+    public static String MenuPickOtherDate;
     public static String MenuRemoveAll;
     public static String MenuRenameDashboard;
     public static String MenuRenameLabel;

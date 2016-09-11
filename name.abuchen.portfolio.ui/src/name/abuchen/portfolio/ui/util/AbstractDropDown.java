@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.util.function.BiConsumer;
+
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -67,6 +69,19 @@ public abstract class AbstractDropDown implements IMenuListener
         };
     }
 
+    public static final AbstractDropDown create(ToolBar toolBar, String label, Image image, int style,
+                    BiConsumer<AbstractDropDown, IMenuManager> listener)
+    {
+        return new AbstractDropDown(toolBar, label, image, style)
+        {
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+                listener.accept(this, manager);
+            }
+        };
+    }
+
     private void widgetSelected(SelectionEvent event)
     {
         ToolItem item = (ToolItem) event.widget;
@@ -78,12 +93,12 @@ public abstract class AbstractDropDown implements IMenuListener
         menu.setVisible(true);
     }
 
-    protected ToolBar getToolBar()
+    public ToolBar getToolBar()
     {
         return toolBar;
     }
 
-    protected ToolItem getToolItem()
+    public ToolItem getToolItem()
     {
         return dropdown;
     }

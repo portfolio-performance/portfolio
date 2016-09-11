@@ -10,6 +10,8 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
@@ -19,12 +21,15 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 
@@ -33,6 +38,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     private StatementOfAssetsViewer assetViewer;
     private PropertyChangeListener currencyChangeListener;
     private ClientFilterDropDown clientFilter;
+    private LocalDate snapshotDate = LocalDate.now();
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -49,7 +55,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilte().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate);
 
         assetViewer.setInput(snapshot);
         updateTitle(getDefaultTitle());
@@ -79,6 +85,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
         currencyChangeListener = e -> dropdown.setLabel(e.getNewValue().toString());
         getClient().addPropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
 
+        addCalendarButton(toolBar);
+
         this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), filter -> notifyModelUpdated());
 
         Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
@@ -96,6 +104,38 @@ public class StatementOfAssetsView extends AbstractFinanceView
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
         new ActionContributionItem(config).fill(toolBar, -1);
+    }
+
+    private void addCalendarButton(ToolBar toolBar)
+    {
+        AbstractDropDown.create(toolBar, Messages.LabelPortfolioTimeMachine, Images.CALENDAR_OFF.image(), SWT.NONE,
+                        (dropDown, manager) -> {
+                            manager.add(new LabelOnly(Values.Date.format(snapshotDate)));
+                            manager.add(new Separator());
+
+                            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
+                                snapshotDate = LocalDate.now();
+                                notifyModelUpdated();
+                                dropDown.getToolItem().setImage(Images.CALENDAR_OFF.image());
+                            });
+                            action.setEnabled(!snapshotDate.equals(LocalDate.now()));
+                            manager.add(action);
+
+                            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
+                                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell(),
+                                                date -> !date.isAfter(LocalDate.now()));
+                                dialog.setSelection(snapshotDate);
+                                if (dialog.open() != DateSelectionDialog.OK)
+                                    return;
+                                if (snapshotDate.equals(dialog.getSelection()))
+                                    return;
+
+                                snapshotDate = dialog.getSelection();
+                                notifyModelUpdated();
+                                dropDown.getToolItem().setImage(LocalDate.now().equals(snapshotDate)
+                                                ? Images.CALENDAR_OFF.image() : Images.CALENDAR_ON.image());
+                            }));
+                        });
     }
 
     @Override
