@@ -566,17 +566,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected long calculateConvertedGrossValue()
     {
-        long totalFees = fees + Math.round(exchangeRate.doubleValue() * forexFees);
-        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * forexTaxes);
+        long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return Math.max(0, total - totalFees - totalTaxes);
+                return Math.max(0, total - feesAndTaxes);
             case SELL:
             case DELIVERY_OUTBOUND:
-                return total + totalFees + totalTaxes;
+                return total + feesAndTaxes;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -584,17 +583,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     private long calculateTotal()
     {
-        long totalFees = fees + Math.round(exchangeRate.doubleValue() * forexFees);
-        long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * forexTaxes);
+        long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return convertedGrossValue + totalFees + totalTaxes;
+                return convertedGrossValue + feesAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, convertedGrossValue - totalFees - totalTaxes);
+                return Math.max(0, convertedGrossValue - feesAndTaxes);
             default:
                 throw new UnsupportedOperationException();
         }
