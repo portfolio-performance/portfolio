@@ -2,7 +2,9 @@ package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import javax.inject.Inject;
@@ -10,6 +12,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -36,6 +39,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -90,14 +94,36 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
                 filter.add(sharesEqualZero);
 
-            if (!filter.isEmpty())
-                getToolItem().setImage(Images.FILTER_ON.image());
+            // add only active portfolios
+            getClient().getPortfolios().stream().filter(p -> !p.isRetired()).forEach((portfolio) -> {
+                String portfolioPrefStorageName = SecuritiesPerformanceView.class.getSimpleName() + "-PortfolioFilter-" //$NON-NLS-1$
+                                + portfolio.getUUID();
+
+                if (preferenceStore.contains(portfolioPrefStorageName))
+                {
+                    if (preferenceStore.getBoolean(portfolioPrefStorageName))
+                        portfolioFilter.add(portfolio);
+                }
+                else
+                {
+                    // add newly created portfolios
+                    portfolioFilter.add(portfolio);
+                }
+            });
+
+            setFilterImage();
 
             toolBar.addDisposeListener(e -> {
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
                                 filter.contains(sharesGreaterZero));
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 filter.contains(sharesEqualZero));
+
+                for (Portfolio portfolio : getClient().getPortfolios())
+                {
+                    preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-PortfolioFilter-" //$NON-NLS-1$
+                                    + portfolio.getUUID(), portfolioFilter.contains(portfolio));
+                }
             });
         }
 
@@ -106,6 +132,17 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         {
             manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+
+            MenuManager subMenu = new MenuManager(Messages.SecurityFilterPortfolioFilter);
+
+            for (Portfolio portfolio : getClient().getPortfolios())
+            {
+                if (!portfolio.isRetired())
+                    subMenu.add(createPortfolioFilterAction(portfolio));
+                else
+                    portfolioFilter.remove(portfolio);
+            }
+            manager.add(subMenu);
         }
 
         private Action createAction(String label, Predicate<SecurityPerformanceRecord> predicate)
@@ -123,12 +160,45 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                         filter.add(predicate);
 
                     setChecked(!isChecked);
-                    getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                    setFilterImage();
                     records.refresh();
                 }
             };
             action.setChecked(filter.contains(predicate));
             return action;
+        }
+
+        private Action createPortfolioFilterAction(Portfolio portfolio)
+        {
+
+            Action action = new Action(portfolio.getName(), Action.AS_CHECK_BOX)
+            {
+                @Override
+                public void run()
+                {
+
+                    boolean isChecked = portfolioFilter.contains(portfolio);
+
+                    if (isChecked)
+                        portfolioFilter.remove(portfolio);
+                    else
+                        portfolioFilter.add(portfolio);
+
+                    setChecked(!isChecked);
+                    setFilterImage();
+                    records.refresh();
+                }
+            };
+            action.setChecked(portfolioFilter.contains(portfolio));
+            return action;
+        }
+
+        private void setFilterImage()
+        {
+            long numberOfActivePortfolios = getClient().getPortfolios().parallelStream().filter(p -> !p.isRetired())
+                            .count();
+            boolean filterOff = filter.isEmpty() && portfolioFilter.size() == numberOfActivePortfolios;
+            getToolItem().setImage(filterOff ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
         }
     }
 
@@ -142,6 +212,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private ReportingPeriodDropDown dropDown;
 
     private List<Predicate<SecurityPerformanceRecord>> filter = new ArrayList<>();
+    private Set<Portfolio> portfolioFilter = new HashSet<>();
 
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
@@ -285,6 +356,26 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 }
 
                 return true;
+            }
+        });
+
+        records.addFilter(new ViewerFilter()
+        {
+
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                if (portfolioFilter.isEmpty())
+                    return false;
+
+                Security seucrity = ((SecurityPerformanceRecord) element).getSecurity();
+                for (Portfolio portfolio : portfolioFilter)
+                {
+                    if (portfolio.getTransactions().parallelStream().anyMatch(t -> t.getSecurity() == seucrity))
+                        return true;
+                }
+
+                return false;
             }
         });
 
