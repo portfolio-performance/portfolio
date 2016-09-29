@@ -108,7 +108,6 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
     {
         target.setDate(source.getDate());
-        target.setAmount(source.getAmount());
         target.setNote(source.getNote());
     }
 

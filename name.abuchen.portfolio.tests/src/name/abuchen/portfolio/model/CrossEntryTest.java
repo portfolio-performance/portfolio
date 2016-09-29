@@ -7,13 +7,13 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.time.Month;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class CrossEntryTest
 {
@@ -74,10 +74,6 @@ public class CrossEntryTest
         assertThat(entry.getCrossTransaction(pa), is((Transaction) pt));
 
         // check cross editing
-        pt.setAmount(2000 * Values.Amount.factor());
-        entry.updateFrom(pt);
-        assertThat(pa.getAmount(), is(pt.getAmount()));
-
         pa.setDate(LocalDate.of(2013, Month.MARCH, 16));
         entry.updateFrom(pa);
         assertThat(pt.getDate(), is(pa.getDate()));
@@ -122,9 +118,9 @@ public class CrossEntryTest
         assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
 
         // check cross editing
-        pA.setAmount(2000 * Values.Amount.factor());
+        pA.setNote("Test"); //$NON-NLS-1$
         entry.updateFrom(pA);
-        assertThat(pB.getAmount(), is(pA.getAmount()));
+        assertThat(pB.getNote(), is(pA.getNote()));
 
         pB.setDate(LocalDate.of(2013, Month.MARCH, 16));
         entry.updateFrom(pB);
@@ -174,10 +170,6 @@ public class CrossEntryTest
         assertThat(entry.getCrossTransaction(pB), is((Transaction) pA));
 
         // check cross editing
-        pA.setAmount(2000);
-        entry.updateFrom(pA);
-        assertThat(pB.getAmount(), is(2000L));
-
         pA.setShares(2);
         entry.updateFrom(pA);
         assertThat(pB.getShares(), is(2L));
