@@ -108,6 +108,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 {
                     // add newly created portfolios
                     portfolioFilter.add(portfolio);
+                    preferenceStore.setDefault(portfolioPrefStorageName, true);
                 }
             });
 
@@ -186,7 +187,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
                     setChecked(!isChecked);
                     setFilterImage();
-                    records.refresh();
+                    reportingPeriodUpdated();
                 }
             };
             action.setChecked(portfolioFilter.contains(portfolio));
@@ -197,7 +198,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         {
             long numberOfActivePortfolios = getClient().getPortfolios().parallelStream().filter(p -> !p.isRetired())
                             .count();
-            boolean filterOff = filter.isEmpty() && portfolioFilter.size() == numberOfActivePortfolios;
+            boolean filterOff = filter.isEmpty() && portfolioFilter.size() >= numberOfActivePortfolios;
             getToolItem().setImage(filterOff ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
         }
     }
@@ -356,26 +357,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 }
 
                 return true;
-            }
-        });
-
-        records.addFilter(new ViewerFilter()
-        {
-
-            @Override
-            public boolean select(Viewer viewer, Object parentElement, Object element)
-            {
-                if (portfolioFilter.isEmpty())
-                    return false;
-
-                Security seucrity = ((SecurityPerformanceRecord) element).getSecurity();
-                for (Portfolio portfolio : portfolioFilter)
-                {
-                    if (portfolio.getTransactions().parallelStream().anyMatch(t -> t.getSecurity() == seucrity))
-                        return true;
-                }
-
-                return false;
             }
         });
 
@@ -970,7 +951,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        records.setInput(SecurityPerformanceSnapshot.create(getClient(), converter, period).getRecords());
+        records.setInput(SecurityPerformanceSnapshot.create(getClient(), converter, portfolioFilter, period)
+                        .getRecords());
         records.refresh();
     }
 
