@@ -591,6 +591,7 @@ public class Messages extends NLS
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String SecurityFilter;
+    public static String SecurityFilterPortfolioFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldGreaterZero;
     public static String SecurityListFilter;

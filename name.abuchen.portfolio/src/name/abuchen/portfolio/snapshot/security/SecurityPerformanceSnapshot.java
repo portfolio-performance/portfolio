@@ -1,10 +1,13 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -36,13 +39,29 @@ public class SecurityPerformanceSnapshot
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
                     ReportingPeriod period)
     {
+        return create(client, converter, Collections.singleton(portfolio), period);
+    }
+
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter,
+                    Set<Portfolio> portfolios, ReportingPeriod period)
+    {
         // FIXME create pseudo client --> transferals must add up
         Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
 
-        if (portfolio.getReferenceAccount() != null)
-            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), period, transactions);
-        extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
-        addPseudoValuationTansactions(portfolio, converter, period, transactions);
+        HashSet<Account> referenceAccounts = new HashSet<Account>(portfolios.size());
+        
+        for (Portfolio portfolio : portfolios)
+        {
+            if (portfolio.getReferenceAccount() != null)
+                referenceAccounts.add(portfolio.getReferenceAccount());
+            extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
+            addPseudoValuationTansactions(portfolio, converter, period, transactions);
+        }
+        
+        for(Account account : referenceAccounts)
+        {
+            extractSecurityRelatedAccountTransactions(account, period, transactions);
+        }
 
         return doCreateSnapshot(client, converter, transactions, period);
     }
