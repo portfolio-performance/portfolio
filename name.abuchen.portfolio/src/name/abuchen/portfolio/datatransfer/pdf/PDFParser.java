@@ -111,15 +111,23 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public void parse(String filename, List<Item> items, String[] lines)
         {
-            int currentLastTransactionLine = lines.length-1;
-            for (int ii = lines.length-1; ii >= 0; ii--)
+            int currentLastTransactionLine = -1;
+            for (int ii = 0; ii < lines.length; ii++)
             {
                 Matcher matcher = marker.matcher(lines[ii]);
                 if (matcher.matches())
                 {
-                    transaction.parse(filename, items, lines, ii, currentLastTransactionLine);
-                    currentLastTransactionLine = ii-1;
+                    if(currentLastTransactionLine >= 0)
+                    {
+                        transaction.parse(filename, items, lines, currentLastTransactionLine, ii-1);
+                    }
+                    currentLastTransactionLine = ii;
                 }
+            }
+            
+            if (currentLastTransactionLine >= 0 && currentLastTransactionLine != lines.length-1)
+            {
+                transaction.parse(filename, items, lines, currentLastTransactionLine, lines.length-1);
             }
         }
     }

@@ -126,7 +126,7 @@ public class SBrokerPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("sBroker_Ertragsgutschrift1.txt")), errors);
         
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
 
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();

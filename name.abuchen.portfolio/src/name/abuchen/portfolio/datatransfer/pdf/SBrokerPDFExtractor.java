@@ -130,7 +130,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Erträgnisgutschrift");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Erträgnisgutschrift.*");
+        Block block = new Block("Erträgnisgutschrift.*\\d+.\\d+.\\d{4}");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 

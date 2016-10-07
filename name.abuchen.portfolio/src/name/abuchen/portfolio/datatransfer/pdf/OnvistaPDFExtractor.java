@@ -880,10 +880,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // en o.St.o.N
                         .match("^(?<nameP4>^.*\\.*)$")
                         .assign((t, v) -> {
+                            type.getCurrentContext().put("nameP4", v.get("nameP4"));
+                        })
+
+                        .section("combine")
+                        .match("(?<combine>.*)")
+                        .assign((t, v) -> {
                             String name = type.getCurrentContext().get("nameP1") + 
                                           type.getCurrentContext().get("nameP2") +
                                           type.getCurrentContext().get("nameP3") + 
-                                          v.get("nameP4");
+                                          type.getCurrentContext().get("nameP4");
                             v.put("isin", type.getCurrentContext().get("isin"));
                             if (name.indexOf(v.get("isin")) > -1)
                             {
