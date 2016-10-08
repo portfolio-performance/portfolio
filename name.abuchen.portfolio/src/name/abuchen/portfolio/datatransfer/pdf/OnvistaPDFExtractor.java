@@ -1109,6 +1109,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("stockfees"))))))
+                        .section("stockfees2").optional()
+                        .match("(^.*) (Handelsplatzgeb\\Dhr) (\\w{3}+) (?<stockfees2>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("stockfees2"))))))
                         .section("agent").optional()
                         .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
