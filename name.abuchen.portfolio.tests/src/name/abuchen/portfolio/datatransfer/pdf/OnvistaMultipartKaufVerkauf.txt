@@ -1,0 +1,124 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Verkauf ADRESSZEILE3=Musterstraße 1
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstraße 1 BELEGNUMMER=12345
+12345 Musterstadt 123456789 12345678 / 02.09.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 02.09.2016
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+adesso AG Inhaber-Aktien o.N. DE000A0Z23Q5
+Nominal Kurs
+STK 20,000 EUR 31,5000
+Handelstag 02.09.2016 Kurswert EUR 630,00 
+Handelszeit 09:10 Orderprovision EUR 5,00-
+Börse Xetra/EDE Kapitalertragsteuer EUR 1,43-
+Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 0,08-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+06.09.2016 243921041 EUR 623,49
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 5,70
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 5,70
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 10,94
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,60
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Es folgt Seite 2
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+123456789 435345 2 ADRESSZEILE3=Musterstraße 1
+ADRESSZEILE4=12345 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=44556677
+Ausfuehrung zu XETRA Order Nummer: 654363534534 SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+Verkauf ADRESSZEILE3=Musterstraße 1
+Kommissionsgeschäft ADRESSZEILE4=12345 Musterstadt
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstraße 1 BELEGNUMMER=123455
+12345 Musterstadt 12345678 1234567 / 02.09.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 02.09.2016
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+adesso AG Inhaber-Aktien o.N. DE000A0Z23Q5
+Nominal Kurs
+STK 80,000 EUR 31,5000
+Handelstag 02.09.2016 Kurswert EUR 2.520,00 
+Handelszeit 09:10 Handelsplatzgebühr EUR 1,50-
+Börse Xetra/EDE Kapitalertragsteuer EUR 9,51-
+Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 0,52-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+06.09.2016 243921041 EUR 2.508,47
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Aktien EUR 41,30
+Aktienverlusttopf EUR 3,25 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 38,05
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 9,51
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,52
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Jahressteuerbescheinigung folgt
+Wir werden in Ihrem Depot wie angegeben buchen.
+Es folgt Seite 2
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=Max Mustermann
+123456789 43543534 2 ADRESSZEILE3=Musterstraße 1
+ADRESSZEILE4=12345 Musterstadt
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=4455667756
+Ausfuehrung zu XETRA Order Nummer: 346456346 SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
