@@ -51,6 +51,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
         table = new Composite(container, SWT.NONE);
         // 13 columns, one for the legend and 12 for the months
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(table);
         GridLayoutFactory.fillDefaults().numColumns(13).spacing(1, 1).applyTo(table);
         table.setBackground(container.getBackground());
         fillTable();
@@ -88,6 +89,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             Label currLabel = new Label(table, SWT.NONE);
             currLabel.setText(legendMonth.getMonth().getDisplayName(TextStyle.NARROW, Locale.GERMAN));
             currLabel.setAlignment(SWT.CENTER);
+            GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(currLabel);
         }
 
         // now loop the years
@@ -110,11 +112,12 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
                     PerformanceIndex performance = getDashboardData().calculate(dataSeries, currPeriod);
 
                     currLabel.setFont(resources.getSmallFont());
+                    currLabel.setAlignment(SWT.CENTER);
                     currLabel.setText(Values.PercentShort.format(performance.getFinalAccumulatedPercentage()));
                     currLabel.setBackground(getScaledColorForPerformance(performance.getFinalAccumulatedPercentage()));
                     InfoToolTip.attach(currLabel, Messages.PerformanceHeatmapToolTip);
                 }
-                GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(currLabel);
+                GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(currLabel);
             }
         }
         table.layout(true);
