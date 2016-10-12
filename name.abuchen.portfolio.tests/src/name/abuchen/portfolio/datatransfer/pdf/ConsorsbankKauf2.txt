@@ -1,0 +1,39 @@
+Consorsbank • 90318 Nürnberg
+Depotnummer 1234567890
+0123456789/00
+Max Mustermann
+Musterstr. 1
+12345 Musterstadt Vermerk der Bank 1000
+02
+WERTPAPIERABRECHNUNG
+KAUF AM 21.09.2015  UM 12:45:38 FRANKFURT NR. 92612045.001
+Wertpapier WKN ISIN
+HELIAD EQ.PARTN.KGAA A0L1NN DE000A0L1NN5
+Einheit Umsatz
+ST 250,00000
+Kurs 5,480000 EUR P.ST.  
+Kurswert EUR 1.370,00
+Börsenplatzgebühr EUR 2,95
+Handelsentgelt EUR 3,00
+Provision EUR 5,00
+Grundgebühr EUR 4,95
+Eig. Spesen EUR 1,95
+Wert 23.09.2015 EUR 1.387,85
+zulasten Konto-Nr. 111222333
+Wertpapiere zugunsten Girosammelverwahrung 
+Clearstream Bk Ffm 2126
+Eigene Spesen enthalten 1,95 EUR Umschreibegebühr inkl. 19 % MWST
+Limitkurs  5,500000 EUR
+Hinweis für Kontoauszüge, Wertpapierabrechnungen und Depotbuchungsanzeigen:
+Kapitalerträge und Spekulationsgewinne sind einkommensteuerpflichtig.
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung oder die Nichtgenehmigung einer im Wege der Einzugsermächtigung erfolgten
+Lastschriftabbuchung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der Allgemeine Geschäftsbedingungen (AGB Banken) sowie
+unter B. VII. Ziffer 2.4 der Lastschriftbedingungen. Umsätze und Kontobuchungen, die nach dem Erstellungsdatum anfallen und sich auf den Abrechnungssaldo des
+abgelaufenen Abrechnungszeitraumes auswirken, werden erst mit dem folgenden Kontoauszug ausgewiesen. Korrekturen werden seitens der Bank gekennzeichnet.
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank (Revision) oder per Fax oder
+Mail an die unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland.
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé

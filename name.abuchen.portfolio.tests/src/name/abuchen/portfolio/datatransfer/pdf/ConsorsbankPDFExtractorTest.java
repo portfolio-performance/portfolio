@@ -29,8 +29,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
@@ -251,6 +253,44 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf1() throws IOException
+    {
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankVerkauf1.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("A0DPR2"));
+        assertThat(security.getName(), is("VOLKSWAGEN AG VZ ADR1/5"));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5794_56L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 26_65L)));
+        assertThat(t.getUnitSum(Type.TAX), is(Money.of(CurrencyUnit.EUR, 226_79L)));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-02-20")));
+        assertThat(t.getShares(), is(Values.Share.factorize(140)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(43.2))));
+        
+    }
+    
+    @Test
     public void testWertpapierKauf() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
@@ -285,6 +325,94 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
+    public void testWertpapierKauf2() throws IOException
+    {
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankKauf2.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> secItem = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(secItem.isPresent(), is(true));
+        Security security = ((SecurityItem) secItem.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000A0L1NN5"));
+        assertThat(security.getWkn(), is("A0L1NN"));
+        assertThat(security.getName(), is("HELIAD EQ.PARTN.KGAA"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1387_85L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-23")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 17_85L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(5.48))));
+    }
+    
+    @Test
+    public void testWertpapierKaufSparplan() throws IOException
+    {
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("ConsorsbankKaufSparplan.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> secItem = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(secItem.isPresent(), is(true));
+        Security security = ((SecurityItem) secItem.get()).getSecurity();
+        assertThat(security.getIsin(), is("PO6527623674"));
+        assertThat(security.getWkn(), is("SP110Y"));
+        assertThat(security.getName(), is("Sparplanname"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00L)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-20")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.43915)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(15.53))));
     }
 
     @Test

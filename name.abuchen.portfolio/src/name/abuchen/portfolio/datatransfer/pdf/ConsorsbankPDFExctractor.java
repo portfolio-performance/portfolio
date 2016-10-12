@@ -23,6 +23,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
 
         addBuyTransaction();
+        addSellTransaction();
         addDividendTransaction();
     }
 
@@ -34,23 +35,23 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block("^KAUF AM .*$");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        block.set(pdfTransaction);
+        pdfTransaction.subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
-                        })
+                        });
 
-                        .section("wkn", "isin", "name", "currency") //
-                        .find("Wertpapier WKN ISIN") //
+        pdfTransaction.section("wkn", "isin", "name", "currency") //
+                        .find("(Wertpapier|Bezeichnung) WKN ISIN") //
                         .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
-                        .match("Kurs (\\d+,\\d+) (?<currency>\\w{3}+) .*")
+                        .match("(Kurs|Preis pro Anteil) (\\d+,\\d+) (?<currency>\\w{3}+) .*")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .find("Einheit Umsatz") //
-                        .match("^ST (?<shares>\\d+(,\\d+)?)$") //
+                        .find("Einheit Umsatz( F\\Dlligkeit)?") //
+                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -61,7 +62,50 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(t -> new BuySellEntryItem(t));
+        
+        addFeesSectionsTransaction(pdfTransaction);
+    }
+    
+    @SuppressWarnings("nls")
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("VERKAUF");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^VERKAUF AM .*$");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        block.set(pdfTransaction);
+        pdfTransaction.subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        });
+
+        pdfTransaction.section("wkn", "isin", "name", "currency") //
+                        .find("(Wertpapier|Bezeichnung) WKN ISIN") //
+                        .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .match("(Kurs|Preis pro Anteil) (\\d+,\\d+) (?<currency>\\w{3}+) .*")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .find("Einheit Umsatz( F\\Dlligkeit)?") //
+                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "amount", "currency")
+                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setDate(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> new BuySellEntryItem(t));
+        
+        addFeesSectionsTransaction(pdfTransaction);
+        addTaxesSectionsTransaction(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -165,6 +209,102 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
+
+    }
+
+    private  <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
+    {
+        pdfTransaction.section("tax", "currency")
+                        .optional()
+                        .match("KAPST .*(?<currency>\\w{3}+) *(?<tax>[\\d.]+,\\d+) *")
+                        .assign((t, v) -> {
+                            if (t instanceof name.abuchen.portfolio.model.Transaction)
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t)
+                                                .addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                            }
+                            else
+                            {
+                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("tax")))));
+                            }
+                        })
+                        
+                        .section("solz", "currency")
+                        .optional()
+                        .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *")
+                        .assign((t, v) -> {
+                            if (t instanceof name.abuchen.portfolio.model.Transaction)
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t)
+                                                .addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("solz")))));
+                            }
+                            else
+                            {
+                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("solz")))));
+                            }
+                        })
+                        
+                        .section("kirchenst", "currency")
+                        .optional()
+                        .match("KIST .*(?<currency>\\w{3}+) *(?<kirchenst>[\\d.]+,\\d+) *")
+                        .assign((t, v) -> {
+                            if (t instanceof name.abuchen.portfolio.model.Transaction)
+                            {
+                                ((name.abuchen.portfolio.model.Transaction) t)
+                                                .addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kirchenst")))));
+                            }
+                            else
+                            {
+                                ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")),
+                                                                asAmount(v.get("kirchenst")))));
+                            }
+                        });
+    }
+
+    private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction.section("currency", "stockfees").optional()
+                        .match("(^.*)(B\\Drsenplatzgeb\\Dhr) (?<currency>\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("stockfees"))))))
+                        
+                        .section("currency", "brokerage").optional()
+                        .match("(^.*)(Provision) (?<currency>\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("brokerage"))))))
+                        
+                        .section("currency", "fee").optional()
+                        .match("(^.*)(Handelsentgelt) (?<currency>\\w{3}+) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+                        
+                        .section("currency", "basicfees").optional()
+                        .match("(^.*)(Grundgeb\\Dhr) (?<currency>\\w{3}+) (?<basicfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("basicfees"))))))
+        
+                        .section("currency", "expenses").optional()
+                        .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("expenses"))))));
 
     }
 
