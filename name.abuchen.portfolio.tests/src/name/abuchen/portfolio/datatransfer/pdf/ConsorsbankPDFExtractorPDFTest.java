@@ -22,8 +22,8 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 
 /**
@@ -42,13 +42,13 @@ public class ConsorsbankPDFExtractorPDFTest
     public void testErtragsgutschrift6_USD_Freibetrag_ausgeschoepft() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<Exception>();        
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift6_USD_Freibetrag_ausgeschoepft.pdf"));
         List<Item> results = extractor.extract(Arrays.asList(new File(url.getPath())), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
 
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
@@ -61,34 +61,24 @@ public class ConsorsbankPDFExtractorPDFTest
                         .findFirst().get().getSubject();
         assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
         assertThat(t.getShares(), is(Values.Share.factorize(300)));
-        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 138_55)));
-        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 153_00)));
+        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 121_36)));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 180_00)));
 
-        // check tax transaction
-        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.TAXES)
-                        .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
-
-        MutableMoney taxes = MutableMoney.of("EUR");
-        taxes.add(Money.of("EUR", 24_45)); // QUST
-        taxes.add(Money.of("EUR", 16_30)); // KAPST
-        taxes.add(Money.of("EUR", 89)); // SOLZ
-
-        assertThat(t.getMonetaryAmount(), is(taxes.toMoney()));
+        // check tax
+        assertThat(t.getUnitSum(Type.TAX), is(Money.of("EUR", 16_30 + 89 + 24_45)));
     }
 
     @Test
     public void testErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<Exception>();        
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft.pdf"));
         List<Item> results = extractor.extract(Arrays.asList(new File(url.getPath())), errors);
-
+        
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
 
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
@@ -102,14 +92,9 @@ public class ConsorsbankPDFExtractorPDFTest
         assertThat(t.getDate(), is(LocalDate.parse("2016-01-11")));
         assertThat(t.getShares(), is(Values.Share.factorize(650)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 285_60)));
-        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 312_16)));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 367_25)));
 
-        // check tax transaction
-        t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.TAXES)
-                        .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2016-01-11")));
-        assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 50_40))); // QUEST
+        // check tax
+        assertThat(t.getUnitSum(Type.TAX), is(Money.of("EUR", 50_40))); // QUEST
     }
-
 }

@@ -2,6 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Optional;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -11,6 +13,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 
 public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
@@ -23,8 +26,10 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
 
         addBuyTransaction();
+        addPreemptiveBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
+        addIncomeTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -57,8 +62,60 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .section("date", "amount", "currency")
                         .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            String currencyCode = asCurrencyCode(v.get("currency"));
+                            if (currencyCode.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode())) {
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(currencyCode);
+                            } else {
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(currencyCode);
+                            }
+                            t.setDate(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> new BuySellEntryItem(t));
+        
+        addFeesSectionsTransaction(pdfTransaction);
+    }
+    
+    @SuppressWarnings("nls")
+    private void addPreemptiveBuyTransaction()
+    {
+        DocumentType type = new DocumentType("BEZUG");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^BEZUG AM .*$");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        block.set(pdfTransaction);
+        pdfTransaction.subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        });
+
+        pdfTransaction.section("wkn", "isin", "name", "currency") //
+                        .find("(Wertpapier|Bezeichnung) WKN ISIN") //
+                        .match("^(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .match("(Kurs|Preis pro Anteil) (\\d+,\\d+) (?<currency>\\w{3}+) .*")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .find("Einheit Umsatz( F\\Dlligkeit)?") //
+                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "amount", "currency")
+                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            String currencyCode = asCurrencyCode(v.get("currency"));
+                            if (currencyCode.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode())) {
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(currencyCode);
+                            } else {
+                                t.setAmount(asAmount(v.get("amount")));
+                                t.setCurrencyCode(currencyCode);
+                            }
                             t.setDate(asDate(v.get("date")));
                         })
 
@@ -116,7 +173,24 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block("DIVIDENDENGUTSCHRIFT.*");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        block.set(newDividendTransaction(type));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addIncomeTransaction()
+    {
+        DocumentType type = new DocumentType("ERTRAGSGUTSCHRIFT");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("ERTRAGSGUTSCHRIFT.*");
+        type.addBlock(block);
+        block.set(newDividendTransaction(type));
+
+    }
+
+    private Transaction<AccountTransaction> newDividendTransaction(DocumentType type)
+    {
+        return new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
@@ -131,26 +205,6 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("rate", "amount", "currency").optional() //
-                        .match("UMGER.ZUM DEV.-KURS *(?<rate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
-                        .assign((t, v) -> {
-                            // replace BRUTTO (which is in foreign currency)
-                            // with the value in transaction currency
-
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-                            BigDecimal rate = asExchangeRate(v.get("rate"));
-
-                            // forex currency has been set above ("BRUTTO")
-                            BigDecimal converted = rate.multiply(BigDecimal.valueOf(amount.getAmount()));
-                            Money forex = Money.of(t.getCurrencyCode(), Math.round(converted.doubleValue()));
-
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
-                            Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, inverseRate);
-
-                            t.setMonetaryAmount(amount);
-                            t.addUnit(grossValue);
-                        })
-
                         .section("wkn", "name", "shares") //
                         .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *") //
                         .match("^(?<name>.*)$") //
@@ -162,29 +216,32 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                         })
 
-                        .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .wrap(t -> new TransactionItem(t)));
-
-        block = new Block("DIVIDENDENGUTSCHRIFT.*");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-
-                        .subject(() -> {
-                            AccountTransaction t = new AccountTransaction();
-                            t.setType(AccountTransaction.Type.TAXES);
-                            return t;
+                        .section( "rate", "amount", "currency").optional() //
+                        .match("UMGER.ZUM DEV.-KURS *(?<rate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
+                            Money currentMonetaryAmount = t.getMonetaryAmount();
+                            BigDecimal rate = asExchangeRate(v.get("rate"));
+                            type.getCurrentContext().put("exchangeRate", rate.toPlainString());
+                            BigDecimal accountMoneyValue = BigDecimal.valueOf(t.getAmount()).divide(rate, RoundingMode.HALF_DOWN);
+                            String currencyCode = asCurrencyCode(v.get("currency"));
+                            t.setMonetaryAmount(Money.of(currencyCode, asAmount(v.get("amount"))));
+                            // transaction and security have different currencies -> add gross value
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                Money accountMoney = Money.of(currencyCode, Math.round(accountMoneyValue.doubleValue()));
+                                // replace BRUTTO (which is in foreign currency) with the value in transaction currency
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, accountMoney, currentMonetaryAmount, inverseRate);
+                                
+                                t.addUnit(grossValue);
+                            }
                         })
-
-                        .section("currency").optional()
-                        .match("VERRECHNUNGSTOPF ALLGEMEIN NACH ERTRAG.*(?<currency>\\w{3}+).*")
-                        .assign((t, v) -> t.setCurrencyCode(asCurrencyCode(v.get("currency"))))
-
+                        
                         .section("kapst", "currency").optional()
                         .match("KAPST .*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *").assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("kapst")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.addUnit(new Unit(
+                                            Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kapst")))));
                         })
 
                         .section("solz", "currency").optional()
@@ -192,24 +249,60 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
                             if (currency.equals(t.getCurrencyCode()))
-                                t.setAmount(t.getAmount() + asAmount(v.get("solz")));
+                            {
+                                t.addUnit(new Unit(
+                                                Unit.Type.TAX,
+                                                Money.of(asCurrencyCode(currency), asAmount(v.get("solz")))));
+                            }
                         })
 
-                        .section("qust", "currency").optional() //
-                        .match("QUST [\\d.]+,\\d+ *% *(?<currency>\\w{3}+) *(?<qust>[\\d.]+,\\d+) *\\w{3}+ *[\\d.]+,\\d+ *")
+                        .section("qust", "currency", "forexcurrency", "forex").optional() //
+                        .match("QUST [\\d.]+,\\d+ *% *(?<currency>\\w{3}+) *(?<qust>[\\d.]+,\\d+) *(?<forexcurrency>\\w{3}+) *(?<forex>[\\d.]+,\\d+) *")
                         .assign((t, v) -> {
-                            // if it is a foreign currency transaction and has
-                            // quellensteuer, add to transaction
-                            String currency = asCurrencyCode(v.get("currency"));
-                            if (currency.equals(t.getCurrencyCode()))
-                                t.setAmount(t.getAmount() + asAmount(v.get("qust")));
+                            Optional<Unit> grossValueOption = t.getUnit(Type.GROSS_VALUE);
+                            Money money = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("qust")));
+                            if (grossValueOption.isPresent())
+                            {
+                                Money forex = Money.of(asCurrencyCode(v.get("forexcurrency")), asAmount(v.get("forex")));
+                                t.addUnit(new Unit(Unit.Type.TAX, money, forex, grossValueOption.get().getExchangeRate()));
+                            } else {
+                                t.addUnit(new Unit(Unit.Type.TAX, money));
+                            }
+                        })
+                        
+                        .section("date") //
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                        })
+                        
+                        .section("currency", "amount").optional() //
+                        .match("WERT \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *").assign((t, v) -> {
+                            String currencyCode = asCurrencyCode(v.get("currency"));
+                            Money money = Money.of(currencyCode, asAmount(v.get("amount")) );
+                            t.setMonetaryAmount(money);
                         })
 
-                        .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
-
+                        .section("currency", "forexpenses").optional()
+                        .match("FREMDE SPESEN *(?<currency>\\w{3}+) *(?<forexpenses>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
+                            Optional<Unit> grossValueOption = t.getUnit(Type.GROSS_VALUE);
+                            long forexAmount = asAmount(v.get("forexpenses"));
+                            if (grossValueOption.isPresent())
+                            {
+                                BigDecimal exchangeRate = grossValueOption.get().getExchangeRate();
+                                long convertedMoney = Math.round(exchangeRate.multiply(BigDecimal.valueOf(forexAmount)).doubleValue());
+                                Money money = Money.of(t.getCurrencyCode(), convertedMoney);
+                                Money forex = Money.of(asCurrencyCode(v.get("currency")), forexAmount);
+                                t.addUnit(new Unit(Unit.Type.TAX, money, forex, grossValueOption.get().getExchangeRate()));
+                            } else {
+                                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+                                long convertedMoney = BigDecimal.valueOf(forexAmount).divide(exchangeRate, RoundingMode.HALF_UP).longValue();
+                                Money money = Money.of(t.getCurrencyCode(), convertedMoney);
+                                t.addUnit(new Unit(Unit.Type.TAX, money));
+                            }
+                        })
+                        
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
     }
 
     private  <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
@@ -305,7 +398,6 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("expenses"))))));
-
     }
 
     @Override
