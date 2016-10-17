@@ -14,7 +14,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     private String note;
     private boolean isRetired = false;
 
-    private List<AccountTransaction> transactions = new ArrayList<AccountTransaction>();
+    private List<AccountTransaction> transactions = new ArrayList<>();
 
     public Account()
     {

@@ -10,9 +10,10 @@ public class ReadOnlyAccount extends Account
 {
     private final Account source;
 
-    ReadOnlyAccount(Account source, String name)
+    ReadOnlyAccount(Account source)
     {
-        super(name);
+        super(source.getName());
+        this.setCurrencyCode(source.getCurrencyCode());
         this.source = Objects.requireNonNull(source);
     }
 
