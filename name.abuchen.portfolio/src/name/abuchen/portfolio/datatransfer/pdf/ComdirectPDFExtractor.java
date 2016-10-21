@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -31,6 +32,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierkauf");
         this.addDocumentTyp(type);
 
+        // bei Wertpapiersparplänen oder im LiveTradingfällt lediglich die Provision an.
+        // Die Summe der Entgelte wird nicht explizit ausgewiesen 
+        AtomicBoolean hasSum = new AtomicBoolean(false);
         Block block = new Block("Wertpapierkauf *");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
@@ -62,12 +66,27 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-
-                        .section("fee", "currency") //
-                        .optional().match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+) *") //
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
-
+                        
+                        .section("fee", "currency")
+                        .optional().match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> 
+                        {
+                            hasSum.set(true);
+                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+                         
+                        .section("fee", "currency")
+                        .optional().match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> 
+                        {
+                            if(!hasSum.get())
+                            {
+                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                            }
+                        })
+                        
                         .wrap(t -> new BuySellEntryItem(t)));
     }
 
