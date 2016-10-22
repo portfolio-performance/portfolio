@@ -430,6 +430,36 @@ public class ClientPerformanceSnapshotTest
         assertThatCalculationWorksOut(snapshot, converter);
     }
 
+    @Test
+    public void testInterestCharge()
+    {
+        Client client = new Client();
+
+        Account account = new AccountBuilder() //
+                        .interest_charge("2011-01-01", Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.EARNINGS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().size(), is(1));
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
+
+        assertThat(snapshot.getEarnings().size(), is(1));
+        assertThat(snapshot.getEarnings().get(0).getTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
+
+        GroupEarningsByAccount grouping = new GroupEarningsByAccount(snapshot);
+        assertThat(grouping.getItems().size(), is(1));
+        assertThat(grouping.getItems().get(0).getAccount(), is(account));
+        assertThat(grouping.getItems().get(0).getSum(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
     private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
     {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());

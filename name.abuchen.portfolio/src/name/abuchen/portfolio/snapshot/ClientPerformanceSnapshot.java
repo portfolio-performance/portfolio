@@ -300,7 +300,10 @@ public class ClientPerformanceSnapshot
                         addEarningTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
                     case INTEREST_CHARGE:
+                        Money charged = t.getMonetaryAmount().with(converter.at(t.getDate()));
                         mEarnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        earnings.add(new TransactionPair<AccountTransaction>(account, t));
+                        mOtherEarnings.subtract(charged);
                         break;
                     case DEPOSIT:
                         mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));

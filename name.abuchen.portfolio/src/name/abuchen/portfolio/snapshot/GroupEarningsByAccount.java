@@ -56,10 +56,12 @@ public class GroupEarningsByAccount
                         case INTEREST:
                             sum.add(t.getGrossValue());
                             break;
+                        case INTEREST_CHARGE:
+                            sum.subtract(t.getMonetaryAmount());
+                            break;
                         case DEPOSIT:
                         case REMOVAL:
                         case FEES:
-                        case INTEREST_CHARGE:
                         case TAXES:
                         case TAX_REFUND:
                         case BUY:
