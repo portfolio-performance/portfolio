@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -1095,6 +1096,59 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-04-03")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.62))));
 
+    }
+    
+    @Test
+    public void testMehrereTransaktionenInEinerDatei() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("OnvistaMultipartKaufVerkauf.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        List<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList());
+        assertThat(item.isEmpty(), is(false));
+        
+        Item firstItem = item.get(0);
+        assertNotNull(firstItem);
+        assertThat(firstItem.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry firstEntry = (BuySellEntry) firstItem.getSubject();
+
+        assertThat(firstEntry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(firstEntry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(firstEntry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(firstEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
+        assertThat(firstEntry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(623.49))));
+        assertThat(firstEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-06")));
+        assertThat(firstEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
+        
+        Item secondItem = item.get(1);
+        assertNotNull(secondItem);
+        assertThat(secondItem.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry secondEntry = (BuySellEntry) secondItem.getSubject();
+       
+        assertThat(secondEntry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(secondEntry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(secondEntry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(secondEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
+        assertThat(secondEntry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2508.47))));
+        assertThat(secondEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-06")));
+        assertThat(secondEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.5))));
     }
 
     private String from(String resource)

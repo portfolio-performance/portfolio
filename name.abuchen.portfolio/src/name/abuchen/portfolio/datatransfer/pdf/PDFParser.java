@@ -111,11 +111,23 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public void parse(String filename, List<Item> items, String[] lines)
         {
+            int currentLastTransactionLine = -1;
             for (int ii = 0; ii < lines.length; ii++)
             {
                 Matcher matcher = marker.matcher(lines[ii]);
                 if (matcher.matches())
-                    transaction.parse(filename, items, lines, ii);
+                {
+                    if(currentLastTransactionLine >= 0)
+                    {
+                        transaction.parse(filename, items, lines, currentLastTransactionLine, ii-1);
+                    }
+                    currentLastTransactionLine = ii;
+                }
+            }
+            
+            if (currentLastTransactionLine >= 0 && currentLastTransactionLine != lines.length-1)
+            {
+                transaction.parse(filename, items, lines, currentLastTransactionLine, lines.length-1);
             }
         }
     }
@@ -145,12 +157,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return this;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo)
+        public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
         {
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(filename, items, lines, lineNo, target);
+                section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -199,12 +211,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo, T target)
+        public void parse(String filename, List<Item> items, String[] lines, int lineNo, int lineNoEnd, T target)
         {
             Map<String, String> values = new HashMap<>();
 
             int patternNo = 0;
-            for (int ii = lineNo; ii < lines.length; ii++)
+            for (int ii = lineNo; ii <= lineNoEnd; ii++)
             {
                 Pattern p = pattern.get(patternNo);
                 Matcher m = p.matcher(lines[ii]);

@@ -880,10 +880,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // en o.St.o.N
                         .match("^(?<nameP4>^.*\\.*)$")
                         .assign((t, v) -> {
+                            type.getCurrentContext().put("nameP4", v.get("nameP4"));
+                        })
+
+                        .section("combine")
+                        .match("(?<combine>.*)")
+                        .assign((t, v) -> {
                             String name = type.getCurrentContext().get("nameP1") + 
                                           type.getCurrentContext().get("nameP2") +
                                           type.getCurrentContext().get("nameP3") + 
-                                          v.get("nameP4");
+                                          type.getCurrentContext().get("nameP4");
                             v.put("isin", type.getCurrentContext().get("isin"));
                             if (name.indexOf(v.get("isin")) > -1)
                             {
@@ -1103,6 +1109,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("stockfees"))))))
+                        .section("stockfees2").optional()
+                        .match("(^.*) (Handelsplatzgeb\\Dhr) (\\w{3}+) (?<stockfees2>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("stockfees2"))))))
                         .section("agent").optional()
                         .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
