@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.util.PDFTextStripper;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
@@ -22,9 +25,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
 
 /* package */abstract class AbstractPDFExtractor implements Extractor
 {
@@ -152,7 +152,7 @@ import org.apache.pdfbox.util.PDFTextStripper;
         String isin = values.get("isin"); //$NON-NLS-1$
         String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
         String wkn = values.get("wkn"); //$NON-NLS-1$
-        String name = values.get("name") != null ? values.get("name").trim() : null; //$NON-NLS-1$
+        String name = values.get("name") != null ? values.get("name").trim() : null; //$NON-NLS-1$ //$NON-NLS-2$
 
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
