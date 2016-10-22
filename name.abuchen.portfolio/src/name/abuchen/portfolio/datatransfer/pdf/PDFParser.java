@@ -87,9 +87,9 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         {
             // if a context provider is given call it, else parse the current
             // context in a subclass
-            if(contextProvider!=null)
+            if (contextProvider != null)
             {
-              contextProvider.accept(context, lines);  
+                contextProvider.accept(context, lines);
             }
         }
     }
@@ -111,23 +111,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public void parse(String filename, List<Item> items, String[] lines)
         {
-            int currentLastTransactionLine = -1;
+            List<Integer> blocks = new ArrayList<>();
+
             for (int ii = 0; ii < lines.length; ii++)
             {
                 Matcher matcher = marker.matcher(lines[ii]);
                 if (matcher.matches())
-                {
-                    if(currentLastTransactionLine >= 0)
-                    {
-                        transaction.parse(filename, items, lines, currentLastTransactionLine, ii-1);
-                    }
-                    currentLastTransactionLine = ii;
-                }
+                    blocks.add(ii);
             }
-            
-            if (currentLastTransactionLine >= 0 && currentLastTransactionLine != lines.length-1)
+
+            for (int ii = 0; ii < blocks.size(); ii++)
             {
-                transaction.parse(filename, items, lines, currentLastTransactionLine, lines.length-1);
+                int startLine = blocks.get(ii);
+                int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
+
+                transaction.parse(filename, items, lines, startLine, endLine);
             }
         }
     }
