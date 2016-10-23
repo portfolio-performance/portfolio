@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -17,6 +19,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
 public class DividendsViewModel
 {
@@ -59,6 +62,8 @@ public class DividendsViewModel
     private final CurrencyConverter converter;
     private final Client client;
 
+    private final ClientFilterMenu clientFilter;
+
     private int startYear;
     private int noOfmonths;
     private List<Line> lines;
@@ -67,10 +72,19 @@ public class DividendsViewModel
 
     private boolean useGrossValue = true;
 
-    public DividendsViewModel(CurrencyConverter converter, Client client)
+    public DividendsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
     {
         this.converter = converter;
         this.client = client;
+
+        this.clientFilter = new ClientFilterMenu(client, preferences, filter -> {
+            recalculate();
+        });
+    }
+
+    public ClientFilterMenu getClientFilterMenu()
+    {
+        return clientFilter;
     }
 
     public int getStartYear()
@@ -150,7 +164,9 @@ public class DividendsViewModel
         this.sum = new Line(null, this.noOfmonths);
         this.transactions = new ArrayList<>();
 
-        for (Account account : client.getAccounts())
+        Client filteredClient = clientFilter.getSelectedFilter().filter(client);
+
+        for (Account account : filteredClient.getAccounts())
         {
             for (AccountTransaction t : account.getTransactions())
             {

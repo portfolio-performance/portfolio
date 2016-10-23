@@ -146,7 +146,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void notifyModelUpdated()
     {
-        Client filteredClient = this.clientFilter.getSelectedFilte().filter(getClient());
+        Client filteredClient = this.clientFilter.getSelectedFilter().filter(getClient());
         ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
         model.setClientSnapshot(snapshot);
         model.fireTaxonomyModelChange(model.getVirtualRootNode());

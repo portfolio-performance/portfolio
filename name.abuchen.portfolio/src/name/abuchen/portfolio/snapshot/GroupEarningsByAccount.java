@@ -38,7 +38,7 @@ public class GroupEarningsByAccount
 
     public GroupEarningsByAccount(ClientPerformanceSnapshot snapshot)
     {
-        Client client = snapshot.getEndClientSnapshot().getClient();
+        Client client = snapshot.getClient();
         LocalDate startDate = snapshot.getStartClientSnapshot().getTime();
         LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
 

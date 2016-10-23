@@ -10,6 +10,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -36,6 +37,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -45,6 +47,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
 import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.security.DividendTransaction;
@@ -55,6 +58,8 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -80,24 +85,35 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         private Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
         private Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
 
+        private ClientFilterMenu clientFilterMenu;
+
         public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
         {
             super(toolBar, Messages.SecurityFilter, Images.FILTER_OFF.image(), SWT.NONE);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero")) //$NON-NLS-1$
-                filter.add(sharesGreaterZero);
+                recordFilter.add(sharesGreaterZero);
 
             if (preferenceStore.getBoolean(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero")) //$NON-NLS-1$
-                filter.add(sharesEqualZero);
+                recordFilter.add(sharesEqualZero);
 
-            if (!filter.isEmpty())
+            clientFilterMenu = new ClientFilterMenu(getClient(), preferenceStore, f -> {
+                getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
+                                ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                clientFilter = f;
+                notifyModelUpdated();
+            });
+
+            clientFilter = clientFilterMenu.getSelectedFilter();
+
+            if (!recordFilter.isEmpty() || clientFilterMenu.hasActiveFilter())
                 getToolItem().setImage(Images.FILTER_ON.image());
 
             toolBar.addDisposeListener(e -> {
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesGreaterZero", //$NON-NLS-1$
-                                filter.contains(sharesGreaterZero));
+                                recordFilter.contains(sharesGreaterZero));
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
-                                filter.contains(sharesEqualZero));
+                                recordFilter.contains(sharesEqualZero));
             });
         }
 
@@ -106,6 +122,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         {
             manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
             manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            clientFilterMenu.menuAboutToShow(manager);
         }
 
         private Action createAction(String label, Predicate<SecurityPerformanceRecord> predicate)
@@ -115,19 +135,20 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 @Override
                 public void run()
                 {
-                    boolean isChecked = filter.contains(predicate);
+                    boolean isChecked = recordFilter.contains(predicate);
 
                     if (isChecked)
-                        filter.remove(predicate);
+                        recordFilter.remove(predicate);
                     else
-                        filter.add(predicate);
+                        recordFilter.add(predicate);
 
                     setChecked(!isChecked);
-                    getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                    getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
+                                    ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
                     records.refresh();
                 }
             };
-            action.setChecked(filter.contains(predicate));
+            action.setChecked(recordFilter.contains(predicate));
             return action;
         }
     }
@@ -141,7 +162,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private TableViewer transactions;
     private ReportingPeriodDropDown dropDown;
 
-    private List<Predicate<SecurityPerformanceRecord>> filter = new ArrayList<>();
+    private ClientFilter clientFilter;
+    private List<Predicate<SecurityPerformanceRecord>> recordFilter = new ArrayList<>();
 
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
@@ -275,10 +297,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
-                if (filter.isEmpty())
+                if (recordFilter.isEmpty())
                     return true;
 
-                for (Predicate<SecurityPerformanceRecord> predicate : filter)
+                for (Predicate<SecurityPerformanceRecord> predicate : recordFilter)
                 {
                     if (!predicate.test((SecurityPerformanceRecord) element))
                         return false;
@@ -879,7 +901,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        records.setInput(SecurityPerformanceSnapshot.create(getClient(), converter, period).getRecords());
+        Client filteredClient = clientFilter.filter(getClient());
+        records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());
         records.refresh();
     }
 

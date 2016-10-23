@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
@@ -54,6 +56,8 @@ public class PerformanceView extends AbstractHistoricView
 {
     @Inject
     private ExchangeRateProviderFactory factory;
+
+    private ClientFilterDropDown clientFilter;
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -73,6 +77,10 @@ public class PerformanceView extends AbstractHistoricView
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
+
+        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+                        filter -> notifyModelUpdated());
+
         new ExportDropDown(toolBar); // NOSONAR
     }
 
@@ -81,7 +89,8 @@ public class PerformanceView extends AbstractHistoricView
     {
         ReportingPeriod period = getReportingPeriod();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(getClient(), converter, period);
+        Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 
         try
         {

@@ -130,6 +130,11 @@ public class ClientPerformanceSnapshot
         calculate();
     }
 
+    public Client getClient()
+    {
+        return client;
+    }
+
     public ClientSnapshot getStartClientSnapshot()
     {
         return snapshotStart;

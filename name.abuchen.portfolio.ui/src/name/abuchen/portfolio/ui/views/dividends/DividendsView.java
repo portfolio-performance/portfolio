@@ -46,7 +46,8 @@ public class DividendsView extends AbstractFinanceView
     @PostConstruct
     public void setupModel()
     {
-        model = new DividendsViewModel(new CurrencyConverterImpl(factory, client.getBaseCurrency()), client);
+        CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        model = new DividendsViewModel(preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
@@ -79,6 +80,12 @@ public class DividendsView extends AbstractFinanceView
     protected void addButtons(ToolBar toolBar)
     {
         new StartYearSelectionDropDown(toolBar, model);
+
+        AbstractDropDown dropDown = AbstractDropDown.create(toolBar, Messages.MenuChooseClientFilter,
+                        Images.FILTER_OFF.image(), SWT.NONE, model.getClientFilterMenu()::menuAboutToShow);
+        model.getClientFilterMenu()
+                        .addListener(f -> dropDown.getToolItem().setImage(model.getClientFilterMenu().hasActiveFilter()
+                                        ? Images.FILTER_ON.image() : Images.FILTER_OFF.image()));
 
         new AbstractDropDown(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE)
         {
