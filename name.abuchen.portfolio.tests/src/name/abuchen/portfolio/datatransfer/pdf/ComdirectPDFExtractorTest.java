@@ -121,6 +121,49 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf3() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from("comdirectWertpapierabrechnung_Kauf3.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getName(), is("NXP Semiconductors NV"));
+        assertThat(security.getIsin(), is("NL0009538784"));
+        assertThat(security.getWkn(), is("A1C5WJ"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(822.66)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-27")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(9.9))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
+    }    
+    
+    @Test
     public void testWertpapierVerkauf() throws IOException
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
