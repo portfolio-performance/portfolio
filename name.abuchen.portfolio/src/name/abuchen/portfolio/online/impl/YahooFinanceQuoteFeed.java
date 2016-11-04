@@ -37,7 +37,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 {
     public static final String ID = "YAHOO"; //$NON-NLS-1$
 
-    private static final String LATEST_URL = "http://finance.yahoo.com/d/quotes.csv?s={0}&f=sl1d1hgpv"; //$NON-NLS-1$
+    private static final String LATEST_URL = "http://download.finance.yahoo.com/d/quotes.csv?s={0}&f=sl1d1hgpv"; //$NON-NLS-1$
     // s = symbol
     // l1 = last trade (price only)
     // d1 = last trade date
