@@ -75,6 +75,8 @@ import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
@@ -139,7 +141,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private class FilterDropDown extends AbstractDropDown
     {
-        private Predicate<Security> securityIsNotInactive = record -> record.isRetired() == false;
+        private Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
 
         public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
         {
@@ -151,10 +153,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             if (!filter.isEmpty())
                 getToolItem().setImage(Images.FILTER_ON.image());
 
-            toolBar.addDisposeListener(e -> {
-                preferenceStore.setValue(this.getClass().getSimpleName() + "-hideInactiveSecurities", //$NON-NLS-1$
-                                filter.contains(securityIsNotInactive));
-            });
+            toolBar.addDisposeListener(
+                            e -> preferenceStore.setValue(this.getClass().getSimpleName() + "-hideInactiveSecurities", //$NON-NLS-1$
+                                            filter.contains(securityIsNotInactive)));
         }
 
         @Override
@@ -544,7 +545,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         prices.setContentProvider(ArrayContentProvider.getInstance());
 
-        hookContextMenu(prices.getTable(), manager -> fillPricesContextMenu(manager));
+        hookContextMenu(prices.getTable(), this::fillPricesContextMenu);
 
         return container;
     }
@@ -834,6 +835,25 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
             manager.add(new Separator());
+
+            if (pair.getTransaction() instanceof PortfolioTransaction)
+            {
+                Portfolio p = (Portfolio) pair.getOwner();
+                PortfolioTransaction t = (PortfolioTransaction) pair.getTransaction();
+
+                if (t.getType() == PortfolioTransaction.Type.BUY || t.getType() == PortfolioTransaction.Type.SELL)
+                {
+                    manager.add(new ConvertBuySellToDeliveryAction(getClient(), new TransactionPair<>(p, t)));
+                    manager.add(new Separator());
+                }
+
+                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                {
+                    manager.add(new ConvertDeliveryToBuySellAction(getClient(), new TransactionPair<>(p, t)));
+                    manager.add(new Separator());
+                }
+            }
         }
 
         new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
@@ -856,33 +876,33 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         });
     }
 
-    private Action createEditAction(TransactionPair<?> transactoinPair)
+    private Action createEditAction(TransactionPair<?> transactionPair)
     {
-        if (transactoinPair.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        if (transactionPair.getTransaction().getCrossEntry() instanceof BuySellEntry)
         {
-            BuySellEntry entry = (BuySellEntry) transactoinPair.getTransaction().getCrossEntry();
+            BuySellEntry entry = (BuySellEntry) transactionPair.getTransaction().getCrossEntry();
             return new OpenDialogAction(this, Messages.MenuEditTransaction)
                             .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
                             .parameters(entry.getPortfolioTransaction().getType());
         }
-        else if (transactoinPair.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        else if (transactionPair.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
         {
-            PortfolioTransferEntry entry = (PortfolioTransferEntry) transactoinPair.getTransaction().getCrossEntry();
+            PortfolioTransferEntry entry = (PortfolioTransferEntry) transactionPair.getTransaction().getCrossEntry();
             return new OpenDialogAction(this, Messages.MenuEditTransaction) //
                             .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
         }
-        else if (transactoinPair.getTransaction() instanceof PortfolioTransaction)
+        else if (transactionPair.getTransaction() instanceof PortfolioTransaction)
         {
             @SuppressWarnings("unchecked")
-            TransactionPair<PortfolioTransaction> pair = (TransactionPair<PortfolioTransaction>) transactoinPair;
+            TransactionPair<PortfolioTransaction> pair = (TransactionPair<PortfolioTransaction>) transactionPair;
             return new OpenDialogAction(this, Messages.MenuEditTransaction) //
                             .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
                             .parameters(pair.getTransaction().getType());
         }
-        else if (transactoinPair.getTransaction() instanceof AccountTransaction)
+        else if (transactionPair.getTransaction() instanceof AccountTransaction)
         {
             @SuppressWarnings("unchecked")
-            TransactionPair<AccountTransaction> pair = (TransactionPair<AccountTransaction>) transactoinPair;
+            TransactionPair<AccountTransaction> pair = (TransactionPair<AccountTransaction>) transactionPair;
             return new OpenDialogAction(this, Messages.MenuEditTransaction) //
                             .type(AccountTransactionDialog.class,
                                             d -> d.setTransaction((Account) pair.getOwner(), pair.getTransaction())) //

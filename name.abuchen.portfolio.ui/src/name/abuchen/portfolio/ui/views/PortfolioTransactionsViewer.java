@@ -26,12 +26,10 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -51,6 +49,8 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 
 public final class PortfolioTransactionsViewer implements ModificationListener
 {
@@ -80,52 +80,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         {
             warningColor.dispose();
             super.dispose();
-        }
-    }
-
-    private static class ConvertToDeliveryAction extends Action
-    {
-        private final AbstractFinanceView owner;
-        private final PortfolioTransaction transaction;
-
-        public ConvertToDeliveryAction(AbstractFinanceView owner, PortfolioTransaction transaction)
-        {
-            this.owner = owner;
-            this.transaction = transaction;
-
-            if (transaction.getType() != PortfolioTransaction.Type.BUY
-                            && transaction.getType() != PortfolioTransaction.Type.SELL)
-                throw new IllegalArgumentException();
-
-            setText(transaction.getType() == PortfolioTransaction.Type.BUY ? Messages.MenuConvertToInboundDelivery
-                            : Messages.MenuConvertToOutboundDelivery);
-        }
-
-        @Override
-        public void run()
-        {
-            // delete existing transaction
-            CrossEntry source = transaction.getCrossEntry();
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> portfolio = (TransactionOwner<Transaction>) source.getOwner(transaction);
-            portfolio.deleteTransaction(transaction, owner.getClient());
-
-            // create new delivery
-            PortfolioTransaction delivery = new PortfolioTransaction();
-            delivery.setType(transaction.getType() == PortfolioTransaction.Type.BUY
-                            ? PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-            delivery.setDate(transaction.getDate());
-            delivery.setMonetaryAmount(transaction.getMonetaryAmount());
-            delivery.setSecurity(transaction.getSecurity());
-            delivery.setNote(transaction.getNote());
-            delivery.setShares(transaction.getShares());
-
-            transaction.getUnits().forEach(unit -> delivery.addUnit(unit));
-
-            portfolio.addTransaction(delivery);
-
-            owner.markDirty();
-            owner.notifyModelUpdated();
         }
     }
 
@@ -383,7 +337,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(manager -> fillTransactionsContextMenu(manager));
+        menuMgr.addMenuListener(this::fillTransactionsContextMenu);
 
         contextMenu = menuMgr.createContextMenu(parent.getShell());
         tableViewer.getTable().setMenu(contextMenu);
@@ -421,30 +375,41 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         if (portfolio == null)
             return;
 
-        PortfolioTransaction firstTransaction = (PortfolioTransaction) ((IStructuredSelection) tableViewer
-                        .getSelection()).getFirstElement();
+        IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
+        PortfolioTransaction firstTransaction = (PortfolioTransaction) selection.getFirstElement();
 
-        if (firstTransaction != null)
+        if (firstTransaction != null && selection.size() == 1)
         {
             Action editAction = createEditAction(firstTransaction);
             editAction.setAccelerator(SWT.MOD1 | 'E');
             manager.add(editAction);
             manager.add(new Separator());
-        }
 
-        if (fullContextMenu && firstTransaction != null && (firstTransaction.getType() == PortfolioTransaction.Type.BUY
-                        || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
+            if (fullContextMenu && (firstTransaction.getType() == PortfolioTransaction.Type.BUY
+                            || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
+            {
+                manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(),
+                                new TransactionPair<>(portfolio, firstTransaction)));
+                manager.add(new Separator());
+            }
+
+            if (fullContextMenu && (firstTransaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                            || firstTransaction.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND))
+            {
+                manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(),
+                                new TransactionPair<>(portfolio, firstTransaction)));
+                manager.add(new Separator());
+            }
+
+            if (fullContextMenu)
+                new SecurityContextMenu(owner).menuAboutToShow(manager, firstTransaction.getSecurity(), portfolio);
+            else
+                manager.add(new BookmarkMenu(owner.getPart(), firstTransaction.getSecurity()));
+        }
+        else if (firstTransaction == null)
         {
-            manager.add(new ConvertToDeliveryAction(owner, firstTransaction));
-            manager.add(new Separator());
-        }
-
-        if (fullContextMenu && firstTransaction != null)
-            new SecurityContextMenu(owner).menuAboutToShow(manager, firstTransaction.getSecurity(), portfolio);
-        else if (fullContextMenu)
             new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
-        else if (firstTransaction != null)
-            manager.add(new BookmarkMenu(owner.getPart(), firstTransaction.getSecurity()));
+        }
 
         if (firstTransaction != null)
         {
@@ -454,8 +419,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 @Override
                 public void run()
                 {
-                    Object[] selection = ((IStructuredSelection) tableViewer.getSelection()).toArray();
-                    for (Object transaction : selection)
+                    Object[] transactions = selection.toArray();
+                    for (Object transaction : transactions)
                         portfolio.deleteTransaction((PortfolioTransaction) transaction, owner.getClient());
 
                     owner.markDirty();

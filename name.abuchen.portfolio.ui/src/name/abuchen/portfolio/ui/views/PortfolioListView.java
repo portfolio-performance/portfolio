@@ -6,16 +6,13 @@ import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -230,36 +227,26 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolios.setContentProvider(ArrayContentProvider.getInstance());
         setInput();
 
-        portfolios.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        portfolios.addSelectionChangedListener(event -> {
+            Portfolio portfolio = (Portfolio) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
-                if (portfolio != null)
-                {
-                    transactions.setInput(portfolio, portfolio.getTransactions());
-                    transactions.refresh();
-                    CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                                    portfolio.getReferenceAccount().getCurrencyCode());
-                    statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
-                }
-                else
-                {
-                    transactions.setInput(null, null);
-                    transactions.refresh();
-                    statementOfAssets.setInput((PortfolioSnapshot) null);
-                }
+            if (portfolio != null)
+            {
+                transactions.setInput(portfolio, portfolio.getTransactions());
+                transactions.refresh();
+                CurrencyConverter converter = new CurrencyConverterImpl(factory,
+                                portfolio.getReferenceAccount().getCurrencyCode());
+                statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
+            }
+            else
+            {
+                transactions.setInput(null, null);
+                transactions.refresh();
+                statementOfAssets.setInput((PortfolioSnapshot) null);
             }
         });
 
-        hookContextMenu(portfolios.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillPortfolioContextMenu(manager);
-            }
-        });
+        hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
     }
 
     private void fillPortfolioContextMenu(IMenuManager manager)
@@ -301,6 +288,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     // bottom table: transactions
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createBottomTable(Composite parent)
     {
         CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
