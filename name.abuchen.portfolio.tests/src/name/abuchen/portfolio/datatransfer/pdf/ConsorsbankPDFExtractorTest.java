@@ -96,7 +96,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-05-08")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("EUR", 326_90L)));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(370)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1370)));
     }
 
     @Test
@@ -119,6 +119,10 @@ public class ConsorsbankPDFExtractorTest
         // since taxes are zero, no tax transaction must be created
         assertThat(results.size(), is(2));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1444))));
     }
 
     @Test

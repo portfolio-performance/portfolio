@@ -56,7 +56,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares") //
                         .find("Einheit Umsatz( F\\Dlligkeit)?") //
-                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
+                        .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -96,7 +96,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares") //
                         .find("Einheit Umsatz( F\\Dlligkeit)?") //
-                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
+                        .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -136,7 +136,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares") //
                         .find("Einheit Umsatz( F\\Dlligkeit)?") //
-                        .match("^ST (?<shares>\\d+(,\\d+)?).*$") //
+                        .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -195,7 +195,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "name", "shares") //
-                        .match("ST *(?<shares>\\d+(,\\d*)?) *WKN: *(?<wkn>\\S*) *") //
+                        .match("ST *(?<shares>[\\d.]+(,\\d+)?) *WKN: *(?<wkn>\\S*) *") //
                         .match("^(?<name>.*)$") //
                         .assign((t, v) -> {
                             // reuse currency from transaction when creating a

@@ -7,7 +7,7 @@ An den Häusern 5
 02
 NUERNBERG, 08.05.2015
 DIVIDENDENGUTSCHRIFT                                                    
-ST                      370,00000          WKN:  ETF110                 
+ST                    1.370,00000          WKN:  ETF110                 
            COMS.-MSCI WORL.T.U.ETF I                                                     
            Namens-Aktien o.N.                                           
 ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015 

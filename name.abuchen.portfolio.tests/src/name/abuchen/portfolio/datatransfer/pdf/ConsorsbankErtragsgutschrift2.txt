@@ -12,14 +12,14 @@ ST                      370,00000          WKN:  ETF110
            Namens-Aktien o.N.                                           
 ZINS-/DIVIDENDENSATZ            1,200000  EUR SCHLUSSTAG PER 07.05.2015 
                                                      EX-TAG  08.05.2015 
-BRUTTO                                        EUR                444,00 
+BRUTTO                                        EUR              1.444,00 
 KAPST                                 25,00 % EUR                  0,00 
 SOLZ                                   5,50 % EUR                  0,00 
-WERT 08.05.2015                               EUR                444,00 
+WERT 08.05.2015                               EUR              1.444,00 
 ZU GUNSTEN KONTO-NR. 0123 456 789 / IBAN DE40760300800123456789
 (BIC CSDBDE71XYZ)
-KAPST-PFLICHTIGER KAPITALERTRAG               EUR               444,00  
-BEMESSUNGSGRUNDLAGE FUER KAPST                EUR               444,00  
+KAPST-PFLICHTIGER KAPITALERTRAG               EUR             1.444,00  
+BEMESSUNGSGRUNDLAGE FUER KAPST                EUR             1.444,00  
 VERRECHNUNGSTOPF ALLGEMEIN NACH ERTRAG        EUR                 0,00  
 SPARERPAUSCHBETRAG NACH ERTRAG                EUR                 0,00  
 Abgelt. im PV/TB im BV                                                  
