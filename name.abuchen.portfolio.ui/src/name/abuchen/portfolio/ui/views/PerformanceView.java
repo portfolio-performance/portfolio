@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -26,12 +27,15 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -269,7 +273,7 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + '@' + title,
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@2" + title, //$NON-NLS-1$
                         getPreferenceStore(), transactionViewer, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -315,7 +319,33 @@ public class PerformanceView extends AbstractHistoricView
         column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getMonetaryAmount()));
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        addTaxesColumn(support);
+        addFeesColumn(support);
+        addSecurityColumn(support);
+        addPortfolioColumn(support);
+        addAccountColumn(support);
+
+        column = new NoteColumn();
+        column.setEditingSupport(null);
+        support.addColumn(column);
+
+        support.createColumns();
+
+        transactionViewer.getTable().setHeaderVisible(true);
+        transactionViewer.getTable().setLinesVisible(true);
+
+        transactionViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(title);
+        item.setControl(container);
+
+        return transactionViewer;
+    }
+
+    private void addTaxesColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -344,8 +374,11 @@ public class PerformanceView extends AbstractHistoricView
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.TAX)));
         support.addColumn(column);
+    }
 
-        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+    private void addFeesColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -363,48 +396,98 @@ public class PerformanceView extends AbstractHistoricView
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.FEE)));
         support.addColumn(column);
+    }
 
-        column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
+    private void addSecurityColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnSecurity, SWT.LEFT, 250);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                TransactionPair<?> pair = (TransactionPair<?>) element;
-                return pair.getTransaction().getSecurity() != null ? pair.getTransaction().getSecurity().getName()
-                                : pair.getOwner().toString();
+                Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
+                return security != null ? security.getName() : null;
             }
 
             @Override
             public Image getImage(Object element)
             {
-                Transaction transaction = ((TransactionPair<?>) element).getTransaction();
-                return transaction.getSecurity() != null ? Images.SECURITY.image() : Images.ACCOUNT.image();
+                Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
+                return security != null ? Images.SECURITY.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
-            TransactionPair<?> pair = (TransactionPair<?>) e;
-            return pair.getTransaction().getSecurity() != null ? pair.getTransaction().getSecurity().getName()
-                            : pair.getOwner().toString();
+            Security security = ((TransactionPair<?>) e).getTransaction().getSecurity();
+            return security != null ? security.getName() : null;
         }));
         support.addColumn(column);
+    }
 
-        column = new NoteColumn();
-        column.setEditingSupport(null);
+    private void addPortfolioColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnPortfolio, SWT.LEFT, 100);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
+                                ? (Portfolio) ((TransactionPair<?>) element).getOwner() : null;
+                return portfolio != null ? portfolio.getName() : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
+                                ? (Portfolio) ((TransactionPair<?>) element).getOwner() : null;
+                return portfolio != null ? Images.PORTFOLIO.image() : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            Portfolio portfolio = ((TransactionPair<?>) e).getOwner() instanceof Portfolio
+                            ? (Portfolio) ((TransactionPair<?>) e).getOwner() : null;
+            return portfolio != null ? portfolio.getName() : null;
+        }));
         support.addColumn(column);
+    }
 
-        support.createColumns();
+    private void addAccountColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnAccount, SWT.LEFT, 100);
 
-        transactionViewer.getTable().setHeaderVisible(true);
-        transactionViewer.getTable().setLinesVisible(true);
+        Function<Object, Account> getAccount = element -> {
+            TransactionPair<?> pair = (TransactionPair<?>) element;
 
-        transactionViewer.setContentProvider(ArrayContentProvider.getInstance());
+            if (pair.getOwner() instanceof Account)
+                return (Account) pair.getOwner();
 
-        CTabItem item = new CTabItem(folder, SWT.NONE);
-        item.setText(title);
-        item.setControl(container);
+            TransactionOwner<?> other = pair.getTransaction().getCrossEntry().getCrossOwner(pair.getTransaction());
+            return other instanceof Account ? ((Account) other) : null;
+        };
 
-        return transactionViewer;
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Account account = getAccount.apply(element);
+                return account != null ? account.getName() : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                Account account = getAccount.apply(element);
+                return account != null ? Images.ACCOUNT.image() : null;
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            Account account = getAccount.apply(e);
+            return account != null ? account.getName() : null;
+        }));
+        support.addColumn(column);
     }
 
     private void createEarningsByAccountsItem(CTabFolder folder, String title)
