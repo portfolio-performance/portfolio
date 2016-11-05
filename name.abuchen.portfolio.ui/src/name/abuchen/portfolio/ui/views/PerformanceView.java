@@ -322,6 +322,22 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
+                if (t instanceof AccountTransaction)
+                {
+                    AccountTransaction at = (AccountTransaction) t;
+
+                    switch (at.getType())
+                    {
+                        case TAXES:
+                            return Values.Money.format(at.getMonetaryAmount(), getClient().getBaseCurrency());
+                        case TAX_REFUND:
+                            return Values.Money.format(at.getMonetaryAmount().multiply(-1),
+                                            getClient().getBaseCurrency());
+                        default:
+                            // do nothing -> print unit sum
+                    }
+                }
+
                 return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
@@ -336,7 +352,12 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
-                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+
+                if (t instanceof AccountTransaction
+                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.FEES)
+                    return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
+                else
+                    return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter
