@@ -107,11 +107,14 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7e784PPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.menu.help.welcome" label="%part.welcome" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_E-53QPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.welcome"/>
         </children>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_mRCKILOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="WIKI" command="_dYDXQLOiEeWe1a5u3oOf1Q">
-          <parameters xmi:id="_pMDJwLOiEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio/wiki"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_mRCKILOiEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="Forum" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <parameters xmi:id="_pMDJwLOiEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info"/>
+        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_a9IwYJ54EeafbcEa_s_MDw" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="How-Tos" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <parameters xmi:id="_a9JXcJ54EeafbcEa_s_MDw" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/c/how-to"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_H7TFULOjEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menu.help.wiki" label="FAQ" command="_dYDXQLOiEeWe1a5u3oOf1Q">
-          <parameters xmi:id="_H7TFUbOjEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://github.com/buchen/portfolio/wiki/FAQ"/>
+          <parameters xmi:id="_H7TFUbOjEeWe1a5u3oOf1Q" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/c/faq"/>
         </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_NbNDkLOjEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.menuseparator.11"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_SQAUsKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.menu.help.errorlog" label="%command.showErrorView.label" command="_veiGEPPLEeOuTsL2OeJEvQ">
