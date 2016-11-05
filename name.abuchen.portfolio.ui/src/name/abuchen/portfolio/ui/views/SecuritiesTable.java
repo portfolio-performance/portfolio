@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -98,7 +99,7 @@ public final class SecuritiesTable implements ModificationListener
         this.resources = new LocalResourceManager(JFaceResources.getResources(), container);
         this.warningColor = resources.createColor(Colors.WARNING.swt());
 
-        this.securities = new TableViewer(container, SWT.FULL_SELECTION);
+        this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(securities);
 
@@ -558,47 +559,34 @@ public final class SecuritiesTable implements ModificationListener
         });
     }
 
-    private void fillContextMenu(IMenuManager manager) // NOSONAR
+    private void fillContextMenu(IMenuManager manager)
     {
-        final Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-        if (security == null)
+        IStructuredSelection selection = (IStructuredSelection) securities.getSelection();
+
+        if (selection.isEmpty())
             return;
 
-        // only if the security has a currency code, it can be bought
-        if (security.getCurrencyCode() != null)
-            fillTransactionContextMenu(manager, security);
+        if (selection.size() == 1)
+        {
+            Security security = (Security) selection.getFirstElement();
 
-        manager.add(new EditSecurityAction());
+            // only if the security has a currency code, it can be bought
+            if (security.getCurrencyCode() != null)
+                fillTransactionContextMenu(manager, security);
 
-        manager.add(new Separator());
-        new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+            manager.add(new EditSecurityAction());
 
-        manager.add(new Separator());
-        manager.add(new BookmarkMenu(view.getPart(), security));
+            manager.add(new Separator());
+            new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+
+            manager.add(new Separator());
+            manager.add(new BookmarkMenu(view.getPart(), security));
+        }
 
         manager.add(new Separator());
         if (watchlist == null)
         {
-            manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
-            {
-                @Override
-                public void run()
-                {
-                    if (!security.getTransactions(getClient()).isEmpty())
-                    {
-                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible, MessageFormat
-                                        .format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
-                    }
-                    else
-                    {
-
-                        getClient().removeSecurity(security);
-                        markDirty();
-
-                        securities.setInput(getClient().getSecurities());
-                    }
-                }
-            });
+            manager.add(new DeleteSecurityAction(selection));
         }
         else
         {
@@ -607,9 +595,10 @@ public final class SecuritiesTable implements ModificationListener
                 @Override
                 public void run()
                 {
-                    watchlist.getSecurities().remove(security);
-                    markDirty();
+                    for (Object security : selection.toArray())
+                        watchlist.getSecurities().remove(security);
 
+                    markDirty();
                     securities.setInput(watchlist.getSecurities());
                 }
             });
@@ -680,6 +669,56 @@ public final class SecuritiesTable implements ModificationListener
         {
             securities.refresh(security, true);
             securities.setSelection(securities.getSelection());
+        }
+    }
+
+    private final class DeleteSecurityAction extends Action
+    {
+        private IStructuredSelection selection;
+
+        private DeleteSecurityAction(IStructuredSelection selection)
+        {
+            super(Messages.SecurityMenuDeleteSecurity);
+
+            this.selection = selection;
+        }
+
+        @Override
+        public void run()
+        {
+            boolean isDirty = false;
+            List<Security> withTransactions = new ArrayList<>();
+
+            for (Object obj : selection.toArray())
+            {
+                Security security = (Security) obj;
+
+                if (!security.getTransactions(getClient()).isEmpty())
+                {
+                    withTransactions.add(security);
+                }
+                else
+                {
+                    getClient().removeSecurity(security);
+                    isDirty = true;
+                }
+            }
+
+            if (!withTransactions.isEmpty())
+            {
+                String label = String.join(", ", //$NON-NLS-1$
+                                withTransactions.stream().map(s -> s.getName()).collect(Collectors.toList()));
+
+                MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
+                                MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, label));
+            }
+
+            if (isDirty)
+            {
+                markDirty();
+                securities.setInput(getClient().getSecurities());
+            }
+
         }
     }
 
