@@ -12,9 +12,21 @@ public class SimpleAction extends Action
 
     private final Runnable runnable;
 
+    public SimpleAction(String text, int style, Runnable runnable)
+    {
+        super(text, style);
+        this.runnable = runnable;
+    }
+
     public SimpleAction(String text, Runnable runnable)
     {
         super(text);
+        this.runnable = runnable;
+    }
+
+    public SimpleAction(Runnable runnable)
+    {
+        super();
         this.runnable = runnable;
     }
 

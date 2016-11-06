@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
@@ -127,16 +128,11 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBar toolBar)
     {
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                StackLayout layout = (StackLayout) container.getLayout();
-                if (layout.topControl != null)
-                    ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
-            }
-        };
+        Action config = new SimpleAction(a -> {
+            StackLayout layout = (StackLayout) container.getLayout();
+            if (layout.topControl != null)
+                ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
+        });
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
 
@@ -154,14 +150,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addView(final ToolBar toolBar, String label, Images image, final int index)
     {
-        Action showDefinition = new Action(label, Action.AS_CHECK_BOX)
-        {
-            @Override
-            public void run()
-            {
-                activateView(index);
-            }
-        };
+        Action showDefinition = new SimpleAction(label, Action.AS_CHECK_BOX, a -> activateView(index));
         showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
         new ActionContributionItem(showDefinition).fill(toolBar, -1);
