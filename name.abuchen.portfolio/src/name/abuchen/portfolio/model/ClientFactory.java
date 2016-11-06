@@ -203,6 +203,9 @@ public class ClientFactory
                 decrypted.read(bytes); // version number
                 int version = ByteBuffer.wrap(bytes).getInt();
 
+                // sanity check if the file was properly decrypted
+                if (majorVersion < 1 || majorVersion > 10 || version < 1 || version > 100)
+                    throw new IOException(Messages.MsgIncorrectPassword);
                 if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
                     throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
 
