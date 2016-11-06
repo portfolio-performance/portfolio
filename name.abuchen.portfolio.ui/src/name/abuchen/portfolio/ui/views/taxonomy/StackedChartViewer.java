@@ -96,7 +96,7 @@ public class StackedChartViewer extends AbstractChartPage
             double[] answer = new double[values.length];
             for (int ii = 0; ii < answer.length; ii++)
             {
-                if (totals[ii] == 0d)
+                if (totals[ii] == 0)
                     answer[ii] = 0d;
                 else
                     answer[ii] = values[ii] / (double) totals[ii];
@@ -129,7 +129,8 @@ public class StackedChartViewer extends AbstractChartPage
         Period weekly = Aggregation.Period.WEEKLY;
 
         final LocalDate start = interval.getStart();
-        final LocalDate end = interval.getEnd();
+        final LocalDate now = LocalDate.now();
+        final LocalDate end = interval.getEnd().isAfter(now) ? now : interval.getEnd();
         LocalDate current = weekly.getStartDateFor(start);
 
         dates = new ArrayList<>();
