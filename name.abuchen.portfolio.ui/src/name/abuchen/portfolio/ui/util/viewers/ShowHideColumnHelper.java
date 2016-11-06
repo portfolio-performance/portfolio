@@ -51,7 +51,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private abstract static class ViewerPolicy
     {
-        private org.eclipse.swt.widgets.Listener sortOrderChangedListener;
+        /**
+         * The changeListener is attached to various SWT events (ordering,
+         * resizing or moving columns) in order to store the updated
+         * configuration.
+         */
+        private org.eclipse.swt.widgets.Listener changeListener;
 
         abstract ColumnViewer getViewer();
 
@@ -87,14 +92,20 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 // add selection listener *after* attaching the viewer sorter
                 // because the viewer sorter will add a listener that actually
                 // changes the sort order
-                if (sortOrderChangedListener != null)
-                    getColumnWidget(viewerColumn).addListener(SWT.Selection, sortOrderChangedListener);
+                if (changeListener != null)
+                    getColumnWidget(viewerColumn).addListener(SWT.Selection, changeListener);
             }
 
             if (column.getEditingSupport() != null)
             {
                 viewerColumn.setEditingSupport(
                                 new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
+            }
+
+            if (changeListener != null)
+            {
+                getColumnWidget(viewerColumn).addListener(SWT.Resize, changeListener);
+                getColumnWidget(viewerColumn).addListener(SWT.Move, changeListener);
             }
         }
 
@@ -103,9 +114,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             getViewer().getControl().setRedraw(redraw);
         }
 
-        public void setSortOrderChangedListener(org.eclipse.swt.widgets.Listener sortOrderChangedListener)
+        public void setChangeListener(org.eclipse.swt.widgets.Listener changeListener)
         {
-            this.sortOrderChangedListener = sortOrderChangedListener;
+            this.changeListener = changeListener;
         }
     }
 
@@ -347,7 +358,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (client != null)
         {
             this.store = new ConfigurationStore(identifier, client, preferences, this);
-            this.policy.setSortOrderChangedListener(e -> store.updateActive(serialize()));
+            this.policy.setChangeListener(e -> store.updateActive(serialize()));
         }
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
