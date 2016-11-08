@@ -114,13 +114,14 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public DateColumn()
         {
-            super(new String[] { "Datum" });
+            super(new String[] { "Datum", "Date" });
 
             formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d.M.y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMM y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMMM y"), //$NON-NLS-1$
-                            DateTimeFormatter.ofPattern("d. MMM. y") //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMM. y"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
             };
         }
 
@@ -151,7 +152,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt" });
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price" });
         }
 
         @Override
