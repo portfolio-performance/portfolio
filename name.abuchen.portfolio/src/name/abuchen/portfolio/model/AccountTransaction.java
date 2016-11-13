@@ -42,10 +42,10 @@ public class AccountTransaction extends Transaction
     }
 
     /**
-     * Comparator to sort by date, amount, and type in order to have a stable
-     * enough sort order to calculate the balance per transaction.
+     * Comparator to sort by date, amount, type, and hash code in order to have
+     * a stable enough sort order to calculate the balance per transaction.
      */
-    public static final class ByDateAmountAndType implements Comparator<AccountTransaction>, Serializable
+    public static final class ByDateAmountTypeAndHashCode implements Comparator<AccountTransaction>, Serializable
     {
         private static final long serialVersionUID = 1L;
 
@@ -60,7 +60,11 @@ public class AccountTransaction extends Transaction
             if (compare != 0)
                 return compare;
 
-            return t1.getType().compareTo(t2.getType());
+            compare = t1.getType().compareTo(t2.getType());
+            if (compare != 0)
+                return compare;
+
+            return Integer.compare(t1.hashCode(), t2.hashCode());
         }
     }
 

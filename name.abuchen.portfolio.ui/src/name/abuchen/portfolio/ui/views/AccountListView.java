@@ -382,7 +382,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(AccountTransaction.class, "date", "amount", "type").attachTo(column, SWT.DOWN); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
         new DateEditingSupport(AccountTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
@@ -437,7 +437,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return balance != null ? Values.Money.format(balance, getClient().getBaseCurrency()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new AccountTransaction.ByDateAmountAndType()));
+        column.setSorter(ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()));
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -707,7 +707,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             return;
 
         List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
-        Collections.sort(tx, new AccountTransaction.ByDateAmountAndType());
+        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
 
         MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
         for (AccountTransaction t : tx)
