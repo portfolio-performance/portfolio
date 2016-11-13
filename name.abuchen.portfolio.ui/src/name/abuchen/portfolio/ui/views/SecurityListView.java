@@ -732,7 +732,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         }));
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnPerShare, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnPerShare_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -748,8 +749,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 {
                     long shares = ((AccountTransaction) t).getShares();
                     if (shares != 0)
-                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), Math.round(t.getAmount()
-                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares)));
+                    {
+                        long perShare = Math.round(((AccountTransaction) t).getGrossValueAmount()
+                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares);
+                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare));
+                    }
                 }
                 return null;
             }
