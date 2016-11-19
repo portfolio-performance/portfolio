@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -463,7 +464,11 @@ public class PerformanceView extends AbstractHistoricView
             if (pair.getOwner() instanceof Account)
                 return (Account) pair.getOwner();
 
-            TransactionOwner<?> other = pair.getTransaction().getCrossEntry().getCrossOwner(pair.getTransaction());
+            CrossEntry crossEntry = pair.getTransaction().getCrossEntry();
+            if (crossEntry == null)
+                return null;
+
+            TransactionOwner<?> other = crossEntry.getCrossOwner(pair.getTransaction());
             return other instanceof Account ? ((Account) other) : null;
         };
 
