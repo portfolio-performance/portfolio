@@ -318,6 +318,7 @@ public class Messages extends NLS
     public static String LabelAccounts;
     public static String LabelAccumulatedDividends;
     public static String LabelAccumulatedInterest;
+    public static String LabelAccumulatedInterestCharge;
     public static String LabelAccumulatedTaxes;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
@@ -347,6 +348,7 @@ public class Messages extends NLS
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
     public static String LabelInterest;
+    public static String LabelInterestCharge;
     public static String LabelInvestedCapital;
     public static String LabelInvestmentPlans;
     public static String LabelIRR;

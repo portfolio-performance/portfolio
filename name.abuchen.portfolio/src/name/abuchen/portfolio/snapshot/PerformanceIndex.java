@@ -43,6 +43,7 @@ public class PerformanceIndex
     protected long[] taxes;
     protected long[] dividends;
     protected long[] interest;
+    protected long[] interestCharge;
     protected double[] accumulated;
     protected double[] delta;
 
@@ -233,6 +234,11 @@ public class PerformanceIndex
         return interest;
     }
     
+    public long[] getInterestCharge()
+    {
+        return interestCharge;
+    }
+
     public long[] calculateInvestedCapital()
     {
         long[] investedCapital = new long[transferals.length];

@@ -110,6 +110,16 @@ public class DataSeriesSet
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE_ACCUMULATED,
+                        Messages.LabelAccumulatedInterestCharge,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+        availableSeries.add(series);
+
     }
 
     private void buildPerformanceDataSeries(Client client, ColorWheel wheel)

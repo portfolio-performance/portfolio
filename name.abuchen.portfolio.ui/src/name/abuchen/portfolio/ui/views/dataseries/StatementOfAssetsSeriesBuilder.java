@@ -65,6 +65,12 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case INTEREST_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getInterest(), Values.Amount.divider());
                 break;
+            case INTEREST_CHARGE:
+                values = toDouble(clientIndex.getInterestCharge(), Values.Amount.divider());
+                break;
+            case INTEREST_CHARGE_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getInterestCharge(), Values.Amount.divider());
+                break;
             default:
                 throw new IllegalArgumentException(String.valueOf(series.getInstance()));
         }
