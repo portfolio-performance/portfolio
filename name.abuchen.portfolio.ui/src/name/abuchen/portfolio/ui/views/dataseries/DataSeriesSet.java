@@ -82,8 +82,18 @@ public class DataSeriesSet
         series.setShowArea(true);
         availableSeries.add(series);
 
-        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelAbsoluteDelta,
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_INVESTED_CAPITAL,
+                        Messages.LabelAbsoluteInvestedCapital,
                         Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        series.setShowArea(true);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA, Messages.LabelDelta,
+                        Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.ABSOLUTE_DELTA_ALL_RECORDS,
+                        Messages.LabelAbsoluteDelta, Display.getDefault().getSystemColor(SWT.COLOR_GRAY).getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TAXES, Messages.LabelAccumulatedTaxes,

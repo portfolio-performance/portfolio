@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.function.ToLongBiFunction;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVStrategy;
@@ -20,12 +21,15 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
@@ -233,27 +237,102 @@ public class PerformanceIndex
     {
         return interest;
     }
-    
+
     public long[] getInterestCharge()
     {
         return interestCharge;
     }
 
+    /**
+     * Calculates the absolute invested capital, i.e. starting with the first
+     * transaction recorded for the client.
+     */
+    public long[] calculateAbsoluteInvestedCapital()
+    {
+        ToLongBiFunction<Money, LocalDate> convertIfNecessary = (amount, date) -> {
+            if (amount.getCurrencyCode().equals(getCurrencyConverter().getTermCurrency()))
+                return amount.getAmount();
+            else
+                return getCurrencyConverter().convert(date, amount).getAmount();
+        };
+
+        long startValue = 0;
+        Interval interval = getActualInterval();
+
+        for (Account account : getClient().getAccounts())
+            startValue += account.getTransactions() //
+                            .stream() //
+                            .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT
+                                            || t.getType() == AccountTransaction.Type.REMOVAL)
+                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .mapToLong(t -> {
+                                if (t.getType() == AccountTransaction.Type.DEPOSIT)
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                else if (t.getType() == AccountTransaction.Type.REMOVAL)
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                else
+                                    return 0;
+                            }).sum();
+
+        for (Portfolio portfolio : getClient().getPortfolios())
+            startValue += portfolio.getTransactions() //
+                            .stream() //
+                            .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                            || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .mapToLong(t -> {
+                                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                else
+                                    return 0;
+                            }).sum();
+
+        return calculateInvestedCapital(startValue);
+    }
+
+    /**
+     * Calculates the invested capital for the given reporting period.
+     */
     public long[] calculateInvestedCapital()
+    {
+        return calculateInvestedCapital(totals[0]);
+    }
+
+    private long[] calculateInvestedCapital(long startValue)
     {
         long[] investedCapital = new long[transferals.length];
 
-        investedCapital[0] = totals[0];
-        long current = totals[0];
+        investedCapital[0] = startValue;
+        long current = startValue;
         for (int ii = 1; ii < investedCapital.length; ii++)
             current = investedCapital[ii] = current + transferals[ii];
 
         return investedCapital;
     }
 
+    /**
+     * Calculates the delta as difference between the current valuation and the
+     * invested capital since the first transaction.
+     */
     public long[] calculateAbsoluteDelta()
     {
-        long[] answer = calculateInvestedCapital();
+        return calculateDelta(calculateAbsoluteInvestedCapital());
+    }
+
+    /**
+     * Calculates the delta as difference between the total valuation and the
+     * invested capital for the given reporting period.
+     */
+    public long[] calculateDelta()
+    {
+        return calculateDelta(calculateInvestedCapital());
+    }
+
+    private long[] calculateDelta(long[] investedCapital)
+    {
+        long[] answer = investedCapital;
 
         for (int ii = 0; ii < answer.length; ii++)
             answer[ii] = totals[ii] - answer[ii];

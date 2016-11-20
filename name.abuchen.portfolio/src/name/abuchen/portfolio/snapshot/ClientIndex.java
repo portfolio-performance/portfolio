@@ -101,7 +101,7 @@ import name.abuchen.portfolio.util.Interval;
         }
     }
 
-    private void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)
+    protected void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)
     {
         if (value == 0)
             return;

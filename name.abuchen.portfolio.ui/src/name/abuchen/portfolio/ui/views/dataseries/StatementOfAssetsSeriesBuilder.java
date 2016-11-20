@@ -47,7 +47,13 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case INVESTED_CAPITAL:
                 values = toDouble(clientIndex.calculateInvestedCapital(), Values.Amount.divider());
                 break;
+            case ABSOLUTE_INVESTED_CAPITAL:
+                values = toDouble(clientIndex.calculateAbsoluteInvestedCapital(), Values.Amount.divider());
+                break;
             case ABSOLUTE_DELTA:
+                values = toDouble(clientIndex.calculateDelta(), Values.Amount.divider());
+                break;
+            case ABSOLUTE_DELTA_ALL_RECORDS:
                 values = toDouble(clientIndex.calculateAbsoluteDelta(), Values.Amount.divider());
                 break;
             case TAXES:

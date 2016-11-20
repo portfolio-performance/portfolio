@@ -315,6 +315,7 @@ public class Messages extends NLS
     public static String JurisdictionFilesDownloadTitle;
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
+    public static String LabelAbsoluteInvestedCapital;
     public static String LabelAccounts;
     public static String LabelAccumulatedDividends;
     public static String LabelAccumulatedInterest;
@@ -338,6 +339,7 @@ public class Messages extends NLS
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDefaultReferenceAccountName;
+    public static String LabelDelta;
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelError;
