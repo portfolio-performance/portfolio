@@ -31,6 +31,7 @@ public class Messages extends NLS
     public static String BookmarksListView_NewBookmark;
     public static String BookmarksListView_title;
     public static String BookmarksListView_url;
+    public static String BtnLabelApply;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;

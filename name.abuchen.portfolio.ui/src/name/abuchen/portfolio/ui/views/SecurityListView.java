@@ -27,7 +27,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
-import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -66,6 +65,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -79,7 +79,7 @@ import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizard;
+import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizardDialog;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
@@ -93,32 +93,17 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(new Action(Messages.SecurityMenuNewSecurity)
-            {
-                @Override
-                public void run()
-                {
-                    Security newSecurity = new Security();
-                    newSecurity.setFeed(QuoteFeed.MANUAL);
-                    openEditDialog(newSecurity);
-                }
-            });
+            manager.add(new SimpleAction(Messages.SecurityMenuNewSecurity, a -> {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                openEditDialog(newSecurity);
+            }));
 
-            manager.add(new Action(Messages.SecurityMenuSearchYahoo)
-            {
-                @Override
-                public void run()
-                {
-                    SearchYahooWizard wizard = new SearchYahooWizard(getClient());
-                    Dialog dialog = new WizardDialog(getToolBar().getShell(), wizard);
-
-                    if (dialog.open() == Dialog.OK)
-                    {
-                        Security newSecurity = wizard.getSecurity();
-                        openEditDialog(newSecurity);
-                    }
-                }
-            });
+            manager.add(new SimpleAction(Messages.SecurityMenuSearchYahoo, a -> {
+                SearchYahooWizardDialog dialog = new SearchYahooWizardDialog(getToolBar().getShell(), getClient());
+                if (dialog.open() == Dialog.OK)
+                    openEditDialog(dialog.getSecurity());
+            }));
         }
 
         private void openEditDialog(Security newSecurity)
