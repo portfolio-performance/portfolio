@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -94,44 +95,44 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        addNewPortfolioButton(toolBar);
+        addNewButton(toolBar);
         addFilterButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addNewPortfolioButton(ToolBar toolBar)
+    private void addNewButton(ToolBar toolBar)
     {
-        Action action = new Action()
-        {
-            @Override
-            public void run()
+        SimpleAction.Runnable newPortfolioAction = a -> {
+            Portfolio portfolio = new Portfolio();
+            portfolio.setName(Messages.LabelNoName);
+
+            if (!getClient().getAccounts().isEmpty())
             {
-                Portfolio portfolio = new Portfolio();
-                portfolio.setName(Messages.LabelNoName);
-
-                if (!getClient().getAccounts().isEmpty())
-                {
-                    portfolio.setReferenceAccount(getClient().getAccounts().get(0));
-                }
-                else
-                {
-                    Account account = new Account();
-                    account.setName(Messages.LabelDefaultReferenceAccountName);
-                    getClient().addAccount(account);
-                    portfolio.setReferenceAccount(account);
-                }
-
-                getClient().addPortfolio(portfolio);
-                markDirty();
-
-                setInput();
-                portfolios.editElement(portfolio, 0);
+                portfolio.setReferenceAccount(getClient().getAccounts().get(0));
             }
+            else
+            {
+                Account account = new Account();
+                account.setName(Messages.LabelDefaultReferenceAccountName);
+                getClient().addAccount(account);
+                portfolio.setReferenceAccount(account);
+            }
+            getClient().addPortfolio(portfolio);
+            markDirty();
+            setInput();
+            portfolios.editElement(portfolio, 0);
         };
-        action.setImageDescriptor(Images.PLUS.descriptor());
-        action.setToolTipText(Messages.PortfolioMenuAdd);
 
-        new ActionContributionItem(action).fill(toolBar, -1);
+        AbstractDropDown.create(toolBar, Messages.MenuCreatePortfolioOrTransaction, Images.PLUS.image(), SWT.NONE,
+                        (dd, manager) -> {
+
+                            manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
+
+                            manager.add(new Separator());
+
+                            Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
+                            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
+                        });
     }
 
     private void addFilterButton(ToolBar toolBar)

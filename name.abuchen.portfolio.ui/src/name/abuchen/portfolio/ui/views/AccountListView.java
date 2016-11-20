@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -123,32 +124,36 @@ public class AccountListView extends AbstractListView implements ModificationLis
     @Override
     protected void addButtons(ToolBar toolBar)
     {
-        addNewAccountButton(toolBar);
+        addNewButton(toolBar);
         addFilterButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addNewAccountButton(ToolBar toolBar)
+    private void addNewButton(ToolBar toolBar)
     {
-        Action action = new Action()
-        {
-            @Override
-            public void run()
-            {
-                Account account = new Account();
-                account.setName(Messages.LabelNoName);
-                account.setCurrencyCode(getClient().getBaseCurrency());
+        SimpleAction.Runnable newAccountAction = a -> {
+            Account account = new Account();
+            account.setName(Messages.LabelNoName);
+            account.setCurrencyCode(getClient().getBaseCurrency());
 
-                getClient().addAccount(account);
-                markDirty();
+            getClient().addAccount(account);
+            markDirty();
 
-                resetInput();
-                accounts.editElement(account, 0);
-            }
+            resetInput();
+            accounts.editElement(account, 0);
         };
-        action.setImageDescriptor(Images.PLUS.descriptor());
-        action.setToolTipText(Messages.AccountMenuAdd);
-        new ActionContributionItem(action).fill(toolBar, -1);
+
+        AbstractDropDown.create(toolBar, Messages.MenuCreateAccountOrTransaction, Images.PLUS.image(), SWT.NONE,
+                        (dd, manager) -> {
+
+                            manager.add(new SimpleAction(Messages.AccountMenuAdd, newAccountAction));
+
+                            manager.add(new Separator());
+
+                            Account account = (Account) accounts.getStructuredSelection().getFirstElement();
+                            new AccountContextMenu(AccountListView.this).menuAboutToShow(manager, account, null);
+                        });
+
     }
 
     private void addFilterButton(ToolBar toolBar)
