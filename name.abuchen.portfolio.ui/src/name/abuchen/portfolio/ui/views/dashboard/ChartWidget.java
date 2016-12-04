@@ -164,7 +164,7 @@ public class ChartWidget extends WidgetDelegate
         super(widget, dashboardData);
 
         this.useCase = useCase;
-        this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), useCase);
+        this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), dashboardData.getPreferences(), useCase);
 
         addConfig(new ChartConfig(this, useCase));
         if (useCase == DataSeries.UseCase.PERFORMANCE)

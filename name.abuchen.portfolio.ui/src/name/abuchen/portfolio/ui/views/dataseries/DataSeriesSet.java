@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 import org.swtchart.LineStyle;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
 
@@ -26,7 +28,7 @@ public class DataSeriesSet
     private DataSeries.UseCase useCase;
     private final List<DataSeries> availableSeries = new ArrayList<>();
 
-    public DataSeriesSet(Client client, DataSeries.UseCase useCase)
+    public DataSeriesSet(Client client, IPreferenceStore preferences, DataSeries.UseCase useCase)
     {
         this.useCase = useCase;
 
@@ -46,7 +48,7 @@ public class DataSeriesSet
                 throw new IllegalArgumentException(useCase.name());
         }
 
-        buildCommonDataSeries(client, wheel);
+        buildCommonDataSeries(client, preferences, wheel);
     }
 
     public DataSeries.UseCase getUseCase()
@@ -180,7 +182,7 @@ public class DataSeriesSet
         }
     }
 
-    private void buildCommonDataSeries(Client client, ColorWheel wheel)
+    private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         int index = client.getSecurities().size();
 
@@ -204,6 +206,15 @@ public class DataSeriesSet
         {
             DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
+                            wheel.getRGB(index++));
+            availableSeries.add(series);
+        }
+
+        // custom client filters
+        ClientFilterMenu menu = new ClientFilterMenu(client, preferences, f -> {});
+        for (ClientFilterMenu.Item item : menu.getCustomItems())
+        {
+            DataSeries series = new DataSeries(DataSeries.Type.CLIENT_FILTER, item, item.getLabel(),
                             wheel.getRGB(index++));
             availableSeries.add(series);
         }

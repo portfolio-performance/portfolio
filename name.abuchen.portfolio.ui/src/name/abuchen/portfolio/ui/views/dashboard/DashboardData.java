@@ -8,6 +8,8 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -60,6 +62,7 @@ public class DashboardData
     }
 
     private final Client client;
+    private final IPreferenceStore preferences;
     private final CurrencyConverter converter;
 
     private final Map<CacheKey, Object> cache = new HashMap<>();
@@ -73,18 +76,24 @@ public class DashboardData
     private Dashboard dashboard;
 
     @Inject
-    public DashboardData(Client client, ExchangeRateProviderFactory factory)
+    public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory)
     {
         this.client = client;
+        this.preferences = preferences;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
-        this.dataSeriesSet = new DataSeriesSet(client, DataSeries.UseCase.RETURN_VOLATILITY);
+        this.dataSeriesSet = new DataSeriesSet(client, preferences, DataSeries.UseCase.RETURN_VOLATILITY);
         this.dataSeriesCache = new DataSeriesCache(client, factory);
     }
 
     public Client getClient()
     {
         return client;
+    }
+
+    public IPreferenceStore getPreferences()
+    {
+        return preferences;
     }
 
     public Dashboard getDashboard()

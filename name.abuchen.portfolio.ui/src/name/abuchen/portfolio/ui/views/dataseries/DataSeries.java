@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
 /**
  * A data series available to add to charts.
@@ -48,7 +49,8 @@ public final class DataSeries
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         CONSUMER_PRICE_INDEX("[b]ConsumerPriceIndex", i -> ""), //$NON-NLS-1$ //$NON-NLS-2$
-        CLASSIFICATION("Classification", i -> ((Classification) i).getId()); //$NON-NLS-1$
+        CLASSIFICATION("Classification", i -> ((Classification) i).getId()), //$NON-NLS-1$
+        CLIENT_FILTER("ClientFilter", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")); //$NON-NLS-1$
 
         private final String label;
         private final Function<Object, String> uuidProvider;
@@ -186,6 +188,8 @@ public final class DataSeries
                 return Images.PORTFOLIO.image();
             case CLASSIFICATION:
                 return Images.CATEGORY.image();
+            case CLIENT_FILTER:
+                return Images.FILTER_OFF.image();
             default:
                 return null;
         }

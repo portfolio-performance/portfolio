@@ -9,6 +9,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -44,6 +45,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private final String identifier;
     private final Client client;
+    private final IPreferenceStore preferences;
     private final ConfigurationStore store;
 
     private final List<DataSeriesConfigurator.Listener> listeners = new ArrayList<>();
@@ -57,9 +59,10 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
     {
         this.identifier = view.getClass().getSimpleName() + IDENTIFIER_POSTFIX;
         this.client = view.getClient();
-        this.store = new ConfigurationStore(identifier, client, view.getPreferenceStore(), this);
+        this.preferences = view.getPreferenceStore();
+        this.store = new ConfigurationStore(identifier, client, preferences, this);
 
-        this.dataSeriesSet = new DataSeriesSet(client, useCase);
+        this.dataSeriesSet = new DataSeriesSet(client, preferences, useCase);
         this.selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, store.getActive());
 
         view.getControl().addDisposeListener(e -> DataSeriesConfigurator.this.widgetDisposed());
@@ -180,7 +183,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     private void doResetSeries(String config)
     {
-        dataSeriesSet = new DataSeriesSet(client, dataSeriesSet.getUseCase());
+        dataSeriesSet = new DataSeriesSet(client, preferences, dataSeriesSet.getUseCase());
 
         selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, config);
 

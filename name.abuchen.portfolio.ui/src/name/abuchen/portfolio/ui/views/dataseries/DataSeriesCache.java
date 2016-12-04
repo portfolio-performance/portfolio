@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
 /**
  * Cache for calculation results of DataSeries.
@@ -129,6 +130,11 @@ public class DataSeriesCache
                 case CONSUMER_PRICE_INDEX:
                     return PerformanceIndex.forConsumerPriceIndex(
                                     lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod));
+
+                case CLIENT_FILTER:
+                    ClientFilterMenu.Item item = (ClientFilterMenu.Item) series.getInstance();
+                    return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,
+                                    warnings);
 
                 default:
                     throw new IllegalArgumentException(series.getType().name());

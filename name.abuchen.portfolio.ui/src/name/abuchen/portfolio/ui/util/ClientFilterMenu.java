@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +30,7 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 
 public final class ClientFilterMenu implements IMenuListener
 {
-    private static class Item
+    public static class Item
     {
         String label;
         String uuids;
@@ -40,6 +41,21 @@ public final class ClientFilterMenu implements IMenuListener
             this.label = label;
             this.uuids = uuids;
             this.filter = filter;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public String getUUIDs()
+        {
+            return uuids;
+        }
+
+        public ClientFilter getFilter()
+        {
+            return filter;
         }
     }
 
@@ -207,5 +223,10 @@ public final class ClientFilterMenu implements IMenuListener
     public void addListener(Consumer<ClientFilter> listener)
     {
         listeners.add(listener);
+    }
+
+    public List<Item> getCustomItems()
+    {
+        return Collections.unmodifiableList(customItems);
     }
 }
