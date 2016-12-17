@@ -25,7 +25,8 @@ public class AssetPosition
     private final Money totalAssets;
     private final Money valuation;
 
-    /* package */AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDate date, Money totalAssets)
+    /* package */ AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDate date,
+                    Money totalAssets)
     {
         this.position = position;
         this.converter = converter;
@@ -80,4 +81,13 @@ public class AssetPosition
     {
         return position.getInvestmentVehicle();
     }
+
+    @SuppressWarnings("nls")
+    @Override
+    public String toString()
+    {
+        return "AssetPosition [" + position.getInvestmentVehicle() + ", date=" + date + ", valuation=" + valuation
+                        + "]";
+    }
+
 }

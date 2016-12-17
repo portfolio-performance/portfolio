@@ -50,9 +50,11 @@ public class PortfolioClientFilter implements ClientFilter
 
         for (Portfolio portfolio : portfolios)
         {
-            ReadOnlyAccount pseudoAccount = new ReadOnlyAccount(portfolio.getReferenceAccount());
-            pseudoClient.internalAddAccount(pseudoAccount);
-            account2pseudo.put(portfolio.getReferenceAccount(), pseudoAccount);
+            ReadOnlyAccount pseudoAccount = account2pseudo.computeIfAbsent(portfolio.getReferenceAccount(), a -> {
+                ReadOnlyAccount pa = new ReadOnlyAccount(a);
+                pseudoClient.internalAddAccount(pa);
+                return pa;
+            });
 
             ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(portfolio);
             pseudoPortfolio.setReferenceAccount(pseudoAccount);
