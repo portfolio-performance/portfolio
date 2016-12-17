@@ -197,7 +197,21 @@ public class PerformanceView extends AbstractHistoricView
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
-                    return position.getSecurity() != null ? Images.SECURITY.image() : null;
+
+                    if (position.getSecurity() != null)
+                    {
+                        ClientPerformanceSnapshot snapshot = ((PerformanceContentProvider) calculation
+                                        .getContentProvider()).getSnapshot();
+
+                        boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
+                                        .get(position.getSecurity()) != null;
+
+                        return hasHoldings ? Images.SECURITY.image() : Images.SECURITY_RETIRED.image();
+                    }
+                    else
+                    {
+                        return null;
+                    }
                 }
 
                 return null;
@@ -552,6 +566,7 @@ public class PerformanceView extends AbstractHistoricView
 
     private static class PerformanceContentProvider implements ITreeContentProvider
     {
+        private ClientPerformanceSnapshot snapshot;
         private ClientPerformanceSnapshot.Category[] categories;
 
         @Override
@@ -559,12 +574,13 @@ public class PerformanceView extends AbstractHistoricView
         {
             if (newInput == null)
             {
+                this.snapshot = null;
                 this.categories = new ClientPerformanceSnapshot.Category[0];
             }
             else if (newInput instanceof ClientPerformanceSnapshot)
             {
-                this.categories = ((ClientPerformanceSnapshot) newInput).getCategories()
-                                .toArray(new ClientPerformanceSnapshot.Category[0]);
+                this.snapshot = (ClientPerformanceSnapshot) newInput;
+                this.categories = snapshot.getCategories().toArray(new ClientPerformanceSnapshot.Category[0]);
             }
             else
             {
@@ -615,6 +631,10 @@ public class PerformanceView extends AbstractHistoricView
             // no resources to dispose
         }
 
+        public ClientPerformanceSnapshot getSnapshot()
+        {
+            return snapshot;
+        }
     }
 
     private final class ExportDropDown extends AbstractDropDown
