@@ -28,8 +28,8 @@
 <repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20150804081228"/>
-<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.13.0/mars"/>
+<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20161126080556"/>
+<repository location="http://archive.eclipse.org/technology/babel/update-site/R0.14.1/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601121647"/>

@@ -60,7 +60,7 @@
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.13.0/mars</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/mars</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
