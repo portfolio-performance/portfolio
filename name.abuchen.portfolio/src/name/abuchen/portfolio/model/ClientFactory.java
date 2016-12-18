@@ -494,6 +494,8 @@ public class ClientFactory
                 migrateToConfigurationSets(client);
             case 31:
                 // added INTEREST_CHARGE transaction type
+            case 32:
+                // added AED currency
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
