@@ -1,3 +1,4 @@
 name.abuchen.portfolio.money.impl.GBXExchangeRateProviderTest
+name.abuchen.portfolio.money.impl.ECBExchangeRateProviderTest
 name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractorPDFTest
 name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractorPDFTest

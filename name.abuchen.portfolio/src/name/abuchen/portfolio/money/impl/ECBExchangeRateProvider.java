@@ -120,7 +120,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         // of the application
         File file = getStorageFile(FILE_SUMMARY);
 
-        Map<String, ExchangeRate> summary = new HashMap<String, ExchangeRate>();
+        Map<String, ExchangeRate> summary = new HashMap<>();
         for (ExchangeRateTimeSeriesImpl s : data.getSeries())
             s.getLatest().ifPresent(rate -> summary.put(s.getTermCurrency(), rate));
         write(summary, file);
@@ -136,32 +136,6 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         return new ArrayList<>(data.getSeries());
     }
 
-    @Override
-    public ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency)
-    {
-        if (EUR.equals(baseCurrency))
-        {
-            return data.getCurrencyMap().get(termCurrency);
-        }
-        else if (EUR.equals(termCurrency))
-        {
-            ExchangeRateTimeSeriesImpl series = data.getCurrencyMap().get(baseCurrency);
-            return series != null ? new InverseExchangeRateTimeSeries(series) : null;
-        }
-        else
-        {
-            Map<String, ExchangeRateTimeSeriesImpl> map = data.getCurrencyMap();
-
-            ExchangeRateTimeSeriesImpl base = map.get(baseCurrency);
-            ExchangeRateTimeSeriesImpl term = map.get(termCurrency);
-
-            if (base != null && term != null)
-                return new ChainedExchangeRateTimeSeries(new InverseExchangeRateTimeSeries(base), term);
-            else
-                return null;
-        }
-    }
-
     private File getStorageFile(String name)
     {
         Bundle bundle = FrameworkUtil.getBundle(ECBExchangeRateProvider.class);
@@ -170,16 +144,9 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
     private void write(Object object, File file) throws IOException
     {
-        FileOutputStream out = null;
-        try
+        try (FileOutputStream out = new FileOutputStream(file))
         {
-            out = new FileOutputStream(file);
             xstream().toXML(object, out);
-        }
-        finally
-        {
-            if (out != null)
-                out.close();
         }
     }
 

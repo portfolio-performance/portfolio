@@ -15,4 +15,6 @@ public interface ExchangeRateTimeSeries
     List<ExchangeRate> getRates();
 
     Optional<ExchangeRate> lookupRate(LocalDate requestedTime);
+
+    int getWeight();
 }

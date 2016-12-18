@@ -19,7 +19,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
 
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.money.currencies"; //$NON-NLS-1$
     private static final ResourceBundle BUNDLE = ResourceBundle.getBundle(BUNDLE_NAME);
-    private static final Map<String, CurrencyUnit> CACHE = new HashMap<String, CurrencyUnit>();
+    private static final Map<String, CurrencyUnit> CACHE = new HashMap<>();
 
     static
     {
@@ -38,7 +38,7 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
             {
                 currencySymbol = BUNDLE.getString(currencyCode + ".symbol"); //$NON-NLS-1$
             }
-            catch (MissingResourceException ignore)
+            catch (MissingResourceException ignore) // NOSONAR
             {
                 // no symbol defined
             }
@@ -51,21 +51,21 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
     private String displayName;
     private String currencySymbol;
 
-    public static List<CurrencyUnit> getAvailableCurrencyUnits()
-    {
-        return new ArrayList<CurrencyUnit>(CACHE.values());
-    }
-
-    public static CurrencyUnit getInstance(String currencyCode)
-    {
-        return CACHE.get(currencyCode);
-    }
-
     private CurrencyUnit(String currencyCode, String displayName, String currencySymbol)
     {
         this.currencyCode = currencyCode;
         this.displayName = displayName;
         this.currencySymbol = currencySymbol;
+    }
+
+    public static List<CurrencyUnit> getAvailableCurrencyUnits()
+    {
+        return new ArrayList<>(CACHE.values());
+    }
+
+    public static CurrencyUnit getInstance(String currencyCode)
+    {
+        return CACHE.get(currencyCode);
     }
 
     public String getCurrencyCode()

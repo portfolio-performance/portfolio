@@ -57,4 +57,11 @@ public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
             return answer;
         }
     }
+
+    @Override
+    public int getWeight()
+    {
+        return 1 + source.getWeight();
+    }
+
 }
