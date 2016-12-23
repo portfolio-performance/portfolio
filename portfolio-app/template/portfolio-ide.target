@@ -4,12 +4,12 @@
 <target name="portfolio-ide" sequenceNumber="10">
 <locations>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.4.1.v20160212-1350"/>
-<unit id="org.eclipse.platform.source.feature.group" version="4.5.2.v20160212-1500"/>
-<unit id="org.eclipse.e4.rcp.feature.group" version="1.4.1.v20160212-1350"/>
-<unit id="org.eclipse.platform.ide" version="4.5.2.M20160212-1500"/>
-<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.200.v20150602-1417"/>
-<repository location="http://download.eclipse.org/eclipse/updates/4.5/R-4.5.2-201602121500"/>
+<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.5.2.v20161122-1740"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="4.6.2.v20161124-1400"/>
+<unit id="org.eclipse.e4.rcp.feature.group" version="1.5.2.v20161122-1740"/>
+<unit id="org.eclipse.platform.ide" version="4.6.2.M20161124-1400"/>
+<unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20161122-1740"/>
+<repository location="http://download.eclipse.org/eclipse/updates/4.6/R-4.6.2-201611241400/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.hamcrest.library.source" version="1.3.0.v201505072020"/>
@@ -18,22 +18,22 @@
 <unit id="org.junit" version="4.12.0.v201504281640"/>
 <unit id="org.hamcrest.core.source" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest" version="1.1.0.v20090501071000"/>
+<unit id="org.mockito.source" version="1.9.5.v201605172210"/>
 <unit id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
-<unit id="org.mockito" version="1.9.5.v201311280930"/>
 <unit id="org.hamcrest.core" version="1.3.0.v201303031735"/>
 <unit id="org.hamcrest.text.source" version="1.1.0.v20090501071000"/>
-<unit id="org.mockito.source" version="1.9.5.v201311280930"/>
+<unit id="org.mockito" version="1.9.5.v201605172210"/>
 <unit id="org.hamcrest.library" version="1.3.0.v201505072020"/>
 <unit id="org.junit.source" version="4.12.0.v201504281640"/>
-<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160221192158/repository/"/>
+<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.5.0.v20161126080556"/>
 <repository location="http://archive.eclipse.org/technology/babel/update-site/R0.14.1/mars"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="0.14.0.201601121647"/>
-<repository location="http://archive.eclipse.org/technology/nebula/Q42015/release/"/>
+<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.0.0.201605182147"/>
+<repository location="http://archive.eclipse.org/nebula/Q22016/release/"/>
 </location>
 <location path="${basedir}/ide-target-platform/bundles" type="Directory"/>
 </locations>
