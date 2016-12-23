@@ -72,6 +72,7 @@ public class RecentFilesMenuContribution
             MHandledMenuItem menuItem = MMenuFactory.INSTANCE.createHandledMenuItem();
             menuItem.setToBeRendered(true);
             menuItem.setLabel(file);
+            menuItem.setTooltip(""); //$NON-NLS-1$
             menuItem.setContributorURI("platform:/plugin/" + PortfolioPlugin.PLUGIN_ID); //$NON-NLS-1$
             menuItem.getParameters().add(parameter);
             menuItem.setWbCommand(command);
