@@ -318,10 +318,10 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("shares", "notation")
-                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+)") //
+                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+).*") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
-                            if (notation != null && !notation.equalsIgnoreCase("St"))
+                            if (notation != null && !notation.equalsIgnoreCase("St."))
                             {
                                 // Prozent-Notierung, Workaround..
                                 t.setShares((asShares(v.get("shares")) / 100));
