@@ -48,7 +48,7 @@ public class ProxyAddon
                     data.setHost(proxyHost);
                     data.setPort(proxyHost == null ? -1 : proxyPort);
                     data.setUserid(proxyHost == null ? null : System.getProperty("name.abuchen.portfolio.proxyUser")); //$NON-NLS-1$
-                    data.setUserid(proxyHost == null ? null
+                    data.setPassword(proxyHost == null ? null
                                     : System.getProperty("name.abuchen.portfolio.proxyPassword")); //$NON-NLS-1$
                 }
             }
