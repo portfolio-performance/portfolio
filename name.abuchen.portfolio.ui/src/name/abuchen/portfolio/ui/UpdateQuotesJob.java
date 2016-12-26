@@ -97,7 +97,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 final String hostname = new URI(url).getHost();
                 return hostname != null ? new HostSchedulingRule(hostname) : null;
             }
-            catch (URISyntaxException e)
+            catch (URISyntaxException e) // NOSONAR
             {
                 // ignore syntax exception -> quote feed provide will also
                 // complain but with a better error message
@@ -126,7 +126,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         super(client, Messages.JobLabelUpdateQuotes);
 
         this.target = target;
-        this.securities = new ArrayList<Security>(securities);
+        this.securities = new ArrayList<>(securities);
     }
 
     public UpdateQuotesJob repeatEvery(long milliseconds)
@@ -179,7 +179,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
         {
             group.join(0, monitor);
         }
-        catch (InterruptedException ignore)
+        catch (InterruptedException ignore) // NOSONAR
         {
             // ignore
         }

@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     private Client client;
 
     private PreferenceStore preferenceStore = new PreferenceStore();
-    private Job regularQuoteUpdateJob;
+    private List<Job> regularJobs = new ArrayList<>();
 
     private Composite container;
     private PageBook book;
@@ -293,8 +294,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         client.addPropertyChangeListener(event -> notifyModelUpdated());
 
         if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
-            Display.getDefault().asyncExec(
-                            () -> new ClientMigrationDialog(Display.getDefault().getActiveShell(), client).open());
+            Display.getDefault()
+                            .asyncExec(new ClientMigrationDialog(Display.getDefault().getActiveShell(), client)::open);
 
         new ConsistencyChecksJob(client, false).schedule(100);
         scheduleOnlineUpdateJobs();
@@ -326,8 +327,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         if (clientFile != null)
             storePreferences();
 
-        if (regularQuoteUpdateJob != null)
-            regularQuoteUpdateJob.cancel();
+        regularJobs.forEach(Job::cancel);
     }
 
     @Persist
@@ -448,7 +448,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         return preferenceStore;
     }
 
-                    /* package */void markDirty()
+    /* package */void markDirty()
     {
         dirty.setDirty(true);
     }
@@ -522,9 +522,14 @@ public class PortfolioPart implements LoadClientThread.Callback
                             .schedule(1000);
 
             int tenMinutes = 1000 * 60 * 10;
-            regularQuoteUpdateJob = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST))
-                            .repeatEvery(tenMinutes);
-            regularQuoteUpdateJob.schedule(tenMinutes);
+            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(tenMinutes);
+            job.schedule(tenMinutes);
+            regularJobs.add(job);
+
+            int sixHours = 1000 * 60 * 60 * 6;
+            job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
+            job.schedule(sixHours);
+            regularJobs.add(job);
 
             new UpdateCPIJob(client).schedule(1000);
         }
