@@ -21,7 +21,9 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
-        addDividendTransaction();
+        addErtragsgutschrift();
+        addZinsgutschrift();
+        addDividendengutschrift();
     }
 
     @Override
@@ -146,7 +148,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addDividendTransaction()
+    private void addErtragsgutschrift()
     {
         DocumentType type = new DocumentType("Ertragsgutschrift");
         this.addDocumentTyp(type);
@@ -185,11 +187,15 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new TransactionItem(t)));
+    }
 
-        type = new DocumentType("Zinsgutschrift");
+    @SuppressWarnings("nls")
+    private void addZinsgutschrift()
+    {
+        DocumentType type = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type);
 
-        block = new Block("Zinsgutschrift");
+        Block block = new Block("Zinsgutschrift");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -218,6 +224,58 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new TransactionItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addDividendengutschrift()
+    {
+        DocumentType type = new DocumentType("Dividendengutschrift");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Dividendengutschrift");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
+                        })
+
+                        .section("wkn", "isin", "name")
+                        //
+                        .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares")
+                        //
+                        .match("^Nominale (?<shares>\\d+(,\\d+)?) .*")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date") //
+                        .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("amount", "currency") //
+                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("tax", "currency").optional() //
+                        .match("Solidaritätszuschlag \\d+,\\d+% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .wrap(TransactionItem::new));
     }
 
 }
