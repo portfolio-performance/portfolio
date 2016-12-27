@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -14,6 +13,7 @@ import org.eclipse.swt.widgets.ColorDialog;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
@@ -74,8 +74,11 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
     {
         super.fillContextMenu(manager);
 
-        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
-                        .getFirstElement();
+        final IStructuredSelection selection = getNodeViewer().getStructuredSelection();
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
+
+        final TaxonomyNode node = (TaxonomyNode) selection.getFirstElement();
 
         if (node == null || node.isUnassignedCategory())
             return;
@@ -84,33 +87,9 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
             return;
 
         MenuManager color = new MenuManager(Messages.ColumnColor);
-
-        color.add(new Action(Messages.MenuTaxonomyColorEdit)
-        {
-            @Override
-            public void run()
-            {
-                doEditColor(node);
-            }
-        });
-
-        color.add(new Action(Messages.MenuTaxonomyColorRandomPalette)
-        {
-            @Override
-            public void run()
-            {
-                doAutoAssignColors(node);
-            }
-        });
-
-        color.add(new Action(Messages.MenuTaxonomyColorCascadeToChildren)
-        {
-            @Override
-            public void run()
-            {
-                doCascadeColorsDown(node);
-            }
-        });
+        color.add(new SimpleAction(Messages.MenuTaxonomyColorEdit, a -> doEditColor(node)));
+        color.add(new SimpleAction(Messages.MenuTaxonomyColorRandomPalette, a -> doAutoAssignColors(node)));
+        color.add(new SimpleAction(Messages.MenuTaxonomyColorCascadeToChildren, a -> doCascadeColorsDown(node)));
 
         manager.appendToGroup(MENU_GROUP_DEFAULT_ACTIONS, color);
     }

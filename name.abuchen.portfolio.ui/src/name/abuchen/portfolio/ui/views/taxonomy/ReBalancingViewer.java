@@ -225,7 +225,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return super.canEdit(element);
             }
 
-        }.addListener((element, newValue, oldValue) -> onWeightModified(element, newValue, oldValue)).attachTo(column);
+        }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
     }
 
@@ -234,9 +234,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     {
         super.fillContextMenu(manager);
 
-        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
-                        .getFirstElement();
+        final IStructuredSelection selection = getNodeViewer().getStructuredSelection();
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
 
+        final TaxonomyNode node = (TaxonomyNode) selection.getFirstElement();
         if (node == null || node.isUnassignedCategory())
             return;
 

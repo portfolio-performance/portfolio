@@ -57,6 +57,7 @@ import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -183,8 +184,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
             // do not allow dragging of categories into the "unassigned
             // category" (must be deleted via right-click instead)
-            if (target.getPath().stream().filter(n -> n.isUnassignedCategory()).findAny().isPresent()
-                            && droppedNodes.stream().filter(n -> n.isClassification()).findAny().isPresent())
+            if (target.getPath().stream().filter(TaxonomyNode::isUnassignedCategory).findAny().isPresent()
+                            && droppedNodes.stream().filter(TaxonomyNode::isClassification).findAny().isPresent())
                 return false;
 
             switch (getCurrentLocation())
@@ -464,9 +465,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return false;
                 return super.canEdit(element);
             }
-        } //
-                        .addListener((element, newValue, oldValue) -> onWeightModified(element, newValue, oldValue)) //
-                        .attachTo(column);
+        }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
     }
 
@@ -703,14 +702,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         if (node.isClassification())
         {
-            manager.add(new Action(Messages.MenuTaxonomyClassificationCreate)
-            {
-                @Override
-                public void run()
-                {
-                    doAddClassification(node);
-                }
-            });
+            manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationCreate, a -> doAddClassification(node)));
 
             TaxonomyNode unassigned = getModel().getUnassignedNode();
             if (!unassigned.getChildren().isEmpty())
@@ -723,36 +715,16 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             manager.add(new Separator());
 
             MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new Action(Messages.MenuTaxonomySortByTypName)
-            {
-                @Override
-                public void run()
-                {
-                    doSort(node, true);
-                }
-            });
-            sorting.add(new Action(Messages.MenuTaxonomySortByName)
-            {
-                @Override
-                public void run()
-                {
-                    doSort(node, false);
-                }
-            });
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, true)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, false)));
 
             manager.add(sorting);
 
             if (!node.isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
-                manager.add(new Action(Messages.MenuTaxonomyClassificationDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        doDeleteClassification(node);
-                    }
-                });
+                manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
+                                a -> doDeleteClassification(node)));
             }
         }
         else
@@ -760,17 +732,12 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             // node is assignment, but not in unassigned category
             if (!node.getParent().isUnassignedCategory())
             {
-                manager.add(new Action(Messages.MenuTaxonomyAssignmentRemove)
-                {
-                    @Override
-                    public void run()
-                    {
-                        int oldWeight = node.getWeight();
-                        node.setWeight(0);
-                        doChangeAssignmentWeight(node, oldWeight);
-                        onTaxnomyNodeEdited(getModel().getVirtualRootNode());
-                    }
-                });
+                manager.add(new SimpleAction(Messages.MenuTaxonomyAssignmentRemove, a -> {
+                    int oldWeight = node.getWeight();
+                    node.setWeight(0);
+                    doChangeAssignmentWeight(node, oldWeight);
+                    onTaxnomyNodeEdited(getModel().getVirtualRootNode());
+                }));
             }
 
             Security security = node.getBackingSecurity();
