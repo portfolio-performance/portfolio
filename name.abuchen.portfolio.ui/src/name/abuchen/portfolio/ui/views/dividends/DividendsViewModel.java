@@ -77,9 +77,7 @@ public class DividendsViewModel
         this.converter = converter;
         this.client = client;
 
-        this.clientFilter = new ClientFilterMenu(client, preferences, filter -> {
-            recalculate();
-        });
+        this.clientFilter = new ClientFilterMenu(client, preferences, filter -> recalculate());
     }
 
     public ClientFilterMenu getClientFilterMenu()
@@ -201,6 +199,6 @@ public class DividendsViewModel
 
     protected void fireUpdateChange()
     {
-        this.listeners.stream().forEach(l -> l.onUpdate());
+        this.listeners.stream().forEach(UpdateListener::onUpdate);
     }
 }

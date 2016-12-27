@@ -83,12 +83,17 @@ public abstract class AbstractChartTab implements DividendsTab
 
         chart.getAxisSet().adjustRange();
 
-        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
-        toolTip.enableCategory(true);
+        attachTooltipTo(chart);
 
-        model.addUpdateListener(() -> updateChart());
+        model.addUpdateListener(this::updateChart);
 
         return chart;
+    }
+
+    protected void attachTooltipTo(Chart chart)
+    {
+        TimelineChartToolTip toolTip = new TimelineChartToolTip(chart);
+        toolTip.enableCategory(true);
     }
 
     protected Color getColor(int year)
