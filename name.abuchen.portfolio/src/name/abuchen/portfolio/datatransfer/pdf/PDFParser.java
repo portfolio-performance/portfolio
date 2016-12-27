@@ -19,25 +19,38 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 {
     /* package */static class DocumentType
     {
-        private String marker;
+        private String mustInclude;
+        private String mustExclude;
+
         private List<Block> blocks = new ArrayList<>();
         private Map<String, String> context = new HashMap<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
 
-        public DocumentType(String marker)
+        public DocumentType(String mustInclude)
         {
-            this(marker, null);
+            this(mustInclude, null);
         }
 
-        public DocumentType(String marker, BiConsumer<Map<String, String>, String[]> contextProvider)
+        public DocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
         {
-            this.marker = marker;
+            this.mustInclude = mustInclude;
             this.contextProvider = contextProvider;
         }
 
         public boolean matches(String text)
         {
-            return text.contains(marker);
+            if (!text.contains(mustInclude))
+                return false;
+
+            if (mustExclude != null)
+                return !text.contains(mustExclude);
+
+            return true;
+        }
+
+        public void setMustExclude(String mustExclude)
+        {
+            this.mustExclude = mustExclude;
         }
 
         public void addBlock(Block block)

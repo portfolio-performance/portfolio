@@ -150,9 +150,20 @@ import name.abuchen.portfolio.money.Values;
     protected Security getOrCreateSecurity(Map<String, String> values)
     {
         String isin = values.get("isin"); //$NON-NLS-1$
+        if (isin != null)
+            isin = isin.trim();
+
         String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+        if (tickerSymbol != null)
+            tickerSymbol = tickerSymbol.trim();
+
         String wkn = values.get("wkn"); //$NON-NLS-1$
-        String name = values.get("name") != null ? values.get("name").trim() : null; //$NON-NLS-1$ //$NON-NLS-2$
+        if (wkn != null)
+            wkn = wkn.trim();
+
+        String name = values.get("name"); //$NON-NLS-1$
+        if (name != null)
+            name = name.trim();
 
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();

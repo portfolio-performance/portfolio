@@ -30,6 +30,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addChangeTransaction();
         addPayingTransaction();
         addDividendTransaction();
+        addDividendTransaction2();
         // addBackOfProfitsTransaction();
         addTransferInTransaction();
         addCapitalReductionTransaction();
@@ -269,7 +270,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("Dividendengutschrift.*|Kupongutschrift.*|Erträgnisgutschrift.*(\\d+.\\d+.\\d{4})");
         type.addBlock(block);
 
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
             transaction.setType(AccountTransaction.Type.DIVIDENDS);
@@ -360,6 +361,58 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new BuySellEntryItem(t)));
+    }
+
+    private void addDividendTransaction2()
+    {
+        DocumentType type = new DocumentType("Erträgnisgutschrift");
+        type.setMustExclude("BELEGDRUCK=J");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Erträgnisgutschrift aus Wertpapieren.*");
+        type.addBlock(block);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+
+        block.set(pdfTransaction);
+        pdfTransaction
+
+                        .section("name", "isin") //
+                        .match("Gattungsbezeichnung *") //
+                        .match("(?<name>.*?)") //
+                        .match("ISIN *").match("(?<isin>.*?)") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("notation", "shares") //
+                        .match("Nominal *") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d*)?) *")
+                        .assign((t, v) -> {
+                            String notation = v.get("notation");
+                            if (notation != null && !"STK".equalsIgnoreCase(notation))
+                                t.setShares(asShares(v.get("shares")) / 100);
+                            else
+                                t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date") //
+                        .match("Ex-Tag *") //
+                        .match("(?<date>\\d+.\\d+.\\d{4}+) *") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("amount", "currency") //
+                        .match("Wert Konto-Nr. Betrag zu Ihren Gunsten *") //
+                        .match("(\\d+.\\d+.\\d{4}+)? (\\d*) (?<currency>\\w{3}+) (?<amount>[\\d.]+(,\\d*)?) *") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new);
     }
 
     private void addTransferInTransaction()

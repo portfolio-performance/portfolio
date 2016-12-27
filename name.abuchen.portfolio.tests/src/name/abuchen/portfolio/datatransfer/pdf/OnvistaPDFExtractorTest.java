@@ -3,8 +3,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +17,9 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
+import org.junit.Test;
+
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -31,8 +34,6 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractorTest
@@ -302,8 +303,67 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
     }
-    
-    
+
+    @Test
+    public void testErtragsgutschriftDividende2() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<>();
+
+        File file = new File("OnvistaErtragsgutschriftDividende2.txt");
+        List<Item> results = extractor.extract(Arrays.asList(file), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(6));
+
+        // transaction #1
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(i -> i.getSecurity()) //
+                        .filter(s -> "FR0010296061".equals(s.getIsin())) //
+                        .findFirst().get();
+        assertThat(security.getName(), is("Lyxor ETF MSCI USA Actions au Porteur D-EUR o.N."));
+
+        AccountTransaction transaction = results.stream() //
+                        .filter(i -> i instanceof Extractor.TransactionItem) //
+                        .filter(i -> "FR0010296061".equals(i.getSecurity().getIsin())) //
+                        .map(i -> (AccountTransaction) ((Extractor.TransactionItem) i).getSubject()).findFirst().get();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-14")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1.0545)));
+
+        // transaction #2
+        security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(i -> i.getSecurity()) //
+                        .filter(s -> "FR0010315770".equals(s.getIsin())) //
+                        .findFirst().get();
+        assertThat(security.getName(), is("Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N."));
+
+        transaction = results.stream() //
+                        .filter(i -> i instanceof Extractor.TransactionItem) //
+                        .filter(i -> "FR0010315770".equals(i.getSecurity().getIsin())) //
+                        .map(i -> (AccountTransaction) ((Extractor.TransactionItem) i).getSubject()).findFirst().get();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-14")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1.2879)));
+    }
+
     @Test
     public void testErtragsgutschriftKupon() throws IOException
     {
