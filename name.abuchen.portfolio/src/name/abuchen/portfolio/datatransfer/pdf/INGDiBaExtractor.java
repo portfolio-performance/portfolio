@@ -140,11 +140,20 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional() //
                         .match("Handelsentgelt (?<currency>\\w{3}+) (?<fee>[\\d.]+,\\d+)") //
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("tax", "currency").optional() //
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .wrap(BuySellEntryItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -223,7 +232,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -266,12 +275,12 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax", "currency").optional() //
-                        .match("Kapitalertragsteuer \\d+,\\d+% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .section("tax", "currency").optional() //
-                        .match("Solidaritätszuschlag \\d+,\\d+% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Solidaritätszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
