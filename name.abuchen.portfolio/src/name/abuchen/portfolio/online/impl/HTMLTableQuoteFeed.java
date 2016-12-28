@@ -58,6 +58,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             }
         };
 
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
+        {
+            @Override
+            protected DecimalFormat initialValue()
+            {
+                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+                unusualSymbols.setGroupingSeparator('\'');
+                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+            }
+        };
+
         private final Pattern[] patterns;
 
         protected Column(String[] strings)
@@ -93,9 +104,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
             if (format == null)
             {
+                // check first for apostrophe
+
+                int apostrophe = text.indexOf('\'');
+                if (apostrophe >= 0)
+                    format = DECIMAL_FORMAT_APOSTROPHE.get();
+            }
+
+            if (format == null)
+            {
                 // determine format based on the relative location of the last
-                // comma
-                // and dot, e.g. the last comma indicates a German number format
+                // comma and dot, e.g. the last comma indicates a German number
+                // format
                 int lastDot = text.lastIndexOf('.');
                 int lastComma = text.lastIndexOf(',');
                 format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
