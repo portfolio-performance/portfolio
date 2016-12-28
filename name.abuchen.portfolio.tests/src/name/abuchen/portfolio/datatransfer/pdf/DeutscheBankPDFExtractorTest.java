@@ -43,7 +43,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return "some text";
             }
@@ -76,7 +76,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankErtragsgutschrift.txt");
             }
@@ -116,7 +116,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client)
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankErtragsgutschrift.txt");
             }
@@ -145,7 +145,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client)
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankDividendengutschrift.txt");
             }
@@ -177,7 +177,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -222,7 +222,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankKauf.txt");
             }
@@ -260,7 +260,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankKauf2.txt");
             }
@@ -297,7 +297,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankVerkauf.txt");
             }
@@ -337,7 +337,7 @@ public class DeutscheBankPDFExtractorTest
         DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DeutscheBankVerkauf2.txt");
             }

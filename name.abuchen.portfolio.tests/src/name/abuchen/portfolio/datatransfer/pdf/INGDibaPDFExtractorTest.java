@@ -40,7 +40,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -80,7 +80,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -118,7 +118,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -156,7 +156,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -193,7 +193,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -230,7 +230,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -267,7 +267,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -304,7 +304,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -342,7 +342,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -377,7 +377,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -412,7 +412,7 @@ public class INGDibaPDFExtractorTest
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

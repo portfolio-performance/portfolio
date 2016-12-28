@@ -89,7 +89,7 @@ import name.abuchen.portfolio.money.Values;
         return results;
     }
 
-                    /* testing */String strip(File file) throws IOException
+    /* testing */ protected String strip(File file) throws IOException
     {
         try (PDDocument doc = PDDocument.load(file))
         {

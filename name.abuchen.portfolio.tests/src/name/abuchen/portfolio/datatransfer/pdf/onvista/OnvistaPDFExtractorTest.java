@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf;
+package name.abuchen.portfolio.datatransfer.pdf.onvista;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -25,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -45,7 +46,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return "some text";
             }
@@ -276,7 +277,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaErtragsgutschriftDividende.txt");
             }
@@ -310,7 +311,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -370,7 +371,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaErtragsgutschriftKupon.txt");
             }
@@ -407,7 +408,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaErtragsgutschriftErträgnisgutschrift.txt");
             }
@@ -443,7 +444,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKaufAktien.txt");
             }
@@ -481,7 +482,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKaufBezugsrechte.txt");
             }
@@ -517,7 +518,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaVerkauf.txt");
             }
@@ -555,7 +556,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaEinloesung.txt");
             }
@@ -593,7 +594,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaWertpapierübertragEingang.txt");
             }
@@ -625,7 +626,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaErtragsgutschriftDividendeReinvestition.txt");
             }
@@ -673,7 +674,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKapitalherabsetzung.txt");
             }
@@ -745,7 +746,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKapitalerhöhung.txt");
             }
@@ -777,7 +778,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaEinbuchungDividendenRechte.txt");
             }
@@ -809,7 +810,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaAusbuchungDividendenRechte.txt");
             }
@@ -841,7 +842,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaUmtausch.txt");
             }
@@ -873,7 +874,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaUmtauschFonds.txt");
             }
@@ -940,7 +941,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaVerkaufSpitzeMitSteuerErstattung.txt");
             }
@@ -984,7 +985,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaZwangsabfindung.txt");
             }
@@ -1020,7 +1021,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaDividendeAbfindung.txt");
             }
@@ -1056,7 +1057,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaDepotauszug.txt");
             }
@@ -1104,7 +1105,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKontoauszugEinzelneBuchung.txt");
             }
@@ -1134,7 +1135,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaKontoauszugMehrereBuchungen.txt");
             }
@@ -1164,7 +1165,7 @@ public class OnvistaPDFExtractorTest
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("OnvistaMultipartKaufVerkauf.txt");
             }

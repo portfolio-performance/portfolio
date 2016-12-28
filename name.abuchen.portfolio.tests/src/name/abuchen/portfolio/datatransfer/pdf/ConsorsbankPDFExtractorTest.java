@@ -62,7 +62,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -105,7 +105,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -131,7 +131,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -169,7 +169,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -207,7 +207,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -243,7 +243,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -281,7 +281,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -321,7 +321,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(client)
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -359,7 +359,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -400,7 +400,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -437,7 +437,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -474,7 +474,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -518,7 +518,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -568,7 +568,7 @@ public class ConsorsbankPDFExtractorTest
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(client)
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

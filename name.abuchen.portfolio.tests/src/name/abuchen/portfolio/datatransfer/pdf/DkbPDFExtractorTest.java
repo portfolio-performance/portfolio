@@ -41,7 +41,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return "some text";
             }
@@ -133,7 +133,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbErtragsgutschrift.txt");
             }
@@ -167,7 +167,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbErtragsgutschriftDividende.txt");
             }
@@ -201,7 +201,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbKauf.txt");
             }
@@ -240,7 +240,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbKaufAktien.txt");
             }
@@ -280,7 +280,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbVerkauf.txt");
             }
@@ -320,7 +320,7 @@ public class DkbPDFExtractorTest
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("DkbVerkaufAktien.txt");
             }

@@ -49,7 +49,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -89,7 +89,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -129,7 +129,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -165,7 +165,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -206,7 +206,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -244,7 +244,7 @@ public class DABPDFExtractorTest
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

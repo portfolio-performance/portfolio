@@ -40,7 +40,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -80,7 +80,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -121,7 +121,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -162,7 +162,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -203,7 +203,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -244,7 +244,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -282,7 +282,7 @@ public class BankSLMPDFExtractorTest
         BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

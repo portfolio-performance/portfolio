@@ -45,7 +45,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexKauf.txt");
             }
@@ -150,7 +150,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexKauf2.txt");
             }
@@ -193,7 +193,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -234,7 +234,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexKontoauszug.txt");
             }
@@ -264,7 +264,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexKontoauszug2.txt");
             }
@@ -293,7 +293,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexErtragsgutschrift.txt");
             }
@@ -333,7 +333,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexErtragsgutschrift2.txt");
             }
@@ -371,7 +371,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexZinsgutschriftInland.txt");
             }
@@ -409,7 +409,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexVerkauf.txt");
             }
@@ -452,7 +452,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexVerkauf2.txt");
             }
@@ -495,7 +495,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexDepoteingang.txt");
             }
@@ -534,7 +534,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexDepotausgang.txt");
             }
@@ -575,7 +575,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexDepotausgang2.txt");
             }
@@ -615,7 +615,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexBestandsausbuchung.txt");
             }
@@ -719,7 +719,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexBestandsausbuchung2.txt");
             }
@@ -760,7 +760,7 @@ public class FlatexPDFExtractorTest
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("FlatexZinsBelastung.txt");
             }

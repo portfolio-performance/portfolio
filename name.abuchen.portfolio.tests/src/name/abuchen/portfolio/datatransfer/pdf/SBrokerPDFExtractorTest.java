@@ -40,7 +40,7 @@ public class SBrokerPDFExtractorTest
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -78,7 +78,7 @@ public class SBrokerPDFExtractorTest
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -116,7 +116,7 @@ public class SBrokerPDFExtractorTest
         SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

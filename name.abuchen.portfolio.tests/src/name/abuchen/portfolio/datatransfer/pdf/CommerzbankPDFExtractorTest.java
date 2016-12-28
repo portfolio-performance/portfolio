@@ -38,7 +38,7 @@ public class CommerzbankPDFExtractorTest
         CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }
@@ -76,7 +76,7 @@ public class CommerzbankPDFExtractorTest
         CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from(file.getName());
             }

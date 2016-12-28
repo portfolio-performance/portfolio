@@ -40,7 +40,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectWertpapierabrechnung_Kauf.txt");
             }
@@ -83,7 +83,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectWertpapierabrechnung_Kauf2.txt");
             }
@@ -126,7 +126,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectWertpapierabrechnung_Kauf3.txt");
             }
@@ -169,7 +169,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectWertpapierabrechnung_Kauf4.txt");
             }
@@ -212,7 +212,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectWertpapierabrechnung_Verkauf.txt");
             }
@@ -255,7 +255,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectGutschrift.txt");
             }
@@ -293,7 +293,7 @@ public class ComdirectPDFExtractorTest
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
         {
             @Override
-            String strip(File file) throws IOException
+            protected String strip(File file) throws IOException
             {
                 return from("comdirectGutschrift2.txt");
             }
