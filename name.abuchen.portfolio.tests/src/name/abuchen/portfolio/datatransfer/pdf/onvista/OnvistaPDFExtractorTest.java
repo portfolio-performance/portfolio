@@ -340,7 +340,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-14")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-16")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.0545)));
 
@@ -360,7 +360,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-14")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-16")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.2879)));
     }
@@ -437,6 +437,45 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.96))));
     }
 
+    @Test
+    public void testErtragsgutschriftErträgnisgutschrift2() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("OnvistaErtragsgutschriftErträgnisgutschrift2.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(i -> i.getSecurity()) //
+                        .findFirst().get();
+        assertThat(security.getIsin(), is("DE0002635307"));
+        assertThat(security.getName(), is("iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile"));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-15")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.16))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(5.8192)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
 
     @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
