@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.Charset;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.MessageFormat;
@@ -23,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -87,6 +90,11 @@ public class CSVImporter
         {
             this.label = label;
             this.format = format;
+        }
+
+        public FieldFormat(String label, Supplier<Format> supplier)
+        {
+            this(label, supplier.get());
         }
 
         @Override
@@ -187,7 +195,12 @@ public class CSVImporter
     {
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
                         new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)) };
+                        new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)),
+                        new FieldFormat(Messages.CSVFormatApostrophe, () -> {
+                            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+                            unusualSymbols.setGroupingSeparator('\'');
+                            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+                        }) };
 
         /* package */ AmountField(String name)
         {

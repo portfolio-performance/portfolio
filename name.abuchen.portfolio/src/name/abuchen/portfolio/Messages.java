@@ -45,6 +45,7 @@ public class Messages extends NLS
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
+    public static String CSVFormatApostrophe;
     public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
