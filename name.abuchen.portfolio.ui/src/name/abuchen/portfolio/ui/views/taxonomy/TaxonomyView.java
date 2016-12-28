@@ -140,15 +140,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addConfigButton(ToolBar toolBar)
     {
-        Action config = new SimpleAction(a -> {
-            StackLayout layout = (StackLayout) container.getLayout();
-            if (layout.topControl != null)
-                ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
-        });
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuShowHideColumns);
-
-        new ActionContributionItem(config).fill(toolBar, -1);
+        AbstractDropDown.create(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE,
+                        (dropdown, manager) -> {
+                            StackLayout layout = (StackLayout) container.getLayout();
+                            if (layout.topControl != null)
+                                ((Page) layout.topControl.getData()).configMenuAboutToShow(manager);
+                        });
     }
 
     @Override

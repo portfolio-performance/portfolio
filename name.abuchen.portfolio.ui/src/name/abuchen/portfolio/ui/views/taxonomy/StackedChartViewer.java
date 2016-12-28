@@ -35,6 +35,7 @@ import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 import name.abuchen.portfolio.util.Interval;
@@ -161,18 +162,13 @@ public class StackedChartViewer extends AbstractChartPage
     }
 
     @Override
-    protected void initializeConfigMenu(IMenuManager manager)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
-        super.initializeConfigMenu(manager);
-        Action action = new Action(Messages.LabelOrderByTaxonomy)
-        {
-            @Override
-            public void run()
-            {
-                getModel().setOrderByTaxonomyInStackChart(!getModel().isOrderByTaxonomyInStackChart());
-                onConfigChanged();
-            }
-        };
+        super.configMenuAboutToShow(manager);
+        Action action = new SimpleAction(Messages.LabelOrderByTaxonomy, a -> {
+            getModel().setOrderByTaxonomyInStackChart(!getModel().isOrderByTaxonomyInStackChart());
+            onConfigChanged();
+        });
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
     }
