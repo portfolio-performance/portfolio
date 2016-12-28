@@ -49,7 +49,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .match("Nr.[0-9A-Za-z]*/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -156,12 +156,13 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .match("Nr.[0-9A-Za-z]*/(\\d*)  Kauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("shares").match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\.") //
+                        .section("shares") //
+                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //

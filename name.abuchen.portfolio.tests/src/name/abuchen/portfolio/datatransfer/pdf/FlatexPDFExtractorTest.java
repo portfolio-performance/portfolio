@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -184,6 +185,47 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
+    }
+
+    @Test
+    public void testWertpapierKauf3() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("FlatexKauf3.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00B2QWCY14"));
+        assertThat(security.getWkn(), is("A0Q1YY"));
+        assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
+        
+        PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem) //
+                        .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
+                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+        
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1050)));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-15")));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(0))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(19.334524)));
     }
 
     @Test
