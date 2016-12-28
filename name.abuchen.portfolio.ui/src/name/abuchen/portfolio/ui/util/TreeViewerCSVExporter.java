@@ -55,7 +55,7 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
             printer.println();
 
             // write body
-            LinkedList<String> path = new LinkedList<String>();
+            LinkedList<String> path = new LinkedList<>();
             for (Object element : provider.getElements(null))
             {
                 writeLine(printer, provider, labels, depth, path, element);
@@ -75,7 +75,10 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
             printer.print(""); //$NON-NLS-1$
 
         for (int ii = 1; ii < labels.length; ii++)
-            printer.print(labels[ii].getText(element));
+        {
+            String text = labels[ii].getText(element);
+            printer.print(text != null ? text : ""); //$NON-NLS-1$
+        }
 
         printer.println();
 

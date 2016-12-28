@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -41,6 +42,9 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
     }
 
     public void showConfigMenu(Shell shell)
+    {}
+
+    public void exportMenuAboutToShow(IMenuManager manager)
     {}
 
     public abstract Control createControl(Composite parent);

@@ -58,6 +58,7 @@ import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -330,6 +331,13 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     public void showConfigMenu(Shell shell)
     {
         support.showHideShowColumnsMenu(shell);
+    }
+
+    @Override
+    public void exportMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuExportData, action -> new TreeViewerCSVExporter(nodeViewer)
+                        .export(getModel().getTaxonomy().getName() + ".csv"))); //$NON-NLS-1$
     }
 
     @Override

@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
@@ -112,6 +113,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
         addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
         addFilterButton(toolBar);
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
@@ -124,6 +126,16 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             model.setClientSnapshot(snapshot);
             model.fireTaxonomyModelChange(model.getVirtualRootNode());
         });
+    }
+
+    private void addExportButton(ToolBar toolBar)
+    {
+        AbstractDropDown.create(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE,
+                        (dropdown, manager) -> {
+                            StackLayout layout = (StackLayout) container.getLayout();
+                            if (layout.topControl != null)
+                                ((Page) layout.topControl.getData()).exportMenuAboutToShow(manager);
+                        });
     }
 
     private void addConfigButton(ToolBar toolBar)
