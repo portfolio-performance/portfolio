@@ -41,8 +41,8 @@ public class PerformanceIndexTest
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class PerformanceIndexTest
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
     }
 }

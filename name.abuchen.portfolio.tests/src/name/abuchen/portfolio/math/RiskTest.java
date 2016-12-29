@@ -58,17 +58,9 @@ public class RiskTest
     {
         double[] delta = new double[] { 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
         Volatility volatility = new Volatility(delta, index -> true);
-        // returns are 0.5, -1/3, -0.5, 1, 1, -0.5 with an average of 7/36
-        // the deviation from the average is 11/36 for 0.5, 19/36 for -1/3 and
-        // so on each of these deviations is squared and the sum divided by the
-        // number of returns (6) the resulting division is
-        // root((121+1250+1682+361)/(1296*6)) or 3414/7776
-        assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-
-        // for semi deviation, only the returns lower than the average are
-        // counted so only the -1/3 and the two times -0.5
-        // root((361+1250)/(1296*3)) or 1611/7776
-        assertThat(volatility.getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        // calculated reference values with excel
+        assertThat(volatility.getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
+        assertThat(volatility.getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
     }
 
     @Test
@@ -76,8 +68,8 @@ public class RiskTest
     {
         double[] delta = new double[] { 0, 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
         Volatility volatility = new Volatility(delta, index -> index > 0);
-        assertThat(volatility.getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(volatility.getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        assertThat(volatility.getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
+        assertThat(volatility.getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
     }
 
     @Test
