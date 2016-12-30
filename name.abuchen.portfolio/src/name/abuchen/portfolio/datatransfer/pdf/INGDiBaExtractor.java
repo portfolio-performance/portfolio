@@ -175,9 +175,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .section("wkn", "isin", "name")
                         //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares")
                         //
@@ -195,7 +194,17 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("tax", "currency").optional() //
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -217,9 +226,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .section("wkn", "isin", "name")
                         //
                         .match("^ISIN \\(WKN\\) (?<isin>[^ ]*) \\((?<wkn>.*)\\)$")
-                        .match("Wertpapierbezeichnung (?<name>.*)").assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .match("Wertpapierbezeichnung (?<name>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date") //
                         .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
@@ -231,6 +239,16 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
+
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragsteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("tax", "currency").optional() //
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .wrap(TransactionItem::new));
     }
@@ -280,7 +298,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .section("tax", "currency").optional() //
-                        .match("Solidaritätszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
