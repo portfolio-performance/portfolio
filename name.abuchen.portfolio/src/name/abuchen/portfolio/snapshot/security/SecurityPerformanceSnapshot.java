@@ -15,6 +15,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 
 public class SecurityPerformanceSnapshot
 {
@@ -36,15 +37,7 @@ public class SecurityPerformanceSnapshot
     public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Portfolio portfolio,
                     ReportingPeriod period)
     {
-        // FIXME create pseudo client --> transferals must add up
-        Map<Security, SecurityPerformanceRecord> transactions = initRecords(client);
-
-        if (portfolio.getReferenceAccount() != null)
-            extractSecurityRelatedAccountTransactions(portfolio.getReferenceAccount(), period, transactions);
-        extractSecurityRelatedPortfolioTransactions(portfolio, period, transactions);
-        addPseudoValuationTansactions(portfolio, converter, period, transactions);
-
-        return doCreateSnapshot(client, converter, transactions, period);
+        return create(new PortfolioClientFilter(portfolio).filter(client), converter, period);
     }
 
     private static Map<Security, SecurityPerformanceRecord> initRecords(Client client)
