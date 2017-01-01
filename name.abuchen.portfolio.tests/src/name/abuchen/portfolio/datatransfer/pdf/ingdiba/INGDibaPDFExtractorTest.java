@@ -494,7 +494,7 @@ public class INGDibaPDFExtractorTest
         };
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiba_Dividendengutschrift2.txt")), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Dividendengutschrift2.txt")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
