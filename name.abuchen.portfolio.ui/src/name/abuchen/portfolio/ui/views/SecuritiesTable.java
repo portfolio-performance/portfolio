@@ -53,6 +53,7 @@ import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
@@ -607,37 +608,23 @@ public final class SecuritiesTable implements ModificationListener
 
     private void fillTransactionContextMenu(IMenuManager manager, Security security)
     {
-        new OpenDialogAction(view, Messages.SecurityMenuBuy) //
+        new OpenDialogAction(view, Messages.SecurityMenuBuy + "...") //
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
-        new OpenDialogAction(view, Messages.SecurityMenuSell) //
+        new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.SELL) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
-        new OpenDialogAction(view, Messages.SecurityMenuDividends) //
+        new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
-                        .type(SecurityTransactionDialog.class) //
-                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
-                        .addTo(manager);
-
-        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
-                        .type(SecurityTransactionDialog.class) //
-                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
@@ -658,6 +645,31 @@ public final class SecuritiesTable implements ModificationListener
                 return new WizardDialog(getShell(), wizard);
             }
         });
+
+        if (view.getClient().getActivePortfolios().size() > 1)
+        {
+            manager.add(new Separator());
+            new OpenDialogAction(view, Messages.SecurityMenuTransfer) //
+                            .type(SecurityTransferDialog.class) //
+                            .with(security) //
+                            .addTo(manager);
+        }
+
+        manager.add(new Separator());
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+            .type(SecurityTransactionDialog.class) //
+            .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+            .with(security) //
+            .onSuccess(d -> performFinish(security)) //
+            .addTo(manager);
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+            .type(SecurityTransactionDialog.class) //
+            .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
+            .with(security) //
+            .onSuccess(d -> performFinish(security)) //
+            .addTo(manager);
 
         manager.add(new Separator());
     }

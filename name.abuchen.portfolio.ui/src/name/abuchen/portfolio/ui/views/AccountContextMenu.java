@@ -49,13 +49,6 @@ public class AccountContextMenu
 
         manager.add(new Separator());
 
-        new OpenDialogAction(owner, Messages.AccountMenuTransfer) //
-                        .type(AccountTransferDialog.class) //
-                        .with(account) //
-                        .addTo(manager);
-
-        manager.add(new Separator());
-
         // show security related actions only if
         // (a) a portfolio exists and (b) securities exist
 
@@ -73,21 +66,21 @@ public class AccountContextMenu
                 }
             }
 
-            new OpenDialogAction(owner, Messages.SecurityMenuBuy) //
+            new OpenDialogAction(owner, Messages.SecurityMenuBuy + "...") //
                             .type(SecurityTransactionDialog.class) //
                             .parameters(PortfolioTransaction.Type.BUY) //
                             .with(portfolio[0]) //
                             .with(security) //
                             .addTo(manager);
 
-            new OpenDialogAction(owner, Messages.SecurityMenuSell) //
+            new OpenDialogAction(owner, Messages.SecurityMenuSell + "...") //
                             .type(SecurityTransactionDialog.class) //
                             .parameters(PortfolioTransaction.Type.SELL) //
                             .with(portfolio[0]) //
                             .with(security) //
                             .addTo(manager);
 
-            new OpenDialogAction(owner, Messages.SecurityMenuDividends) //
+            new OpenDialogAction(owner, Messages.SecurityMenuDividends + "...") //
                             .type(AccountTransactionDialog.class) //
                             .parameters(AccountTransaction.Type.DIVIDENDS) //
                             .with(account) //
