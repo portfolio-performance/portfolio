@@ -248,6 +248,30 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                                     t.setType(AccountTransaction.Type.REMOVAL);
                                 }
                         }).wrap(t -> new TransactionItem(t)));
+        
+        // fees for foreign dividends, subtract value from account
+        block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+[\\d.-]+,\\d+[-]");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.FEES);
+            return t;
+        })
+        .section("valuta", "amount")
+        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
+        .assign((t, v) -> {
+                Map<String, String> context = type.getCurrentContext();
+                String date = v.get("valuta");
+                if (date != null)
+                {
+                    // create a long date from the year in the
+                    // context
+                    t.setDate(asDate(date + context.get("year")));
+                }
+                t.setNote(v.get("text"));
+                t.setAmount(asAmount(v.get("amount")));
+                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+        }).wrap(t -> new TransactionItem(t)));
     }
 
     @SuppressWarnings("nls")
