@@ -728,7 +728,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 else if (t instanceof AccountTransaction)
                     return ((AccountTransaction) t).getType().toString();
                 else if (t instanceof DividendTransaction)
-                    return Messages.LabelDividends;
+                    return AccountTransaction.Type.DIVIDENDS.toString();
                 else
                     return Messages.LabelQuote;
             }
