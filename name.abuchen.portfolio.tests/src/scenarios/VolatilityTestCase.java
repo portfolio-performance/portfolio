@@ -41,7 +41,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.01251323582, 0.000001)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.141568791460, 0.1e-10)); // excel
     }
 
     @Test

@@ -56,20 +56,20 @@ public class RiskTest
     @Test
     public void testVolatility()
     {
-        double[] delta = new double[] { 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
+        double[] delta = new double[] { 0.005, -1 / 300d, -0.005, 0.01, 0.01, -0.005 };
         Volatility volatility = new Volatility(delta, index -> true);
         // calculated reference values with excel
-        assertThat(volatility.getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
-        assertThat(volatility.getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
+        assertThat(volatility.getStandardDeviation(), closeTo(0.017736692475, 0.1e-10));
+        assertThat(volatility.getSemiDeviation(), closeTo(0.012188677034, 0.1e-10));
     }
 
     @Test
     public void testVolatilityWithSkip()
     {
-        double[] delta = new double[] { 0, 0.5, -1 / 3d, -0.5, 1, 1, -0.5 };
+        double[] delta = new double[] { 0, 0.005, -1 / 300d, -0.005, 0.01, 0.01, -0.005 };
         Volatility volatility = new Volatility(delta, index -> index > 0);
-        assertThat(volatility.getStandardDeviation(), closeTo(1.632310053678, 0.1e-10));
-        assertThat(volatility.getSemiDeviation(), closeTo(1.118882075970, 0.1e-10));
+        assertThat(volatility.getStandardDeviation(), closeTo(0.017736692475, 0.1e-10));
+        assertThat(volatility.getSemiDeviation(), closeTo(0.012188677034, 0.1e-10));
     }
 
     @Test
