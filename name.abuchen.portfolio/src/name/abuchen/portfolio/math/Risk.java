@@ -111,6 +111,7 @@ public final class Risk
 
             double tempStandard = 0;
             double tempSemi = 0;
+            int count = 0;
 
             double averageLogReturn = logAverage(returns, filter);
             
@@ -119,20 +120,18 @@ public final class Risk
                 if (!filter.test(ii))
                     continue;
 
-                double logReturn = Math.log(1 + 0.01 * returns[ii]);
+                double logReturn = Math.log(1 + returns[ii]);
                 double add = Math.pow(logReturn - averageLogReturn, 2);
 
                 tempStandard = tempStandard + add;
+                count++;
 
                 if (logReturn < averageLogReturn)
                     tempSemi = tempSemi + add;
             }
             
-            double logStdDeviation = Math.sqrt(tempStandard);
-            double logSemiDeviation = Math.sqrt(tempSemi);
-            
-            stdDeviation = (Math.exp(logStdDeviation) - 1) * 100;
-            semiDeviation = (Math.exp(logSemiDeviation) - 1) * 100;            
+            stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
+            semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);            
         }
 
         private double logAverage(double[] returns, Predicate<Integer> filter)
@@ -145,9 +144,7 @@ public final class Risk
                 if (!filter.test(ii))
                     continue;
 
-                double logReturn = Math.log(1 + 0.01 * returns[ii]);
-                
-                sum += logReturn;
+                sum += Math.log(1 + returns[ii]);
                 count++;
             }
 
