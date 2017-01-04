@@ -400,6 +400,7 @@ public class Messages extends NLS
     public static String LabelSecurityTransfer;
     public static String LabelSemiVolatility;
     public static String LabelSettings;
+    public static String LabelDividendPerShare;    
     public static String LabelDividends;
     public static String LabelDividendsByMonthAndVehicle;
     public static String LabelDividendsPerMonth;
