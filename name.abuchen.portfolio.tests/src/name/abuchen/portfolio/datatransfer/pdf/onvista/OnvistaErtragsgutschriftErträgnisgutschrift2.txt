@@ -1,0 +1,46 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstrasse 1
+ADRESSZEILE4=12345 Musterstadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.05.2016 - 30.04.2017
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 1 BELEGNUMMER=5423
+12345 Musterstadt 123456789 14053767 / 14.12.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Erträgnisgutschrift Frankfurt am Main, 14.12.2016
+Gattungsbezeichnung ISIN
+iSh.STOXX Europe 600 U.ETF DE Inhaber-Anteile DE0002635307
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 5,8192 15.12.2016 15.12.2016 EUR 0,200144
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+15.12.2016 247281048 EUR 1,16
+Ertrag für 2016/17 EUR 1,16
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 0,22
+ausl. Dividendenanteil (Ausschüttung) EUR 0,98
+anrechenbare Quellensteuer EUR 0,03
+   davon anrechenbare Quellensteuer Fondseingangsseite EUR 0,03
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 399,45 398,25
+Quellensteuertopf EUR 0,02 0,05
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag 15.12.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/005423/151216/002717

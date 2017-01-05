@@ -1,0 +1,35 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Wertpapierübertrag ADRESSZEILE2=Max MUSTERMANNADRESSZEILE3=Musterstrasse 2
+Freier Erhalt ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+Durchführungsanzeige  ADRESSZEILE6=
+Herr BELEGNUMMER=4SEITENNUMMER=1
+Max MUSTERMANN
+Depot-Nr. Ausführungs-Nr. STEUERERSTATTUNG=N
+Musterstrasse 2
+54321 Musterhausen 173458000 57221493 / 02.12.2011
+Depotinhaber
+Max MUSTERMANN
+  
+Wir erhielten zu Gunsten Ihres Depots Frankfurt am Main, 02.12.2011
+  
+Gattungsbezeichnung ISIN
+Allianz PIMCO Euro Bd Tot.Ret. Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Schlusstag Wert
+STK 28,000 02.12.2011 02.12.2011
+Verwahrart
+Girosammelverwahrung
+  
+Ihre Anschaffungsdaten werden Ihnen ggf. auf einem gesonderten Beleg mitgeteilt.
+ 
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.31/DUANDLIELIEFFRER/290920/000004/021211/225334

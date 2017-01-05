@@ -1,0 +1,49 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstrasse 2
+ADRESSZEILE4=54321 Musterhausen
+Ausschüttung für
+Herr ADRESSZEILE5=01.01.2014 - 31.12.2014
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 2 BELEGNUMMER=98
+54321 Musterhausen 173458000 96937413 / 04.03.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Erträgnisgutschrift Frankfurt am Main, 04.03.2015
+Gattungsbezeichnung ISIN
+Allianz Euro Bond Fund Inhaber-Anteile A (EUR) o.N. LU0140355917
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 28,000 02.03.2015 04.03.2015 EUR 1,094780
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+04.03.2015 172306238 EUR 21,69
+Ertrag für 2014 EUR 30,65
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zinsanteil (Ausschüttung) EUR 33,13
+fiktiv anrechenbare Quellensteuer Fondseingangsseite EUR 0,27
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 32,05
+einbehaltene Kapitalertragsteuer EUR 7,83
+einbehaltener Solidaritätszuschlag EUR 0,43
+einbehaltene Kirchensteuer EUR 0,70
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 9,85
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,54
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,88
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Köln-Porz, Steuernummer 216/5881/1238.
+Zahlungstag 04.03.2015
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/000098/050315/011013
