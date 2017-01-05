@@ -568,7 +568,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // Periodizit��t der Dividendenzahlungen
+        // Periodizität der Dividendenzahlungen
         column = new Column("dperiod", Messages.ColumnDividendPeriodicity, SWT.None, 100); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendPeriodicity_Description);
