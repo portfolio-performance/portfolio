@@ -568,7 +568,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "lastDividendPayment")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
-        // Periodizität der Dividendenzahlungen
+        // Periodizit��t der Dividendenzahlungen
         column = new Column("dperiod", Messages.ColumnDividendPeriodicity, SWT.None, 100); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendPeriodicity_Description);
@@ -728,7 +728,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 else if (t instanceof AccountTransaction)
                     return ((AccountTransaction) t).getType().toString();
                 else if (t instanceof DividendTransaction)
-                    return Messages.LabelDividends;
+                    return Messages.SecurityMenuDividends;
                 else
                     return Messages.LabelQuote;
             }
