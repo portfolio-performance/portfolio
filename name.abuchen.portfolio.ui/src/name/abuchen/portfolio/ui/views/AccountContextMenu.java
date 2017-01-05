@@ -50,9 +50,9 @@ public class AccountContextMenu
         manager.add(new Separator());
 
         new OpenDialogAction(owner, Messages.AccountMenuTransfer) //
-                                .type(AccountTransferDialog.class) //
-                                .with(account) //
-                                .addTo(manager);
+                            .type(AccountTransferDialog.class) //
+                            .with(account) //
+                            .addTo(manager);
 
         manager.add(new Separator());
 
