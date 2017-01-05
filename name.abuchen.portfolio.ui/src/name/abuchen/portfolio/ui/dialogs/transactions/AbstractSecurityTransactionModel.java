@@ -65,18 +65,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     @Override
     public String getHeading()
     {
-        switch (type)
-        {
-            case BUY:
-                return Messages.SecurityMenuBuy;
-            case SELL:
-                return Messages.SecurityMenuSell;
-            case TRANSFER_IN:
-            case TRANSFER_OUT:
-                return type.toString();
-            default:
-                throw new UnsupportedOperationException();
-        }
+        return type.toString();
     }
 
     public abstract boolean accepts(Type type);
