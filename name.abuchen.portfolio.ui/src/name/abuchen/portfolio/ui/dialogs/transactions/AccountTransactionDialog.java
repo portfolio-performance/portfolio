@@ -74,6 +74,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         AccountTransactionModel m = new AccountTransactionModel(client, type);
         m.setExchangeRateProviderFactory(factory);
         setModel(m);
+
+        // set account only if exactly one exists
+        // (otherwise force user to choose)
+        List<Account> activeAccounts = client.getActiveAccounts();
+        if (activeAccounts.size() == 1)
+            m.setAccount(activeAccounts.get(0));
     }
 
     private AccountTransactionModel model()
