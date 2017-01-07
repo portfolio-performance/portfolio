@@ -23,6 +23,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class AccountTransactionModel extends AbstractModel
 {
@@ -161,6 +162,7 @@ public class AccountTransactionModel extends AbstractModel
 
         setShares(0);
         setFxGrossAmount(0);
+        setDividendAmount(0);
         setGrossAmount(0);
         setDividendAmount(0);
         setTaxes(0);
