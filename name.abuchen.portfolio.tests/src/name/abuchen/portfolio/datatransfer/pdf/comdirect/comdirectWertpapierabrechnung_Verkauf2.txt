@@ -1,0 +1,30 @@
+comdirect bank
+
+GESCHÄFTSABRECHNUNG VOM 08.12.2016
+
+*
+Wertpapierverkauf
+Geschäftsnummer   : 91 040013
+Ordernummer       : 072468891314-001  Rechnungsnummer   : 408310300825DD15
+Geschäftstag      : 08.12.2016        Abwicklung        : Live Trading
+Handelszeit       : 17:03 Uhr (MEZ/MESZ)
+
+Wertpapier-Bezeichnung                                               WPKNR/ISIN
+Boeing Co.                                                               850471
+Registered Shares DL 5                                             US0970231058
+
+
+Nennwert                  Zum Preis von
+St.  140                  EUR  146,21           franco Courtage
+                          Kurswert                    : EUR           20.469,40
+
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Provision                   : EUR               56,07-
+--------------------------------------------------------------------------------
+
+
+IBAN                                  Valuta        Zu Ihren Gunsten vor Steuern
+DE00 0000 0000 0000 0000 00   EUR     12.12.2016        EUR           20.413,33
+
+Verwahrungs-Art: GIROSAMMELDEPOT

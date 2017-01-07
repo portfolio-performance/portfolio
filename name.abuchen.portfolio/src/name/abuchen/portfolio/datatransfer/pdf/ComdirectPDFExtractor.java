@@ -159,8 +159,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares") //
+                        .section("shares").optional() //
                         .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("shares").optional() // teilausführung
+                        .match("^ Summe *St\\. *(?<shares>\\d+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
@@ -171,8 +175,23 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fee", "currency") //
-                        .optional().match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .section("fee", "currency").optional()
+                        .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*B.rsenplatzabh.ng. Entgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Abwickl.entgelt Clearstream *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Gesamtprovision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
