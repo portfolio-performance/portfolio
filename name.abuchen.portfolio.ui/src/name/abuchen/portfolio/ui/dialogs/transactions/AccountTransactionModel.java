@@ -19,6 +19,7 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
@@ -27,7 +28,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxGrossAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -46,6 +47,7 @@ public class AccountTransactionModel extends AbstractModel
     private long shares;
 
     private long fxGrossAmount;
+    private long dividendAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
     private long grossAmount;
 
@@ -159,7 +161,9 @@ public class AccountTransactionModel extends AbstractModel
 
         setShares(0);
         setFxGrossAmount(0);
+        setDividendAmount(0);
         setGrossAmount(0);
+        setDividendAmount(0);
         setTaxes(0);
         setFxTaxes(0);
         setNote(null);
@@ -223,11 +227,13 @@ public class AccountTransactionModel extends AbstractModel
             }
         });
 
-        this.grossAmount = calculateGrossAmount();
+        this.grossAmount = calculateGrossAmount4Total();
 
         // in case units have to forex gross value
         if (exchangeRate.equals(BigDecimal.ONE))
             this.fxGrossAmount = grossAmount;
+
+        this.dividendAmount = calculateDividendAmount();
 
         this.note = transaction.getNote();
     }
@@ -359,6 +365,9 @@ public class AccountTransactionModel extends AbstractModel
     public void setShares(long shares)
     {
         firePropertyChange(Properties.shares.name(), this.shares, this.shares = shares);
+
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
+                        this.dividendAmount = calculateDividendAmount());
     }
 
     public long getFxGrossAmount()
@@ -373,10 +382,33 @@ public class AccountTransactionModel extends AbstractModel
 
         triggerGrossAmount(Math.round(exchangeRate.doubleValue() * foreignCurrencyAmount));
 
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
+                        this.dividendAmount = calculateDividendAmount());
+
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
     }
 
+    public long getDividendAmount()
+    {
+        return dividendAmount;
+    }
+
+    public void setDividendAmount(long amount)
+    {
+        triggerDividendAmount(amount);
+        long myGrossAmount = calculateGrossAmount4Dividend(); 
+        setFxGrossAmount(myGrossAmount);
+         
+    }
+
+    public void triggerDividendAmount(long amount)
+    {
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount);
+    }
+  
+    
+    
     public BigDecimal getExchangeRate()
     {
         return exchangeRate;
@@ -471,10 +503,13 @@ public class AccountTransactionModel extends AbstractModel
     {
         triggerTotal(total);
 
-        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = calculateGrossAmount());
+        firePropertyChange(Properties.grossAmount.name(), this.grossAmount, this.grossAmount = calculateGrossAmount4Total());
 
         firePropertyChange(Properties.fxGrossAmount.name(), this.fxGrossAmount,
                         this.fxGrossAmount = Math.round(grossAmount / exchangeRate.doubleValue()));
+
+        firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
+                        this.dividendAmount = calculateDividendAmount());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -485,10 +520,25 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.total.name(), this.total, this.total = total);
     }
 
-    protected long calculateGrossAmount()
+    protected long calculateDividendAmount()
+    {
+        long result = 0;
+        if (shares > 0) {
+            result = Math.round((fxGrossAmount * Values.Share.factor()) / shares);
+        }
+        return result;
+    }
+
+    protected long calculateGrossAmount4Total()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
         return total + totalTaxes;
+    }
+
+    protected long calculateGrossAmount4Dividend()
+    {        
+        long newGrossAmount = Math.round((shares * dividendAmount) / Values.Share.factor());
+        return newGrossAmount;
     }
 
     private long calculateTotal()
