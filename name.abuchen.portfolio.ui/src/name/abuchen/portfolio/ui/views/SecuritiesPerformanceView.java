@@ -2,8 +2,12 @@ package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -20,6 +24,7 @@ import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
@@ -892,8 +897,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Override
     public void notifyModelUpdated()
     {
+        // keep security selected even though SecurityPerformacneRecord changes
+        Set<Security> oldSelection = new HashSet<>();
+        for (Iterator<?> iter = records.getStructuredSelection().iterator(); iter.hasNext();)
+            oldSelection.add(((SecurityPerformanceRecord) iter.next()).getSecurity());
+
         reportingPeriodUpdated();
         updateTitle(getDefaultTitle());
+
+        List<SecurityPerformanceRecord> newSelection = ((List<?>) records.getInput()).stream()
+                        .map(e -> (SecurityPerformanceRecord) e) //
+                        .filter(e -> oldSelection.contains(e.getSecurity())) //
+                        .collect(Collectors.toList());
+        records.setSelection(new StructuredSelection(newSelection));
     }
 
     @Override
