@@ -124,7 +124,7 @@ public class OnvistaPDFExtractorTest
         return security;
     }
     
-    private Security assertSecurityErtragsgutschriftErträgnisgutschrift(List<Item> results)
+    private Security assertSecurityErtragsgutschriftErtraegnisgutschrift(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -135,7 +135,7 @@ public class OnvistaPDFExtractorTest
         return security;
     }
     
-    private Security assertSecurityWertpapierübertrag(List<Item> results)
+    private Security assertSecurityWertpapieruebertrag(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -403,14 +403,14 @@ public class OnvistaPDFExtractorTest
     }
     
     @Test
-    public void testErtragsgutschriftErträgnisgutschrift() throws IOException
+    public void testErtragsgutschriftErtraegnisgutschrift() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
             {
-                return from("OnvistaErtragsgutschriftErträgnisgutschrift.txt");
+                return from("OnvistaErtragsgutschriftErtraegnisgutschrift.txt");
             }
         };
         List<Exception> errors = new ArrayList<Exception>();
@@ -421,7 +421,7 @@ public class OnvistaPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // check security
-        Security security = assertSecurityErtragsgutschriftErträgnisgutschrift(results);
+        Security security = assertSecurityErtragsgutschriftErtraegnisgutschrift(results);
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -438,14 +438,14 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
-    public void testErtragsgutschriftErträgnisgutschrift2() throws IOException
+    public void testErtragsgutschriftErtraegnisgutschrift2() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
             {
-                return from("OnvistaErtragsgutschriftErträgnisgutschrift2.txt");
+                return from("OnvistaErtragsgutschriftErtraegnisgutschrift2.txt");
             }
         };
         List<Exception> errors = new ArrayList<>();
@@ -628,14 +628,14 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierÜbertrag() throws IOException
+    public void testWertpapieruebertrag() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
             {
-                return from("OnvistaWertpapierübertragEingang.txt");
+                return from("OnvistaWertpapieruebertragEingang.txt");
             }
         };
         List<Exception> errors = new ArrayList<Exception>();
@@ -645,7 +645,7 @@ public class OnvistaPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        assertSecurityWertpapierübertrag(results);
+        assertSecurityWertpapieruebertrag(results);
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -780,14 +780,14 @@ public class OnvistaPDFExtractorTest
     }
     
     @Test
-    public void testKapitalerhöhung() throws IOException
+    public void testKapitalerhoehung() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
             {
-                return from("OnvistaKapitalerhöhung.txt");
+                return from("OnvistaKapitalerhoehung.txt");
             }
         };
         List<Exception> errors = new ArrayList<Exception>();

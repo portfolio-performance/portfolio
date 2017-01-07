@@ -161,8 +161,8 @@ public class AccountTransactionModel extends AbstractModel
 
         setShares(0);
         setFxGrossAmount(0);
-        setDividendAmount(0);
         setGrossAmount(0);
+        setDividendAmount(0);
         setTaxes(0);
         setFxTaxes(0);
         setNote(null);
@@ -200,7 +200,6 @@ public class AccountTransactionModel extends AbstractModel
         this.account = account;
         this.date = transaction.getDate();
         this.shares = transaction.getShares();
-        this.dividendAmount = 0; // TODO
         this.total = transaction.getAmount();
 
         // both will be overwritten if forex data exists
@@ -232,6 +231,8 @@ public class AccountTransactionModel extends AbstractModel
         // in case units have to forex gross value
         if (exchangeRate.equals(BigDecimal.ONE))
             this.fxGrossAmount = grossAmount;
+
+        this.dividendAmount = calculateDividendAmount();
 
         this.note = transaction.getNote();
     }
@@ -520,7 +521,7 @@ public class AccountTransactionModel extends AbstractModel
 
     protected long calculateDividendAmount()
     {
-        long result = -1;
+        long result = 0;
         if (shares > 0) {
             result = Math.round((fxGrossAmount * Values.Share.factor()) / shares);
         }
