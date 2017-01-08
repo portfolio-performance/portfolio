@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -12,6 +14,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
@@ -66,6 +69,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("tax").optional() //
+                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .assign((t, v) -> {
+                            Unit unit = createTaxUnit(v.get("tax"));
+                            if (unit == null || unit.getAmount().isZero())
+                                return;
+
+                            t.getPortfolioTransaction().addUnit(unit);
+
+                            MutableMoney total = MutableMoney.of(t.getPortfolioTransaction().getCurrencyCode());
+                            total.add(t.getPortfolioTransaction().getMonetaryAmount());
+                            total.add(unit.getAmount());
+                            t.setMonetaryAmount(total.toMoney());
                         })
 
                         .wrap(t -> {
@@ -157,6 +175,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
+                        .section("tax").optional() //
+                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .assign((t, v) -> {
+                            Unit unit = createTaxUnit(v.get("tax"));
+                            if (unit == null || unit.getAmount().isZero())
+                                return;
+
+                            t.getPortfolioTransaction().addUnit(unit);
+
+                            MutableMoney total = MutableMoney.of(t.getPortfolioTransaction().getCurrencyCode());
+                            total.add(t.getPortfolioTransaction().getMonetaryAmount());
+                            total.subtract(unit.getAmount());
+                            t.setMonetaryAmount(total.toMoney());
+                        })
+
                         .wrap(BuySellEntryItem::new);
 
         addFeesSection(pdfTransaction);
@@ -191,6 +224,20 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))));
+    }
+
+    @SuppressWarnings("nls")
+    private Unit createTaxUnit(String taxString)
+    {
+        String tax = taxString.replaceAll("[_ ]*", "");
+
+        Pattern pattern = Pattern.compile("(?<currency>\\w{3}+)-(?<amount>[\\d.]+,\\d+)");
+        Matcher matcher = pattern.matcher(tax);
+        if (!matcher.matches())
+            return null;
+
+        return new Unit(Unit.Type.TAX,
+                        Money.of(asCurrencyCode(matcher.group("currency")), asAmount(matcher.group("amount"))));
     }
 
     @Override

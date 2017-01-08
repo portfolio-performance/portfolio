@@ -329,10 +329,14 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(10111.11)));
+        // expected total is total amount minux taxes
+        long expectedTotal = Values.Amount.factorize(10111.11 - 11.11);
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(expectedTotal)); 
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-01-01")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(11.51))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of("EUR", Values.Amount.factorize(11.11))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
     }
 
