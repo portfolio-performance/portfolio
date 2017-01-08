@@ -1,0 +1,33 @@
+comdirect bank
+
+GESCHÄFTSABRECHNUNG VOM  14.03.2013
+* Wertpapierkauf
+Geschäftsnummer   : 91 006132
+                    071077639314-001  Rechnungsnummer   : 290356708923DCA5
+Geschäftstag      : 14.03.2013        Ausführungsplatz  : XETRA
+Handelszeit       : 12:09 Uhr (MEZ/MESZ)                  (Kommissionsgeschäft)
+
+Wertpapier-Bezeichnung                                               WPKNR/ISIN
+BayWa AG                                                                 519406
+vink. Namens-Aktien o.N.                                           DE0005194062
+
+
+Nennwert                  Zum Kurs von
+St.  437                  EUR  37,22
+                          Kurswert                    : EUR           16.265,14
+
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Provision                   : EUR               45,56
+                          Börsenplatzabhäng. Entgelt  : EUR                1,50
+                          Summe Entgelte              : EUR               47,06
+--------------------------------------------------------------------------------
+Fremde Kosten
+                          Umschreibeentgelt           : EUR                0,60
+--------------------------------------------------------------------------------
+
+
+Verrechnung über Konto   BLZ          Valuta         Zu Ihren Lasten vor Steuern
+     0000000 00  EUR     000 000 00   18.03.2013        EUR           16.312,80
+
+Verwahrungs-Art: GIROSAMMELDEPOT

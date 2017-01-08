@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -33,12 +32,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierkauf");
         this.addDocumentTyp(type);
 
-        // bei Wertpapiersparplänen oder im LiveTradingfällt lediglich die
-        // Provision an. Die Summe der Entgelte wird nicht explizit ausgewiesen
-        AtomicBoolean hasSum = new AtomicBoolean(false);
-        Block block = new Block("Wertpapierkauf *");
+        Block block = new Block("^(\\* )?Wertpapierkauf *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
@@ -66,35 +62,21 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Lasten vor Steuern *") //
-                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                        })
-
-                        .section("fee", "currency").optional()
-                        .match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
-                        .assign((t, v) -> {
-                            hasSum.set(true);
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
-                        })
-
-                        .section("fee", "currency").optional()
-                        .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
-                        .assign((t, v) -> {
-                            if (!hasSum.get())
-                            {
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
-                            }
                         })
 
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getShares() == 0)
                                 throw new IllegalArgumentException(Messages.PDFMsgMissingShares);
                             return new BuySellEntryItem(t);
-                        }));
+                        });
+
+        addFeesSection(pdfTransaction);
+
+        block.set(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -141,9 +123,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierverkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierverkauf *");
+        Block block = new Block("^(\\* )?Wertpapierverkauf *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
@@ -169,13 +151,23 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Gunsten vor Steuern *") //
-                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fee", "currency").optional()
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSection(pdfTransaction);
+
+        block.set(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeesSection(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction.section("fee", "currency").optional()
                         .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
@@ -195,7 +187,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .section("fee", "currency").optional()
+                        .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))));
     }
 
     @Override
