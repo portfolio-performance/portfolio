@@ -2,9 +2,12 @@ package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -14,7 +17,7 @@ import name.abuchen.portfolio.util.Interval;
 
 /* package */class SecurityIndex extends PerformanceIndex
 {
-    /* package */SecurityIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    /* package */ SecurityIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         super(client, converter, reportInterval);
     }
@@ -27,6 +30,10 @@ import name.abuchen.portfolio.util.Interval;
             initEmpty(clientIndex);
             return;
         }
+
+        // prices only include historical quotes, not the latest quote. Merge
+        // the latest quote into the list if necessary
+        prices = mergeLatestQuoteIfNecessary(prices, security);
 
         Interval actualInterval = clientIndex.getActualInterval();
 
@@ -60,8 +67,8 @@ import name.abuchen.portfolio.util.Interval;
         // b) the term currency differs from the currency of the security
 
         CurrencyConverter converter = security.getCurrencyCode() != null
-                        && !security.getCurrencyCode().equals(clientIndex.getCurrencyConverter().getTermCurrency()) ? clientIndex
-                        .getCurrencyConverter() : null;
+                        && !security.getCurrencyCode().equals(clientIndex.getCurrencyConverter().getTermCurrency())
+                                        ? clientIndex.getCurrencyConverter() : null;
 
         dates = new LocalDate[size];
         delta = new double[size];
@@ -95,6 +102,22 @@ import name.abuchen.portfolio.util.Interval;
             valuation = thisValuation;
             index++;
         }
+    }
+
+    private List<SecurityPrice> mergeLatestQuoteIfNecessary(List<SecurityPrice> prices, Security security)
+    {
+        LatestSecurityPrice latest = security.getLatest();
+        if (latest == null)
+            return prices;
+
+        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getTime(), latest.getValue()));
+
+        if (index >= 0) // historic quote exists -> use it
+            return prices;
+
+        List<SecurityPrice> copy = new ArrayList<>(prices);
+        copy.add(~index, latest);
+        return copy;
     }
 
     private long convert(CurrencyConverter converter, Security security, LocalDate date)

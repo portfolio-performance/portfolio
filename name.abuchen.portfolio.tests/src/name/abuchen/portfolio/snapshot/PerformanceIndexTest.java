@@ -37,12 +37,12 @@ public class PerformanceIndexTest
                         LocalDate.parse("2015-02-07") /* weekend */, LocalDate.parse("2015-02-08") /* weekend */,
                         LocalDate.parse("2015-02-09"), LocalDate.parse("2015-02-10") };
         long[] totals = new long[] { 1000, 1500, 1000, 500, 1000, 1000, 1000, 2000, 1000 };
-        double[] delta = new double[] { 0, 0.5, -1 / 3d, -0.5, 1, 0, 0, 1, -0.5 };
+        double[] delta = new double[] { 0, 0.005, -1 / 300d, -0.005, 0.01, 0, 0, 0.01, -0.005 };
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.017736692475, 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(0.012188677034, 0.1e-10));
     }
 
     @Test
@@ -54,11 +54,11 @@ public class PerformanceIndexTest
                         LocalDate.parse("2015-02-09"), LocalDate.parse("2015-02-10"), LocalDate.parse("2015-02-11"),
                         LocalDate.parse("2015-02-12") };
         long[] totals = new long[] { 0, 0, 1000, 1500, 1000, 1000, 1000, 500, 1000, 2000, 1000 };
-        double[] delta = new double[] { 0, 0, 0, 0.5, -1 / 3d, 0, 0, -0.5, 1, 1, -0.5 };
+        double[] delta = new double[] { 0, 0, 0, 0.005, -1 / 300d, 0, 0, -0.005, 0.01, 0.01, -0.005 };
 
         PerformanceIndex index = new PerformanceIndexStub(dates, totals, delta);
 
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(Math.sqrt(3414d / 7776), 0.1e-10));
-        assertThat(index.getVolatility().getSemiDeviation(), closeTo(Math.sqrt(1611d / 7776), 0.1e-10));
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.017736692475, 0.1e-10));
+        assertThat(index.getVolatility().getSemiDeviation(), closeTo(0.012188677034, 0.1e-10));
     }
 }

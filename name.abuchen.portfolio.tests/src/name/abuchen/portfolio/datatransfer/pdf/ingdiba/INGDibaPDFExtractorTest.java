@@ -263,6 +263,44 @@ public class INGDibaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf7() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf7.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US0378331005"));
+        assertThat(security.getWkn(), is("865985"));
+        assertThat(security.getName(), is("Apple Inc. Registered Shares o.N."));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5009.71)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2012-03-22")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(12.49))));
+    }
+
+    @Test
     public void testWertpapierVerkauf1() throws IOException
     {
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
@@ -335,6 +373,44 @@ public class INGDibaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 19_32)));
+    }
+
+    @Test
+    public void testWertpapierVerkauf3() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Verkauf3.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US0378331005"));
+        assertThat(security.getWkn(), is("865985"));
+        assertThat(security.getName(), is("Apple Inc. Registered Shares o.N."));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3421.66)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-06-25")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
     }
 
     @Test

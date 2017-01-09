@@ -74,6 +74,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         AccountTransactionModel m = new AccountTransactionModel(client, type);
         m.setExchangeRateProviderFactory(factory);
         setModel(m);
+
+        // set account only if exactly one exists
+        // (otherwise force user to choose)
+        List<Account> activeAccounts = client.getActiveAccounts();
+        if (activeAccounts.size() == 1)
+            m.setAccount(activeAccounts.get(0));
     }
 
     private AccountTransactionModel model()
@@ -126,6 +132,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         });
         btnShares.setVisible(model().supportsShares());
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
+
+        Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
+        dividendAmount.bindValue(Properties.dividendAmount.name(), Messages.ColumnDividendPerShare, Values.Amount,
+                        false);
+        dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
+        dividendAmount.setVisible(model().supportsShares());
 
         // other input fields
 
@@ -208,6 +220,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // date
         // shares
         forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
+                        // shares [- amount per share]
                         .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
@@ -218,6 +231,14 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                         .thenRight(grossAmount.label) //
                         .thenRight(grossAmount.value).width(amountWidth) //
                         .thenRight(grossAmount.currency).width(currencyWidth);
+
+        if (model().supportsShares())
+        {
+            // shares [- amount per share]
+            startingWith(btnShares).thenRight(dividendAmount.label) //
+                            .thenRight(dividendAmount.value).width(amountWidth) //
+                            .thenRight(dividendAmount.currency).width(currencyWidth); //
+        }
 
         // forexTaxes - taxes
         if (model().supportsTaxUnits())

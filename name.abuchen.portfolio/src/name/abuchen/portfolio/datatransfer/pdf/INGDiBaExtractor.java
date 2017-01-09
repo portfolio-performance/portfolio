@@ -57,7 +57,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("shares")
                         //
-                        .match("^Nominale St.ck (?<shares>\\d+(,\\d+)?)")
+                        .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
@@ -114,7 +114,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("shares")
                         //
-                        .match("^Nominale St.ck (?<shares>(\\d.)+(,\\d+)?)")
+                        .match("^Nominale St.ck (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
@@ -180,7 +180,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("shares")
                         //
-                        .match("^Nominale (?<shares>(\\d.)+(,\\d+)?) .*")
+                        .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
@@ -277,7 +277,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("shares")
                         //
-                        .match("^Nominale (?<shares>(\\d.)+(,\\d+)?) .*")
+                        .match("^Nominale (?<shares>[\\d.]+(,\\d+)?) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //

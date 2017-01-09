@@ -98,7 +98,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^STK (?<shares>\\d+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("amount", "currency") //
+                        .section("amount", "currency").optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
@@ -106,27 +106,49 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("amount", "currency", "exchangeRate", "forex", "forexCurrency").optional() //
+                        .find("Verwahrart Wertpapierrechnung Ausmachender Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d.]+,\\d+)")
+                        .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) .../... (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            t.setMonetaryAmount(amount);
+                            
+                            BigDecimal exchangeRate = BigDecimal.ONE.divide( //
+                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+
+                            Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                            t.getPortfolioTransaction().addUnit(grossValue);
+                        })
+
                         .section("date") //
                         .match("^Handelstag (?<date>\\d+.\\d+.\\d{4}+) .*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("fees", "currency").optional()
-                        .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
+                            String currency = asCurrencyCode(v.get("currency"));
+                            if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                            }
+                        })
+
+                        .section("fees", "currency").optional()
+                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional()
-                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional()
-                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
-
-                        .section("fees", "currency").optional()
-                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
+                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
 
@@ -160,7 +182,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^STK (?<shares>\\d+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount", "currency")
+                        .section("date", "amount", "currency") //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
@@ -168,11 +190,11 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
+
                         // this section is needed, if the dividend is payed in
                         // the forex currency to a account in forex curreny
-                        .section("forex", "localCurrency", "forexCurrency", "exchangeRate")
-                        .optional()
+                        .section("forex", "localCurrency", "forexCurrency", "exchangeRate") //
+                        .optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<forex>[\\d.]+,\\d+)$")
                         .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")

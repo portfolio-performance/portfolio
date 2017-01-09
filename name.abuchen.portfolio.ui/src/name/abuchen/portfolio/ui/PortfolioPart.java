@@ -31,6 +31,7 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -294,8 +295,12 @@ public class PortfolioPart implements LoadClientThread.Callback
         client.addPropertyChangeListener(event -> notifyModelUpdated());
 
         if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
-            Display.getDefault()
-                            .asyncExec(new ClientMigrationDialog(Display.getDefault().getActiveShell(), client)::open);
+        {
+            Display.getDefault().asyncExec(() -> {
+                Dialog dialog = new ClientMigrationDialog(Display.getDefault().getActiveShell(), client);
+                dialog.open();
+            });
+        }
 
         new ConsistencyChecksJob(client, false).schedule(100);
         scheduleOnlineUpdateJobs();

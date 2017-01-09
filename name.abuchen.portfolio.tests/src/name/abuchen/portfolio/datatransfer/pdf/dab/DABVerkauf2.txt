@@ -1,0 +1,71 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=0000000000
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Frau
+Verkauf  ADRESSZEILE2=Vorname Nachname
+Kommissionsgeschäft ADRESSZEILE3=Straße 999
+Frau ADRESSZEILE4=99999 Ort
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Straße. 999 9999999999 ADRESSZEILE6=
+99999 Ort 00000000 / 24.08.2015 BELEGNUMMER=11949
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+München, 24.08.2015
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+Silgan Holdings Inc. Registered Shares DL -,01 US8270481091
+Nominal Kurs
+STK 100,000 USD 52,0500
+Handelstag 24.08.2015 Kurswert USD 5.205,00
+Handelszeit 16:38* Provision USD 13,01-
+Börse USA/NAN Abwicklungskosten Ausland USD 0,10-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 5.191,89
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+27.08.2015 0000000000 EUR/USD 1,162765 EUR 4.465,12
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsverlust Aktien EUR 341,55
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern (negativ) EUR 341,55
+Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:
+Kapitalertragsteuer EUR 85,39
+Solidaritätszuschlag EUR 4,70
+Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+24.08.2015 0000000000 00000000 EUR 90,09
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 16.095,78
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 885,26
+Es folgt Seite 2
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 217504
+USt.-Ident.-Nr.: DE300737710 > Aufsichtsratsvorsitzende: Franciska Decuypere > Vorstand: Kai Friedrich (Vorstandsvorsitzender), Dr. Niklas Dieterich, Dr. Josef Zellner
+
+3.19/ABREABHNHANDVFDI/GAAASAFG/011949/250815/000933
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+0000000000 00000000 0 DEPOTNUMMER=0000000000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Frau
+ADRESSZEILE2=Vorname Nachname
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit demADRESSZEILE3=Straße 999
+Finanzamt München für Körperschaften, Steuernummer 000/000/00000. ADRESSZEILE4=99999 Ort
+ADRESSZEILE5=
+Jahressteuerbescheinigung folgt ADRESSZEILE6=
+BELEGNUMMER=11949
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland SEITENNUMMER=2
+  (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit). STEUERERSTATTUNG=N
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 217504
+USt.-Ident.-Nr.: DE300737710 > Aufsichtsratsvorsitzende: Franciska Decuypere > Vorstand: Kai Friedrich (Vorstandsvorsitzender), Dr. Niklas Dieterich, Dr. Josef Zellner
+
+3.19/ABREABHNHANDVFDI/GAAASAFG/011949/250815/000933

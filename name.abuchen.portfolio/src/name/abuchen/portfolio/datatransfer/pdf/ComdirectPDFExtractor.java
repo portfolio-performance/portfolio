@@ -1,7 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -13,6 +14,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
 
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
@@ -33,12 +35,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierkauf");
         this.addDocumentTyp(type);
 
-        // bei Wertpapiersparplänen oder im LiveTradingfällt lediglich die
-        // Provision an. Die Summe der Entgelte wird nicht explizit ausgewiesen
-        AtomicBoolean hasSum = new AtomicBoolean(false);
-        Block block = new Block("Wertpapierkauf *");
+        Block block = new Block("^(\\* )?Wertpapierkauf *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
@@ -66,35 +65,36 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Lasten vor Steuern *") //
-                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fee", "currency").optional()
-                        .match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .section("tax").optional() //
+                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
-                            hasSum.set(true);
-                            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
-                        })
+                            Unit unit = createTaxUnit(v.get("tax"));
+                            if (unit == null || unit.getAmount().isZero())
+                                return;
 
-                        .section("fee", "currency").optional()
-                        .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
-                        .assign((t, v) -> {
-                            if (!hasSum.get())
-                            {
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
-                            }
+                            t.getPortfolioTransaction().addUnit(unit);
+
+                            MutableMoney total = MutableMoney.of(t.getPortfolioTransaction().getCurrencyCode());
+                            total.add(t.getPortfolioTransaction().getMonetaryAmount());
+                            total.add(unit.getAmount());
+                            t.setMonetaryAmount(total.toMoney());
                         })
 
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getShares() == 0)
                                 throw new IllegalArgumentException(Messages.PDFMsgMissingShares);
                             return new BuySellEntryItem(t);
-                        }));
+                        });
+
+        addFeesSection(pdfTransaction);
+
+        block.set(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -141,9 +141,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierverkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierverkauf *");
+        Block block = new Block("^(\\* )?Wertpapierverkauf *");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
                         .subject(() -> {
                             BuySellEntry entry = new BuySellEntry();
@@ -159,24 +159,85 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares") //
+                        .section("shares").optional() //
                         .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("shares").optional() // teilausführung
+                        .match("^ Summe *St\\. *(?<shares>\\d+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Gunsten vor Steuern *") //
-                        .match(".*(\\w{3}+) *\\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
+                        .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section("fee", "currency") //
-                        .optional().match(".*Summe Entgelte *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .section("tax").optional() //
+                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .assign((t, v) -> {
+                            Unit unit = createTaxUnit(v.get("tax"));
+                            if (unit == null || unit.getAmount().isZero())
+                                return;
+
+                            t.getPortfolioTransaction().addUnit(unit);
+
+                            MutableMoney total = MutableMoney.of(t.getPortfolioTransaction().getCurrencyCode());
+                            total.add(t.getPortfolioTransaction().getMonetaryAmount());
+                            total.subtract(unit.getAmount());
+                            t.setMonetaryAmount(total.toMoney());
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSection(pdfTransaction);
+
+        block.set(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeesSection(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction.section("fee", "currency").optional()
+                        .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .section("fee", "currency").optional()
+                        .match(".*B.rsenplatzabh.ng. Entgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Abwickl.entgelt Clearstream *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Gesamtprovision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))));
+    }
+
+    @SuppressWarnings("nls")
+    private Unit createTaxUnit(String taxString)
+    {
+        String tax = taxString.replaceAll("[_ ]*", "");
+
+        Pattern pattern = Pattern.compile("(?<currency>\\w{3}+)-(?<amount>[\\d.]+,\\d+)");
+        Matcher matcher = pattern.matcher(tax);
+        if (!matcher.matches())
+            return null;
+
+        return new Unit(Unit.Type.TAX,
+                        Money.of(asCurrencyCode(matcher.group("currency")), asAmount(matcher.group("amount"))));
     }
 
     @Override

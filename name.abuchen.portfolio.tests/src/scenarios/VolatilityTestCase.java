@@ -3,7 +3,6 @@ package scenarios;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.number.IsCloseTo.closeTo;
-import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -41,7 +40,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.01251323582, 0.000001)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.141568791460, 0.1e-10)); // excel
     }
 
     @Test
@@ -52,16 +51,13 @@ public class VolatilityTestCase
 
         Security basf = client.getSecurities().stream().filter(s -> "Basf SE".equals(s.getName())).findAny().get();
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, basf, report, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.01371839502, 0.00001)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.200573810778, 0.1e-10)); // excel
+        assertThat(clientIndex.getVolatility().getStandardDeviation(), closeTo(0.200599730118, 0.1e-10)); // excel
         assertThat(index.getDates()[index.getDates().length - 1], is(LocalDate.parse("2015-01-31")));
-
-        // compare with client -> must be lower because cash has volatility of 0
-        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, report, warnings);
-        assertThat(clientIndex.getVolatility().getStandardDeviation(), lessThan(index.getVolatility()
-                        .getStandardDeviation()));
-    }
+    }  
 
     @Test
     public void testVolatilityIfSecurityIsSoldAndLaterBoughtDuringReportingPeriod() throws IOException
@@ -73,7 +69,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, basf, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.0134468200485513, 0.00001)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.202942041440, 0.1e-10)); // excel
         assertThat(index.getDates()[index.getDates().length - 1], is(LocalDate.parse("2015-02-20")));
     }
 
@@ -91,7 +87,7 @@ public class VolatilityTestCase
         assertThat(warnings, empty());
         // quotes only until December 31st
         assertThat(sapIndex.getDates()[sapIndex.getDates().length - 1], is(LocalDate.parse("2014-12-31")));
-        assertThat(sapIndex.getVolatility().getStandardDeviation(), closeTo(0.0126152529671108, 0.00001)); // excel
+        assertThat(sapIndex.getVolatility().getStandardDeviation(), closeTo(0.193062749491, 0.1e-10)); // excel
     }
 
 }
