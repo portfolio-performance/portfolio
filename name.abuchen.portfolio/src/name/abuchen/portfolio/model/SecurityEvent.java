@@ -58,10 +58,11 @@ public class SecurityEvent
 
     public String getDetails()
     {
-        if (type == SecurityEvent.Type.STOCK_DIVIDEND) {
-            return dividend.toString();
-        } else {
+        if (details != null) {
             return details;
+        } else {
+            // details == null
+            return dividend.toString();
         }
     }
     
