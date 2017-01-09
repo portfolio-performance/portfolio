@@ -26,6 +26,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
@@ -221,8 +222,7 @@ public class SecuritiesChart
 
         security.getEvents().stream() //
                         .filter(e -> chartPeriod == null || chartPeriod.isBefore(e.getDate())) //
-                        .forEach(e -> chart.addMarkerLine(e.getDate(),
-                                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
-
+                        .forEach(e -> chart.addMarkerLine(e.getDate(), 
+                                                          Display.getDefault().getSystemColor(e.getType() == SecurityEvent.Type.STOCK_SPLIT ? SWT.COLOR_DARK_GRAY : SWT.COLOR_MAGENTA), e.getDetails()));
     }
 }
