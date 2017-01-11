@@ -137,20 +137,20 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("fees", "currency").optional()
-                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                        .section("tax", "currency").optional()
+                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
-                        .section("fees", "currency").optional()
-                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                        .section("tax", "currency").optional()
+                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
-                        .section("fees", "currency").optional()
-                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                        .section("tax", "currency").optional()
+                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }

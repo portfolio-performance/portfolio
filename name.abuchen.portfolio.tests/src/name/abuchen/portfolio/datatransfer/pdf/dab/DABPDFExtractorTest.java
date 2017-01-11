@@ -197,8 +197,9 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1994_12)));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-23")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(43)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, 10_09 + 45_88 + 2_52 + 4_12)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10_09)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, 45_88 + 2_52 + 4_12)));
     }
 
     @Test
@@ -239,7 +240,7 @@ public class DABPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4465.12))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-08-24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(85.39 + 4.7))));
     }
 
