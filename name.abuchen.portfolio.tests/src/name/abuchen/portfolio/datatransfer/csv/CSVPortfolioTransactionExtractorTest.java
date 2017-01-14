@@ -263,4 +263,38 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(results, empty());
         assertThat(errors.size(), is(1));
     }
+
+    @Test
+    public void testGrossValueIsCreated() throws ParseException
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("LU0419741177");
+        security.setCurrencyCode(CurrencyUnit.USD);
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2015-09-15", "LU0419741177", "", "", "", "56", "EUR",
+                                        "0,14", "", "", "USD", "1,1194", "0,701124", "BUY", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        BuySellEntry entry = (BuySellEntry) results.get(0).getSubject();
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("EUR", Values.Amount.factorize(56))));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.14))));
+
+        assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getForex(),
+                        is(Money.of(security.getCurrencyCode(), Values.Amount.factorize(62.53))));
+    }
+
 }

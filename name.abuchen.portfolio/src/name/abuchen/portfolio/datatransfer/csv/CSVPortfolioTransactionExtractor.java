@@ -90,13 +90,14 @@ import name.abuchen.portfolio.money.Money;
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 
-        Unit grossAmount = extractGrossAmount(rawValues, field2column, security, amount);
+        Unit grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
         switch (type)
         {
             case BUY:
             case SELL:
-                items.add(createBuySell(type, security, amount, fees, taxes, date, note, shares, grossAmount));
+                items.add(createBuySell(rawValues, field2column, type, security, amount, fees, taxes, date, note,
+                                shares, grossAmount));
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
@@ -104,7 +105,8 @@ import name.abuchen.portfolio.money.Money;
                 break;
             case DELIVERY_INBOUND:
             case DELIVERY_OUTBOUND:
-                items.add(createDelivery(type, security, amount, fees, taxes, date, note, shares, grossAmount));
+                items.add(createDelivery(rawValues, field2column, type, security, amount, fees, taxes, date, note,
+                                shares, grossAmount));
                 break;
             default:
                 throw new IllegalArgumentException(type.toString());
@@ -112,8 +114,9 @@ import name.abuchen.portfolio.money.Money;
 
     }
 
-    private Item createBuySell(Type type, Security security, Money amount, Long fees, Long taxes, LocalDate date,
-                    String note, Long shares, Unit grossAmount)
+    private Item createBuySell(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
+                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    throws ParseException
     {
         BuySellEntry entry = new BuySellEntry();
         entry.setType(type);
@@ -135,7 +138,31 @@ import name.abuchen.portfolio.money.Money;
             entry.getPortfolioTransaction()
                             .addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
 
+        if (grossAmount == null)
+            createGrossValueIfNecessary(rawValues, field2column, entry.getPortfolioTransaction());
+
         return new BuySellEntryItem(entry);
+    }
+
+    private void createGrossValueIfNecessary(String[] rawValues, Map<String, Column> field2column,
+                    PortfolioTransaction transaction) throws ParseException
+    {
+        if (transaction.getSecurity().getCurrencyCode().equals(transaction.getCurrencyCode()))
+            return;
+
+        BigDecimal exchangeRate = getBigDecimal(Messages.CSVColumn_ExchangeRate, rawValues, field2column);
+        if (exchangeRate != null && exchangeRate.compareTo(BigDecimal.ZERO) != 0)
+        {
+            Money grossValue = transaction.getGrossValue();
+
+            Money forex = Money.of(transaction.getSecurity().getCurrencyCode(), Math
+                            .round(exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount())).doubleValue()));
+
+            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+
+            transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
+
+        }
     }
 
     private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDate date, String note,
@@ -152,8 +179,9 @@ import name.abuchen.portfolio.money.Money;
         return new PortfolioTransferItem(entry);
     }
 
-    private Item createDelivery(Type type, Security security, Money amount, Long fees, Long taxes, LocalDate date,
-                    String note, Long shares, Unit grossAmount)
+    private Item createDelivery(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
+                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    throws ParseException
     {
         PortfolioTransaction t = new PortfolioTransaction();
 
@@ -174,6 +202,9 @@ import name.abuchen.portfolio.money.Money;
         if (taxes != null && taxes.longValue() != 0)
             t.addUnit(new Unit(Unit.Type.TAX, Money.of(amount.getCurrencyCode(), Math.abs(taxes))));
 
+        if (grossAmount == null)
+            createGrossValueIfNecessary(rawValues, field2column, t);
+
         return new TransactionItem(t);
     }
 
@@ -185,8 +216,8 @@ import name.abuchen.portfolio.money.Money;
         return type;
     }
 
-    private Unit extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Security security,
-                    Money amount) throws ParseException
+    private Unit extractGrossAmount(String[] rawValues, Map<String, Column> field2column, Money amount)
+                    throws ParseException
     {
         Long grossAmount = getAmount(Messages.CSVColumn_GrossAmount, rawValues, field2column);
         String currencyCode = getCurrencyCode(Messages.CSVColumn_CurrencyGrossAmount, rawValues, field2column);
@@ -203,7 +234,7 @@ import name.abuchen.portfolio.money.Money;
             return null;
 
         // if no exchange rate is available, not unit to create
-        if (exchangeRate == null || exchangeRate.doubleValue() == 0d)
+        if (exchangeRate == null || exchangeRate.compareTo(BigDecimal.ZERO) == 0)
             return null;
 
         Money forex = Money.of(currencyCode, Math.abs(grossAmount.longValue()));
