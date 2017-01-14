@@ -24,10 +24,12 @@ import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -456,6 +458,15 @@ public class PortfolioPart implements LoadClientThread.Callback
     /* package */void markDirty()
     {
         dirty.setDirty(true);
+    }
+
+    @Inject
+    @Optional
+    public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
+    {
+        // update view w/o marking the model dirty
+        if (view != null && view.getControl() != null && !view.getControl().isDisposed())
+            view.notifyModelUpdated();
     }
 
     public void notifyModelUpdated()

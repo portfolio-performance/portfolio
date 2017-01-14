@@ -152,7 +152,6 @@ public class ExchangeRateProviderFactory
         while (registeredProvider.hasNext())
         {
             ExchangeRateProvider provider = registeredProvider.next();
-            provider.init(this);
             providers.add(provider);
         }
     }
@@ -168,6 +167,11 @@ public class ExchangeRateProviderFactory
         for (ExchangeRateProvider p : providers)
             series.addAll(p.getAvailableTimeSeries());
         return series;
+    }
+
+    public void clearCache()
+    {
+        cache.clear();
     }
 
     public ExchangeRateTimeSeries getTimeSeries(String baseCurrency, String termCurrency)

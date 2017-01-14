@@ -3,8 +3,6 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -13,8 +11,6 @@ public class CurrencyConverterImpl implements CurrencyConverter
 {
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
-
-    private final Map<String, ExchangeRateTimeSeries> cache = new HashMap<>();
 
     public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency)
     {
@@ -48,7 +44,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);
 
-        ExchangeRateTimeSeries series = cache.computeIfAbsent(currencyCode, this::lookupSeries);
+        ExchangeRateTimeSeries series = lookupSeries(currencyCode);
 
         Optional<ExchangeRate> rate = series.lookupRate(date);
         if (!rate.isPresent())

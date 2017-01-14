@@ -16,11 +16,6 @@ public interface ExchangeRateProvider
     String getName();
 
     /**
-     * Initializes the exchange rate provider with the factory.
-     */
-    void init(ExchangeRateProviderFactory factory);
-
-    /**
      * Loads the stored exchange rates from local storage.
      */
     void load(IProgressMonitor monitor) throws IOException;

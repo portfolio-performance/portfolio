@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class GBXExchangeRateProvider implements ExchangeRateProvider
@@ -25,10 +24,6 @@ public class GBXExchangeRateProvider implements ExchangeRateProvider
     {
         return CurrencyUnit.getInstance(GBX).getDisplayName();
     }
-
-    @Override
-    public void init(ExchangeRateProviderFactory factory)
-    {}
 
     @Override
     public void load(IProgressMonitor monitor) throws IOException

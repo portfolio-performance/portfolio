@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 public class AEDExchangeRateProvider implements ExchangeRateProvider
@@ -24,10 +23,6 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
     {
         return CurrencyUnit.getInstance(AED).getDisplayName();
     }
-
-    @Override
-    public void init(ExchangeRateProviderFactory factory)
-    {}
 
     @Override
     public void load(IProgressMonitor monitor) throws IOException

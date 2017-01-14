@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -43,11 +44,16 @@ public class StartupAddon
 {
     private static final class UpdateExchangeRatesJob extends Job
     {
+        private final IEventBroker broker;
+        private final ExchangeRateProviderFactory factory;
         private final ExchangeRateProvider provider;
 
-        private UpdateExchangeRatesJob(ExchangeRateProvider provider)
+        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProviderFactory factory,
+                        ExchangeRateProvider provider)
         {
             super(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()));
+            this.broker = broker;
+            this.factory = factory;
             this.provider = provider;
         }
 
@@ -64,6 +70,11 @@ public class StartupAddon
                 // method runs in any case
                 PortfolioPlugin.log(e);
             }
+            finally
+            {
+                factory.clearCache();
+                broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
+            }
 
             try
             {
@@ -72,6 +83,11 @@ public class StartupAddon
             catch (IOException e)
             {
                 PortfolioPlugin.log(e);
+            }
+            finally
+            {
+                factory.clearCache();
+                broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
 
             return Status.OK_STATUS;
@@ -131,11 +147,11 @@ public class StartupAddon
     }
 
     @PostConstruct
-    public void updateExchangeRates(ExchangeRateProviderFactory factory)
+    public void updateExchangeRates(IEventBroker broker, ExchangeRateProviderFactory factory)
     {
         for (final ExchangeRateProvider provider : factory.getProviders())
         {
-            Job job = new UpdateExchangeRatesJob(provider);
+            Job job = new UpdateExchangeRatesJob(broker, factory, provider);
             job.schedule();
         }
     }

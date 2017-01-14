@@ -28,6 +28,11 @@ public interface UIConstants
             String OPENED = "file/opened"; //$NON-NLS-1$
             String SAVED = "file/saved"; //$NON-NLS-1$
         }
+
+        interface ExchangeRates
+        {
+            String LOADED = "exchangeRates/loaded"; //$NON-NLS-1$
+        }
     }
 
     interface File
