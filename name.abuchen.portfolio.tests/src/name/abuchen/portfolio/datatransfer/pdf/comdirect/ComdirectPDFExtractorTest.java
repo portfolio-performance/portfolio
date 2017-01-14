@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
@@ -485,7 +486,7 @@ public class ComdirectPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
 
         Optional<Item> item;
 
@@ -510,6 +511,12 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(66.47))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(570)));
+
+        // tax refund
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+        assertThat(t.getSecurity(), is(security));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(71.73))));
     }
 
     @Test

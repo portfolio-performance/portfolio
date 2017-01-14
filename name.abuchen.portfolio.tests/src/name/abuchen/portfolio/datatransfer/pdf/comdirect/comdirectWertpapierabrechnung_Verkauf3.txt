@@ -60,5 +60,7 @@ DE00 0000 1111 0000 0000 00   EUR     29.02.2016        EUR           21.239,83
 Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA (AKV)
 Teilausführung Ihrer Order
 
+e r s ta t te t e S t e ue r n     E_ _U R_ _ _ _ _ _ _ _ _  _ _ __ _ 7_1__,7_ 3_
+
 
 comdirect bank

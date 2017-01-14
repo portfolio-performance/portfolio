@@ -95,6 +95,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addFeesSection(pdfTransaction);
 
         block.set(pdfTransaction);
+
+        addTaxRefunds(type, "^(\\* )?Wertpapierkauf *");
     }
 
     @SuppressWarnings("nls")
@@ -134,12 +136,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("currency", "gross") //
                         .optional() //
-                        .find("^Bruttobetrag: *(?<currency>\\w{3}+) *(?<gross>[\\d.]+,\\d+)")
-                        .assign((t, v) -> {
+                        .find("^Bruttobetrag: *(?<currency>\\w{3}+) *(?<gross>[\\d.]+,\\d+)").assign((t, v) -> {
                             long gross = asAmount(v.get("gross"));
                             long tax = gross - t.getAmount();
-                            Unit unit = new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), tax));
+                            Unit unit = new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax));
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
                         })
@@ -161,7 +161,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             BuySellEntry entry = new BuySellEntry();
                             entry.setType(PortfolioTransaction.Type.SELL);
                             return entry;
-                        }).section("date") //
+                        })
+
+                        .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
@@ -207,6 +209,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addFeesSection(pdfTransaction);
 
         block.set(pdfTransaction);
+
+        addTaxRefunds(type, "^(\\* )?Wertpapierverkauf *");
     }
 
     @SuppressWarnings("nls")
@@ -239,11 +243,49 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
+    private void addTaxRefunds(DocumentType type, String blockMarker)
+    {
+        // tax refunds --> separate transaction
+        Block block = new Block(blockMarker);
+        type.addBlock(block);
+
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
+
+                        .section("date") //
+                        .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("isin", "name", "wkn") //
+                        .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
+                        .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
+                        .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("tax").optional() //
+                        .match("^e *r *s *t *a *t *t *e *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .assign((t, v) -> {
+                            Unit unit = createTaxUnit(v.get("tax"));
+                            if (unit == null || unit.getAmount().isZero())
+                                return;
+
+                            t.setMonetaryAmount(unit.getAmount());
+                        })
+
+                        .wrap(t -> t.getAmount() == 0L ? null : new TransactionItem(t)));
+    }
+
+    @SuppressWarnings("nls")
     private Unit createTaxUnit(String taxString)
     {
         String tax = taxString.replaceAll("[_ ]*", "");
 
-        Pattern pattern = Pattern.compile("(?<currency>\\w{3}+)-(?<amount>[\\d.]+,\\d+)");
+        Pattern pattern = Pattern.compile("(?<currency>\\w{3}+)-?(?<amount>[\\d.]+,\\d+)");
         Matcher matcher = pattern.matcher(tax);
         if (!matcher.matches())
             return null;
