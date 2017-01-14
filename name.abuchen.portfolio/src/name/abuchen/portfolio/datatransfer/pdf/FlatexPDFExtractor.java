@@ -32,6 +32,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
         addRemoveTransaction();
         addRemoveNewFormatTransaction();
         addOverdraftinterestTransaction();
+        addTaxoptimisationTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -131,11 +132,19 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("tax", "currency").optional() //
-                        .match(".* \\*\\*Einbeh. Steuer *: *(?<tax>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .match(".* \\*\\*Einbeh. Steuer *: *(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
+                        .section("taxreturn", "currency")
+                        .optional()
+                        .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("taxreturn")));
+                        })
+
                         .wrap(t -> new BuySellEntryItem(t)));
+        addTaxReturnBlock(type);
     }
 
     @SuppressWarnings("nls")
@@ -513,7 +522,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                                         
                         .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
@@ -593,7 +602,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                                         
                         .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
@@ -663,7 +672,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                                         
                         .section("tax", "currency").optional() //
-                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
@@ -722,6 +731,105 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                         }));
     }
     
+    @SuppressWarnings("nls")
+    private void addTaxoptimisationTransaction()
+    {
+        final DocumentType type = new DocumentType("Kontoauszug Nr:", (context, lines) -> {
+            Pattern pYear = Pattern.compile("Kontoauszug Nr:[ ]*\\d+/(\\d+).*");
+            Pattern pCurrency = Pattern.compile("Kontow.hrung:[ ]+(\\w{3}+)");
+            // read the current context here
+                        for (String line : lines)
+                        {
+                            Matcher m = pYear.matcher(line);
+                            if (m.matches())
+                            {
+                                context.put("year", m.group(1));
+                            }
+                            m = pCurrency.matcher(line);
+                            if (m.matches())
+                            {
+                                context.put("currency", m.group(1));
+                            }
+                        }
+                    });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Steuertopfoptimierung[ ]+(.*)");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
+
+                        .section("valuta", "amount", "sign")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Steuertopfoptimierung[ ]+(\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            String date = v.get("valuta");
+                            if (date != null)
+                            {
+                                // create a long date from the year in the
+                                // context
+                                t.setDate(asDate(date + context.get("year")));
+                            }
+                            t.setNote(v.get("text"));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            String sign = v.get("sign");
+                            if ("-".equals(sign))
+                            {
+                                // change type for payed Taxes
+                                t.setType(AccountTransaction.Type.TAXES);
+                            }
+                        }).wrap(t -> {
+                            if (t.getAmount() != 0) { return new TransactionItem(t); }
+                            return null;
+                        }));
+    }
+
+    private void addTaxReturnBlock(DocumentType type)
+    {
+
+        // optional: Steuererstattung
+        Block block = new Block("Nr.(\\d*)/(\\d*)  Verkauf.*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAX_REFUND);
+                            return entry;
+                        })
+
+                        .section("taxreturn")
+                        .optional()
+                        .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("taxreturn")));
+                        })
+
+                        .section("wkn", "isin", "name")
+                        .match("Nr.(\\d*)/(\\d*)  Verkauf *(?<name>[^(]*) \\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("shares", "date")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDate(asDate(v.get("date")));
+
+                        })
+
+                        .wrap(t -> {
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0) { return new TransactionItem(t); }
+                            return null;
+                        }));
+    }
+
     @Override
     public String getLabel()
     {

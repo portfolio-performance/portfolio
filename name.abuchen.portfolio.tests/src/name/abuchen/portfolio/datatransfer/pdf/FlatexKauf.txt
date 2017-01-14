@@ -65,7 +65,7 @@ Bew-Faktor   : 1,0000                  Eigene Spesen  :
 Verwahrart   : GS-Verwahrung          *Fremde Spesen  :
 Lagerstelle  : Clearstream Nat.
 Lagerland    : Deutschland           **Einbeh. Steuer :            -100,00 EUR
-Valuta       : 30.01.2014              Endbetrag      :           5.843,00 EUR
+Valuta       : 30.01.2014              Endbetrag      :           6.043,00 EUR
 *   Enthalten sind folgende Gebühren   Courtage       :               0,00 EUR
                                        Tradinggebühr  :               0,00 EUR
                                        Regulierung    :               0,00 EUR
