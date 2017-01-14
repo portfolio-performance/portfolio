@@ -99,7 +99,7 @@ public abstract class CSVExtractor implements Extractor
             return null;
 
         Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Math.round(num.doubleValue() * Values.Share.factor());
+        return Math.round(Math.abs(num.doubleValue()) * Values.Share.factor());
     }
 
     @SuppressWarnings("unchecked")

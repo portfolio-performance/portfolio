@@ -278,7 +278,7 @@ public class CSVPortfolioTransactionExtractorTest
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2015-09-15", "LU0419741177", "", "", "", "56", "EUR",
-                                        "0,14", "", "", "USD", "1,1194", "0,701124", "BUY", "Notiz" }),
+                                        "0,14", "", "", "USD", "1,1194", "-0,701124", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -289,6 +289,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(56))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.701124)));
 
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.14))));
