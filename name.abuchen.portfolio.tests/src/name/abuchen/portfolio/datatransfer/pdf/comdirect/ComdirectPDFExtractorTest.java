@@ -162,7 +162,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(9.9))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
-    }    
+    }
 
     @Test
     public void testWertpapierKauf4() throws IOException
@@ -294,6 +294,92 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf7() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("comdirectWertpapierabrechnung_Kauf7.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getName(), is("Allianz SE"));
+        assertThat(security.getIsin(), is("DE0008404005"));
+        assertThat(security.getWkn(), is("840400"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(7586.80)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2008-10-16")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(23.80 + 1.5 + 0.6))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+    }
+
+    @Test
+    public void testWertpapierKauf8() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("comdirectWertpapierabrechnung_Kauf8.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getName(), is("T. Rowe Price Group Inc."));
+        assertThat(security.getIsin(), is("US74144T1088"));
+        assertThat(security.getWkn(), is("870967"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1469.55)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-11-08")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(2.9 + 9.9))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+    }
+
+    @Test
     public void testWertpapierVerkauf() throws IOException
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client())
@@ -331,7 +417,7 @@ public class ComdirectPDFExtractorTest
 
         // expected total is total amount minux taxes
         long expectedTotal = Values.Amount.factorize(10111.11 - 11.11);
-        assertThat(entry.getPortfolioTransaction().getAmount(), is(expectedTotal)); 
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(expectedTotal));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-01-01")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(11.51))));
