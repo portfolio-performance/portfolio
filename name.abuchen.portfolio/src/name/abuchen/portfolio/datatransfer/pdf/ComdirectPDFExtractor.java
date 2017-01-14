@@ -114,7 +114,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "name", "isin", "shares") //
-                        .match("p e r *\\d \\d *. \\d\\d . \\d \\d \\d \\d (?<name>.*)      (?<wkn>.*)") //
+                        .match("p e r *\\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d (?<name>.*)      (?<wkn>.*)") //
                         .match("^S T K *(?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).*    .* {4}(?<isin>.*)$") //
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
@@ -132,7 +132,19 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             t.setDate(asDate(v.get("date")));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .section("currency", "gross") //
+                        .optional() //
+                        .find("^Bruttobetrag: *(?<currency>\\w{3}+) *(?<gross>[\\d.]+,\\d+)")
+                        .assign((t, v) -> {
+                            long gross = asAmount(v.get("gross"));
+                            long tax = gross - t.getAmount();
+                            Unit unit = new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), tax));
+                            if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
+                                t.addUnit(unit);
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
