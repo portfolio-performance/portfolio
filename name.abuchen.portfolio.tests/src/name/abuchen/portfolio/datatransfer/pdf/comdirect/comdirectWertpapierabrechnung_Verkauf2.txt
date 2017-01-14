@@ -15,7 +15,7 @@ Registered Shares DL 5                                             US0970231058
 
 
 Nennwert                  Zum Preis von
-St.  140                  EUR  146,21           franco Courtage
+St.  1.140                EUR  146,21           franco Courtage
                           Kurswert                    : EUR           20.469,40
 
 --------------------------------------------------------------------------------

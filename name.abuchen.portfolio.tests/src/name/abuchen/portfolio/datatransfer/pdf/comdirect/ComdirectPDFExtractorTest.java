@@ -291,7 +291,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-03-14")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(47.66))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(437)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1437)));
     }
 
     @Test
@@ -467,7 +467,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-12-08")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(56.07))));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(140)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1140)));
     }
 
     @Test

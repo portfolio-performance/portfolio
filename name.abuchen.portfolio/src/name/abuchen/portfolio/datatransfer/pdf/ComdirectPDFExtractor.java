@@ -56,11 +56,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
-                        .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .match("^St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("shares").optional() //
-                        .match("^ Summe *St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .match("^ Summe *St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
@@ -174,11 +174,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //
-                        .match("^St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .match("^St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("shares").optional() // teilausführung
-                        .match("^ Summe *St\\. *(?<shares>\\d+(,\\d+)?) .*") //
+                        .match("^ Summe *St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
