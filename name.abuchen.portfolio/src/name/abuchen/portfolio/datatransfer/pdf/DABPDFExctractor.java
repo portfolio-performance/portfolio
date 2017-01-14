@@ -48,7 +48,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares") //
                         .find("Nominal Kurs") //
-                        .match("^STK (?<shares>\\d+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
+                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
@@ -90,12 +90,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
-                        .match("STK \\d+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
+                        .match("STK [\\d.]+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
                         .find("Nominal Kurs") //
-                        .match("^STK (?<shares>\\d+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
+                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("amount", "currency").optional() //
@@ -111,10 +111,10 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) .../... (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            
+
                             Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                             t.setMonetaryAmount(amount);
-                            
+
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
                                             asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
@@ -174,15 +174,16 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$") //
-                        .match("STK (\\d+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
+                        .match("STK ([\\d.]+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .find("Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück")
-                        .match("^STK (?<shares>\\d+(,\\d+)?) .*$")
+                        .find("^Nominal Ex-Tag Zahltag .*") //
+                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency") //
+                        .optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
@@ -191,8 +192,27 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("date", "amount", "currency", "forexCurrency", "exchangeRate") //
+                        .optional() //
+                        .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
+                                            BigDecimal.ROUND_HALF_DOWN);
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
+                                            Math.round(t.getAmount() / exchangeRate.doubleValue()));
+                            Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, exchangeRate);
+                            if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                t.addUnit(unit);
+                        })
+
                         // this section is needed, if the dividend is payed in
-                        // the forex currency to a account in forex curreny
+                        // the forex currency to a account in forex curreny but
+                        // the security is listed in local currency
                         .section("forex", "localCurrency", "forexCurrency", "exchangeRate") //
                         .optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
@@ -211,7 +231,11 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                                 t.addUnit(unit);
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(t -> {
+                            if (t.getMonetaryAmount().isZero())
+                                throw new IllegalArgumentException("No dividend amount found.");
+                            return new TransactionItem(t);
+                        }));
     }
 
     @Override
