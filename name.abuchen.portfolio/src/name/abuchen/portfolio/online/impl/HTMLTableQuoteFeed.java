@@ -172,7 +172,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @SuppressWarnings("nls")
         public CloseColumn()
         {
-            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price" });
+            super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
+                            "akt. Kurs" });
         }
 
         @Override
@@ -415,6 +416,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         // check if thead exists
         Elements header = table.select("> thead > tr > th");
+        if (!header.isEmpty())
+        {
+            buildSpecFromRow(header, specs);
+            return 0;
+        }
+
+        header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
