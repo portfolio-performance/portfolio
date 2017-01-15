@@ -789,6 +789,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                         }));
     }
 
+    @SuppressWarnings("nls")
     private void addTaxReturnBlock(DocumentType type)
     {
 

@@ -608,21 +608,21 @@ public final class SecuritiesTable implements ModificationListener
 
     private void fillTransactionContextMenu(IMenuManager manager, Security security)
     {
-        new OpenDialogAction(view, Messages.SecurityMenuBuy + "...") //
+        new OpenDialogAction(view, Messages.SecurityMenuBuy + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
-        new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //
+        new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.SELL) //
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
-        new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //
+        new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(security) //
