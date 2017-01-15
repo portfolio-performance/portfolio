@@ -129,6 +129,32 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
+    private static class VolumeColumn extends Column
+    {
+        @SuppressWarnings("nls")
+        public VolumeColumn()
+        {
+            super(new String[] { "Volume.*", "Umsatz" , "Stücke" });
+        }
+
+        @Override
+        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        {
+            try
+            {
+                if ("-".equals(value.text().trim())) //$NON-NLS-1$
+                    price.setVolume((int) LatestSecurityPrice.NOT_AVAILABLE);
+                else
+                    price.setVolume(super.asInt(value));
+            }
+            catch (Throwable ex)
+            {
+                System.err.println("Uncaught exception - " + ex.getMessage());
+                ex.printStackTrace(System.err);
+            }
+        }
+    }
+
     private static class Spec
     {
         private final Column column;
@@ -144,7 +170,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     public static final String ID = "GENERIC_HTML_TABLE"; //$NON-NLS-1$
 
     private static final Column[] COLUMNS = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
-                    new LowColumn() };
+                    new LowColumn(), new VolumeColumn() };
 
     private final PageCache cache = new PageCache();
 

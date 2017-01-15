@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online;
 
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -8,7 +7,6 @@ import java.util.Hashtable;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Set;
 
 import org.jsoup.nodes.Element;
 
@@ -104,4 +102,65 @@ public abstract class Column
         return Math.round(quote * Values.Quote.factor());
     }
     
+    private Hashtable<String,Integer> symbols = new Hashtable<String,Integer>() {
+        {
+            put("k",       1000);
+            put("K",       1000);
+            put("T",       1000);
+            put("M",    1000000);
+        }
+    };
+
+    protected int asInt(Element elem) throws ParseException
+    {
+        String text = elem.text().trim();
+        int multiplier = 1;
+        double value = -0.1;
+        try
+        {
+            Pattern numberPattern = Pattern.compile("([0-9,.]+)");
+            Matcher numberMatcher = numberPattern.matcher(text);
+            if (numberMatcher.find())
+            {
+                String match = numberMatcher.group(1);
+                int lastDot = match.lastIndexOf(".");
+                int lastComma = match.lastIndexOf(",");
+                if (lastComma > lastDot)
+                {
+                    match = match.replaceAll("\\.", "");
+                    match = match.replace(",", ".");
+                }
+                else
+                {
+                    match = match.replaceAll(",","");
+                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3$4");
+                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3");
+                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])","$1$2");
+                }
+                value = Double.valueOf(match);
+            }
+        }
+        catch (Throwable ex)
+        {
+            System.err.println("Uncaught exception - " + ex.getMessage());
+            ex.printStackTrace(System.err);
+        }
+        try
+        {
+            Pattern symbolPattern = Pattern.compile(".*([KTM])");
+            Matcher symbolMatcher = symbolPattern.matcher(text);
+            if (symbolMatcher.find())
+            {
+                multiplier = symbols.get(symbolMatcher.group(1));
+            }
+        }
+        catch (Throwable ex)
+        {
+            System.err.println("Uncaught exception - " + ex.getMessage());
+            ex.printStackTrace(System.err);
+        }
+        value *= (double)multiplier;
+        return (int)value;
+    }
+
 }
