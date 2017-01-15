@@ -17,7 +17,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public enum WidgetFactory
 {
-    HEADING(Messages.LabelHeading, (widget, data) -> new HeadingWidget(widget, data)),
+    HEADING(Messages.LabelHeading, HeadingWidget::new),
 
     TTWROR(Messages.LabelTTWROR,
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
@@ -125,7 +125,7 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
-    CALCULATION(Messages.LabelPerformanceCalculation, (widget, data) -> new PerformanceCalculationWidget(widget, data)),
+    CALCULATION(Messages.LabelPerformanceCalculation, PerformanceCalculationWidget::new),
 
     CHART(Messages.LabelPerformanceChart,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.PERFORMANCE)),
@@ -133,7 +133,9 @@ public enum WidgetFactory
     ASSET_CHART(Messages.LabelAssetChart,
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
-    HEATMAP(Messages.LabelHeatmap, (widget, data) -> new PerformanceHeatmapWidget(widget, data));
+    HEATMAP(Messages.LabelHeatmap, PerformanceHeatmapWidget::new),
+
+    CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new);
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;

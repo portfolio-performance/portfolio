@@ -336,6 +336,7 @@ public class Messages extends NLS
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
     public static String LabelCurrencies;
+    public static String LabelCurrentDate;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDefaultReferenceAccountName;
