@@ -69,11 +69,10 @@ public final class ClientFilterMenu implements IMenuListener
     private LinkedList<Item> customItems = new LinkedList<>();
     private Item selectedItem;
 
-    public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener)
+    public ClientFilterMenu(Client client, IPreferenceStore preferences)
     {
         this.client = client;
         this.preferences = preferences;
-        this.listeners.add(listener);
 
         selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, null, c -> c);
         defaultItems.add(selectedItem);
@@ -85,6 +84,12 @@ public final class ClientFilterMenu implements IMenuListener
         });
 
         loadCustomItems();
+    }
+
+    public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener)
+    {
+        this(client, preferences);
+        this.listeners.add(listener);
     }
 
     private void loadCustomItems()
