@@ -145,7 +145,7 @@ public class SecuritiesChart
 
             chart.getTitle().setText(security.getName());
 
-            List<SecurityPrice> prices = security.getPrices();
+            List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
             int index;
             LocalDate[] dates;

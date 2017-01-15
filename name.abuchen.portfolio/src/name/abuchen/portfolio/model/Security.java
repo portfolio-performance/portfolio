@@ -236,6 +236,25 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     /**
+     * Returns a list of historical security prices that includes the latest
+     * security price if no history price exists for that date
+     */
+    public List<SecurityPrice> getPricesIncludingLatest()
+    {
+        if (latest == null)
+            return getPrices();
+
+        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getTime(), latest.getValue()));
+
+        if (index >= 0) // historic quote exists -> use it
+            return getPrices();
+
+        List<SecurityPrice> copy = new ArrayList<>(prices);
+        copy.add(~index, latest);
+        return copy;
+    }
+
+    /**
      * Adds security price to historical quotes.
      * 
      * @return true if the historical quote was updated.
