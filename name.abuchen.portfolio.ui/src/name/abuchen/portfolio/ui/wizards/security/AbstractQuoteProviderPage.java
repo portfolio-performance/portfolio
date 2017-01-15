@@ -7,12 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -38,6 +32,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
@@ -371,6 +371,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             }
         }
 
+        grpQuoteFeed.layout(true);
         grpQuoteFeed.getParent().layout();
     }
 
