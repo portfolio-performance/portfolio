@@ -55,6 +55,11 @@ public abstract class AbstractChartTab implements DividendsTab
         return chart;
     }
 
+    protected LocalResourceManager getResources()
+    {
+        return resources;
+    }
+
     @Override
     public final Control createControl(Composite parent)
     {

@@ -405,6 +405,7 @@ public class Messages extends NLS
     public static String LabelDividends;
     public static String LabelDividendsByMonthAndVehicle;
     public static String LabelDividendsPerMonth;
+    public static String LabelDividendsPerYear;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHistoricalReturnsAndVolatiltity;
