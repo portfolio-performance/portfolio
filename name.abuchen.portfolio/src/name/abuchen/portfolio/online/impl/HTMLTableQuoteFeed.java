@@ -6,8 +6,6 @@ import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -20,7 +18,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -34,98 +31,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.Column;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
-    private abstract static class Column
-    {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
-            }
-        };
-
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
-            }
-        };
-
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                unusualSymbols.setGroupingSeparator('\'');
-                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-            }
-        };
-
-        private final Pattern[] patterns;
-
-        protected Column(String[] strings)
-        {
-            this.patterns = new Pattern[strings.length];
-            for (int ii = 0; ii < strings.length; ii++)
-                this.patterns[ii] = Pattern.compile(strings[ii]);
-        }
-
-        protected boolean matches(Element header)
-        {
-            String text = header.text();
-            for (Pattern pattern : patterns)
-            {
-                if (pattern.matcher(text).matches())
-                    return true;
-            }
-            return false;
-        }
-
-        abstract void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException;
-
-        protected long asQuote(Element value, String languageHint) throws ParseException
-        {
-            String text = value.text().trim();
-
-            DecimalFormat format = null;
-
-            if ("de".equals(languageHint)) //$NON-NLS-1$
-                format = DECIMAL_FORMAT_GERMAN.get();
-            else if ("en".equals(languageHint)) //$NON-NLS-1$
-                format = DECIMAL_FORMAT_ENGLISH.get();
-
-            if (format == null)
-            {
-                // check first for apostrophe
-
-                int apostrophe = text.indexOf('\'');
-                if (apostrophe >= 0)
-                    format = DECIMAL_FORMAT_APOSTROPHE.get();
-            }
-
-            if (format == null)
-            {
-                // determine format based on the relative location of the last
-                // comma and dot, e.g. the last comma indicates a German number
-                // format
-                int lastDot = text.lastIndexOf('.');
-                int lastComma = text.lastIndexOf(',');
-                format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
-                                : DECIMAL_FORMAT_ENGLISH.get();
-            }
-
-            double quote = format.parse(text).doubleValue();
-            return Math.round(quote * Values.Quote.factor());
-        }
-    }
 
     private static class DateColumn extends Column
     {
@@ -146,7 +56,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             String text = Strings.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
@@ -177,7 +87,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             price.setValue(asQuote(value, languageHint));
         }
@@ -192,7 +102,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
@@ -210,7 +120,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
