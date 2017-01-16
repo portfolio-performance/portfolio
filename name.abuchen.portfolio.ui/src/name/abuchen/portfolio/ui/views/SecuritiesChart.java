@@ -22,6 +22,8 @@ import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -216,6 +218,18 @@ public class SecuritiesChart
                     double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
                                     .getAmount() / Values.Quote.divider();
                     chart.addMarkerLine(t.getDate(), color, label, value);
+                }
+            }
+        }
+
+        for (Account account : client.getAccounts())
+        {
+            for (AccountTransaction t : account.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())) && t.getType() == AccountTransaction.Type.DIVIDENDS)
+                {
+                    Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN);
+                    chart.addMarkerLine(t.getDate(), color, t.getGrossValue().toString());
                 }
             }
         }
