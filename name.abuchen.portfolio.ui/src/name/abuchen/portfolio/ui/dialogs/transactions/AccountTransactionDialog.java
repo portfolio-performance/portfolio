@@ -134,7 +134,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
 
         Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
-        dividendAmount.bindValue(Properties.dividendAmount.name(), Messages.ColumnDividendPerShare, Values.Amount,
+        dividendAmount.bindValue(Properties.dividendAmount.name(), Messages.ColumnDividendPerShare, Values.Dividend,
                         false);
         dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
         dividendAmount.setVisible(model().supportsShares());

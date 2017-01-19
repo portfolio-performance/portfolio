@@ -164,6 +164,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> Dividend = new Values<Long>("#,##0.00#####", 10000000D, 10000000) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long dividend)
+        {
+            return format.format(dividend / divider());
+        }
+    };
+
     public static final QuoteValues Quote = new QuoteValues();
 
     public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 1D, 1)//$NON-NLS-1$
