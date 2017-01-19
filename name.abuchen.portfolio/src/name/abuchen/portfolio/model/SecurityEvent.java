@@ -3,7 +3,7 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
-public class SecurityEvent
+public class SecurityEvent extends SecurityElement
 {
     public enum Type
     {
@@ -17,13 +17,11 @@ public class SecurityEvent
         }
     }
 
-    private LocalDate date;
     private Type type;
     private String details;
 
     public SecurityEvent()
     {
-        // xstream
     }
 
     public SecurityEvent(LocalDate date, Type type, String details)

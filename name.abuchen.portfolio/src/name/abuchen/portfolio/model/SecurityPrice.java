@@ -6,7 +6,7 @@ import java.util.Comparator;
 
 import name.abuchen.portfolio.money.Values;
 
-public class SecurityPrice implements Comparable<SecurityPrice>
+public class SecurityPrice extends SecurityElement implements Comparable<SecurityPrice>
 {
     public static final class ByDate implements Comparator<SecurityPrice>, Serializable
     {
@@ -19,9 +19,6 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         }
     }
 
-    private LocalDate time;
-    private long value;
-
     public SecurityPrice()
     {}
 
@@ -29,26 +26,6 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     {
         this.value = price;
         this.time = time;
-    }
-
-    public LocalDate getTime()
-    {
-        return time;
-    }
-
-    public void setTime(LocalDate time)
-    {
-        this.time = time;
-    }
-
-    public long getValue()
-    {
-        return value;
-    }
-
-    public void setValue(long value)
-    {
-        this.value = value;
     }
 
     @Override
@@ -87,13 +64,6 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         if (value != other.value)
             return false;
         return true;
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%tF: %,10.2f", time, value / Values.Quote.divider());
     }
 
 }

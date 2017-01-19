@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -56,8 +57,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             String text = Strings.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
@@ -86,8 +88,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             price.setValue(asQuote(value, languageHint));
         }
     }
@@ -101,8 +104,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             else
@@ -119,8 +123,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
             else
@@ -137,8 +142,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
 
         @Override
-        public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
+        public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             try
             {
                 if ("-".equals(value.text().trim())) //$NON-NLS-1$

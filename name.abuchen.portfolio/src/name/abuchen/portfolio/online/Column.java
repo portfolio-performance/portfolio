@@ -65,7 +65,7 @@ public abstract class Column
         return false;
     }
 
-    public abstract void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException;
+    public abstract void setValue(Element value, Object obj, String languageHint) throws ParseException;
 
     protected long asQuote(Element value, String languageHint) throws ParseException
     {
