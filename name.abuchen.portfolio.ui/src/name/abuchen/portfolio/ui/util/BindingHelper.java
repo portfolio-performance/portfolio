@@ -270,7 +270,7 @@ public class BindingHelper
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setLabelProvider(new LabelProvider());
 
-        List<CurrencyUnit> currencies = new ArrayList<CurrencyUnit>();
+        List<CurrencyUnit> currencies = new ArrayList<>();
         currencies.add(CurrencyUnit.EMPTY);
         currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
         combo.setInput(currencies);
@@ -305,23 +305,6 @@ public class BindingHelper
                         null);
     }
 
-    public final void bindAmountInput(Composite editArea, String label, String property)
-    {
-        Text txtValue = createTextInput(editArea, label);
-
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
-                        BeanProperties.value(property).observe(model), //
-                        new UpdateValueStrategy().setConverter(new StringToCurrencyConverter(Values.Amount)),
-                        new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(Values.Amount)));
-    }
-
-    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property)
-    {
-        Text txtValue = createTextInput(editArea, label);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
-        return txtValue;
-    }
-
     public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label);
@@ -329,31 +312,23 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final Control bindMandatorySharesInput(Composite editArea, final String label, String property)
-    {
-        Text txtValue = createTextInput(editArea, label);
-        bindMandatoryDecimalInput(label, property, txtValue, Values.Share);
-        return txtValue;
-    }
-
     private void bindMandatoryDecimalInput(final String label, String property, Text txtValue, Values<?> type)
     {
+        StringToCurrencyConverter converter = new StringToCurrencyConverter(type);
+
+        UpdateValueStrategy input2model = new UpdateValueStrategy() //
+                        .setAfterGetValidator(converter) //
+                        .setConverter(converter) //
+                        .setAfterConvertValidator(value -> {
+                            Long v = (Long) value;
+                            return v != null && v.longValue() > 0 ? ValidationStatus.ok()
+                                            : ValidationStatus.error(MessageFormat
+                                                            .format(Messages.MsgDialogInputRequired, label));
+                        });
+
         context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
                         BeanProperties.value(property).observe(model), //
-                        new UpdateValueStrategy() //
-                                        .setConverter(new StringToCurrencyConverter(type)) //
-                                        .setAfterConvertValidator(new IValidator()
-                                        {
-                                            @Override
-                                            public IStatus validate(Object value)
-                                            {
-                                                Long v = (Long) value;
-                                                return v != null && v.longValue() > 0 ? ValidationStatus.ok()
-                                                                : ValidationStatus.error(MessageFormat.format(
-                                                                                Messages.MsgDialogInputRequired,
-                                                                                label));
-                                            }
-                                        }), // ,
+                        input2model, // ,
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(type)));
     }
 
