@@ -22,10 +22,13 @@ import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
@@ -219,10 +222,21 @@ public class SecuritiesChart
             }
         }
 
+        for (Account account : client.getAccounts())
+        {
+            for (AccountTransaction t : account.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())) && t.getType() == AccountTransaction.Type.DIVIDENDS)
+                {
+                    Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN);
+                    chart.addMarkerLine(t.getDate(), color, t.getGrossValue().toString());
+                }
+            }
+        }
+
         security.getEvents().stream() //
                         .filter(e -> chartPeriod == null || chartPeriod.isBefore(e.getDate())) //
-                        .forEach(e -> chart.addMarkerLine(e.getDate(),
-                                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
-
+                        .forEach(e -> chart.addMarkerLine(e.getDate(), 
+                                                          Display.getDefault().getSystemColor(e.getType() == SecurityEvent.Type.STOCK_SPLIT ? SWT.COLOR_DARK_GRAY : SWT.COLOR_MAGENTA), e.getDetails()));
     }
 }
