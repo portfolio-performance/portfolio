@@ -5,8 +5,13 @@ import java.time.LocalDate;
 import java.time.Period;
 import java.time.temporal.TemporalAmount;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -17,6 +22,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
@@ -31,7 +37,10 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
 /**
@@ -39,17 +48,44 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
  */
 public class SecuritiesChart
 {
+    private enum ChartDetails
+    {
+        INVESTMENT(Messages.LabelChartDetailInvestments), //
+        EVENTS(Messages.LabelChartDetailEvents), //
+        DIVIDENDS(Messages.LabelChartDetailDividends);
+
+        private final String label;
+
+        private ChartDetails(String label)
+        {
+            this.label = label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
+    private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
+
+    private Menu contextMenu;
+
     private Client client;
     private CurrencyConverter converter;
+    private Security security;
 
     private TimelineChart chart;
     private LocalDate chartPeriod = LocalDate.now().minusYears(2);
-    private Security security;
+    private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS);
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
         this.client = client;
         this.converter = converter;
+
+        readChartConfig(client);
 
         chart = new TimelineChart(parent);
         chart.getTitle().setText("..."); //$NON-NLS-1$
@@ -60,6 +96,8 @@ public class SecuritiesChart
         buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
         RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
+
+        addConfigButton(buttons);
 
         addButton(buttons, Messages.SecurityTabChart1M, Period.ofMonths(1));
         addButton(buttons, Messages.SecurityTabChart2M, Period.ofMonths(2));
@@ -81,6 +119,74 @@ public class SecuritiesChart
                 updateChart();
             }
         });
+    }
+
+    private final void readChartConfig(Client client)
+    {
+        String pref = client.getProperty(PREF_KEY);
+        if (pref == null)
+            return;
+
+        chartConfig.clear();
+        for (String key : pref.split(",")) //$NON-NLS-1$
+        {
+            try
+            {
+                chartConfig.add(ChartDetails.valueOf(key));
+            }
+            catch (IllegalArgumentException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+        }
+    }
+
+    private void addConfigButton(Composite buttons)
+    {
+        Button b = new Button(buttons, SWT.FLAT);
+        b.setImage(Images.CONFIG.image());
+        b.addSelectionListener(new SelectionAdapter()
+        {
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                if (contextMenu == null)
+                {
+                    MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+                    menuMgr.setRemoveAllWhenShown(true);
+                    menuMgr.addMenuListener(SecuritiesChart.this::chartConfigAboutToShow);
+
+                    contextMenu = menuMgr.createContextMenu(buttons.getShell());
+
+                    buttons.addDisposeListener(event -> contextMenu.dispose());
+                }
+
+                contextMenu.setVisible(true);
+            }
+        });
+    }
+
+    private void chartConfigAboutToShow(IMenuManager manager)
+    {
+        for (ChartDetails detail : ChartDetails.values())
+        {
+            Action action = new SimpleAction(detail.toString(), a -> {
+                boolean isActive = chartConfig.contains(detail);
+
+                if (isActive)
+                    chartConfig.remove(detail);
+                else
+                    chartConfig.add(detail);
+
+                client.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
+                                chartConfig.stream().map(ChartDetails::name).collect(Collectors.toList())));
+
+                updateChart();
+            });
+
+            action.setChecked(chartConfig.contains(detail));
+            manager.add(action);
+        }
     }
 
     private void addButton(Composite buttons, String label, TemporalAmount amountToAdd)
@@ -205,6 +311,18 @@ public class SecuritiesChart
 
     private void addChartMarker()
     {
+        if (chartConfig.contains(ChartDetails.INVESTMENT))
+            addInvestmentMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.DIVIDENDS))
+            addDividendMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.EVENTS))
+            addEventMarkerLines();
+    }
+
+    private void addInvestmentMarkerLines()
+    {
         for (Portfolio portfolio : client.getPortfolios())
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
@@ -220,23 +338,29 @@ public class SecuritiesChart
                 }
             }
         }
+    }
 
+    private void addDividendMarkerLines()
+    {
         for (Account account : client.getAccounts())
         {
             for (AccountTransaction t : account.getTransactions())
             {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())) && t.getType() == AccountTransaction.Type.DIVIDENDS)
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                                && t.getType() == AccountTransaction.Type.DIVIDENDS)
                 {
                     Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN);
                     chart.addMarkerLine(t.getDate(), color, t.getGrossValue().toString());
                 }
             }
         }
+    }
 
+    private void addEventMarkerLines()
+    {
         security.getEvents().stream() //
                         .filter(e -> chartPeriod == null || chartPeriod.isBefore(e.getDate())) //
                         .forEach(e -> chart.addMarkerLine(e.getDate(),
                                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
-
     }
 }
