@@ -47,7 +47,7 @@ public class AccountTransactionModel extends AbstractModel
     private long shares;
 
     private long fxGrossAmount;
-    private long dividendAmount;
+    private BigDecimal dividendAmount = BigDecimal.ZERO;
     private BigDecimal exchangeRate = BigDecimal.ONE;
     private long grossAmount;
 
@@ -161,7 +161,7 @@ public class AccountTransactionModel extends AbstractModel
 
         setShares(0);
         setFxGrossAmount(0);
-        setDividendAmount(0);
+        setDividendAmount(BigDecimal.ZERO);
         setGrossAmount(0);
         setTaxes(0);
         setFxTaxes(0);
@@ -388,19 +388,19 @@ public class AccountTransactionModel extends AbstractModel
                         this.calculationStatus = calculateStatus());
     }
 
-    public long getDividendAmount()
+    public BigDecimal getDividendAmount()
     {
         return dividendAmount;
     }
 
-    public void setDividendAmount(long amount)
+    public void setDividendAmount(BigDecimal amount)
     {
         triggerDividendAmount(amount);
         long myGrossAmount = calculateGrossAmount4Dividend();
         setFxGrossAmount(myGrossAmount);
     }
 
-    public void triggerDividendAmount(long amount)
+    public void triggerDividendAmount(BigDecimal amount)
     {
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount);
     }
@@ -517,12 +517,13 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.total.name(), this.total, this.total = total);
     }
 
-    protected long calculateDividendAmount()
+    protected BigDecimal calculateDividendAmount()
     {
         if (shares > 0)
-            return Math.round((fxGrossAmount * Values.Share.factor()) / (double) shares);
+            return BigDecimal.valueOf(
+                            (fxGrossAmount * Values.Share.factor()) / (double) shares / Values.Amount.divider());
         else
-            return 0L;
+            return BigDecimal.ZERO;
     }
 
     protected long calculateGrossAmount4Total()
@@ -533,7 +534,8 @@ public class AccountTransactionModel extends AbstractModel
 
     protected long calculateGrossAmount4Dividend()
     {
-        return Math.round((shares * dividendAmount) / (double) Values.Share.factor());
+        return Math.round((shares * dividendAmount.doubleValue() * Values.Amount.factor())
+                        / (double) Values.Share.factor());
     }
 
     private long calculateTotal()
