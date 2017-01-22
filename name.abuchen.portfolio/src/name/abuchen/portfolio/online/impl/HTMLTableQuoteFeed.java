@@ -136,7 +136,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             super(new String[] { "Datum", "Date" });
 
-            formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+            formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("y-M-d"),
+                            DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d.M.y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMM y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMMM y"), //$NON-NLS-1$
