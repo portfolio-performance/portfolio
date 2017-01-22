@@ -731,11 +731,6 @@ public class StatementOfAssetsViewer
         support.showSaveMenu(shell);
     }
 
-    public void setInput(ClientSnapshot snapshot)
-    {
-        setInput(snapshot, ClientFilter.NO_FILTER);
-    }
-
     public void setInput(ClientSnapshot snapshot, ClientFilter filter)
     {
         this.clientSnapshot = snapshot;

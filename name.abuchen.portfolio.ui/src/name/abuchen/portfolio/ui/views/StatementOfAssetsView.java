@@ -57,7 +57,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate);
 
-        assetViewer.setInput(snapshot);
+        assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
         updateTitle(getDefaultTitle());
     }
 
