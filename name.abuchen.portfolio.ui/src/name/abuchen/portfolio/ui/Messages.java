@@ -163,6 +163,7 @@ public class Messages extends NLS
     public static String ColumnPurchaseValue_Description;
     public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnQuote;
+    public static String ColumnQuote_DescriptionEndOfReportingPeriod;
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
