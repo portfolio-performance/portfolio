@@ -520,7 +520,7 @@ public class AccountTransactionModel extends AbstractModel
     protected long calculateDividendAmount()
     {
         if (shares > 0)
-            return Math.round((fxGrossAmount * Values.Share.factor()) / (double) shares);
+            return Math.round((fxGrossAmount * Values.Share.factor() * Values.Dividend.factor()) / (double) (shares * Values.Amount.factor()));
         else
             return 0L;
     }
@@ -533,7 +533,10 @@ public class AccountTransactionModel extends AbstractModel
 
     protected long calculateGrossAmount4Dividend()
     {
-        return Math.round((shares * dividendAmount) / (double) Values.Share.factor());
+        double sharesD = (double) shares / Values.Share.factor();
+        double dividendD = (double) dividendAmount / Values.Dividend.factor();
+        double amountD = dividendD * sharesD;
+        return Math.round(amountD * Values.Amount.factor());
     }
 
     private long calculateTotal()
