@@ -95,14 +95,14 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         // now loop the years
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
 
-        for (LocalDate yearDate : interval.iterYears())
+        for (Integer year : interval.iterYears())
         {
             Label currLabel = new Label(table, SWT.NONE);
-            currLabel.setText(String.valueOf(yearDate.getYear()));
+            currLabel.setText(year.toString());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(currLabel);
 
-            for (LocalDate currMonth = LocalDate.of(yearDate.getYear(), 1, 1); currMonth.getYear() == yearDate
-                            .getYear(); currMonth = currMonth.plusMonths(1))
+            for (LocalDate currMonth = LocalDate.of(year, 1, 1); currMonth.getYear() == year; currMonth = currMonth
+                            .plusMonths(1))
             {
                 currLabel = new Label(table, SWT.RIGHT);
                 if (interval.contains(currMonth))
