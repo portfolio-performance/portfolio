@@ -20,6 +20,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     {
         super(client);
 
+        addBankIdentifier("DAB"); //$NON-NLS-1$
+
         addBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
