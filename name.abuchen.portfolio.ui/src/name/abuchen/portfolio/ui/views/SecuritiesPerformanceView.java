@@ -369,6 +369,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // latest / current quote
         column = new Column("quote", Messages.ColumnQuote, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnQuote_DescriptionEndOfReportingPeriod);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
