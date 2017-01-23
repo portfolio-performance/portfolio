@@ -27,6 +27,27 @@ public abstract class Transaction implements Annotated
             GROSS_VALUE, TAX, FEE
         }
 
+        /**
+         * Type of transaction unit
+         */
+        private final Type type;
+
+        /**
+         * Amount in transaction currency
+         */
+        private final Money amount;
+
+        /**
+         * Original amount in foreign currency; can be null if unit is recorded
+         * in currency of transaction
+         */
+        private final Money forex;
+
+        /**
+         * Exchange rate used to convert forex amount to amount
+         */
+        private final BigDecimal exchangeRate;
+
         public Unit(Type type, Money amount)
         {
             this.type = Objects.requireNonNull(type);
@@ -53,27 +74,6 @@ public abstract class Transaction implements Annotated
                                 MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
                                                 Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
         }
-
-        /**
-         * Type of transaction unit
-         */
-        private final Type type;
-
-        /**
-         * Amount in transaction currency
-         */
-        private final Money amount;
-
-        /**
-         * Original amount in foreign currency; can be null if unit is recorded
-         * in currency of transaction
-         */
-        private final Money forex;
-
-        /**
-         * Exchange rate used to convert forex amount to amount
-         */
-        private final BigDecimal exchangeRate;
 
         public Type getType()
         {
@@ -274,7 +274,7 @@ public abstract class Transaction implements Annotated
     public Money getUnitSum(Unit.Type type)
     {
         return getUnits().filter(u -> u.getType() == type) //
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
     }
 
     /**
