@@ -242,7 +242,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getMonetaryAmount().isZero())
+                            if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
                             return new TransactionItem(t);
                         }));
