@@ -7,6 +7,7 @@ import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -28,13 +29,13 @@ import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -342,18 +343,30 @@ public class SecuritiesChart
 
     private void addDividendMarkerLines()
     {
-        for (Account account : client.getAccounts())
-        {
-            for (AccountTransaction t : account.getTransactions())
-            {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate()))
-                                && t.getType() == AccountTransaction.Type.DIVIDENDS)
-                {
-                    Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_CYAN);
-                    chart.addMarkerLine(t.getDate(), color, t.getGrossValue().toString());
-                }
-            }
-        }
+        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
+                        .filter(t -> t.getSecurity() == security)
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate())) //
+                        .forEach(t -> {
+                            Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
+
+                            if (t.getShares() == 0L)
+                            {
+                                chart.addMarkerLine(t.getDate(), color, "\u2211 " + t.getGrossValue().toString()); //$NON-NLS-1$
+                            }
+                            else
+                            {
+                                Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
+                                long gross = grossValue.isPresent() ? grossValue.get().getForex().getAmount()
+                                                : t.getGrossValueAmount();
+
+                                long perShare = Math.round(gross * Values.Share.divider() * Values.Quote.factorToMoney()
+                                                / t.getShares());
+
+                                chart.addMarkerLine(t.getDate(), color, Values.Quote.format(perShare));
+                            }
+                        });
+
     }
 
     private void addEventMarkerLines()
