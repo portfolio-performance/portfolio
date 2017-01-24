@@ -48,8 +48,6 @@ public class ClientSettings
                         "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("finanztreff.de", //$NON-NLS-1$
-                        "http://www.finanztreff.de/kurse_einzelkurs_suche.htn?suchbegriff={isin}")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
                         "http://www.ariva.de/{isin}/bilanz-guv")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("justETF", //$NON-NLS-1$
