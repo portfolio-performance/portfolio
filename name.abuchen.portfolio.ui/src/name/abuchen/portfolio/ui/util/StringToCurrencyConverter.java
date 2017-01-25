@@ -7,12 +7,10 @@ import java.text.ParseException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.eclipse.core.databinding.conversion.IConverter;
-
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
-public class StringToCurrencyConverter implements IConverter
+public class StringToCurrencyConverter implements IValidatingConverter
 {
     private final Pattern pattern;
     private final NumberFormat full;
@@ -88,5 +86,4 @@ public class StringToCurrencyConverter implements IConverter
 
         return before.longValue() * factor + after;
     }
-
 }

@@ -28,6 +28,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDesignation;
 
@@ -61,7 +62,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         }
     }
 
-    private static final class ToAttributeObjectConverter implements IConverter
+    private static final class ToAttributeObjectConverter implements IValidatingConverter
     {
         private final AttributeDesignation attribute;
 
@@ -144,7 +145,6 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // input
         final Text value = new Text(container, SWT.BORDER);
-        value.setText(attribute.getType().getConverter().toString(attribute.getValue()));
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
 
         // delete button
@@ -152,10 +152,11 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         deleteButton.setImage(Images.REMOVE.image());
 
         // model binding
+        ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
         final Binding binding = bindings.getBindingContext().bindValue( //
                         WidgetProperties.text(SWT.Modify).observe(value), //
                         BeanProperties.value("value").observe(attribute), //$NON-NLS-1$
-                        new UpdateValueStrategy().setConverter(new ToAttributeObjectConverter(attribute)),
+                        new UpdateValueStrategy().setAfterGetValidator(input2model).setConverter(input2model),
                         new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 
         // delete selection listener

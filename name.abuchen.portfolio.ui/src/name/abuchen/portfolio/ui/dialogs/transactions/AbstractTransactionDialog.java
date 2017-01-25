@@ -42,6 +42,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.IValidatingConverter;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
@@ -71,8 +72,10 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public void bindValue(String property, String description, Values<?> values, boolean isMandatory)
         {
+            StringToCurrencyConverter converter = new StringToCurrencyConverter(values);
             UpdateValueStrategy strategy = new UpdateValueStrategy();
-            strategy.setConverter(new StringToCurrencyConverter(values));
+            strategy.setAfterGetValidator(converter);
+            strategy.setConverter(converter);
             if (isMandatory)
             {
                 strategy.setAfterConvertValidator(convertedValue -> {
@@ -98,9 +101,11 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         {
             NumberFormat format = new DecimalFormat(pattern);
 
+            IValidatingConverter converter = IValidatingConverter.wrap(StringToNumberConverter.toBigDecimal());
+
             context.bindValue(WidgetProperties.text(SWT.Modify).observe(value), //
                             BeanProperties.value(property).observe(model), //
-                            new UpdateValueStrategy().setConverter(StringToNumberConverter.toBigDecimal()),
+                            new UpdateValueStrategy().setAfterGetValidator(converter).setConverter(converter),
                             new UpdateValueStrategy().setConverter(NumberToStringConverter.fromBigDecimal(format)));
         }
 

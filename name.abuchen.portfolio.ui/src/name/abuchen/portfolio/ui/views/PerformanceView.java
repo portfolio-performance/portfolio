@@ -109,8 +109,8 @@ public class PerformanceView extends AbstractHistoricView
             calculation.getTree().setRedraw(true);
         }
 
-        snapshotStart.setInput(snapshot.getStartClientSnapshot());
-        snapshotEnd.setInput(snapshot.getEndClientSnapshot());
+        snapshotStart.setInput(snapshot.getStartClientSnapshot(), clientFilter.getSelectedFilter());
+        snapshotEnd.setInput(snapshot.getEndClientSnapshot(), clientFilter.getSelectedFilter());
 
         earnings.setInput(snapshot.getEarnings());
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());

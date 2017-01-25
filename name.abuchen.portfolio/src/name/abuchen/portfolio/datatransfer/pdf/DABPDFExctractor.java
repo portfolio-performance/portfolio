@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -18,6 +19,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     public DABPDFExctractor(Client client) throws IOException
     {
         super(client);
+
+        addBankIdentifier("DAB"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
@@ -137,22 +140,29 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("tax", "currency").optional()
-                        .match("^.*Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign(this::addSellTaxUnit)
 
-                        .section("tax", "currency").optional()
-                        .match("^.*Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign(this::addSellTaxUnit)
 
-                        .section("tax", "currency").optional()
-                        .match("^.*Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$") //
+                        .assign(this::addSellTaxUnit)
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(BuySellEntryItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addSellTaxUnit(BuySellEntry t, Map<String, String> v)
+    {
+        if (v.get("label").contains("im laufenden Jahr einbehaltene"))
+            return;
+
+        t.getPortfolioTransaction().addUnit(
+                        new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
     }
 
     @SuppressWarnings("nls")
@@ -232,7 +242,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getMonetaryAmount().isZero())
+                            if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
                             return new TransactionItem(t);
                         }));

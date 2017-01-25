@@ -19,6 +19,7 @@ import org.swtchart.ISeries;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -55,7 +56,7 @@ public class ExchangeRatesListView extends AbstractListView
 
         TableViewer indeces = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListView.class.getSimpleName() + "@top", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), indeces, layout);
 
         Column column = new Column(Messages.ColumnBaseCurrency, SWT.None, 80);
@@ -96,6 +97,24 @@ public class ExchangeRatesListView extends AbstractListView
         ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "provider").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnDateLatestExchangeRate, SWT.None, 150);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
+                List<ExchangeRate> rates = series.getRates();
+                return rates.isEmpty() ? null : Values.Date.format(rates.get(rates.size() - 1).getTime());
+            }
+        });
+        ColumnViewerSorter.create(element -> {
+            ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) element;
+            List<ExchangeRate> rates = series.getRates();
+            return rates.isEmpty() ? null : rates.get(rates.size() - 1).getTime();
+        }).attachTo(column);
+        support.addColumn(column);
+
         support.createColumns();
 
         indeces.getTable().setHeaderVisible(true);
@@ -106,11 +125,8 @@ public class ExchangeRatesListView extends AbstractListView
         indeces.setInput(providerFactory.getAvailableTimeSeries());
         indeces.refresh();
 
-        indeces.addSelectionChangedListener(event -> {
-            ExchangeRateTimeSeries series = (ExchangeRateTimeSeries) ((IStructuredSelection) event.getSelection())
-                            .getFirstElement();
-            refreshChart(series);
-        });
+        indeces.addSelectionChangedListener(event -> refreshChart(
+                        (ExchangeRateTimeSeries) ((IStructuredSelection) event.getSelection()).getFirstElement()));
     }
 
     @Override

@@ -85,6 +85,7 @@ public class Messages extends NLS
     public static String ColumnCurrentShares;
     public static String ColumnDataSeries;
     public static String ColumnDate;
+    public static String ColumnDateLatestExchangeRate;
     public static String ColumnDateOfQuote;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
@@ -162,6 +163,7 @@ public class Messages extends NLS
     public static String ColumnPurchaseValue_Description;
     public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnQuote;
+    public static String ColumnQuote_DescriptionEndOfReportingPeriod;
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
@@ -327,6 +329,9 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelChartDetailDividends;
+    public static String LabelChartDetailEvents;
+    public static String LabelChartDetailInvestments;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;

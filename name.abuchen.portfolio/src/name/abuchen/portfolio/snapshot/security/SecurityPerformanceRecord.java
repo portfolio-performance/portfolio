@@ -319,7 +319,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
         if (!transactions.isEmpty())
         {
-            calculateMarketValue(converter);
+            calculateMarketValue(converter, period);
             calculateIRR(converter);
             calculateTTWROR(client, converter, period);
             calculateDelta(converter);
@@ -328,7 +328,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         }
     }
 
-    private void calculateMarketValue(CurrencyConverter converter)
+    private void calculateMarketValue(CurrencyConverter converter, ReportingPeriod period)
     {
         MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
         for (Transaction t : transactions)
@@ -336,7 +336,7 @@ public final class SecurityPerformanceRecord implements Adaptable
                 mv.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
 
         this.marketValue = mv.toMoney();
-        this.quote = security.getSecurityPrice(LocalDate.now());
+        this.quote = security.getSecurityPrice(period.getEndDate());
     }
 
     private void calculateIRR(CurrencyConverter converter)
