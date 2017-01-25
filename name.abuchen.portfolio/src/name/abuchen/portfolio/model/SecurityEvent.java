@@ -26,14 +26,9 @@ public class SecurityEvent extends SecurityElement
 
     public SecurityEvent(LocalDate date, Type type, String details)
     {
-        this.date = date;
+        super.date = date;
         this.type = type;
         this.details = details;
-    }
-
-    public LocalDate getDate()
-    {
-        return date;
     }
 
     public Type getType()

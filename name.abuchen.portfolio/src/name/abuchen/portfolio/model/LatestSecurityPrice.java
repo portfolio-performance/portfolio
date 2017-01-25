@@ -15,9 +15,9 @@ public class LatestSecurityPrice extends SecurityPrice
     public LatestSecurityPrice()
     {}
 
-    public LatestSecurityPrice(LocalDate time, long price)
+    public LatestSecurityPrice(LocalDate date, long price)
     {
-        super(time, price);
+        super(date, price);
     }
 
     public long getHigh()

@@ -8,20 +8,20 @@ import name.abuchen.portfolio.money.Values;
 
 public class SecurityElement
 {
-    private LocalDate time;
-    private long value;
+    protected LocalDate date;
+    protected long value;
 
     public SecurityElement()
     {}
 
-    public LocalDate getTime()
+    public LocalDate getDate()
     {
-        return time;
+        return date;
     }
 
-    public void setTime(LocalDate time)
+    public void setDate(LocalDate date)
     {
-        this.time = time;
+        this.date = date;
     }
 
     public long getValue()
@@ -38,7 +38,7 @@ public class SecurityElement
     @SuppressWarnings("nls")
     public String toString()
     {
-        return String.format("%tF: %,10.2f", time, value / Values.Quote.divider());
+        return String.format("%tF: %,10.2f", date, value / Values.Quote.divider());
     }
 
 }

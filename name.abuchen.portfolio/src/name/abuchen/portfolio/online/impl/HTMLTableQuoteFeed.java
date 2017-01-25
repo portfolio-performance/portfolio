@@ -32,7 +32,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.Column;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
@@ -66,7 +65,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 try
                 {
                     LocalDate date = LocalDate.parse(text, formatters[ii]);
-                    price.setTime(date);
+                    price.setDate(date);
                     return;
                 }
                 catch (DateTimeParseException e) // NOSONAR
@@ -228,7 +227,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         boolean isUpdated = false;
         for (LatestSecurityPrice quote : quotes)
         {
-            boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
+            boolean isAdded = security.addPrice(new SecurityPrice(quote.getDate(), quote.getValue()));
             isUpdated = isUpdated || isAdded;
         }
 
@@ -490,7 +489,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (LatestSecurityPrice p : prices)
         {
-            writer.print(Values.Date.format(p.getTime()));
+            writer.print(Values.Date.format(p.getDate()));
             writer.print("\t");
             writer.print(Values.Quote.format(p.getValue()));
             writer.print("\t");
