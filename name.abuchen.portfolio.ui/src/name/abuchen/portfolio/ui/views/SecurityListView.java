@@ -513,7 +513,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((SecurityPrice) element).getTime());
+                return Values.Date.format(((SecurityPrice) element).getDate());
             }
 
             @Override
@@ -577,7 +577,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         return;
 
                     SecurityPrice price = new SecurityPrice();
-                    price.setTime(LocalDate.now());
+                    price.setDate(LocalDate.now());
 
                     security.addPrice(price);
 

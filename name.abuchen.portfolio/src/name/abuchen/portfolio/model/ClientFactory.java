@@ -1016,8 +1016,8 @@ public class ClientFactory
                     xstream.alias("attribute-type", AttributeType.class);
 
                     xstream.alias("price", SecurityPrice.class);
-                    xstream.useAttributeFor(SecurityPrice.class, "time");
-                    xstream.aliasField("t", SecurityPrice.class, "time");
+                    xstream.useAttributeFor(SecurityPrice.class, "date");
+                    xstream.aliasField("t", SecurityPrice.class, "date");
                     xstream.useAttributeFor(SecurityPrice.class, "value");
                     xstream.aliasField("v", SecurityPrice.class, "value");
 

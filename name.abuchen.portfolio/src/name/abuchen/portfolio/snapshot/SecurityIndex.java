@@ -34,7 +34,7 @@ import name.abuchen.portfolio.util.Interval;
 
         Interval actualInterval = clientIndex.getActualInterval();
 
-        LocalDate firstPricePoint = prices.get(0).getTime();
+        LocalDate firstPricePoint = prices.get(0).getDate();
         if (firstPricePoint.isAfter(actualInterval.getEnd()))
         {
             initEmpty(clientIndex);
@@ -46,7 +46,7 @@ import name.abuchen.portfolio.util.Interval;
             startDate = firstPricePoint;
 
         LocalDate endDate = actualInterval.getEnd();
-        LocalDate lastPricePoint = prices.get(prices.size() - 1).getTime();
+        LocalDate lastPricePoint = prices.get(prices.size() - 1).getDate();
 
         if (lastPricePoint.isBefore(endDate))
             endDate = lastPricePoint;
@@ -99,6 +99,22 @@ import name.abuchen.portfolio.util.Interval;
             valuation = thisValuation;
             index++;
         }
+    }
+
+    private List<SecurityPrice> mergeLatestQuoteIfNecessary(List<SecurityPrice> prices, Security security)
+    {
+        LatestSecurityPrice latest = security.getLatest();
+        if (latest == null)
+            return prices;
+
+        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getDate(), latest.getValue()));
+
+        if (index >= 0) // historic quote exists -> use it
+            return prices;
+
+        List<SecurityPrice> copy = new ArrayList<>(prices);
+        copy.add(~index, latest);
+        return copy;
     }
 
     private long convert(CurrencyConverter converter, Security security, LocalDate date)

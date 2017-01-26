@@ -26,6 +26,7 @@ import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -59,13 +60,14 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             String text = Strings.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
                 try
                 {
                     LocalDate date = LocalDate.parse(text, formatters[ii]);
-                    price.setTime(date);
+                    price.setDate(date);
                     return;
                 }
                 catch (DateTimeParseException e) // NOSONAR
@@ -90,6 +92,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             price.setValue(asQuote(value, languageHint));
         }
     }
@@ -105,6 +108,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             else
@@ -123,6 +127,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
+            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
             else
@@ -224,7 +229,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         boolean isUpdated = false;
         for (LatestSecurityPrice quote : quotes)
         {
-            boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
+            boolean isAdded = security.addPrice(new SecurityPrice(quote.getDate(), quote.getValue()));
             isUpdated = isUpdated || isAdded;
         }
 
@@ -493,7 +498,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (LatestSecurityPrice p : prices)
         {
-            writer.print(Values.Date.format(p.getTime()));
+            writer.print(Values.Date.format(p.getDate()));
             writer.print("\t");
             writer.print(Values.Quote.format(p.getValue()));
             writer.print("\t");

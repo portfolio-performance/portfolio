@@ -182,7 +182,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            return lastHistoricalQuote.getTime();
+            return lastHistoricalQuote.getDate();
         }
         else
         {
@@ -273,7 +273,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         Number q = priceFormat.parse(values[4]);
         long v = (long) (q.doubleValue() * Values.Quote.factor());
 
-        price.setTime(date);
+        price.setDate(date);
         price.setValue(v);
 
         if (price instanceof LatestSecurityPrice)
