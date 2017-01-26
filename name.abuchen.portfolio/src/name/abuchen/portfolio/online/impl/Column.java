@@ -116,48 +116,32 @@ abstract class Column
         String text = elem.text().trim();
         int multiplier = 1;
         double value = -0.1;
-        try
+        Pattern numberPattern = Pattern.compile("([0-9,.]+)");
+        Matcher numberMatcher = numberPattern.matcher(text);
+        if (numberMatcher.find())
         {
-            Pattern numberPattern = Pattern.compile("([0-9,.]+)");
-            Matcher numberMatcher = numberPattern.matcher(text);
-            if (numberMatcher.find())
+            String match = numberMatcher.group(1);
+            int lastDot = match.lastIndexOf(".");
+            int lastComma = match.lastIndexOf(",");
+            if (lastComma > lastDot)
             {
-                String match = numberMatcher.group(1);
-                int lastDot = match.lastIndexOf(".");
-                int lastComma = match.lastIndexOf(",");
-                if (lastComma > lastDot)
-                {
-                    match = match.replaceAll("\\.", "");
-                    match = match.replace(",", ".");
-                }
-                else
-                {
-                    match = match.replaceAll(",","");
-                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3$4");
-                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3");
-                    match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])","$1$2");
-                }
-                value = Double.valueOf(match);
+                match = match.replaceAll("\\.", "");
+                match = match.replace(",", ".");
             }
-        }
-        catch (Throwable ex)
-        {
-            System.err.println("Uncaught exception - " + ex.getMessage());
-            ex.printStackTrace(System.err);
-        }
-        try
-        {
-            Pattern symbolPattern = Pattern.compile(".*([KTM])");
-            Matcher symbolMatcher = symbolPattern.matcher(text);
-            if (symbolMatcher.find())
+            else
             {
-                multiplier = symbols.get(symbolMatcher.group(1));
+                match = match.replaceAll(",","");
+                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3$4");
+                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3");
+                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])","$1$2");
             }
+            value = Double.valueOf(match);
         }
-        catch (Throwable ex)
+        Pattern symbolPattern = Pattern.compile(".*([KTM])");
+        Matcher symbolMatcher = symbolPattern.matcher(text);
+        if (symbolMatcher.find())
         {
-            System.err.println("Uncaught exception - " + ex.getMessage());
-            ex.printStackTrace(System.err);
+            multiplier = symbols.get(symbolMatcher.group(1));
         }
         value *= (double)multiplier;
         return (int)value;

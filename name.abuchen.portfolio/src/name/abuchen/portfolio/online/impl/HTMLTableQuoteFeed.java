@@ -142,18 +142,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            try
-            {
-                if ("-".equals(value.text().trim())) //$NON-NLS-1$
-                    price.setVolume((int) LatestSecurityPrice.NOT_AVAILABLE);
-                else
-                    price.setVolume(super.asInt(value));
-            }
-            catch (Throwable ex)
-            {
-                System.err.println("Uncaught exception - " + ex.getMessage());
-                ex.printStackTrace(System.err);
-            }
+            if ("-".equals(value.text().trim())) //$NON-NLS-1$
+                price.setVolume((int) LatestSecurityPrice.NOT_AVAILABLE);
+            else
+                price.setVolume(super.asInt(value));
         }
     }
 
