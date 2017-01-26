@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online;
+package name.abuchen.portfolio.online.impl;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -14,7 +14,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
 
-public abstract class Column
+abstract class Column
 {
     static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
     {

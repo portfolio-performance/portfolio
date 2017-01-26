@@ -32,7 +32,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.online.Column;
+import name.abuchen.portfolio.online.impl.Column;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
@@ -60,7 +60,6 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             String text = Strings.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
@@ -92,7 +91,6 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             price.setValue(asQuote(value, languageHint));
         }
     }
@@ -108,7 +106,6 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             else
@@ -127,7 +124,6 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         public void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            LatestSecurityPrice price = (LatestSecurityPrice) obj; 
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
             else
