@@ -46,7 +46,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
-                        .match("Handelstag (\\d+.\\d+.\\d{4}+) Kurswert (?<currency>\\w{3}+) ([\\d.]+,\\d+)-")
+                        .match("Handelstag (\\d+.\\d+.\\d{4}+) *Kurswert *(?<currency>\\w{3}+) ([\\d.]+,\\d+)-")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //

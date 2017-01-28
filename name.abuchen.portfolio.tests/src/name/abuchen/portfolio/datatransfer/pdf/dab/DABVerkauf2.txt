@@ -22,7 +22,7 @@ Gattungsbezeichnung ISIN
 Silgan Holdings Inc. Registered Shares DL -,01 US8270481091
 Nominal Kurs
 STK 100,000 USD 52,0500
-Handelstag 24.08.2015 Kurswert USD 5.205,00
+Handelstag 24.08.2015  Kurswert                    USD 5.205,00
 Handelszeit 16:38* Provision USD 13,01-
 Börse USA/NAN Abwicklungskosten Ausland USD 0,10-
 Verwahrart Wertpapierrechnung Ausmachender Betrag USD 5.191,89
