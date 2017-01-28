@@ -194,7 +194,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
                         .section("date", "amount", "currency") //
                         .optional() //
-                        .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
+                        .find("Wert *Konto-Nr. *Betrag *zu *Ihren *Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
