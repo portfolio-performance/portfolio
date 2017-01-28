@@ -161,6 +161,43 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf4() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABKauf4.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("US8270481091"));
+        assertThat(security.getName(), is("Silgan Holdings Inc. Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4798.86))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-07-29")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
     public void testWertpapierVerkauf() throws IOException
     {
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
@@ -242,6 +279,48 @@ public class DABPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(85.39 + 4.7))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf3() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABVerkauf3.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("US8270481091"));
+        assertThat(security.getName(), is("Silgan Holdings Inc. Registered Shares DL -,01"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4447.21))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-08-24")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(92.97 + 5.11))));
     }
 
     @Test
