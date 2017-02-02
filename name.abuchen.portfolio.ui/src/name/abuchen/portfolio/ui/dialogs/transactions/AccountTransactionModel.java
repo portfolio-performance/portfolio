@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
@@ -154,7 +155,8 @@ public class AccountTransactionModel extends AbstractModel
         }
         if (type == AccountTransaction.Type.DIVIDENDS)
         {
-                SecurityEvent event = new SecurityEvent(date, SecurityEvent.Type.STOCK_DIVIDEND, Money.of(getFxCurrencyCode(), dividendAmount)); //$NON-NLS-1$
+                DecimalFormat valueFormat = new DecimalFormat("#,##0.00####"); //$NON-NLS-1$
+                SecurityEvent event = new SecurityEvent(date, SecurityEvent.Type.STOCK_DIVIDEND, getFxCurrencyCode() + " " + valueFormat.format(dividendAmount)); //$NON-NLS-1$
                 security.addEvent(event);
         }
 
