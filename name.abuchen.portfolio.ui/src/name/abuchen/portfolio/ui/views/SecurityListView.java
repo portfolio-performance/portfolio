@@ -527,7 +527,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return null;
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
-                int days = Dates.daysBetween(previous.getTime(), current.getTime());
+                int days = Dates.daysBetween(previous.getDate(), current.getDate());
                 return days > 3 ? warningColor : null;
             }
         });
