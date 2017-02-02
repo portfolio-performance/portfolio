@@ -163,6 +163,7 @@ public class PortfolioClientFilter implements ClientFilter
                 case INTEREST_CHARGE:
                 case TAXES:
                 case FEES:
+                case FEES_REFUND:
                     // do nothing
                     break;
                 default:
@@ -214,6 +215,7 @@ public class PortfolioClientFilter implements ClientFilter
                 case INTEREST_CHARGE:
                 case TAXES:
                 case FEES:
+                case FEES_REFUND:
                     pseudoAccount.internalAddTransaction(t);
                     break;
                 default:

@@ -80,6 +80,7 @@ public class AccountTransactionModel extends AbstractModel
             case DEPOSIT:
             case REMOVAL:
             case FEES:
+            case FEES_REFUND:
             case TAXES:
             case TAX_REFUND:
             case INTEREST:

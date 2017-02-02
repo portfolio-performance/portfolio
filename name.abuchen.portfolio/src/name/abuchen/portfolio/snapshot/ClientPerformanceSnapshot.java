@@ -320,6 +320,10 @@ public class ClientPerformanceSnapshot
                         mFees.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
+                    case FEES_REFUND:
+                        mFees.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        fees.add(new TransactionPair<AccountTransaction>(account, t));
+                        break;
                     case TAXES:
                         mTaxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         taxes.add(new TransactionPair<AccountTransaction>(account, t));
@@ -452,6 +456,7 @@ public class ClientPerformanceSnapshot
                     case DEPOSIT:
                     case TAX_REFUND:
                     case SELL:
+                    case FEES_REFUND:
                         value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case REMOVAL:

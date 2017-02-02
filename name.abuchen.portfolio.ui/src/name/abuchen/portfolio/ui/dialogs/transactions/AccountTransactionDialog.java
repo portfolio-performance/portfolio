@@ -391,6 +391,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             case TAX_REFUND:
             case DIVIDENDS:
             case DEPOSIT:
+            case FEES_REFUND:
                 return Messages.ColumnCreditNote;
             case BUY:
             case SELL:

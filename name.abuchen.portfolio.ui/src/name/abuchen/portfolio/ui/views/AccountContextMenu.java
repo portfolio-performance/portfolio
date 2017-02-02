@@ -37,6 +37,7 @@ public class AccountContextMenu
                         AccountTransaction.Type.REMOVAL, //
                         AccountTransaction.Type.TAXES, //
                         AccountTransaction.Type.FEES, //
+                        AccountTransaction.Type.FEES_REFUND, //
                         AccountTransaction.Type.INTEREST_CHARGE))
         {
             new OpenDialogAction(owner, type.toString() + "...") //$NON-NLS-1$
