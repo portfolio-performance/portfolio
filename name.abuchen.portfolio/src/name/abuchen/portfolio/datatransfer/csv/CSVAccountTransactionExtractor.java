@@ -108,6 +108,7 @@ import name.abuchen.portfolio.money.Money;
             case TAXES:
             case TAX_REFUND:
             case FEES:
+            case FEES_REFUND:
             case INTEREST:
             case INTEREST_CHARGE:
             case REMOVAL:

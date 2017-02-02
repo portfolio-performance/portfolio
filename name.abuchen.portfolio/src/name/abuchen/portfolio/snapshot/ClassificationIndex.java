@@ -124,6 +124,7 @@ import name.abuchen.portfolio.money.Money;
                         case INTEREST_CHARGE:
                         case TAXES:
                         case FEES:
+                        case FEES_REFUND:
                             // do nothing
                             break;
                         default:
@@ -189,6 +190,7 @@ import name.abuchen.portfolio.money.Money;
                 case INTEREST_CHARGE:
                 case TAXES:
                 case FEES:
+                case FEES_REFUND:
                     if (weight != Classification.ONE_HUNDRED_PERCENT)
                         pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount,
                                         null, t.getType()));
