@@ -42,6 +42,7 @@ public class CheckValidTypesAction implements ImportAction
             case TAXES:
             case REMOVAL:
             case FEES:
+            case FEES_REFUND:
                 return Status.OK_STATUS;
             default:
                 throw new UnsupportedOperationException();
