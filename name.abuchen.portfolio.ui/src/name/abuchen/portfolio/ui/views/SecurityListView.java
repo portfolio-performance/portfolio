@@ -531,8 +531,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return days > 3 ? warningColor : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
