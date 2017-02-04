@@ -102,48 +102,39 @@ abstract class Column
         return Math.round(quote * Values.Quote.factor());
     }
     
-    private Hashtable<String,Integer> symbols = new Hashtable<String,Integer>() {
-        {
-            put("k",       1000);
-            put("K",       1000);
-            put("T",       1000);
-            put("M",    1000000);
-        }
-    };
-
-    protected int asInt(Element elem) throws ParseException
+    protected int asInt(Element elem, String languageHint) throws ParseException
     {
         String text = elem.text().trim();
-        int multiplier = 1;
-        double value = -0.1;
-        Pattern numberPattern = Pattern.compile("([0-9,.]+)");
-        Matcher numberMatcher = numberPattern.matcher(text);
-        if (numberMatcher.find())
+
+        DecimalFormat format = null;
+
+        if ("de".equals(languageHint)) //$NON-NLS-1$
+            format = DECIMAL_FORMAT_GERMAN.get();
+        else if ("en".equals(languageHint)) //$NON-NLS-1$
+            format = DECIMAL_FORMAT_ENGLISH.get();
+
+        if (format == null)
         {
-            String match = numberMatcher.group(1);
-            int lastDot = match.lastIndexOf(".");
-            int lastComma = match.lastIndexOf(",");
-            if (lastComma > lastDot)
-            {
-                match = match.replaceAll("\\.", "");
-                match = match.replace(",", ".");
-            }
-            else
-            {
-                match = match.replaceAll(",","");
-                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3$4");
-                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])\\.([0-9][0-9][0-9])","$1$2$3");
-                match = match.replaceAll("([0-9])\\.([0-9][0-9][0-9])","$1$2");
-            }
-            value = Double.valueOf(match);
+            // check first for apostrophe
+
+            int apostrophe = text.indexOf('\'');
+            if (apostrophe >= 0)
+                format = DECIMAL_FORMAT_APOSTROPHE.get();
         }
-        Pattern symbolPattern = Pattern.compile(".*([KTM])");
-        Matcher symbolMatcher = symbolPattern.matcher(text);
-        if (symbolMatcher.find())
+
+        if (format == null)
         {
-            multiplier = symbols.get(symbolMatcher.group(1));
+            // determine format based on the relative location of the last
+            // comma and dot, e.g. the last comma indicates a German number
+            // format
+            int lastDot = text.lastIndexOf('.');
+            int lastComma = text.lastIndexOf(',');
+            format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
+                            : DECIMAL_FORMAT_ENGLISH.get();
         }
-        value *= (double)multiplier;
+
+        double value = format.parse(text).doubleValue();
+
         return (int)value;
     }
 

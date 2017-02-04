@@ -145,7 +145,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             if ("-".equals(value.text().trim())) //$NON-NLS-1$
                 price.setVolume((int) LatestSecurityPrice.NOT_AVAILABLE);
             else
-                price.setVolume(super.asInt(value));
+                price.setVolume(super.asInt(value, languageHint));
         }
     }
 
