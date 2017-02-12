@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -16,7 +17,9 @@ import name.abuchen.portfolio.money.Values;
         @Override
         protected DecimalFormat initialValue()
         {
-            return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+            DecimalFormat fmt = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+            fmt.setParseBigDecimal(true);
+            return fmt;
         }
     };
 
@@ -24,7 +27,8 @@ import name.abuchen.portfolio.money.Values;
     {
         if ("N/A".equals(s)) //$NON-NLS-1$
             return -1;
-        return (long) (FMT_PRICE.get().parse(s).doubleValue() * Values.Quote.factor());
+        BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
+        return v.multiply(Values.Quote.getBigDecimalFactor()).longValue();
     }
 
     static int asNumber(String s) throws ParseException

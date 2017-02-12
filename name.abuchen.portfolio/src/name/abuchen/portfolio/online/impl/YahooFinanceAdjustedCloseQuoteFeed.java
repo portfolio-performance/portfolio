@@ -1,12 +1,10 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.time.format.DateTimeFormatter;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.money.Values;
 
 public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
 {
@@ -23,15 +21,13 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
     }
 
     @Override
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
-                    DateTimeFormatter dateFormat) throws ParseException
+    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DateTimeFormatter dateFormat)
+                    throws ParseException
     {
         // Date,Open,High,Low,Close,Volume,Adj Close
-        super.fillValues(values, price, priceFormat, dateFormat);
+        super.fillValues(values, price, dateFormat);
 
-        Number q = priceFormat.parse(values[6]);
-        long v = (long) (q.doubleValue() * Values.Quote.factor());
-        price.setValue(v);
+        price.setValue(YahooHelper.asPrice(values[6]));
     }
 
 }

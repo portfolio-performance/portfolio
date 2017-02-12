@@ -270,12 +270,14 @@ public abstract class Values<E>
     private final String pattern;
     private final double divider;
     private final int factor;
+    private final BigDecimal bdFactor;
 
     private Values(String pattern, double divider, int factor)
     {
         this.pattern = pattern;
         this.divider = divider;
         this.factor = factor;
+        this.bdFactor = BigDecimal.valueOf(factor);
     }
 
     public String pattern()
@@ -291,6 +293,14 @@ public abstract class Values<E>
     public int factor()
     {
         return factor;
+    }
+
+    /**
+     * Returns the factor as BigDecimal
+     */
+    public BigDecimal getBigDecimalFactor()
+    {
+        return bdFactor;
     }
 
     public long factorize(double value)

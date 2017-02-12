@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_PRICE;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
@@ -11,7 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -30,7 +28,6 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
@@ -237,7 +234,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
                 throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
 
-            DecimalFormat priceFormat = FMT_PRICE.get();
             DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
 
             while ((line = reader.readLine()) != null)
@@ -248,7 +244,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
                 T price = klass.newInstance();
 
-                fillValues(values, price, priceFormat, dateFormat);
+                fillValues(values, price, dateFormat);
 
                 answer.add(price);
             }
@@ -265,13 +261,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return answer;
     }
 
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
-                    DateTimeFormatter dateFormat) throws ParseException, DateTimeParseException
+    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DateTimeFormatter dateFormat)
+                    throws ParseException, DateTimeParseException
     {
         LocalDate date = LocalDate.parse(values[0], dateFormat);
 
-        Number q = priceFormat.parse(values[4]);
-        long v = (long) (q.doubleValue() * Values.Quote.factor());
+        long v = asPrice(values[4]);
 
         price.setTime(date);
         price.setValue(v);
@@ -280,14 +275,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         {
             LatestSecurityPrice latest = (LatestSecurityPrice) price;
 
-            q = priceFormat.parse(values[5]);
-            latest.setVolume(q.intValue());
-
-            q = priceFormat.parse(values[2]);
-            latest.setHigh((long) (q.doubleValue() * Values.Quote.factor()));
-
-            q = priceFormat.parse(values[3]);
-            latest.setLow((long) (q.doubleValue() * Values.Quote.factor()));
+            latest.setVolume(asNumber(values[5]));
+            latest.setHigh(asPrice(values[2]));
+            latest.setLow(asPrice(values[3]));
         }
     }
 
@@ -334,7 +324,6 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         return answer;
     }
-
 
     private Exchange createExchange(String symbol)
     {
