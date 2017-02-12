@@ -496,6 +496,8 @@ public class ClientFactory
                 // added INTEREST_CHARGE transaction type
             case 32:
                 // added AED currency
+            case 33:
+                // added FEES_REFUND transaction type
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

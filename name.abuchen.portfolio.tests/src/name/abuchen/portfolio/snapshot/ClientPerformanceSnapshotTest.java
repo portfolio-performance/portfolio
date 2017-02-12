@@ -460,6 +460,27 @@ public class ClientPerformanceSnapshotTest
         assertThatCalculationWorksOut(snapshot, converter);
     }
 
+    @Test
+    public void testFeesRefund()
+    {
+        Client client = new Client();
+
+        new AccountBuilder() //
+                        .fees_refund("2011-01-01", Values.Amount.factorize(100)) //
+                        .addTo(client);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.FEES), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-100))));
+
+        assertThat(snapshot.getFees().size(), is(1));
+        assertThat(snapshot.getFees().get(0).getTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100))));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
     private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
     {
         MutableMoney valueAtEndOfPeriod = MutableMoney.of(converter.getTermCurrency());
