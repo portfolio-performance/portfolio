@@ -124,16 +124,8 @@ public class SecurityPosition
                         long grossAmount;
                         long netAmount;
 
-                        if (t.getCurrencyCode().equals(converter.getTermCurrency()))
-                        {
-                            grossAmount = t.getAmount();
-                            netAmount = t.getGrossValueAmount();
-                        }
-                        else
-                        {
-                            grossAmount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
-                            netAmount = t.getGrossValue().with(converter.at(t.getDate())).getAmount();
-                        }
+                        grossAmount = t.getMonetaryAmount(converter).getAmount();
+                        netAmount = t.getGrossValue(converter).getAmount();
 
                         sharesBought += bought;
                         grossInvestment += grossAmount * bought / (double) t.getShares();
