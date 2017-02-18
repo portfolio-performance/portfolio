@@ -108,11 +108,11 @@ public class ClientFactory
 
         void save(Client client, OutputStream output) throws IOException
         {
-            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
-
-            xstream().toXML(client, writer);
-
-            writer.flush();
+            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
+            {
+                xstream().toXML(client, writer);
+                writer.flush();
+            }
         }
     }
 
@@ -378,18 +378,9 @@ public class ClientFactory
         if (isEncrypted(file) && password == null && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        OutputStream output = null;
-
-        try
+        try (OutputStream output = new FileOutputStream(file))
         {
-            output = new FileOutputStream(file);
-
             buildPersister(file, method, password).save(client, output);
-        }
-        finally
-        {
-            if (output != null)
-                output.close();
         }
     }
 
