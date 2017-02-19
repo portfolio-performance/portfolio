@@ -27,6 +27,7 @@ public interface UIConstants
             String ALL_SUB_TOPICS = "file/*"; //$NON-NLS-1$
             String OPENED = "file/opened"; //$NON-NLS-1$
             String SAVED = "file/saved"; //$NON-NLS-1$
+            String REMOVED = "file/removed"; //$NON-NLS-1$
         }
 
         interface ExchangeRates

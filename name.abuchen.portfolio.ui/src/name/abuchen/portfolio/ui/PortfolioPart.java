@@ -154,7 +154,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             ProgressBar bar = createContainerWithMessage(parent,
                             MessageFormat.format(Messages.MsgLoadingFile, clientFile.getName()), true, false);
 
-            new LoadClientThread(new ProgressMonitor(bar), this, clientFile, null).start();
+            new LoadClientThread(broker, new ProgressMonitor(bar), this, clientFile, null).start();
         }
     }
 
@@ -263,7 +263,7 @@ public class PortfolioPart implements LoadClientThread.Callback
                     {
                         ProgressBar bar = createContainerWithMessage(parent, MessageFormat.format(
                                         Messages.MsgLoadingFile, PortfolioPart.this.clientFile.getName()), true, false);
-                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile,
+                        new LoadClientThread(broker, new ProgressMonitor(bar), PortfolioPart.this, clientFile,
                                         password.toCharArray()).start();
                     }
                 });

@@ -346,7 +346,10 @@ public class ClientFactory
         }
         catch (FileNotFoundException e)
         {
-            throw new IOException(MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()), e);
+            FileNotFoundException fnf = new FileNotFoundException(
+                            MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()));
+            fnf.initCause(e);
+            throw fnf;
         }
         finally
         {
