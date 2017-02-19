@@ -108,11 +108,11 @@ public class ClientFactory
 
         void save(Client client, OutputStream output) throws IOException
         {
-            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
-            {
-                xstream().toXML(client, writer);
-                writer.flush();
-            }
+            Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8);
+
+            xstream().toXML(client, writer);
+
+            writer.flush();
         }
     }
 
@@ -134,7 +134,11 @@ public class ClientFactory
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            new XmlSerialization().save(client, output);
+            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
+            {
+                xstream().toXML(client, writer);
+                writer.flush();
+            }
         }
     }
 

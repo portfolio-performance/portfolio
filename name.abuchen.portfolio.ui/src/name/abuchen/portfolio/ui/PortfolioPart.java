@@ -447,6 +447,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
         catch (IOException e)
         {
+            PortfolioPlugin.log(e);
             ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
                             new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }
