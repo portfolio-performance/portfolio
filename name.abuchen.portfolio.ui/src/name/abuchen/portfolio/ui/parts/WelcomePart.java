@@ -11,8 +11,13 @@ import org.eclipse.core.commands.IParameter;
 import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
 import org.eclipse.core.commands.common.NotDefinedException;
+import org.eclipse.core.runtime.Path;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -32,16 +37,27 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.RecentFilesCache;
 
 @SuppressWarnings("restriction")
 public class WelcomePart
 {
+    private static final String OPEN = "open:"; //$NON-NLS-1$
 
     @Inject
     private ECommandService commandService;
 
     @Inject
     private EHandlerService handlerService;
+
+    @Inject
+    private EPartService partService;
+
+    @Inject
+    private RecentFilesCache recentFiles;
+
+    private Composite recentFilesComposite;
+    private Font boldFont;
 
     @PostConstruct
     public void createComposite(Composite parent)
@@ -57,7 +73,7 @@ public class WelcomePart
         // create fonts
         FontData[] fD = container.getFont().getFontData();
         fD[0].setStyle(SWT.BOLD);
-        final Font boldFont = new Font(container.getDisplay(), fD[0]);
+        boldFont = new Font(container.getDisplay(), fD[0]);
 
         fD[0].setStyle(SWT.NORMAL);
         fD[0].setHeight(fD[0].getHeight() * 2);
@@ -76,30 +92,53 @@ public class WelcomePart
         // second column: actions
         Composite actions = new Composite(container, SWT.NONE);
         actions.setBackground(container.getBackground());
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(actions);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(20, 20).applyTo(actions);
 
         Label title = new Label(actions, SWT.NONE);
         title.setText(Messages.LabelPortfolioPerformance);
         title.setFont(bigFont);
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(title);
 
         Label version = new Label(actions, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString());
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(version);
 
-        addSectionLabel(boldFont, actions, Messages.IntroLabelActions);
-        addLink(actions, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
-        addLink(actions, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
+        Composite links = new Composite(actions, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(links);
+        GridLayoutFactory.fillDefaults().applyTo(links);
 
-        addSectionLabel(boldFont, actions, Messages.IntroLabelSamples);
-        addLink(actions, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
-        addLink(actions, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
+        addSectionLabel(boldFont, links, Messages.IntroLabelActions);
+        addLink(links, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
+        addLink(links, "action:new", Messages.IntroNewFile, Messages.IntroNewFileText); //$NON-NLS-1$
 
-        addSectionLabel(boldFont, actions, Messages.IntroLabelHelp);
-        addLink(actions, "https://forum.portfolio-performance.info", //$NON-NLS-1$
+        addSectionLabel(boldFont, links, Messages.IntroLabelSamples);
+        addLink(links, "action:sample", Messages.IntroOpenSample, Messages.IntroOpenSampleText); //$NON-NLS-1$
+        addLink(links, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
+
+        addSectionLabel(boldFont, links, Messages.IntroLabelHelp);
+        addLink(links, "https://forum.portfolio-performance.info", //$NON-NLS-1$
                         Messages.IntroOpenForum, Messages.IntroOpenForumText);
-        addLink(actions, "https://forum.portfolio-performance.info/c/how-to", //$NON-NLS-1$
+        addLink(links, "https://forum.portfolio-performance.info/c/how-to", //$NON-NLS-1$
                         Messages.IntroOpenHowtos, Messages.IntroOpenHowtosText);
-        addLink(actions, "https://forum.portfolio-performance.info/c/faq", //$NON-NLS-1$
+        addLink(links, "https://forum.portfolio-performance.info/c/faq", //$NON-NLS-1$
                         Messages.IntroOpenFAQ, Messages.IntroOpenFAQText);
+
+        createRecentFilesComposite(actions);
+    }
+
+    private void createRecentFilesComposite(Composite actions)
+    {
+        recentFilesComposite = new Composite(actions, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(recentFilesComposite);
+        GridLayoutFactory.fillDefaults().applyTo(recentFilesComposite);
+
+        addSectionLabel(boldFont, recentFilesComposite, Messages.IntroLabelRecentlyUsedFiles);
+
+        for (String file : recentFiles.getRecentFiles())
+        {
+            String name = Path.fromOSString(file).lastSegment();
+            addLink(recentFilesComposite, OPEN + file, name, null);
+        }
     }
 
     private void addSectionLabel(Font boldFont, Composite actions, String label)
@@ -123,14 +162,33 @@ public class WelcomePart
             }
         });
 
-        Label l = new Label(container, SWT.WRAP);
-        l.setText(subtext);
-        GridDataFactory.fillDefaults().indent(0, -3).applyTo(l);
+        if (subtext != null)
+        {
+            Label l = new Label(container, SWT.WRAP);
+            l.setText(subtext);
+            GridDataFactory.fillDefaults().indent(0, -3).applyTo(l);
+        }
     }
 
     public void linkActivated(String target)
     {
-        if ("action:open".equals(target)) //$NON-NLS-1$
+        if (target.startsWith(OPEN))
+        {
+            String file = target.substring(OPEN.length());
+
+            // check if file is already opened somewhere
+
+            java.util.Optional<MPart> part = partService.getParts().stream()
+                            .filter(p -> UIConstants.Part.PORTFOLIO.equals(p.getElementId())) //
+                            .filter(p -> file.equals(p.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY)))
+                            .findAny();
+
+            if (part.isPresent())
+                partService.activate(part.get());
+            else
+                executeCommand(UIConstants.Command.OPEN_RECENT_FILE, UIConstants.Parameter.FILE, file);
+        }
+        else if ("action:open".equals(target)) //$NON-NLS-1$
         {
             executeCommand("name.abuchen.portfolio.ui.command.open"); //$NON-NLS-1$
         }
@@ -182,5 +240,18 @@ public class WelcomePart
             PortfolioPlugin.log(e);
             MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
         }
+    }
+
+    @Inject
+    @Optional
+    public void subscribeFileTopic(@UIEventTopic(UIConstants.Event.File.ALL_SUB_TOPICS) String file)
+    {
+        if (recentFilesComposite == null)
+            return;
+
+        Composite parent = recentFilesComposite.getParent();
+        recentFilesComposite.dispose();
+        createRecentFilesComposite(parent);
+        recentFilesComposite.getParent().getParent().layout(true);
     }
 }

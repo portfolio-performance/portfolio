@@ -277,6 +277,7 @@ public class Messages extends NLS
     public static String ImportWizardReviewTitle;
     public static String IntroLabelActions;
     public static String IntroLabelHelp;
+    public static String IntroLabelRecentlyUsedFiles;
     public static String IntroLabelSamples;
     public static String IntroNewFile;
     public static String IntroNewFileText;
