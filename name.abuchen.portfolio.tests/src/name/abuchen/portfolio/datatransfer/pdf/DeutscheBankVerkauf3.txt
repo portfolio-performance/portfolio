@@ -1,0 +1,39 @@
+16. Februar 2017
+Abrechnung: Verkauf von Wertpapieren
+Depotinhaber: Max Mustermann
+Filialnummer Depotnummer Wertpapierbezeichnung Seite
+600 1234567 01 BASF SE
+WKN BASF11 Nominal ST 100
+ISIN DE000BASF111 Kurs EUR 47,74
+Verwahrart Girosammeldepot
+Geschäft Kommissionsgeschäft
+Börse Stuttgart - Baden-Württembergische Wertpapierbörse zu Stuttgart
+Belegnummer 1202359588 / 831475 Schlusstag/-zeit MEZ 16.02.2017 / 15:28
+Auftragsart Marktpreisauftrag
+Diese Order wurde elektronisch übermittelt.
+Abrechnung Währung Betrag
+Kurswert EUR 4.774,00
+Provision (0,25 %) EUR -11,94
+Weitere Provision der Bank bei der börslichen Orderausführung EUR -3,50
+Fremde Spesen und Auslagen EUR -5,40
+Buchung auf Kontonummer 1234567 01 mit Wertstellung 20.02.2017 EUR 4.753,16
+Währung Betrag
+Informationen zum Steuerabzug
+- keine Steuerbescheinigung -
+Veräußerungsgewinn EUR 345,19
+Auf Ihren Freistellungsbetrag angerechnet EUR 345,19
+Sind die Wertpapiere vermögenswirksam angelegt, so gilt das Pfandrecht gemäß Ziffer 14 Abs. 1 der Allgemeinen Geschäftsbedingungen (AGB) für die
+Dauer der Festlegungsfrist nicht. Unser Geschäftsverkehr mit Ihnen wird durch unsere Allgemeinen Geschäftsbedingungen und die Sonderbedingungen
+fürWertpapiergeschäfte geregelt. Bitte überprüfen Sie diese Abrechnung schnellstmöglich und richten Sie etwaige Einwendungen in den Geschäftsräumen
+der Bank oder schriftlich an Deutsche Bank Privat- und Geschäftskunden AG, QM - Support, 04082 Leipzig. Andernfalls gilt diese Abrechnung als genehmigt.
+Die abgerechneten Leistungen sind als Bank- oder Finanzdienstleistungen von der Umsatzsteuer befreit, sofern Umsatzsteuer nicht gesondert ausgewiesen
+ist. Umsatzsteuer ID Nr.: Deutsche Bank Privat- und Geschäftskunden AG, 60262 Frankfurt DE811907980
+Deutsche Bank Privat- und Geschäftskunden AG
+Claudia Reckewell
+V 600/302.2.005
+Max Mustermann
+Musterstr. 1
+Max-Osterloh-Platz 10
+12345 Musterstadt
+Telefon (0123) 23456
+24h-Kundenservice (069) 910-10000
