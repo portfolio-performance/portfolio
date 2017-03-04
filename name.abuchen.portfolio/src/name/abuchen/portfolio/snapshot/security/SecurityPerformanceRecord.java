@@ -374,7 +374,12 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.taxes = cost.getTaxes();
 
         this.capitalGainsOnHoldings = marketValue.subtract(fifoCost);
-        this.capitalGainsOnHoldingsPercent = ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
+
+        // avoid NaN for securities with no holdings
+        if (marketValue.getAmount() == 0L && fifoCost.getAmount() == 0L)
+            this.capitalGainsOnHoldingsPercent = 0d;
+        else
+            this.capitalGainsOnHoldingsPercent = ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
     }
 
     private void calculateDividends(CurrencyConverter converter)
