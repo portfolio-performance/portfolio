@@ -9,7 +9,7 @@ public class Dashboard
 {
     public enum Config
     {
-        REPORTING_PERIOD, DATA_SERIES, CONFIG_UUID, AGGREGATION;
+        REPORTING_PERIOD, DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES;
     }
     
     public static class Column

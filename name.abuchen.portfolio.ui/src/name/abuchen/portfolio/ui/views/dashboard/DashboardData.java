@@ -63,6 +63,7 @@ public class DashboardData
 
     private final Client client;
     private final IPreferenceStore preferences;
+    private final ExchangeRateProviderFactory factory;
     private final CurrencyConverter converter;
 
     private final Map<CacheKey, Object> cache = new HashMap<>();
@@ -80,6 +81,7 @@ public class DashboardData
     {
         this.client = client;
         this.preferences = preferences;
+        this.factory = factory;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.dataSeriesSet = new DataSeriesSet(client, preferences, DataSeries.UseCase.RETURN_VOLATILITY);
@@ -124,6 +126,11 @@ public class DashboardData
     public ReportingPeriod getDefaultReportingPeriod()
     {
         return defaultReportingPeriod;
+    }
+
+    public ExchangeRateProviderFactory getExchangeRateProviderFactory()
+    {
+        return factory;
     }
 
     public DataSeriesSet getDataSeriesSet()

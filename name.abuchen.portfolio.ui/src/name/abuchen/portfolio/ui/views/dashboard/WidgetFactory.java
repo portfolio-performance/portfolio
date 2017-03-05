@@ -135,7 +135,9 @@ public enum WidgetFactory
 
     HEATMAP(Messages.LabelHeatmap, PerformanceHeatmapWidget::new),
 
-    CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new);
+    CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new),
+
+    EXCHANGE_RATE(Messages.LabelExchangeRate, ExchangeRateWidget::new);
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;

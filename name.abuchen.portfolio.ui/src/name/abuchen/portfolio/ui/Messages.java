@@ -351,6 +351,7 @@ public class Messages extends NLS
     public static String LabelDoNotImport;
     public static String LabelError;
     public static String LabelExchange;
+    public static String LabelExchangeRate;
     public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelIncludeUnassignedCategoryInCharts;
@@ -665,6 +666,7 @@ public class Messages extends NLS
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
+    public static String TooltipDateOfExchangeRate;
     public static String TooltipMaxDrawdown;
     public static String TooltipMaxDrawdownDuration;
     public static String TooltipMaxDrawdownDurationEndOfPeriod;
