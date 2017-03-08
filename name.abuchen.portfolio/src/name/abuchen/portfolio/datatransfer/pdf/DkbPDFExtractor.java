@@ -216,6 +216,24 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("tax")
+                        .optional()
+                        .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("soli")
+                        .optional()
+                        .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
+
+                        .section("quellenst")
+                        .optional()
+                        .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenst>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("quellenst"))))))
+
                         .wrap(t -> new TransactionItem(t)));
     }
 
