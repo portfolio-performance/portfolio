@@ -370,6 +370,47 @@ public class DeutscheBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90 + 0.60 + 2))));
     }
+    
+    @Test
+    public void testWertpapierVerkauf3() throws IOException
+    {
+        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("DeutscheBankVerkauf3.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertSecurity(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4753.16))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-02-20")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.94 + 3.50 + 5.40))));
+    }
+
 
     private String from(String resource)
     {
