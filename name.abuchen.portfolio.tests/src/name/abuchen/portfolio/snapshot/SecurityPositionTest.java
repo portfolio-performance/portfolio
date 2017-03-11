@@ -259,4 +259,36 @@ public class SecurityPositionTest
         assertThat(record.getFifoCostPerSharesHeld().toMoney(), is(position.getFIFOPurchasePrice()));
     }
 
+    @Test
+    public void testSplittingPositionsWithForexGrossValue()
+    {
+        Security security = new Security("", CurrencyUnit.EUR);
+
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2016, Month.DECEMBER, 2), Values.Quote.factorize(10.19));
+
+        PortfolioTransaction inbound_delivery = new PortfolioTransaction();
+        inbound_delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        inbound_delivery.setDate(LocalDate.parse("2016-01-01"));
+        inbound_delivery.setSecurity(security);
+        inbound_delivery.setMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27409.55)));
+        inbound_delivery.setShares(Values.Share.factorize(2415.794));
+
+        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, //
+                        Money.of(CurrencyUnit.USD, Values.Amount.factorize(27409.55)),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24616.95)),
+                        BigDecimal.valueOf(1.1134421608));
+
+        inbound_delivery.addUnit(grossValue);
+
+        SecurityPosition position = new SecurityPosition(security, new TestCurrencyConverter(), price,
+                        Arrays.asList(inbound_delivery));
+
+        SecurityPosition third = SecurityPosition.split(position, 20 * Values.Weight.factor()); // 20%
+
+        // 24616.95 EUR * 0.2 = 4923,39 EUR
+        assertThat(third.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4923.39))));
+        assertThat(third.getFIFOPurchaseValue(),
+                        is(Money.of(CurrencyUnit.EUR, Math.round(position.getFIFOPurchaseValue().getAmount() * 0.2))));
+    }
+
 }
