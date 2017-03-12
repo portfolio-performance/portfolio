@@ -8,20 +8,28 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hamcrest.number.IsCloseTo;
+import org.junit.Test;
+
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class ClassificationIndexTest
@@ -83,8 +91,8 @@ public class ClassificationIndexTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
-                        period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification, period,
+                        warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -109,8 +117,8 @@ public class ClassificationIndexTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
-                        period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification, period,
+                        warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -131,8 +139,8 @@ public class ClassificationIndexTest
 
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex iClient = PerformanceIndex.forClient(client, converter, period, warnings);
-        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification,
-                        period, warnings);
+        PerformanceIndex iClassification = PerformanceIndex.forClassification(client, converter, classification, period,
+                        warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -149,5 +157,65 @@ public class ClassificationIndexTest
         for (int ii = 0; ii < transferals.length; ii++)
             answer[ii] = transferals[ii] / 2;
         return answer;
+    }
+
+    @Test
+    public void testThatTaxesAreNotIncludedInTTWRORCalculation()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder() //
+                        .addPrice("2015-12-31", Values.Quote.factorize(100)) //
+                        .addPrice("2016-12-31", Values.Quote.factorize(110)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .addTo(client);
+
+        AccountTransaction t = new AccountTransaction();
+        t.setType(AccountTransaction.Type.DIVIDENDS);
+        t.setDate(LocalDate.parse("2016-06-01"));
+        t.setSecurity(security);
+        t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
+        t.setShares(Values.Share.factorize(10));
+        account.addTransaction(t);
+
+        Portfolio portfolio = new PortfolioBuilder(account) //
+                        .addTo(client);
+
+        portfolio.addTransaction(new PortfolioTransaction("2015-12-31", //
+                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
+                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, //
+                        0, 0));
+
+        portfolio.addTransaction(new PortfolioTransaction("2016-12-31", //
+                        CurrencyUnit.EUR, Values.Amount.factorize(1070), //
+                        security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
+                        0, Values.Amount.factorize(30)));
+
+        Classification classification = new Classification(null, null);
+        classification.addAssignment(new Assignment(security));
+
+        List<Exception> warnings = new ArrayList<Exception>();
+
+        PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
+                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
+                        warnings);
+
+        assertThat(warnings.isEmpty(), is(true));
+
+        // dividend payment 10% * quote change 10%
+        assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.1 * 1.1) - 1, 0.000000001d));
+
+        // add taxes to dividend payment
+
+        t.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50))));
+
+        index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
+                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
+                        warnings);
+
+        // dividend payment 15% * quote change 10%
+        assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.15 * 1.1) - 1, 0.000000001d));
     }
 }

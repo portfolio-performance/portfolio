@@ -100,37 +100,39 @@ import name.abuchen.portfolio.money.Money;
         {
             for (AccountTransaction t : a.getTransactions())
             {
-                if (security.equals(t.getSecurity()))
-                {
-                    switch (t.getType())
-                    {
-                        case DIVIDENDS:
-                            long amount = value(t.getAmount(), weight);
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                            amount, t.getSecurity(), t.getType()));
-                            pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                            amount, t.getSecurity(), AccountTransaction.Type.REMOVAL));
-                            break;
-                        case TAX_REFUND:
-                            // ignore taxes when calculating performance of
-                            // securities
-                        case BUY:
-                        case TRANSFER_IN:
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DEPOSIT:
-                        case REMOVAL:
-                        case INTEREST:
-                        case INTEREST_CHARGE:
-                        case TAXES:
-                        case FEES:
-                        case FEES_REFUND:
-                            // do nothing
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
+                if (!security.equals(t.getSecurity()))
+                    continue;
 
-                    }
+                switch (t.getType())
+                {
+                    case DIVIDENDS:
+                        long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
+                        long amount = value(t.getAmount(), weight);
+
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                        amount + taxes, t.getSecurity(), t.getType()));
+                        pseudoAccount.addTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                        amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                        break;
+                    case TAX_REFUND:
+                        // ignore taxes when calculating performance of
+                        // securities
+                    case BUY:
+                    case TRANSFER_IN:
+                    case SELL:
+                    case TRANSFER_OUT:
+                    case DEPOSIT:
+                    case REMOVAL:
+                    case INTEREST:
+                    case INTEREST_CHARGE:
+                    case TAXES:
+                    case FEES:
+                    case FEES_REFUND:
+                        // do nothing
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+
                 }
             }
         }
