@@ -13,8 +13,8 @@ import name.abuchen.portfolio.money.Values;
 
 /* package */class IRRCalculation extends Calculation
 {
-    private List<LocalDate> dates = new ArrayList<LocalDate>();
-    private List<Double> values = new ArrayList<Double>();
+    private List<LocalDate> dates = new ArrayList<>();
+    private List<Double> values = new ArrayList<>();
 
     @Override
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
@@ -34,7 +34,11 @@ import name.abuchen.portfolio.money.Values;
     public void visit(CurrencyConverter converter, DividendTransaction t)
     {
         dates.add(t.getDate());
-        values.add(t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
+
+        long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+        long amount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
+
+        values.add((amount + taxes) / Values.Amount.divider());
     }
 
     @Override
@@ -48,7 +52,7 @@ import name.abuchen.portfolio.money.Values;
     {
         dates.add(t.getDate());
         long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
-        long amount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
+        long amount = t.getMonetaryAmount(converter).getAmount();
         switch (t.getType())
         {
             case BUY:
@@ -70,7 +74,7 @@ import name.abuchen.portfolio.money.Values;
     {
         // see #457: if the reporting period contains only tax refunds, dates
         // (and values) can be empty and no IRR can be calculated
-        if (dates.size() == 0)
+        if (dates.isEmpty())
             return Double.NaN;
 
         return IRR.calculate(dates, values);
