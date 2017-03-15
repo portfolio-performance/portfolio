@@ -79,6 +79,18 @@ public class DkbPDFExtractorTest
         return security;
     }
 
+    private Security assertSecurityBuyFonds(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0392494562"));
+        assertThat(security.getWkn(), is("ETF110"));
+        assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF"));
+
+        return security;
+    }
+
     private Security assertSecuritySell(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -319,6 +331,46 @@ public class DkbPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf3() throws IOException // Fonds
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("DkbKaufFonds.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertSecurityBuyFonds(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1400.00))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-03-08")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2893)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test
