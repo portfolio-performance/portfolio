@@ -21,6 +21,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier(""); //$NON-NLS-1$
 
         addBuyTransaction();
+        addBuyTransactionFund();
         addSellTransaction();
         addInterestTransaction();
         addDividendTransaction();
@@ -72,6 +73,59 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^Provision) (?<fees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+
+                        .wrap(t -> new BuySellEntryItem(t)));
+    }
+
+    @SuppressWarnings("nls")
+    private void addBuyTransactionFund()
+    {
+        DocumentType type = new DocumentType("Wertpapier Abrechnung Ausgabe Investmentfonds");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wertpapier Abrechnung Ausgabe Investmentfonds");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
+                        .section("notation", "shares", "name", "isin", "wkn")
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{4})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .assign((t, v) -> {
+                            String notation = v.get("notation");
+                            if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
+                            {
+                                // Prozent-Notierung, Workaround..
+                                t.setShares((asShares(v.get("shares")) / 100));
+                            }
+                            else
+                            {
+                                t.setShares(asShares(v.get("shares")));
+                            }
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("date", "amount")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
+                        .match("(^Den Gegenwert buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Lasten des Kontos (.*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("fees")
+                        .optional()
+                        //
+                        .match("(^Provision) (?<fees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(
+                                        new Unit(Unit.Type.FEE, Money.of(asCurrencyCode(v.get("currency")),
+                                                        asAmount(v.get("fees"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }
