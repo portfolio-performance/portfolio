@@ -8,14 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.online.impl.Column;
-import name.abuchen.portfolio.online.impl.HTMLTableParser;
+import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableQuoteParser extends HTMLTableParser
@@ -32,27 +28,27 @@ public class HTMLTableQuoteParser extends HTMLTableParser
         return (LatestSecurityPrice) price;
     }
 
-    private List<LatestSecurityPrice> castList(List<Object> Olist) 
+    private <T extends SecurityElement> List<T> castList(List<Object> Olist, Class<T> clazz, List<Exception> errors)
     {
-        if (Olist != null) {
-            List<LatestSecurityPrice> priceList = new ArrayList<>();
-            for (Object obj : Olist) {
-                priceList.add((LatestSecurityPrice) obj); // need to cast each object specifically
-            }
-            return priceList;
-        } else {
-           return null;
-        }        
+        List<T> Tlist = new ArrayList<>();
+        for (Object obj : Olist)
+        {
+            if (obj instanceof SecurityElement)
+                Tlist.add((T) obj); // need to cast each object specifically
+            else
+                errors.add(new ClassCastException());
+        }
+        return Tlist;
     }
     
     public List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
-        return castList(super._parseFromURL(url, errors));
+        return castList(super._parseFromURL(url, errors), LatestSecurityPrice.class, errors);
     }
 
     public List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
-        return castList(super._parseFromHTML(html, errors));
+        return castList(super._parseFromHTML(html, errors), LatestSecurityPrice.class, errors);
     }
     
     private static class DateColumn extends Column
@@ -171,7 +167,8 @@ public class HTMLTableQuoteParser extends HTMLTableParser
         }
     }
     
-    public final boolean isSpecValid(List<Spec> specs)
+    @Override
+    protected boolean isSpecValid(List<Spec> specs)
     {
         if (specs == null || specs.isEmpty())
             return false;

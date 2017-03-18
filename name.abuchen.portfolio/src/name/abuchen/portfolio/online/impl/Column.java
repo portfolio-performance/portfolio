@@ -3,14 +3,11 @@ package name.abuchen.portfolio.online.impl;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.util.Hashtable;
 import java.util.Locale;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
 
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 
 
@@ -65,44 +62,9 @@ abstract class Column
         return false;
     }
 
-    public abstract void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException;
+    public abstract void setValue(Element value, Object obj, String languageHint) throws ParseException;
 
-    protected long asQuote(Element value, String languageHint) throws ParseException
-    {
-        String text = value.text().trim();
-
-        DecimalFormat format = null;
-
-        if ("de".equals(languageHint)) //$NON-NLS-1$
-            format = DECIMAL_FORMAT_GERMAN.get();
-        else if ("en".equals(languageHint)) //$NON-NLS-1$
-            format = DECIMAL_FORMAT_ENGLISH.get();
-
-        if (format == null)
-        {
-            // check first for apostrophe
-
-            int apostrophe = text.indexOf('\'');
-            if (apostrophe >= 0)
-                format = DECIMAL_FORMAT_APOSTROPHE.get();
-        }
-
-        if (format == null)
-        {
-            // determine format based on the relative location of the last
-            // comma and dot, e.g. the last comma indicates a German number
-            // format
-            int lastDot = text.lastIndexOf('.');
-            int lastComma = text.lastIndexOf(',');
-            format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
-                            : DECIMAL_FORMAT_ENGLISH.get();
-        }
-
-        double quote = format.parse(text).doubleValue();
-        return Math.round(quote * Values.Quote.factor());
-    }
-    
-    protected int asInt(Element elem, String languageHint) throws ParseException
+    public double asDouble(Element elem, String languageHint) throws ParseException
     {
         String text = elem.text().trim();
 
@@ -132,10 +94,17 @@ abstract class Column
             format = Math.max(lastDot, lastComma) == lastComma ? DECIMAL_FORMAT_GERMAN.get()
                             : DECIMAL_FORMAT_ENGLISH.get();
         }
-
-        double value = format.parse(text).doubleValue();
-
-        return (int)value;
+        double value = format.parse(text).doubleValue(); 
+        return value;
     }
 
+    protected long asQuote(Element value, String languageHint) throws ParseException
+    {
+        return Math.round(asDouble(value,languageHint) * Values.Quote.factor());
+    }
+
+    protected int asInt(Element elem, String languageHint) throws ParseException
+    {
+        return (int)asDouble(elem,languageHint);
+    }
 }

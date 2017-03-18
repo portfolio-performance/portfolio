@@ -1,18 +1,22 @@
 package name.abuchen.portfolio.model;
 
-import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.Comparator;
+import java.util.ArrayList;
+import java.util.List;
 
 import name.abuchen.portfolio.money.Values;
 
-public class SecurityElement
+public class SecurityElement extends Object
 {
+
     protected LocalDate date;
     protected long value;
 
+    public static final long NOT_AVAILABLE = -1L;
+
     public SecurityElement()
-    {}
+    {
+    }
 
     public LocalDate getDate()
     {
@@ -39,6 +43,24 @@ public class SecurityElement
     public String toString()
     {
         return String.format("%tF: %,10.2f", date, value / Values.Quote.divider());
+    }
+
+    public static <T extends Object> List<SecurityElement> cast2ElementList(List<T> oList)
+    {
+        if (oList != null)
+        {
+            List<SecurityElement> sList = new ArrayList<>();
+            for (Object obj : oList)
+            {
+                    if (obj instanceof SecurityElement)
+                        sList.add((SecurityElement) obj); // need to cast each object specifically
+            }
+            return sList;
+        }
+        else
+        {
+            return null;
+        }
     }
 
 }

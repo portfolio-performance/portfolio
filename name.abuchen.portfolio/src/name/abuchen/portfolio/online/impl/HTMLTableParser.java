@@ -17,10 +17,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.SecurityElement;
 
 abstract class HTMLTableParser
 {
+    protected GenericPageCache cache = new GenericPageCache();
  
     protected static class Spec
     {
@@ -43,13 +43,17 @@ abstract class HTMLTableParser
     {        
     }
     
-    public abstract Object newRowObject();
+    public abstract <T extends Object> T newRowObject();
     
     protected Column[] COLUMNS = new Column[] {}; 
     
     @SuppressWarnings("nls")
     protected List<Object> _parseFromURL(String url, List<Exception> errors)
     {
+        List<Object> answer = cache.lookup(url);
+        if (answer != null)
+            return answer;
+
         // without a user agent, some sites serve a mobile/alternative version
         String userAgent;
 
@@ -64,7 +68,10 @@ abstract class HTMLTableParser
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(30000).get(), errors);
+            answer = parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(30000).get(), errors);
+            if (!answer.isEmpty())
+                cache.put(url, answer);
+            return answer;
         }
         catch (URISyntaxException | IOException e)
         {
@@ -125,12 +132,12 @@ abstract class HTMLTableParser
         return rowIndex;
     }
 
-    private List<Object> parse(Document document, List<Exception> errors)
+    private <T extends Object> List<T> parse(Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
 
-        List<Object> elementList = new ArrayList<>();
+        List<T> elementList = new ArrayList<>();
 
         // first: find tables
         Elements tables = document.getElementsByTag("table"); //$NON-NLS-1$
@@ -151,7 +158,7 @@ abstract class HTMLTableParser
 
                     try
                     {
-                        Object element = extractData(row, specs, language);
+                        T element = extractData(row, specs, language, errors);
                         if (element != null)
                             elementList.add(element);
                     }
@@ -168,7 +175,7 @@ abstract class HTMLTableParser
 
         // if no quotes could be extract, log HTML for further analysis
         if (elementList.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoMatchingTableFoundInHTML, document.html())));
         return elementList;
     }
 
@@ -199,7 +206,7 @@ abstract class HTMLTableParser
         return false;
     }
     
-    private Object extractData(Element row, List<Spec> specs, String languageHint) throws ParseException
+    private <T extends Object> T extractData(Element row, List<Spec> specs, String languageHint, List<Exception> errors)
     {
         Elements cells = row.select("> td"); //$NON-NLS-1$
 
@@ -207,10 +214,19 @@ abstract class HTMLTableParser
         if (cells.size() <= 1)
             return null;
 
-        Object obj = newRowObject();
+        T obj = newRowObject();
 
         for (Spec spec : specs)
-            spec.column.setValue(cells.get(spec.index), obj, languageHint);
+        {
+            try
+            {
+                spec.column.setValue(cells.get(spec.index), obj, languageHint);
+            }
+            catch (Exception e)
+            {
+                errors.add(new IOException(MessageFormat.format(Messages.MsgParsingFailedWithHTML, cells.toString())));
+            }
+        }
         
         return obj;
     }

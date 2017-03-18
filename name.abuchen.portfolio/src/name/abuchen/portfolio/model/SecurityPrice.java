@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-import name.abuchen.portfolio.money.Values;
-
 public class SecurityPrice extends SecurityElement implements Comparable<SecurityPrice>
 {
     public static final class ByDate implements Comparator<SecurityPrice>, Serializable
@@ -24,8 +22,8 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
 
     public SecurityPrice(LocalDate date, long price)
     {
-        super.value = price;
-        super.date = date;
+        super.setDate(date);
+        super.setValue(price);
     }
 
     @Override
@@ -39,6 +37,7 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
     {
         final int prime = 31;
         int result = 1;
+        long value = getValue();
         result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + (int) (value ^ (value >>> 32));
         return result;
@@ -61,7 +60,7 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
         }
         else if (!date.equals(other.date))
             return false;
-        if (value != other.value)
+        if (getValue() != other.getValue())
             return false;
         return true;
     }
