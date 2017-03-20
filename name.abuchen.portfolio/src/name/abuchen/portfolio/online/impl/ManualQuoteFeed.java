@@ -9,12 +9,15 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 
-public final class ManualQuoteFeed implements QuoteFeed
+public final class ManualQuoteFeed extends QuoteFeed
 {
+
+    public static final String ID = MANUAL; //$NON-NLS-1$
+
     @Override
     public String getId()
     {
-        return QuoteFeed.MANUAL;
+        return ID;
     }
 
     @Override
@@ -29,7 +32,7 @@ public final class ManualQuoteFeed implements QuoteFeed
         boolean isUpdated = false;
         for (Security security : securities)
         {
-            boolean isAdded = security.setLatest(null);
+            boolean isAdded = security.setLatest((LatestSecurityPrice) null);
             isUpdated = isUpdated || isAdded;
         }
         return isUpdated;
