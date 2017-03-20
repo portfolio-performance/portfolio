@@ -38,7 +38,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 {
-    private static class DummyQuoteFeed implements QuoteFeed
+    private static class DummyQuoteFeed extends QuoteFeed
     {
         @Override
         public String getId()
