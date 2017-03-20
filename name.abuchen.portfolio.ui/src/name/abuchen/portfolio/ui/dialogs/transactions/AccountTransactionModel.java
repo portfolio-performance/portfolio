@@ -155,8 +155,7 @@ public class AccountTransactionModel extends AbstractModel
         }
         if (type == AccountTransaction.Type.DIVIDENDS)
         {
-                DecimalFormat valueFormat = new DecimalFormat("#,##0.00####"); //$NON-NLS-1$
-                SecurityEvent event = new SecurityEvent(date, SecurityEvent.Type.STOCK_DIVIDEND, getFxCurrencyCode() + " " + valueFormat.format(dividendAmount)); //$NON-NLS-1$
+                SecurityEvent event = new SecurityEvent(date, SecurityEvent.Type.STOCK_DIVIDEND, getFxCurrencyCode(), dividendAmount); //$NON-NLS-1$
                 security.addEvent(event);
         }
 
