@@ -272,6 +272,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 LatestSecurityPrice latest = quotes.get(size - 1);
                 LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
                 latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
+                latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
                 boolean isAdded = security.setLatest(latest);
                 isUpdated = isUpdated || isAdded;
