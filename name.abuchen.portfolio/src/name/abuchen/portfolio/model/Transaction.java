@@ -64,9 +64,9 @@ public abstract class Transaction implements Annotated
             this.exchangeRate = Objects.requireNonNull(exchangeRate);
 
             // check whether given amount is in range of converted amount
-            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.0001))
+            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.001))
                             .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.0001))
+            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.001))
                             .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
 
             if (amount.getAmount() < lower || amount.getAmount() > upper)
@@ -286,6 +286,9 @@ public abstract class Transaction implements Annotated
                         .collect(MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
                             if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
                                 return unit.getAmount();
+                            else if (unit.getForex() != null
+                                            && converter.getTermCurrency().equals(unit.getForex().getCurrencyCode()))
+                                return unit.getForex();
                             else
                                 return unit.getAmount().with(converter.at(date));
                         }));

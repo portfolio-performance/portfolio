@@ -12,8 +12,13 @@ public class AccountTransaction extends Transaction
 {
     public enum Type
     {
-        DEPOSIT(false), REMOVAL(true), INTEREST(false), INTEREST_CHARGE(true), DIVIDENDS(false), FEES(true), TAXES(true), TAX_REFUND(
-                        false), BUY(true), SELL(false), TRANSFER_IN(false), TRANSFER_OUT(true);
+        DEPOSIT(false), REMOVAL(true), //
+        INTEREST(false), INTEREST_CHARGE(true), //
+        DIVIDENDS(false), //
+        FEES(true), FEES_REFUND(false), //
+        TAXES(true), TAX_REFUND(false), //
+        BUY(true), SELL(false), //
+        TRANSFER_IN(false), TRANSFER_OUT(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 

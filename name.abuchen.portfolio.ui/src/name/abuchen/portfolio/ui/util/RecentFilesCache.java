@@ -71,9 +71,23 @@ public class RecentFilesCache
 
     @Inject
     @Optional
-    public void subscribeFileTopic(@EventTopic(UIConstants.Event.File.ALL_SUB_TOPICS) String file)
+    public void onFileOpened(@EventTopic(UIConstants.Event.File.OPENED) String file)
     {
         files.add(file);
+    }
+
+    @Inject
+    @Optional
+    public void onFileSaved(@EventTopic(UIConstants.Event.File.SAVED) String file)
+    {
+        files.add(file);
+    }
+
+    @Inject
+    @Optional
+    public void onFileRemoved(@EventTopic(UIConstants.Event.File.REMOVED) String file)
+    {
+        files.remove(file);
     }
 
     public List<String> getRecentFiles()

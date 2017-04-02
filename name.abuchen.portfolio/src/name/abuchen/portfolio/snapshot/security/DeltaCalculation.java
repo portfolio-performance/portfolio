@@ -76,6 +76,9 @@ import name.abuchen.portfolio.money.MutableMoney;
 
     public double getDeltaPercent()
     {
+        if (delta.getAmount() == 0L && cost.getAmount() == 0L)
+            return 0d;
+
         return delta.getAmount() / (double) cost.getAmount();
     }
 }

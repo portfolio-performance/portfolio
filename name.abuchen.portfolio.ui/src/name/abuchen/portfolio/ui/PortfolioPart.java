@@ -70,7 +70,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     private abstract class BuildContainerRunnable implements Runnable
     {
         @Override
-        public void run()
+        public final void run()
         {
             if (container != null && !container.isDisposed())
             {
@@ -154,7 +154,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             ProgressBar bar = createContainerWithMessage(parent,
                             MessageFormat.format(Messages.MsgLoadingFile, clientFile.getName()), true, false);
 
-            new LoadClientThread(new ProgressMonitor(bar), this, clientFile, null).start();
+            new LoadClientThread(broker, new ProgressMonitor(bar), this, clientFile, null).start();
         }
     }
 
@@ -263,7 +263,7 @@ public class PortfolioPart implements LoadClientThread.Callback
                     {
                         ProgressBar bar = createContainerWithMessage(parent, MessageFormat.format(
                                         Messages.MsgLoadingFile, PortfolioPart.this.clientFile.getName()), true, false);
-                        new LoadClientThread(new ProgressMonitor(bar), PortfolioPart.this, clientFile,
+                        new LoadClientThread(broker, new ProgressMonitor(bar), PortfolioPart.this, clientFile,
                                         password.toCharArray()).start();
                     }
                 });
@@ -276,6 +276,12 @@ public class PortfolioPart implements LoadClientThread.Callback
     @Override
     public void setClient(Client client)
     {
+        // additional safeguard: make a copy of the file that could be
+        // successfully read b/c we get reports of corrupted files
+
+        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+            createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
+
         internalSetClient(client);
 
         Display.getDefault().asyncExec(new BuildContainerRunnable()
@@ -351,7 +357,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientFile.getAbsolutePath());
 
             if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-                createBackup(shell, clientFile);
+                createBackup(clientFile, "backup"); //$NON-NLS-1$
 
             ClientFactory.save(client, clientFile, null, null);
             broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
@@ -366,7 +372,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
     }
 
-    private void createBackup(Shell shell, File file)
+    private void createBackup(File file, String suffix)
     {
         try
         {
@@ -374,8 +380,8 @@ public class PortfolioPart implements LoadClientThread.Callback
             // file directly from within PP
             String filename = file.getName();
             int l = filename.lastIndexOf('.');
-            String suffix = ".backup"; //$NON-NLS-1$
-            String backupName = l > 0 ? filename.substring(0, l) + suffix + filename.substring(l) : filename + suffix;
+            String backupName = l > 0 ? filename.substring(0, l) + '.' + suffix + filename.substring(l)
+                            : filename + '.' + suffix;
 
             Path sourceFile = file.toPath();
             Path backupFile = sourceFile.resolveSibling(backupName);
@@ -384,7 +390,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         catch (IOException e)
         {
             PortfolioPlugin.log(e);
-            MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
+            Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
+                            Messages.LabelError, e.getMessage()));
         }
     }
 
@@ -440,6 +447,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
         catch (IOException e)
         {
+            PortfolioPlugin.log(e);
             ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
                             new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
         }

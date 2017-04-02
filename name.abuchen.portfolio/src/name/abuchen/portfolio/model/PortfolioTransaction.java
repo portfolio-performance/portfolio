@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.model;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -102,6 +104,37 @@ public class PortfolioTransaction extends Transaction
     }
 
     /**
+     * Returns the monetary amount in the term currency of the given currency
+     * converter. If applicable, it uses the exchange rate given in the
+     * transaction instead of the historic exchange rate of that day.
+     */
+    public Money getMonetaryAmount(CurrencyConverter converter)
+    {
+        if (getCurrencyCode().equals(converter.getTermCurrency()))
+        {
+            return getMonetaryAmount();
+        }
+        else if (getSecurity().getCurrencyCode().equals(converter.getTermCurrency()))
+        {
+            Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
+
+            // use exchange rate used within the transaction,
+            // not the historical exchange rate
+            BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
+                            : converter.getRate(getDate(), getCurrencyCode()).getValue();
+
+            return Money.of(converter.getTermCurrency(),
+                            BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN)
+                                            .multiply(BigDecimal.valueOf(getAmount()))
+                                            .setScale(0, BigDecimal.ROUND_HALF_DOWN).longValue());
+        }
+        else
+        {
+            return converter.convert(getDate(), getMonetaryAmount());
+        }
+    }
+
+    /**
      * Returns the gross value, i.e. the value including taxes and fees. See
      * {@link #getGrossValue()}.
      */
@@ -126,6 +159,31 @@ public class PortfolioTransaction extends Transaction
     public Money getGrossValue()
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());
+    }
+
+    /**
+     * Returns the gross value in the term currency of the currency converter.
+     * If applicable, it uses the exchange rate given in the transaction instead
+     * of the historic exchange rate of that day.
+     */
+    public Money getGrossValue(CurrencyConverter converter)
+    {
+        if (getCurrencyCode().equals(converter.getTermCurrency()))
+        {
+            return getGrossValue();
+        }
+        else if (getSecurity().getCurrencyCode().equals(converter.getTermCurrency()))
+        {
+            Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
+
+            return Money.of(converter.getTermCurrency(),
+                            grossValue.isPresent() ? grossValue.get().getForex().getAmount()
+                                            : getGrossValue().with(converter.at(getDate())).getAmount());
+        }
+        else
+        {
+            return converter.convert(getDate(), getGrossValue());
+        }
     }
 
     /**

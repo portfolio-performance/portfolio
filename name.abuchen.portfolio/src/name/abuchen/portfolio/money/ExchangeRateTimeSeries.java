@@ -17,4 +17,9 @@ public interface ExchangeRateTimeSeries
     Optional<ExchangeRate> lookupRate(LocalDate requestedTime);
 
     int getWeight();
+
+    default String getLabel()
+    {
+        return getBaseCurrency() + '/' + getTermCurrency();
+    }
 }

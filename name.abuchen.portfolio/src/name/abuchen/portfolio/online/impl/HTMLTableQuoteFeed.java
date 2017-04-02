@@ -15,6 +15,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 
 public class HTMLTableQuoteFeed extends QuoteFeed
 {
+
     public static final String ID = HTML; //$NON-NLS-1$
 
     private final PageCache cache = new PageCache();

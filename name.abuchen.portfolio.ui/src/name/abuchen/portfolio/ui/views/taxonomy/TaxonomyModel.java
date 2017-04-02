@@ -311,6 +311,11 @@ public final class TaxonomyModel
         recalculate();
     }
 
+    public ClientSnapshot getClientSnapshot()
+    {
+        return snapshot;
+    }
+
     public void recalculate()
     {
         virtualRootNode.setActual(snapshot.getMonetaryAssets());

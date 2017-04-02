@@ -1,0 +1,15 @@
+DAB
+Kauf ADRESSZEILE2=XXX
+
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Silgan Holdings Inc. Registered Shares DL -,01 US8270481091
+Nominal Kurs
+STK 100,000 USD 52,6700
+Handelstag 29.07.2015 Kurswert USD 5.267,00-
+Handelszeit 16:30* Provision USD 13,17-
+Börse USA/NAN Ausmachender Betrag USD 5.280,17-
+Verwahrart Wertpapierrechnung
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+03.08.2015 0000000000 EUR/USD 1,100297 EUR 4.798,86

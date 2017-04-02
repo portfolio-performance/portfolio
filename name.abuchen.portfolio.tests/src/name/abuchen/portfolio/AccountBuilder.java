@@ -75,6 +75,11 @@ public class AccountBuilder
         return transaction(Type.FEES, date, amount);
     }
 
+    public AccountBuilder fees_refund(String date, long amount)
+    {
+        return transaction(Type.FEES_REFUND, date, amount);
+    }
+
     public AccountBuilder withdraw(String date, long amount)
     {
         return transaction(Type.REMOVAL, date, amount);

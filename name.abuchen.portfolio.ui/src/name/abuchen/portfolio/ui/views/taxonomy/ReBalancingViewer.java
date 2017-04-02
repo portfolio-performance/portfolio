@@ -17,10 +17,12 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
@@ -132,6 +134,29 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
             }
         });
+        support.addColumn(column);
+
+        column = new Column("shares", Messages.ColumnSharesOwned, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                Security security = node.getBackingSecurity();
+                if (security == null || security.getCurrencyCode() == null)
+                    return null;
+
+                AssetPosition position = getModel().getClientSnapshot().getPositionsByVehicle().get(security);
+                if (position == null)
+                    return null;
+                
+                return Math.round(position.getPosition().getShares() * node.getWeight()
+                                / (double) Classification.ONE_HUNDRED_PERCENT);
+            }
+        });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("deltashares", Messages.ColumnDeltaShares, SWT.RIGHT, 100); //$NON-NLS-1$

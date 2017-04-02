@@ -401,11 +401,22 @@ public class PerformanceView extends AbstractHistoricView
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
 
-                if (t instanceof AccountTransaction
-                                && ((AccountTransaction) t).getType() == AccountTransaction.Type.FEES)
-                    return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
-                else
-                    return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+                if (t instanceof AccountTransaction)
+                {
+                    AccountTransaction at = (AccountTransaction) t;
+                    switch (at.getType())
+                    {
+                        case FEES:
+                            return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
+                        case FEES_REFUND:
+                            return Values.Money.format(t.getMonetaryAmount().multiply(-1),
+                                            getClient().getBaseCurrency());
+                        default:
+                            // do nothing --> print unit sum
+                    }
+                }
+
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
             }
         });
         column.setSorter(ColumnViewerSorter

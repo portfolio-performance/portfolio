@@ -15,8 +15,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
 
-import org.junit.Test;
-
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
@@ -30,6 +28,8 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+
+import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class DkbPDFExtractorTest
@@ -79,6 +79,18 @@ public class DkbPDFExtractorTest
         return security;
     }
 
+    private Security assertSecurityBuyFonds(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0392494562"));
+        assertThat(security.getWkn(), is("ETF110"));
+        assertThat(security.getName(), is("COMSTAGE-MSCI WORLD TRN U.ETF"));
+
+        return security;
+    }
+
     private Security assertSecuritySell(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -123,6 +135,18 @@ public class DkbPDFExtractorTest
         assertThat(security.getIsin(), is("DE0007100000"));
         assertThat(security.getWkn(), is("710000"));
         assertThat(security.getName(), is("DAIMLER AG"));
+
+        return security;
+    }
+
+    private Security assertSecurityErtragsgutschriftDividendeQuellensteuern(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US0378331005"));
+        assertThat(security.getWkn(), is("865985"));
+        assertThat(security.getName(), is("APPLE INC."));
 
         return security;
     }
@@ -193,6 +217,41 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-04-07")));
         assertThat(transaction.getAmount(), is(9750L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(30)));
+    }
+
+    @Test
+    public void testErtragsgutschriftDividendeQuellensteuern() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("DkbErtragsgutschriftDividendeQuellensteuern.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = assertSecurityErtragsgutschriftDividendeQuellensteuern(results);
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-20")));
+        assertThat(transaction.getAmount(), is(2995L));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));
     }
 
     @Test
@@ -272,6 +331,46 @@ public class DkbPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+    }
+
+    @Test
+    public void testWertpapierKauf3() throws IOException // Fonds
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("DkbKaufFonds.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertSecurityBuyFonds(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1400.00))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-03-08")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2893)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
     }
 
     @Test

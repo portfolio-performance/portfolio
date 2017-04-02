@@ -1,0 +1,49 @@
+﻿10919 Berlin Seite 1
+Depotnummer 123456789
+Kundennummer 123456789
+Max Mustermann
+Abrechnungsnr. 123456789
+Herrn Datum 16.02.2017
+Max Mustermann
+Strasse 5A
+12345 Ort
+Dividendengutschrift
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 66 APPLE INC. US0378331005 (865985)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 16.02.2017 Dividende pro Stück 0,57 USD
+Bestandsstichtag 08.02.2017 Herkunftsland USA
+Ex-Tag 09.02.2017 Art der Dividende Quartalsdividende
+Geschäftsjahr 27.09.2016 - 26.09.2017
+Devisenkurs EUR / USD 1,06767
+Devisenkursdatum 16.02.2017
+Dividendengutschrift 37,62 USD 35,24+ EUR
+Umrechnung in EUR 35,24 EUR
+Einbehaltene Quellensteuer 15 % auf 37,62 USD 5,29- EUR
+Anrechenbare Quellensteuer 15 % auf 35,24 EUR 5,29 EUR
+Kapitalertragsteuerpflichtige Dividende 35,24 EUR
+Verrechneter Sparer-Pauschbetrag 35,24 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Ausmachender Betrag 29,95+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 20.02.2017 zu Gunsten des Kontos 123456789 (IBAN DE76 1234 0000 1234
+1234 01), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0812.01234567.0001234ER01
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 123456789
+Abrechnungsnr. 123456789
+Datum 16.02.2017
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 455,06 0,00 0,00
+Ertrag 0,00 0,00 35,24- 5,29 0,00
+Nachher 0,00 0,00 419,82 5,29 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0812.01234567.0001234ER01

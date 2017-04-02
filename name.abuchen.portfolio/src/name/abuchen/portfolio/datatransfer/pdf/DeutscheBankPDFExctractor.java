@@ -133,13 +133,18 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
 
                         .section("provision", "currency") //
-                        .optional().match("Provision (?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
+                        .optional().match("Provision.*(?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
+                        
+                        .section("charges", "currency") //
+                        .optional().match("Fremde Spesen und Auslagen (?<currency>\\w{3}+) -(?<charges>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("charges"))))))
 
                         .section("additional", "currency") //
                         .optional()
-                        .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) -(?<additional>[\\d.]+,\\d+)")
+                        .match("Weitere Provision der Bank bei der börslichen Orderausf.*hrung (?<currency>\\w{3}+) -(?<additional>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
 

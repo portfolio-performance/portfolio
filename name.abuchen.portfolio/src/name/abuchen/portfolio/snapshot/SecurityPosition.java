@@ -49,7 +49,7 @@ public class SecurityPosition
          */
         private List<PortfolioTransaction> filter(List<PortfolioTransaction> input)
         {
-            List<PortfolioTransaction> inbound = new ArrayList<PortfolioTransaction>();
+            List<PortfolioTransaction> inbound = new ArrayList<>();
             for (PortfolioTransaction t : input)
                 if (t.getType() == Type.TRANSFER_IN)
                     inbound.add(t);
@@ -57,7 +57,7 @@ public class SecurityPosition
             if (inbound.isEmpty())
                 return input;
 
-            List<PortfolioTransaction> output = new ArrayList<PortfolioTransaction>(input.size());
+            List<PortfolioTransaction> output = new ArrayList<>(input.size());
             TransactionLoop: for (PortfolioTransaction t : input)
             {
                 if (t.getType() == Type.TRANSFER_IN)
@@ -124,16 +124,8 @@ public class SecurityPosition
                         long grossAmount;
                         long netAmount;
 
-                        if (t.getCurrencyCode().equals(converter.getTermCurrency()))
-                        {
-                            grossAmount = t.getAmount();
-                            netAmount = t.getGrossValueAmount();
-                        }
-                        else
-                        {
-                            grossAmount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
-                            netAmount = t.getGrossValue().with(converter.at(t.getDate())).getAmount();
-                        }
+                        grossAmount = t.getMonetaryAmount(converter).getAmount();
+                        netAmount = t.getGrossValue(converter).getAmount();
 
                         sharesBought += bought;
                         grossInvestment += grossAmount * bought / (double) t.getShares();
@@ -288,8 +280,22 @@ public class SecurityPosition
             t.getUnits().forEach(u -> {
                 long splitAmount = Math.round(
                                 u.getAmount().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
-                t2.addUnit(new Unit(u.getType(), //
-                                Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
+
+                if (u.getForex() == null)
+                {
+                    t2.addUnit(new Unit(u.getType(), //
+                                    Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
+                }
+                else
+                {
+                    long splitForex = Math.round(
+                                    u.getForex().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
+
+                    t2.addUnit(new Unit(u.getType(), //
+                                    Money.of(u.getAmount().getCurrencyCode(), splitAmount),
+                                    Money.of(u.getForex().getCurrencyCode(), splitForex), //
+                                    u.getExchangeRate()));
+                }
             });
 
             splitTransactions.add(t2);

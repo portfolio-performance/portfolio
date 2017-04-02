@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import org.hamcrest.number.IsCloseTo;
@@ -121,8 +122,12 @@ public class CurrencyTestCase
         assertThat(equityUSD.getPosition().getShares(), is(Values.Share.factorize(10)));
         // purchase value must be sum of both purchases:
         // the one in EUR account and the one in USD account
+
+        // must take the inverse of the exchange used within the transaction
+        BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, BigDecimal.ROUND_HALF_DOWN);
+        
         assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),
-                        is(Money.of("USD", Math.round(454_60 * 1.2141) + 571_90)));
+                        is(Money.of("USD", Math.round(454_60 * rate.doubleValue()) + 571_90)));
 
         // price per share is the total purchase price minus 20 USD fees and
         // taxes divided by the number of shares

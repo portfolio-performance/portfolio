@@ -114,6 +114,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case SELL:
                 case TRANSFER_IN:
                 case TAX_REFUND:
+                case FEES_REFUND:
                     return t.getAmount();
                 case FEES:
                 case INTEREST_CHARGE:
