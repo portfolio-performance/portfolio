@@ -225,7 +225,7 @@ public class StatementOfAssetsViewer
             }
 
         }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
-        column.getSorter().wrap(c -> new ElementComparator(c));
+        column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
         column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
@@ -259,7 +259,7 @@ public class StatementOfAssetsViewer
 
         column = new IsinColumn("3"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.getSorter().wrap(c -> new ElementComparator(c));
+        column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);
         support.addColumn(column);
 
@@ -320,7 +320,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("6", Messages.ColumnShareInPercent, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -344,7 +344,7 @@ public class StatementOfAssetsViewer
                 return ((Element) e).isGroupByTaxonomy() || ((Element) e).isCategory() ? boldFont : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Element.class, "valuation").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column("7", Messages.ColumnPurchasePrice, SWT.RIGHT, 60); //$NON-NLS-1$
@@ -388,7 +388,7 @@ public class StatementOfAssetsViewer
         });
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(Element.class, "FIFOPurchaseValue") //$NON-NLS-1$
-                        .wrap(c -> new ElementComparator(c)));
+                        .wrap(ElementComparator::new));
         support.addColumn(column);
 
         column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -425,15 +425,20 @@ public class StatementOfAssetsViewer
             }
         });
         column.setVisible(false);
-        column.setSorter(ColumnViewerSorter.create(Element.class, "profitLoss").wrap(c -> new ElementComparator(c))); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Element.class, "profitLoss").wrap(ElementComparator::new)); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
-        column.getSorter().wrap(c -> new ElementComparator(c));
+        column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
-        addPerformanceColumns();
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().loadReportingPeriods());
+
+        addPerformanceColumns(options);
+        addDividendColumns(options);
         addTaxonomyColumns();
         addAttributeColumns();
         addCurrencyColumns();
@@ -455,17 +460,14 @@ public class StatementOfAssetsViewer
         return container;
     }
 
-    private void addPerformanceColumns()
+    private void addPerformanceColumns(List<ReportingPeriod> options)
     {
-        // create a modifiable copy as all menus share the same list of
-        // reporting periods
-        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().loadReportingPeriods());
-
         Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getTrueTimeWeightedRateOfReturn()));
+        column.setLabelProvider(
+                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -473,7 +475,7 @@ public class StatementOfAssetsViewer
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getIrr()));
+        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getIrr));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -481,7 +483,7 @@ public class StatementOfAssetsViewer
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldings()));
+        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -489,7 +491,8 @@ public class StatementOfAssetsViewer
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getCapitalGainsOnHoldingsPercent()));
+        column.setLabelProvider(
+                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -497,7 +500,7 @@ public class StatementOfAssetsViewer
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDelta()));
+        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDelta));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -505,7 +508,27 @@ public class StatementOfAssetsViewer
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(record -> record.getDeltaPercent()));
+        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDeltaPercent));
+        column.setVisible(false);
+        support.addColumn(column);
+    }
+
+    private void addDividendColumns(List<ReportingPeriod> options)
+    {
+        Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendSum + " {0}", options)); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
+        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, false));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
+        column.setLabelProvider(
+                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDiv, false));
         column.setVisible(false);
         support.addColumn(column);
     }
@@ -519,7 +542,7 @@ public class StatementOfAssetsViewer
                             Column column = new AttributeColumn(attribute);
                             column.setVisible(false);
                             if (column.getSorter() != null)
-                                column.getSorter().wrap(c -> new ElementComparator(c));
+                                column.getSorter().wrap(ElementComparator::new);
                             column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
                             support.addColumn(column);
                         });
@@ -532,7 +555,7 @@ public class StatementOfAssetsViewer
             Column column = new TaxonomyColumn(t);
             column.setVisible(false);
             if (column.getSorter() != null)
-                column.getSorter().wrap(c -> new ElementComparator(c));
+                column.getSorter().wrap(ElementComparator::new);
             support.addColumn(column);
         }
     }
@@ -773,7 +796,7 @@ public class StatementOfAssetsViewer
         else if (portfolioSnapshot != null)
             return portfolioSnapshot.getCurrencyConverter();
         else
-            return null;
+            throw new IllegalArgumentException();
     }
 
     private LocalDate getDate()
@@ -927,11 +950,7 @@ public class StatementOfAssetsViewer
         @Override
         public <T> T adapt(Class<T> type) // NOSONAR
         {
-            if (type == Security.class)
-            {
-                return type.cast(getSecurity());
-            }
-            else if (type == Attributable.class)
+            if (type == Security.class || type == Attributable.class)
             {
                 return type.cast(getSecurity());
             }
@@ -1043,12 +1062,21 @@ public class StatementOfAssetsViewer
 
     private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
     {
+        private boolean showColorAndArrows;
         private Function<SecurityPerformanceRecord, Object> valueProvider;
 
         public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
         {
-            this.valueProvider = valueProvider;
+            this(valueProvider, true);
         }
+
+        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
+                        boolean showUpAndDownArrows)
+        {
+            this.valueProvider = valueProvider;
+            this.showColorAndArrows = showUpAndDownArrows;
+        }
+
 
         private Object getValue(Object e, ReportingPeriod option)
         {
@@ -1083,6 +1111,9 @@ public class StatementOfAssetsViewer
         @Override
         public Color getForeground(Object e, ReportingPeriod option)
         {
+            if (!showColorAndArrows)
+                return null;
+
             Object value = getValue(e, option);
             if (value == null)
                 return null;
@@ -1104,6 +1135,9 @@ public class StatementOfAssetsViewer
         @Override
         public Image getImage(Object element, ReportingPeriod option)
         {
+            if (!showColorAndArrows)
+                return null;
+
             Object value = getValue(element, option);
             if (value == null)
                 return null;
@@ -1144,10 +1178,10 @@ public class StatementOfAssetsViewer
             }
 
             Map<Security, SecurityPerformanceRecord> map = sps.getRecords().stream()
-                            .collect(Collectors.toMap(r -> r.getSecurity(), r -> r));
+                            .collect(Collectors.toMap(SecurityPerformanceRecord::getSecurity, r -> r));
 
             Arrays.stream(((StatementOfAssetsContentProvider) assets.getContentProvider()).elements) // NOSONAR
-                            .filter(e -> e.isSecurity())
+                            .filter(Element::isSecurity)
                             .forEach(e -> e.setPerformance(period, map.get(e.getSecurity())));
 
         }
