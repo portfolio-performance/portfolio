@@ -73,13 +73,13 @@ public class YahooFinanceQuoteFeedTest
         assertThat(latest.getTime(), equalTo(LocalDate.of(2011, Month.SEPTEMBER, 29)));
         assertThat(latest.getHigh(), is(Values.Quote.factorize(13.75)));
         assertThat(latest.getLow(), is(Values.Quote.factorize(13.70)));
-        assertThat(latest.getVolume(), is(10037));
+        assertThat(latest.getVolume(), is(10037L));
         assertThat(latest.getPreviousClose(), is(Values.Quote.factorize(12.71)));
 
         latest = securities.get(1).getLatest();
         assertThat(latest.getHigh(), is(-1L));
         assertThat(latest.getLow(), is(-1L));
-        assertThat(latest.getVolume(), is(-1));
+        assertThat(latest.getVolume(), is(-1L));
 
         latest = securities.get(3).getLatest();
         assertThat(latest.getTime(), equalTo(LocalDate.now()));
