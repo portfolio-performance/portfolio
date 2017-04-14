@@ -38,7 +38,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 {
-    private static class DummyQuoteFeed implements QuoteFeed
+    private static class DummyQuoteFeed extends QuoteFeed
     {
         @Override
         public String getId()
@@ -123,7 +123,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         LatestSecurityPrice p = s.getLatest();
 
                         valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                        valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                        valueLatestTrade.setText(Values.Date.format(p.getDate()));
                         long daysHigh = p.getHigh();
                         valueDaysHigh.setText(
                                         daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));

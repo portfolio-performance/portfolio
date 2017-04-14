@@ -513,7 +513,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((SecurityPrice) element).getTime());
+                return Values.Date.format(((SecurityPrice) element).getDate());
             }
 
             @Override
@@ -527,12 +527,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return null;
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
-                int days = Dates.daysBetween(previous.getTime(), current.getTime());
+                int days = Dates.daysBetween(previous.getDate(), current.getDate());
                 return days > 3 ? warningColor : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -577,7 +577,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         return;
 
                     SecurityPrice price = new SecurityPrice();
-                    price.setTime(LocalDate.now());
+                    price.setDate(LocalDate.now());
 
                     security.addPrice(price);
 

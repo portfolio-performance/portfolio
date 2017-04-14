@@ -175,6 +175,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String eventFeed;
+    private String eventFeedURL;
     private String feed;
     private String feedURL;
     private String latestFeed;
@@ -185,6 +187,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
      * Used to pipe the status of a manually validated quote provider into the
      * binding context
      */
+    private String statusEventProvider;
     private String statusHistoricalQuotesProvider;
     private String statusLatestQuotesProvider;
 
@@ -203,6 +206,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.isin = security.getIsin();
         this.tickerSymbol = security.getTickerSymbol();
         this.wkn = security.getWkn();
+        this.eventFeed = security.getEventFeed();
+        this.eventFeedURL = security.getEventFeedURL();
         this.feed = security.getFeed();
         this.feedURL = security.getFeedURL();
         this.latestFeed = security.getLatestFeed();
@@ -303,6 +308,27 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         firePropertyChange("feedURL", this.feedURL, this.feedURL = feedURL); //$NON-NLS-1$
     }
 
+
+    public String getEventFeed()
+    {
+        return eventFeed;
+    }
+
+    public void setEventFeed(String feed)
+    {
+        firePropertyChange("eventFeed", this.eventFeed, this.eventFeed = feed); //$NON-NLS-1$
+    }
+
+    public String getEventFeedURL()
+    {
+        return eventFeedURL;
+    }
+
+    public void setEventFeedURL(String feedURL)
+    {
+        firePropertyChange("eventFeedURL", this.eventFeedURL, this.eventFeedURL = feedURL); //$NON-NLS-1$
+    }
+
     public String getLatestFeed()
     {
         return latestFeed;
@@ -394,6 +420,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         security.setIsin(isin);
         security.setTickerSymbol(tickerSymbol);
         security.setWkn(wkn);
+        security.setEventFeed(eventFeed);
+        security.setEventFeedURL(eventFeedURL);
         security.setFeed(feed);
         security.setFeedURL(feedURL);
         security.setLatestFeed(latestFeed);

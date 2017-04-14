@@ -112,6 +112,8 @@ public class Messages extends NLS
     public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnEntity;
     public static String ColumnErrorMessages;
+    public static String ColumnEventType;
+    public static String ColumnEventDetails;
     public static String ColumnExchangeRate;
     public static String ColumnExDate;
     public static String ColumnFees;
@@ -249,6 +251,11 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
     public static String EditWizardOptionSameAsHistoricalQuoteFeed;
+    public static String EditWizardEventFeedLabelFeedURL;
+    public static String EditWizardEventFeedMsgErrorMissingURL;
+    public static String EditWizardEventFeedMsgErrorOrNoData;
+    public static String EditWizardEventFeedMsgLoading;
+    public static String EditWizardEventFeedTitle;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
     public static String EditWizardQuoteFeedMsgErrorOrNoData;
@@ -302,6 +309,7 @@ public class Messages extends NLS
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
     public static String JobLabelUpdateCPI;
+    public static String JobLabelUpdateEvents;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdateStackedLineChart;
     public static String JobLabelUpdating;
@@ -310,6 +318,7 @@ public class Messages extends NLS
     public static String JobMsgErrorUpdatingQuotes;
     public static String JobMsgLoadingExchanges;
     public static String JobMsgRunningConsistencyChecks;
+    public static String JobMsgSamplingHistoricalEvents;
     public static String JobMsgSamplingHistoricalQuotes;
     public static String JobMsgUpdatingQuotesFor;
     public static String LabelAbout;
@@ -350,9 +359,12 @@ public class Messages extends NLS
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelError;
+    public static String LabelEvent;
+    public static String LabelEventFeed;
     public static String LabelExchange;
     public static String LabelExchangeRate;
     public static String LabelExport;
+    public static String LabelFeedProvider;
     public static String LabelFullClassification;
     public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
@@ -637,6 +649,7 @@ public class Messages extends NLS
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
     public static String SecurityMenuTransfer;
+    public static String SecurityMenuUpdateEvents;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;
     public static String SecurityTabChart10Y;

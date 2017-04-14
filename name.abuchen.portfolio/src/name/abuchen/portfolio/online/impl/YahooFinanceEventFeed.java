@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.online.impl;
 
+import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_PRICE;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
-import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
+import static name.abuchen.portfolio.online.impl.YahooHelper.asDouble;
+//import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
 
@@ -10,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -25,32 +28,38 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.model.SecurityElement;
+import name.abuchen.portfolio.model.SecurityEvent;
+//import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.EventFeed;
 
-public class YahooFinanceQuoteFeed extends QuoteFeed
+public class YahooFinanceEventFeed extends EventFeed
 {
     public static final String ID = YAHOO; //$NON-NLS-1$
+    // Source = https://greenido.wordpress.com/2009/12/22/work-like-a-pro-with-yahoo-finance-hidden-api/
+    // http://brusdeylins.info/tips_and_tricks/yahoo-finance-api/
 
-    private static final String LATEST_URL = "http://download.finance.yahoo.com/d/quotes.csv?s={0}&f=sl1d1hgpv"; //$NON-NLS-1$
-    // s = symbol
-    // l1 = last trade (price only)
-    // d1 = last trade date
-    // h = day's high
-    // g = day's low
-    // p = previous close
-    // v = volume
-    // Source = http://cliffngan.net/a/13
+    private static final String LATEST_URL = "http://download.finance.yahoo.com/d/quotes.csv?s={0}&f=sdqr1yc4"; //$NON-NLS-1$
+    // s  = symbol
+    // d  = dividend/share
+    // q  = dividend ex-day 
+    // r1 = dividend pay day
+    // y  = dividend yield
+
+    //private static final String CURRENCY_URL = "http://download.finance.yahoo.com/d/quotes.csv?s={0}&f=sc4"; //$NON-NLS-1$
+    // s  = symbol
+    // c4 = currency
 
     @SuppressWarnings("nls")
-    private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
+    private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/x?ignore=.csv" //
                     + "&s={0}" // ticker symbol
                     + "&a={1}&b={2}&c={3}" // begin
                     + "&d={4}&e={5}&f={6}" // end
-                    + "&g=d"; // daily
+                    + "&g=v"; // dividends&splits
 
+    
+    
     @Override
     public String getId()
     {
@@ -64,7 +73,7 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
     }
 
     @Override
-    public final boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public final boolean update(List<Security> securities, List<Exception> errors)
     {
         Map<String, List<Security>> symbol2security = securities.stream()
                         //
@@ -86,7 +95,7 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
+                if (values.length != 6)
                 {
                     errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line)));
                     return false;
@@ -102,12 +111,14 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
 
                 try
                 {
-                    LatestSecurityPrice price = buildPrice(values);
-
-                    for (Security security : forSymbol)
+                    SecurityEvent event = buildPrice(values);
+                    if (event != null)
                     {
-                        boolean isAdded = security.setLatest(price);
-                        isUpdated = isUpdated || isAdded;
+                        for (Security security : forSymbol)
+                        {
+                            boolean isAdded = security.setLatest(event);
+                            isUpdated = isUpdated || isAdded;
+                        }                        
                     }
                 }
                 catch (NumberFormatException | ParseException | DateTimeParseException e)
@@ -127,44 +138,49 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
         return isUpdated;
     }
 
-    private LatestSecurityPrice buildPrice(String[] values) throws ParseException
+    private SecurityEvent buildPrice(String[] values) throws ParseException
     {
-        long lastTrade = asPrice(values[1]);
+        try
+        {
+        
+            double lastDividend = asDouble(values[1]);
+    
+            LocalDate lastExDate = asDate(values[2]);
+            if (lastExDate == null) // can't work w/o date
+                lastExDate = LocalDate.now();
+    
+            LocalDate payDate = asDate(values[3]);
+            if (payDate == null) // can't work w/o date
+                payDate = LocalDate.now();
+    
+            long dividendYield = asPrice(values[4]);
+    
+            String currencyCode = values[5];        
+            SecurityEvent event = new SecurityEvent(lastExDate, SecurityEvent.Type.STOCK_DIVIDEND, currencyCode, lastDividend);
+            //event.setYield(dividendYield);
+            //event.setPayDate(Date);
+            return event;
+        }
+        catch (ParseException e)
+        {
+            return null;
+        }
 
-        LocalDate lastTradeDate = asDate(values[2]);
-        if (lastTradeDate == null) // can't work w/o date
-            lastTradeDate = LocalDate.now();
-
-        long daysHigh = asPrice(values[3]);
-
-        long daysLow = asPrice(values[4]);
-
-        long previousClose = asPrice(values[5]);
-
-        int volume = asNumber(values[6]);
-
-        LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
-        price.setHigh(daysHigh);
-        price.setLow(daysLow);
-        price.setPreviousClose(previousClose);
-        price.setVolume(volume);
-
-        return price;
     }
 
     @Override
-    public final boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public final boolean update(Security security, List<Exception> errors)
     {
         LocalDate start = caculateStart(security);
 
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start, errors);
+        List<SecurityEvent> events = internalGet(SecurityEvent.class, security, start, errors);
 
         boolean isUpdated = false;
-        if (quotes != null)
+        if (events != null)
         {
-            for (SecurityPrice p : quotes)
+            for (SecurityEvent e : events)
             {
-                boolean isAdded = security.addPrice(p);
+                boolean isAdded = security.addEvent(e);
                 isUpdated = isUpdated || isAdded;
             }
         }
@@ -172,14 +188,14 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
     }
 
     /**
-     * Calculate the first date to request historical quotes for.
+     * Calculate the first date to request historical events for.
      */
     /* package */final LocalDate caculateStart(Security security)
     {
-        if (!security.getPrices().isEmpty())
+        if (!security.getEvents().isEmpty())
         {
-            SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            return lastHistoricalQuote.getDate();
+            SecurityEvent lastHistoricalEvent = security.getEvents().get(security.getEvents().size() - 1);
+            return lastHistoricalEvent.getDate();
         }
         else
         {
@@ -188,19 +204,19 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start,
+    public final List<SecurityElement> get(Security security, LocalDate start,
                     List<Exception> errors)
     {
-        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
+        return SecurityElement.cast2ElementList(internalGet(SecurityEvent.class, security, start, errors));
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
+    public List<SecurityElement> get(String response, List<Exception> errors)
     {
         throw new UnsupportedOperationException();
     }
 
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, LocalDate startDate,
+    private <T extends SecurityEvent> List<T> internalGet(Class<T> klass, Security security, LocalDate startDate,
                     List<Exception> errors)
     {
         if (security.getTickerSymbol() == null)
@@ -213,9 +229,9 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
 
         String wknUrl = MessageFormat.format(HISTORICAL_URL, //
                         security.getTickerSymbol(), //
-                        startDate.getMonth().getValue() - 1, //
+                        startDate.getMonth().getValue(), //
                         startDate.getDayOfMonth(), //
-                        Integer.toString(startDate.getYear()), //
+                        Integer.toString(startDate.getYear() - 5), //
                         stopDate.getMonth().getValue() - 1, //
                         stopDate.getDayOfMonth(), //
                         Integer.toString(stopDate.getYear()));
@@ -231,22 +247,48 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
             line = reader.readLine();
 
             // poor man's check
-            if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
+            if (!"Date,Dividends".equals(line)) //$NON-NLS-1$
                 throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
 
-            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
+            DecimalFormat priceFormat = FMT_PRICE.get();
+            DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern(" yyyyMMdd"); //$NON-NLS-1$
 
+            int cnt = 0;
+            int expectedCnt = 0;
+            int split = 0;
+            int others = 0;
+            
             while ((line = reader.readLine()) != null)
             {
                 String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
+                if (values.length == 3 && ("SPLIT".equals(values[0]) || "DIVIDEND".equals(values[0])))
+                {
+                    T event = klass.newInstance();
+                    LocalDate date = LocalDate.parse(values[1], dateFormat);
+                    event.setDate(date);
+                    if ("DIVIDEND".equals(values[0])) 
+                    {
+                        cnt++;
+                        event.setType(SecurityEvent.Type.STOCK_DIVIDEND);
+                        event.setDetails(security.getCurrencyCode(), asDouble(values[2]));                        
+                    } 
+                    else if ("SPLIT".equals(values[0]))
+                    {
+                        split++;
+                        event.setType(SecurityEvent.Type.STOCK_SPLIT);
+                        event.setDetails(values[2]);                        
+                    }
+                    answer.add(event);
+                }
+                else if (values.length == 2 && ("TOTALSIZE".equals(values[0])))
+                {
+                    expectedCnt = Integer.parseInt(values[1].trim());  // may be used for a check in the future
+                }
+                else if (values.length == 2 && ("STARTDATE".equals(values[0]) || "ENDDATE".equals(values[0]) || "STATUS".equals(values[0])))
+                {
+                }
+                else
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
-
-                T price = klass.newInstance();
-
-                fillValues(values, price, dateFormat);
-
-                answer.add(price);
             }
         }
         catch (NumberFormatException | ParseException | DateTimeParseException e)
@@ -257,29 +299,34 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
         {
             errors.add(e);
         }
-
         return answer;
     }
-
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DateTimeFormatter dateFormat)
-                    throws ParseException, DateTimeParseException
-    {
-        LocalDate date = LocalDate.parse(values[0], dateFormat);
-
-        long v = asPrice(values[4]);
-
-        price.setDate(date);
-        price.setValue(v);
-
-        if (price instanceof LatestSecurityPrice)
-        {
-            LatestSecurityPrice latest = (LatestSecurityPrice) price;
-
-            latest.setVolume(asNumber(values[5]));
-            latest.setHigh(asPrice(values[2]));
-            latest.setLow(asPrice(values[3]));
-        }
-    }
+//
+//    protected <T extends SecurityEvent> void fillValues(String[] values, T event, DecimalFormat priceFormat,
+//                    DateTimeFormatter dateFormat) throws ParseException, DateTimeParseException
+//    {
+//        LocalDate date = LocalDate.parse(values[0], dateFormat);
+//
+//        Number q = priceFormat.parse(values[4]);
+//        long v = (long) (q.doubleValue() * Values.Quote.factor());
+//
+//        price.setDate(date);
+//        price.setValue(v);
+//
+//        if (price instanceof LatestSecurityPrice)
+//        {
+//            LatestSecurityPrice latest = (LatestSecurityPrice) price;
+//
+//            q = priceFormat.parse(values[5]);
+//            latest.setVolume(q.intValue());
+//
+//            q = priceFormat.parse(values[2]);
+//            latest.setHigh((long) (q.doubleValue() * Values.Quote.factor()));
+//
+//            q = priceFormat.parse(values[3]);
+//            latest.setLow((long) (q.doubleValue() * Values.Quote.factor()));
+//        }
+//    }
 
     @Override
     public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
@@ -324,6 +371,7 @@ public class YahooFinanceQuoteFeed extends QuoteFeed
 
         return answer;
     }
+
 
     private Exchange createExchange(String symbol)
     {

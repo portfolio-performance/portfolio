@@ -15,15 +15,15 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Widget;
 
-import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
-public class QuotesTableViewer
+public class EventsTableViewer
 {
     private TableViewer tableViewer;
 
-    public QuotesTableViewer(Composite container)
+    public EventsTableViewer(Composite container)
     {
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
@@ -38,32 +38,22 @@ public class QuotesTableViewer
         layout.setColumnData(column, new ColumnPixelData(80, true));
 
         column = new TableColumn(tableViewer.getTable(), SWT.None);
-        column.setText(Messages.ColumnDaysHigh);
-        column.setAlignment(SWT.RIGHT);
+        column.setText(Messages.ColumnEventType);
+        column.setAlignment(SWT.LEFT);
         layout.setColumnData(column, new ColumnPixelData(80, true));
 
         column = new TableColumn(tableViewer.getTable(), SWT.None);
-        column.setText(Messages.ColumnDaysLow);
+        column.setText(Messages.ColumnEventDetails);
         column.setAlignment(SWT.RIGHT);
         layout.setColumnData(column, new ColumnPixelData(80, true));
 
-        column = new TableColumn(tableViewer.getTable(), SWT.None);
-        column.setText(Messages.ColumnQuote);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        column = new TableColumn(tableViewer.getTable(), SWT.None);
-        column.setText(Messages.ColumnVolume);
-        column.setAlignment(SWT.RIGHT);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
-
-        tableViewer.setLabelProvider(new PriceLabelProvider());
+        tableViewer.setLabelProvider(new EventLabelProvider());
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
     }
 
-    public void setInput(List<LatestSecurityPrice> quotes)
+    public void setInput(List<SecurityEvent> events)
     {
-        tableViewer.setInput(quotes);
+        tableViewer.setInput(events);
     }
 
     public void setMessage(String message)
@@ -91,7 +81,7 @@ public class QuotesTableViewer
         return tableViewer.getControl();
     }
 
-    static class PriceLabelProvider extends LabelProvider implements ITableLabelProvider
+    static class EventLabelProvider extends LabelProvider implements ITableLabelProvider
     {
 
         public Image getColumnImage(Object element, int columnIndex)
@@ -107,19 +97,15 @@ public class QuotesTableViewer
             }
             else
             {
-                LatestSecurityPrice p = (LatestSecurityPrice) element;
+                SecurityEvent e = (SecurityEvent) element;
                 switch (columnIndex)
                 {
                     case 0:
-                        return Values.Date.format(p.getDate());
+                        return Values.Date.format(e.getDate());
                     case 1:
-                        return p.getHigh() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getHigh());
+                        return e.getType() == SecurityEvent.Type.NONE ? null : e.getType().toString();
                     case 2:
-                        return p.getLow() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getLow());
-                    case 3:
-                        return Values.Quote.format(p.getValue());
-                    case 4:
-                        return String.format("%,d", p.getVolume()); //$NON-NLS-1$
+                        return e.getDetails() == SecurityEvent.NONE ? null : e.getDetails();
                     default:
                         throw new IllegalArgumentException(String.valueOf(columnIndex));
                 }
