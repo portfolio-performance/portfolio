@@ -28,7 +28,7 @@ set MAVEN_OPTS="-Xmx1g"
 
 ### Build
 
-Run Maven 3.0.x in the 'portfolio-app' directory:
+Run Maven 3.x.x in the 'portfolio-app' directory:
 
 ```
 mvn clean install
@@ -38,7 +38,7 @@ mvn clean install
 
 ### Setup
 
-To develop, use [Eclipse Luna](http://eclipse.org/downloads/) plus the Plug-in Development Tools (PDT).
+To develop, use [Eclipse Neon](http://eclipse.org/downloads/) plus the Plug-in Development Environment (PDE).
 
 Clone the git repository.
 
