@@ -225,7 +225,7 @@ public class CSVImporter
 
         public EnumMapFormat<M> createFormat()
         {
-            return new EnumMapFormat<M>(enumType);
+            return new EnumMapFormat<>(enumType);
         }
     }
 
@@ -237,7 +237,7 @@ public class CSVImporter
 
         public EnumMapFormat(Class<M> enumType)
         {
-            enumMap = new EnumMap<M, String>(enumType);
+            enumMap = new EnumMap<>(enumType);
             for (M element : enumType.getEnumConstants())
                 enumMap.put(element, element.toString());
         }
@@ -262,6 +262,19 @@ public class CSVImporter
         {
             if (pos == null)
                 throw new NullPointerException();
+
+            // first: try exact matches (example: "Fees" vs. "Fees Refund")
+
+            for (Map.Entry<M, String> entry : enumMap.entrySet())
+            {
+                if (source.equalsIgnoreCase(entry.getValue()))
+                {
+                    pos.setIndex(source.length());
+                    return entry.getKey();
+                }
+            }
+
+            // second: try partial matches
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
             {
@@ -378,7 +391,7 @@ public class CSVImporter
             for (int ii = 0; ii < skipLines; ii++)
                 parser.getLine();
 
-            List<String[]> input = new ArrayList<String[]>();
+            List<String[]> input = new ArrayList<>();
             String[] header = null;
             String[] line = parser.getLine();
             if (isFirstLineHeader)
@@ -420,7 +433,7 @@ public class CSVImporter
 
     private void mapToImportDefinition()
     {
-        List<Field> list = new LinkedList<Field>(currentExtractor.getFields());
+        List<Field> list = new LinkedList<>(currentExtractor.getFields());
 
         for (Column column : columns)
         {
@@ -459,7 +472,7 @@ public class CSVImporter
 
     public List<Item> createItems(List<Exception> errors)
     {
-        Map<String, Column> field2column = new HashMap<String, Column>();
+        Map<String, Column> field2column = new HashMap<>();
         for (Column column : getColumns())
             if (column.getField() != null)
                 field2column.put(column.getField().name, column);

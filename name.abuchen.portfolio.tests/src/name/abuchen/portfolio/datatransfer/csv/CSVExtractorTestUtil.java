@@ -19,7 +19,7 @@ final class CSVExtractorTestUtil
      */
     /* package */ static Map<String, Column> buildField2Column(CSVExtractor extractor)
     {
-        Map<String, Column> field2column = new HashMap<String, Column>();
+        Map<String, Column> field2column = new HashMap<>();
 
         int index = 0;
         for (Field f : extractor.getFields())
