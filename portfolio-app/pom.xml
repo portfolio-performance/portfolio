@@ -9,7 +9,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.26.5-SNAPSHOT</version>
+	<version>0.26.5</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -278,7 +278,7 @@
 						<alias>${alias}</alias>
 						<storepass>${storepass}</storepass>
 						<keypass>${keypass}</keypass>
-						<tsa>https://timestamp.geotrust.com/tsa</tsa>
+						<tsa>http://time.certum.pl/</tsa>
 					</configuration>
 				</plugin>
 				<plugin>
