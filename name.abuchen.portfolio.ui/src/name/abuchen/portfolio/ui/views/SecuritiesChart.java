@@ -419,13 +419,8 @@ public class SecuritiesChart
     {
         security.getEvents(SecurityEvent.Type.STOCK_SPLIT).stream() //
                         .filter(e -> chartPeriod == null || chartPeriod.isBefore(e.getDate())) //
-<<<<<<< HEAD
-                        .forEach(e -> chart.addMarkerLine(e.getDate(), 
-                                                          Display.getDefault().getSystemColor(e.getType() == SecurityEvent.Type.STOCK_SPLIT ? SWT.COLOR_DARK_GRAY : SWT.COLOR_MAGENTA), e.getDetails()));
-=======
                         .forEach(e -> chart.addMarkerLine(e.getDate(),
                                                           Display.getDefault().getSystemColor(SWT.COLOR_GRAY),
                                                           e.getRatioString()));
->>>>>>> enhancement_eventLoader
     }
 }
