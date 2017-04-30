@@ -47,7 +47,7 @@ public class HTMLTableEventFeed extends EventFeed
         boolean isUpdated = false;
         for (SecurityEvent event: events)
         {
-            boolean isAdded = security.addEvent(new SecurityEvent(event.getDate(), event.getType(), event.getDetails()));
+            boolean isAdded = security.addEvent(event);
             isUpdated = isUpdated || isAdded;
         }
 

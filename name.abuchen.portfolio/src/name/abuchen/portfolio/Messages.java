@@ -100,10 +100,13 @@ public class Messages extends NLS
     public static String LabelInterest;
     public static String LabelJointPortfolio;
     public static String LabelNameReferenceAccountRecovered;
+    public static String LabelNoAmount;
     public static String LabelNoCurrency;
+    public static String LabelNoCurrencyCode;
     public static String LabelNoCurrencyDescription;
-    public static String LabelPotentialDuplicate;
+    public static String LabelNoRatio;
     public static String LabelRemovals;
+    public static String LabelPotentialDuplicate;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodLastXDays;
     public static String LabelReportingPeriodLastXTradingDays;
@@ -111,6 +114,7 @@ public class Messages extends NLS
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
     public static String LabelSecurity;
+    public static String LabelStockRightReference;
     public static String LabelSuffixEntryCorrected;
     public static String LabelTransferAccount;
     public static String LabelTransferPortfolio;

@@ -342,6 +342,8 @@ public class Messages extends NLS
     public static String LabelChartDetailDividends;
     public static String LabelChartDetailEvents;
     public static String LabelChartDetailInvestments;
+    public static String LabelChartDetailRights;
+    public static String LabelChartDetailSplits;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
@@ -486,11 +488,13 @@ public class Messages extends NLS
     public static String MenuCreatePortfolioOrTransaction;
     public static String MenuDeleteDashboardColumn;
     public static String MenuDeleteWidget;
+    public static String MenuEditEvent;
     public static String MenuEditInvestmentPlan;
     public static String MenuEditTransaction;
     public static String MenuExportChartData;
     public static String MenuExportData;
     public static String MenuExportDiagram;
+    public static String MenuGenerateTransaction;
     public static String MenuLabelSetAsStartPage;
     public static String MenuNewDashboardColumn;
     public static String MenuNewReportingPeriod;
@@ -526,6 +530,9 @@ public class Messages extends NLS
     public static String MenuTaxonomySortTreeBy;
     public static String MenuTaxonomyWeightFix;
     public static String MenuTransactionDelete;
+    public static String MenuTransactionHide;
+    public static String MenuTransactionRevertSplit;
+    public static String MenuTransactionShowHidden;
     public static String MenuUseDashboardDefaultReportingPeriod;
     public static String MessageDialogProviderAnswerKeep;
     public static String MessageDialogProviderAnswerReplace;

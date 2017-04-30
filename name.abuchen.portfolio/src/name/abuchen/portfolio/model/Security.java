@@ -434,11 +434,53 @@ public final class Security implements Attributable, InvestmentVehicle
         this.eventFeedURL = eventFeedURL;
     }
 
-    public List<SecurityEvent> getEvents()
+    public List<SecurityEvent> getAllEvents()
     {
         if (this.events == null)
             this.events = new ArrayList<>();
         return events;
+    }
+
+    public List<SecurityEvent> getEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getInvisibleEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (!e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getEvents(SecurityEvent.Type type)
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.getType().equals(type))
+            {
+                list.add(e);
+            }
+        }
+        return list;
     }
 
     public boolean addEvent(SecurityEvent event)
@@ -455,6 +497,12 @@ public final class Security implements Attributable, InvestmentVehicle
             this.events.add(event);
         return add;
     }
+
+    public void removeEvent(SecurityEvent event)
+    {
+        events.remove(event);
+    }
+
 
     public void removeAllEvents()
     {

@@ -11,6 +11,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -32,6 +33,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.model.SecurityEvent;
 //import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.online.EventFeed;
 
 public class YahooFinanceEventFeed extends EventFeed
@@ -116,7 +118,7 @@ public class YahooFinanceEventFeed extends EventFeed
                     {
                         for (Security security : forSymbol)
                         {
-                            boolean isAdded = security.setLatest(event);
+                            boolean isAdded = security.addEvent(event);
                             isUpdated = isUpdated || isAdded;
                         }                        
                     }
@@ -128,7 +130,7 @@ public class YahooFinanceEventFeed extends EventFeed
             }
 
             for (String symbol : symbol2security.keySet())
-                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
+                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol + symbol2security.toString())));
         }
         catch (IOException e)
         {
@@ -150,15 +152,25 @@ public class YahooFinanceEventFeed extends EventFeed
                 lastExDate = LocalDate.now();
     
             LocalDate payDate = asDate(values[3]);
-            if (payDate == null) // can't work w/o date
-                payDate = LocalDate.now();
-    
+
             long dividendYield = asPrice(values[4]);
-    
-            String currencyCode = values[5];        
-            SecurityEvent event = new SecurityEvent(lastExDate, SecurityEvent.Type.STOCK_DIVIDEND, currencyCode, lastDividend);
-            //event.setYield(dividendYield);
-            //event.setPayDate(Date);
+
+            String currencyCode = Messages.LabelNoCurrencyCode;
+            if (CurrencyUnit.isCurrencyCode(stripQuotes(values[5])))
+                currencyCode = stripQuotes(values[5]);
+
+            SecurityEvent event = new SecurityEvent();
+                event.setType(SecurityEvent.Type.STOCK_DIVIDEND);
+                if (payDate == null) // can't work w/o date
+                {
+                    event.setDate(lastExDate);
+                }
+                else
+                {
+                    event.setDate(payDate);
+                    event.setExDate(lastExDate);
+                }
+                event.setAmount(currencyCode, BigDecimal.valueOf(lastDividend));
             return event;
         }
         catch (ParseException e)
@@ -270,13 +282,19 @@ public class YahooFinanceEventFeed extends EventFeed
                     {
                         cnt++;
                         event.setType(SecurityEvent.Type.STOCK_DIVIDEND);
-                        event.setDetails(security.getCurrencyCode(), asDouble(values[2]));                        
+                        event.setAmount(security.getCurrencyCode(), BigDecimal.valueOf(asDouble(values[2])));
                     } 
                     else if ("SPLIT".equals(values[0]))
                     {
                         split++;
-                        event.setType(SecurityEvent.Type.STOCK_SPLIT);
-                        event.setDetails(values[2]);                        
+                        String[] elements = values[2].split(":"); 
+                        if (elements.length == 2)
+                        {
+                            event.setType(SecurityEvent.Type.STOCK_SPLIT);
+                            event.setRatio(Double.parseDouble(elements[0]), Double.parseDouble(elements[1]));
+                        }
+                        else
+                            throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
                     }
                     answer.add(event);
                 }

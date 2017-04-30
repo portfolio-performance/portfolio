@@ -11,7 +11,7 @@ import org.jsoup.nodes.Element;
 import name.abuchen.portfolio.money.Values;
 
 
-abstract class Column
+public abstract class Column
 {
     static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
     {
@@ -64,10 +64,13 @@ abstract class Column
 
     public abstract void setValue(Element value, Object obj, String languageHint) throws ParseException;
 
-    public double asDouble(Element elem, String languageHint) throws ParseException
+    static public double asDouble(Element elem, String languageHint) throws ParseException
     {
-        String text = elem.text().trim();
+        return asDouble(elem.text().trim(), languageHint);
+    }
 
+    static public double asDouble(String text, String languageHint) throws ParseException
+    {
         DecimalFormat format = null;
 
         if ("de".equals(languageHint)) //$NON-NLS-1$

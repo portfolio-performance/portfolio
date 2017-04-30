@@ -35,6 +35,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -417,6 +418,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     public void setTransaction(Account account, AccountTransaction transaction)
     {
         model().setSource(account, transaction);
+    }
+
+    public void setEvent(SecurityEvent event)
+    {
+        model().setEvent(event);
     }
 
 }
