@@ -1,8 +1,14 @@
 package name.abuchen.portfolio.model;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.TreeMap;
+
 
 public class Bookmark
 {
@@ -42,10 +48,46 @@ public class Bookmark
 
     public String constructURL(Security security)
     {
-        String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$
-        url = url.replace("{isin}", encode(security.getIsin())); //$NON-NLS-1$
-        url = url.replace("{wkn}", encode(security.getWkn())); //$NON-NLS-1$
-        url = url.replace("{name}", encode(security.getName())); //$NON-NLS-1$
+        boolean replacementDone = Boolean.FALSE;
+        String url = pattern;
+        Class<? extends Security> securityClass = security.getClass();
+        HashMap<String, String> types = new HashMap<String, String>();
+        TreeMap <Integer,Entry<String, String>> replaceTypes = new TreeMap<Integer,Entry<String, String>>();
+
+        
+        
+        types.put("{tickerSymbol}", "getTickerSymbol");
+        types.put("{isin}",  "getIsin");
+        types.put("{wkn}", "getWkn");
+        types.put("{name}",  "getName");
+
+       
+        for(Entry<String, String> type : types.entrySet()){
+            if(pattern.contains(type.getKey()))
+              replaceTypes.put(pattern.indexOf(type.getKey()), type);
+        }
+
+        for( Integer key :replaceTypes.keySet()){
+            Entry<String, String> replacement = replaceTypes.get(key);
+            Method method;
+            try
+            {
+                method = securityClass.getMethod(replacement.getValue());
+                String queryString = (String) method.invoke(security);
+                
+                if(!replacementDone && queryString!= null && queryString.length() > 0 ){
+                        url = url.replace(replacement.getKey(), encode(queryString));
+                        replacementDone = Boolean.TRUE;
+                }
+                else 
+                    url = url.replace(replacement.getKey(), encode(""));
+            }
+            catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+            {
+                e.printStackTrace();
+            }
+
+        }
 
         return url;
     }
