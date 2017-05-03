@@ -3,6 +3,13 @@ package name.abuchen.portfolio.model;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 
 public class Bookmark
 {
@@ -42,11 +49,47 @@ public class Bookmark
 
     public String constructURL(Security security)
     {
-        String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$
-        url = url.replace("{isin}", encode(security.getIsin())); //$NON-NLS-1$
-        url = url.replace("{wkn}", encode(security.getWkn())); //$NON-NLS-1$
-        url = url.replace("{name}", encode(security.getName())); //$NON-NLS-1$
+        boolean replacementDone = Boolean.FALSE;
 
+
+        HashMap<String, String> types = new HashMap<String, String>();
+        types.put("tickerSymbol", security.getTickerSymbol());
+        types.put("isin",  security.getIsin());
+        types.put("wkn", security.getWkn());
+        types.put("name",  security.getName());
+
+        List<String> patterns = new ArrayList<>();
+
+        Pattern p = Pattern.compile("\\{(.*?)\\}");
+        Matcher m = p.matcher(pattern);
+        while(m.find()) {
+            Arrays.stream(m.group(1).split(","))
+            .filter(t -> pattern.contains(t) )
+            .forEach(patterns::add);
+        }
+        
+        String url = pattern.replace(",", encode("")).replace("{",encode("")).replace("}", encode(""));
+        
+        for( String key :patterns){
+            try
+            {
+                String replacement = types.get(key);
+                if(!replacementDone && replacement != null && replacement.length() > 0 ){
+                        url = url.replace(key, encode(replacement));
+                        replacementDone = Boolean.TRUE;
+                }
+                else 
+                    url = url.replace(key, encode(""));
+                
+        
+            }
+            catch ( SecurityException e)
+            {
+                throw new RuntimeException(e);
+            }
+
+        }
+        
         return url;
     }
 
