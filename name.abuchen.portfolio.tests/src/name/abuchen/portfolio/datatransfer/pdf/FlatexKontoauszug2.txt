@@ -26,7 +26,7 @@ datum                                                                   in EUR
 26.01.     26.01.  Überweisung                                     -15.000,00-
                    Auszahlung 01 Flatex
                    BYLADEM1001
-                   DE30120300000016664096
+                   DE30120300000016765097
                    Max Mustermann
 28.01.     01.02.  Ausführung ORDER Kauf   DE000CD1FT55              1.125,00-
                    76625567                                                   
