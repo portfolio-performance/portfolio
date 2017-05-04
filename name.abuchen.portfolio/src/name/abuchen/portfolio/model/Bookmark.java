@@ -74,13 +74,15 @@ public class Bookmark
             {
                 method = securityClass.getMethod(replacement.getValue());
                 String queryString = (String) method.invoke(security);
-                
+
                 if(!replacementDone && queryString!= null && queryString.length() > 0 ){
                         url = url.replace(replacement.getKey(), encode(queryString));
                         replacementDone = Boolean.TRUE;
                 }
                 else 
                     url = url.replace(replacement.getKey(), encode(""));
+                
+        
             }
             catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
             {
@@ -88,7 +90,21 @@ public class Bookmark
             }
 
         }
-
+        
+        if(!replacementDone){
+            url = pattern.replace("{tickerSymbol}", encode("")); //$NON-NLS-1$
+            url = url.replace("{isin}", encode("")); //$NON-NLS-1$
+            url = url.replace("{wkn}", encode("")); //$NON-NLS-1$
+            url = url.replace("{name}", encode("")); //$NON-NLS-1$
+            if(security.getTickerSymbol() != null && security.getTickerSymbol().length()>0)
+                url=url.concat(security.getTickerSymbol());
+            else if(security.getIsin()!= null && security.getIsin().length()>0)
+                url=url.concat(security.getIsin());
+            else if(security.getWkn()!= null && security.getWkn().length()>0)
+                url=url.concat(security.getWkn());
+            else 
+                url=url.concat(security.getName());
+        }
         return url;
     }
 
