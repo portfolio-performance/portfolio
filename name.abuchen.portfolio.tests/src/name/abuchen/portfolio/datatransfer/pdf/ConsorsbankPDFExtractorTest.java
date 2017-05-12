@@ -463,7 +463,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5000_00L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-19")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
@@ -506,7 +506,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1387_85L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-23")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-21")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 17_85L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(5.48))));
@@ -550,7 +550,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-20")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-15")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.43915)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0_00L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(15.53))));
