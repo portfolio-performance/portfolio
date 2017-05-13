@@ -70,7 +70,8 @@ import name.abuchen.portfolio.util.Interval;
         dates = new LocalDate[size];
         delta = new double[size];
         accumulated = new double[size];
-        transferals = new long[size];
+        inboundTransferals = new long[size];
+        outboundTransferals = new long[size];
         totals = new long[size];
 
         final double adjustment = clientIndex.getAccumulatedPercentage()[Dates.daysBetween(actualInterval.getStart(),
@@ -119,7 +120,8 @@ import name.abuchen.portfolio.util.Interval;
         dates = new LocalDate[] { startDate };
         delta = new double[] { 0d };
         accumulated = new double[] { 0d };
-        transferals = new long[] { 0 };
+        inboundTransferals = new long[] { 0 };
+        outboundTransferals = new long[] { 0 };
         totals = new long[] { 0 };
     }
 }

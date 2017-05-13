@@ -43,7 +43,8 @@ public class PerformanceIndex
 
     protected LocalDate[] dates;
     protected long[] totals;
-    protected long[] transferals;
+    protected long[] inboundTransferals;
+    protected long[] outboundTransferals;
     protected long[] taxes;
     protected long[] dividends;
     protected long[] interest;
@@ -179,7 +180,21 @@ public class PerformanceIndex
 
     public long[] getTransferals()
     {
+        long[] transferals = new long[inboundTransferals.length];
+        for (int ii = 0; ii < transferals.length; ii++)
+            transferals[ii] = inboundTransferals[ii] - outboundTransferals[ii];
+
         return transferals;
+    }
+
+    public long[] getInboundTransferals()
+    {
+        return inboundTransferals;
+    }
+
+    public long[] getOutboundTransferals()
+    {
+        return outboundTransferals;
     }
 
     public Drawdown getDrawdown()
@@ -302,12 +317,12 @@ public class PerformanceIndex
 
     private long[] calculateInvestedCapital(long startValue)
     {
-        long[] investedCapital = new long[transferals.length];
+        long[] investedCapital = new long[inboundTransferals.length];
 
         investedCapital[0] = startValue;
         long current = startValue;
         for (int ii = 1; ii < investedCapital.length; ii++)
-            current = investedCapital[ii] = current + transferals[ii];
+            current = investedCapital[ii] = current + inboundTransferals[ii] - outboundTransferals[ii];
 
         return investedCapital;
     }
@@ -384,7 +399,7 @@ public class PerformanceIndex
 
                 printer.print(dates[ii].toString());
                 printer.print(Values.Amount.format(totals[ii]));
-                printer.print(Values.Amount.format(transferals[ii]));
+                printer.print(Values.Amount.format(inboundTransferals[ii] - outboundTransferals[ii]));
                 printer.print(Values.Percent.format(delta[ii]));
                 printer.print(Values.Percent.format(accumulated[ii]));
                 printer.println();
