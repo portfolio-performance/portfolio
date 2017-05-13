@@ -36,8 +36,7 @@ public class PortfolioSnapshot
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 
-        return new PortfolioSnapshot(portfolio instanceof ReadOnlyPortfolio
-                        ? ((ReadOnlyPortfolio) portfolio).getSource() : portfolio, converter, date, positions);
+        return new PortfolioSnapshot(portfolio, converter, date, positions);
     }
 
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter)
@@ -87,9 +86,14 @@ public class PortfolioSnapshot
         this.positions = positions;
     }
 
-    public Portfolio getSource()
+    Portfolio getSource()
     {
         return portfolio;
+    }
+
+    public Portfolio getPortfolio()
+    {
+        return portfolio instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) portfolio).getSource() : portfolio;
     }
 
     public CurrencyConverter getCurrencyConverter()
