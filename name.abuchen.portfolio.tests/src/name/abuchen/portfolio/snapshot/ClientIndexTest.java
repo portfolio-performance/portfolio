@@ -281,7 +281,9 @@ public class ClientIndexTest
                         .generatePrices(startPrice, startDate, endDate) //
                         .addTo(client);
 
-        new PortfolioBuilder() //
+        Account account = new AccountBuilder().addTo(client);
+
+        new PortfolioBuilder(account) //
                         .inbound_delivery(security, "2014-01-01", Values.Share.factorize(100), 100) //
                         .addTo(client);
 

@@ -18,6 +18,7 @@ import name.abuchen.portfolio.TaxonomyBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
@@ -170,6 +171,7 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
+                        .deposit_("2014-01-01", Values.Amount.factorize(1000))
                         .addTo(client);
 
         AccountTransaction t = new AccountTransaction();
@@ -183,15 +185,23 @@ public class ClassificationIndexTest
         Portfolio portfolio = new PortfolioBuilder(account) //
                         .addTo(client);
 
-        portfolio.addTransaction(new PortfolioTransaction("2015-12-31", //
-                        CurrencyUnit.EUR, Values.Amount.factorize(1000), //
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, //
-                        0, 0));
+        BuySellEntry buy = new BuySellEntry(portfolio, account);
+        buy.setType(PortfolioTransaction.Type.BUY);
+        buy.setDate(LocalDate.parse("2015-12-31"));
+        buy.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
+        buy.setShares(Values.Share.factorize(10));
+        buy.setSecurity(security);
+        buy.insert();
 
-        portfolio.addTransaction(new PortfolioTransaction("2016-12-31", //
-                        CurrencyUnit.EUR, Values.Amount.factorize(1070), //
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
-                        0, Values.Amount.factorize(30)));
+        BuySellEntry sell = new BuySellEntry(portfolio, account);
+        sell.setType(PortfolioTransaction.Type.SELL);
+        sell.setDate(LocalDate.parse("2016-12-31"));
+        sell.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1070)));
+        sell.setShares(Values.Share.factorize(10));
+        sell.setSecurity(security);
+        sell.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30))));
+        sell.insert();
 
         Classification classification = new Classification(null, null);
         classification.addAssignment(new Assignment(security));
