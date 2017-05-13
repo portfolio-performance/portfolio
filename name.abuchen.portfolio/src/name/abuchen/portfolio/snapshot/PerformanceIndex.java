@@ -23,7 +23,6 @@ import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -31,6 +30,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -101,9 +101,8 @@ public class PerformanceIndex
     public static PerformanceIndex forInvestment(Client client, CurrencyConverter converter, Security security,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        Classification classification = new Classification(null, null);
-        classification.addAssignment(new Assignment(security));
-        return forClassification(client, converter, classification, reportInterval, warnings);
+        Client filteredClient = new ClientSecurityFilter(security).filter(client);
+        return forClient(filteredClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security)
