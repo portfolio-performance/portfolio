@@ -222,4 +222,11 @@ public class PortfolioTransaction extends Transaction
         double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
         return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
     }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s %-17s %s %9s %s", Values.Date.format(getDate()), type.name(), getCurrencyCode(), //$NON-NLS-1$
+                        Values.Amount.format(getAmount()), getSecurity().getName());
+    }
 }
