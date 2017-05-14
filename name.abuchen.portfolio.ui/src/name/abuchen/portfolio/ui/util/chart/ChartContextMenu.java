@@ -227,7 +227,9 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                                 chart.getLegend().setPosition(SWT.BOTTOM);
                                 chart.suspendUpdate(false);
                                 chart.save(filename, format);
-                            }finally {
+                            }
+                            finally
+                            {
                                 chart.suspendUpdate(true);
                                 chart.getTitle().setVisible(isChartTitleVisible);
                                 chart.getLegend().setVisible(isChartLegendVisible);

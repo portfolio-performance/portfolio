@@ -58,6 +58,7 @@ public class Messages extends NLS
     public static String CSVImportMissingField;
     public static String CSVImportMissingSecurity;
     public static String CSVLineXwithMsgY;
+    public static String EventFeedManual;
     public static String FixAssignCurrencyCode;
     public static String FixAssignCurrencyCodeDone;
     public static String FixAssignExistingAccount;
@@ -145,16 +146,18 @@ public class Messages extends NLS
     public static String MsgIncorrectPassword;
     public static String MsgKeyLengthNotSupported;
     public static String MsgLoadingExchangeRates;
+    public static String MsgMissingEventFeedURL;
     public static String MsgMissingFeedURL;
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResultsAvailable;
     public static String MsgNoExchangeRateAvailableForConversion;
     public static String MsgNoExchangeRateTimeSeriesFound;
-    public static String MsgNoQuotesFoundInHTML;
+    public static String MsgNoMatchingTableFoundInHTML;
     public static String MsgNoResults;
     public static String MsgNotANumber;
     public static String MsgNotAPortflioFile;
+    public static String MsgParsingFailedWithHTML;
     public static String MsgPasswordMissing;
     public static String MsgReadingFile;
     public static String MsgResponseContainsNoIndices;

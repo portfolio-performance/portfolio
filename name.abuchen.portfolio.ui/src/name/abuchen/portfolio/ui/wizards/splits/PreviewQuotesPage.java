@@ -41,11 +41,11 @@ public class PreviewQuotesPage extends AbstractWizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return Values.Date.format(p.getTime());
+                    return Values.Date.format(p.getDate());
                 case 1:
                     return Values.Quote.format(p.getValue());
                 case 2:
-                    if (model.isChangeHistoricalQuotes() && p.getTime().isBefore(model.getExDate()))
+                    if (model.isChangeHistoricalQuotes() && p.getDate().isBefore(model.getExDate()))
                     {
                         long shares = p.getValue() * model.getOldShares() / model.getNewShares();
                         return Values.Quote.format(shares);

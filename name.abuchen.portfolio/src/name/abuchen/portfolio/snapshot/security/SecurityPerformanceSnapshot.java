@@ -88,6 +88,7 @@ public class SecurityPerformanceSnapshot
                             || t.getType() == AccountTransaction.Type.INTEREST)
             {
                 DividendTransaction dt = new DividendTransaction();
+                dt.setType(t.getType());
                 dt.setDate(t.getDate());
                 dt.setSecurity(t.getSecurity());
                 dt.setAccount(account);
