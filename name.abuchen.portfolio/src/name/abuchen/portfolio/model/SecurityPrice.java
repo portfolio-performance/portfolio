@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-import name.abuchen.portfolio.money.Values;
-
-public class SecurityPrice implements Comparable<SecurityPrice>
+public class SecurityPrice extends SecurityElement implements Comparable<SecurityPrice>
 {
     public static final class ByDate implements Comparator<SecurityPrice>, Serializable
     {
@@ -15,46 +13,23 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         @Override
         public int compare(SecurityPrice p1, SecurityPrice p2)
         {
-            return p1.time.compareTo(p2.time);
+            return p1.date.compareTo(p2.date);
         }
     }
-
-    private LocalDate time;
-    private long value;
 
     public SecurityPrice()
     {}
 
-    public SecurityPrice(LocalDate time, long price)
+    public SecurityPrice(LocalDate date, long price)
     {
-        this.value = price;
-        this.time = time;
-    }
-
-    public LocalDate getTime()
-    {
-        return time;
-    }
-
-    public void setTime(LocalDate time)
-    {
-        this.time = time;
-    }
-
-    public long getValue()
-    {
-        return value;
-    }
-
-    public void setValue(long value)
-    {
-        this.value = value;
+        super.setDate(date);
+        super.setValue(price);
     }
 
     @Override
     public int compareTo(SecurityPrice o)
     {
-        return time.compareTo(o.time);
+        return super.date.compareTo(o.date);
     }
 
     @Override
@@ -62,7 +37,8 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        long value = getValue();
+        result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + (int) (value ^ (value >>> 32));
         return result;
     }
@@ -77,23 +53,16 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         if (getClass() != obj.getClass())
             return false;
         SecurityPrice other = (SecurityPrice) obj;
-        if (time == null)
+        if (date == null)
         {
-            if (other.time != null)
+            if (other.date != null)
                 return false;
         }
-        else if (!time.equals(other.time))
+        else if (!date.equals(other.date))
             return false;
-        if (value != other.value)
+        if (getValue() != other.getValue())
             return false;
         return true;
-    }
-
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%tF: %,10.2f", time, value / Values.Quote.divider());
     }
 
 }

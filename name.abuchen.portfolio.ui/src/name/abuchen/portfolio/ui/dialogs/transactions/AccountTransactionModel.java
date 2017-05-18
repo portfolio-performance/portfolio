@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
@@ -13,6 +14,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -152,6 +154,12 @@ public class AccountTransactionModel extends AbstractModel
                                 Money.of(getSecurityCurrencyCode(), fxTaxes), //
                                 exchangeRate));
         }
+        if (type == AccountTransaction.Type.DIVIDENDS)
+        {
+                SecurityEvent event = new SecurityEvent(date, SecurityEvent.Type.STOCK_DIVIDEND, getFxCurrencyCode(), dividendAmount); //$NON-NLS-1$
+                security.addEvent(event);
+        }
+
     }
 
     @Override

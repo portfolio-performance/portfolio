@@ -16,10 +16,12 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.EventFeed;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UpdateEventsJob;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
@@ -51,6 +53,18 @@ public class QuotesContextMenu
         // enable only if online updates are configured
         action.setEnabled(!QuoteFeed.MANUAL.equals(security.getFeed())
                         || (security.getLatestFeed() != null && !QuoteFeed.MANUAL.equals(security.getLatestFeed())));
+        manager.add(action);
+
+        action = new Action(Messages.SecurityMenuUpdateEvents)
+        {
+            @Override
+            public void run()
+            {
+                new UpdateEventsJob(owner.getClient(), security).schedule();
+            }
+        };
+        // enable only if online updates are configured
+        action.setEnabled(!EventFeed.MANUAL.equals(security.getEventFeed()));
         manager.add(action);
 
         manager.add(new Action(Messages.SecurityMenuConfigureOnlineUpdate)

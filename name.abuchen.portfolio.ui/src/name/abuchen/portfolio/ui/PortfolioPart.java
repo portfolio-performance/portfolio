@@ -556,6 +556,10 @@ public class PortfolioPart implements LoadClientThread.Callback
             regularJobs.add(job);
 
             new UpdateCPIJob(client).schedule(1000);
+
+            new UpdateEventsJob(client, EnumSet.of(UpdateEventsJob.Target.HISTORIC))
+                .schedule(1000);
+
         }
     }
 
