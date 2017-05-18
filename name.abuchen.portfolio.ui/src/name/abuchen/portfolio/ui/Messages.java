@@ -335,6 +335,7 @@ public class Messages extends NLS
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelChartDetailDividends;
+    public static String LabelChartDetailSMA;
     public static String LabelChartDetailEvents;
     public static String LabelChartDetailInvestments;
     public static String LabelClientClearCustomItems;
