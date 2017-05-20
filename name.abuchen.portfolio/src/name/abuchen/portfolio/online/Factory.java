@@ -11,6 +11,9 @@ public class Factory
     private static final List<QuoteFeed> FEEDS;
     private static final List<SecuritySearchProvider> SEARCH;
 
+    private Factory()
+    {}
+
     public static final List<QuoteFeed> getQuoteFeedProvider()
     {
         return FEEDS;
@@ -33,12 +36,12 @@ public class Factory
 
     static
     {
-        FEEDS = new ArrayList<QuoteFeed>();
+        FEEDS = new ArrayList<>();
         Iterator<QuoteFeed> feeds = ServiceRegistry.lookupProviders(QuoteFeed.class);
         while (feeds.hasNext())
             FEEDS.add(feeds.next());
 
-        SEARCH = new ArrayList<SecuritySearchProvider>();
+        SEARCH = new ArrayList<>();
         Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
         while (search.hasNext())
             SEARCH.add(search.next());
