@@ -462,73 +462,90 @@ public class StatementOfAssetsViewer
 
     private void addPerformanceColumns(List<ReportingPeriod> options)
     {
+        ReportingPeriodLabelProvider labelProvider;
+
         Column column = new Column("ttwror", Messages.ColumnTWROR, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnTTWROR_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnTWROR_Description);
-        column.setLabelProvider(
-                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTrueTimeWeightedRateOfReturn));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getIrr);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnIRRPerformanceOption, options));
         column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getIrr));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGains_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("capitalgains%", Messages.ColumnCapitalGainsPercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnCapitalGainsPercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGainsPercent_Description);
-        column.setLabelProvider(
-                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldingsPercent));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnAbsolutePerformance_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDelta);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformance_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDelta));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("delta%", Messages.ColumnAbsolutePerformancePercent_MenuLabel, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDeltaPercent);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnAbsolutePerformancePercent_Option, options));
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnAbsolutePerformancePercent_Description);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getDeltaPercent));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
     }
 
     private void addDividendColumns(List<ReportingPeriod> options)
     {
+        ReportingPeriodLabelProvider labelProvider;
+
         Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendSum + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setMenuLabel(Messages.ColumnDividendSum_MenuLabel);
-        column.setLabelProvider(new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, false));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("d%", Messages.ColumnDividendTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDiv, false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
         column.setDescription(Messages.ColumnDividendTotalRateOfReturn_Description);
-        column.setLabelProvider(
-                        new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDiv, false));
+        column.setLabelProvider(labelProvider);
+        column.setSorter(ColumnViewerSorter.create(new ElementComparator(labelProvider)));
         column.setVisible(false);
         support.addColumn(column);
     }
@@ -1061,6 +1078,7 @@ public class StatementOfAssetsViewer
     }
 
     private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+                    implements Comparator<Object>
     {
         private boolean showColorAndArrows;
         private Function<SecurityPerformanceRecord, Object> valueProvider;
@@ -1076,7 +1094,6 @@ public class StatementOfAssetsViewer
             this.valueProvider = valueProvider;
             this.showColorAndArrows = showUpAndDownArrows;
         }
-
 
         private Object getValue(Object e, ReportingPeriod option)
         {
@@ -1153,6 +1170,25 @@ public class StatementOfAssetsViewer
             if (doubleValue < 0)
                 return Images.RED_ARROW.image();
             return null;
+        }
+
+        @SuppressWarnings("unchecked")
+        @Override
+        public int compare(Object o1, Object o2)
+        {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
+
+            Comparable<Object> v1 = (Comparable<Object>) getValue(o1, option);
+            Comparable<Object> v2 = (Comparable<Object>) getValue(o2, option);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return v1.compareTo(v2);
         }
 
         private void calculatePerformance(Element element, ReportingPeriod period)
