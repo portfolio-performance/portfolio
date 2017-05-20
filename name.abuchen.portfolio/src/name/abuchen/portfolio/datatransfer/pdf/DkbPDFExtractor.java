@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
+@SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
 {
     public DkbPDFExtractor(Client client) throws IOException
@@ -30,7 +31,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addTransferOutTransaction();
     }
 
-    @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
         DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
@@ -38,7 +38,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Wertpapier Abrechnung Kauf");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
@@ -72,12 +72,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t));
+                        .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addBuyTransactionFund()
     {
         DocumentType type = new DocumentType("Wertpapier Abrechnung Ausgabe Investmentfonds");
@@ -85,7 +84,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Wertpapier Abrechnung Ausgabe Investmentfonds");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.BUY);
@@ -119,12 +118,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t));
+                        .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addSellTransaction()
     {
         DocumentType type = new DocumentType("Wertpapier Abrechnung Verkauf");
@@ -132,7 +130,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Wertpapier Abrechnung Verkauf");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.setType(PortfolioTransaction.Type.SELL);
@@ -166,13 +164,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t));
+                        .wrap(BuySellEntryItem::new);
 
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addInterestTransaction()
     {
         DocumentType type = new DocumentType("Zinsgutschrift");
@@ -180,7 +177,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Zinsgutschrift");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
             transaction.setType(AccountTransaction.Type.DIVIDENDS);
@@ -214,12 +211,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new TransactionItem(t));
+                        .wrap(TransactionItem::new);
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
         DocumentType type = new DocumentType("Dividendengutschrift");
@@ -227,7 +223,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Dividendengutschrift");
         type.addBlock(block);
-        Transaction<AccountTransaction> pdfTransaction = new Transaction<AccountTransaction>();
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
             transaction.setType(AccountTransaction.Type.DIVIDENDS);
@@ -252,12 +248,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new TransactionItem(t));
+                        .wrap(TransactionItem::new);
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
-    @SuppressWarnings("nls")
     private void addRemoveTransaction()
     {
         DocumentType type = new DocumentType("ung");
@@ -266,7 +261,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("Gesamtkündigung|Teilrückzahlung mit Nennwertänderung"
                         + "|Teilliquidation mit Nennwertreduzierung|Einlösung bei Gesamtfälligkeit");
         type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>();
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             BuySellEntry entry = new BuySellEntry();
             entry.getPortfolioTransaction().setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
@@ -309,13 +304,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t));
+                        .wrap(BuySellEntryItem::new);
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
         addTaxReturnBlock(type);
     }
 
-    @SuppressWarnings("nls")
     private void addTransferOutTransaction()
     {
         DocumentType type = new DocumentType("Depotbuchung - Belastung");
@@ -356,37 +350,31 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                             .getCurrencyCode()));
                         })
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(BuySellEntryItem::new));
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
     {
         pdfTransaction.section("tax").optional()
                         .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            addTax(t, v, "tax");
-                        })
+                        .assign((t, v) -> addTax(t, v, "tax"))
 
                         .section("soli").optional()
                         .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            addTax(t, v, "soli");
-                        })
+                        .assign((t, v) -> addTax(t, v, "soli"))
+
                         .section("kirchenst").optional()
                         .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            addTax(t, v, "kirchenst");
-                        })
+                        .assign((t, v) -> addTax(t, v, "kirchenst"))
+
                         .section("quellenst")
                         .optional()
                         .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenst>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            addTax(t, v, "quellenst");
-                        });
+                        .assign((t, v) -> addTax(t, v, "quellenst"));
 
     }
 
-    private <T extends Transaction<?>> void addTax(Object t, Map<String, String> v, String taxtype)
+    private void addTax(Object t, Map<String, String> v, String taxtype)
     {
         if (t instanceof name.abuchen.portfolio.model.Transaction)
         {
@@ -465,7 +453,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(TransactionItem::new));
     }
 
     @Override
