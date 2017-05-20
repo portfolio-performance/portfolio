@@ -1,13 +1,14 @@
 package name.abuchen.portfolio.model;
 
 import java.io.UnsupportedEncodingException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.TreeMap;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class Bookmark
@@ -49,62 +50,46 @@ public class Bookmark
     public String constructURL(Security security)
     {
         boolean replacementDone = Boolean.FALSE;
-        String url = pattern;
-        Class<? extends Security> securityClass = security.getClass();
+
+
         HashMap<String, String> types = new HashMap<String, String>();
-        TreeMap <Integer,Entry<String, String>> replaceTypes = new TreeMap<Integer,Entry<String, String>>();
+        types.put("tickerSymbol", security.getTickerSymbol());
+        types.put("isin",  security.getIsin());
+        types.put("wkn", security.getWkn());
+        types.put("name",  security.getName());
 
-        
-        
-        types.put("{tickerSymbol}", "getTickerSymbol");
-        types.put("{isin}",  "getIsin");
-        types.put("{wkn}", "getWkn");
-        types.put("{name}",  "getName");
+        List<String> patterns = new ArrayList<>();
 
-       
-        for(Entry<String, String> type : types.entrySet()){
-            if(pattern.contains(type.getKey()))
-              replaceTypes.put(pattern.indexOf(type.getKey()), type);
+        Pattern p = Pattern.compile("\\{(.*?)\\}");
+        Matcher m = p.matcher(pattern);
+        while(m.find()) {
+            Arrays.stream(m.group(1).split(","))
+            .filter(t -> pattern.contains(t) )
+            .forEach(patterns::add);
         }
-
-        for( Integer key :replaceTypes.keySet()){
-            Entry<String, String> replacement = replaceTypes.get(key);
-            Method method;
+        
+        String url = pattern.replace(",", encode("")).replace("{",encode("")).replace("}", encode(""));
+        
+        for( String key :patterns){
             try
             {
-                method = securityClass.getMethod(replacement.getValue());
-                String queryString = (String) method.invoke(security);
-
-                if(!replacementDone && queryString!= null && queryString.length() > 0 ){
-                        url = url.replace(replacement.getKey(), encode(queryString));
+                String replacement = types.get(key);
+                if(!replacementDone && replacement != null && replacement.length() > 0 ){
+                        url = url.replace(key, encode(replacement));
                         replacementDone = Boolean.TRUE;
                 }
                 else 
-                    url = url.replace(replacement.getKey(), encode(""));
+                    url = url.replace(key, encode(""));
                 
         
             }
-            catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e)
+            catch ( SecurityException e)
             {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
 
         }
         
-        if(!replacementDone){
-            url = pattern.replace("{tickerSymbol}", encode("")); //$NON-NLS-1$
-            url = url.replace("{isin}", encode("")); //$NON-NLS-1$
-            url = url.replace("{wkn}", encode("")); //$NON-NLS-1$
-            url = url.replace("{name}", encode("")); //$NON-NLS-1$
-            if(security.getTickerSymbol() != null && security.getTickerSymbol().length()>0)
-                url=url.concat(security.getTickerSymbol());
-            else if(security.getIsin()!= null && security.getIsin().length()>0)
-                url=url.concat(security.getIsin());
-            else if(security.getWkn()!= null && security.getWkn().length()>0)
-                url=url.concat(security.getWkn());
-            else 
-                url=url.concat(security.getName());
-        }
         return url;
     }
 
