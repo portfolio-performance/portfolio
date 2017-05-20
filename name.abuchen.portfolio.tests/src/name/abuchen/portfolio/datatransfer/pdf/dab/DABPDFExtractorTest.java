@@ -198,6 +198,43 @@ public class DABPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf5() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("DABKauf5.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("IE00B3F81R35"));
+        assertThat(security.getName(), is("iShsIII-Core EO Corp.Bd U.ETF Registered Shares o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.46))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-03-01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.0499)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
+    }
+
+    @Test
     public void testWertpapierVerkauf() throws IOException
     {
         DABPDFExctractor extractor = new DABPDFExctractor(new Client())
