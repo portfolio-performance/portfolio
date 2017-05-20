@@ -64,8 +64,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
+                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
-                        .match("(^Den Gegenwert buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Lasten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -110,8 +110,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
+                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
-                        .match("(^Den Gegenwert buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Lasten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -156,8 +156,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount")
+                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
-                        .match("(^Den Gegenwert buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
