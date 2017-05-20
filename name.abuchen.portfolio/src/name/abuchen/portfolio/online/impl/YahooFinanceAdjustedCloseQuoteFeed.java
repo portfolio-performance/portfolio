@@ -27,7 +27,7 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
         // Date,Open,High,Low,Close,Volume,Adj Close
         super.fillValues(values, price, dateFormat);
 
-        price.setValue(YahooHelper.asPrice(values[6]));
+        price.setValue(YahooHelper.asPrice(values[CSVColumn.AdjClose]));
     }
 
 }

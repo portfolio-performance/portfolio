@@ -58,13 +58,16 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .find("Einheit Umsatz( F\\Dlligkeit)?") //
                         .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        
+                        .section("date")
+                        .match("KAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
+                        .assign((t,v) -> t.setDate(asDate(v.get("date"))))
 
-                        .section("date", "amount", "currency")
-                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .section("amount", "currency")
+                        .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setDate(asDate(v.get("date")));
                         })
 
                         .wrap(BuySellEntryItem::new);

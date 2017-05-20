@@ -18,7 +18,7 @@ Kontowährung:      EUR
 Alter Saldo vom    30.09.2010                     in EUR               106,14+
 Buchungs-  Valuta  Buchungstext                                         Betrag
 datum                                                                   in EUR
-01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16664096                  2.000,00+
+01.10.     01.10.  EINZAHLUNG 4 FLATEX / 0/16765097                  2.000,00+
 01.10.     30.09.  Zinsabschluss   01.07.2010 - 30.09.2010               0,00+
 04.10.     06.10.  Ausführung ORDER Kauf DE000GS3FNF6                1.210,00-
                    29514705

@@ -8,6 +8,8 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 public class InvestmentPlan implements Named, Adaptable
 {
@@ -23,7 +25,7 @@ public class InvestmentPlan implements Named, Adaptable
     private long amount;
     private long fees;
 
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
+    private List<PortfolioTransaction> transactions = new ArrayList<>();
 
     public InvestmentPlan()
     {
@@ -177,15 +179,46 @@ public class InvestmentPlan implements Named, Adaptable
      * Returns the date for the next transaction to be generated based on the
      * interval
      */
-    private LocalDate next(LocalDate date)
+    private LocalDate next(LocalDate transactionDate)
     {
-        LocalDate startLocalDate = start;
+        LocalDate previousDate = transactionDate;
 
-        LocalDate next = date.plusMonths(interval);
+        // the transaction date might be edited (or moved to the next months b/c
+        // of public holidays) -> determine the "normalized" date by comparing
+        // the three months around the current transactionDate
+
+        if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
+        {
+            int daysBetween = Integer.MAX_VALUE;
+
+            LocalDate testDate = transactionDate.minusMonths(1);
+            testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+
+            for (int ii = 0; ii < 3; ii++)
+            {
+                int d = Dates.daysBetween(transactionDate, testDate);
+                if (d < daysBetween)
+                {
+                    daysBetween = d;
+                    previousDate = testDate;
+                }
+
+                testDate = testDate.plusMonths(1);
+                testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
+            }
+        }
+
+        LocalDate next = previousDate.plusMonths(interval);
 
         // correct day of month (say the transactions are to be generated on the
         // 31st, but the month has only 30 days)
-        next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), startLocalDate.getDayOfMonth()));
+        next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
+
+        // do not generate a investment plan transaction on a public holiday
+        TradeCalendar tradeCalendar = new TradeCalendar();
+        while (tradeCalendar.isHoliday(next))
+            next = next.plusDays(1);
+
         return next;
     }
 
@@ -197,7 +230,7 @@ public class InvestmentPlan implements Named, Adaptable
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)
     {
         LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
-        List<PortfolioTransaction> newlyCreated = new ArrayList<PortfolioTransaction>();
+        List<PortfolioTransaction> newlyCreated = new ArrayList<>();
 
         LocalDate now = LocalDate.now();
 
@@ -250,8 +283,8 @@ public class InvestmentPlan implements Named, Adaptable
             entry.setSecurity(getSecurity());
 
             if (fees != 0)
-                entry.getPortfolioTransaction().addUnit(
-                                new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
+                entry.getPortfolioTransaction()
+                                .addUnit(new Transaction.Unit(Unit.Type.FEE, Money.of(targetCurrencyCode, fees)));
 
             if (forex != null)
                 entry.getPortfolioTransaction().addUnit(forex);

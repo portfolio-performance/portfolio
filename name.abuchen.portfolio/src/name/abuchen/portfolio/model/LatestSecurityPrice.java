@@ -20,6 +20,15 @@ public class LatestSecurityPrice extends SecurityPrice
         super(time, price);
     }
 
+    public LatestSecurityPrice(LocalDate time, long price, long high, long low, long volume)
+    {
+        super(time, price);
+
+        this.high = high;
+        this.low = low;
+        this.volume = volume;
+    }
+
     public long getHigh()
     {
         return high;

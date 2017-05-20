@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf;
+package name.abuchen.portfolio.datatransfer.pdf.commerzbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -17,12 +17,16 @@ import java.util.Scanner;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -69,7 +73,7 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 223_45L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
-    
+
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
@@ -106,6 +110,47 @@ public class CommerzbankPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-07-20")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1045_67L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
+    }
+
+    @Test
+    public void testWertpapierkauf() throws IOException
+    {
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankWertpapierkauf.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
+        assertThat(security.getName(), is("i S h s I I I - C o r e MSCI W o r l d U . E T F"));
+        assertThat(security.getIsin(), is("DE26100400480680403302"));
+        assertThat(security.getWkn(), is("A0RPWH"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.96))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-04-18")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.572)));
     }
 
     private String from(String resource)

@@ -335,24 +335,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
-    @SuppressWarnings("nls")
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
-        // without a user agent, some sites serve a mobile/alternative version
-        String userAgent;
-
-        String os = System.getProperty("os.name", "unknown").toLowerCase();
-        if (os.startsWith("windows"))
-            userAgent = "Mozilla/5.0 (Windows NT 6.2; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/32.0.1700.77 Safari/537.36";
-        else if (os.startsWith("mac"))
-            userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_1) AppleWebKit/537.73.11 (KHTML, like Gecko) Version/7.0.1 Safari/537.73.11";
-        else
-            userAgent = "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:25.0) Gecko/20100101 Firefox/25.0";
-
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(userAgent).timeout(30000).get(), errors);
+            return parse(Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(), errors);
         }
         catch (URISyntaxException | IOException e)
         {

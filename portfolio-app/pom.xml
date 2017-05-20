@@ -15,7 +15,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.26.0</tycho-version>
+		<tycho-version>1.0.0</tycho-version>
 		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
@@ -50,17 +50,17 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.2-201611241400</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/mars</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/neon</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
@@ -186,6 +186,13 @@
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
 							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.osgi</id>
+							<restrictTo>
+								<version>3.11.3.v20170209-1843</version>
+							</restrictTo>
 						</filter>
 					</filters>
 				</configuration>
