@@ -82,11 +82,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "currency") //
+                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
                         // 14.01.2015 172306238 EUR 59,55
                         // Wert Konto-Nr. Betrag zu Ihren Lasten
                         // 01.06.2011 172306238 EUR 6,40
-                        .match("(?<date>\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
+                        .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -138,9 +139,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "amount", "currency")
+                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Gunsten(\\s*)$")
-                        // 12.04.2011 172306238 EUR 21,45
-                        .match("(?<date>\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));

@@ -17,8 +17,6 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Collectors;
 
-import org.junit.Test;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -35,6 +33,8 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+
+import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractorTest
@@ -509,7 +509,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(59.55))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-14")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-12")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.05))));
@@ -547,7 +547,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.40))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-06-01")));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-05-30")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
     }
     
@@ -583,7 +583,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.45))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2011-04-12"))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2011-04-08"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.75))));
@@ -1231,7 +1231,7 @@ public class OnvistaPDFExtractorTest
         assertThat(firstEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(firstEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(623.49))));
-        assertThat(firstEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-06")));
+        assertThat(firstEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
         assertThat(firstEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
         
@@ -1246,7 +1246,7 @@ public class OnvistaPDFExtractorTest
         assertThat(secondEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
         assertThat(secondEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2508.47))));
-        assertThat(secondEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-06")));
+        assertThat(secondEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
         assertThat(secondEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.5))));
     }
