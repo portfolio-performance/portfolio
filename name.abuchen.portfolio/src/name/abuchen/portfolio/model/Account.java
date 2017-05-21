@@ -94,9 +94,6 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     @Override
     public void addTransaction(AccountTransaction transaction)
     {
-        if (!currencyCode.equals(transaction.getCurrencyCode()))
-            throw new IllegalArgumentException();
-
         this.transactions.add(transaction);
     }
 
