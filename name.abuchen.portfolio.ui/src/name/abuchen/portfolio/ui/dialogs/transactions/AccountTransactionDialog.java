@@ -340,7 +340,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             if (list.size() > 1)
             {
                 for (PortfolioSnapshot ps : list)
-                    addAction(manager, ps, ps.getSource().getName());
+                    addAction(manager, ps, ps.getPortfolio().getName());
             }
         }
 

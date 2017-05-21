@@ -16,11 +16,9 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
-import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 
 public class ClientSnapshot
 {
-    private final Client client;
     private final CurrencyConverter converter;
     private final LocalDate date;
 
@@ -32,9 +30,7 @@ public class ClientSnapshot
 
     public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
     {
-        ClientSnapshot snapshot = new ClientSnapshot(
-                        client instanceof ReadOnlyClient ? ((ReadOnlyClient) client).getSource() : client, converter,
-                        date);
+        ClientSnapshot snapshot = new ClientSnapshot(converter, date);
 
         for (Account account : client.getAccounts())
             snapshot.accounts.add(AccountSnapshot.create(account, converter, date));
@@ -45,16 +41,10 @@ public class ClientSnapshot
         return snapshot;
     }
 
-    private ClientSnapshot(Client client, CurrencyConverter converter, LocalDate date)
+    private ClientSnapshot(CurrencyConverter converter, LocalDate date)
     {
-        this.client = client;
         this.converter = converter;
         this.date = date;
-    }
-
-    public Client getClient()
-    {
-        return client;
     }
 
     public String getCurrencyCode()

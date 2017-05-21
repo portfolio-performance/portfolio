@@ -535,4 +535,26 @@ public class Client
     {
         propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
     }
+
+    public String debugTransactionsToString()
+    {
+        StringBuilder answer = new StringBuilder();
+
+        for (Portfolio portfolio : portfolios)
+        {
+            answer.append(portfolio.getName()).append('\n');
+            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        for (Account account : accounts)
+        {
+            answer.append(account.getName()).append('\n');
+            account.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        return answer.toString();
+    }
+
 }

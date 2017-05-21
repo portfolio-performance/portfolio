@@ -23,7 +23,6 @@ import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -31,6 +30,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
+import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -43,7 +44,8 @@ public class PerformanceIndex
 
     protected LocalDate[] dates;
     protected long[] totals;
-    protected long[] transferals;
+    protected long[] inboundTransferals;
+    protected long[] outboundTransferals;
     protected long[] taxes;
     protected long[] dividends;
     protected long[] interest;
@@ -94,15 +96,15 @@ public class PerformanceIndex
     public static PerformanceIndex forClassification(Client client, CurrencyConverter converter,
                     Classification classification, ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        return ClassificationIndex.calculate(client, converter, classification, reportInterval, warnings);
+        Client filteredClient = new ClientClassificationFilter(classification).filter(client);
+        return PerformanceIndex.forClient(filteredClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forInvestment(Client client, CurrencyConverter converter, Security security,
                     ReportingPeriod reportInterval, List<Exception> warnings)
     {
-        Classification classification = new Classification(null, null);
-        classification.addAssignment(new Assignment(security));
-        return forClassification(client, converter, classification, reportInterval, warnings);
+        Client filteredClient = new ClientSecurityFilter(security).filter(client);
+        return forClient(filteredClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security)
@@ -179,7 +181,21 @@ public class PerformanceIndex
 
     public long[] getTransferals()
     {
+        long[] transferals = new long[inboundTransferals.length];
+        for (int ii = 0; ii < transferals.length; ii++)
+            transferals[ii] = inboundTransferals[ii] - outboundTransferals[ii];
+
         return transferals;
+    }
+
+    public long[] getInboundTransferals()
+    {
+        return inboundTransferals;
+    }
+
+    public long[] getOutboundTransferals()
+    {
+        return outboundTransferals;
     }
 
     public Drawdown getDrawdown()
@@ -302,12 +318,12 @@ public class PerformanceIndex
 
     private long[] calculateInvestedCapital(long startValue)
     {
-        long[] investedCapital = new long[transferals.length];
+        long[] investedCapital = new long[inboundTransferals.length];
 
         investedCapital[0] = startValue;
         long current = startValue;
         for (int ii = 1; ii < investedCapital.length; ii++)
-            current = investedCapital[ii] = current + transferals[ii];
+            current = investedCapital[ii] = current + inboundTransferals[ii] - outboundTransferals[ii];
 
         return investedCapital;
     }
@@ -384,7 +400,7 @@ public class PerformanceIndex
 
                 printer.print(dates[ii].toString());
                 printer.print(Values.Amount.format(totals[ii]));
-                printer.print(Values.Amount.format(transferals[ii]));
+                printer.print(Values.Amount.format(inboundTransferals[ii] - outboundTransferals[ii]));
                 printer.print(Values.Percent.format(delta[ii]));
                 printer.print(Values.Percent.format(accumulated[ii]));
                 printer.println();

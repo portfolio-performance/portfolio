@@ -59,6 +59,7 @@ public class DetectDuplicatesActionTest
     private Account account(AccountTransaction t)
     {
         Account a = new Account();
+        a.setCurrencyCode(t.getCurrencyCode());
         a.addTransaction(t);
         return a;
     }

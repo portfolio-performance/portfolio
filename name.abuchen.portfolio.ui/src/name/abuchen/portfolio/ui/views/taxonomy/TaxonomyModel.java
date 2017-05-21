@@ -51,6 +51,7 @@ public final class TaxonomyModel
     }
 
     private final Taxonomy taxonomy;
+    private final Client client;
     private ClientSnapshot snapshot;
     private final CurrencyConverter converter;
 
@@ -74,6 +75,7 @@ public final class TaxonomyModel
         Objects.requireNonNull(taxonomy);
 
         this.taxonomy = taxonomy;
+        this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
@@ -292,7 +294,7 @@ public final class TaxonomyModel
 
     public Client getClient()
     {
-        return snapshot.getClient();
+        return client;
     }
 
     public CurrencyConverter getCurrencyConverter()

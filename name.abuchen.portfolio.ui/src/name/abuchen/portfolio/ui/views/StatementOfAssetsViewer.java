@@ -714,7 +714,7 @@ public class StatementOfAssetsViewer
         }
         else if (element.isSecurity())
         {
-            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getSource() : null;
+            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getPortfolio() : null;
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
     }
@@ -1210,7 +1210,7 @@ public class StatementOfAssetsViewer
             else
             {
                 sps = SecurityPerformanceSnapshot.create(filteredClient, portfolioSnapshot.getCurrencyConverter(),
-                                portfolioSnapshot.getSource(), period);
+                                portfolioSnapshot.getPortfolio(), period);
             }
 
             Map<Security, SecurityPerformanceRecord> map = sps.getRecords().stream()
