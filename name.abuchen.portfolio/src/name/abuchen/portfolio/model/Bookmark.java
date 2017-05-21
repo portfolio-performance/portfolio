@@ -46,7 +46,7 @@ public class Bookmark
         return "-".equals(label); //$NON-NLS-1$
     }
 
-    public String constructURL(Security security)
+    public String constructURL(Client client, Security security)
     {
         Map<String, String> types = new HashMap<>();
         types.put("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
@@ -54,6 +54,14 @@ public class Bookmark
         types.put("isin", security.getIsin()); //$NON-NLS-1$
         types.put("wkn", security.getWkn()); //$NON-NLS-1$
         types.put("name", security.getName()); //$NON-NLS-1$
+
+        client.getSettings().getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .filter(a -> !types.containsKey(a.getColumnLabel())) //
+                        .forEach(attrib -> {
+                            Object value = security.getAttributes().get(attrib);
+                            types.put(attrib.getColumnLabel(), attrib.getConverter().toString(value));
+                        });
 
         StringBuilder answer = new StringBuilder();
         int position = 0;

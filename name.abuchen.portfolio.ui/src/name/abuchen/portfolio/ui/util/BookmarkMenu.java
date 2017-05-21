@@ -1,14 +1,13 @@
 package name.abuchen.portfolio.ui.util;
 
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 
 public class BookmarkMenu extends MenuManager
 {
@@ -37,24 +36,13 @@ public class BookmarkMenu extends MenuManager
             }
             else
             {
-                add(new Action(bookmark.getLabel())
-                {
-                    @Override
-                    public void run()
-                    {
-                        DesktopAPI.browse(bookmark.constructURL(security));
-                    }
-                });
+                add(new SimpleAction(bookmark.getLabel(),
+                                a -> DesktopAPI.browse(bookmark.constructURL(client, security))));
             }
         }
+
         add(new Separator());
-        add(new Action(Messages.BookmarkMenu_EditBookmarks)
-        {
-            @Override
-            public void run()
-            {
-                editor.activateView("settings.Settings", Integer.valueOf(0)); //$NON-NLS-1$
-            }
-        });
+        add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,
+                        a -> editor.activateView("settings.Settings", Integer.valueOf(0)))); //$NON-NLS-1$
     }
 }

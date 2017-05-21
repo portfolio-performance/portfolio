@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views.settings;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
@@ -27,6 +30,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -205,18 +209,31 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         manager.add(submenu);
 
         @SuppressWarnings("nls")
-        String[] replacements = new String[] { "isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix",
-                        "isin,wkn,tickerSymbol" };
+        List<String> defaultReplacements = Arrays
+                        .asList(new String[] { "isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix" });
 
-        for (String replacement : replacements)
-        {
-            submenu.add(new SimpleAction('{' + replacement + '}', a -> {
-                Bookmark bookmark = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
-                bookmark.setPattern(bookmark.getPattern() + '{' + replacement + '}');
-                bookmarks.refresh(bookmark);
-                client.markDirty();
-            }));
-        }
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelDefaultReplacements));
+        defaultReplacements.forEach(r -> addReplacementMenu(submenu, r));
+
+        submenu.add(new Separator());
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelAttributeReplacements));
+        client.getSettings().getAttributeTypes().filter(a -> a.supports(Security.class))
+                        .filter(a -> !defaultReplacements.contains(a.getColumnLabel()))
+                        .forEach(a -> addReplacementMenu(submenu, a.getColumnLabel()));
+
+        submenu.add(new Separator());
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelReplaceFirstAvailable));
+        addReplacementMenu(submenu, "isin,wkn"); //$NON-NLS-1$
+    }
+
+    private void addReplacementMenu(MenuManager manager, String replacement)
+    {
+        manager.add(new SimpleAction('{' + replacement + '}', a -> {
+            Bookmark bookmark = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
+            bookmark.setPattern(bookmark.getPattern() + '{' + replacement + '}');
+            bookmarks.refresh(bookmark);
+            client.markDirty();
+        }));
     }
 
     private void addTestMenu(IMenuManager manager, Bookmark bookmark)
@@ -225,7 +242,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         for (Security security : client.getSecurities())
         {
             securities.add(new SimpleAction(security.getName(),
-                            a -> DesktopAPI.browse(bookmark.constructURL(security))));
+                            a -> DesktopAPI.browse(bookmark.constructURL(client, security))));
         }
         manager.add(securities);
         manager.add(new Separator());
