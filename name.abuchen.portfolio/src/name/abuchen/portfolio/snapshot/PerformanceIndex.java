@@ -64,7 +64,7 @@ public class PerformanceIndex
         this.reportInterval = reportInterval;
     }
 
-    public static ClientIndex forClient(Client client, CurrencyConverter converter, ReportingPeriod reportInterval,
+    public static PerformanceIndex forClient(Client client, CurrencyConverter converter, ReportingPeriod reportInterval,
                     List<Exception> warnings)
     {
         ClientIndex index = new ClientIndex(client, converter, reportInterval);

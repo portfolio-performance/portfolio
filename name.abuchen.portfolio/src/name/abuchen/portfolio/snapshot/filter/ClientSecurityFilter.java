@@ -1,10 +1,15 @@
 package name.abuchen.portfolio.snapshot.filter;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -24,47 +29,61 @@ public class ClientSecurityFilter implements ClientFilter
     {
         ReadOnlyClient pseudoClient = new ReadOnlyClient(client);
 
-        ReadOnlyAccount pseudoAccount = new ReadOnlyAccount(client.getAccounts().get(0));
-        pseudoClient.internalAddAccount(pseudoAccount);
+        Map<Account, ReadOnlyAccount> account2readonly = new HashMap<>();
+        Map<Portfolio, ReadOnlyPortfolio> portfolio2readonly = new HashMap<>();
 
-        ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(client.getPortfolios().get(0));
-        pseudoPortfolio.setReferenceAccount(pseudoAccount);
-        pseudoClient.internalAddPortfolio(pseudoPortfolio);
+        Function<Account, ReadOnlyAccount> transformAccount = a -> account2readonly.computeIfAbsent(a, aa -> {
+            ReadOnlyAccount readonly = new ReadOnlyAccount(aa);
+            pseudoClient.internalAddAccount(readonly);
+            return readonly;
+        });
+
+        Function<Portfolio, ReadOnlyPortfolio> transformPortfolio = p -> portfolio2readonly.computeIfAbsent(p, pp -> {
+            ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(pp);
+            pseudoPortfolio.setReferenceAccount(transformAccount.apply(pp.getReferenceAccount()));
+            pseudoClient.internalAddPortfolio(pseudoPortfolio);
+            return pseudoPortfolio;
+        });
 
         for (Security security : securities)
         {
             pseudoClient.internalAddSecurity(security);
-            addSecurity(client, pseudoPortfolio, pseudoAccount, security);
+            addSecurity(client, transformPortfolio, transformAccount, security);
         }
 
         return pseudoClient;
     }
 
-    private void addSecurity(Client client, ReadOnlyPortfolio portfolio, ReadOnlyAccount account, Security security)
+    @SuppressWarnings("unchecked")
+    private void addSecurity(Client client, Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    Function<Account, ReadOnlyAccount> getAccount, Security security)
     {
         List<TransactionPair<?>> transactions = security.getTransactions(client);
 
         for (TransactionPair<?> pair : transactions)
         {
             if (pair.getTransaction() instanceof PortfolioTransaction)
-                addPortfolioTransaction(portfolio, (PortfolioTransaction) pair.getTransaction());
+                addPortfolioTransaction(getPortfolio, (TransactionPair<PortfolioTransaction>) pair);
             else if (pair.getTransaction() instanceof AccountTransaction)
-                addAccountTransaction(account, (AccountTransaction) pair.getTransaction());
+                addAccountTransaction(getAccount, (TransactionPair<AccountTransaction>) pair);
         }
 
     }
 
-    private void addPortfolioTransaction(ReadOnlyPortfolio portfolio, PortfolioTransaction t)
+    private void addPortfolioTransaction(Function<Portfolio, ReadOnlyPortfolio> getPortfolio,
+                    TransactionPair<PortfolioTransaction> pair)
     {
-        switch (t.getType())
+        switch (pair.getTransaction().getType())
         {
             case BUY:
             case DELIVERY_INBOUND:
-                portfolio.internalAddTransaction(convertToDelivery(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
+                getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
+                                convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_INBOUND));
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
-                portfolio.internalAddTransaction(convertToDelivery(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+                getPortfolio.apply((Portfolio) pair.getOwner()).internalAddTransaction(
+                                convertToDelivery(pair.getTransaction(), PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                 break;
             case TRANSFER_IN:
             case TRANSFER_OUT:
@@ -75,18 +94,20 @@ public class ClientSecurityFilter implements ClientFilter
         }
     }
 
-    private void addAccountTransaction(ReadOnlyAccount account, AccountTransaction t)
+    private void addAccountTransaction(Function<Account, ReadOnlyAccount> getAccount,
+                    TransactionPair<AccountTransaction> pair)
     {
-        switch (t.getType())
+        switch (pair.getTransaction().getType())
         {
             case DIVIDENDS:
+                AccountTransaction t = pair.getTransaction();
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
-                account.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount + taxes,
-                                t.getSecurity(), t.getType()));
-                account.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(), amount + taxes,
-                                t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                 break;
             case TAX_REFUND:
                 // ignore taxes
@@ -102,6 +123,7 @@ public class ClientSecurityFilter implements ClientFilter
             case TAXES:
             case INTEREST:
             case INTEREST_CHARGE:
+            default:
                 throw new IllegalArgumentException();
         }
     }
