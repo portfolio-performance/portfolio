@@ -19,11 +19,6 @@ Eclipse Public License Version 1.0 (&quot;EPL&quot;).  A copy of the EPL is avai
 For purposes of the EPL, &quot;Program&quot; will mean the Content.
    </license>
 
-   <requires>
-      <import plugin="org.eclipse.osgi"/>
-      <import plugin="org.eclipse.core.net"/>
-   </requires>
-
    <plugin
          id="name.abuchen.portfolio"
          download-size="0"
@@ -102,7 +97,21 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          unpack="false"/>
 
    <plugin
+         id="org.eclipse.osgi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
          id="com.googlecode.json-simple"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.eclipse.core.net"
          download-size="0"
          install-size="0"
          version="0.0.0"
