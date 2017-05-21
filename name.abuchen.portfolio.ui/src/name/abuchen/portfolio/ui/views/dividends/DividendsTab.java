@@ -13,5 +13,10 @@ public interface DividendsTab
     default void addExportActions(IMenuManager manager)
     {
         // no export actions added by default
-    };
+    }
+
+    default void addConfigActions(IMenuManager manager)
+    {
+        // no config actions added by default
+    }
 }

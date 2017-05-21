@@ -7,6 +7,7 @@ import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -111,6 +112,13 @@ public class DividendsView extends AbstractFinanceView
                                 a -> model.setUseGrossValue(!model.usesGrossValue()));
                 action.setChecked(model.usesGrossValue());
                 manager.add(action);
+
+                DividendsTab tab = (DividendsTab) folder.getSelection().getData();
+                if (tab != null)
+                {
+                    manager.add(new Separator());
+                    tab.addConfigActions(manager);
+                }
             }
         };
     }

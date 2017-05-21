@@ -55,6 +55,11 @@ public class DividendsViewModel
         {
             return sum;
         }
+
+        public int getNoOfMonths()
+        {
+            return values.length;
+        }
     }
     
     private List<UpdateListener> listeners = new ArrayList<>();
