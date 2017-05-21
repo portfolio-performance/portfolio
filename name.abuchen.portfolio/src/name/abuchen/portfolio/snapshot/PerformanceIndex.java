@@ -389,7 +389,8 @@ public class PerformanceIndex
 
             printer.println(new String[] { Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Value, //
-                            Messages.CSVColumn_Transferals, //
+                            Messages.CSVColumn_InboundTransferals, //
+                            Messages.CSVColumn_OutboundTransferals, //
                             Messages.CSVColumn_DeltaInPercent, //
                             Messages.CSVColumn_CumulatedPerformanceInPercent });
 
@@ -400,7 +401,8 @@ public class PerformanceIndex
 
                 printer.print(dates[ii].toString());
                 printer.print(Values.Amount.format(totals[ii]));
-                printer.print(Values.Amount.format(inboundTransferals[ii] - outboundTransferals[ii]));
+                printer.print(Values.Amount.format(inboundTransferals[ii]));
+                printer.print(Values.Amount.format(outboundTransferals[ii]));
                 printer.print(Values.Percent.format(delta[ii]));
                 printer.print(Values.Percent.format(accumulated[ii]));
                 printer.println();

@@ -23,6 +23,7 @@ public class Messages extends NLS
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
     public static String CSVColumn_Fees;
+    public static String CSVColumn_InboundTransferals;
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
     public static String CSVColumn_SecurityName;
@@ -39,6 +40,7 @@ public class Messages extends NLS
     public static String CSVColumn_ExchangeRate;
     public static String CSVColumn_GrossAmount;
     public static String CSVColumn_Note;
+    public static String CSVColumn_OutboundTransferals;
     public static String CSVColumn_TransactionCurrency;
     public static String CSVColumn_Transferals;
     public static String CSVDefAccountTransactions;
