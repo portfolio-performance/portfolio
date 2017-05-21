@@ -140,6 +140,7 @@ public class QuotesContextMenu
             {
                 FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
                 fileDialog.setFileName(security.getName() + ".csv"); //$NON-NLS-1$
+                fileDialog.setOverwrite(true);
                 String fileName = fileDialog.open();
 
                 if (fileName == null)
