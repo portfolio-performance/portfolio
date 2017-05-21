@@ -29,6 +29,7 @@ public class Messages extends NLS
     public static String MenuMoveDown;
     public static String MenuMoveUp;
     public static String BookmarksListView_NewBookmark;
+    public static String BookmarksListView_replacements;
     public static String BookmarksListView_title;
     public static String BookmarksListView_url;
     public static String BtnLabelApply;

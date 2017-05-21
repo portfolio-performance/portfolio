@@ -3,16 +3,15 @@ package name.abuchen.portfolio.model;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-
 public class Bookmark
 {
+    private static final Pattern REPLACEMENT_PATTERN = Pattern.compile("\\{([^}]*)\\}"); //$NON-NLS-1$
+
     private String label;
     private String pattern;
 
@@ -49,48 +48,37 @@ public class Bookmark
 
     public String constructURL(Security security)
     {
-        boolean replacementDone = Boolean.FALSE;
+        Map<String, String> types = new HashMap<>();
+        types.put("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
+        types.put("tickerSymbolPrefix", getTickerPrefix(security.getTickerSymbol())); //$NON-NLS-1$
+        types.put("isin", security.getIsin()); //$NON-NLS-1$
+        types.put("wkn", security.getWkn()); //$NON-NLS-1$
+        types.put("name", security.getName()); //$NON-NLS-1$
 
+        StringBuilder answer = new StringBuilder();
+        int position = 0;
 
-        HashMap<String, String> types = new HashMap<String, String>();
-        types.put("tickerSymbol", security.getTickerSymbol());
-        types.put("isin",  security.getIsin());
-        types.put("wkn", security.getWkn());
-        types.put("name",  security.getName());
+        Matcher matcher = REPLACEMENT_PATTERN.matcher(pattern);
 
-        List<String> patterns = new ArrayList<>();
+        while (matcher.find())
+        {
+            answer.append(pattern.substring(position, matcher.start()));
+            position = matcher.end();
 
-        Pattern p = Pattern.compile("\\{(.*?)\\}");
-        Matcher m = p.matcher(pattern);
-        while(m.find()) {
-            Arrays.stream(m.group(1).split(","))
-            .filter(t -> pattern.contains(t) )
-            .forEach(patterns::add);
-        }
-        
-        String url = pattern.replace(",", encode("")).replace("{",encode("")).replace("}", encode(""));
-        
-        for( String key :patterns){
-            try
+            for (String key : matcher.group(1).split(",")) //$NON-NLS-1$
             {
                 String replacement = types.get(key);
-                if(!replacementDone && replacement != null && replacement.length() > 0 ){
-                        url = url.replace(key, encode(replacement));
-                        replacementDone = Boolean.TRUE;
+                if (replacement != null && !replacement.isEmpty())
+                {
+                    answer.append(encode(replacement));
+                    break;
                 }
-                else 
-                    url = url.replace(key, encode(""));
-                
-        
             }
-            catch ( SecurityException e)
-            {
-                throw new RuntimeException(e);
-            }
-
         }
-        
-        return url;
+
+        answer.append(pattern.substring(position));
+
+        return answer.toString();
     }
 
     private String encode(String s)
@@ -104,5 +92,18 @@ public class Bookmark
             // should not happen as UTF-8 is always supported
             throw new UnsupportedOperationException(e);
         }
+    }
+
+    /**
+     * Returns the prefix of a ticker symbol, e.g. without exchange rate suffix.
+     * For example, for "BAS.DE" it would return "BAS".
+     */
+    private String getTickerPrefix(String tickerSymbol)
+    {
+        if (tickerSymbol == null)
+            return null;
+
+        int dot = tickerSymbol.indexOf('.');
+        return dot > 0 ? tickerSymbol.substring(0, dot) : tickerSymbol;
     }
 }
