@@ -25,6 +25,7 @@ public abstract class AbstractCSVExporter
     {
         FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
         dialog.setFileName(fileName);
+        dialog.setOverwrite(true);
         String name = dialog.open();
         if (name == null)
             return;

@@ -398,6 +398,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod) // NOSONAR
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setOverwrite(true);
 
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog

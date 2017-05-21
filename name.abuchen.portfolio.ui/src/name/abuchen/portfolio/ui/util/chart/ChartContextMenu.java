@@ -198,6 +198,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                         dialog.setFileName(label);
                         dialog.setFilterExtensions(EXTENSIONS);
                         dialog.setFilterIndex(lastUsedFileExtension);
+                        dialog.setOverwrite(true);
 
                         String filename = dialog.open();
                         if (filename == null)

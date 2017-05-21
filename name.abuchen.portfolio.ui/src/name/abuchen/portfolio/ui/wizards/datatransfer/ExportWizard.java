@@ -148,6 +148,7 @@ public class ExportWizard extends Wizard
                 name = (String) exportItem;
 
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
+            dialog.setOverwrite(true);
             if (name != null)
                 dialog.setFileName(name + ".csv"); //$NON-NLS-1$
             String fileName = dialog.open();
