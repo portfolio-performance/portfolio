@@ -1033,7 +1033,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         pdfTransaction.section("tax", "withheld", "sign")
                         .optional()
-                        .match("(?<withheld>\\w+|^)(\\s*)Kapitalertragsteuer(\\s*)(?<currency>\\w{3}+)(\\s+)(?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(?<sign>-|\\s+|$)?")
+                        .match("(?<withheld>\\w+|^(Verwahrart\\s.*)?)(\\s*)Kapitalertragsteuer(\\s*)(?<currency>\\w{3}+)(\\s+)(?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(?<sign>-|\\s+|$)?")
                         .assign((t, v) -> {
                             if ("-".equalsIgnoreCase(v.get("sign"))
                                             || "einbehaltene".equalsIgnoreCase(v.get("withheld")))
