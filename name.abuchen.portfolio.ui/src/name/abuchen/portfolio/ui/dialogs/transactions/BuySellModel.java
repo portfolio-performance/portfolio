@@ -67,6 +67,7 @@ import name.abuchen.portfolio.ui.Messages;
             }
 
             entry = new BuySellEntry(portfolio, account);
+            entry.setCurrencyCode(account.getCurrencyCode());
             entry.insert();
         }
 
