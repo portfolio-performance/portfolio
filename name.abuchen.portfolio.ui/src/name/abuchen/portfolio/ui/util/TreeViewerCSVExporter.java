@@ -9,10 +9,15 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
 import org.apache.commons.csv.CSVPrinter;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.IBaseLabelProvider;
+import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.widgets.Control;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 
 public class TreeViewerCSVExporter extends AbstractCSVExporter
 {
@@ -42,9 +47,8 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
             int depth = depth(provider);
             int columnCount = viewer.getTree().getColumnCount();
 
-            ColumnLabelProvider[] labels = new ColumnLabelProvider[columnCount];
-            for (int ii = 0; ii < labels.length; ii++)
-                labels[ii] = (ColumnLabelProvider) viewer.getLabelProvider(ii);
+            ILabelProvider[] labels = new ILabelProvider[columnCount];
+            extractLabelProvider(labels);
 
             // write header
             String label = viewer.getTree().getColumn(0).getText();
@@ -63,8 +67,46 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
         }
     }
 
-    private void writeLine(CSVPrinter printer, ITreeContentProvider provider, ColumnLabelProvider[] labels,
-                    final int depth, LinkedList<String> path, Object element)
+    private void extractLabelProvider(ILabelProvider[] labels)
+    {
+        for (int ii = 0; ii < labels.length; ii++)
+        {
+            // label provider other than ColumnLabelProvider need special
+            // treatment as there is no easy #getText method
+            IBaseLabelProvider blp = viewer.getLabelProvider(ii);
+
+            if (blp instanceof ILabelProvider)
+            {
+                labels[ii] = (ILabelProvider) blp;
+            }
+            else if (blp instanceof SharesLabelProvider)
+            {
+                labels[ii] = new LabelProvider()
+                {
+                    @Override
+                    public String getText(Object element)
+                    {
+                        Long value = ((SharesLabelProvider) blp).getValue(element);
+                        return value != null ? Values.Share.format(value) : null;
+                    }
+                };
+            }
+            else
+            {
+                labels[ii] = new LabelProvider()
+                {
+                    @Override
+                    public String getText(Object element)
+                    {
+                        return String.valueOf(element);
+                    }
+                };
+            }
+        }
+    }
+
+    private void writeLine(CSVPrinter printer, ITreeContentProvider provider, ILabelProvider[] labels, final int depth,
+                    LinkedList<String> path, Object element)
     {
         path.add(labels[0].getText(element));
 
