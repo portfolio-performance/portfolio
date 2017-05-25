@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 
 public class ClientSnapshot
 {
@@ -122,7 +123,13 @@ public class ClientSnapshot
 
     public Map<InvestmentVehicle, AssetPosition> getPositionsByVehicle()
     {
-        return getAssetPositions().collect(Collectors.toMap(AssetPosition::getInvestmentVehicle, v -> v));
+        return getAssetPositions().collect(Collectors.toMap(p -> {
+            InvestmentVehicle v = p.getInvestmentVehicle();
+            if (v instanceof ReadOnlyAccount)
+                return ((ReadOnlyAccount) v).getSource();
+            else
+                return v;
+        }, v -> v));
     }
 
     public Stream<AssetPosition> getAssetPositions()
