@@ -184,8 +184,11 @@ public class UpdateHelper
 
         ProvisioningJob job = operation.getProvisioningJob(null);
         IStatus status = job.runModal(monitor);
+
         if (status.getSeverity() == IStatus.CANCEL)
             throw new OperationCanceledException();
+        if (status.getSeverity() != IStatus.OK)
+            throw new CoreException(status);
     }
 
     private <T> T getService(Class<T> type, String name)
