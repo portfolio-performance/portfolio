@@ -105,6 +105,11 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 contextProvider.accept(context, lines);
             }
         }
+
+       public String getMustInclude()
+       {
+           return mustInclude;
+       }
     }
 
     /* package */static class Block
