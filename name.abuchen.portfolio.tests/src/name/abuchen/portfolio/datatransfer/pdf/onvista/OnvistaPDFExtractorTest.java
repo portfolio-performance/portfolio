@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
@@ -1255,6 +1256,85 @@ public class OnvistaPDFExtractorTest
         assertThat(secondEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
         assertThat(secondEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.5))));
+    }
+    
+    @Test
+    public void testMultiTypeDocument() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("OnvistaMultiTypePDFDokument.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        List<Item> securities = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList());
+        assertThat(securities.isEmpty(), is(false));
+        
+        Item mphSecurity = securities.get(0);
+        assertThat(mphSecurity.getSubject(), instanceOf(Security.class));
+        assertThat(((Security)mphSecurity.getSubject()).getIsin(), is("DE000A0L1H32"));
+        
+        Item paragonSecurity = securities.get(1);
+        assertThat(paragonSecurity.getSubject(), instanceOf(Security.class));
+        assertThat(((Security)paragonSecurity.getSubject()).getIsin(), is("DE0005558696"));
+        
+        List<Item> buySellItems = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList());
+        assertThat(buySellItems.isEmpty(), is(false));
+        
+        Optional<Item> taxReturnOption = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertTrue(taxReturnOption.isPresent());
+        
+        Item mph = buySellItems.get(0);
+        assertNotNull(mph);
+        assertThat(mph.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry mphEntry = (BuySellEntry) mph.getSubject();
+        
+        assertThat(mphEntry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(mphEntry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(mphEntry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(mphEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
+        assertThat(mphEntry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.70))));
+        assertThat(mphEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-14")));
+        assertThat(mphEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.5))));
+        
+        Item paragon = buySellItems.get(1);
+        assertNotNull(paragon);
+        assertThat(paragon.getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry paragonEntry = (BuySellEntry) paragon.getSubject();
+       
+        assertThat(paragonEntry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(paragonEntry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+        assertThat(paragonEntry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(paragonEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
+        assertThat(paragonEntry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1665.41))));
+        assertThat(paragonEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-14")));
+        assertThat(paragonEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.5))));
+        assertThat(paragonEntry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.04))));
+        
+        // check tax return
+        Item taxReturnItem = taxReturnOption.get();
+        assertNotNull(taxReturnItem);
+        assertThat(taxReturnItem.getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction taxReturnEntry = (AccountTransaction) taxReturnItem.getSubject();
+        assertThat(taxReturnEntry.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.18))));
+        assertThat(taxReturnEntry.getDate(), is(is(LocalDate.parse("2016-09-14"))));
+        Security taxReturnSecurity = taxReturnEntry.getSecurity();
+        assertThat(((Security)mphSecurity.getSubject()).getIsin(), is(taxReturnSecurity.getIsin()));
     }
 
     private String from(String resource)
