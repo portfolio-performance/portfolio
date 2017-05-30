@@ -567,7 +567,7 @@ public class OnvistaPDFExtractorTest
         List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(3));
 
         assertSecuritySell(results);
 
@@ -587,6 +587,12 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.75))));
+
+        // check Steuererstattung
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        AccountTransaction entryTaxReturn = (AccountTransaction) item.get().getSubject();
+        assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.28))));
+        assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2011-04-12"))));
     }
     
     @Test
