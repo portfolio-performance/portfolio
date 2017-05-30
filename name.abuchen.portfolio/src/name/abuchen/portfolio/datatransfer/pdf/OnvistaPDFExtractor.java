@@ -1127,7 +1127,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
 
         // optional: Steuererstattung
-        Block block = new Block("Steuerausgleich nach § 43a Abs. 3 Satz 2 EStG:(.*)");
+        Block block = new Block("Steuerausgleich nach § 43a.*EStG:(.*)");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
