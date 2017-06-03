@@ -279,7 +279,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     }
 
     @Inject
-    public void setUseIndirectQuotation(
+    private void setUseIndirectQuotation(
                     @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
     {
         this.useIndirectQuotation = useIndirectQuotation;
