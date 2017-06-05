@@ -53,6 +53,7 @@ public class SecuritiesChart
     {
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         EVENTS(Messages.LabelChartDetailEvents), //
+        SMA(Messages.LabelChartDetailSMA), 
         DIVIDENDS(Messages.LabelChartDetailDividends);
 
         private final String label;
@@ -297,9 +298,9 @@ public class SecuritiesChart
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
+            
 
             chart.adjustRange();
-
             addChartMarker();
 
         }
@@ -320,6 +321,24 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.SMA))
+            addSMAMarkerLines( 200 );
+    }
+
+    private void addSMAMarkerLines( int SMADays )
+    {
+        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(SMADays, this.security, chartPeriod);
+        ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.LabelChartDetailSMA);
+        lineSeriesSMA.setXDateSeries(SMALines.getDates());
+        lineSeriesSMA.setLineWidth(3);
+        lineSeriesSMA.enableArea(false);
+        lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
+        lineSeriesSMA.setYSeries(SMALines.getValues());
+        lineSeriesSMA.setAntialias(SWT.ON);
+        Color lineColor = new Color(Display.getCurrent(), 200, 22, 22);
+        lineSeriesSMA.setLineColor(lineColor);
+        chart.adjustRange();
     }
 
     private void addInvestmentMarkerLines()
