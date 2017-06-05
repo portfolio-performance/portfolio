@@ -103,13 +103,7 @@ import name.abuchen.portfolio.money.Values;
         {
             checkBankIdentifier(filename, text);
 
-            List<Item> items = new ArrayList<>();
-
-            for (DocumentType type : documentTypes)
-            {
-                if (type.matches(text))
-                    type.parse(filename, items, text);
-            }
+            List<Item> items = parseDocumentTypes(documentTypes, filename, text);
 
             if (items.isEmpty())
             {
@@ -132,6 +126,16 @@ import name.abuchen.portfolio.money.Values;
             errors.add(e);
             return Collections.emptyList();
         }
+    }
+    
+    protected List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text) {
+        List<Item> items = new ArrayList<>();
+        for (DocumentType type : documentTypes)
+        {
+            if (type.matches(text))
+                type.parse(filename, items, text);
+        }
+        return items;
     }
 
     private void checkBankIdentifier(String filename, String text)

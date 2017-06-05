@@ -1,7 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.NavigableMap;
+import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,6 +25,19 @@ import name.abuchen.portfolio.money.Money;
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
 
+    static class MultipartDocumentType extends DocumentType {
+
+        public MultipartDocumentType(String mustInclude)
+        {
+            super(mustInclude);
+        }
+
+        public MultipartDocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
+        {
+            super(mustInclude, contextProvider);
+        }
+    }
+    
     public OnvistaPDFExtractor(Client client) throws IOException
     {
         super(client);
@@ -44,7 +63,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("Wir haben für Sie gekauft");
+        DocumentType type = new MultipartDocumentType("Wir haben für Sie gekauft");
         this.addDocumentTyp(type);
 
         Block block = new Block("Wir haben für Sie gekauft(.*)");
@@ -100,7 +119,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Wir haben für Sie verkauft");
+        DocumentType type = new MultipartDocumentType("Wir haben für Sie verkauft");
         this.addDocumentTyp(type);
 
         Block block = new Block("Wir haben für Sie verkauft(.*)");
@@ -262,7 +281,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Erträgnisgutschrift");
+        DocumentType type = new MultipartDocumentType("Erträgnisgutschrift");
         this.addDocumentTyp(type);
 
         // Erträgnisgutschrift allein ist nicht gut hier, da es schon in der
@@ -1227,6 +1246,46 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new TransactionItem(t)));
     }
 
+    @Override
+    protected List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text)
+    {
+        List<Item> items = new ArrayList<>();
+        NavigableMap<Integer, DocumentType> sortedTypes = new TreeMap<>();
+        for (DocumentType type : documentTypes)
+        {
+            if(type instanceof MultipartDocumentType) {
+                Pattern pattern = Pattern.compile(type.getMustInclude());
+                Matcher matcher = pattern.matcher(text);
+                
+                while(matcher.find()) {
+                    int start = matcher.start();
+                    int startIndex = text.substring(0, start).lastIndexOf("BELEGDRUCK");
+                    if(startIndex >= 0) {
+                        sortedTypes.put(startIndex, type);
+                    } else {
+                        sortedTypes.put(matcher.start(), type);
+                    }
+                }
+            } else {
+                if (type.matches(text)) {
+                    sortedTypes.put(0, type);
+                }
+            }
+        }
+
+        Integer endIndex = 0;
+        for (Entry<Integer, DocumentType> entry : sortedTypes.entrySet())
+        {
+            Integer startIndex = endIndex;
+            endIndex = sortedTypes.higherKey(startIndex);
+            if(endIndex == null) {
+                endIndex = text.length();
+            }
+            entry.getValue().parse(filename, items, text.substring(startIndex, endIndex));
+        }
+        return items;
+    }
+    
     @Override
     public String getLabel()
     {
