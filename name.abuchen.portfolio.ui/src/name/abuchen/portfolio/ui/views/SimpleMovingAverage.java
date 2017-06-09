@@ -12,11 +12,18 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 public class SimpleMovingAverage
 {
     /**
-     * Calculates the Simple Moving Average for the given range of days from the given startDate on
-     * The method returns an object containing the X and Y Axes of the generated SMA
+     * Calculates the Simple Moving Average for the given range of days from the
+     * given startDate on The method returns an object containing the X and Y
+     * Axes of the generated SMA
+     * 
+     * @return The ChartLineSeriesAxes contains the X and Y Axes of the
+     *         generated SMA
      */
     public static ChartLineSeriesAxes getSMA(Integer RangeSMA, Security security, LocalDate startDate)
     {
+        if (security == null)
+            return null;
+
         int index;
         LocalDate[] dates;
         double[] values;
@@ -24,12 +31,14 @@ public class SimpleMovingAverage
         ChartLineSeriesAxes lineSeries = new ChartLineSeriesAxes();
 
         List<SecurityPrice> prices = security.getPricesIncludingLatest();
+        if (prices == null || prices.size() < RangeSMA)
+            return null;
 
         if (startDate == null)
         {
-            index = RangeSMA;
-            dates = new LocalDate[prices.size() - RangeSMA];
-            values = new double[prices.size() - RangeSMA];
+            index = RangeSMA - 1;
+            dates = new LocalDate[prices.size() - index];
+            values = new double[prices.size() - index];
         }
         else
         {
@@ -41,11 +50,12 @@ public class SimpleMovingAverage
                 // no data available
                 return null;
             }
-            
-            if (index < RangeSMA) {
+
+            if (index < RangeSMA)
+            {
                 index = RangeSMA;
             }
-            
+
             dates = new LocalDate[prices.size() - index];
             values = new double[prices.size() - index];
         }
@@ -53,14 +63,14 @@ public class SimpleMovingAverage
         for (int ii = 0; index < prices.size(); index++, ii++)
         {
             List<SecurityPrice> filteredPrices = null;
-            int start = index - RangeSMA;
+            int start = index - (RangeSMA - 1);
             sum = 0;
             if (start >= 0)
             {
-                LocalDate indexDate = prices.get(index).getTime();
-                LocalDate indexDateMinusSMA = indexDate.minusDays(RangeSMA);
+                LocalDate indexDatePlusOneDay = prices.get(index).getTime().plusDays(1);
+                LocalDate indexDateMinusSMA = indexDatePlusOneDay.minusDays(RangeSMA).minusDays(1);
                 filteredPrices = prices.stream()
-                                .filter(p -> p.getTime().isAfter(indexDateMinusSMA) && p.getTime().isBefore(indexDate))
+                                .filter(p -> p.getTime().isAfter(indexDateMinusSMA) && p.getTime().isBefore(indexDatePlusOneDay))
                                 .collect(Collectors.toList());
 
                 for (SecurityPrice price : filteredPrices)
@@ -69,16 +79,14 @@ public class SimpleMovingAverage
                 }
             }
 
-            if (sum != 0)
-            {
-                dates[ii] = prices.get(index).getTime();
-                values[ii] = sum / Values.Quote.divider() / filteredPrices.size();
-            }
+            dates[ii] = prices.get(index).getTime();
+            values[ii] = sum / Values.Quote.divider() / filteredPrices.size();
+
         }
 
         lineSeries.setDates(TimelineChart.toJavaUtilDate(dates));
         lineSeries.setValues(values);
-       
+
         return lineSeries;
     }
 }

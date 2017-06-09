@@ -53,7 +53,8 @@ public class SecuritiesChart
     {
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         EVENTS(Messages.LabelChartDetailEvents), //
-        SMA(Messages.LabelChartDetailSMA), 
+        SMA50(Messages.LabelChartDetailSMA50), //
+        SMA200(Messages.LabelChartDetailSMA200), //
         DIVIDENDS(Messages.LabelChartDetailDividends);
 
         private final String label;
@@ -245,6 +246,7 @@ public class SecuritiesChart
                 chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
             }
             chart.clearMarkerLines();
+            clearSMA();
 
             if (security == null || security.getPrices().isEmpty())
             {
@@ -298,7 +300,6 @@ public class SecuritiesChart
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
-            
 
             chart.adjustRange();
             addChartMarker();
@@ -309,6 +310,15 @@ public class SecuritiesChart
             chart.setRedraw(true);
             chart.redraw();
         }
+    }
+
+    private void clearSMA()
+    {
+        if (chart.getSeriesSet().getSeries(Messages.LabelChartDetailSMA50) != null)
+            chart.getSeriesSet().deleteSeries(Messages.LabelChartDetailSMA50);
+
+        if (chart.getSeriesSet().getSeries(Messages.LabelChartDetailSMA200) != null)
+            chart.getSeriesSet().deleteSeries(Messages.LabelChartDetailSMA200);
     }
 
     private void addChartMarker()
@@ -322,21 +332,37 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.SMA))
-            addSMAMarkerLines( 200 );
+        if (chartConfig.contains(ChartDetails.SMA200))
+            addSMAMarkerLines(200);
+
+        if (chartConfig.contains(ChartDetails.SMA50))
+            addSMAMarkerLines(50);
     }
 
-    private void addSMAMarkerLines( int SMADays )
+    private void addSMAMarkerLines(int SMADays)
     {
+        String lineID;
         ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(SMADays, this.security, chartPeriod);
-        ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.LabelChartDetailSMA);
+        if (SMALines == null)
+            return;
+
+        if (SMADays == 200)
+        {
+            lineID = Messages.LabelChartDetailSMA200;
+        }
+        else
+        {
+            lineID = Messages.LabelChartDetailSMA50;
+        }
+
+        ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(SMALines.getDates());
         lineSeriesSMA.setLineWidth(3);
         lineSeriesSMA.enableArea(false);
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
-        Color lineColor = new Color(Display.getCurrent(), 200, 22, 22);
+        Color lineColor = new Color(Display.getCurrent(), SMADays, 22, 22);
         lineSeriesSMA.setLineColor(lineColor);
         chart.adjustRange();
     }
