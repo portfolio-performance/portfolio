@@ -97,7 +97,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-    private List<Item> extract(String filename, String text, List<Exception> errors)
+    private final List<Item> extract(String filename, String text, List<Exception> errors)
     {
         try
         {
@@ -128,7 +128,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
     
-    protected List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text) {
+    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text) {
         List<Item> items = new ArrayList<>();
         for (DocumentType type : documentTypes)
         {
@@ -203,7 +203,7 @@ import name.abuchen.portfolio.money.Values;
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
-                    /* protected */long asAmount(String value)
+    /* protected */long asAmount(String value)
     {
         try
         {
@@ -215,7 +215,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-                    /* protected */BigDecimal asExchangeRate(String value)
+    /* protected */BigDecimal asExchangeRate(String value)
     {
         try
         {
@@ -227,7 +227,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-                    /* protected */LocalDate asDate(String value)
+    /* protected */LocalDate asDate(String value)
     {
         return LocalDate.parse(value, DATE_FORMAT);
     }

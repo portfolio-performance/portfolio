@@ -24,19 +24,6 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
-
-    static class MultipartDocumentType extends DocumentType {
-
-        public MultipartDocumentType(String mustInclude)
-        {
-            super(mustInclude);
-        }
-
-        public MultipartDocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
-        {
-            super(mustInclude, contextProvider);
-        }
-    }
     
     public OnvistaPDFExtractor(Client client) throws IOException
     {
@@ -46,6 +33,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
+        addTaxReturnTransaction();
         addChangeTransaction();
         addPayingTransaction();
         addDividendTransaction();
@@ -63,7 +51,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransaction()
     {
-        DocumentType type = new MultipartDocumentType("Wir haben für Sie gekauft");
+        DocumentType type = new DocumentType("Wir haben für Sie gekauft");
         this.addDocumentTyp(type);
 
         Block block = new Block("Wir haben für Sie gekauft(.*)");
@@ -119,7 +107,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addSellTransaction()
     {
-        DocumentType type = new MultipartDocumentType("Wir haben für Sie verkauft");
+        DocumentType type = new DocumentType("Wir haben für Sie verkauft");
         this.addDocumentTyp(type);
 
         Block block = new Block("Wir haben für Sie verkauft(.*)");
@@ -138,8 +126,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
-                            // Merken für evtl. Steuerrückerstattung:
-                            type.getCurrentContext().put("isin", v.get("isin"));
                         })
 
                         .section("notation", "shares").find("Nominal Kurs")
@@ -170,7 +156,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new BuySellEntryItem(t));
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
-        addTaxReturnBlock(type);
     }
 
     private void addChangeTransaction()
@@ -281,7 +266,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new MultipartDocumentType("Erträgnisgutschrift");
+        DocumentType type = new DocumentType("Erträgnisgutschrift");
         this.addDocumentTyp(type);
 
         // Erträgnisgutschrift allein ist nicht gut hier, da es schon in der
@@ -744,7 +729,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         });
 
         addTaxesSectionsTransaction(pdfTransaction);
-        addTaxReturnBlock(type);
         addTaxBlock(type);
     }
 
@@ -1142,13 +1126,18 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     }
 
-    private void addTaxReturnBlock(DocumentType type)
+    private void addTaxReturnTransaction()
     {
+        DocumentType type = new DocumentType("Steuerausgleich nach § 43a");
+        this.addDocumentTyp(type);
 
-        // optional: Steuererstattung
-        Block block = new Block("Steuerausgleich nach § 43a.*EStG:(.*)");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block block1 = new Block("Wir haben für Sie verkauft(.*)");
+        type.addBlock(block1);
+        
+        Block block2 = new Block("(Aus|Ein)buchung:(.*)");
+        type.addBlock(block2);
+
+        Transaction<AccountTransaction> taxRefundTransaction = new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction entry = new AccountTransaction();
@@ -1156,29 +1145,33 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("tax")
-                        .optional()
+                        .section("name", "isin") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("tax").optional()
                         .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
                         })
-                        .section("soli")
-                        .optional()
+                        
+                        .section("soli").optional()
                         .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("soli")));
                         })
-                        .section("kirchenst")
-                        .optional()
+                        
+                        .section("kirchenst").optional()
                         .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("kirchenst")));
                         })
 
-                        .section("date", "currency")
+                        .section("date", "currency").optional()
                         .find("Wert(\\s+)Konto-Nr.(\\s+)Abrechnungs-Nr.(\\s+)Betrag zu Ihren Gunsten(\\s*)$")
                         // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren
                         // Gunsten
@@ -1187,11 +1180,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            v.put("isin", type.getCurrentContext().get("isin"));
-                            t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+        
+        block1.set(taxRefundTransaction);
+        block2.set(taxRefundTransaction);
     }
 
     private void addTaxBlock(DocumentType type)
@@ -1244,46 +1238,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> new TransactionItem(t)));
-    }
-
-    @Override
-    protected List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text)
-    {
-        List<Item> items = new ArrayList<>();
-        NavigableMap<Integer, DocumentType> sortedTypes = new TreeMap<>();
-        for (DocumentType type : documentTypes)
-        {
-            if(type instanceof MultipartDocumentType) {
-                Pattern pattern = Pattern.compile(type.getMustInclude());
-                Matcher matcher = pattern.matcher(text);
-                
-                while(matcher.find()) {
-                    int start = matcher.start();
-                    int startIndex = text.substring(0, start).lastIndexOf("BELEGDRUCK");
-                    if(startIndex >= 0) {
-                        sortedTypes.put(startIndex, type);
-                    } else {
-                        sortedTypes.put(matcher.start(), type);
-                    }
-                }
-            } else {
-                if (type.matches(text)) {
-                    sortedTypes.put(0, type);
-                }
-            }
-        }
-
-        Integer endIndex = 0;
-        for (Entry<Integer, DocumentType> entry : sortedTypes.entrySet())
-        {
-            Integer startIndex = endIndex;
-            endIndex = sortedTypes.higherKey(startIndex);
-            if(endIndex == null) {
-                endIndex = text.length();
-            }
-            entry.getValue().parse(filename, items, text.substring(startIndex, endIndex));
-        }
-        return items;
     }
     
     @Override

@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
@@ -936,7 +937,11 @@ public class OnvistaPDFExtractorTest
         Security security = assertSecurityUmtauschZiel(results);
 
         // check transaction (target security, in)
-        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                        .findFirst();
         assertThat(item.isPresent(), is(true));
         assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
         PortfolioTransaction transaction = (PortfolioTransaction) item.get().getSubject();
@@ -945,36 +950,46 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDate(), is(LocalDate.parse("2015-11-26")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(156.729)));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
 
         // check Steuererstattung
-        Item itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
-                        .get(2);
+        Item itemTaxReturn = results.stream() //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject())
+                                        .getType() == AccountTransaction.Type.TAX_REFUND)
+                        .findFirst().get();
         AccountTransaction entryTaxReturn = (AccountTransaction) itemTaxReturn.getSubject();
         assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90))));
         assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2015-11-26"))));
 
         // check security (original)
-        assertSecurityUmtauschOriginal(results.stream().filter(i -> i instanceof SecurityItem)
-                        .collect(Collectors.toList()).get(1));
-        Item targetItem = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
-                        .get(1);
+        assertSecurityUmtauschOriginal(
+                        results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1));
+
+        Item targetItem = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                        .findFirst().get();
 
         // check transaction (original security, out)
-        assertThat(targetItem.getSubject(), instanceOf(PortfolioTransaction.class));
         PortfolioTransaction entry2 = (PortfolioTransaction) targetItem.getSubject();
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry2.getDate(), is(LocalDate.parse("2015-11-23")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(28)));
-        assertThat(entry2.getUnitSum(Unit.Type.TAX),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
+        assertThat(entry2.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
         assertThat(entry2.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
 
         // check Steuerbuchung
-        Item itemTax = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(3);
+        Item itemTax = results.stream() //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.TAXES)
+                        .findFirst().get();
+
         AccountTransaction entryTax = (AccountTransaction) itemTax.getSubject();
         assertThat(entryTax.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(entryTax.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
