@@ -19,7 +19,7 @@ public class SimpleMovingAverage
      * @return The ChartLineSeriesAxes contains the X and Y Axes of the
      *         generated SMA
      */
-    public static ChartLineSeriesAxes getSMA(Integer RangeSMA, Security security, LocalDate startDate)
+    public static ChartLineSeriesAxes getSMA(int RangeSMA, Security security, LocalDate startDate)
     {
         if (security == null)
             return null;
@@ -70,7 +70,8 @@ public class SimpleMovingAverage
                 LocalDate indexDatePlusOneDay = prices.get(index).getTime().plusDays(1);
                 LocalDate indexDateMinusSMA = indexDatePlusOneDay.minusDays(RangeSMA).minusDays(1);
                 filteredPrices = prices.stream()
-                                .filter(p -> p.getTime().isAfter(indexDateMinusSMA) && p.getTime().isBefore(indexDatePlusOneDay))
+                                .filter(p -> p.getTime().isAfter(indexDateMinusSMA)
+                                                && p.getTime().isBefore(indexDatePlusOneDay))
                                 .collect(Collectors.toList());
 
                 for (SecurityPrice price : filteredPrices)
