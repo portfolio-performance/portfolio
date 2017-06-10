@@ -93,7 +93,8 @@ public class SimpleMovingAverageTest
         security.addPrice(new SecurityPrice(LocalDate.parse("2017-01-01"), Values.Quote.factorize(12)));
         
         ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, null);
-        assertThat(SMALines, is(IsNull.nullValue()));
+        assertThat(SMALines, is(IsNull.notNullValue()));
+        assertThat(SMALines.getValues()[SMALines.getValues().length - 1], is(12d));
     }
 
 }
