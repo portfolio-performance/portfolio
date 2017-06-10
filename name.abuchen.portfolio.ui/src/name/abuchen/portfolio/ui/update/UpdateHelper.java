@@ -3,22 +3,30 @@ package name.abuchen.portfolio.ui.update;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.Collections;
 import java.util.Locale;
+import java.util.Optional;
+import java.util.Set;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.equinox.internal.provisional.p2.director.PlannerStatus;
+import org.eclipse.equinox.internal.provisional.p2.director.RequestStatus;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
-import org.eclipse.equinox.p2.operations.ProvisioningJob;
-import org.eclipse.equinox.p2.operations.ProvisioningSession;
-import org.eclipse.equinox.p2.operations.Update;
+import org.eclipse.equinox.p2.metadata.IInstallableUnit;
+import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
+import org.eclipse.equinox.p2.operations.UninstallOperation;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,27 +34,38 @@ import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
+import name.abuchen.portfolio.p2.P2Service;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
+@SuppressWarnings("restriction")
 public class UpdateHelper
 {
     private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
 
     private final IWorkbench workbench;
     private final EPartService partService;
-    private final IProvisioningAgent agent;
-    private UpdateOperation operation;
+    private P2Service p2Service;
 
-    public UpdateHelper(IWorkbench workbench, EPartService partService) throws CoreException
+    // TODO convert to local variable
+    private ProfileChangeOperation operation;
+
+    public UpdateHelper(IWorkbench workbench, EPartService partService, P2Service p2Service) throws CoreException
     {
         this.workbench = workbench;
         this.partService = partService;
-        this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
-
+        this.p2Service = p2Service;
+        
+        IProvisioningAgent agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        if (agent == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
+        
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-
+        
         IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
         if (profile == null)
         {
@@ -55,41 +74,84 @@ public class UpdateHelper
         }
     }
 
-    public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, CoreException
+    public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
-
-        final NewVersion newVersion = checkForUpdates(sub.newChild(100));
-        if (newVersion != null)
+        try
         {
-            final boolean[] doUpdate = new boolean[1];
-            Display.getDefault().syncExec(() -> {
-                Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
-                                Messages.LabelUpdatesAvailable, //
-                                MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
-                                newVersion);
 
-                doUpdate[0] = dialog.open() == 0;
-            });
-
-            if (doUpdate[0])
+            final NewVersion newVersion = checkForUpdates(sub.newChild(100));
+            if (newVersion != null)
             {
-                runUpdateOperation(sub.newChild(100));
-                promptForRestart();
+                final boolean[] doUpdate = new boolean[1];
+                Display.getDefault().syncExec(() -> {
+                    Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
+                                    Messages.LabelUpdatesAvailable, //
+                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                                    newVersion);
+
+                    doUpdate[0] = dialog.open() == 0;
+                });
+
+                if (doUpdate[0])
+                {
+                    runProfileChangeOperation(operation, sub.newChild(100));
+                }
+            }
+            else
+            {
+                if (!silent)
+                {
+                    Display.getDefault()
+                                    .asyncExec(() -> MessageDialog.openInformation(
+                                                    Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                                    Messages.MsgNoUpdatesAvailable));
+                }
             }
         }
-        else
+        catch (UpdateConflictException e)
         {
-            if (!silent)
+            IStatus status = e.getStatus();
+            if (status.getSeverity() == IStatus.ERROR && status.isMultiStatus())
             {
-                Display.getDefault()
-                                .asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
-                                                Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
+                for (IStatus innerStatus : ((MultiStatus) status).getChildren())
+                {
+                    if (innerStatus instanceof PlannerStatus)
+                    {
+                        RequestStatus requestStatus = ((PlannerStatus) innerStatus).getRequestStatus();
+                        Set<IInstallableUnit> conflictingInstalledPlugins = requestStatus.getConflictsWithAnyRoots();
+                        UninstallOperation uninstallOperation = p2Service
+                                        .newUninstallOperation(conflictingInstalledPlugins);
+                        status = uninstallOperation.resolveModal(monitor);
+                        if (status.isOK())
+                        {
+                            StringBuilder sb = new StringBuilder(Messages.MsgUninstallConflicts + ":");
+
+                            sb.append("\n\n"); //$NON-NLS-1$
+
+                            for (IInstallableUnit installableUnit : conflictingInstalledPlugins)
+                            {
+                                sb.append(installableUnit.getId()).append("\n"); //$NON-NLS-1$
+                            }
+
+                            final boolean[] doUninstall = new boolean[1];
+                            Display.getDefault()
+                                            .syncExec(() -> doUninstall[0] = MessageDialog.openConfirm(
+                                                            Display.getDefault().getActiveShell(),
+                                                            Messages.LabelUninstallConflicts, sb.toString()));
+
+                            if (doUninstall[0])
+                            {
+                                runProfileChangeOperation(uninstallOperation, sub.newChild(100));
+                            }
+                        }
+                    }
+                }
             }
         }
     }
 
-    private void promptForRestart()
+    public static void promptForRestart(EPartService partService, IWorkbench workbench)
     {
         Display.getDefault().asyncExec(() -> {
             MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo, null,
@@ -117,41 +179,42 @@ public class UpdateHelper
         });
     }
 
-    private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
+    private NewVersion checkForUpdates(IProgressMonitor monitor) throws UpdateConflictException, CoreException
     {
-        ProvisioningSession session = new ProvisioningSession(agent);
-        operation = new UpdateOperation(session);
-        configureUpdateOperation(operation);
+        IInstallableUnit product = p2Service.getProduct();
+        Set<IInstallableUnit> latestProducts = p2Service.getLatestProductsFromUpdateSite(getUpdateSite(), monitor);
 
+        Optional<IInstallableUnit> firstProductUpdate = latestProducts.stream().filter(
+                        iu -> iu.getId().equals(product.getId()) && iu.getVersion().compareTo(product.getVersion()) > 0)
+                        .findFirst();
+
+        if (!firstProductUpdate.isPresent()) { return null; }
+
+        IInstallableUnit productUpdate = firstProductUpdate.get();
+        operation = p2Service.newUpdateOperation(Collections.singleton(getUpdateSite()));
         IStatus status = operation.resolveModal(monitor);
 
-        if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE)
-            return null;
+        if (status.getCode() == UpdateOperation.STATUS_NOTHING_TO_UPDATE) { return null; }
 
-        if (status.getSeverity() == IStatus.CANCEL)
-            throw new OperationCanceledException();
+        if (status.getSeverity() == IStatus.CANCEL) { throw new OperationCanceledException(); }
 
-        if (status.getSeverity() == IStatus.ERROR)
-            throw new CoreException(status);
+        if (!status.isOK()) { throw new UpdateConflictException(status); }
 
-        Update[] possibleUpdates = operation.getPossibleUpdates();
-        Update update = possibleUpdates.length > 0 ? possibleUpdates[0] : null;
-
-        if (update == null)
+        if (productUpdate == null)
         {
             return new NewVersion(Messages.LabelUnknownVersion);
         }
         else
         {
-            NewVersion v = new NewVersion(update.replacement.getVersion().toString());
+            NewVersion v = new NewVersion(productUpdate.getVersion().toString());
             v.setMinimumJavaVersionRequired(
-                            update.replacement.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
+                            productUpdate.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
 
             // try for locale first
-            String history = update.replacement.getProperty( //
+            String history = productUpdate.getProperty( //
                             VERSION_HISTORY + "_" + Locale.getDefault().getLanguage(), null); //$NON-NLS-1$
             if (history == null)
-                history = update.replacement.getProperty(VERSION_HISTORY, null);
+                history = productUpdate.getProperty(VERSION_HISTORY, null);
             if (history != null)
                 v.setVersionHistory(history);
 
@@ -159,36 +222,55 @@ public class UpdateHelper
         }
     }
 
-    private void configureUpdateOperation(UpdateOperation operation)
+    private void runProfileChangeOperation(ProfileChangeOperation operation, IProgressMonitor monitor)
+                    throws CoreException
+    {
+        if (operation == null)
+        {
+            try
+            {
+                checkForUpdates(monitor);
+            }
+            catch (UpdateConflictException e)
+            {
+                throw new CoreException(e.getStatus());
+            }
+        }
+
+        p2Service.executeProfileChangeOperation(operation, new JobChangeAdapter()
+        {
+            @Override
+            public void done(IJobChangeEvent event)
+            {
+                IStatus status = event.getResult();
+                if (status.getSeverity() == IStatus.CANCEL) { throw new OperationCanceledException(); }
+                if (status.isOK())
+                {
+                    promptForRestart(partService, workbench);
+                }
+                else
+                {
+                    PortfolioPlugin.log(status);
+                }
+            }
+        });
+
+    }
+
+    private URI getUpdateSite()
     {
         try
         {
             String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
                             .getString(UIConstants.Preferences.UPDATE_SITE);
-            URI uri = new URI(updateSite);
-
-            operation.getProvisioningContext().setArtifactRepositories(new URI[] { uri });
-            operation.getProvisioningContext().setMetadataRepositories(new URI[] { uri });
+            return new URI(updateSite);
 
         }
         catch (final URISyntaxException e)
         {
             PortfolioPlugin.log(e);
+            return null;
         }
-    }
-
-    private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, CoreException
-    {
-        if (operation == null)
-            checkForUpdates(monitor);
-
-        ProvisioningJob job = operation.getProvisioningJob(null);
-        IStatus status = job.runModal(monitor);
-
-        if (status.getSeverity() == IStatus.CANCEL)
-            throw new OperationCanceledException();
-        if (status.getSeverity() != IStatus.OK)
-            throw new CoreException(status);
     }
 
     private <T> T getService(Class<T> type, String name)

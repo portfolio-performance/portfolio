@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.addons;
 
 import java.io.IOException;
+import java.net.URI;
 import java.text.MessageFormat;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +15,7 @@ import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
@@ -30,12 +32,14 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.p2.P2Service;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
+import name.abuchen.portfolio.ui.util.P2Util;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
 
@@ -114,6 +118,9 @@ public class StartupAddon
         }
     }
 
+    @Inject
+    P2Service p2service;
+
     @PostConstruct
     public void setupProgressMontior(ProgressMonitorFactory factory)
     {
@@ -150,7 +157,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
+                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService, p2service);
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e) // NOSONAR
@@ -209,5 +216,33 @@ public class StartupAddon
         registry.put(Dialog.DLG_IMG_MESSAGE_ERROR, Images.ERROR.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_WARNING, Images.WARNING.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_INFO, Images.INFO.descriptor());
+    }
+
+    @PostConstruct
+    public void cachePluginUpdateSite(P2Service p2Service, @Preference(nodePath = "name.abuchen.portfolio."
+                    + UIConstants.Preferences.PLUGIN_UPDATE_SITES) IEclipsePreferences preferences)
+    {
+        // Fetch the content of all known update sites at startup to have them cached and provide a more responsive UI
+        for (URI updateSite : P2Util.toURIs(preferences))
+        {
+            new Job(String.format("Fetch installable units from %s", updateSite)) //$NON-NLS-1$
+            {
+                @Override
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    try
+                    {
+                        p2Service.fetchInstallableUnitsFromUpdateSite(updateSite, monitor);
+                    }
+                    catch (Exception e)
+                    {
+                        return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID,
+                                        String.format("Fetching of installable units from %s canceled", updateSite), //$NON-NLS-1$
+                                        e);
+                    }
+                    return Status.OK_STATUS;
+                }
+            }.schedule();
+        }
     }
 }

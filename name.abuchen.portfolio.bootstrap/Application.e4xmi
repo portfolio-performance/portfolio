@@ -108,9 +108,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_vsPUMLdtEeO8D7SW8YS2SA" elementId="name.abuchen.portfolio.ui.menuseparator.10"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_ZqFHkLdMEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.menu.help.preferences" label="%command.preferences.name" tooltip="%command.preferences.tooltip" command="_7aSvMLdLEeO0acAVfaNMbA"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_BvUYkBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help.updateproduct" label="%command.update.name" tooltip="%command.update.tooltip" command="_59FgcBiREeOR1rNFCzC82A">
-          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_PRn4cLdsEeO8D7SW8YS2SA" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_fMvNgE21EeeikdJzk0NW7A" elementId="name.abuchen.portfolio.ui.menu.help.updateproduct" label="%command.update.name" tooltip="%command.update.tooltip" command="_59FgcBiREeOR1rNFCzC82A">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_fMvNgU21EeeikdJzk0NW7A" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_BvUYkBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help.plugins" label="%command.plugins.name" tooltip="%command.plugins.tooltip" command="_nGn64E21EeeikdJzk0NW7A"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_t8NhALdtEeO8D7SW8YS2SA" elementId="name.abuchen.portfolio.ui.menuseparator.11"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7e784PPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.menu.help.welcome" label="%part.welcome" tooltip="%part.welcome.tooltip" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_E-53QPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.welcome"/>
@@ -157,6 +158,7 @@
   <handlers xmi:id="_x5vH0ATREeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.ui.handler.clearRecentFilesHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ClearRecentFilesHandler" command="_UujAAATREeaaR_cYBUBOZA"/>
   <handlers xmi:id="_1vwOoGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.handler.closeFileHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CloseFileHandler" command="_nzlOsGzxEeapdeFYfst3DA"/>
   <handlers xmi:id="_STacIHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.handler.forceClearPersistedStateHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ForceClearPersistedStateHandler" command="_aOrCgHJzEeaMJYqdyBIeUw"/>
+  <handlers xmi:id="_t46HAE21EeeikdJzk0NW7A" elementId="name.abuchen.portfolio.ui.handler.plugins" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ManagePluginsHandler" command="_nGn64E21EeeikdJzk0NW7A"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4BjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -212,6 +214,7 @@
   <commands xmi:id="_UujAAATREeaaR_cYBUBOZA" elementId="name.abuchen.portfolio.ui.command.clearRecentFiles" commandName="clearRecentFiles"/>
   <commands xmi:id="_nzlOsGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.command.closeFile" commandName="closeFileCommand"/>
   <commands xmi:id="_aOrCgHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.command.forceClearPersistedState" commandName="forceClearPersistedStateCommand"/>
+  <commands xmi:id="_nGn64E21EeeikdJzk0NW7A" elementId="name.abuchen.portfolio.ui.command.plugins" commandName="managePluginsCommand"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
