@@ -60,8 +60,12 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .section("date").optional() //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("date").optional() //
+                        .match("Schlusstag / -zeit (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
@@ -87,7 +91,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(t -> {
+                            if (t.getPortfolioTransaction().getDate() == null)
+                                throw new IllegalArgumentException("Missing date");
+                            return new BuySellEntryItem(t);
+                        }));
     }
 
     @SuppressWarnings("nls")
@@ -118,7 +126,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
