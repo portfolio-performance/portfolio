@@ -52,7 +52,7 @@ public class DividendsView extends AbstractFinanceView
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
-        if (year <= now.getYear() - 10 || year > now.getYear())
+        if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
         model.updateWith(year);
 

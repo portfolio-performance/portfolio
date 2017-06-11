@@ -410,6 +410,7 @@ public class Messages extends NLS
     public static String LabelSecurities;
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
+    public static String LabelSelectYear;
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
@@ -418,6 +419,7 @@ public class Messages extends NLS
     public static String LabelDividendsByMonthAndVehicle;
     public static String LabelDividendsPerMonth;
     public static String LabelDividendsPerYear;
+    public static String LabelDividendsSelectStartYear;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHistoricalReturnsAndVolatiltity;
@@ -453,6 +455,7 @@ public class Messages extends NLS
     public static String LabelVolatility;
     public static String LabelWithoutClassification;
     public static String LabelXDays;
+    public static String LabelYear;
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
@@ -536,6 +539,7 @@ public class Messages extends NLS
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
     public static String MsgErrorConvertedAmount;
+    public static String MsgErrorDividendsYearBetween1900AndNow;
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
