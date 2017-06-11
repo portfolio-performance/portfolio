@@ -154,7 +154,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findAny().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-09-28")));
         assertThat(t.getShares(), is(Values.Share.factorize(300)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 121_36)));
         assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 180_00)));
@@ -192,7 +192,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2015-07-02")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-05-13")));
         assertThat(t.getShares(), is(Values.Share.factorize(1.0002)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 46)));
         assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("AUD", 93)));
@@ -228,7 +228,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2015-06-29")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-06-12")));
         assertThat(t.getShares(), is(Values.Share.factorize(0.27072)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 8)));
         assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 12)));
@@ -264,7 +264,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2014-04-22")));
+        assertThat(t.getDate(), is(LocalDate.parse("2014-03-06")));
         assertThat(t.getShares(), is(Values.Share.factorize(80)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 33_51)));
         assertThat(t.getGrossValue(), is(Money.of("EUR", 64_08)));
@@ -302,7 +302,7 @@ public class ConsorsbankPDFExtractorTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2016-05-20")));
+        assertThat(t.getDate(), is(LocalDate.parse("2016-05-06")));
         assertThat(t.getShares(), is(Values.Share.factorize(50)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 32_51)));
         assertThat(t.getGrossValue(), is(Money.of("EUR", 38_25)));
@@ -342,7 +342,7 @@ public class ConsorsbankPDFExtractorTest
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
         assertThat(t.getSecurity(), is(existingSecurity));
-        assertThat(t.getDate(), is(LocalDate.parse("2014-04-22")));
+        assertThat(t.getDate(), is(LocalDate.parse("2014-03-06")));
         assertThat(t.getShares(), is(Values.Share.factorize(80)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 33_51)));
         assertThat(t.getGrossValue(), is(Money.of("EUR", 64_08)));
