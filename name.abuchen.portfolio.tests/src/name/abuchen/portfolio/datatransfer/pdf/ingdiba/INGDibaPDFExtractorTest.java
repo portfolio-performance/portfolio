@@ -550,7 +550,7 @@ public class INGDibaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(44.01)));
-        assertThat(t.getDate(), is(LocalDate.parse("2016-12-15")));
+        assertThat(t.getDate(), is(LocalDate.parse("2016-11-29")));
         assertThat(t.getShares(), is(Values.Share.factorize(66)));
 
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.24))));
