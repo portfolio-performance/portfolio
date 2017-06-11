@@ -192,7 +192,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+)") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
@@ -238,7 +238,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date") //
-                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+)") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
@@ -289,7 +289,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
+                        .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+)") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
