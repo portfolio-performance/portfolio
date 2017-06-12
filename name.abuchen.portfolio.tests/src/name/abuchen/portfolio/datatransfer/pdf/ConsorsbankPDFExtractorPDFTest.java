@@ -59,7 +59,7 @@ public class ConsorsbankPDFExtractorPDFTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2015-11-02")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-09-28")));
         assertThat(t.getShares(), is(Values.Share.factorize(300)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 121_36)));
         assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 180_00)));
@@ -89,7 +89,7 @@ public class ConsorsbankPDFExtractorPDFTest
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).filter(
                         i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.DIVIDENDS)
                         .findFirst().get().getSubject();
-        assertThat(t.getDate(), is(LocalDate.parse("2016-01-11")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-12-22")));
         assertThat(t.getShares(), is(Values.Share.factorize(650)));
         assertThat(t.getMonetaryAmount(), is(Money.of("EUR", 285_60)));
         assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("USD", 367_25)));
