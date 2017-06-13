@@ -93,7 +93,8 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         //
                         .match(".*W e r t p a p i e r - B e z e i c h n u n g.*")
                         .match("p e r (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<name>.*) (?<wkn>\\S*)")
-                        .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
+                        .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$")
+                        .assign((t, v) -> {
                             // if necessary, create the security with the
                             // currency of the transaction
                             t.setDate(asDate(stripBlanks(v.get("date"))));
