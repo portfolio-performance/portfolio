@@ -320,7 +320,7 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-20")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-09")));
         assertThat(transaction.getAmount(), is(2995L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));

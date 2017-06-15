@@ -248,6 +248,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("date") //
+                        .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
                         .wrap(TransactionItem::new);
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
