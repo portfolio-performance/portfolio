@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 
 public class AccountSnapshot
 {
@@ -46,6 +47,11 @@ public class AccountSnapshot
         this.date = date;
         this.converter = converter;
         this.funds = funds;
+    }
+    
+    /* package */ Account unwrapAccount()
+    {
+        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount)account).getSource() : account;
     }
 
     public Account getAccount()
