@@ -62,22 +62,6 @@ public class CheckCurrenciesAction implements ImportAction
                 Status status = checkGrossValueAndUnitsAgainstSecurity(transaction);
                 if (status.getCode() != Status.Code.OK)
                     return status;
-
-                if (transaction.getType() == AccountTransaction.Type.DIVIDENDS)
-                {
-                    // tax must be < than transaction amount
-                    Money taxes = transaction.getUnits() //
-                                    .filter(u -> u.getType() == Unit.Type.TAX) //
-                                    .map(u -> u.getAmount()) //
-                                    .collect(MoneyCollectors.sum(transaction.getCurrencyCode()));
-
-                    if (!transaction.getMonetaryAmount().isGreaterOrEqualThan(taxes))
-                        return new Status(Status.Code.ERROR,
-                                        MessageFormat.format(Messages.MsgCheckTaxAndFeesTooHigh,
-                                                        Values.Money.format(transaction.getMonetaryAmount()),
-                                                        Values.Money.format(taxes)));
-                }
-
             }
         }
 
