@@ -226,27 +226,28 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("STK ([\\d.]+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares") //
+                        .section("date", "shares") //
                         .find("^Nominal Ex-Tag Zahltag .*") //
-                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) (?<date>\\d+.\\d+.\\d{4}+).*$")
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setDate(asDate(v.get("date")));
+                        })
 
-                        .section("date", "amount", "currency") //
+                        .section("amount", "currency") //
                         .optional() //
                         .find("Wert *Konto-Nr. *Betrag *zu *Ihren *Gunsten")
-                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("date", "amount", "currency", "forexCurrency", "exchangeRate") //
+                        .section("amount", "currency", "forexCurrency", "exchangeRate") //
                         .optional() //
                         .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
-                        .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
+                        .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
