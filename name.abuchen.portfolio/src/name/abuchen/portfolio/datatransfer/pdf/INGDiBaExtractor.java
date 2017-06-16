@@ -161,6 +161,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        
                         .wrap(BuySellEntryItem::new));
     }
 
@@ -212,6 +217,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        
                         .wrap(TransactionItem::new));
     }
 
@@ -258,6 +268,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        
                         .wrap(TransactionItem::new));
     }
 
@@ -310,6 +325,11 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+                        
                         .wrap(TransactionItem::new));
     }
 
