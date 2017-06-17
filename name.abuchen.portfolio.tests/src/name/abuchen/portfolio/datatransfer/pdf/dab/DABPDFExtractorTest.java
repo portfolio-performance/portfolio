@@ -432,7 +432,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, 56_91)));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-05-16")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-04-14")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
 
@@ -472,7 +472,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, 56_91)));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-05-16")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-04-14")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
 
@@ -548,7 +548,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(80.92))));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-07-29")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-07-13")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(500)));
     }
 
@@ -586,7 +586,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(586.80))));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-03-30")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-03-23")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1300)));
     }
 
@@ -624,7 +624,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(198.79))));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2013-05-31")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2013-05-30")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
 

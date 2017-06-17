@@ -164,7 +164,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-04")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 64_88L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 8_71 + 47 + 13_07)));
         assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 87_13)));

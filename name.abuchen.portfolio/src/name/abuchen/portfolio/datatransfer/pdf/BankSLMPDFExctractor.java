@@ -184,16 +184,21 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                             return transaction;
                         })
 
-                        .section("date", "shares", "name", "wkn", "currency")
-                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) wurde folgende Dividende gutgeschrieben:") //
+                        .section("shares", "name", "wkn", "currency")
+                        .match("Am \\d+.\\d+.\\d{4}+ wurde folgende Dividende gutgeschrieben:") //
                         .match("^.*$") //
                         .match("^(?<name>.*)$") //
                         .match("^Valor: (?<wkn>[^ ]*)$") //
                         .match("Brutto \\((?<shares>[\\d.']+) \\* ... ([\\d.']+)\\) (?<currency>\\w{3}+) ([\\d.']+)") //
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("date") //
+                        .match(".*Ex Datum: (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
                         })
 
                         .section("amount", "currency") //

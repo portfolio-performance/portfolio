@@ -307,7 +307,7 @@ public class BankSLMPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-07-05")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2016-06-17")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", 3302_00L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 1415_14L)));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", 4717_14L)));
