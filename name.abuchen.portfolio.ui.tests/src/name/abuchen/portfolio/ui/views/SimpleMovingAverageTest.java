@@ -5,13 +5,12 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.Locale;
 
 import org.hamcrest.core.IsNull;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.ibm.icu.util.LocaleData;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -82,7 +81,7 @@ public class SimpleMovingAverageTest
     public void testSecurityHasSparsePrice()
     {
         Security security = new Security();
-        
+
         LocalDate date = LocalDate.parse("2016-01-01");
         for (int ii = 0; ii < 100; ii++)
         {
@@ -91,10 +90,48 @@ public class SimpleMovingAverageTest
         }
 
         security.addPrice(new SecurityPrice(LocalDate.parse("2017-01-01"), Values.Quote.factorize(12)));
-        
+
+        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, null);
+        assertThat(SMALines, is(IsNull.nullValue())); // null because not enough
+                                                      // prices for sma in last
+                                                      // sma period
+        // assertThat(SMALines.getValues()[SMALines.getValues().length - 1],
+        // is(12d));
+    }
+
+    @Test
+    public void testSufficientPriceDataPass()
+    {
+        Security security = new Security();
+
+        LocalDate date = LocalDate.parse("2016-01-01");
+        for (int ii = 0; ii < 300; ii++)
+        {
+            security.addPrice(new SecurityPrice(date, Values.Quote.factorize(10)));
+            date = date.plusDays(1);
+        }
+
         ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, null);
         assertThat(SMALines, is(IsNull.notNullValue()));
-        assertThat(SMALines.getValues()[SMALines.getValues().length - 1], is(12d));
+        assertThat(SMALines.getValues().length, is(security.getPrices().size() - 10 + 1));
+    }
+
+    @Test
+    public void testSufficientPriceDataStartDate()
+    {
+        Security security = new Security();
+
+        LocalDate date = LocalDate.parse("2016-01-01");
+        for (int ii = 0; ii < 300; ii++)
+        {
+            security.addPrice(new SecurityPrice(date, Values.Quote.factorize(10)));
+            date = date.plusDays(1);
+        }
+        LocalDate startDate = LocalDate.parse("2016-06-01");
+        Date isStartDate = java.sql.Date.valueOf(startDate);
+        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, startDate);
+        assertThat(SMALines, is(IsNull.notNullValue()));
+        assertThat(SMALines.getDates()[0], is(isStartDate));
     }
 
 }
