@@ -124,7 +124,7 @@ public abstract class AbstractFinanceView
         title = new Label(header, SWT.NONE);
         title.setText(getDefaultTitle());
         title.setFont(boldFont);
-        title.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+        title.setForeground(Colors.HEADINGS);
         title.setBackground(header.getBackground());
 
         ToolBar toolBar = new ToolBar(header, SWT.FLAT | SWT.RIGHT);

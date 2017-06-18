@@ -175,9 +175,9 @@ public abstract class TaxonomyNode implements Adaptable
         public String getColor()
         {
             if (assignment.getInvestmentVehicle() instanceof Security)
-                return Colors.EQUITY.asHex();
+                return Colors.toHex(Colors.EQUITY);
             else
-                return Colors.CASH.asHex();
+                return Colors.toHex(Colors.CASH);
         }
 
         @Override
@@ -207,7 +207,7 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public String getColor()
         {
-            return Colors.OTHER_CATEGORY.asHex();
+            return Colors.toHex(Colors.OTHER_CATEGORY);
         }
     }
 

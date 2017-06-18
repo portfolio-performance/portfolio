@@ -74,7 +74,7 @@ public class DataSeriesSet
     private void buildStatementOfAssetsDataSeries()
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
-                        Colors.TOTALS.swt()));
+                        Colors.TOTALS.getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
                         Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
@@ -140,7 +140,7 @@ public class DataSeriesSet
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
                         Messages.LabelAggregationDaily,
@@ -150,7 +150,7 @@ public class DataSeriesSet
 
         // consumer price index
         series = new DataSeries(DataSeries.Type.CONSUMER_PRICE_INDEX, ConsumerPriceIndex.class,
-                        Messages.LabelConsumerPriceIndex, Colors.CPI.swt());
+                        Messages.LabelConsumerPriceIndex, Colors.CPI.getRGB());
         series.setBenchmark(true);
         series.setLineStyle(LineStyle.DASHDOTDOT);
         availableSeries.add(series);
@@ -170,7 +170,7 @@ public class DataSeriesSet
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         // securities as benchmark
         int index = 0;

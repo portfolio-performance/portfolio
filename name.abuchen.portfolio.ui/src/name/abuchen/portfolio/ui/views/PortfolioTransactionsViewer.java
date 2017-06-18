@@ -56,8 +56,6 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 {
     private class TransactionLabelProvider extends ColumnLabelProvider
     {
-        private Color warningColor = new Color(Display.getDefault(), Colors.WARNING.swt());
-
         @Override
         public Color getForeground(Object element)
         {
@@ -72,14 +70,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         @Override
         public Color getBackground(Object element)
         {
-            return marked.contains(element) ? warningColor : null;
-        }
-
-        @Override
-        public void dispose()
-        {
-            warningColor.dispose();
-            super.dispose();
+            return marked.contains(element) ? Colors.WARNING : null;
         }
     }
 

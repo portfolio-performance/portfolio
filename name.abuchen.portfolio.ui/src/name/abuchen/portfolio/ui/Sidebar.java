@@ -331,7 +331,7 @@ public final class Sidebar extends Composite
 
     private void createColorsAndFonts(Composite parent)
     {
-        hightlightColor = new Color(null, Colors.HEADINGS.swt());
+        hightlightColor = new Color(null, Colors.HEADINGS.getRGB());
 
         FontData fontData = parent.getFont().getFontData()[0];
         regularFont = new Font(Display.getDefault(), fontData);

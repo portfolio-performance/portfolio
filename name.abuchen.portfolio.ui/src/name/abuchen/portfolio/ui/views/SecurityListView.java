@@ -18,8 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -181,9 +179,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     @Inject
     private ExchangeRateProviderFactory factory;
-
-    private LocalResourceManager resources;
-    private Color warningColor;
 
     private SecuritiesTable securities;
     private TableViewer prices;
@@ -364,9 +359,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createTopTable(Composite parent)
     {
-        this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        this.warningColor = resources.createColor(Colors.WARNING.swt());
-
         securities = new SecuritiesTable(parent, this);
         updateTitle(getDefaultTitle());
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
@@ -525,7 +517,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
                 int days = Dates.daysBetween(previous.getTime(), current.getTime());
-                return days > 3 ? warningColor : null;
+                return days > 3 ? Colors.WARNING : null;
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$

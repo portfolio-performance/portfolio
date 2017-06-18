@@ -58,9 +58,7 @@ public class DividendsChartTab extends AbstractChartTab
 
             Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
             container.setForeground(foregroundColor);
-            Color backgroundColor = new Color(container.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
-            container.addDisposeListener(e -> backgroundColor.dispose());
-            container.setBackground(backgroundColor);
+            container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setForeground(foregroundColor);
