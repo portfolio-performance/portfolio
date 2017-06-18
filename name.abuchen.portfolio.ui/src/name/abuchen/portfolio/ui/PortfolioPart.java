@@ -60,6 +60,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.ExceptionView;
@@ -169,12 +170,15 @@ public class PortfolioPart implements LoadClientThread.Callback
         sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
-        navigationBar.setLayoutData(new SashLayoutData(180));
-        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
+        
+        Composite divider = new Composite(navigationBar, SWT.NONE);
+        divider.setBackground(Colors.SIDEBAR_BORDER);
+        GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
         ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());

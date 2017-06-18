@@ -147,6 +147,6 @@ public class DividendsPerYearChartTab extends AbstractChartTab
 
         IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
         barSeries.setYSeries(series);
-        barSeries.setBarColor(Colors.HEADINGS);
+        barSeries.setBarColor(Colors.DARK_BLUE);
     }
 }

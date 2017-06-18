@@ -26,11 +26,18 @@ public final class Colors
     public static final Color CPI = getColor(120, 120, 120);
     public static final Color IRR = getColor(0, 0, 0);
 
-    public static final Color HEADINGS = getColor(149, 165, 180); // 95A5B4
+    public static final Color DARK_BLUE = getColor(149, 165, 180); // 95A5B4
+
+    public static final Color HEADINGS = getColor(57, 62, 66); // 95A5B4
     public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
     public static final Color INFO_TOOLTIP_BACKGROUND = getColor(236, 235, 236);
 
     public static final Color WARNING = getColor(254, 223, 107);
+    
+    public static final Color SIDEBAR_TEXT = getColor(57, 62, 66);
+    public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250);
+    public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233);
+    public static final Color SIDEBAR_BORDER = getColor(244, 245, 245);
 
     private Colors()
     {}
