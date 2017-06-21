@@ -332,8 +332,8 @@ public class SecuritiesChart
 
     private void addSMAMarkerLines(int SMADays)
     {
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(SMADays, this.security, chartPeriod);
-        if (SMALines == null)
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(SMADays, this.security, chartPeriod).getSMA();
+        if (SMALines == null || SMALines.getValues() == null || SMALines.getDates() == null)
             return;
 
         String lineID = SMADays == 200 ? Messages.LabelChartDetailSMA200 : Messages.LabelChartDetailSMA50;

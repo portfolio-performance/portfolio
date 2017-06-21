@@ -57,21 +57,21 @@ public class SimpleMovingAverageTest
     @Test
     public void testSecurityHasOnlyOnePrice()
     {
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(200, this.securityOnePrice, null);
-        assertThat(SMALines, is(IsNull.nullValue()));
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(200, this.securityOnePrice, null).getSMA();
+        assertThat(SMALines.getDates(), is(IsNull.nullValue()));
     }
 
     @Test
     public void testSecurityIsNull()
     {
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(200, null, null);
-        assertThat(SMALines, is(IsNull.nullValue()));
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(200, null, null).getSMA();
+        assertThat(SMALines.getDates(), is(IsNull.nullValue()));
     }
 
     @Test
     public void testCorrectSMAEntries()
     {
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, this.securityTenPrices, null);
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, this.securityTenPrices, null).getSMA();
         assertThat(SMALines, is(IsNull.notNullValue()));
         assertThat(SMALines.getValues().length, is(1));
         assertThat(SMALines.getValues()[0], is((1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10) / Values.Quote.divider() / 10));
@@ -91,8 +91,8 @@ public class SimpleMovingAverageTest
 
         security.addPrice(new SecurityPrice(LocalDate.parse("2017-01-01"), Values.Quote.factorize(12)));
 
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, null);
-        assertThat(SMALines, is(IsNull.nullValue())); // null because not enough
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, security, null).getSMA();
+        assertThat(SMALines.getDates(), is(IsNull.nullValue())); // null because not enough
                                                       // prices for sma in last
                                                       // sma period
         // assertThat(SMALines.getValues()[SMALines.getValues().length - 1],
@@ -111,7 +111,7 @@ public class SimpleMovingAverageTest
             date = date.plusDays(1);
         }
 
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, null);
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, security, null).getSMA();
         assertThat(SMALines, is(IsNull.notNullValue()));
         assertThat(SMALines.getValues().length, is(security.getPrices().size() - 10 + 1));
     }
@@ -129,7 +129,7 @@ public class SimpleMovingAverageTest
         }
         LocalDate startDate = LocalDate.parse("2016-06-01");
         Date isStartDate = java.sql.Date.valueOf(startDate);
-        ChartLineSeriesAxes SMALines = SimpleMovingAverage.getSMA(10, security, startDate);
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, security, startDate).getSMA();
         assertThat(SMALines, is(IsNull.notNullValue()));
         assertThat(SMALines.getDates()[0], is(isStartDate));
     }

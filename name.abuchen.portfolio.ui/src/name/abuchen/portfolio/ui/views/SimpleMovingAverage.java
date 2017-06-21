@@ -13,6 +13,32 @@ public class SimpleMovingAverage
 {
 
     public static final int MIN_AVERAGE_PRICES_PER_WEEK = 2;
+    private int rangeSMA;
+    private Security security;
+    private LocalDate startDate;
+    private ChartLineSeriesAxes SMA;
+    private int calculatedMinimumDays;
+    private List<SecurityPrice> prices;
+
+    public SimpleMovingAverage(int rangeSMA, Security security, LocalDate startDate)
+    {
+        this.rangeSMA = rangeSMA;
+        this.security = security;
+        this.startDate = startDate;
+        this.SMA = new ChartLineSeriesAxes();
+        calculatedMinimumDays = this.getMinimumDaysForSMA();
+        this.calculateSMA();
+    }
+
+    public ChartLineSeriesAxes getSMA()
+    {
+        return this.SMA;
+    }
+
+    public SimpleMovingAverage calculateSMA(int rangeSMA, Security security, LocalDate startDate)
+    {
+        return new SimpleMovingAverage(rangeSMA, security, startDate);
+    }
 
     /**
      * Calculates the Simple Moving Average for the given range of days from the
@@ -22,40 +48,38 @@ public class SimpleMovingAverage
      * @return The ChartLineSeriesAxes contains the X and Y Axes of the
      *         generated SMA
      */
-    public static ChartLineSeriesAxes getSMA(int rangeSMA, Security security, LocalDate startDate)
+    private void calculateSMA()
     {
         if (security == null)
-            return null;
+            return;
 
+        this.prices = security.getPricesIncludingLatest();
         int index;
-        int minDays = SimpleMovingAverage.getMinimumDaysForSMA(rangeSMA);
         LocalDate[] dates;
         double[] values;
 
         SecurityPrice startPrice = null;
-        ChartLineSeriesAxes lineSeries = new ChartLineSeriesAxes();
-        List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
-        if (prices == null || prices.size() < minDays)
-            return null;
+        if (prices == null || prices.size() < calculatedMinimumDays)
+            return;
 
         if (startDate == null)
         {
-            startPrice = SimpleMovingAverage.getStartPrice(rangeSMA, prices);
+            startPrice = this.getStartPrice();
             // in case no valid start date could be determined, return null
-            if (startPrice == null) { return null; }
+            if (startPrice == null) { return; }
             index = prices.indexOf(startPrice);
-            if (index >= prices.size()) { return null; }
+            if (index >= prices.size()) { return; }
             dates = new LocalDate[prices.size() - index];
             values = new double[prices.size() - index];
         }
         else
         {
-            startPrice = SimpleMovingAverage.getStartPrice(rangeSMA, prices, startDate);
+            startPrice = this.getStartPriceFromStartDate();
             // in case no valid start date could be determined, return null
-            if (startPrice == null) { return null; }
+            if (startPrice == null) { return; }
             index = prices.indexOf(startPrice);
-            if (index >= prices.size()) { return null; }
+            if (index >= prices.size()) { return; }
             dates = new LocalDate[prices.size() - index];
             values = new double[prices.size() - index];
         }
@@ -67,9 +91,9 @@ public class SimpleMovingAverage
             LocalDate nextDate = prices.get(index).getTime();
             LocalDate isBefore = nextDate.plusDays(1);
             LocalDate isAfter = isBefore.minusDays(rangeSMA + 1);
-            filteredPrices = SimpleMovingAverage.getFilteredList(prices, isBefore, isAfter);
+            filteredPrices = this.getFilteredList(isBefore, isAfter);
 
-            if (filteredPrices.size() < minDays) { return null; }
+            if (filteredPrices.size() < calculatedMinimumDays) { return; }
 
             for (SecurityPrice price : filteredPrices)
             {
@@ -81,13 +105,11 @@ public class SimpleMovingAverage
 
         }
 
-        lineSeries.setDates(TimelineChart.toJavaUtilDate(dates));
-        lineSeries.setValues(values);
-
-        return lineSeries;
+        this.SMA.setDates(TimelineChart.toJavaUtilDate(dates));
+        this.SMA.setValues(values);
     }
 
-    public static int getMinimumDaysForSMA(int rangeSMA)
+    public int getMinimumDaysForSMA()
     {
         int weeks = rangeSMA / 7;
         int minDays = weeks * MIN_AVERAGE_PRICES_PER_WEEK;
@@ -95,17 +117,17 @@ public class SimpleMovingAverage
 
     }
 
-    public static SecurityPrice getStartPrice(int rangeSMA, List<SecurityPrice> prices, LocalDate startDate)
+    public SecurityPrice getStartPriceFromStartDate()
     {
         // get Date of first possible SMA calculation beginning from startDate
         int index = Math.abs(
                         Collections.binarySearch(prices, new SecurityPrice(startDate, 0), new SecurityPrice.ByDate()));
 
         if (index >= prices.size()) { return null; }
-        return determineStartPrice(rangeSMA, prices, startDate);
+        return determineStartPrice(startDate);
     }
 
-    public static SecurityPrice getStartPrice(int rangeSMA, List<SecurityPrice> prices)
+    public SecurityPrice getStartPrice()
     {
         // get Date of first possible SMA calculation
         LocalDate smaPeriodEnd = prices.get(0).getTime().plusDays(rangeSMA - 1);
@@ -113,39 +135,38 @@ public class SimpleMovingAverage
                         new SecurityPrice.ByDate()));
         if (index >= prices.size()) { return null; }
 
-        return determineStartPrice(rangeSMA, prices, smaPeriodEnd);
+        return determineStartPrice(smaPeriodEnd);
     }
 
-    private static SecurityPrice determineStartPrice(int rangeSMA, List<SecurityPrice> prices, LocalDate smaPeriodEnd)
+    private SecurityPrice determineStartPrice(LocalDate smaPeriodEnd)
     {
         // check if an SMA can be calculated for this Date
         List<SecurityPrice> filteredPrices = null;
         LocalDate isBefore = smaPeriodEnd.plusDays(1);
         LocalDate isAfter = smaPeriodEnd.minusDays(rangeSMA);
         LocalDate lastDate = prices.get(prices.size() - 1).getTime();
-        filteredPrices = SimpleMovingAverage.getFilteredList(prices, isBefore, isAfter);
+        filteredPrices = this.getFilteredList(isBefore, isAfter);
         int i = 1;
-        while (!SimpleMovingAverage.checkListIsValidForSMA(filteredPrices, rangeSMA))
+        while (!this.checkListIsValidForSMA(filteredPrices, rangeSMA))
         {
             if (isBefore.plusDays(i).isAfter(lastDate) || isAfter.plusDays(i).isAfter(lastDate))
                 return null;
 
-            filteredPrices = SimpleMovingAverage.getFilteredList(prices, isBefore.plusDays(i), isAfter.plusDays(i));
+            filteredPrices = this.getFilteredList(isBefore.plusDays(i), isAfter.plusDays(i));
             i++;
         }
 
         return filteredPrices.get(filteredPrices.size() - 1);
     }
 
-    private static boolean checkListIsValidForSMA(List<SecurityPrice> filteredPrices, int rangeSMA)
+    private boolean checkListIsValidForSMA(List<SecurityPrice> filteredPrices, int rangeSMA)
     {
 
-        return filteredPrices.size() < SimpleMovingAverage.getMinimumDaysForSMA(rangeSMA) ? false : true;
+        return filteredPrices.size() < calculatedMinimumDays ? false : true;
 
     }
 
-    private static List<SecurityPrice> getFilteredList(List<SecurityPrice> prices, LocalDate isBefore,
-                    LocalDate isAfter)
+    private List<SecurityPrice> getFilteredList(LocalDate isBefore, LocalDate isAfter)
     {
         return prices.stream().filter(p -> p.getTime().isAfter(isAfter) && p.getTime().isBefore(isBefore))
                         .collect(Collectors.toList());
