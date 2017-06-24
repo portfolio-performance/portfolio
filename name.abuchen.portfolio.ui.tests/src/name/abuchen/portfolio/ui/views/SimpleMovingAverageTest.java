@@ -18,6 +18,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.views.ChartLineSeriesAxes;
 import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
+@SuppressWarnings("nls")
 public class SimpleMovingAverageTest
 {
     private Security securityOnePrice;
@@ -95,8 +96,6 @@ public class SimpleMovingAverageTest
         assertThat(SMALines.getDates(), is(IsNull.nullValue())); // null because not enough
                                                       // prices for sma in last
                                                       // sma period
-        // assertThat(SMALines.getValues()[SMALines.getValues().length - 1],
-        // is(12d));
     }
 
     @Test
