@@ -41,7 +41,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.GUIHelper;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
@@ -345,7 +345,7 @@ public class SecuritiesChart
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
-        lineSeriesSMA.setLineColor(GUIHelper.getColor(SMADays, 22, 22));
+        lineSeriesSMA.setLineColor(Colors.getColor(SMADays, 22, 22));
         chart.adjustRange();
     }
 
