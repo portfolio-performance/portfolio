@@ -210,7 +210,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (t != total)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgIncorrectTotal, Values.Amount.format(t)));
 
-        if (total == 0L)
+        if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
 
         return ValidationStatus.ok();
