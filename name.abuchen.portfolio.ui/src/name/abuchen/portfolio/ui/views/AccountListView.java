@@ -115,6 +115,12 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
     }
+    
+    @Override
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.BEGINNING;
+    }
 
     private void resetInput()
     {

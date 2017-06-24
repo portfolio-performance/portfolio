@@ -66,6 +66,12 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     {
         return Messages.LabelInvestmentPlans;
     }
+    
+    @Override
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.BEGINNING;
+    }
 
     @Override
     public void notifyModelUpdated()

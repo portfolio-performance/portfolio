@@ -62,8 +62,11 @@ public enum Images
     INFO("info.png"), //$NON-NLS-1$
 
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
-    GREEN_ARROW("green_arrow.png"); //$NON-NLS-1$
+    GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
+    HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
+    HANDLE_WE("handle_we.png"); //$NON-NLS-1$
+    
     static
     {
         // Enable use of HiDPI icons as described here:

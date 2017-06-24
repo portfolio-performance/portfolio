@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -31,8 +29,6 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
-
-import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart
 {
@@ -60,14 +56,11 @@ public class TimelineChart extends Chart
     private List<MarkerLine> markerLines = new ArrayList<>();
 
     private TimelineChartToolTip toolTip;
-    private final LocalResourceManager resources;
     private ChartContextMenu contextMenu;
 
     public TimelineChart(Composite parent)
     {
         super(parent, SWT.NONE);
-
-        resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
         setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
@@ -132,19 +125,9 @@ public class TimelineChart extends Chart
         return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Colors color, String label)
-    {
-        return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);
-    }
-
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
     {
         return addDateSeries(dates, values, color, false, label);
-    }
-
-    public void addDateSeries(LocalDate[] dates, double[] values, Colors color, boolean showArea)
-    {
-        addDateSeries(dates, values, resources.createColor(color.swt()), showArea, color.name());
     }
 
     private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)

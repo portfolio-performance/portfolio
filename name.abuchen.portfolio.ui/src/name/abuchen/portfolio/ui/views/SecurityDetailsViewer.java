@@ -409,21 +409,20 @@ public class SecurityDetailsViewer
 
         LocalResourceManager resources = new LocalResourceManager(JFaceResources.getResources(), container);
         Font boldFont = resources.createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
-        Color color = resources.createColor(Colors.HEADINGS.swt());
 
         // facets
 
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
         if (showMasterData)
-            children.add(new MasterDataFacet(boldFont, color));
+            children.add(new MasterDataFacet(boldFont, Colors.HEADINGS));
 
-        children.add(new LatestQuoteFacet(boldFont, color));
+        children.add(new LatestQuoteFacet(boldFont, Colors.HEADINGS));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
-            children.add(new TaxonomyFacet(taxonomy, boldFont, color));
+            children.add(new TaxonomyFacet(taxonomy, boldFont, Colors.HEADINGS));
 
-        children.add(new NoteFacet(boldFont, color));
+        children.add(new NoteFacet(boldFont, Colors.HEADINGS));
 
         for (SecurityFacet child : children)
         {

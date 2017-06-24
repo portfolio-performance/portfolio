@@ -7,7 +7,6 @@ import javax.inject.Inject;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -28,6 +27,8 @@ import de.engehausen.treemap.swt.TreeMap;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 /* package */class TreeMapViewer extends AbstractChartPage
@@ -65,8 +66,8 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
     @Override
     public Control createControl(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
-        sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        Composite sash = new Composite(parent, SWT.NONE);
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         Composite container = new Composite(sash, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -89,7 +90,7 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
         GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
 
         // layout sash
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), details.getControl());
+        details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
         treeMap.setTreeModel(new Model(getModel()));

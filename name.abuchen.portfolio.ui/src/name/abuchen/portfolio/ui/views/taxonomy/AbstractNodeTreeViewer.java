@@ -269,7 +269,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
-    private Color warningColor;
 
     private boolean isFirstView = true;
 
@@ -295,11 +294,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     protected final TreeViewer getNodeViewer()
     {
         return nodeViewer;
-    }
-
-    public Color getWarningColor()
-    {
-        return warningColor;
     }
 
     @Override
@@ -345,9 +339,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
-
-        warningColor = new Color(container.getDisplay(), Colors.WARNING.swt());
-        container.addDisposeListener(e -> warningColor.dispose());
 
         nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
@@ -450,7 +441,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node) ? warningColor : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.WARNING : null;
             }
 
             @Override

@@ -18,8 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -32,7 +30,6 @@ import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
@@ -71,6 +68,8 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -181,9 +180,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private LocalResourceManager resources;
-    private Color warningColor;
-
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -210,12 +206,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return title.toString();
-    }
-
-    @Override
-    protected int[] getDefaultWeights(int numOfChildren)
-    {
-        return new int[] { 50, 50 };
     }
 
     @Override
@@ -369,9 +359,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createTopTable(Composite parent)
     {
-        this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        this.warningColor = resources.createColor(Colors.WARNING.swt());
-
         securities = new SecuritiesTable(parent, this);
         updateTitle(getDefaultTitle());
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
@@ -454,14 +441,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createBottomTable(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+        Composite sash = new Composite(parent, SWT.NONE);
+        
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
+        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -528,7 +517,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
                 int days = Dates.daysBetween(previous.getTime(), current.getTime());
-                return days > 3 ? warningColor : null;
+                return days > 3 ? Colors.WARNING : null;
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$

@@ -7,6 +7,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class HeadingWidget extends WidgetDelegate
 {
@@ -29,7 +30,7 @@ public class HeadingWidget extends WidgetDelegate
 
         title = new Label(heading, SWT.NONE);
         title.setFont(resources.getBoldFont());
-        title.setForeground(resources.getHeadingColor());
+        title.setForeground(Colors.HEADINGS);
         title.setText(getWidget().getLabel());
 
         return heading;

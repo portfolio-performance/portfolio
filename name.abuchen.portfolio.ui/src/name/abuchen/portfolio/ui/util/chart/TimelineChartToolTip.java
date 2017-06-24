@@ -127,9 +127,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
         container.setForeground(foregroundColor);
-        Color backgroundColor = new Color(container.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
-        container.addDisposeListener(e -> backgroundColor.dispose());
-        container.setBackground(backgroundColor);
+        container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
 
         Label left = new Label(container, SWT.NONE);
         left.setForeground(foregroundColor);
