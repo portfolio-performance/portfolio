@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.swt;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
@@ -18,6 +19,7 @@ import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.util.ContextMenu;
 
 /**
  * A custom sash layout that supports double-clicking to hide and unhide one
@@ -159,6 +161,11 @@ public class SashLayout extends Layout
         });
     }
 
+    public void addQuickNavigation(IMenuListener menuListener)
+    {
+        new ContextMenu(divider, menuListener).hook();
+    }
+    
     protected void adjustSize(int curX, int curY)
     {
         List<Control> children = getChildren();

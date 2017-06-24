@@ -75,13 +75,18 @@ public final class Sidebar extends Composite
         {
             return id;
         }
-
+        
         public void setAction(Action action)
         {
             this.action = action;
 
             if (action.getImageDescriptor() != null)
                 item.setImage(action.getImageDescriptor().createImage(true));
+        }
+        
+        public Action getAction()
+        {
+            return action;
         }
 
         public void setContextMenu(MenuListener listener)
@@ -163,6 +168,16 @@ public final class Sidebar extends Composite
             item.text = label;
             item.redraw();
         }
+        
+        public String getLabel()
+        {
+            return item.text;
+        }
+        
+        public int getIndent()
+        {
+            return item.indent;
+        }
 
         public void dispose()
         {
@@ -216,7 +231,7 @@ public final class Sidebar extends Composite
         void menuAboutToShow(Entry entry, IMenuManager manager);
     }
 
-    private static final int STEP = 10;
+    public static final int STEP = 10;
 
     private Font regularFont;
     private Font boldFont;
@@ -265,6 +280,11 @@ public final class Sidebar extends Composite
         return null;
     }
 
+    public List<Entry> getEntries()
+    {
+        return entries;
+    }
+    
     //
     // listener implementations
     //

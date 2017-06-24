@@ -176,6 +176,8 @@ public class PortfolioPart implements LoadClientThread.Callback
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
         
+        sashLayout.addQuickNavigation(manager -> sidebar.menuAboutToShow(manager));
+                
         Composite divider = new Composite(navigationBar, SWT.NONE);
         divider.setBackground(Colors.SIDEBAR_BORDER);
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
