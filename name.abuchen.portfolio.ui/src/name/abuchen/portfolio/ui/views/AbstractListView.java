@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -12,25 +14,32 @@ import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 {
     private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
 
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.END;
+    }
+    
     @Override
     protected final Control createBody(Composite parent)
     {
         Composite sash = new Composite(parent, SWT.NONE);
 
-        SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        int style = getSashStyle();
+        SashLayout sashLayout = new SashLayout(sash, style);
         sash.setLayout(sashLayout);
 
         createTopTable(sash);
         createBottomTable(sash);
 
-        Control[] children = sash.getChildren();
-        if (children.length > 2)
+        List<Control> children = sashLayout.getChildren();
+        int childIndex = (style & SWT.BEGINNING) == SWT.BEGINNING ? 0 : 1;
+        if (children.size() > childIndex)
         {
-            Control bottomControl = children[2];
+            Control control = children.get(childIndex);
             int size = getPreferenceStore().getInt(identifier);
-            bottomControl.setLayoutData(new SashLayoutData(size != 0 ? size : 250));
+            control.setLayoutData(new SashLayoutData(size != 0 ? size : 250));
             sash.addDisposeListener(e -> getPreferenceStore().setValue(identifier,
-                            ((SashLayoutData) bottomControl.getLayoutData()).getSize()));
+                            ((SashLayoutData) control.getLayoutData()).getSize()));
         }
 
         return sash;

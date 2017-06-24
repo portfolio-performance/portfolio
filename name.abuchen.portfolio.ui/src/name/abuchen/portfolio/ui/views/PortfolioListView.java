@@ -72,6 +72,12 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
     }
+    
+    @Override
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.BEGINNING;
+    }
 
     private void setInput()
     {
