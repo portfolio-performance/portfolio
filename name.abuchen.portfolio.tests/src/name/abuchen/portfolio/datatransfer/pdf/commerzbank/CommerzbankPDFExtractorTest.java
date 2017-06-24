@@ -69,7 +69,7 @@ public class CommerzbankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-06-22")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-05-27")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 223_45L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
     }
@@ -107,7 +107,7 @@ public class CommerzbankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-07-20")));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2015-06-24")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1045_67L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1234)));
     }

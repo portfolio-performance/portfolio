@@ -269,7 +269,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .match(".*EX-TAG  (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("currency", "amount").optional() //
                         .match("WERT \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")

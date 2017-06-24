@@ -237,17 +237,29 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })
-
-                        .section("date", "amount")
+                        
+                        .section("amount")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*) (?<currency>\\w{3}+)")
                         .match("(^Lagerstelle) (.*)")
-                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
+                        .section("date") //
+                        .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("date") //
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
+                        .assign((t, v) -> {
+
+                        if (t.getDate() == null)
+                        {
+                            t.setDate(asDate(v.get("date")));
+                        }})
+
+                        
                         .wrap(TransactionItem::new);
         addTaxesSectionsTransaction(pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);

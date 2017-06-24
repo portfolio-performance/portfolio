@@ -322,7 +322,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
+                        .match("Extag * : *(?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
