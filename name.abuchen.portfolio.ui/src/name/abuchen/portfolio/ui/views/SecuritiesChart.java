@@ -41,6 +41,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.GUIHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
@@ -53,6 +54,8 @@ public class SecuritiesChart
     {
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         EVENTS(Messages.LabelChartDetailEvents), //
+        SMA50(Messages.LabelChartDetailSMA50), //
+        SMA200(Messages.LabelChartDetailSMA200), //
         DIVIDENDS(Messages.LabelChartDetailDividends);
 
         private final String label;
@@ -238,11 +241,11 @@ public class SecuritiesChart
 
         try
         {
-            ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
-            if (series != null)
-            {
-                chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
-            }
+            // delete all line series (quotes + possibly moving average)
+            ISeries[] series = chart.getSeriesSet().getSeries();
+            for (ISeries s : series)
+                chart.getSeriesSet().deleteSeries(s.getId());
+
             chart.clearMarkerLines();
 
             if (security == null || security.getPrices().isEmpty())
@@ -299,7 +302,6 @@ public class SecuritiesChart
             lineSeries.setAntialias(SWT.ON);
 
             chart.adjustRange();
-
             addChartMarker();
 
         }
@@ -320,6 +322,31 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.SMA200))
+            addSMAMarkerLines(200);
+
+        if (chartConfig.contains(ChartDetails.SMA50))
+            addSMAMarkerLines(50);
+    }
+
+    private void addSMAMarkerLines(int SMADays)
+    {
+        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(SMADays, this.security, chartPeriod).getSMA();
+        if (SMALines == null || SMALines.getValues() == null || SMALines.getDates() == null)
+            return;
+
+        String lineID = SMADays == 200 ? Messages.LabelChartDetailSMA200 : Messages.LabelChartDetailSMA50;
+
+        ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
+        lineSeriesSMA.setXDateSeries(SMALines.getDates());
+        lineSeriesSMA.setLineWidth(2);
+        lineSeriesSMA.enableArea(false);
+        lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
+        lineSeriesSMA.setYSeries(SMALines.getValues());
+        lineSeriesSMA.setAntialias(SWT.ON);
+        lineSeriesSMA.setLineColor(GUIHelper.getColor(SMADays, 22, 22));
+        chart.adjustRange();
     }
 
     private void addInvestmentMarkerLines()
