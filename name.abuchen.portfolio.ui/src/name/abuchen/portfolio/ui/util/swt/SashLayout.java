@@ -165,7 +165,7 @@ public class SashLayout extends Layout
     {
         new ContextMenu(divider, menuListener).hook();
     }
-    
+
     protected void adjustSize(int curX, int curY)
     {
         List<Control> children = getChildren();
@@ -178,12 +178,18 @@ public class SashLayout extends Layout
         int proposedSize = isHorizontal ? curX : curY;
         int totalSize = isHorizontal ? left.width + right.width : left.height + right.height;
 
-        // ensure minimum size of a child (if not hidden)
-        proposedSize = Math.max(MIN_WIDHT, proposedSize);
-        proposedSize = Math.min(totalSize - MIN_WIDHT, proposedSize);
-
         SashLayoutData data = getLayoutData(children.get(isBeginning ? 0 : 1));
-        data.size = isBeginning ? proposedSize : totalSize - proposedSize;
+
+        // if collapsed, drag only if proposed size is bigger than min width. That
+        // excludes many accidental drags when trying to restore via double click.
+
+        if (data.size > 0 || (proposedSize > MIN_WIDHT && proposedSize < totalSize - MIN_WIDHT))
+        {
+            // ensure minimum size of a child (if not hidden)
+            proposedSize = Math.max(MIN_WIDHT, proposedSize);
+            proposedSize = Math.min(totalSize - MIN_WIDHT, proposedSize);
+            data.size = isBeginning ? proposedSize : totalSize - proposedSize;
+        }
     }
 
     @Override
