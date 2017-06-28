@@ -59,7 +59,7 @@ public final class ClientFilterMenu implements IMenuListener
         }
     }
 
-    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 10;
+    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
 
     private final Client client;
     private final IPreferenceStore preferences;
