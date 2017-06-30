@@ -633,6 +633,7 @@ public class Messages extends NLS
     public static String SecurityMenuBuy;
     public static String SecurityMenuConfigureOnlineUpdate;
     public static String SecurityMenuCreateManually;
+    public static String SecurityMenuCreateQuotesFromTransactions;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;
