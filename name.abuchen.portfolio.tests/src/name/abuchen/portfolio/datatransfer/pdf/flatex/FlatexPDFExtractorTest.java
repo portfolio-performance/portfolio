@@ -69,7 +69,7 @@ public class FlatexPDFExtractorTest
 
         assertThirdTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem) //
                         .collect(Collectors.toList()).get(2));
-        
+
         assertFourthTransaction(results.stream().filter(i -> i instanceof TransactionItem) //
                         .collect(Collectors.toList()).get(0));
 
@@ -143,12 +143,13 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2014-01-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
-        //keine Steuer, sondern Steuererstattung!
-        //assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 100_00L)));
+        // keine Steuer, sondern Steuererstattung!
+        // assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+        // is(Money.of(CurrencyUnit.EUR, 100_00L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(59.489))));
     }
-    
+
     private void assertFourthTransaction(Item item)
     {
         assertThat(item.getSubject(), instanceOf(AccountTransaction.class));
@@ -312,9 +313,9 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDate(), is(LocalDate.parse("2016-01-29")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1100_00L)));
-        
+
     }
-    
+
     @Test
     public void testKontoauszug2() throws IOException
     {
@@ -459,7 +460,7 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(73.75)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1000)));
     }
-    
+
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
@@ -502,7 +503,7 @@ public class FlatexPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
     }
-    
+
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
@@ -590,14 +591,14 @@ public class FlatexPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierÜbertrag() throws IOException
+    public void testWertpapierÜbertrag1() throws IOException
     {
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
             {
-                return from("FlatexDepoteingang.txt");
+                return from("FlatexDepoteingang1.txt"); // biw AG
             }
         };
         List<Exception> errors = new ArrayList<Exception>();
@@ -627,7 +628,46 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getDate(), is(LocalDate.parse("2015-11-24")));
         assertThat(entry.getShares(), is(Values.Share.factorize(250)));
     }
-    
+
+    @Test
+    public void testWertpapierÜbertrag2() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("FlatexDepoteingang2.txt"); // FinTech Group
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000US9RGR9"));
+        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry.getAmount(), is(Values.Amount.factorize(7517.50)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2015-11-24")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(250)));
+    }
+
     @Test
     public void testWertpapierAusgang() throws IOException
     {
@@ -668,7 +708,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(325)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 382_12L)));
     }
-    
+
     @Test
     public void testWertpapierAusgang2() throws IOException
     {
@@ -708,7 +748,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-07-18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
     }
-    
+
     @Test
     public void testWertpapierBestandsausbuchung() throws IOException
     {
@@ -729,19 +769,20 @@ public class FlatexPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         assertFirstSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
-        assertFirstTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
+        assertFirstTransactionBestandsausbuchung(
+                        results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
 
         assertSecondSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
                         .collect(Collectors.toList()).get(1));
-        assertSecondTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
-                        .get(1));
+        assertSecondTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(1));
         assertThirdSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
                         .collect(Collectors.toList()).get(2));
-        assertThirdTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
-                        .get(2));
-                        
+        assertThirdTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList()).get(2));
+
     }
-    
+
     private Security assertFirstSecurityBestandsausbuchung(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -789,7 +830,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-03-16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(1250_000000L));
     }
-    
+
     private Security assertThirdSecurityBestandsausbuchung(Item item)
     {
         Security security = ((SecurityItem) item).getSecurity();
@@ -812,7 +853,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-03-16")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(750_000000L));
     }
-    
+
     @Test
     public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
     {
@@ -853,7 +894,7 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-28")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(83)));
     }
-    
+
     @Test
     public void testZinsBelastung() throws IOException
     {
@@ -882,7 +923,7 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.20)));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
     }
-    
+
     @Test
     public void testWertpapierVerkaufSteuererstattung() throws IOException
     {
@@ -924,17 +965,19 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(11.85))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(460)));
-                
+
         // check Steuererstattung
-        Item itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(0);
-        //Optional<Item> itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Item itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(0);
+        // Optional<Item> itemTaxReturn = results.stream().filter(i -> i
+        // instanceof TransactionItem).findFirst();
 
         AccountTransaction entryTaxReturn = (AccountTransaction) itemTaxReturn.getSubject();
         assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(463.04))));
         assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2016-09-08"))));
     }
-    
+
     @Test
     public void testWertpapierKaufVerkaufSteuererstattung() throws IOException
     {
@@ -1065,7 +1108,7 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is("EUR"));
     }
 
-   private String from(String resource)
+    private String from(String resource)
     {
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
         {
