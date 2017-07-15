@@ -6,28 +6,28 @@ Kundenservice:
 Tel.: +49 (0)9221 - 7035898
 E-Mail: kunden@flatex.de
 FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
-Frankfurt,        17.12.2016
-0202272000000694XXXXX
-Herr Auftragsdatum     15.12.2016n
-Vorname Nachname Schlusstag        15.12.2016
-Strasse Ausführungszeit   00:00 Uhr. 1
-PLZ Ort Valuta            20.12.2016
-Auftragsnummer    92212XXX/1
+Frankfurt,        19.06.2017
+0202272000000784320020
+Herr Auftragsdatum     15.06.2017n
+Max Mustermann Schlusstag        15.06.2017a
+Musterstr Ausführungszeit   00:00 Uhr. 3b
+88888 Musterstadt Valuta            20.06.2017
+Auftragsnummer    95768888/1
 Ausf.platz/-art   KAG/außerbörsl.
 Wertpapierabrechnung Kauf Fonds/Zertifikate
-Ihre Depotnummer  100XXXXXXX
-Depotinhaber      Nachname, Vorname
-Nr.92212XXX/1  Kauf            ISHSIII-S+P SM.CAP600 DLD (IE00B2QWCY14/A0Q1YY)
-Ausgeführt     19,334524 St.           Kurswert       EUR             1.050,00
-Kurs           54,307000 EUR           Provision
+Ihre Depotnummer  1000000000
+Depotinhaber      Mustermann, Max
+Nr.95768888/1  Kauf            DB X-TR.S.E.600U.E.(DR)1C (LU0328475792/DBX1A7)
+Ausgeführt     5,082011 St.            Kurswert       EUR               400,00
+Kurs           78,709000 EUR           Provision
 Devisenkurs                            Eigene Spesen
-Verwahrart     Wertpapierrechnung     *Fremde Spesen
-Lagerstelle    Clearstream Lux.
-Lagerland      Großbritannien
+Verwahrart     GS-Verwahrung          *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland
                                        Bemessungs-
 Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
                                      **Einbeh. Steuer EUR                 0,00
-                                       Endbetrag      EUR            -1.050,00
+                                       Endbetrag      EUR              -400,00
 * Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
                                        Tradinggebühr  EUR                 0,00
                                        Regulierung    EUR                 0,00
@@ -38,16 +38,18 @@ Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
                                  Solidaritätszuschlag EUR                 0,00
                                  Kirchensteuer        EUR                 0,00
     Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
-    1137201681.
+    1233799247.
 Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
 Rabattierung   keine                   gezahlter AA   EUR                 0,00
-Kurs           54,3070 EUR             Kurswert       EUR             1.050,00
-               ausschüttungsgleiche Erträge je Anteil EUR         0,3076552600
-               ausschüttungsgleiche Erträge gesamt    EUR                 5,95
-Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 100869XXXX
+Kurs           78,7090 EUR             Kurswert       EUR               400,00
+               Zwischengewinn je Anteil               EUR               0,0003
+               Zwischengewinn Gesamt                  EUR               0,0000
+               ausschüttungsgleiche Erträge je Anteil EUR         5,7954720000
 BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
-Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Bernd Würfel
-2000000694370290 0113202270000102
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784320020 0113202270000102
+               ausschüttungsgleiche Erträge gesamt    EUR                29,45
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1009126575
 Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
 dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
 Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
@@ -63,5 +65,5 @@ Viel Freiheit für wenig Zins - Ihr flatex flex-Kredit zu günstigen
 Konditionen: 3,90% p.a.
 Weitere Informationen finden Sie unter: www.flatex.de/kredit/
 BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
-Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Bernd Würfel
-2000000694370290 0113202270000202
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784320020 0113202270000202
