@@ -245,6 +245,47 @@ public class FlatexPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf4() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("FlatexKauf4.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0392494992"));
+        assertThat(security.getWkn(), is("ETF113"));
+        assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
+
+        PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
+                        //
+                        .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
+                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(800)));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-16")));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(13.268957)));
+    }
+
+    @Test
     public void testKontoauszug() throws IOException
     {
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
@@ -503,6 +544,49 @@ public class FlatexPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
+    }
+
+    @Test
+    public void testWertpapierVerkauf3() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("FlatexVerkauf3.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE0009807008"));
+        assertThat(security.getWkn(), is("980700"));
+        assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(4840.15)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-07-06")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(5.90))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
     }
 
     @Test
