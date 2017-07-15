@@ -1,0 +1,37 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0003432000000123780230
+Herr 
+Max Mustermann 
+Musterstr. 2 
+54321 Musterhausen
+          Frankfurt, den 03.12.2009
+Gutschrifts-/Belastungsanzeige
+Ihre Depotnummer: 1002322280
+Depotinhaber:     Max Mustermann
+------------------------------------------------------------------------------
+Depotausgang                          COMMERZBANK INLINE09EO/SF (DE000CM31SV9)
+------------------------------------------------------------------------------
+Stk./Nominale  : 325,000000 Stk         Einbeh. Steuer*:            382,12 EUR
+Verwahrart     : GS-Verwahrung          Geldgegenwert**:          2.867,88 EUR
+Lagerstelle    : Clearstream Nat.
+Vermerk/Sperrschlüssel
+Transaktionsnr.  : 197409035                   Steuer    : 382,12          EUR
+Fälligkeitstag   : 02.12.2009                  Letzter Handelstag:  20.11.2009
+Rückzahlungsgrund: Ablauf der Optionsfrist     Betrag/Stk: 10,000000000000 EUR
+*Einbehaltene Kapitalertragsteuer zuzüglich Solidaritätszuschlag und ggf.
+Kirchensteuer (negative Werte bedeuten Steuererstattung). Evtl. Details dazu
+finden Sie im Steuerreport unter der Transaktion-Nr.: 197409035.
+**Gutschrift auf Ihr Konto Nr. 1002459875
+------------------------------------------------------------------------------
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Dr. Ulrich Ivo von Trotha   -  Vorstand: Dirk Franzmeyer, Thomas J. Schmidt
+2000000123780230 00343000

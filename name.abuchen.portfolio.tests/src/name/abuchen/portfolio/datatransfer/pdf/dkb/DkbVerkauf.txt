@@ -1,0 +1,73 @@
+﻿10919 Berlin Seite 1 von 2
+Depotnummer 500123451
+Kundennummer 51234561
+Max Mustermann
+Auftragsnummer 495752/36.00
+Herrn Datum 27.10.2015
+Max Mustermann Rechnungsnummer W00221-0000511454/16
+Musterstraße 2 Umsatzsteuer-ID DE137178746
+12345 Musterhausen
+Wertpapier Abrechnung Verkauf
+Auftrag vom 25.10.2015 18:42:46 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 6.000,00 8,5 % SCHOLZ HOLDING AT0000A0U9J2 (A1MLSS)
+INH.-SCHV. V.2012(2017)
+Börse Tradegate (gemäß Weisung)
+Limit-Order
+Limit 85,00 %
+Schlusstag/-Zeit 27.10.2015 09:05:33 Zinstermin Monat(e) 08. März
+Ausführungskurs 85,00 % Fällig am 08.03.2017
+Auftraggeber Max Mustermann
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 5.100,00 EUR
+Provision 10,00- EUR
+Stückzinsen für 235 Tage per 28.10.2015 328,36 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn 1.718,79 EUR
+Veräußerungsverlust 202,14- EUR
+Bemessungsgrundlage für die Kapitalertragsteuer 1.516,65 EUR
+Eingebuchte sonstige negative Kapitalerträge 202,14 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 1.718,79 EUR
+Steuerberechnung
+Kapitalertragsteuer 24,45% auf 1.718,79 EUR 420,24- EUR
+Solidaritätszuschlag 5,50% auf 420,24 EUR 23,11- EUR
+Kirchensteuer 9,00% auf 420,24 EUR 37,82- EUR
+Ausmachender Betrag 4.937,19 EUR
+Den Gegenwert buchen wir mit Valuta 29.10.2015 zu Gunsten des Kontos 12345678
+(IBAN DE30 1203 0000 0012 3456 78), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+0883.10272231.0000464OR07
+Seite 2 von 2
+Depotnummer 500123451
+Kundennummer 51234561
+Auftragsnummer 495752/36.00
+Datum 27.10.2015
+Verrechnete sonstige negative Kapitalerträge 202,14- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 202,14 EUR
+Kapitalertragsteuer 24,45% auf 202,14 EUR 49,42 EUR
+Solidaritätszuschlag 5,50% auf 49,42 EUR 2,71 EUR
+Kirchensteuer 9,00% auf 49,42 EUR 4,44 EUR
+Ausmachender Betrag 56,57 EUR
+Den Gegenwert buchen wir mit Valuta 27.10.2015 zu Gunsten des Kontos 12345678
+(IBAN DE30 1203 0000 0012 3456 78), BLZ 12030000 (BIC BYLADEM1001).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Ich/wir habe(n) den Auftrag aus eigener Initiative erteilt.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2015 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.403,88
+Verkauf 0,00 202,14 0,00 0,00 1.718,79
+Steuerausgleich 0,00 202,14- 0,00 0,00 202,14-
+Nachher 0,00 0,00 0,00 0,00 3.920,53
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+Kauf 2025105800 04.07.2013 EUR 2.000,0000 2.008,26- 1.806,12 202,14- (D)
+Kauf 8014351800 11.03.2014 EUR 4.000,0000 1.893,45- 3.612,24 1.718,79 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 1.516,65
+Im ausgewiesenen Erlös sind anteilige Stückzinsen enthalten.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0993.11252056.0000527OR07
