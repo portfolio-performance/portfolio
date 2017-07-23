@@ -111,6 +111,7 @@ public class SecuritiesChart
         addButton(buttons, Messages.SecurityTabChart3Y, Period.ofYears(3));
         addButton(buttons, Messages.SecurityTabChart5Y, Period.ofYears(5));
         addButton(buttons, Messages.SecurityTabChart10Y, Period.ofYears(10));
+        addButton(buttons, Messages.SecurityTabChartYTD, Period.ofDays(LocalDate.now().getDayOfYear() - 1));
 
         Button button = new Button(buttons, SWT.FLAT);
         button.setText(Messages.SecurityTabChartAll);
