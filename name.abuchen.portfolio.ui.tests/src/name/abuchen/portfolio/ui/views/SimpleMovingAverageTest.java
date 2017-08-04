@@ -91,11 +91,13 @@ public class SimpleMovingAverageTest
         }
 
         security.addPrice(new SecurityPrice(LocalDate.parse("2017-01-01"), Values.Quote.factorize(12)));
+        LocalDate tmp = LocalDate.parse("2016-01-01");
+        tmp = tmp.plusDays(99);
+        Date lastSMADate = java.sql.Date.valueOf(tmp);
 
         ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, security, null).getSMA();
-        assertThat(SMALines.getDates(), is(IsNull.nullValue())); // null because not enough
-                                                      // prices for sma in last
-                                                      // sma period
+        assertThat(SMALines.getDates(), is(IsNull.notNullValue()));
+        assertThat(SMALines.getDates()[SMALines.getDates().length - 1], is(lastSMADate));
     }
 
     @Test

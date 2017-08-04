@@ -1,0 +1,32 @@
+Spar + Leihkasse M�nsingen AG
+Dorfplatz 5
+Postfach 1080
+3110 M�nsingen
+CHE-123.123.123 MWST
+Depot 80 1.123.123.12
+IBAN CH24 1234 1234 1234 1234 5
+Ihr Kundenberater Max Mustermann
+Direktwahl 123 123 10 36 HerrMax Mustermann
+Auftragsnummer AUF123456 Musterstrasse 1
+Auftragsdatum 22.08.2013 1234 Musterstadt
+M�nsingen, 22.08.2013
+B�rsenabrechnung - Verkauf
+Wir haben f�r Sie am 22.08.2013 verkauft.
+7'798 Namen-Aktien nom CHF 0.10
+UBS AG
+Valor: 2489948
+B�rsenplatz: Swiss Blue Chip Segment
+Menge/Nominal Preis
+7'798 18.32
+Total Kurswert CHF 142'859.35
+Eidg. Umsatzabgabe CHF -107.15
+B�rsengeb�hr CHF -3.50
+Eigene Courtage CHF -389.30
+Netto CHF 142'359.40
+Valuta: 27.08.2013
+Unsere Gutschrift erfolgt auf dem Konto 42 0.123.123.12
+Auftrag aus Internet-Banking
+Freundliche Gr�sse
+Spar + Leihkasse M�nsingen AG
+Anzeige ohne Unterschrift
+123'123'123 Seite 1/1
