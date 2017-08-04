@@ -153,7 +153,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Kauf Fonds/Zertifikate");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *biw AG *");
+        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -334,7 +334,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *biw AG *");
+        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -400,7 +400,7 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Depoteingang");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *biw AG *");
+        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
         type.addBlock(block);
         block.set(new Transaction<PortfolioTransaction>().subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
