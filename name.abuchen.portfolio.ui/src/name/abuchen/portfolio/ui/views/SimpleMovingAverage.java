@@ -20,22 +20,22 @@ public class SimpleMovingAverage
     private LocalDate startDate;
     private ChartLineSeriesAxes SMA;
     private int calculatedMinimumDays;
-    private List<SecurityPrice> prices;  
+    private List<SecurityPrice> prices;
     private List<LocalDate> datesSMA;
     private List<Double> valuesSMA;
-    
+
     public SimpleMovingAverage(int rangeSMA, Security security, LocalDate startDate)
     {
         this.rangeSMA = rangeSMA;
         this.security = security;
         this.startDate = startDate;
         this.SMA = new ChartLineSeriesAxes();
-        datesSMA = new ArrayList<LocalDate>();
-        valuesSMA = new ArrayList<Double>();
+        this.datesSMA = new ArrayList<>();
+        this.valuesSMA = new ArrayList<>();
         this.calculatedMinimumDays = getMinimumDaysForSMA();
         this.calculateSMA();
     }
-    
+
     /**
      * Returns the calculated Simple Moving Average
      * 
@@ -56,7 +56,6 @@ public class SimpleMovingAverage
      * Calculates the Simple Moving Average for the given range of days from the
      * given startDate on The method returns an object containing the X and Y
      * Axes of the generated SMA
-     * 
      */
     private void calculateSMA()
     {
@@ -100,16 +99,17 @@ public class SimpleMovingAverage
             List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
 
             if (filteredPrices.size() < calculatedMinimumDays)
-               continue; //skip this date and try to calculate SMA for next entry
+                continue; // skip this date and try to calculate SMA for next
+                          // entry
 
             double sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
-            
+
             valuesSMA.add(sum / Values.Quote.divider() / filteredPrices.size());
             datesSMA.add(prices.get(index).getTime());
         }
-        LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[ datesSMA.size()]);
-        Double[] tmpPrices = valuesSMA.toArray(new Double[ valuesSMA.size()]);
-        
+        LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[0]);
+        Double[] tmpPrices = valuesSMA.toArray(new Double[0]);
+
         this.SMA.setDates(TimelineChart.toJavaUtilDate(tmpDates));
         this.SMA.setValues(ArrayUtils.toPrimitive(tmpPrices));
     }
@@ -152,7 +152,7 @@ public class SimpleMovingAverage
         LocalDate isAfter = smaPeriodEnd.minusDays(rangeSMA);
         LocalDate lastDate = prices.get(prices.size() - 1).getTime();
         filteredPrices = this.getFilteredList(isBefore, isAfter);
-        
+
         int i = 1;
         while (!this.checkListIsValidForSMA(filteredPrices))
         {
