@@ -21,6 +21,9 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
     public FlatexPDFExtractor(Client client) throws IOException
     {
         super(client);
+        
+        addBankIdentifier("biw AG");
+        addBankIdentifier("FinTech Group Bank AG");
 
         addBuySellTransaction();
         addBuyTransaction();
@@ -834,6 +837,6 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "flatex"; //$NON-NLS-1$
+        return "FinTech Group Bank AG (flatex)"; //$NON-NLS-1$
     }
 }
