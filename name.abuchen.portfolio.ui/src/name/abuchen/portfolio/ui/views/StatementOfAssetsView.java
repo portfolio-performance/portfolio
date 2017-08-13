@@ -88,7 +88,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
         addCalendarButton(toolBar);
 
         this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
-                        filter -> notifyModelUpdated());
+                        StatementOfAssetsView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
                         .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
@@ -133,8 +133,10 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
                                 snapshotDate = dialog.getSelection();
                                 notifyModelUpdated();
-                                dropDown.getToolItem().setImage(LocalDate.now().equals(snapshotDate)
-                                                ? Images.CALENDAR_OFF.image() : Images.CALENDAR_ON.image());
+                                dropDown.getToolItem()
+                                                .setImage(LocalDate.now().equals(snapshotDate)
+                                                                ? Images.CALENDAR_OFF.image()
+                                                                : Images.CALENDAR_ON.image());
                             }));
                         });
     }
