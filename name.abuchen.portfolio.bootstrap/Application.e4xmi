@@ -42,6 +42,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" tooltip="%command.import.csv.tooltip" command="_GgTyQBhXEeOR1rNFCzC82A"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_-_9i0LpsEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_k6K6cPr-EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-pdf" label="%command.import.pdf.import-pdf" enabled="false"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_r3-X8H6zEeecDJV7ZrwQwQ" elementId="name.abuchen.portfolio.ui.menu.file.import.baaderbank" label="%command.import.pdf.baaderbank" tooltip="%command.import.pdf.baaderbank.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_BaMjQH60EeecDJV7ZrwQwQ" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="baaderbank"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_UBQ5AKHFEeWfmp1Klh842g" elementId="name.abuchen.portfolio.ui.menu.file.import.bankslm" label="%command.import.pdf.bankslm" tooltip="%command.import.pdf.bankslm.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_UBQ5AaHFEeWfmp1Klh842g" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="bankslm"/>
           </children>
