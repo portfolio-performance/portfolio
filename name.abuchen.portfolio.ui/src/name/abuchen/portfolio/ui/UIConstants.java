@@ -86,5 +86,18 @@ public interface UIConstants
          * Preference key to store a comma-separated list of recent files
          */
         String RECENT_FILES = "RECENT_FILES"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to automatically update quotes after opening a
+         * data file.
+         */
+        String UPDATE_QUOTES_AFTER_FILE_OPEN = "UPDATE_QUOTES_AFTER_FILE_OPEN"; //$NON-NLS-1$
+
+        /**
+         * Preference key whether to store settings (column width, last expanded
+         * tree nodes, etc.) next to the data file as opposed to in the
+         * workspace folder
+         */
+        String STORE_SETTINGS_NEXT_TO_FILE = "STORE_SETTINGS_NEXT_TO_FILE"; //$NON-NLS-1$
     }
 }

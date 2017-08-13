@@ -287,6 +287,47 @@ public class FlatexPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf6() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("FlatexKauf6.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00B2NPKV68"));
+        assertThat(security.getWkn(), is("A0NECU"));
+        assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
+
+        PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
+                        //
+                        .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
+                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
+
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1000)));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-15")));
+        assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.9))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(9.703363)));
+    }
+
+    @Test
     public void testKontoauszug() throws IOException
     {
         FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
@@ -423,6 +464,45 @@ public class FlatexPDFExtractorTest
         assertThat(transaction.getShares(), is(Values.Share.factorize(99)));
     }
 
+    @Test
+    public void testErtragsgutschrift3() throws IOException
+    {
+        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("FlatexErtragsgutschrift3.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE0006335003"));
+        assertThat(security.getWkn(), is("633500"));
+        assertThat(security.getName(), is("KRONES AG O.N."));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-23")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(17.13)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.12))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
+    }
+    
     @Test
     public void testZinsgutschriftInland() throws IOException
     {

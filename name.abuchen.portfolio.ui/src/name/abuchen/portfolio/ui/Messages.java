@@ -616,6 +616,9 @@ public class Messages extends NLS
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
     public static String PrefNoteIndirectQuotation;
+    public static String PrefNoteStoreSettingsNextToFile;
+    public static String PrefStoreSettingsNextToFile;
+    public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleGeneral;
