@@ -22,8 +22,8 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
         
-        addBankIdentifier("biw AG");
-        addBankIdentifier("FinTech Group Bank AG");
+        addBankIdentifier("biw AG"); //$NON-NLS-1$
+        addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addBuyTransaction();
@@ -323,6 +323,11 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
+                        
+                        .section("tax", "currency").optional() //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .section("date") //
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
