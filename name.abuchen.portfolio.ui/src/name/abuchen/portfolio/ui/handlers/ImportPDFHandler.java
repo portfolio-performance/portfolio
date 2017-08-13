@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
@@ -96,6 +97,8 @@ public class ImportPDFHandler
     {
         switch (type)
         {
+            case "baaderbank": //$NON-NLS-1$
+                return new BaaderBankPDFExtractor(client);
             case "bankslm": //$NON-NLS-1$
                 return new BankSLMPDFExctractor(client);
             case "comdirect": //$NON-NLS-1$
