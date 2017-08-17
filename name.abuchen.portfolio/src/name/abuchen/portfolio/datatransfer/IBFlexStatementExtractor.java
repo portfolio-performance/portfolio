@@ -86,7 +86,8 @@ public class IBFlexStatementExtractor implements Extractor
     {
         // Lookup the Exchange Suffix for Yahoo
         String tickerSymbol = eElement.getAttribute("symbol");
-        String yahooSymbol = tickerSymbol;
+        // yahoo uses '-' instead of ' '
+        String yahooSymbol = tickerSymbol == null ? tickerSymbol : tickerSymbol.replaceAll(" ", "-");
         String exchange = eElement.getAttribute("exchange");
         String currency = asCurrencyUnit(eElement.getAttribute("currency"));
         String isin = eElement.getAttribute("isin");
@@ -140,7 +141,7 @@ public class IBFlexStatementExtractor implements Extractor
     private void buildPortfolioTransaction(Client client, Element eElement) throws ParseException
     {
         // Unused Information from Flexstatement Trades, to be used in the
-        // future: currency, tradeTime, transactionID, ibOrderID
+        // future: tradeTime, transactionID, ibOrderID
 
         BuySellEntry transaction = new BuySellEntry();
 
@@ -171,7 +172,8 @@ public class IBFlexStatementExtractor implements Extractor
 
         // Set the Amount which is "cost"
         transaction.setCurrencyCode(currency);
-        transaction.setAmount(Values.Amount.factorize(Double.parseDouble(eElement.getAttribute("cost"))));
+        transaction.setAmount(
+                        Values.Amount.factorize(Math.abs(Double.parseDouble(eElement.getAttribute("cost")))));
 
         // Share Quantity
         Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
@@ -291,8 +293,8 @@ public class IBFlexStatementExtractor implements Extractor
         String currency = asCurrencyUnit(eElement.getAttribute("currency"));
 
         // Set Transaction Type
-        if (eElement.getAttribute("type").equals("Deposits")
-                        || eElement.getAttribute("type").equals("Deposits & Withdrawals"))
+        String type = eElement.getAttribute("type");
+        if (type.equals("Deposits") || type.equals("Deposits & Withdrawals") || type.equals("Deposits/Withdrawals"))
         {
             if (amount >= 0)
             {
@@ -303,8 +305,7 @@ public class IBFlexStatementExtractor implements Extractor
                 transaction.setType(AccountTransaction.Type.REMOVAL);
             }
         }
-        else if (eElement.getAttribute("type").equals("Dividends")
-                        || eElement.getAttribute("type").equals("Payment In Lieu Of Dividends"))
+        else if (type.equals("Dividends") || type.equals("Payment In Lieu Of Dividends"))
         {
             transaction.setType(AccountTransaction.Type.DIVIDENDS);
 
@@ -314,28 +315,29 @@ public class IBFlexStatementExtractor implements Extractor
 
             this.calculateShares(transaction, eElement);
         }
-        else if (eElement.getAttribute("type").equals("Withholding Tax"))
+        else if (type.equals("Withholding Tax"))
         {
             // Set the Symbol
             if (eElement.getAttribute("symbol").length() > 0)
                 transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
-            transaction.setType(AccountTransaction.Type.TAXES);
-
-            // Temporary until the model supports negative interest rates and
-            // dividends see #310
-            throw new ParseException(eElement.getAttribute("dateTime") + " Witholding Tax is not supported", 0);
+            if(amount > 0) {
+                transaction.setType(AccountTransaction.Type.TAXES);
+            } else {
+                // Negative taxes are a tax refund: see #310
+                transaction.setType(AccountTransaction.Type.TAX_REFUND);
+            }
         }
-        else if (eElement.getAttribute("type").equals("Broker Interest Received"))
+        else if (type.equals("Broker Interest Received"))
         {
             transaction.setType(AccountTransaction.Type.INTEREST);
         }
-        else if (eElement.getAttribute("type").equals("Broker Interest Paid"))
+        else if (type.equals("Broker Interest Paid"))
         {
-            // Temporary until the model supports negative interest see #310
-            throw new ParseException(eElement.getAttribute("dateTime") + " Broker Interest Paid is not supported", 0);
+            // Paid interests are of type interest charge: see #310
+            transaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
         }
-        else if (eElement.getAttribute("type").equals("Other Fees"))
+        else if (type.equals("Other Fees"))
         {
             transaction.setType(AccountTransaction.Type.FEES);
         }
@@ -369,7 +371,11 @@ public class IBFlexStatementExtractor implements Extractor
                 {
                     if (type.equals("Trade"))
                     {
-                        this.buildPortfolioTransaction(client, (Element) nNode);
+                        String assetCategory = ((Element) nNode).getAttribute("assetCategory");
+                        if ("STK".equals(assetCategory))
+                        {
+                            this.buildPortfolioTransaction(client, (Element) nNode);
+                        }
                     }
                     else if (type.equals("CorporateAction"))
                     {
