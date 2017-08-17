@@ -5,19 +5,25 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -30,32 +36,23 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorTest
 {
-
-    private InputStream activityStatement;
-    private InputStream otherFile;
-
-    public IBFlexStatementExtractorTest()
-    {
-        activityStatement = getClass().getResourceAsStream("IBActivityStatement.xml");
-        otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift.txt");
-    }
-
     @Test
     public void testIBAcitvityStatement() throws IOException
     {
-
+        InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatement.xml");
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+
+        File tempFile = createTempFile(activityStatement);
+
         List<Exception> errors = new ArrayList<Exception>();
-        extractor.importActivityStatement(activityStatement, errors);
+        extractor.extract(Collections.singletonList(tempFile), errors);
         List<Item> results = extractor.getResults();
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
 
-        // 1 Error Messages for negative interest which is not yet supported
-        assertThat(errors.size(), is(1));
-        assertThat(results.size(), is(25));
+        assertThat(results.size(), is(26));
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
@@ -64,7 +61,22 @@ public class IBFlexStatementExtractorTest
                         .reduce((previous, current) -> current).get());
         assertFourthTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).skip(3).findFirst());
 
+        assertInterestCharge(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction
+                                        && ((AccountTransaction) i.getSubject()).getType() == Type.INTEREST_CHARGE)
+                        .findFirst());
         // TODO Check CorporateActions
+    }
+
+    private void assertInterestCharge(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(Type.INTEREST_CHARGE));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("CAD", 15_17L)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2013-02-05")));
     }
 
     private void assertFirstSecurity(Optional<Item> item)
@@ -130,13 +142,24 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift.txt");
+        File tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
         List<Exception> errors = new ArrayList<Exception>();
-        extractor.importActivityStatement(otherFile, errors);
+        extractor.extract(Collections.singletonList(tempFile), errors);
         List<Item> results = extractor.getResults();
 
         assertThat(results.isEmpty(), is(true));
         assertThat(errors.size(), is(1));
+    }
+
+    private File createTempFile(InputStream input) throws IOException
+    {
+        File tempFile = File.createTempFile("iBFlexStatementExtractorTest", null);
+        FileOutputStream fos = new FileOutputStream(tempFile);
+
+        IOUtils.copy(input, fos);
+        return tempFile;
     }
 }
