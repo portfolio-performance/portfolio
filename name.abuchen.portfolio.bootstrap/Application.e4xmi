@@ -78,6 +78,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_ylDyMKWZEeWIXKZIF66Dag" elementId="name.abuchen.portfolio.ui.menu.file.import.sbroker" label="%command.import.pdf.sbroker" tooltip="%command.import.pdf.sbroker.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_FeCqYKWaEeWIXKZIF66Dag" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="sbroker"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_LJwK0IQwEee3oMLxWtvl2Q" elementId="name.abuchen.portfolio.ui.menu.file.import.unicredit" label="%command.import.pdf.unicredit" tooltip="%command.import.pdf.unicredit.tooltip" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_dVZb4IQwEee3oMLxWtvl2Q" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="unicredit"/>
+          </children>
           <children xsi:type="menu:MenuSeparator" xmi:id="_30NnAAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_24C5sAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-xml" label="%command.import.xml.import-xml" tooltip="" enabled="false"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_pgC00EYREeSRXYVe298mXg">

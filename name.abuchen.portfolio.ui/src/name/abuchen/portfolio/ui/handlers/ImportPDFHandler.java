@@ -34,6 +34,7 @@ import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -121,6 +122,8 @@ public class ImportPDFHandler
                 return new OnvistaPDFExtractor(client);
             case "sbroker": //$NON-NLS-1$
                 return new SBrokerPDFExtractor(client);
+            case "unicredit": //$NON-NLS-1$
+                return new UnicreditPDFExtractor(client);
             case "ib": //$NON-NLS-1$
                 return new IBFlexStatementExtractor(client);
             default:
