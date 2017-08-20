@@ -61,7 +61,7 @@ public class DividendsViewModel
             return values.length;
         }
     }
-    
+
     private List<UpdateListener> listeners = new ArrayList<>();
 
     private final CurrencyConverter converter;
@@ -83,6 +83,16 @@ public class DividendsViewModel
         this.client = client;
 
         this.clientFilter = new ClientFilterMenu(client, preferences, filter -> recalculate());
+
+        String selection = preferences
+                        .getString(DividendsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+        if (selection != null)
+            this.clientFilter.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                            .ifPresent(this.clientFilter::select);
+
+        this.clientFilter.addListener(filter -> preferences.putValue(
+                        DividendsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
+                        this.clientFilter.getSelectedItem().getUUIDs()));
     }
 
     public ClientFilterMenu getClientFilterMenu()
@@ -144,7 +154,7 @@ public class DividendsViewModel
         calculate();
         fireUpdateChange();
     }
-    
+
     public void recalculate()
     {
         calculate();

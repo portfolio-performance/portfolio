@@ -83,10 +83,14 @@ public class DividendsView extends AbstractFinanceView
         new StartYearSelectionDropDown(toolBar, model);
 
         AbstractDropDown dropDown = AbstractDropDown.create(toolBar, Messages.MenuChooseClientFilter,
-                        Images.FILTER_OFF.image(), SWT.NONE, model.getClientFilterMenu()::menuAboutToShow);
+                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON.image()
+                                        : Images.FILTER_OFF.image(),
+                        SWT.NONE, model.getClientFilterMenu()::menuAboutToShow);
         model.getClientFilterMenu()
-                        .addListener(f -> dropDown.getToolItem().setImage(model.getClientFilterMenu().hasActiveFilter()
-                                        ? Images.FILTER_ON.image() : Images.FILTER_OFF.image()));
+                        .addListener(f -> dropDown.getToolItem()
+                                        .setImage(model.getClientFilterMenu().hasActiveFilter()
+                                                        ? Images.FILTER_ON.image()
+                                                        : Images.FILTER_OFF.image()));
 
         new AbstractDropDown(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE)
         {

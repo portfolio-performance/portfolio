@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -119,13 +121,22 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private void addFilterButton(ToolBar toolBar)
     {
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(), filter -> {
+        Consumer<ClientFilter> listener = filter -> {
             Client filteredClient = filter.filter(getClient());
             ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
                             LocalDate.now());
             model.setClientSnapshot(snapshot);
             model.fireTaxonomyModelChange(model.getVirtualRootNode());
-        });
+        };
+
+        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+                        TaxonomyView.class.getSimpleName() + "-" + this.taxonomy.getId(), //$NON-NLS-1$
+                        listener);
+
+        // As the taxonomy model is initially calculated in the #init method, we
+        // must recalculate the values if an active filter exists.
+        if (this.clientFilter.hasActiveFilter())
+            listener.accept(this.clientFilter.getSelectedFilter());
     }
 
     private void addExportButton(ToolBar toolBar)

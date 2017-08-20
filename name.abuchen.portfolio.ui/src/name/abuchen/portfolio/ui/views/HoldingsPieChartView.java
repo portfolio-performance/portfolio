@@ -49,7 +49,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
     protected void addButtons(ToolBar toolBar)
     {
         this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
-                        filter -> notifyModelUpdated());
+                        HoldingsPieChartView.class.getSimpleName(), filter -> notifyModelUpdated());
     }
 
     @Override

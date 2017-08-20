@@ -66,10 +66,10 @@ import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
-import name.abuchen.portfolio.ui.util.swt.SashLayout;
-import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
@@ -105,10 +105,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
             clientFilterMenu = new ClientFilterMenu(getClient(), preferenceStore, f -> {
                 getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
-                                ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                                ? Images.FILTER_OFF.image()
+                                : Images.FILTER_ON.image());
                 clientFilter = f;
                 notifyModelUpdated();
             });
+
+            loadPreselectedClientFilter(preferenceStore);
 
             clientFilter = clientFilterMenu.getSelectedFilter();
 
@@ -121,6 +124,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 preferenceStore.setValue(SecuritiesPerformanceView.class.getSimpleName() + "-sharesEqualZero", //$NON-NLS-1$
                                 recordFilter.contains(sharesEqualZero));
             });
+        }
+
+        private void loadPreselectedClientFilter(IPreferenceStore preferenceStore)
+        {
+            String selection = preferenceStore.getString(
+                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+            if (selection != null)
+                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                                .ifPresent(clientFilterMenu::select);
+
+            clientFilterMenu.addListener(filter -> preferenceStore.putValue(
+                            SecuritiesPerformanceView.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
+                            clientFilterMenu.getSelectedItem().getUUIDs()));
         }
 
         @Override
@@ -150,7 +166,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
                     setChecked(!isChecked);
                     getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
-                                    ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                                    ? Images.FILTER_OFF.image()
+                                    : Images.FILTER_ON.image());
                     records.refresh();
                 }
             };

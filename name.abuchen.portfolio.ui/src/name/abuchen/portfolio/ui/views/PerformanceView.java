@@ -84,7 +84,7 @@ public class PerformanceView extends AbstractHistoricView
         super.addButtons(toolBar);
 
         this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
-                        filter -> notifyModelUpdated());
+                        PerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         new ExportDropDown(toolBar); // NOSONAR
     }
@@ -459,7 +459,8 @@ public class PerformanceView extends AbstractHistoricView
             public String getText(Object element)
             {
                 Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
-                                ? (Portfolio) ((TransactionPair<?>) element).getOwner() : null;
+                                ? (Portfolio) ((TransactionPair<?>) element).getOwner()
+                                : null;
                 return portfolio != null ? portfolio.getName() : null;
             }
 
@@ -467,13 +468,15 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
-                                ? (Portfolio) ((TransactionPair<?>) element).getOwner() : null;
+                                ? (Portfolio) ((TransactionPair<?>) element).getOwner()
+                                : null;
                 return portfolio != null ? Images.PORTFOLIO.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
             Portfolio portfolio = ((TransactionPair<?>) e).getOwner() instanceof Portfolio
-                            ? (Portfolio) ((TransactionPair<?>) e).getOwner() : null;
+                            ? (Portfolio) ((TransactionPair<?>) e).getOwner()
+                            : null;
             return portfolio != null ? portfolio.getName() : null;
         }));
         support.addColumn(column);
