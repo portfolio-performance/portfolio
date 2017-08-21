@@ -15,10 +15,10 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
-public class FlatexPDFExtractor extends AbstractPDFExtractor
+public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    public FlatexPDFExtractor(Client client) throws IOException
+    public FinTechGroupBankPDFExtractor(Client client) throws IOException
     {
         super(client);
         
@@ -842,6 +842,6 @@ public class FlatexPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "FinTech Group Bank AG (flatex)"; //$NON-NLS-1$
+        return "fintechgroupbank"; //$NON-NLS-1$
     }
 }

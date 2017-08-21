@@ -66,8 +66,8 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_x6DOEPr6EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.dab" label="%command.import.pdf.dab" tooltip="%command.import.pdf.dab.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_x6DOEfr6EeS4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="dab"/>
           </children>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_VDIBcALOEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.flatex" label="%command.import.pdf.flatex" tooltip="%command.import.pdf.flatex.tooltip" command="_pgC00EYREeSRXYVe298mXg">
-            <parameters xmi:id="_VDIBcQLOEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="flatex"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_VDIBcALOEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.fintechgroupbank" label="%command.import.pdf.fintechgroupbank" tooltip="%command.import.pdf.fintechgroupbank.tooltip" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_VDIBcQLOEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="fintechgroupbank"/>
           </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_Lka2kEZrEeaGlO28N5cZQA" elementId="name.abuchen.portfolio.ui.menu.file.import.ingdiba" label="%command.import.pdf.ingdiba" tooltip="%command.import.pdf.ingdiba.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_Lka2kUZrEeaGlO28N5cZQA" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ingdiba"/>
