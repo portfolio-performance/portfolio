@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer.pdf.flatex;
+package name.abuchen.portfolio.datatransfer.pdf.fintechgroupbank;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -22,7 +22,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.FlatexPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -37,13 +37,13 @@ import name.abuchen.portfolio.money.Values;
 import org.junit.Test;
 
 @SuppressWarnings("nls")
-public class FlatexPDFExtractorTest
+public class FinTechGroupBankPDFExtractorTest
 {
 
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -164,7 +164,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -207,7 +207,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -248,7 +248,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -289,7 +289,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKauf6() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -330,7 +330,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testKontoauszug() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -360,7 +360,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testKontoauszug2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -389,7 +389,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -429,7 +429,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -467,7 +467,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testErtragsgutschrift3() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -506,7 +506,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testZinsgutschriftInland() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -544,7 +544,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -587,7 +587,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -630,7 +630,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -673,7 +673,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierÜbertrag1() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -712,7 +712,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierÜbertrag2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -751,7 +751,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierAusgang() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -792,7 +792,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierAusgang2() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -832,7 +832,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchung() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -937,7 +937,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -978,7 +978,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testZinsBelastung() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -1007,7 +1007,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierVerkaufSteuererstattung() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -1061,7 +1061,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testWertpapierKaufVerkaufSteuererstattung() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
@@ -1162,7 +1162,7 @@ public class FlatexPDFExtractorTest
     @Test
     public void testSteuertopfoptimierung() throws IOException
     {
-        FlatexPDFExtractor extractor = new FlatexPDFExtractor(new Client())
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
         {
             @Override
             protected String strip(File file) throws IOException
