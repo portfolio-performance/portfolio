@@ -215,7 +215,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Vergütung des Vermögensverwalters");
         this.addDocumentTyp(type);
         
-        System.out.println("Hier sind wir im Block Vergütung des Vermögensverwalters"); //SD
         Block block = new Block("Rechnung für .*");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
