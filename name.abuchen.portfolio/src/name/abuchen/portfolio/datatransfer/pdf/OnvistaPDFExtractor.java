@@ -65,7 +65,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares") //
                         .find("Nominal Kurs") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -119,7 +119,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("notation", "shares").find("Nominal Kurs")
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -172,7 +172,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares") //
                         .find("Nominal Kurs")
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -226,7 +226,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares") //
                         .find("Nominal Einlösung(.*)$") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)$")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)$")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -289,7 +289,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
                         // Leistungen aus dem steuerlichen Einlagenkonto (§27
                         // KStG) EUR 17,50
-                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d*)?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d{3,})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)?(.*)")
                         .match("(?<date>\\d+.\\d+.\\d{4}+)?(\\d{6,12})?(.{7,58} )?(?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
@@ -335,7 +335,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("notation", "shares", "amount", "currency") //
                         .find("Nominal Reinvestierungspreis")
                         // STK 25,000 EUR 0,700000
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -378,7 +378,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("notation", "shares", "date") //
                         .find("Nominal Schlusstag Wert")
                         // STK 28,000 02.12.2011 02.12.2011
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?) (\\d+.\\d+.\\d{4}+) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -451,7 +451,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // STK 55,000 24.04.2013
                         .section("notation", "shares") //
                         .find("Nominal(.*)")
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -504,7 +504,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // STK 55,000
                         .section("notation", "shares") //
                         .find("Nominal(.*)") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -552,7 +552,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares") //
                         .find("Nominal(.*)") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -596,7 +596,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("notation", "shares", "date") //
                         .find("Nominal Ex-Tag")
                         // STK 25,000 21.06.2016
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -675,7 +675,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("notation", "shares") //
                         .find("Nominal(.*)")
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -740,7 +740,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .section("notation", "shares", "date") //
                         .find("Nominal Ex-Tag")
                         // STK 25,000 11.06.2013
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?) (?<date>\\d+.\\d+.\\d{4}+)(.*)")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -811,7 +811,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         // Beispiel-Datei: OnvistaDepotauszug.txt)
         pdfTransaction.section("notation", "shares", "nameP1").optional()
                         // STK 4,000 Porsche Automobil
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3})?) (?<nameP1>.*)")
+                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?) (?<nameP1>.*)")
                         .assign((t, v) -> {
                             type.getCurrentContext().put("nameP1", v.get("nameP1"));
 
@@ -1084,7 +1084,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Steuerausgleich nach § 43a");
         this.addDocumentTyp(type);
 
-        Block block1 = new Block("Wir haben für Sie verkauft(.*)");
+        Block block1 = new Block("Wir haben für Sie (ge|ver)kauft(.*)");
         type.addBlock(block1);
 
         Block block2 = new Block("(Aus|Ein)buchung:(.*)");
@@ -1126,8 +1126,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "currency").optional()
                         .find("Wert(\\s+)Konto-Nr.(\\s+)Abrechnungs-Nr.(\\s+)Betrag zu Ihren Gunsten(\\s*)$")
-                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren
-                        // Gunsten
+                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
                         // 06.05.2013 172306238 56072633 EUR 3,05
                         .match("(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+)(\\s)(\\d+)?(\\s)?(\\d+)?(\\s)(?<currency>\\w{3}+) (\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
