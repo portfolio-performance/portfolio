@@ -38,7 +38,7 @@ mvn clean install
 
 ### Setup
 
-To develop, use [Eclipse Neon](http://eclipse.org/downloads/) plus the Plug-in Development Environment (PDE).
+To develop, use [Eclipse IDE](http://eclipse.org/downloads/) plus the **Plug-in Development Environment (PDE)**.
 
 Clone the git repository.
 
