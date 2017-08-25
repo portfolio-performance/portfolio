@@ -78,6 +78,14 @@ public class TimelineChart extends Chart
         yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
+        // 2nd y axis
+        int axisId = getAxisSet().createYAxis();    
+        IAxis y2Axis = getAxisSet().getYAxis(axisId);    
+        y2Axis.getTitle().setVisible(false);    
+        y2Axis.getTick().setVisible(false);    
+        y2Axis.getGrid().setStyle(LineStyle.NONE);    
+        y2Axis.setPosition(Position.Primary); 
+
         ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
