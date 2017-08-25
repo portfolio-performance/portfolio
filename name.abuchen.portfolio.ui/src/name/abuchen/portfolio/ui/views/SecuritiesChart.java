@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
+import org.swtchart.ISeriesLabel;
 import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -52,6 +53,7 @@ public class SecuritiesChart
 {
     private enum ChartDetails
     {
+        CLOSING(Messages.LabelChartDetailClosingIndicator), //
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         EVENTS(Messages.LabelChartDetailEvents), //
         SMA50(Messages.LabelChartDetailSMA50), //
@@ -263,12 +265,16 @@ public class SecuritiesChart
             int index;
             LocalDate[] dates;
             double[] values;
+            double[] values2nd;  
+            double FirstQuote;  
+
 
             if (chartPeriod == null)
             {
                 index = 0;
                 dates = new LocalDate[prices.size()];
                 values = new double[prices.size()];
+                values2nd = new double[prices.size()]; 
             }
             else
             {
@@ -284,25 +290,62 @@ public class SecuritiesChart
 
                 dates = new LocalDate[prices.size() - index];
                 values = new double[prices.size() - index];
+                values2nd = new double[prices.size() - index]; 
             }
+
+            SecurityPrice p2 = prices.get(index);  
+            FirstQuote = (p2.getValue() / Values.Quote.divider());  
 
             for (int ii = 0; index < prices.size(); index++, ii++)
             {
                 SecurityPrice p = prices.get(index);
                 dates[ii] = p.getTime();
                 values[ii] = p.getValue() / Values.Quote.divider();
+                values2nd[ii] = (p.getValue() / Values.Quote.divider()) - FirstQuote; 
             }
 
-            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.ColumnQuote);
-            lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-            lineSeries.setLineWidth(2);
-            lineSeries.enableArea(true);
-            lineSeries.setSymbolType(PlotSymbolType.NONE);
-            lineSeries.setYSeries(values);
-            lineSeries.setAntialias(SWT.ON);
+            if (chartConfig.contains(ChartDetails.CLOSING))
+            {
 
-            chart.adjustRange();
+                ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                Messages.ColumnQuote+"1");
+                lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+                lineSeries.setLineWidth(0);
+                lineSeries.enableArea(false);
+                lineSeries.setSymbolType(PlotSymbolType.NONE);
+                lineSeries.setYSeries(values);
+                lineSeries.setAntialias(SWT.ON);
+                lineSeries.setYAxisId(0); 
+                ISeriesLabel seriesLabel = lineSeries.getLabel();
+                seriesLabel.setVisible(false);
+
+                // create second Y axis  
+                ILineSeries lineSeries2nd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                Messages.ColumnQuote);
+                lineSeries2nd.setLineWidth(2);  
+                lineSeries2nd.setXDateSeries(TimelineChart.toJavaUtilDate(dates));  
+                lineSeries2nd.enableArea(true);  
+                lineSeries2nd.setSymbolType(PlotSymbolType.NONE);
+                lineSeries2nd.setYSeries(values2nd);  
+                lineSeries2nd.setAntialias(SWT.ON);
+                lineSeries2nd.setYAxisId(1);
+                chart.adjustRange();
+                chart.getSeriesSet().deleteSeries(Messages.ColumnQuote+"1");
+            }
+            else
+            {
+                ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                Messages.ColumnQuote);
+                lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+                lineSeries.setLineWidth(2);
+                lineSeries.enableArea(true);
+                lineSeries.setSymbolType(PlotSymbolType.NONE);
+                lineSeries.setYSeries(values);
+                lineSeries.setAntialias(SWT.ON);
+                lineSeries.setYAxisId(0); 
+                chart.adjustRange();
+            }
+            
             addChartMarker();
 
         }
@@ -347,7 +390,7 @@ public class SecuritiesChart
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
         lineSeriesSMA.setLineColor(Colors.getColor(SMADays, 22, 22));
-        chart.adjustRange();
+        lineSeriesSMA.setYAxisId(0);
     }
 
     private void addInvestmentMarkerLines()
