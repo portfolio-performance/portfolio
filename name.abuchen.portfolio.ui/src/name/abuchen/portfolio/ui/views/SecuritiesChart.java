@@ -28,7 +28,6 @@ import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
-import org.swtchart.ISeriesLabel;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -96,6 +95,7 @@ public class SecuritiesChart
         chart = new TimelineChart(parent);
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
         Composite buttons = new Composite(parent, SWT.NONE);
@@ -259,15 +259,16 @@ public class SecuritiesChart
             }
 
             chart.getTitle().setText(security.getName());
+            
+            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING);
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
             int index;
             LocalDate[] dates;
             double[] values;
-            double[] values2nd;    
-            double FirstQuote; 
-
+            double[] values2nd;
+            double firstQuote;
 
             if (chartPeriod == null)
             {
@@ -293,59 +294,41 @@ public class SecuritiesChart
                 values2nd = new double[prices.size() - index];
             }
 
-            SecurityPrice p2 = prices.get(index);    
-            FirstQuote = (p2.getValue() / Values.Quote.divider());  
+            SecurityPrice p2 = prices.get(index);
+            firstQuote = (p2.getValue() / Values.Quote.divider());
 
             for (int ii = 0; index < prices.size(); index++, ii++)
             {
                 SecurityPrice p = prices.get(index);
                 dates[ii] = p.getTime();
                 values[ii] = p.getValue() / Values.Quote.divider();
-                values2nd[ii] = (p.getValue() / Values.Quote.divider()) - FirstQuote;
+                values2nd[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
+            }
+            
+            ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            Messages.ColumnQuote);
+            lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+            lineSeries.setLineWidth(2);
+            lineSeries.enableArea(!showAreaRelativeToFirstQuote);
+            lineSeries.setSymbolType(PlotSymbolType.NONE);
+            lineSeries.setYSeries(values);
+            lineSeries.setAntialias(SWT.ON);
+            
+            if (showAreaRelativeToFirstQuote)
+            {
+                ILineSeries lineSeries2nd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                Messages.LabelChartDetailClosingIndicator);
+                lineSeries2nd.setLineWidth(2);
+                lineSeries2nd.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+                lineSeries2nd.enableArea(true);
+                lineSeries2nd.setSymbolType(PlotSymbolType.NONE);
+                lineSeries2nd.setYSeries(values2nd);
+                lineSeries2nd.setAntialias(SWT.ON);
+                lineSeries2nd.setYAxisId(1);
             }
 
-            if (chartConfig.contains(ChartDetails.CLOSING))  
-            {  
-
-                ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,  
-                                Messages.ColumnQuote+"1");  
-                lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));  
-                lineSeries.setLineWidth(0);  
-                lineSeries.enableArea(false);  
-                lineSeries.setSymbolType(PlotSymbolType.NONE);  
-                lineSeries.setYSeries(values);  
-                lineSeries.setAntialias(SWT.ON);  
-                lineSeries.setYAxisId(0);   
-                ISeriesLabel seriesLabel = lineSeries.getLabel();  
-                seriesLabel.setVisible(false);  
-  
-                // create second Y axis    
-                ILineSeries lineSeries2nd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,  
-                                Messages.ColumnQuote);  
-                lineSeries2nd.setLineWidth(2);    
-                lineSeries2nd.setXDateSeries(TimelineChart.toJavaUtilDate(dates));    
-                lineSeries2nd.enableArea(true);    
-                lineSeries2nd.setSymbolType(PlotSymbolType.NONE);  
-                lineSeries2nd.setYSeries(values2nd);    
-                lineSeries2nd.setAntialias(SWT.ON);  
-                lineSeries2nd.setYAxisId(1);  
-                chart.adjustRange();  
-                chart.getSeriesSet().deleteSeries(Messages.ColumnQuote+"1");  
-            }  
-            else  
-            {  
-                ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,  
-                                Messages.ColumnQuote);  
-                lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));  
-                lineSeries.setLineWidth(2);  
-                lineSeries.enableArea(true);  
-                lineSeries.setSymbolType(PlotSymbolType.NONE);  
-                lineSeries.setYSeries(values);  
-                lineSeries.setAntialias(SWT.ON);  
-                lineSeries.setYAxisId(0);   
-                chart.adjustRange();  
-            }
-
+            chart.adjustRange();
+            
             addChartMarker();
 
         }
@@ -390,7 +373,7 @@ public class SecuritiesChart
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
         lineSeriesSMA.setLineColor(Colors.getColor(SMADays, 22, 22));
-        lineSeriesSMA.setYAxisId(0); 
+        lineSeriesSMA.setYAxisId(0);
     }
 
     private void addInvestmentMarkerLines()

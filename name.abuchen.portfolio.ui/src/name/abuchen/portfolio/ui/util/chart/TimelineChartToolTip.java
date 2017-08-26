@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -30,6 +32,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
+    
+    private Set<String> excludeFromTooltip = new HashSet<>();
 
     public TimelineChartToolTip(Chart chart)
     {
@@ -54,6 +58,14 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     public void setValueFormat(DecimalFormat valueFormat)
     {
         this.valueFormat = valueFormat;
+    }
+    
+    /**
+     * Add a series id which is not displayed in the tool tip.
+     */
+    public void addSeriesExclude(String id)
+    {
+        this.excludeFromTooltip.add(id);
     }
 
     @Override
@@ -144,6 +156,9 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         for (ISeries series : allSeries)
         {
+            if (excludeFromTooltip.contains(series.getId()))
+                continue;
+            
             double value;
 
             if (categoryEnabled)
