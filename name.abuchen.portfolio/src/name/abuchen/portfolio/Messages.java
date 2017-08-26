@@ -83,6 +83,7 @@ public class Messages extends NLS
     public static String IBXML_Label;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
+    public static String IssueKickbackWithoutSecurity;
     public static String IssueInconsistentSharesHeld;
     public static String IssueInterestWithSecurity;
     public static String IssueMissingAccountTransfer;

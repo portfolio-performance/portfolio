@@ -114,6 +114,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case DEPOSIT:
                 case DIVIDENDS:
                 case INTEREST:
+                case KICKBACK:
                 case SELL:
                 case TRANSFER_IN:
                 case TAX_REFUND:

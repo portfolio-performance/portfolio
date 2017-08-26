@@ -65,6 +65,12 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
             case DIVIDENDS_ACCUMULATED:
                 values = accumulateAndToDouble(clientIndex.getDividends(), Values.Amount.divider());
                 break;
+            case KICKBACK:
+                values = toDouble(clientIndex.getKickbacks(), Values.Amount.divider());
+                break;
+            case KICKBACK_ACCUMULATED:
+                values = accumulateAndToDouble(clientIndex.getKickbacks(), Values.Amount.divider());
+                break;
             case INTEREST:
                 values = toDouble(clientIndex.getInterest(), Values.Amount.divider());
                 break;

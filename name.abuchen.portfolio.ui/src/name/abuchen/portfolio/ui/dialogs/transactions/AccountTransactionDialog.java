@@ -133,10 +133,19 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         btnShares.setVisible(model().supportsShares());
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
 
+        // dividends
+        
         Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
         dividendAmount.bindBigDecimal(Properties.dividendAmount.name(), "#,##0.0000"); //$NON-NLS-1$
         dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
-        dividendAmount.setVisible(model().supportsShares());
+        dividendAmount.setVisible(model().supportsDividends());
+        
+        // kickback
+        
+        Input kickbackAmount = new Input(editArea, Messages.LabelKickbackPerShare);
+        kickbackAmount.bindBigDecimal(Properties.kickbackAmount.name(), "#,##0.0000"); //$NON-NLS-1$
+        kickbackAmount.bindCurrency(Properties.fxCurrencyCode.name());
+        kickbackAmount.setVisible(model().supportsKickback());
 
         // other input fields
 
@@ -231,12 +240,20 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                         .thenRight(grossAmount.value).width(amountWidth) //
                         .thenRight(grossAmount.currency).width(currencyWidth);
 
-        if (model().supportsShares())
+        if (model().supportsDividends())
         {
             // shares [- amount per share]
             startingWith(btnShares).thenRight(dividendAmount.label) //
                             .thenRight(dividendAmount.value).width(amountWidth) //
                             .thenRight(dividendAmount.currency).width(currencyWidth); //
+        }
+        
+        if (model().supportsKickback())
+        {
+            // shares [- amount per share]
+            startingWith(btnShares).thenRight(kickbackAmount.label) //
+                            .thenRight(kickbackAmount.value).width(amountWidth) //
+                            .thenRight(kickbackAmount.currency).width(currencyWidth); //
         }
 
         // forexTaxes - taxes
@@ -325,7 +342,17 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
     private void sharesMenuAboutToShow(IMenuManager manager) // NOSONAR
     {
-        manager.add(new LabelOnly(Messages.DividendsDialogTitleShares));
+        // dividend
+        if (model().supportsDividends())
+        {
+            manager.add(new LabelOnly(Messages.DividendsDialogTitleShares));
+        }
+
+        // kickback
+        if (model().supportsKickback())
+        {
+            manager.add(new LabelOnly(Messages.KickbackDialogTitleShares));
+        }
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
@@ -344,6 +371,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             }
         }
 
+        // this string is the same for dividends and for kickbacks
         manager.add(new Action(Messages.DividendsDialogLabelSpecialDistribution)
         {
             @Override
@@ -359,6 +387,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         final SecurityPosition position = portfolio.getPositionsBySecurity().get(model().getSecurity());
         if (position != null)
         {
+            // this string is the same for dividends and for kickbacks
             Action action = new Action(MessageFormat.format(Messages.DividendsDialogLabelPortfolioSharesHeld,
                             Values.Share.format(position.getShares()), label, Values.Date.format(portfolio.getTime())))
             {
@@ -390,6 +419,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             case INTEREST:
             case TAX_REFUND:
             case DIVIDENDS:
+            case KICKBACK:
             case DEPOSIT:
             case FEES_REFUND:
                 return Messages.ColumnCreditNote;

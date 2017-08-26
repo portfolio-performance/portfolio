@@ -301,6 +301,7 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DIVIDENDS:
+                    case KICKBACK:
                     case INTEREST:
                         addEarningTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
@@ -452,6 +453,7 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DIVIDENDS:
+                    case KICKBACK:
                     case INTEREST:
                     case DEPOSIT:
                     case TAX_REFUND:

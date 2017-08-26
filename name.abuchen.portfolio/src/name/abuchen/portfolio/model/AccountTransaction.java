@@ -15,7 +15,7 @@ public class AccountTransaction extends Transaction
     {
         DEPOSIT(false), REMOVAL(true), //
         INTEREST(false), INTEREST_CHARGE(true), //
-        DIVIDENDS(false), //
+        DIVIDENDS(false), KICKBACK(false), //
         FEES(true), FEES_REFUND(false), //
         TAXES(true), TAX_REFUND(false), //
         BUY(true), SELL(false), //
@@ -104,7 +104,7 @@ public class AccountTransaction extends Transaction
     public long getGrossValueAmount()
     {
         // at the moment, only dividend transaction support taxes
-        if (!(this.type == Type.DIVIDENDS || this.type == Type.INTEREST))
+        if (!(this.type == Type.DIVIDENDS || this.type == Type.INTEREST || this.type == Type.KICKBACK))
             throw new UnsupportedOperationException();
 
         long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)

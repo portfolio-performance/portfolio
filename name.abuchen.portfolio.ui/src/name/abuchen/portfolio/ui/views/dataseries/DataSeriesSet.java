@@ -113,6 +113,16 @@ public class DataSeriesSet
                         Messages.LabelAccumulatedDividends,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
         availableSeries.add(series);
+        
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.KICKBACK, Messages.LabelKickback,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.KICKBACK_ACCUMULATED,
+                        Messages.LabelAccumulatedKickbacks,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
+        availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());

@@ -59,6 +59,7 @@ public class GroupEarningsByAccount
                         case INTEREST_CHARGE:
                             sum.subtract(t.getMonetaryAmount());
                             break;
+                        case KICKBACK:
                         case DEPOSIT:
                         case REMOVAL:
                         case FEES:

@@ -621,6 +621,13 @@ public final class SecuritiesTable implements ModificationListener
                         .with(security) //
                         .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
+        
+        new OpenDialogAction(view, Messages.SecurityMenuKickback + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.KICKBACK) //
+                        .with(security) //
+                        .onSuccess(d -> performFinish(security)) //
+                        .addTo(manager);        
 
         new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //

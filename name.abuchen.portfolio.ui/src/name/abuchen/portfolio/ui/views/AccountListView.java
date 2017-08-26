@@ -481,7 +481,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 {
                     return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
                 }
-                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                else if ((t.getType() == Type.DIVIDENDS || t.getType() == Type.KICKBACK) && t.getShares() != 0)
                 {
                     return t.getShares();
                 }
@@ -503,7 +503,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public boolean canEdit(Object element)
             {
                 AccountTransaction t = (AccountTransaction) element;
-                return t.getType() == AccountTransaction.Type.DIVIDENDS;
+                return (t.getType() == AccountTransaction.Type.DIVIDENDS || t.getType() == AccountTransaction.Type.KICKBACK);
             }
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
@@ -521,11 +521,11 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
                     return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
-                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                else if ((t.getType() == Type.DIVIDENDS || t.getType() == Type.KICKBACK ) && t.getShares() != 0)
                 {
-                    long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider()
+                    long amountPerShare = Math.round(t.getAmount() * Values.Share.divider()
                                     * Values.Quote.factorToMoney() / t.getShares());
-                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), dividendPerShare),
+                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), amountPerShare),
                                     getClient().getBaseCurrency());
                 }
                 else
@@ -729,6 +729,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 case DEPOSIT:
                 case INTEREST:
                 case DIVIDENDS:
+                case KICKBACK:
                 case TAX_REFUND:
                 case SELL:
                 case TRANSFER_IN:

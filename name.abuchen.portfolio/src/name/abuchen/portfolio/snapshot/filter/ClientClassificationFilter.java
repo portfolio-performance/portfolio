@@ -124,7 +124,7 @@ public class ClientClassificationFilter implements ClientFilter
             if (state.isCategorized(account))
                 adaptAccountTransactions(state, account);
             else
-                collectDividends(state, account);
+                collectDividendsAndKickbacks(state, account);
         }
 
         for (Security security : state.categorizedSecurities)
@@ -291,11 +291,12 @@ public class ClientClassificationFilter implements ClientFilter
                     break;
 
                 case DIVIDENDS:
+                case KICKBACK:
                     if (!state.isCategorized(t.getSecurity()))
                         state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
                                         t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
                     else
-                        addDividendT(state, account, t);
+                        addDividendOrKickbackT(state, account, t);
                     break;
 
                 case TRANSFER_IN:
@@ -345,20 +346,20 @@ public class ClientClassificationFilter implements ClientFilter
         }
     }
 
-    private void addDividendT(CalculationState state, Account account, AccountTransaction t)
+    private void addDividendOrKickbackT(CalculationState state, Account account, AccountTransaction t)
     {
         int accountWeight = state.getWeight(account);
         int securityWeight = state.getWeight(t.getSecurity());
 
         long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), securityWeight);
-        long dividendAmount = value(t.getAmount(), securityWeight);
+        long amount = value(t.getAmount(), securityWeight);
 
         state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                        dividendAmount + taxes, t.getSecurity(), t.getType()));
+                        amount + taxes, t.getSecurity(), t.getType()));
 
         long accountAmount = value(t.getAmount(), accountWeight);
 
-        long delta = accountAmount - dividendAmount - taxes;
+        long delta = accountAmount - amount - taxes;
 
         if (delta != 0)
             state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
@@ -431,7 +432,7 @@ public class ClientClassificationFilter implements ClientFilter
         return copy;
     }
 
-    private void collectDividends(CalculationState state, Account account)
+    private void collectDividendsAndKickbacks(CalculationState state, Account account)
     {
         for (AccountTransaction t : account.getTransactions())
         {
@@ -441,6 +442,7 @@ public class ClientClassificationFilter implements ClientFilter
             switch (t.getType())
             {
                 case DIVIDENDS:
+                case KICKBACK:
                     int weight = state.getWeight(t.getSecurity());
                     long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
                     long amount = value(t.getAmount(), weight);

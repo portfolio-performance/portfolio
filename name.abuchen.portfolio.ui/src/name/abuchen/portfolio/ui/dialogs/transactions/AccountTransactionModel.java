@@ -28,7 +28,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, shares, fxGrossAmount, dividendAmount, kickbackAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -48,6 +48,7 @@ public class AccountTransactionModel extends AbstractModel
 
     private long fxGrossAmount;
     private BigDecimal dividendAmount = BigDecimal.ZERO;
+    private BigDecimal kickbackAmount = BigDecimal.ZERO;    
     private BigDecimal exchangeRate = BigDecimal.ONE;
     private long grossAmount;
 
@@ -86,6 +87,7 @@ public class AccountTransactionModel extends AbstractModel
             case INTEREST:
             case INTEREST_CHARGE:
             case DIVIDENDS:
+            case KICKBACK:
                 return;
             case BUY:
             case SELL:
@@ -163,6 +165,7 @@ public class AccountTransactionModel extends AbstractModel
         setShares(0);
         setFxGrossAmount(0);
         setDividendAmount(BigDecimal.ZERO);
+        setKickbackAmount(BigDecimal.ZERO);
         setGrossAmount(0);
         setTaxes(0);
         setFxTaxes(0);
@@ -171,12 +174,22 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsShares()
     {
+        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.KICKBACK;
+    }
+    
+    public boolean supportsDividends()
+    {
         return type == AccountTransaction.Type.DIVIDENDS;
+    }
+    
+    public boolean supportsKickback()
+    {
+        return type == AccountTransaction.Type.KICKBACK;
     }
 
     public boolean supportsSecurity()
     {
-        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.TAX_REFUND;
+        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.KICKBACK || type == AccountTransaction.Type.TAX_REFUND;
     }
 
     public boolean supportsOptionalSecurity()
@@ -186,7 +199,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsTaxUnits()
     {
-        return type == AccountTransaction.Type.DIVIDENDS;
+        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.KICKBACK;
     }
 
     public void setSource(Account account, AccountTransaction transaction)
@@ -234,6 +247,8 @@ public class AccountTransactionModel extends AbstractModel
             this.fxGrossAmount = grossAmount;
 
         this.dividendAmount = calculateDividendAmount();
+        
+        this.kickbackAmount = calculateKickbackAmount();
 
         this.note = transaction.getNote();
     }
@@ -368,6 +383,9 @@ public class AccountTransactionModel extends AbstractModel
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
                         this.dividendAmount = calculateDividendAmount());
+        
+        firePropertyChange(Properties.kickbackAmount.name(), this.kickbackAmount,
+                        this.kickbackAmount = calculateKickbackAmount());
     }
 
     public long getFxGrossAmount()
@@ -384,6 +402,9 @@ public class AccountTransactionModel extends AbstractModel
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
                         this.dividendAmount = calculateDividendAmount());
+        
+        firePropertyChange(Properties.kickbackAmount.name(), this.kickbackAmount,
+                        this.kickbackAmount = calculateKickbackAmount());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -404,6 +425,23 @@ public class AccountTransactionModel extends AbstractModel
     public void triggerDividendAmount(BigDecimal amount)
     {
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount, this.dividendAmount = amount);
+    }
+    
+    public BigDecimal getKickbackAmount()
+    {
+        return kickbackAmount;
+    }
+
+    public void setKickbackAmount(BigDecimal amount)
+    {
+        triggerKickbackAmount(amount);
+        long myGrossAmount = calculateGrossAmount4Kickback();
+        setFxGrossAmount(myGrossAmount);
+    }
+
+    public void triggerKickbackAmount(BigDecimal amount)
+    {
+        firePropertyChange(Properties.kickbackAmount.name(), this.kickbackAmount, this.kickbackAmount = amount);
     }
 
     public BigDecimal getExchangeRate()
@@ -508,6 +546,9 @@ public class AccountTransactionModel extends AbstractModel
 
         firePropertyChange(Properties.dividendAmount.name(), this.dividendAmount,
                         this.dividendAmount = calculateDividendAmount());
+        
+        firePropertyChange(Properties.kickbackAmount.name(), this.kickbackAmount,
+                        this.kickbackAmount = calculateKickbackAmount());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
@@ -526,6 +567,15 @@ public class AccountTransactionModel extends AbstractModel
         else
             return BigDecimal.ZERO;
     }
+    
+    protected BigDecimal calculateKickbackAmount()
+    {
+        if (shares > 0)
+            return BigDecimal.valueOf(
+                            (fxGrossAmount * Values.Share.factor()) / (double) shares / Values.Amount.divider());
+        else
+            return BigDecimal.ZERO;
+    }
 
     protected long calculateGrossAmount4Total()
     {
@@ -536,6 +586,12 @@ public class AccountTransactionModel extends AbstractModel
     protected long calculateGrossAmount4Dividend()
     {
         return Math.round((shares * dividendAmount.doubleValue() * Values.Amount.factor())
+                        / (double) Values.Share.factor());
+    }
+    
+    protected long calculateGrossAmount4Kickback()
+    {
+        return Math.round((shares * kickbackAmount.doubleValue() * Values.Amount.factor())
                         / (double) Values.Share.factor());
     }
 
