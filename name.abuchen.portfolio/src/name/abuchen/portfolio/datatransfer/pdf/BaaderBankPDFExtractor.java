@@ -279,6 +279,6 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "baaderbank"; //$NON-NLS-1$
+        return "Baader Bank"; //$NON-NLS-1$
     }
 }

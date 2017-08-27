@@ -146,7 +146,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         if (importer.getExtractor() == importer.getSecurityPriceExtractor())
             return getWizard().getPage(SelectSecurityPage.PAGE_ID);
         else
-            return getWizard().getPage(ReviewExtractedItemsPage.PAGE_ID);
+            return getWizard().getPage("extractedCSV");
     }
 
     @Override
