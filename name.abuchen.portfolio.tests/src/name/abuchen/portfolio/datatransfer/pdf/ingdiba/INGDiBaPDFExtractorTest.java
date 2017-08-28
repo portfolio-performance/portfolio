@@ -33,8 +33,9 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 @SuppressWarnings("nls")
-public class INGDibaPDFExtractorTest
+public class INGDiBaPDFExtractorTest
 {
+    
     @Test
     public void testWertpapierKauf1() throws IOException
     {
@@ -534,7 +535,7 @@ public class INGDibaPDFExtractorTest
         };
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiba_Dividendengutschrift1.txt")), errors);
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Dividendengutschrift1.txt")), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -591,6 +592,42 @@ public class INGDibaPDFExtractorTest
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(65.1 + 3.58))));
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(303.60))));
+    }
+    
+    @Test
+    public void testGemeinschaftskontoDividendengutschrift1() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Gemeinschaftskonto_Dividendengutschrift1.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("DE000TLX1005"));
+        assertThat(security.getWkn(), is("TLX100"));
+        assertThat(security.getName(), is("Talanx AG Namens-Aktien o.N."));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(t.getAmount(), is(Values.Amount.factorize(468.04)));
+        assertThat(t.getDate(), is(LocalDate.parse("2016-05-12")));
+        assertThat(t.getShares(), is(Values.Share.factorize(500)));
+
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(650.00))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(79.46 + 7.15 +  4.37 + 79.46 + 7.15 +  4.37))));
     }
 
     private String from(String resource)
