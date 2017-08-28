@@ -127,48 +127,6 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         setDescription(Messages.PDFImportWizardDescription);
     }
 
-    public enum PDFasistantBankExtractor
-    {
-        BAADERBANK("baaderbank", "Baader Bank"), //$NON-NLS-1$ //$NON-NLS-2$
-        BANKSLM("bankslm", "Spar + Leihkasse"), //$NON-NLS-1$ //$NON-NLS-2$
-        COMDIRECT("comdirect", "comdirect"), //$NON-NLS-1$ //$NON-NLS-2$
-        COMMERZBANK("commerzbank", "comdirect"), //$NON-NLS-1$ //$NON-NLS-2$
-        CONSORSBANK("consorsbank", "Consorsbank"), //$NON-NLS-1$ //$NON-NLS-2$
-        DAB("dab", "DAB Bank"), //$NON-NLS-1$ //$NON-NLS-2$
-        DB("db", "Deutsche Bank"), //$NON-NLS-1$ //$NON-NLS-2$
-        DKB("dkb", "DKB"), //$NON-NLS-1$ //$NON-NLS-2$
-        FINTECHGROUPBANK("fintechgroupbank", "FinTech Group Bank"), //$NON-NLS-1$ //$NON-NLS-2$
-        INGDIBA("ingdiba", "ING-DiBa"), //$NON-NLS-1$ //$NON-NLS-2$
-        ONVISTA("onvista", "Onvista"), //$NON-NLS-1$ //$NON-NLS-2$
-        SBROKER("sbroker", "S Broker AG & Co. KG"), //$NON-NLS-1$ //$NON-NLS-2$
-        UNICREDIT("unicredit", "UniCredit Bank AG"); //$NON-NLS-1$ //$NON-NLS-2$
-
-        private String BankExtractor;
-        private String label;
-
-        private PDFasistantBankExtractor(String BankExtractor, String label)
-        {
-            this.BankExtractor = BankExtractor;
-            this.label = label;
-        }
-
-        public String getPDFBankExtractor()
-        {
-            return BankExtractor;
-        }
-
-        public String getLabel()
-        {
-            return label;
-        }
-
-        @Override
-        public String toString()
-        {
-            return getLabel();
-        }
-    }
-
     public List<ExtractedEntry> getEntries()
     {
         return allEntries;
@@ -200,8 +158,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     public String getPDFBankExtractor()
     {
-        return (String) ((IStructuredSelection) ImportAssistantExtractor.getSelection()).getFirstElement();
-        
+        String SelectedBank = (String) ((IStructuredSelection) ImportAssistantExtractor.getSelection()).getFirstElement();
+        if (SelectedBank == null) return ("");
+        return (String)ImportAssistantExtractor.getData(SelectedBank);       
     }
 
     public boolean doConvertToDelivery()
@@ -212,6 +171,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void createControl(Composite parent)
     {
+
         Composite container = new Composite(parent, SWT.NULL);
         setControl(container);
         container.setLayout(new FormLayout());
@@ -258,7 +218,32 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             Combo cmbImportAssistantExtractor = new Combo(targetContainer, SWT.READ_ONLY);
             ImportAssistantExtractor = new ComboViewer(cmbImportAssistantExtractor);
             ImportAssistantExtractor.setContentProvider(ArrayContentProvider.getInstance());
-            ImportAssistantExtractor.setInput(PDFasistantBankExtractor.values());
+            ImportAssistantExtractor.add("Baader Bank");
+            ImportAssistantExtractor.add("Spar + Leihkasse");
+            ImportAssistantExtractor.add("comdirect");
+            ImportAssistantExtractor.add("comdirect");
+            ImportAssistantExtractor.add("Consorsbank");
+            ImportAssistantExtractor.add("DAB Bank");
+            ImportAssistantExtractor.add("Deutsche Bank");
+            ImportAssistantExtractor.add("DKB");
+            ImportAssistantExtractor.add("FinTech Group Bank");
+            ImportAssistantExtractor.add("ING-DiBa");
+            ImportAssistantExtractor.add("Onvista");
+            ImportAssistantExtractor.add("S Broker AG & Co. KG");
+            ImportAssistantExtractor.add("UniCredit Bank AG");
+            ImportAssistantExtractor.setData("Baader Bank", "baaderbank");
+            ImportAssistantExtractor.setData("Spar + Leihkasse", "bankslm");
+            ImportAssistantExtractor.setData("comdirect", "comdirect");
+            ImportAssistantExtractor.setData("comdirect", "commerzbank");
+            ImportAssistantExtractor.setData("Consorsbank", "consorsbank");
+            ImportAssistantExtractor.setData("DAB Bank", "dab");
+            ImportAssistantExtractor.setData("Deutsche Bank", "db");
+            ImportAssistantExtractor.setData("DKB", "dkb");
+            ImportAssistantExtractor.setData("FinTech Group Bank", "fintechgroupbank");
+            ImportAssistantExtractor.setData("ING-DiBa", "ingdiba");
+            ImportAssistantExtractor.setData("Onvista", "onvista");
+            ImportAssistantExtractor.setData("S Broker AG & Co. KG", "sbroker");
+            ImportAssistantExtractor.setData("UniCredit Bank AG", "unicredit");
             ImportAssistantExtractor.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
             if (extractor.getLabel() != "pdfimportassistant")
             {
@@ -556,6 +541,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     public void beforePage()
     {
         setTitle(extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel());
+        String SelectedBankExtractor = getPDFBankExtractor();
         // clear all entries (if embedded into multi-page wizard)
         allEntries.clear();
         tableViewer.setInput(allEntries);
@@ -575,7 +561,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     {
                         if (extractor.getLabel() == "pdfimportassistant")
                         {
-                            Extractor extractor2 = createExtractor("dkb", client);
+                            Extractor extractor2 = createExtractor(SelectedBankExtractor, client);                               
                             List<ExtractedEntry> entries = extractor2 //
                                             .extract(files, errors).stream() //
                                             .map(i -> new ExtractedEntry(i)) //
@@ -647,6 +633,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
+        if (extractor.getLabel() == "pdfimportassistant") beforePage(); 
         checkEntries(entries);
         tableViewer.refresh();
     }
