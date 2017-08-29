@@ -57,7 +57,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                 t.setDate(asDate(v.get("date")));
                                 t.setAmount(asAmount(v.get("amount")));
-                                //t.setNote(v.get("text"));
                         })
                         .wrap(t -> new TransactionItem(t)));
 
@@ -83,12 +82,11 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 t.setDate(asDate(v.get("date")));
                                 t.setShares(asShares(v.get("shares")));
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                //t.
                                 t.setAmount(asAmount(v.get("amount")));
-                                //t.get
+
                         })
                         
-                        .section("exchangeRate", "currency", "amount")//.optional()
+                        .section("exchangeRate", "currency", "amount").optional()
                         .match(".* Währungswechsel (?<exchangeRate>[.\\d]+,\\d+) (?<currency>\\w{3}) -(?<amount>[.\\d]+,\\d{2}) .*")
                         .assign((t, v) -> {
                                 Money currentMonetaryAmount = t.getAccountTransaction().getMonetaryAmount(); // in fx
@@ -135,10 +133,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 Money currentMonetaryAmount = t.getAccountTransaction().getMonetaryAmount();
                                 t.setMonetaryAmount(currentMonetaryAmount.add(feeAmount));
                         })
-                        
-                        // evtl. muss man diesen Betrag noch zum Total hinzuaddieren und dann diese noch einmal aktualisieren!
-                         
-                       
 
                         .wrap(t -> new BuySellEntryItem(t)));
         
