@@ -221,7 +221,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             ImportAssistantExtractor.add("Baader Bank");
             ImportAssistantExtractor.add("Spar + Leihkasse");
             ImportAssistantExtractor.add("comdirect");
-            ImportAssistantExtractor.add("comdirect");
+            ImportAssistantExtractor.add("Commerzbank");
             ImportAssistantExtractor.add("Consorsbank");
             ImportAssistantExtractor.add("DAB Bank");
             ImportAssistantExtractor.add("Deutsche Bank");
@@ -234,7 +234,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             ImportAssistantExtractor.setData("Baader Bank", "baaderbank");
             ImportAssistantExtractor.setData("Spar + Leihkasse", "bankslm");
             ImportAssistantExtractor.setData("comdirect", "comdirect");
-            ImportAssistantExtractor.setData("comdirect", "commerzbank");
+            ImportAssistantExtractor.setData("Commerzbank", "commerzbank");
             ImportAssistantExtractor.setData("Consorsbank", "consorsbank");
             ImportAssistantExtractor.setData("DAB Bank", "dab");
             ImportAssistantExtractor.setData("Deutsche Bank", "db");
