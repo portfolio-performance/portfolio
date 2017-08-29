@@ -1,0 +1,27 @@
+DEGIRO B.V.
+Rembrandt Tower - 9th floor
+Amstelplein 1
+1096 HA Amsterdam
+T +49 69 365 065 457
+E kundenservice@degiro.de
+Herr Max Mustermann I www.degiro.de
+Am Steintor 99
+30099 Hannover
+Benutzername: ***xxxx
+Kontoauszug von 28-07-2017 bis 28-08-2017
+Datum Uhrzeit Produkt ISIN Beschreibung FX Änderung Saldo
+03-08-2017 15:32 BERKSHIRE HATHAWAY INC US0846707026 Währungswechsel USD 177,50 USD 0,00
+(Einbuchung)
+03-08-2017 15:32 BERKSHIRE HATHAWAY INC US0846707026 Währungswechsel 1,1851 EUR -149,92 EUR 36,52
+(Ausbuchung)
+03-08-2017 15:32 BERKSHIRE HATHAWAY INC US0846707026 Transaktionsgebühr EUR -0,50 EUR 186,44
+03-08-2017 15:32 BERKSHIRE HATHAWAY INC US0846707026 Kauf 1 zu je 177,5 USD -177,50 USD -177,50
+03-08-2017 15:31 DOMINO'S PIZZA INC COM US25754A2015 Währungswechsel USD 192,50 USD 0,00
+(Einbuchung)
+03-08-2017 15:31 DOMINO'S PIZZA INC COM US25754A2015 Währungswechsel 1,1854 EUR -162,56 EUR 186,94
+(Ausbuchung)
+03-08-2017 15:31 DOMINO'S PIZZA INC COM US25754A2015 Transaktionsgebühr EUR -0,50 EUR 349,50
+03-08-2017 15:31 DOMINO'S PIZZA INC COM US25754A2015 Kauf 1 zu je 192,5 USD -192,50 USD -192,50
+02-08-2017 00:00 Einzahlung EUR 350,00 EUR 350,00
+Kontoauszug - www.degiro.de
+DEGIRO B.V. ist als Investmentgesellschaft bei der niederländischen Finanzaufsichtsbehörde (AFM) registriert. 1 / 1

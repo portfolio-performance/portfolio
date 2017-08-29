@@ -57,6 +57,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="__ZN00PrtEeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.pdf-consorsbank" label="%command.import.pdf.consorsbank" tooltip="%command.import.pdf.consorsbank.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="__ZN00frtEeS4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="consorsbank"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_U8MYwIyVEeeYfsskD1KRWg" elementId="name.abuchen.portfolio.ui.menu.file.import.degiro" label="%command.import.pdf.degiro" tooltip="%command.import.pdf.degiro.tooltip" command="_pgC00EYREeSRXYVe298mXg">
+            <parameters xmi:id="_k0RrwIyVEeeYfsskD1KRWg" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="degiro"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_p7RKwInJEeSYsbvne6dyow" elementId="name.abuchen.portfolio.ui.menu.file.import.db" label="%command.import.pdf.db" tooltip="%command.import.pdf.db.tooltip" command="_pgC00EYREeSRXYVe298mXg">
             <parameters xmi:id="_p7RKwYnJEeSYsbvne6dyow" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="db"/>
           </children>
