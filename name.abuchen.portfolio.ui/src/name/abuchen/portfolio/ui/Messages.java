@@ -591,6 +591,8 @@ public class Messages extends NLS
     public static String PDFImportWizardDescription;
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
+    public static String PDFImportWizardAssistant;
+    public static String PDFImportWizardExtractor;
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;
