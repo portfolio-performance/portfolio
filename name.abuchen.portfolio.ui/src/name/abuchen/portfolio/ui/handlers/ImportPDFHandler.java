@@ -28,6 +28,7 @@ import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
@@ -112,6 +113,8 @@ public class ImportPDFHandler
                 return new DABPDFExctractor(client);
             case "db": //$NON-NLS-1$
                 return new DeutscheBankPDFExctractor(client);
+            case "degiro": //$NON-NLS-1$
+                return new DegiroPDFExtractor(client);
             case "dkb": //$NON-NLS-1$
                 return new DkbPDFExtractor(client);
             case "fintechgroupbank": //$NON-NLS-1$
