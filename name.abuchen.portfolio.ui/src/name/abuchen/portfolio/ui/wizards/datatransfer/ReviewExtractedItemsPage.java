@@ -29,7 +29,6 @@ import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
@@ -70,7 +69,6 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
-    /* package */static final String PAGE_ID = "reviewitems"; //$NON-NLS-1$
 
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
@@ -86,6 +84,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Label lblPrimaryAccount;
     private ComboViewer primaryAccount;
     private Label lblSecondaryAccount;
+    private Label lblImportAssistantExtractor;
+    private ComboViewer ImportAssistantExtractor;
     private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
 
@@ -96,7 +96,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private List<ExtractedEntry> allEntries = new ArrayList<ExtractedEntry>();
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files)
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files, String PAGE_ID)
     {
         super(PAGE_ID);
 
@@ -143,10 +143,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbConvertToDelivery.getSelection();
     }
 
-    @Override
-    public IWizardPage getNextPage()
+    public String getPDFBankExtractor()
     {
-        return null;
+        String SelectedBank = (String) ((IStructuredSelection) ImportAssistantExtractor.getSelection()).getFirstElement();
+        if (SelectedBank == null) return ("");
+        return (String)ImportAssistantExtractor.getData(SelectedBank);
     }
 
     @Override
@@ -192,6 +193,46 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         secondaryPortfolio.setContentProvider(ArrayContentProvider.getInstance());
         secondaryPortfolio.setInput(client.getActivePortfolios());
         secondaryPortfolio.getControl().setVisible(false);
+
+        lblImportAssistantExtractor = new Label(targetContainer, SWT.NONE);
+        lblImportAssistantExtractor.setText(Messages.PDFImportWizardExtractor);
+        Combo cmbImportAssistantExtractor = new Combo(targetContainer, SWT.READ_ONLY);
+        ImportAssistantExtractor = new ComboViewer(cmbImportAssistantExtractor);
+        ImportAssistantExtractor.add("Baader Bank / Scalable Capital");
+        ImportAssistantExtractor.add("Bank SLM");
+        ImportAssistantExtractor.add("comdirect");
+        ImportAssistantExtractor.add("Commerzbank");
+        ImportAssistantExtractor.add("Consorsbank");
+        ImportAssistantExtractor.add("DAB Bank");
+        ImportAssistantExtractor.add("DEGIRO");
+        ImportAssistantExtractor.add("Deutsche Bank");
+        ImportAssistantExtractor.add("DKB");
+        ImportAssistantExtractor.add("FinTech Group Bank AG / flatex / Whitebox");
+        ImportAssistantExtractor.add("ING-DiBa");
+        ImportAssistantExtractor.add("Onvista-Bank");
+        ImportAssistantExtractor.add("sBroker");
+        ImportAssistantExtractor.add("UniCredit / HypoVereinsbank");
+        ImportAssistantExtractor.setData("Baader Bank / Scalable Capital", "baaderbank");
+        ImportAssistantExtractor.setData("Bank SLM", "bankslm");
+        ImportAssistantExtractor.setData("comdirect", "comdirect");
+        ImportAssistantExtractor.setData("Commerzbank", "commerzbank");
+        ImportAssistantExtractor.setData("Consorsbank", "consorsbank");
+        ImportAssistantExtractor.setData("DAB Bank", "dab");
+        ImportAssistantExtractor.setData("DEGIRO", "degiro");
+        ImportAssistantExtractor.setData("Deutsche Bank", "db");
+        ImportAssistantExtractor.setData("DKB", "dkb");
+        ImportAssistantExtractor.setData("FinTech Group Bank AG / flatex / Whitebox", "fintechgroupbank");
+        ImportAssistantExtractor.setData("ING-DiBa", "ingdiba");
+        ImportAssistantExtractor.setData("Onvista-Bank", "onvista");
+        ImportAssistantExtractor.setData("sBroker", "sbroker");
+        ImportAssistantExtractor.setData("UniCredit / HypoVereinsbank", "unicredit");
+        ImportAssistantExtractor.addSelectionChangedListener(e -> checkEntriesAndRefresh(allEntries));
+        if (extractor.getLabel() != "pdfimportassistant")
+        {
+            lblImportAssistantExtractor.setVisible(false);
+            ImportAssistantExtractor.getCombo().setVisible(false);
+        }
+
 
         preselectDropDowns();
 
@@ -481,7 +522,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void beforePage()
     {
-        setTitle(extractor.getLabel());
+        setTitle(extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel());
+        String SelectedBankExtractor = getPDFBankExtractor();
 
         // clear all entries (if embedded into multi-page wizard)
         allEntries.clear();
@@ -496,17 +538,42 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
-
                     final List<Exception> errors = new ArrayList<Exception>();
-                    List<ExtractedEntry> entries = extractor //
-                                    .extract(files, errors).stream() //
-                                    .map(i -> new ExtractedEntry(i)) //
-                                    .collect(Collectors.toList());
+                    
+                    try
+                    {
+                        if (extractor.getLabel() == "pdfimportassistant")
+                        {
+                            new PDFImportAssistant();
+                            Extractor extractorDropDown = PDFImportAssistant.createExtractor(SelectedBankExtractor, client);
+                            List<ExtractedEntry> entries = extractorDropDown //
+                                            .extract(files, errors).stream() //
+                                            .map(i -> new ExtractedEntry(i)) //
+                                            .collect(Collectors.toList());
 
-                    // Logging them is not a bad idea if the whole method fails
-                    PortfolioPlugin.log(errors);
+                            // Logging them is not a bad idea if the whole method fails
+                            PortfolioPlugin.log(errors);
 
-                    Display.getDefault().asyncExec(() -> setResults(entries, errors));
+                            Display.getDefault().asyncExec(() -> setResults(entries, errors));
+                        }
+                        else
+                        {
+                            List<ExtractedEntry> entries = extractor //
+                                            .extract(files, errors).stream() //
+                                            .map(i -> new ExtractedEntry(i)) //
+                                            .collect(Collectors.toList());
+
+                            // Logging them is not a bad idea if the whole method fails
+                            PortfolioPlugin.log(errors);
+
+                            Display.getDefault().asyncExec(() -> setResults(entries, errors));
+
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        throw new UnsupportedOperationException(e);
+                    }
 
                     return Status.OK_STATUS;
                 }
@@ -550,6 +617,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
     private void checkEntriesAndRefresh(List<ExtractedEntry> entries)
     {
+        if (extractor.getLabel() == "pdfimportassistant") beforePage();  
         checkEntries(entries);
         tableViewer.refresh();
     }

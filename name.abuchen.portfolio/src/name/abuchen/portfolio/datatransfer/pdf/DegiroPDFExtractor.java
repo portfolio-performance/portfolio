@@ -146,6 +146,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "degiro"; //$NON-NLS-1$
+        return "DEGIRO"; //$NON-NLS-1$
     }
 }

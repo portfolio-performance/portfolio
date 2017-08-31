@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.File;
 import java.io.IOException;
 
+import java.text.MessageFormat; 
+
 import javax.inject.Named;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -10,6 +12,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDDocumentInformation; 
 import org.apache.pdfbox.util.PDFTextStripper;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -39,9 +42,14 @@ public class CreateTextFromPDFHandler
 
         try (PDDocument doc = PDDocument.load(file))
         {
+            String text;  
+            PDDocumentInformation info = doc.getDocumentInformation();  
+            String PDFauthor = info.getAuthor();  
+            text = MessageFormat.format(Messages.PDFImportDebugAuthor, ""); 
+            text+= "\n-----------------------------------------\n"; 
             PDFTextStripper textStripper = new PDFTextStripper();
             textStripper.setSortByPosition(true);
-            String text = textStripper.getText(doc);
+            text+= textStripper.getText(doc); 
 
             new DisplayTextDialog(shell, text).open();
         }
