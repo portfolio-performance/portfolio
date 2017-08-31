@@ -22,19 +22,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -66,9 +54,9 @@ public class ImportPDFHandler
             // open file dialog to pick pdf files
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-            fileDialog.setText(extractor.getLabel());
+            fileDialog.setText(extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel());
             fileDialog.setFilterNames(new String[] { MessageFormat.format("{0} ({1})", //$NON-NLS-1$
-                            extractor.getLabel(), extractor.getFilterExtension()) });
+                            extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel(), extractor.getFilterExtension()) });
             fileDialog.setFilterExtensions(new String[] { extractor.getFilterExtension() });
             fileDialog.open();
 
@@ -98,32 +86,8 @@ public class ImportPDFHandler
     {
         switch (type)
         {
-            case "baaderbank": //$NON-NLS-1$
-                return new BaaderBankPDFExtractor(client);
-            case "bankslm": //$NON-NLS-1$
-                return new BankSLMPDFExctractor(client);
-            case "comdirect": //$NON-NLS-1$
-                return new ComdirectPDFExtractor(client);
-            case "commerzbank": //$NON-NLS-1$
-                return new CommerzbankPDFExctractor(client);
-            case "consorsbank": //$NON-NLS-1$
-                return new ConsorsbankPDFExctractor(client);
-            case "dab": //$NON-NLS-1$
-                return new DABPDFExctractor(client);
-            case "db": //$NON-NLS-1$
-                return new DeutscheBankPDFExctractor(client);
-            case "dkb": //$NON-NLS-1$
-                return new DkbPDFExtractor(client);
-            case "fintechgroupbank": //$NON-NLS-1$
-                return new FinTechGroupBankPDFExtractor(client);
-            case "ingdiba": //$NON-NLS-1$
-                return new INGDiBaExtractor(client);
-            case "onvista": //$NON-NLS-1$
-                return new OnvistaPDFExtractor(client);
-            case "sbroker": //$NON-NLS-1$
-                return new SBrokerPDFExtractor(client);
-            case "unicredit": //$NON-NLS-1$
-                return new UnicreditPDFExtractor(client);
+            case "pdfimportassistant": //$NON-NLS-1$  
+                return new AssistantPDFExtractor(client);  
             case "ib": //$NON-NLS-1$
                 return new IBFlexStatementExtractor(client);
             default:
