@@ -95,12 +95,12 @@ public class PDFImportAssistant
 
             case "Scalable Capital Vermögensverwaltung GmbH": //$NON-NLS-1$  
                 return "baaderbank";  
-            case "consorsbank": //$NON-NLS-1$  
-                return "";  
-            case "dab": //$NON-NLS-1$  
-                return "";  
-            case "dkb": //$NON-NLS-1$  
-                return "";  
+            case "Consorsbank": //$NON-NLS-1$  
+                return "consorsbank";  
+            case "Computershare Communication Services GmbH": //$NON-NLS-1$  
+                return "dab";  
+            case "DKB AG": //$NON-NLS-1$  
+                return "dkb";  
             case "ING-DiBa": //$NON-NLS-1$  
                 return "ingdiba";  
 
