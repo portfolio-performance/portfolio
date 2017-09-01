@@ -77,7 +77,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getAccountTransaction()  .getType(),                 is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getType(),                 is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(),               is(Values.Amount.factorize(208.95)));
-        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-03-22")));
+        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-03-20")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.21))));
         assertThat(entry.getPortfolioTransaction().getShares(),               is(Values.Share.factorize(2)));        
 
@@ -123,7 +123,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(),                 is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction()  .getType(),                 is(AccountTransaction.Type.BUY));
         assertThat(entry.getPortfolioTransaction().getAmount(),               is(Values.Amount.factorize(1551.00)));
-        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-03-22")));
+        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-03-20")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.55))));
         assertThat(entry.getPortfolioTransaction().getShares(),               is(Values.Share.factorize(70)));
     }
@@ -166,7 +166,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getType(),                 is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction()  .getType(),                 is(AccountTransaction.Type.SELL));
         assertThat(entry.getPortfolioTransaction().getAmount(),               is(Values.Amount.factorize(75.92)));
-        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-05-12")));
+        assertThat(entry.getPortfolioTransaction().getDate(),                 is(LocalDate.parse("2017-05-10")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.08))));
         assertThat(entry.getPortfolioTransaction().getShares(),               is(Values.Share.factorize(2)));
     }

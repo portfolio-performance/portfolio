@@ -60,9 +60,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
                         .section("date", "amount", "currency")
-                        .match("Zu Lasten Konto \\d+ Valuta: (?<date>\\d+\\.\\d+\\.\\d{4}) *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .match("Zu Lasten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .find("Handelsdatum Handelsuhrzeit")
+                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) \\d{2}:\\d{2}:\\d{2}:\\d{2}$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDate(asDate(v.get("date")));                            
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -98,7 +100,9 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
                         .section("date", "amount", "currency")
-                        .match("Zu Gunsten Konto \\d+ Valuta: (?<date>\\d+.\\d+.\\d{4}) *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .match("Zu Gunsten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .find("Handelsdatum Handelsuhrzeit")
+                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) \\d{2}:\\d{2}:\\d{2}:\\d{2}$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
