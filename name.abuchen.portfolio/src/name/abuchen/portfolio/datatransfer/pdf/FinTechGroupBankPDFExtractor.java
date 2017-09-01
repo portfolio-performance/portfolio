@@ -842,6 +842,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "FinTech Group Bank"; //$NON-NLS-1$
+        return "FinTech Group Bank AG / flatex / Whitebox"; //$NON-NLS-1$
     }
 }

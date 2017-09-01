@@ -1193,6 +1193,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "Onvista"; //$NON-NLS-1$
+        return "Onvista-Bank"; //$NON-NLS-1$
     }
 }

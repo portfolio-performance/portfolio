@@ -19,6 +19,7 @@ import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
@@ -51,6 +52,8 @@ public class PDFImportAssistant
                 return new ConsorsbankPDFExctractor(client);
             case "dab": //$NON-NLS-1$
                 return new DABPDFExctractor(client);
+            case "degiro": //$NON-NLS-1$
+                return new DegiroPDFExtractor(client);
             case "db": //$NON-NLS-1$
                 return new DeutscheBankPDFExctractor(client);
             case "dkb": //$NON-NLS-1$
@@ -115,7 +118,7 @@ public class PDFImportAssistant
                 if (matcherISIN_count != 0) return ("others");  
 
                 // PDF import assistant - Search for the bank identifier  
-                Matcher matcherBankIdentifier = Pattern.compile("Baader Bank|Bank SLM AG|biw AG|BNP Paribas|C O M M E R Z B A N K|comdirect bank|Consorsbank|Cortal Consors|DAB Bank|Deutsche Bank Privat- und Geschäftskunden AG|FinTech Group Bank AG|ING-DiBa AG|S Broker AG & Co. KG|Scalable Capital|Spar + Leihkasse|UniCredit Bank AG").matcher( text );  
+                Matcher matcherBankIdentifier = Pattern.compile("Baader Bank|Bank SLM AG|biw AG|BNP Paribas|C O M M E R Z B A N K|comdirect bank|Consorsbank|Cortal Consors|DAB Bank|DEGIRO B.V|Deutsche Bank Privat- und Geschäftskunden AG|FinTech Group Bank AG|ING-DiBa AG|S Broker AG & Co. KG|Scalable Capital|Spar + Leihkasse|UniCredit Bank AG").matcher( text );  
                 String BankIdentifier = "";  
                 while ( matcherBankIdentifier.find() )  
                 {  
@@ -135,7 +138,8 @@ public class PDFImportAssistant
                         case "comdirect bank": return("comdirect");  
                         case "Consorsbank": return("consorsbank");  
                         case "Cortal Consors": return("consorsbank");  
-                        case "DAB Bank": return("dab");  
+                        case "DAB Bank": return("dab");
+                        case "DEGIRO B.V.": return("degiro");
                         case "Deutsche Bank Privat- und Geschäftskunden AG": return("db");  
                         case "FinTech Group Bank AG": return("fintechgroupbank");  
                         case "ING-DiBa AG": return("ingdiba");  

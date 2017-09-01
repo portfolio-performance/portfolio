@@ -27,7 +27,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "S Broker AG & Co. KG"; //$NON-NLS-1$
+        return "sBroker"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")
