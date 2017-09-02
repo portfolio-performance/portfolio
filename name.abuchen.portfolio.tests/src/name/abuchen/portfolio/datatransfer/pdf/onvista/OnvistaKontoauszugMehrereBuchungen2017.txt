@@ -1,18 +1,18 @@
 Seite 1 von 5
 Herr
-Peter Müller Unsere Postanschrift:
-Berlinerstr. 22 Postfach 10 08 60
-14621 Nauen 60008 Frankfurt
+Max Mustermann Unsere Postanschrift:
+Musterstr. 1 Postfach 10 08 60
+99999 Ort 99999 Ort
 Kundenservice:
 Telefon: +49 (0) 69 7107 - 530
 Fax +49 (0) 69 7107 - 100
 Mo-Fr 8:00 - 19:00 Uhr
 service@onvista-bank.de
 Ihre Bankverbindung für Überweisungen:
-IBAN DE06514108000220662133
+IBAN DE99999999999999999999
 BIC BOURDEFF
 Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
-EUR - Verrechnungskonto: 0 220662 045
+EUR - Verrechnungskonto: 0 111111 222
 Alter Saldo 341,04 H
 Neuer Saldo 30,59 H
 Guthaben sind als Einlagen nach Maßgabe des Einlagensicherungsgesetzes entschädigungsfähig.
@@ -28,13 +28,13 @@ Genehmigung.
 Bei Zahlungen größer 12.500 EUR bitte Meldepflichten nach dem Außenwirtschaftsrecht beachten.
 Seite 2 von 5
 Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
-EUR - Verrechnungskonto: 0 220662 045
+EUR - Verrechnungskonto: 0 111111 222
 Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
 datum
 Alter Kontostand vom 31.03.17 341,04+
 04.04. 04.04. REF: 000045862247 200,00+
-Überweisungseingang SEPA Peter Müller
-BYLADEM1001 / DE86120300001038905453
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
 Aktien und ETF
 04.04. 03.04. REF: 000045902174 22,75+
 Zinsen/Dividenden
@@ -81,7 +81,7 @@ ABR: 2711194220170419
 ÜBERTRAG 419,78+
 Seite 3 von 5
 Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
-EUR - Verrechnungskonto: 0 220662 045
+EUR - Verrechnungskonto: 0 111111 222
 Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
 datum
 ÜBERTRAG 419,78+
@@ -110,8 +110,8 @@ STK: 4,5168
 ISIN: DE000A0F5UF5
 ABR: 7679025520170427
 03.05. 03.05. REF: 000046541352 200,00+
-Überweisungseingang SEPA Peter Müller
-BYLADEM1001 / DE86120300001038905453
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
 Aktien und ETF
 04.05. 04.05. REF: 000046630106 16,20+
 Zinsen/Dividenden
@@ -134,7 +134,7 @@ ABR: 1498429020170504
 ÜBERTRAG 1.332,20+
 Seite 4 von 5
 Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
-EUR - Verrechnungskonto: 0 220662 045
+EUR - Verrechnungskonto: 0 111111 222
 Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
 datum
 ÜBERTRAG 1.332,20+
@@ -175,12 +175,12 @@ STK: 60
 ISIN: US3453708600
 ABR: 1779828620170522
 01.06. 01.06. REF: 000047323533 100,00+
-Überweisungseingang SEPA Peter Müller
-BYLADEM1001 / DE86120300001038905453
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
 Etf 2
 02.06. 02.06. REF: 000047362999 200,00+
-Überweisungseingang SEPA Peter Müller
-BYLADEM1001 / DE86120300001038905453
+Überweisungseingang SEPA Max Mustermann
+BYLADEM1001 / DE99999999999999999999
 Aktien und ETF
 05.06. 05.06. REF: 000047402052 50,00-
 Wertpapierkauf
@@ -191,7 +191,7 @@ ABR: 8089348120170602
 ÜBERTRAG 290,15+
 Seite 5 von 5
 Kontoauszug Nr. 2017 / 2 und Rechnungsabschluss zum 30.06.2017
-EUR - Verrechnungskonto: 0 220662 045
+EUR - Verrechnungskonto: 0 111111 222
 Buchungs- Valuta Buchungstext Soll in EUR Haben in EUR
 datum
 ÜBERTRAG 290,15+
@@ -233,11 +233,11 @@ ISIN: US7475251036
 ABR: 2467660920170621
 26.06. 26.06. REF: 000047921839 300,00+
 Überweisungseingang SEPA PETER MÜLLER
-BYLADEM1001 / DE86120300001038905453
+BYLADEM1001 / DE99999999999999999999
 Vorschuss
 26.06. 26.06. REF: 000047921840 200,00+
 Überweisungseingang SEPA PETER MÜLLER
-BYLADEM1001 / DE86120300001038905453
+BYLADEM1001 / DE99999999999999999999
 Vorschuss
 30.06. 03.07. REF: 000048086782 619,10-
 Wertpapierkauf
