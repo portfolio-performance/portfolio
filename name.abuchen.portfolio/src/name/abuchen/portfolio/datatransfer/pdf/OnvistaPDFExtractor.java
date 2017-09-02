@@ -40,6 +40,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addCompensationTransaction();
         addDepositTransaction();
         addAccountStatementTransaction();
+        addAccountStatementTransaction2017();
     }
 
     private void addBuyTransaction()
@@ -906,7 +907,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             }
         });
         this.addDocumentTyp(type);
-
+        
         // 31.10. 31.10. REF: 000017304356 37,66
         Block block = new Block("^\\d+\\.\\d+\\.\\s+\\d+\\.\\d+\\.\\s+REF:\\s+\\d+\\s+[\\d.-]+,\\d+[+-]?(.*)");
         type.addBlock(block);
@@ -985,6 +986,107 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         });
     }
 
+    private void addAccountStatementTransaction2017()
+    {
+        // this seems to be the new format of account statements from the year 2017
+        final DocumentType type = new DocumentType("Kontoauszug Nr.", (context, lines) -> {
+            Pattern pYear = Pattern.compile("^Kontoauszug Nr. (\\d{4}) / .*\\.(\\d{4})$");
+            Pattern pCurrency = Pattern.compile("^(\\w{3}+) - Verrechnungskonto: .*$");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pYear.matcher(line);
+                if (m.matches())
+                {
+                    context.put("year", m.group(1));
+                }
+                m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        // 31.10. 31.10. REF: 000017304356 37,66
+        Block block = new Block("^\\d+\\.\\d+\\.\\s+\\d+\\.\\d+\\.\\s+REF:\\s+\\d+\\s+[\\d.-]+,\\d+[+-]?(.*)");
+        type.addBlock(block);
+
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DEPOSIT);
+            return entry;
+        });
+
+        block.set(pdfTransaction);
+        pdfTransaction.section("valuta", "amount", "sign") //
+                        .match("^\\d+\\.\\d+\\.\\s+(?<valuta>\\d+\\.\\d+\\.)\\s+REF:\\s+\\d+\\s+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-]?)(.*)")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            String date = v.get("valuta");
+                            if (date != null)
+                            {
+                                // create a long date from the year in the
+                                // context
+                                t.setDate(asDate(date + context.get("year")));
+                            }
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            // check for withdrawals
+                            String sign = v.get("sign");
+                            if ("-".equals(sign))
+                            {
+                                // change type for withdrawals
+                                t.setType(AccountTransaction.Type.REMOVAL);
+                            }
+                        })
+
+                        // Feintuning Buchungstyp...
+                        .section("postingtype") //
+                        .find("\\d+\\.\\d+\\.\\s+\\d+\\.\\d+\\. REF:(.*)") //
+                        .match("(?<postingtype>.*?)").assign((t, v) -> {
+                            String postingtype = v.get("postingtype");
+                            if (postingtype != null)
+                            {
+                                switch (postingtype)
+                                {
+                                    case "Wertpapierkauf":
+                                    case "Umtausch/Bezug":
+                                    case "Sollbuchung HSBC":
+                                        t.setType(AccountTransaction.Type.BUY);
+                                        break;
+                                    case "Wertpapierverkauf":
+                                    case "Spitze Verkauf":
+                                    case "Habenbuchung HSBC":
+                                    case "Tilgung":
+                                        t.setType(AccountTransaction.Type.SELL);
+                                        break;
+                                    case "Zinsen/Dividenden":
+                                        t.setType(AccountTransaction.Type.DIVIDENDS);
+                                        break;
+                                    case "AbgSt. Optimierung":
+                                        t.setType(AccountTransaction.Type.TAX_REFUND);
+                                        break;
+                                }
+                            }
+                        })
+
+                        .wrap(t -> {
+                            // Buchungen, die bereits durch den Import von
+                            // WP-Abrechnungen abgedeckt sind (sein sollten),
+                            // hier ausklammern, sonst hat man sie doppelt im
+                            // Konto:
+                            if (t.getType() != AccountTransaction.Type.DIVIDENDS
+                                            && t.getType() != AccountTransaction.Type.BUY
+                                            && t.getType() != AccountTransaction.Type.SELL
+                                            && t.getType() != AccountTransaction.Type.TAX_REFUND) { return new TransactionItem(
+                                                            t); }
+                            return null;
+                        });
+    }
+    
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
     {
         pdfTransaction.section("tax", "withheld", "sign").optional() //

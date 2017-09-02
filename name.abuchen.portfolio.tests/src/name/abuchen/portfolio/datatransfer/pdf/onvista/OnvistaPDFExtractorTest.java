@@ -1273,6 +1273,45 @@ public class OnvistaPDFExtractorTest
     }
     
     @Test
+    public void testKontoauszugMehrereBuchungen2017() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("OnvistaKontoauszugMehrereBuchungen2017.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(7));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        assertTransaction(results, 0, "2017-04-04", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 1, "2017-04-10", AccountTransaction.Type.REMOVAL, CurrencyUnit.EUR,   0.89);
+        assertTransaction(results, 2, "2017-05-03", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 3, "2017-06-01", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 100.00);
+        assertTransaction(results, 4, "2017-06-02", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 5, "2017-06-26", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 300.00);
+        assertTransaction(results, 6, "2017-06-26", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+
+    }
+    
+    private void assertTransaction(List<Item> results, int j, String date, AccountTransaction.Type type, String unit, double amount)
+    {
+        Item item = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList()).get(j);
+        assertThat(item.getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.getSubject();
+        
+        assertThat(transaction.getType(), is(type));
+        assertThat(transaction.getDate(), is(LocalDate.parse(date)));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(unit, Values.Amount.factorize(amount))));
+    }
+    
+    @Test
     public void testMehrereTransaktionenInEinerDatei() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client())
