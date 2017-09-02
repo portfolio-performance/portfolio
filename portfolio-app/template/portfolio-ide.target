@@ -7,8 +7,9 @@
 <unit id="org.eclipse.e4.rcp.feature.group" version="1.5.3.v20170228-0512"/>
 <unit id="org.eclipse.e4.rcp.source.feature.group" version="1.5.3.v20170228-0512"/>
 <unit id="org.eclipse.equinox.executable.feature.group" version="3.6.300.v20161122-1740"/>
-<unit id="org.eclipse.rcp.source.feature.group" version="4.6.3.v20170301-0400"/>
+<unit id="org.eclipse.pde.source.feature.group" version="3.12.3.v20170301-0400"/>
 <unit id="org.eclipse.platform.ide" version="4.6.3.M20170301-0400"/>
+<unit id="org.eclipse.rcp.source.feature.group" version="4.6.3.v20170301-0400"/>
 <repository location="http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400/"/>
 </location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
