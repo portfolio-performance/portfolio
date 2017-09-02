@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,26 @@ import name.abuchen.portfolio.money.Money;
 
 public class INGDiBaExtractor extends AbstractPDFExtractor
 {
+    private static final String IS_JOINT_ACCOUNT = "isjointaccount"; //$NON-NLS-1$
+    
+    BiConsumer<Map<String, String>, String[]> isJointAccount = (context, lines) -> {
+        Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*"); //$NON-NLS-1$
+        Boolean bJointAccount = false;
+        for (String line : lines)
+        {
+            Matcher m = pJointAccount.matcher(line);
+            if (m.matches())
+            {
+                context.put(IS_JOINT_ACCOUNT, Boolean.TRUE.toString());
+                bJointAccount = true;
+                break;
+            }
+        }
+
+        if (!bJointAccount)
+            context.put(IS_JOINT_ACCOUNT, Boolean.FALSE.toString());
+
+    };
 
     public INGDiBaExtractor(Client client) throws IOException
     {
@@ -103,24 +125,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf", (context, lines) ->
-        {
-            Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
-            Boolean bJointAccount = false;
-            for (String line : lines)
-            {
-                Matcher m = pJointAccount.matcher(line);
-                if (m.matches())
-                {
-                    context.put("isjointaccount", "true");
-                    bJointAccount = true;
-                    break;
-                }
-            }
-            if (bJointAccount == false)
-                context.put("isjointaccount","false");
-            
-        });
+        DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf", isJointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("Wertpapierabrechnung Verkauf.*");
@@ -179,24 +184,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addErtragsgutschrift()
     {
-        DocumentType type = new DocumentType("Ertragsgutschrift", (context, lines) ->
-        {
-            Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
-            Boolean bJointAccount = false;
-            for (String line : lines)
-            {
-                Matcher m = pJointAccount.matcher(line);
-                if (m.matches())
-                {
-                    context.put("isjointaccount", "true");
-                    bJointAccount = true;
-                    break;
-                }
-            }
-            if (bJointAccount == false)
-                context.put("isjointaccount","false");
-            
-        });
+        DocumentType type = new DocumentType("Ertragsgutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("Ertragsgutschrift");
@@ -240,24 +228,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addZinsgutschrift()
     {
-        DocumentType type = new DocumentType("Zinsgutschrift", (context, lines) ->
-        {
-            Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
-            Boolean bJointAccount = false;
-            for (String line : lines)
-            {
-                Matcher m = pJointAccount.matcher(line);
-                if (m.matches())
-                {
-                    context.put("isjointaccount", "true");
-                    bJointAccount = true;
-                    break;
-                }
-            }
-            if (bJointAccount == false)
-                context.put("isjointaccount","false");
-            
-        });
+        DocumentType type = new DocumentType("Zinsgutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("Zinsgutschrift");
@@ -296,28 +267,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendengutschrift()
     {
-        final DocumentType type = new DocumentType("Dividendengutschrift", (context, lines) ->
-        {
-            Pattern pJointAccount = Pattern.compile("KapSt anteilig 50,00 %.*");
-            Boolean bJointAccount = false;
-            for (String line : lines)
-            {
-                Matcher m = pJointAccount.matcher(line);
-                if (m.matches())
-                {
-                    context.put("isjointaccount", "true");
-                    bJointAccount = true;
-                    //System.out.println("joint account true"); //SD
-                    break;
-                }
-            }
-            if (bJointAccount == false)
-            {
-                context.put("isjointaccount","false");
-                //System.out.println("joint account false"); //SD
-            }
-            
-        });
+        final DocumentType type = new DocumentType("Dividendengutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
         Block block = new Block("Dividendengutschrift");
@@ -382,7 +332,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                     .section("tax", "currency").optional() //
                     .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                     .assign((t, v) -> {
-                        if (type.getCurrentContext().get("isjointaccount").equals("false"))
+                        if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,                    
                                     Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
                         })
@@ -402,7 +352,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                     .section("tax", "currency").optional() //
                     .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                     .assign((t, v) -> {
-                        if (type.getCurrentContext().get("isjointaccount").equals("false"))
+                        if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                     Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));                 
                         })
@@ -446,7 +396,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                     .section("tax", "currency").optional() //
                     .match("Solidarit.tszuschlag \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                     .assign((t, v) -> {
-                        if (type.getCurrentContext().get("isjointaccount").equals("false"))
+                        if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                             t.addUnit(new Unit(Unit.Type.TAX,                    
                                     Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
                         })
@@ -466,7 +416,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                     .section("tax", "currency").optional() //
                     .match("Kirchensteuer \\d+,\\d+ ?% (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)")
                     .assign((t, v) -> {
-                        if (type.getCurrentContext().get("isjointaccount").equals("false"))
+                        if (!Boolean.parseBoolean(type.getCurrentContext().get(IS_JOINT_ACCOUNT)))
                             t.addUnit(new Unit(Unit.Type.TAX,
                                     Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));                 
                         })
