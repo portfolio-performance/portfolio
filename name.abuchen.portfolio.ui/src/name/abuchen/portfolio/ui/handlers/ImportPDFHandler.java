@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -54,10 +53,11 @@ public class ImportPDFHandler
             // open file dialog to pick pdf files
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-            fileDialog.setText(extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel());
+            fileDialog.setText(extractor == null ? Messages.PDFImportWizardAssistant : extractor.getLabel());
             fileDialog.setFilterNames(new String[] { MessageFormat.format("{0} ({1})", //$NON-NLS-1$
-                            extractor.getLabel() == "pdfimportassistant" ? Messages.PDFImportWizardAssistant : extractor.getLabel(), extractor.getFilterExtension()) });
-            fileDialog.setFilterExtensions(new String[] { extractor.getFilterExtension() });
+                            extractor == null ? Messages.PDFImportWizardAssistant : extractor.getLabel(),
+                            extractor == null ? "*.pdf" : extractor.getFilterExtension()) }); //$NON-NLS-1$
+            fileDialog.setFilterExtensions(new String[] { extractor == null ? "*.pdf" : extractor.getFilterExtension() }); //$NON-NLS-1$
             fileDialog.open();
 
             String[] fileNames = fileDialog.getFileNames();
@@ -82,16 +82,14 @@ public class ImportPDFHandler
         }
     }
 
-    private Extractor createExtractor(String type, Client client) throws IOException, IllegalArgumentException
+    private Extractor createExtractor(String type, Client client)
     {
         switch (type)
         {
-            case "pdfimportassistant": //$NON-NLS-1$  
-                return new AssistantPDFExtractor(client);  
             case "ib": //$NON-NLS-1$
                 return new IBFlexStatementExtractor(client);
-            default:
-                throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
         }
+
+        return null;
     }
 }

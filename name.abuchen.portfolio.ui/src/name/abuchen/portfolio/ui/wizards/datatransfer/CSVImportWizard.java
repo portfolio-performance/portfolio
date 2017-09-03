@@ -50,6 +50,8 @@ public class CSVImportWizard extends Wizard
         }
     }
 
+    /* package */static final String REVIEW_PAGE_ID = "reviewitems"; //$NON-NLS-1$
+
     private Client client;
     private IPreferenceStore preferences;
     private CSVImporter importer;
@@ -90,7 +92,7 @@ public class CSVImportWizard extends Wizard
         addPage(definitionPage);
 
         reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
-                        Arrays.asList(importer.getInputFile()), "extractedCSV");
+                        Arrays.asList(importer.getInputFile()), REVIEW_PAGE_ID);
         addPage(reviewPage);
 
         selectSecurityPage = new SelectSecurityPage(client);

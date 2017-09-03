@@ -49,6 +49,12 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         addZinsgutschrift();
         addDividendengutschrift();
     }
+    
+    @Override
+    public String getPDFAuthor()
+    {
+        return "ING-DiBa"; //$NON-NLS-1$
+    }
 
     @Override
     public String getLabel()

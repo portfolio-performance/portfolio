@@ -30,6 +30,12 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addRemoveTransaction();
         addTransferOutTransaction();
     }
+    
+    @Override
+    public String getPDFAuthor()
+    {
+        return "DKB AG"; //$NON-NLS-1$
+    }
 
     private void addBuyTransaction()
     {

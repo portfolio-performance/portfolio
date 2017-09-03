@@ -28,6 +28,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         addDividendTransaction();
     }
 
+    @Override
+    public String getPDFAuthor()
+    {
+        return "Computershare Communication Services GmbH"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {

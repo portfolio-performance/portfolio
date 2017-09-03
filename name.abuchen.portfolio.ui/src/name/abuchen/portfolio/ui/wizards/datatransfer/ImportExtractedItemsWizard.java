@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
-import java.io.IOException; 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.ArrayList;   
-import java.util.Map;   
-import java.util.HashMap; 
+import java.util.Map;
 
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
@@ -13,6 +13,21 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Images;
@@ -22,31 +37,51 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 public class ImportExtractedItemsWizard extends Wizard
 {
     private Client client;
-    private Extractor extractor;
+    private List<Extractor> extractors = new ArrayList<>();
     private IPreferenceStore preferences;
     private List<File> files;
 
-    ArrayList <ReviewExtractedItemsPage> ImportAssistantPages = new ArrayList <ReviewExtractedItemsPage>();
+    private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
 
     public ImportExtractedItemsWizard(Client client, Extractor extractor, IPreferenceStore preferences,
-                    List<File> files)
+                    List<File> files) throws IOException
     {
         this.client = client;
-        this.extractor = extractor;
         this.preferences = preferences;
         this.files = files;
+
+        if (extractor != null)
+            extractors.add(extractor);
+        else
+            addDefaultExtractors();
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(true);
     }
 
+    private void addDefaultExtractors() throws IOException
+    {
+        extractors.add(new BaaderBankPDFExtractor(client));
+        extractors.add(new BankSLMPDFExctractor(client));
+        extractors.add(new ComdirectPDFExtractor(client));
+        extractors.add(new CommerzbankPDFExctractor(client));
+        extractors.add(new ConsorsbankPDFExctractor(client));
+        extractors.add(new DABPDFExctractor(client));
+        extractors.add(new DegiroPDFExtractor(client));
+        extractors.add(new DeutscheBankPDFExctractor(client));
+        extractors.add(new DkbPDFExtractor(client));
+        extractors.add(new FinTechGroupBankPDFExtractor(client));
+        extractors.add(new INGDiBaExtractor(client));
+        extractors.add(new OnvistaPDFExtractor(client));
+        extractors.add(new SBrokerPDFExtractor(client));
+        extractors.add(new UnicreditPDFExtractor(client));
+    }
+
     @Override
     public boolean canFinish()
     {
-        if(getContainer().getCurrentPage() != ImportAssistantPages.get(ImportAssistantPages.size()-1))
-            return false;
-        else
-            return true;
+        // allow "Finish" only on the last page
+        return getContainer().getCurrentPage() == pages.get(pages.size() - 1);
     }
 
     @Override
@@ -58,69 +93,79 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public void addPages()
     {
+        // assign files to extractors and create a page for each extractor that
+        // has a file
+
+        Map<Extractor, List<File>> extractor2files = new HashMap<>();
+
+        if (extractors.size() == 1)
+            extractor2files.put(extractors.get(0), files);
+        else
+            assignFilesToExtractors(extractor2files);
+
+        for (Extractor extractor : extractors)
+        {
+            List<File> files4extractor = extractor2files.get(extractor);
+            if (files4extractor == null || files4extractor.isEmpty())
+                continue;
+
+            ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
+                            files4extractor);
+            pages.add(page);
+            addPage(page);
+        }
+        
+        AbstractWizardPage.attachPageListenerTo(getContainer());
+    }
+
+    private void assignFilesToExtractors(Map<Extractor, List<File>> extractor2files)
+    {
         try
         {
-            switch (extractor.getLabel())
+            List<File> unknown = new ArrayList<>();
+
+            for (File file : files)
             {
+                Extractor extractor = PDFImportAssistant.detectBankIdentifier(file, extractors);
 
-                // PDF auto import assistant page generation
-                case "pdfimportassistant": //$NON-NLS-1$
-
-                    new PDFImportAssistant();
-                    // Read words from file and put into a simulated multimap
-                    Map<String, List<String>> PDFasistantBankIdentifierFiles = new HashMap<String, List<String>>();
-                    String BankIdentifier;
-                    for (File filename : files)
-                    {
-                        BankIdentifier = PDFImportAssistant.DetectBankIdentifier(filename);
-                        List<String> l = PDFasistantBankIdentifierFiles.get(BankIdentifier);
-                        if (l == null) PDFasistantBankIdentifierFiles.put(BankIdentifier, l=new ArrayList<String>());
-                        l.add(filename.getAbsolutePath());
-                    }
-
-                    for (String BankIdentifierKey : PDFasistantBankIdentifierFiles.keySet())
-                    {
-                        Extractor extractor = PDFImportAssistant.createExtractor(BankIdentifierKey, client);
-                        ImportAssistantPages.add(new ReviewExtractedItemsPage(client, extractor, preferences, ImportDetectedBankIdentierFiles(PDFasistantBankIdentifierFiles.get(BankIdentifierKey)), BankIdentifierKey));
-                    }
-
-                    break;
-
-                // fall back if auto importer is not used
-                default:
-                    ImportAssistantPages.add(new ReviewExtractedItemsPage(client, extractor, preferences, files, "extracted"));
-                    break;
+                if (extractor != null)
+                    extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(file);
+                else
+                    unknown.add(file);
             }
-            if (ImportAssistantPages.size() > 0) {
-                for (int PDFAssistantPageID = 0; PDFAssistantPageID < ImportAssistantPages.size(); PDFAssistantPageID++) addPage(ImportAssistantPages.get(PDFAssistantPageID));
+
+            if (!unknown.isEmpty())
+            {
+                Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+                extractors.add(e);
+                extractor2files.put(e, unknown);
             }
-            AbstractWizardPage.attachPageListenerTo(getContainer());
         }
-        catch (IOException ex)
+        catch (IOException e)
         {
+            throw new IllegalArgumentException(e);
         }
-
     }
 
     @Override
     public boolean performFinish()
     {
 
-        if (ImportAssistantPages.size() > 0)
+        if (pages.size() > 0)
         {
             boolean isDirty = false;
-            for (int PDFAssistantPageID = 0; PDFAssistantPageID < ImportAssistantPages.size(); PDFAssistantPageID++)
+            for (int PDFAssistantPageID = 0; PDFAssistantPageID < pages.size(); PDFAssistantPageID++)
             {
 
-                ImportAssistantPages.get(PDFAssistantPageID).afterPage();
+                pages.get(PDFAssistantPageID).afterPage();
                 InsertAction action = new InsertAction(client);
-                action.setConvertBuySellToDelivery(ImportAssistantPages.get(PDFAssistantPageID).doConvertToDelivery());
+                action.setConvertBuySellToDelivery(pages.get(PDFAssistantPageID).doConvertToDelivery());
 
-                for (ExtractedEntry entry : ImportAssistantPages.get(PDFAssistantPageID).getEntries())
+                for (ExtractedEntry entry : pages.get(PDFAssistantPageID).getEntries())
                 {
                     if (entry.isImported())
                     {
-                        entry.getItem().apply(action, ImportAssistantPages.get(PDFAssistantPageID));
+                        entry.getItem().apply(action, pages.get(PDFAssistantPageID));
                         isDirty = true;
                     }
                 }
@@ -131,22 +176,12 @@ public class ImportExtractedItemsWizard extends Wizard
                 client.markDirty();
 
                 // run consistency checks in case bogus transactions have been
-                // created (say: an outbound delivery of a security where there no
-                // held shares)
+                // created (say: an outbound delivery of a security where there
+                // no held shares)
                 new ConsistencyChecksJob(client, false).schedule();
             }
         }
 
         return true;
     }
-
-    private List<File> ImportDetectedBankIdentierFiles(List<String> Dateinamen)
-    {
-        List<File> files = new ArrayList<>();
-        if (Dateinamen.isEmpty()) return(files);
-        for (String file : Dateinamen)
-            files.add(new File(file));
-        return(files);
-    }
-
 }

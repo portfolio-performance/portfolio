@@ -26,7 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
-/* package */abstract class AbstractPDFExtractor implements Extractor
+public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
 
@@ -54,6 +54,16 @@ import name.abuchen.portfolio.money.Values;
     protected final void addBankIdentifier(String identifier)
     {
         this.bankIdentifier.add(identifier);
+    }
+    
+    public List<String> getBankIdentifier()
+    {
+        return bankIdentifier;
+    }
+    
+    public String getPDFAuthor()
+    {
+        return null;
     }
 
     @Override

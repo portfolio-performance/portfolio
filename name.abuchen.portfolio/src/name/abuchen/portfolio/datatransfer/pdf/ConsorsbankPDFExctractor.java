@@ -34,6 +34,12 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         addIncomeTransaction();
         addTaxAdjustmentTransaction();
     }
+    
+    @Override
+    public String getPDFAuthor()
+    {
+        return "Consorsbank"; //$NON-NLS-1$
+    }
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
