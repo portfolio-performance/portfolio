@@ -354,19 +354,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 if (m.matches())
                 {
                     context.put("currency", m.group(1));
-                    System.out.println("context currency found: " + context.get("currency"));
+                    //System.out.println("context currency found: " + context.get("currency"));
                 }
                 m = pCurrencyFx.matcher(line);
                 if (m.matches())
                 {
                     context.put("currencyFx", m.group(1));
-                    System.out.println("context currencyFx found: " + context.get("currencyFx"));
+                    //System.out.println("context currencyFx found: " + context.get("currencyFx"));
                 }
                 m = pExchangeRate.matcher(line);
                 if (m.matches())
                 {
                     context.put("exchangeRate", m.group(1));
-                    System.out.println("context exchangeRate found: " + context.get("exchangeRate"));
+                    //System.out.println("context exchangeRate found: " + context.get("exchangeRate"));
                 }
             }
         });
@@ -390,9 +390,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             
                                 Map<String, String> context = type.getCurrentContext();
                                 v.put("currency", context.get("currencyFx")); // the security must be in Fx units, otherwise, dividends and taxes cannot be in Fx units
-                                System.out.println("Security Currency: " + context.get("currency"));
+                                //System.out.println("Security Currency: " + context.get("currency"));
                                 t.setSecurity(getOrCreateSecurity(v));
-                                System.out.println("Security Info: " + t.getSecurity().toInfoString());
+                                //System.out.println("Security Info: " + t.getSecurity().toInfoString());
                         })
 
                         // St.             :         105          Bruttodividende
