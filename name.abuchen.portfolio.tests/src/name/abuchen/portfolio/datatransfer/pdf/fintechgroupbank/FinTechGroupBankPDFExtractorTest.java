@@ -504,6 +504,45 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
+    public void testDividendeAusland() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("FinTechGroupBankDividendeAusland1.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US8552441094"));
+        assertThat(security.getWkn(), is("884437"));
+        assertThat(security.getName(), is("STARBUCKS CORP."));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-08-25")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(14.45)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.78))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
+    }
+    
+    @Test
     public void testZinsgutschriftInland() throws IOException
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
