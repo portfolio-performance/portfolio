@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +31,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addBuyTransaction();
         addDepositAndWithdrawalTransaction();
         addDividendTransaction();
+        addForeignDividendTransaction();
         addSellTransaction();
         addTransferInTransaction();
         addTransferOutTransaction();
@@ -285,11 +288,11 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 t.setCurrencyCode(asCurrencyCode(context.get("currency")));
         }).wrap(t -> new TransactionItem(t)));
     }
-
+    
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type1 = new DocumentType("Dividendengutschrift");
+        DocumentType type1 = new DocumentType("Dividendengutschrift für inländische Wertpapiere");
         DocumentType type2 = new DocumentType("Ertragsmitteilung");
         DocumentType type3 = new DocumentType("Zinsgutschrift");
         this.addDocumentTyp(type1);
@@ -331,6 +334,136 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .wrap(t -> new TransactionItem(t)));
+    }
+
+
+    @SuppressWarnings("nls")
+    private void addForeignDividendTransaction()
+    {
+        DocumentType type = new DocumentType("Dividendengutschrift für ausländische Wertpapiere", (context, lines) -> {
+            Pattern pCurrency    = Pattern.compile(".* Endbetrag .* (?<currency>\\w{3})$");
+            Pattern pCurrencyFx  = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
+            Pattern pExchangeRate = Pattern.compile("Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+) .*");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                    System.out.println("context currency found: " + context.get("currency"));
+                }
+                m = pCurrencyFx.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currencyFx", m.group(1));
+                    System.out.println("context currencyFx found: " + context.get("currencyFx"));
+                }
+                m = pExchangeRate.matcher(line);
+                if (m.matches())
+                {
+                    context.put("exchangeRate", m.group(1));
+                    System.out.println("context exchangeRate found: " + context.get("exchangeRate"));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Ihre Depotnummer.*");
+        type.addBlock(block);
+
+        block.set(new Transaction<AccountTransaction>()
+                        //
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
+
+                        // Nr.111111111                  STARBUCKS CORP.           (US8552441094/884437)
+                        .section("wkn", "isin", "name") //
+                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .assign((t, v) -> {
+                            
+                                Map<String, String> context = type.getCurrentContext();
+                                v.put("currency", context.get("currencyFx")); // the security must be in Fx units, otherwise, dividends and taxes cannot be in Fx units
+                                System.out.println("Security Currency: " + context.get("currency"));
+                                t.setSecurity(getOrCreateSecurity(v));
+                                System.out.println("Security Info: " + t.getSecurity().toInfoString());
+                        })
+
+                        // St.             :         105          Bruttodividende
+                        .section("shares") //
+                        .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*") //
+                        .assign((t, v) ->
+                        
+                                t.setShares(asShares(v.get("shares"))))
+
+                        
+                        // Extag           :  08.08.2017          Bruttodividende :        26,25 USD
+                        .section("amountGrossFx", "currencyFx") //
+                        .match(".* Bruttodividende *: *(?<amountGrossFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
+                        .assign((t, v) -> {
+                            
+                                // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
+                                Map<String, String> context = type.getCurrentContext();
+                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                
+                                // set currency of transaction (should be in EUR)
+                                String currencyCode = asCurrencyCode(context.get("currency"));
+                                t.setCurrencyCode(currencyCode);
+                                
+                                // get foreign currency (should be in Fx)
+                                String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
+                                
+                                // get gross amount and calculate equivalent in EUR
+                                Money mAmountGrossFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountGrossFx")))); 
+                                BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                Money mAmountGrossFxInEUR = Money.of(currencyCode, Math.round(amountGrossFxInEUR.longValue()));
+                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx, inverseRate));
+
+                        })
+                        
+                        // Quellenst.-satz :       30,00 %        Gez. Quellenst. :         7,88 USD
+                        .section("amountFx", "currencyFx").optional() //
+                        .match(".* Gez. Quellenst. *: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
+                        .assign((t, v) -> {
+                            
+                                // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
+                                Map<String, String> context = type.getCurrentContext();
+                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                        
+                                // get foreign currency (should be in Fx) and transaction currency (should be in EUR)
+                                String currencyCode   = asCurrencyCode(context.get("currency"));
+                                String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
+                                
+                                // get foreign taxes and calculate equivalent in EUR
+                                Money mTaxesFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountFx"))));
+                                BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                Money mTaxesFxInEUR = Money.of(currencyCode, Math.round(taxesFxInEUR.longValue()));
+                                t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
+                            
+                        })                
+
+                        .section("amount", "currency") //
+                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                t.setAmount(asAmount(v.get("amount")));
+                        })
+                        
+                        .section("tax", "currency").optional() //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("date") //
+                        .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
