@@ -93,9 +93,10 @@ public class SimpleMovingAverage
 
         for (; index < prices.size(); index++)
         {
+            if (index < rangeSMA) continue; 
             LocalDate nextDate = prices.get(index).getTime();
             LocalDate isBefore = nextDate.plusDays(1);
-            LocalDate isAfter = isBefore.minusDays(rangeSMA + 1L);
+            LocalDate isAfter = prices.get(index - rangeSMA + 2).getTime();
             List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
 
             if (filteredPrices.size() < calculatedMinimumDays)
