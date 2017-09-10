@@ -115,9 +115,10 @@ public class BollingerBands
 
         for (; index < prices.size(); index++)
         {
+            if (index < BollingerBandsDays) continue; 
             LocalDate nextDate = prices.get(index).getTime();
             LocalDate isBefore = nextDate.plusDays(1);
-            LocalDate isAfter = isBefore.minusDays(BollingerBandsDays + 1L);
+            LocalDate isAfter = prices.get(index - BollingerBandsDays + 2).getTime();
             List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
 
             if (filteredPrices.size() < calculatedMinimumDays)
