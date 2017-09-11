@@ -55,13 +55,13 @@ public class SecuritiesChart
 {
     private enum ChartDetails
     {
-        typeCLOSING(Messages.LabelChartDetailClosingIndicator + "\\-----\\"), //
-        markerINVESTMENT(Messages.LabelChartDetailInvestments), //
-        markerDIVIDENDS(Messages.LabelChartDetailDividends), //
-        markerEVENTS(Messages.LabelChartDetailEvents + "\\-----\\"), //
-        indicatorSMA50(Messages.LabelChartDetailSMA50), //
-        indicatorSMA200(Messages.LabelChartDetailSMA200), //
-        indicatorBOLLINGERBANDS(Messages.LabelChartDetailBollingerBands);
+        CLOSING(Messages.LabelChartDetailClosingIndicator + "---"), //
+        INVESTMENT(Messages.LabelChartDetailInvestments), //
+        DIVIDENDS(Messages.LabelChartDetailDividends), //
+        EVENTS(Messages.LabelChartDetailEvents + "---"), //
+        SMA50(Messages.LabelChartDetailSMA50), //
+        SMA200(Messages.LabelChartDetailSMA200), //
+        BOLLINGERBANDS(Messages.LabelChartDetailBollingerBands);
 
         private final String label;
 
@@ -87,7 +87,7 @@ public class SecuritiesChart
 
     private TimelineChart chart;
     private LocalDate chartPeriod = LocalDate.now().minusYears(2);
-    private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.markerINVESTMENT, ChartDetails.markerEVENTS);
+    private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS);
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -181,7 +181,7 @@ public class SecuritiesChart
     {
         for (ChartDetails detail : ChartDetails.values())
         {
-            String ButtonDescription = detail.toString().replaceAll("\\\\-----\\\\", ""); 
+            String ButtonDescription = detail.toString().replaceAll("---", ""); 
             Action action = new SimpleAction(ButtonDescription, a -> {
                 boolean isActive = chartConfig.contains(detail);
 
@@ -198,7 +198,7 @@ public class SecuritiesChart
 
             action.setChecked(chartConfig.contains(detail));
             manager.add(action);
-            if (detail.toString().matches(".*\\\\-----\\\\.*")) manager.add(new Separator());
+            if (detail.toString().matches(".*---")) manager.add(new Separator());
         }
     }
 
@@ -266,7 +266,7 @@ public class SecuritiesChart
 
             chart.getTitle().setText(security.getName());
             
-            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.typeCLOSING);
+            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING);
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
@@ -315,7 +315,7 @@ public class SecuritiesChart
                             Messages.ColumnQuote);
             lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
             lineSeries.setLineWidth(2);
-            if (!chartConfig.contains(ChartDetails.indicatorBOLLINGERBANDS)) lineSeries.enableArea(!showAreaRelativeToFirstQuote);
+            if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS)) lineSeries.enableArea(!showAreaRelativeToFirstQuote);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
@@ -326,7 +326,7 @@ public class SecuritiesChart
                                 Messages.LabelChartDetailClosingIndicator);
                 lineSeries2nd.setLineWidth(2);
                 lineSeries2nd.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                if (!chartConfig.contains(ChartDetails.indicatorBOLLINGERBANDS)) lineSeries2nd.enableArea(true);
+                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS)) lineSeries2nd.enableArea(true);
                 lineSeries2nd.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2nd.setYSeries(values2nd);
                 lineSeries2nd.setAntialias(SWT.ON);
@@ -351,22 +351,22 @@ public class SecuritiesChart
 
     private void addChartMarker()
     {
-        if (chartConfig.contains(ChartDetails.markerINVESTMENT))
+        if (chartConfig.contains(ChartDetails.INVESTMENT))
             addInvestmentMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.markerDIVIDENDS))
+        if (chartConfig.contains(ChartDetails.DIVIDENDS))
             addDividendMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.markerEVENTS))
+        if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.indicatorSMA200))
+        if (chartConfig.contains(ChartDetails.SMA200))
             addSMAMarkerLines(200);
 
-        if (chartConfig.contains(ChartDetails.indicatorSMA50))
+        if (chartConfig.contains(ChartDetails.SMA50))
             addSMAMarkerLines(50);
 
-        if (chartConfig.contains(ChartDetails.indicatorBOLLINGERBANDS))
+        if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
 }
 
