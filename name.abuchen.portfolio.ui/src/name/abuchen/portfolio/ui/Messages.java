@@ -340,6 +340,9 @@ public class Messages extends NLS
     public static String LabelChartDetailEvents;
     public static String LabelChartDetailInvestments;
     public static String LabelChartDetailClosingIndicator;
+    public static String LabelChartDetailBollingerBands;
+    public static String LabelChartDetailBollingerBandsLower;
+    public static String LabelChartDetailBollingerBandsUpper;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
