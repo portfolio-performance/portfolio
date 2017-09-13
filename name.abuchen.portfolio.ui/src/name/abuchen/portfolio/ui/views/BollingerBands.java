@@ -76,7 +76,7 @@ public class BollingerBands
 
     /**
      * Calculates the Simple Moving Average for the given range of days from the
-     * given startDate on The method returns an object containing the X and Y
+     * given startDate on. The method returns an object containing the X and Y
      * Axes of the generated bollinger bands
      */
     private void calculateBollingerBands()

@@ -55,10 +55,10 @@ public class SecuritiesChart
 {
     private enum ChartDetails
     {
-        CLOSING(Messages.LabelChartDetailClosingIndicator + "---"), //
+        CLOSING(Messages.LabelChartDetailClosingIndicator + SEPERATOR), //
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         DIVIDENDS(Messages.LabelChartDetailDividends), //
-        EVENTS(Messages.LabelChartDetailEvents + "---"), //
+        EVENTS(Messages.LabelChartDetailEvents + SEPERATOR), //
         SMA50(Messages.LabelChartDetailSMA50), //
         SMA200(Messages.LabelChartDetailSMA200), //
         BOLLINGERBANDS(Messages.LabelChartDetailBollingerBands);
@@ -77,6 +77,7 @@ public class SecuritiesChart
         }
     }
 
+    private static final String SEPERATOR = "---"; //$NON-NLS-1$
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
     private Menu contextMenu;
@@ -181,8 +182,9 @@ public class SecuritiesChart
     {
         for (ChartDetails detail : ChartDetails.values())
         {
-            String ButtonDescription = detail.toString().replaceAll("---", ""); 
-            Action action = new SimpleAction(ButtonDescription, a -> {
+            String buttonDescription = detail.toString().replaceAll(SEPERATOR, ""); //$NON-NLS-1$
+            
+            Action action = new SimpleAction(buttonDescription, a -> {
                 boolean isActive = chartConfig.contains(detail);
 
                 if (isActive)
@@ -198,7 +200,8 @@ public class SecuritiesChart
 
             action.setChecked(chartConfig.contains(detail));
             manager.add(action);
-            if (detail.toString().matches(".*---")) manager.add(new Separator());
+            if (detail.toString().endsWith(SEPERATOR))
+                manager.add(new Separator());
         }
     }
 
@@ -265,7 +268,7 @@ public class SecuritiesChart
             }
 
             chart.getTitle().setText(security.getName());
-            
+
             boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING);
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
@@ -310,23 +313,25 @@ public class SecuritiesChart
                 values[ii] = p.getValue() / Values.Quote.divider();
                 values2nd[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
             }
-            
+
             ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.ColumnQuote);
             lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
             lineSeries.setLineWidth(2);
-            if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS)) lineSeries.enableArea(!showAreaRelativeToFirstQuote);
+            if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
+                lineSeries.enableArea(!showAreaRelativeToFirstQuote);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
-            
+
             if (showAreaRelativeToFirstQuote)
             {
                 ILineSeries lineSeries2nd = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator);
                 lineSeries2nd.setLineWidth(2);
                 lineSeries2nd.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS)) lineSeries2nd.enableArea(true);
+                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
+                    lineSeries2nd.enableArea(true);
                 lineSeries2nd.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2nd.setYSeries(values2nd);
                 lineSeries2nd.setAntialias(SWT.ON);
@@ -336,10 +341,11 @@ public class SecuritiesChart
             addChartMarker();
 
             chart.adjustRange();
-            
+
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
             IAxis yAxis2nd = chart.getAxisSet().getYAxis(1);
-            yAxis2nd.setRange(new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
+            yAxis2nd.setRange(
+                            new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
 
         }
         finally
@@ -368,7 +374,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
-}
+    }
 
     private void addSMAMarkerLines(int SMADays)
     {
@@ -385,8 +391,8 @@ public class SecuritiesChart
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
-        lineSeriesSMA.setLineColor(Display.getDefault().getSystemColor(
-                        SMADays == 200 ? SWT.COLOR_RED : SWT.COLOR_GREEN));
+        lineSeriesSMA.setLineColor(
+                        Display.getDefault().getSystemColor(SMADays == 200 ? SWT.COLOR_RED : SWT.COLOR_GREEN));
         lineSeriesSMA.setYAxisId(0);
     }
 
@@ -445,43 +451,36 @@ public class SecuritiesChart
                                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
     }
 
-    private void addBollingerBandsMarkerLines(int BollingerBandsDays, double BollingerBandsFactor)
+    private void addBollingerBandsMarkerLines(int bollingerBandsDays, double bollingerBandsFactor)
     {
-        ChartLineSeriesAxes BollingerBandsLowerBand = new BollingerBands(BollingerBandsDays, BollingerBandsFactor, this.security, chartPeriod).getLowerBands();
-        if (BollingerBandsLowerBand == null || BollingerBandsLowerBand.getValues() == null || BollingerBandsLowerBand.getDates() == null)
+        ChartLineSeriesAxes bollingerBandsLowerBand = new BollingerBands(bollingerBandsDays, bollingerBandsFactor,
+                        this.security, chartPeriod).getLowerBands();
+        if (bollingerBandsLowerBand == null || bollingerBandsLowerBand.getValues() == null
+                        || bollingerBandsLowerBand.getDates() == null)
             return;
 
-
-//      ILineSeries lineSeriesBollingerBandsMiddleBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.LabelChartDetailBollingerBands);
-//      lineSeriesBollingerBandsMiddleBand.setXDateSeries(BollingerBandsMiddleBand.getDates());
-//      lineSeriesBollingerBandsMiddleBand.setLineWidth(1);
-//      lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
-//      lineSeriesBollingerBandsMiddleBand.enableArea(false);
-//      lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
-//      lineSeriesBollingerBandsMiddleBand.setYSeries(BollingerBandsMiddleBand.getValues());
-//      lineSeriesBollingerBandsMiddleBand.setAntialias(SWT.ON);
-//      lineSeriesBollingerBandsMiddleBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
-//      lineSeriesBollingerBandsMiddleBand.setYAxisId(0);
-
-        ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.LabelChartDetailBollingerBandsLower);
-        lineSeriesBollingerBandsLowerBand.setXDateSeries(BollingerBandsLowerBand.getDates());
+        ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        Messages.LabelChartDetailBollingerBandsLower);
+        lineSeriesBollingerBandsLowerBand.setXDateSeries(bollingerBandsLowerBand.getDates());
         lineSeriesBollingerBandsLowerBand.setLineWidth(1);
         lineSeriesBollingerBandsLowerBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsLowerBand.enableArea(false);
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesBollingerBandsLowerBand.setYSeries(BollingerBandsLowerBand.getValues());
+        lineSeriesBollingerBandsLowerBand.setYSeries(bollingerBandsLowerBand.getValues());
         lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
         lineSeriesBollingerBandsLowerBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
 
-        ChartLineSeriesAxes BollingerBandsUpperBand = new BollingerBands(BollingerBandsDays, BollingerBandsFactor, this.security, chartPeriod).getUpperBands();
-        ILineSeries lineSeriesBollingerBandsUpperBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.LabelChartDetailBollingerBandsUpper);
-        lineSeriesBollingerBandsUpperBand.setXDateSeries(BollingerBandsUpperBand.getDates());
+        ChartLineSeriesAxes bollingerBandsUpperBand = new BollingerBands(bollingerBandsDays, bollingerBandsFactor,
+                        this.security, chartPeriod).getUpperBands();
+        ILineSeries lineSeriesBollingerBandsUpperBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                        Messages.LabelChartDetailBollingerBandsUpper);
+        lineSeriesBollingerBandsUpperBand.setXDateSeries(bollingerBandsUpperBand.getDates());
         lineSeriesBollingerBandsUpperBand.setLineWidth(1);
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsUpperBand.enableArea(false);
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
-        lineSeriesBollingerBandsUpperBand.setYSeries(BollingerBandsUpperBand.getValues());
+        lineSeriesBollingerBandsUpperBand.setYSeries(bollingerBandsUpperBand.getValues());
         lineSeriesBollingerBandsUpperBand.setAntialias(SWT.ON);
         lineSeriesBollingerBandsUpperBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
