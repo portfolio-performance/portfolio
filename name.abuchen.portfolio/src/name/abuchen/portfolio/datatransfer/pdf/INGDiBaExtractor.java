@@ -149,7 +149,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("^Nominale St.ck (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date") //
+                        .section("date").optional() //
                         .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
