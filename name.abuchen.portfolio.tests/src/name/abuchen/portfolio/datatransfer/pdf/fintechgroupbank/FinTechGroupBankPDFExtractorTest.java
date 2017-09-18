@@ -160,6 +160,45 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.00))));
         assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2014-01-28"))));
     }
+    
+    @Test
+    public void testGutschriftsBelastungsanzeige() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from("FlatexGutschriftsBelastungsanzeige.txt");
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(20));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE0008474503"));
+        assertThat(security.getName(), is("DEKAFONDS CF"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(entry.getAmount(), is(Values.Amount.factorize(5.50)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2015-02-16")));
+        assertThat(entry.getShares(), is(Values.Share.factorize(0.0520)));
+    }
 
     @Test
     public void testWertpapierKauf2() throws IOException

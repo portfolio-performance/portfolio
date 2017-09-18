@@ -16,6 +16,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 {
@@ -33,7 +34,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addForeignDividendTransaction();
         addSellTransaction();
-        addTransferInTransaction();
+        addTransferInOutTransaction();
         addTransferOutTransaction();
         addRemoveTransaction();
         addRemoveNewFormatTransaction();
@@ -535,28 +536,32 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(t -> new BuySellEntryItem(t)));
     }
     
+    // example is from 2016-12-01
     @SuppressWarnings("nls")
-    private void addTransferInTransaction()
+    private void addTransferInOutTransaction()
     {
-        DocumentType type = new DocumentType("Depoteingang");
+        DocumentType type = new DocumentType("Gutschrifts-/Belastungsanzeige");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
+        Block block = new Block("Depoteingang .*");
         type.addBlock(block);
         block.set(new Transaction<PortfolioTransaction>().subject(() -> {
             PortfolioTransaction entry = new PortfolioTransaction();
             entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             return entry;
         })
+                        // Datum          : 16.03.2015
                         .section("date").match("Datum(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
+                        // Depoteingang                                       DEKAFONDS CF (DE0008474503)
                         .section("isin", "name")
                         .match("Depoteingang *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
+                        // Stk./Nominale   : 0,432000 Stk         Einbeh. Steuer* :              0,00 EUR
                         .section("shares", "notation")
                         .match("^Stk\\.\\/Nominale(\\s*):(\\s+)(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+)(.*)") //
                         .assign((t, v) -> {
@@ -564,7 +569,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !notation.equalsIgnoreCase("Stk"))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
+                                t.setShares(asShares(v.get("shares"))/100);
                             }
                             else
                             {
@@ -572,35 +577,24 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
+                        // Kurs           : 115,740741 EUR         Devisenkurs    :          1,000000
                         .section("rate", "currency")
-                        .match("^Kurs(\\s*):(\\s+)(?<rate>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(.*)")
+                        .match("^Kurs(\\s*):(\\s+)(?<rate>[\\d.]+,\\d+)(\\s+)(?<currency>\\w{3}+)(\\s+)(.*)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount((asAmount(v.get("rate")) * t.getShares())/100/100/100); //TODO/Workaround: Die Abrechnung ist hier komisch, der Kurs wird in der Beispiel Datei in EUR angegeben, müsste aber eigentlich in Prozent sein...
+                            t.setAmount(asAmount(v.get("rate")) * t.getShares() / Values.Share.factor());
                         })
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
-
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
-                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        
+                        // Stk./Nominale   : 0,052000 Stk         Einbeh. Steuer* :              0,00 EUR
+                        .section("tax", "currency").optional() //
+                        .match("(.*)Einbeh. Steuer(.*):(\\s*)(?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .wrap(t -> new TransactionItem(t)));
     }
-
-    @SuppressWarnings("nls")
+    
+   @SuppressWarnings("nls")
     private void addTransferOutTransaction()
     {
         DocumentType type = new DocumentType("Depotausgang");
