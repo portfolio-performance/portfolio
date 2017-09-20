@@ -142,6 +142,37 @@ public class ClientFactory
         }
     }
 
+    private static class PlainWriterZIP implements ClientPersister
+    {
+        @Override
+        public Client load(InputStream input) throws IOException
+        {
+            // wrap with zip input stream
+            ZipInputStream zipin = new ZipInputStream(input);
+            zipin.getNextEntry();
+
+            return new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+        }
+
+        @Override
+        public void save(Client client, OutputStream output) throws IOException
+        {
+            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
+            {
+                // wrap with zip output stream 
+                ZipOutputStream zipout = new ZipOutputStream(output); 
+                zipout.putNextEntry(new ZipEntry("data.xml")); //$NON-NLS-1$ 
+                new XmlSerialization().save(client, zipout); 
+                zipout.closeEntry(); 
+                zipout.flush(); 
+                zipout.finish(); 
+                output.flush(); 
+                writer.flush();
+
+            }
+        }
+    }
+
     private static class Decryptor implements ClientPersister
     {
         private static final byte[] SIGNATURE = new byte[] { 'P', 'O', 'R', 'T', 'F', 'O', 'L', 'I', 'O' };
@@ -319,6 +350,11 @@ public class ClientFactory
         return file.getName().endsWith(".portfolio"); //$NON-NLS-1$
     }
 
+    public static boolean isCompressed(File file)
+    {
+        return file.getName().endsWith(".xmlzip"); //$NON-NLS-1$
+    }
+
     public static boolean isKeyLengthSupported(int keyLength)
     {
         try
@@ -395,6 +431,8 @@ public class ClientFactory
     {
         if (file != null && isEncrypted(file))
             return new Decryptor(method, password);
+        else if (file != null && isCompressed(file))
+            return new PlainWriterZIP();
         else
             return new PlainWriter();
     }
