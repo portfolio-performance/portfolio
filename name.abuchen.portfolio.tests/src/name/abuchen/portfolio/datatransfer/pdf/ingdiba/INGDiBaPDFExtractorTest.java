@@ -302,6 +302,43 @@ public class INGDiBaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf8() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
+        {
+            @Override
+            protected String strip(File file) throws IOException
+            {
+                return from(file.getName());
+            }
+        };
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf8.txt")), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("GB0030934490"));
+        assertThat(security.getWkn(), is("797739"));
+        assertThat(security.getName(), is("M&G Inv.(1)-M&G Global Leaders"));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(75.00)));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2012-02-01")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.41234)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0L)));
+    }
+
+    @Test
     public void testWertpapierVerkauf1() throws IOException
     {
         INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
