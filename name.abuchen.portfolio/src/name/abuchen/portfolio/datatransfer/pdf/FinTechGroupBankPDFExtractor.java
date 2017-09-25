@@ -483,7 +483,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         })
 
-                        .section("date").match(".*Valuta *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
