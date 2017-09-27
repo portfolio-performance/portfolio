@@ -89,7 +89,7 @@ public class BollingerBands
 
         SecurityPrice startPrice = null;
 
-        if (prices == null || prices.size() < calculatedMinimumDays)
+        if (prices == null || prices.size() < BollingerBandsDays + 3)
             return;
 
         if (startDate == null)
