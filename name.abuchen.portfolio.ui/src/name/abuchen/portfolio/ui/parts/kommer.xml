@@ -37717,7 +37717,7 @@
         <columnLabel>TER</columnLabel>
         <target>name.abuchen.portfolio.model.Security</target>
         <type>java.lang.Double</type>
-        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentPlainConverter</converterClass>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
       </attribute-type>
       <attribute-type>
         <id>aum</id>

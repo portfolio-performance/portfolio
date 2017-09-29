@@ -168,6 +168,38 @@ public class AttributeType
         }
     }
 
+    public static class PercentConverter implements Converter
+    {
+        private final NumberFormat format = NumberFormat.getPercentInstance(); //$NON-NLS-1$
+
+        public PercentConverter()
+        {
+            format.setMinimumFractionDigits(2);
+        }
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? format.format((double) object) : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                if (value.trim().length() == 0)
+                    return null;
+
+                return format.parse(value).doubleValue();
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
     public static class PercentPlainConverter extends DoubleConverter
     {
         public PercentPlainConverter()
