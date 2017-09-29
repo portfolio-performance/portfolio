@@ -19,7 +19,8 @@ public final class TaxonomyTemplate
                     new TaxonomyTemplate(INDUSTRY_GICS), //
                     new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL), //
                     new TaxonomyTemplate("kommer"), //$NON-NLS-1$
-                    new TaxonomyTemplate("regions")); //$NON-NLS-1$
+                    new TaxonomyTemplate("regions"), //$NON-NLS-1$
+                    new TaxonomyTemplate("regions-msci")); //$NON-NLS-1$
 
     private String id;
     private String name;
