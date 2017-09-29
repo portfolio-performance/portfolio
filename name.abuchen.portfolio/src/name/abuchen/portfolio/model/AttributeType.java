@@ -188,9 +188,14 @@ public class AttributeType
         {
             try
             {
-                if (value.trim().length() == 0)
+                value = value.trim();
+                if (value.length() == 0)
                     return null;
-
+                // ensure there is a percent sign at the end
+                if (!value.endsWith("%"))
+                {
+                    value += "%";
+                }
                 return format.parse(value).doubleValue();
             }
             catch (ParseException e)
