@@ -95,6 +95,14 @@ public class ClientSettings
         fee.setType(Double.class);
         fee.setConverter(PercentConverter.class);
         attributeTypes.add(fee);
+
+        AttributeType managementFee = new AttributeType("managementFee"); //$NON-NLS-1$
+        managementFee.setName(Messages.AttributesManagementFeeName);
+        managementFee.setColumnLabel(Messages.AttributesManagementFeeColumn);
+        managementFee.setTarget(Security.class);
+        managementFee.setType(Double.class);
+        managementFee.setConverter(PercentConverter.class);
+        attributeTypes.add(managementFee);
     }
 
     public List<Bookmark> getBookmarks()
