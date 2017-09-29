@@ -427,7 +427,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5794_56L)));
         assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 26_65L)));
         assertThat(t.getUnitSum(Type.TAX), is(Money.of(CurrencyUnit.EUR, 226_79L)));
-        assertThat(t.getDate(), is(LocalDate.parse("2015-02-20")));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-02-18")));
         assertThat(t.getShares(), is(Values.Share.factorize(140)));
         assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(43.2))));
     }
