@@ -25,6 +25,9 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_Hhy5UPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.xml" label="%command.saveAs.xml" tooltip="%command.saveAs.xml.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
             <parameters xmi:id="_cM52cPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="xml"/>
           </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_HoYBwJ46EeekX_bya3JT0g" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.zip" label="%command.saveAs.zip" tooltip="%command.saveAs.zip.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
+            <parameters xmi:id="_Y5x4IJ46EeekX_bya3JT0g" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="zip"/>
+          </children>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_Qf3AgPOhEeOnWptkJg3Yig" elementId="name.abuchen.portfolio.ui.menu.file.saveAs.aes128" label="%command.saveAs.AES128" tooltip="%command.saveAs.AES128.tooltip" command="_48Q94POhEeOtWc3KvKMOyw">
             <parameters xmi:id="_fWgEoPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.extension" value="portfolio"/>
             <parameters xmi:id="_kJw_UPOhEeOnWptkJg3Yig" elementId="" name="name.abuchen.portfolio.ui.param.encryptionmethod" value="AES128"/>
