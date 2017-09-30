@@ -145,6 +145,7 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorsConvertingValue;
     public static String MsgErrorUnexpectedStatusCode;
+    public static String MsgErrorUnexpectedZipEntry;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;
