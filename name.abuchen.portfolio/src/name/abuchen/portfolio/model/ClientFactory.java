@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.model;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -27,6 +29,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.zip.Deflater;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -148,31 +151,29 @@ public class ClientFactory
         public Client load(InputStream input) throws IOException
         {
             // wrap with zip input stream
-            ZipInputStream zipin = new ZipInputStream(input);
-            ZipEntry entry = zipin.getNextEntry();
-            
-            if (!ZIP_DATA_FILE.equals(entry.getName()))
-                throw new IOException(MessageFormat.format(Messages.MsgErrorUnexpectedZipEntry, ZIP_DATA_FILE, entry.getName()));
+            try (ZipInputStream zipin = new ZipInputStream(input))
+            {
+                ZipEntry entry = zipin.getNextEntry();
 
-            return new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                if (!ZIP_DATA_FILE.equals(entry.getName()))
+                    throw new IOException(MessageFormat.format(Messages.MsgErrorUnexpectedZipEntry, ZIP_DATA_FILE,
+                                    entry.getName()));
+
+                return new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+            }
         }
 
         @Override
         public void save(Client client, OutputStream output) throws IOException
         {
-            try (Writer writer = new OutputStreamWriter(output, StandardCharsets.UTF_8))
+            // wrap with zip output stream
+            try (ZipOutputStream zipout = new ZipOutputStream(output))
             {
-                // wrap with zip output stream 
-                ZipOutputStream zipout = new ZipOutputStream(output); 
+                zipout.setLevel(Deflater.BEST_COMPRESSION);
+
                 zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
-                
-                new XmlSerialization().save(client, zipout); 
-                zipout.closeEntry(); 
-                
-                zipout.flush(); 
-                zipout.finish(); 
-                output.flush(); 
-                writer.flush();
+                new XmlSerialization().save(client, zipout);
+                zipout.closeEntry();
             }
         }
     }
@@ -205,8 +206,6 @@ public class ClientFactory
         @Override
         public Client load(final InputStream input) throws IOException
         {
-            InputStream decrypted = null;
-
             try
             {
                 // check signature
@@ -230,29 +229,45 @@ public class ClientFactory
                 byte[] iv = new byte[IV_LENGTH];
                 input.read(iv);
 
+                Client client;
                 // build cipher and stream
                 Cipher cipher = Cipher.getInstance(CIPHER_ALGORITHM);
                 cipher.init(Cipher.DECRYPT_MODE, secret, new IvParameterSpec(iv));
-                decrypted = new CipherInputStream(input, cipher);
+                try (InputStream decrypted = new CipherInputStream(input, cipher))
+                {
+                    // read version information
+                    byte[] bytes = new byte[4];
+                    decrypted.read(bytes); // major version number
+                    int majorVersion = ByteBuffer.wrap(bytes).getInt();
+                    decrypted.read(bytes); // version number
+                    int version = ByteBuffer.wrap(bytes).getInt();
 
-                // read version information
-                byte[] bytes = new byte[4];
-                decrypted.read(bytes); // major version number
-                int majorVersion = ByteBuffer.wrap(bytes).getInt();
-                decrypted.read(bytes); // version number
-                int version = ByteBuffer.wrap(bytes).getInt();
+                    // sanity check if the file was properly decrypted
+                    if (majorVersion < 1 || majorVersion > 10 || version < 1 || version > 100)
+                        throw new IOException(Messages.MsgIncorrectPassword);
+                    if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
+                        throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
 
-                // sanity check if the file was properly decrypted
-                if (majorVersion < 1 || majorVersion > 10 || version < 1 || version > 100)
-                    throw new IOException(Messages.MsgIncorrectPassword);
-                if (majorVersion > Client.MAJOR_VERSION || version > Client.CURRENT_VERSION)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnsupportedVersionClientFiled, version));
+                    // wrap with zip input stream
+                    try (ZipInputStream zipin = new ZipInputStream(decrypted))
+                    {
+                        zipin.getNextEntry();
 
-                // wrap with zip input stream
-                ZipInputStream zipin = new ZipInputStream(decrypted);
-                zipin.getNextEntry();
-
-                Client client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                        client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
+                    }
+                    try
+                    {
+                        decrypted.close();
+                    }
+                    catch (IOException ignore)
+                    {
+                        // starting with a later jdk 1.8.0 (for example
+                        // 1.8.0_25), a
+                        // javax.crypto.BadPaddingException
+                        // "Given final block not properly padded" is thrown if
+                        // we do not read the complete stream
+                    }
+                }
 
                 // save secret key for next save
                 client.setSecret(secret);
@@ -262,21 +277,6 @@ public class ClientFactory
             catch (GeneralSecurityException e)
             {
                 throw new IOException(MessageFormat.format(Messages.MsgErrorDecrypting, e.getMessage()), e);
-            }
-            finally
-            {
-                try
-                {
-                    if (decrypted != null)
-                        decrypted.close();
-                }
-                catch (IOException ignore)
-                {
-                    // starting with a later jdk 1.8.0 (for example 1.8.0_25), a
-                    // javax.crypto.BadPaddingException
-                    // "Given final block not properly padded" is thrown if the
-                    // we do not read the complete stream
-                }
             }
         }
 
@@ -315,22 +315,22 @@ public class ClientFactory
                 output.write(iv);
 
                 // encrypted stream
-                OutputStream encrpyted = new CipherOutputStream(output, cipher);
+                try (OutputStream encrypted = new CipherOutputStream(output, cipher))
+                {
+                    // write version information
+                    encrypted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
+                    encrypted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
 
-                // write version information
-                encrpyted.write(ByteBuffer.allocate(4).putInt(Client.MAJOR_VERSION).array());
-                encrpyted.write(ByteBuffer.allocate(4).putInt(client.getVersion()).array());
+                    // wrap with zip output stream
+                    try (ZipOutputStream zipout = new ZipOutputStream(encrypted))
+                    {
+                        zipout.setLevel(Deflater.BEST_COMPRESSION);
+                        zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
 
-                // wrap with zip output stream
-                ZipOutputStream zipout = new ZipOutputStream(encrpyted);
-                zipout.putNextEntry(new ZipEntry(ZIP_DATA_FILE));
-
-                new XmlSerialization().save(client, zipout);
-
-                zipout.closeEntry();
-                zipout.flush();
-                zipout.finish();
-                output.flush();
+                        new XmlSerialization().save(client, zipout);
+                        zipout.closeEntry();
+                    }
+                }
             }
             catch (GeneralSecurityException e)
             {
@@ -378,17 +378,17 @@ public class ClientFactory
         if (isEncrypted(file) && password == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        InputStream input = null;
-
         try
         {
             // progress monitor
             long bytesTotal = file.length();
             int increment = (int) Math.min(bytesTotal / 20L, Integer.MAX_VALUE);
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
-            input = new ProgressMonitorInputStream(new FileInputStream(file), increment, monitor);
-
-            return buildPersister(file, null, password).load(input);
+            try (InputStream input = new ProgressMonitorInputStream(new BufferedInputStream(new FileInputStream(file)),
+                            increment, monitor))
+            {
+                return buildPersister(file, null, password).load(input);
+            }
         }
         catch (FileNotFoundException e)
         {
@@ -396,11 +396,6 @@ public class ClientFactory
                             MessageFormat.format(Messages.MsgFileNotFound, file.getAbsolutePath()));
             fnf.initCause(e);
             throw fnf;
-        }
-        finally
-        {
-            if (input != null)
-                input.close();
         }
     }
 
@@ -427,7 +422,7 @@ public class ClientFactory
         if (isEncrypted(file) && password == null && client.getSecret() == null)
             throw new IOException(Messages.MsgPasswordMissing);
 
-        try (OutputStream output = new FileOutputStream(file))
+        try (OutputStream output = new BufferedOutputStream(new FileOutputStream(file)))
         {
             buildPersister(file, method, password).save(client, output);
         }
