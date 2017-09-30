@@ -90,7 +90,7 @@ public class CSVImportWizard extends Wizard
         addPage(definitionPage);
 
         reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
-                        Arrays.asList(importer.getInputFile()));
+                        Arrays.asList(importer.getInputFile()), "extractedCSV");
         addPage(reviewPage);
 
         selectSecurityPage = new SelectSecurityPage(client);

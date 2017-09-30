@@ -88,6 +88,6 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "unicredit"; //$NON-NLS-1$
+        return "UniCredit / HypoVereinsbank"; //$NON-NLS-1$
     }
 }

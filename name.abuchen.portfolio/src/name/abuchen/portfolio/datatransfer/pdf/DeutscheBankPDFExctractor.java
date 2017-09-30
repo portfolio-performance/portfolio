@@ -238,6 +238,6 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return Messages.PDFdbLabel;
+        return "Deutsche Bank"; //$NON-NLS-1$
     }
 }
