@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
@@ -145,6 +146,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         if (dataSeriesSet.getUseCase() != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             manager.add(new SimpleAction(Messages.ChartSeriesPickerAddBenchmark, a -> doAddSeries(true)));
 
+        addCopyFromOtherChartsMenu(manager);
+
         manager.add(new SimpleAction(Messages.MenuResetChartSeries, a -> doResetSeries(null)));
     }
 
@@ -188,6 +191,31 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, config);
 
         fireUpdate();
+    }
+
+    private void addCopyFromOtherChartsMenu(IMenuManager manager)
+    {
+        String[] charts = new String[] { //
+                        "StatementOfAssetsHistoryView", Messages.LabelStatementOfAssetsHistory, //$NON-NLS-1$
+                        "PerformanceChartView", Messages.LabelPerformanceChart, //$NON-NLS-1$
+                        "ReturnsVolatilityChartView", Messages.LabelHistoricalReturnsAndVolatiltity }; //$NON-NLS-1$
+
+        MenuManager copyFromOthers = new MenuManager(Messages.ChartSeriesCopySeriesFromOtherChart);
+        manager.add(copyFromOthers);
+
+        for (int ii = 0; ii < charts.length; ii += 2)
+        {
+            ConfigurationSet set = client.getSettings().getConfigurationSet(charts[ii] + IDENTIFIER_POSTFIX);
+
+            MenuManager menu = new MenuManager(charts[ii + 1]);
+            copyFromOthers.add(menu);
+
+            set.getConfigurations().forEach(config -> menu.add(new SimpleAction(config.getName(), a -> {
+                List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
+                list.stream().filter(s -> !selectedSeries.contains(s)).forEach(s -> selectedSeries.add(s));
+                fireUpdate();
+            })));
+        }
     }
 
     /* package */ void doDeleteSeries(DataSeries series)
