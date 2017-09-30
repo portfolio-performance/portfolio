@@ -94,7 +94,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value>[en,de]</value>
+							<value>[en]</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
