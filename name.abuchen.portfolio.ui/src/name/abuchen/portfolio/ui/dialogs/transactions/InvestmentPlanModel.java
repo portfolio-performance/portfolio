@@ -2,6 +2,11 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDate;
 
+import org.eclipse.core.databinding.validation.ValidationStatus;
+import org.eclipse.core.runtime.IStatus;
+
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
@@ -13,7 +18,7 @@ public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode;
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode;
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -32,6 +37,8 @@ public class InvestmentPlanModel extends AbstractModel
     private int interval = 1;
     private long amount;
     private long fees;
+    
+    private IStatus calculationStatus = ValidationStatus.ok();
 
     public InvestmentPlanModel(Client client)
     {
@@ -96,6 +103,23 @@ public class InvestmentPlanModel extends AbstractModel
         this.fees = plan.getFees();
     }
 
+    @Override
+    public IStatus getCalculationStatus()
+    {
+        return calculationStatus;
+    }
+    
+    private IStatus calculateStatus()
+    {
+        if (name == null || name.trim().length() == 0)
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
+        
+        if (amount == 0L)
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
+        
+        return ValidationStatus.ok();
+    }
+    
     public String getName()
     {
         return name;
@@ -104,6 +128,8 @@ public class InvestmentPlanModel extends AbstractModel
     public void setName(String name)
     {
         firePropertyChange(Properties.name.name(), this.name, this.name = name);
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
     }
 
     public Security getSecurity()
@@ -177,6 +203,8 @@ public class InvestmentPlanModel extends AbstractModel
     public void setAmount(long amount)
     {
         firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
     }
 
     public long getFees()

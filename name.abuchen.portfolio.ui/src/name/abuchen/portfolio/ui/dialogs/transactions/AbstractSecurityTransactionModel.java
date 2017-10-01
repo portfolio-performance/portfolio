@@ -191,6 +191,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
      */
     private IStatus calculateStatus()
     {
+        if (shares == 0L)
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
+
+        if (grossValue == 0L || convertedGrossValue == 0L)
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnSubTotal));
+
         // check whether gross value is in range
         long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
                         / Values.Share.divider());
@@ -212,7 +218,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
         if (total == 0L && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTotal));
-
+        
         return ValidationStatus.ok();
     }
 
