@@ -9,7 +9,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.27.6-SNAPSHOT</version>
+	<version>0.27.6</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
