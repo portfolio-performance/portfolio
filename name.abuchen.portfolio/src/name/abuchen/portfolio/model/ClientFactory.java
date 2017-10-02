@@ -202,6 +202,21 @@ public class ClientFactory
             this.password = password;
             this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
         }
+        
+        /**
+         * Reads all data in the given {@link InputStream}.
+         * 
+         * @param is
+         *            {@link InputStream}
+         * @throws IOException
+         */
+        private static void readStreamUntilEnd(InputStream is) throws IOException
+        {
+            // use an appropriate buffer (64 KB here)
+            byte[] data = new byte[65536];
+            while (is.read(data) != -1)
+            {}
+        }
 
         @Override
         public Client load(final InputStream input) throws IOException
@@ -254,18 +269,13 @@ public class ClientFactory
                         zipin.getNextEntry();
 
                         client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
-                    }
-                    try
-                    {
-                        decrypted.close();
-                    }
-                    catch (IOException ignore)
-                    {
+
                         // starting with a later jdk 1.8.0 (for example
                         // 1.8.0_25), a
                         // javax.crypto.BadPaddingException
                         // "Given final block not properly padded" is thrown if
                         // we do not read the complete stream
+                        readStreamUntilEnd(decrypted);
                     }
                 }
 
