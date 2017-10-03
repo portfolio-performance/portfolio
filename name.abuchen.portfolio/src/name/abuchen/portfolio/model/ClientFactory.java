@@ -204,36 +204,6 @@ public class ClientFactory
             this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
         }
         
-        /**
-         * Reads all data in the given {@link InputStream} ignoring
-         * {@link BadPaddingException}s.
-         * 
-         * @param is
-         *            {@link InputStream} (is closed when this function returns)
-         * @throws IOException
-         */
-        private static void readStreamUntilEnd(InputStream is) throws IOException
-        {
-            try
-            {
-                // use an appropriate buffer (64 KB here) and loop until end.
-                byte[] data = new byte[65536];
-                while (is.read(data) != -1)
-                {}
-                // explicitly close the stream to force bad padding exceptions
-                // to occur inside this function
-                is.close();
-            }
-            catch (IOException ex)
-            {
-                // starting with a later jdk 1.8.0 (for example 1.8.0_25), a
-                // javax.crypto.BadPaddingException "Given final block not
-                // properly padded" is thrown if we do not read the complete
-                // stream - so ignore that kind of exception
-                if (!(ex.getCause() instanceof BadPaddingException)) { throw ex; }
-            }
-        }
-
         @Override
         public Client load(final InputStream input) throws IOException
         {
@@ -285,10 +255,22 @@ public class ClientFactory
                         zipin.getNextEntry();
 
                         client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
-                        
-                        // read stream until reaching the end ignoring padding
-                        // errors
-                        readStreamUntilEnd(decrypted);
+
+                        try
+                        {
+                            // explicitly close the stream to force bad padding
+                            // exceptions to occur inside this try-catch-block
+                            decrypted.close();
+                        }
+                        catch (IOException ex)
+                        {
+                            // starting with a later jdk 1.8.0 (for example
+                            // 1.8.0_25), a javax.crypto.BadPaddingException
+                            // "Given final block not properly padded" is thrown
+                            // if we do not read the stream - so ignore that
+                            // kind of exception
+                            if (!(ex.getCause() instanceof BadPaddingException)) { throw ex; }
+                        }
                     }
                 }
 
