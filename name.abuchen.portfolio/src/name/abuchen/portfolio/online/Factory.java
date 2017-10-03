@@ -3,8 +3,7 @@ package name.abuchen.portfolio.online;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.spi.ServiceRegistry;
+import java.util.ServiceLoader;
 
 public class Factory
 {
@@ -37,12 +36,12 @@ public class Factory
     static
     {
         FEEDS = new ArrayList<>();
-        Iterator<QuoteFeed> feeds = ServiceRegistry.lookupProviders(QuoteFeed.class);
+        Iterator<QuoteFeed> feeds = ServiceLoader.load(QuoteFeed.class).iterator();
         while (feeds.hasNext())
             FEEDS.add(feeds.next());
 
         SEARCH = new ArrayList<>();
-        Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
+        Iterator<SecuritySearchProvider> search = ServiceLoader.load(SecuritySearchProvider.class).iterator();
         while (search.hasNext())
             SEARCH.add(search.next());
 
