@@ -87,7 +87,17 @@ public class DataSeriesCache
         String uuid = series.getType() == DataSeries.Type.CLIENT ? "$client$" : series.getUUID(); //$NON-NLS-1$
 
         CacheKey key = new CacheKey(uuid, reportingPeriod);
-        return cache.computeIfAbsent(key, k -> calculate(series, reportingPeriod));
+
+        // #computeIfAbsent leads to a ConcurrentMapModificdation b/c #calculate
+        // might call #lookup to calculcate other cache entries
+        PerformanceIndex result = cache.get(key);
+        if (result != null)
+            return result;
+
+        result = calculate(series, reportingPeriod);
+        cache.put(key, result);
+
+        return result;
     }
 
     private PerformanceIndex calculate(DataSeries series, ReportingPeriod reportingPeriod)
