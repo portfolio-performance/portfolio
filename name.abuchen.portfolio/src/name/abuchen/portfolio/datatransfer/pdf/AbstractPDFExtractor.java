@@ -15,7 +15,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
+import org.apache.pdfbox.text.PDFTextStripper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
