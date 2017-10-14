@@ -43,9 +43,7 @@
         <children xsi:type="menu:MenuSeparator" xmi:id="_O_UqkBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.1"/>
         <children xsi:type="menu:Menu" xmi:id="_mF9JAEYQEeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.menu.file.import" label="%command.import.name">
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" tooltip="%command.import.csv.tooltip" command="_GgTyQBhXEeOR1rNFCzC82A"/>
-          <children xsi:type="menu:MenuSeparator" xmi:id="_-_9i0LpsEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
-          <children xsi:type="menu:DirectMenuItem" xmi:id="_k6K6cPr-EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-pdf" label="%command.import.pdf.import-pdf" enabled="false"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.assistant" tooltip="%command.import.pdf.assistant.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.import-pdf" tooltip="%command.import.pdf.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_30NnAAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_24C5sAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-xml" label="%command.import.xml.import-xml" tooltip="" enabled="false"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_QQsCcLCxEeefXq-wtldCQQ"/>
@@ -59,9 +57,7 @@
       </children>
       <children xsi:type="menu:Menu" xmi:id="_k0rOMBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online" label="%menu.online.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_szYKIBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatequotes" label="%command.updateQuotes.name" tooltip="%command.updateQuotes.tooltip" command="_tukxoBiQEeOR1rNFCzC82A"/>
-        <children xsi:type="menu:HandledMenuItem" xmi:id="_zGsiUBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatehistoricquotes" label="%command.updateHistoricQuotes.label" tooltip="%command.updateHistoricQuotes.tooltip" command="_tukxoBiQEeOR1rNFCzC82A">
-          <parameters xmi:id="_XDcoEBiREeOR1rNFCzC82A" elementId="" name="name.abuchen.portfolio.ui.param.target" value="historic"/>
-        </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_zGsiUBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatehistoricquotes" label="%command.updateHistoricQuotes.name" tooltip="%command.updateHistoricQuotes.tooltip" command="_HOmZcLEKEeefXq-wtldCQQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_2MwUUBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatecpi" label="%command.updateCPI.name" tooltip="%command.updateCPI.tooltip" command="_LwwoUBiQEeOR1rNFCzC82A"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
@@ -102,6 +98,7 @@
   <handlers xmi:id="_LyQvULCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.handler.import.ib" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportIBHandler" command="_QQsCcLCxEeefXq-wtldCQQ"/>
   <handlers xmi:id="_Gig3QBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.consistencychecks" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RunConsistencyChecksHandler" command="_D9tYMBiPEeOR1rNFCzC82A"/>
   <handlers xmi:id="_0fz04BiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.updatequotes" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler" command="_tukxoBiQEeOR1rNFCzC82A"/>
+  <handlers xmi:id="_UUvwULEKEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.handler.updatehistoricquotes" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateHistoricQuotesHandler" command="_HOmZcLEKEeefXq-wtldCQQ"/>
   <handlers xmi:id="_NeLzcBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.updatecpi" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateCPIHandler" command="_LwwoUBiQEeOR1rNFCzC82A"/>
   <handlers xmi:id="_88LHwBiREeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.updateproduct" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateHandler" command="_59FgcBiREeOR1rNFCzC82A"/>
   <handlers xmi:id="_X6EagB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.handler.about" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.AboutHandler" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
@@ -123,7 +120,11 @@
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
     <bindings xmi:id="__2J6oPeCEeO4R-HvWULnnw" elementId="" keySequence="M1+S" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
-    <bindings xmi:id="_LS-jQPeDEeO4R-HvWULnnw" elementId="" keySequence="M1+U" command="_tukxoBiQEeOR1rNFCzC82A"/>
+    <bindings xmi:id="_LS-jQPeDEeO4R-HvWULnnw" elementId="" keySequence="M1+U K" command="_tukxoBiQEeOR1rNFCzC82A"/>
+    <bindings xmi:id="_BZnVULEFEeefXq-wtldCQQ" elementId="" keySequence="M1+U H" command="_HOmZcLEKEeefXq-wtldCQQ"/>
+    <bindings xmi:id="_CoeVILEFEeefXq-wtldCQQ" elementId="" keySequence="M1+U V" command="_LwwoUBiQEeOR1rNFCzC82A"/>
+    <bindings xmi:id="_w7HC4LEBEeefXq-wtldCQQ" elementId="" keySequence="M1+I P" command="_pgC00EYREeSRXYVe298mXg"/>
+    <bindings xmi:id="_jcQwwLEEEeefXq-wtldCQQ" elementId="" keySequence="M1+I C" command="_GgTyQBhXEeOR1rNFCzC82A"/>
   </bindingTables>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_7d8q4RjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.window" name="In Windows"/>
@@ -138,14 +139,13 @@
   <commands xmi:id="_3CjQwBfHEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.command.open" commandName="openCommand"/>
   <commands xmi:id="_D9tYMBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.consistencychecks" commandName="consistencyChecksCommand"/>
   <commands xmi:id="_lcgCQBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.command.export" commandName="exportCommand"/>
-  <commands xmi:id="_GgTyQBhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.import" commandName="importCommand"/>
-  <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="importCommand.pdf"/>
+  <commands xmi:id="_GgTyQBhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.import" commandName="%command.import.csv"/>
+  <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="%command.import.pdf.import-pdf"/>
   <commands xmi:id="_Jw7yELptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-text" commandName="importCommand.pdf.create-text"/>
   <commands xmi:id="_QQsCcLCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.command.import.ib" commandName="importCommand.ib"/>
-  <commands xmi:id="_tukxoBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updatequotes" commandName="updateQuotesCommand">
-    <parameters xmi:id="_vkz6gBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.param.target" name="target"/>
-  </commands>
-  <commands xmi:id="_LwwoUBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updateCPICommand" commandName="updateCPICommand"/>
+  <commands xmi:id="_tukxoBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updatequotes" commandName="%command.updateQuotes.label"/>
+  <commands xmi:id="_HOmZcLEKEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.command.updatehistoricquotes" commandName="%command.updateHistoricQuotes.label"/>
+  <commands xmi:id="_LwwoUBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updateCPICommand" commandName="%command.updateCPI.label"/>
   <commands xmi:id="_59FgcBiREeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updateproduct" commandName="updateProductCommand"/>
   <commands xmi:id="_Vr7H8B3VEeOYjJVcrtNJyA" elementId="org.eclipse.ui.help.aboutAction" commandName="aboutCommand"/>
   <commands xmi:id="_8B-l8KSiEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.command.clearerrorlog" commandName="%command.errorlog.clearlog" description=""/>

@@ -13,7 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
 
-public class UpdateQuotesHandler
+public class UpdateHistoricQuotesHandler
 {
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
@@ -29,6 +29,6 @@ public class UpdateQuotesHandler
         if (client == null)
             return;
 
-        new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).schedule();
+        new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).schedule();
     }
 }
