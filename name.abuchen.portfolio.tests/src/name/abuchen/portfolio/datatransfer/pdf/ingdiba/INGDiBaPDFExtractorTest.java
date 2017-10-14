@@ -5,15 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import org.junit.Test;
 
@@ -22,6 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -35,21 +32,15 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractorTest
 {
-    
+
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -79,17 +70,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf2.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -117,17 +102,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf3.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -155,17 +134,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf4.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf4.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -192,17 +165,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf5() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf5.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf5.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -229,17 +196,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf6() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf6.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf6.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -266,17 +227,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf7() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf7.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf7.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -304,17 +259,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf8() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Kauf8.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf8.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -341,17 +290,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Verkauf1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -378,17 +321,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Verkauf2.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -416,17 +353,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Verkauf3.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -454,17 +385,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Ertragsgutschrift1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -489,17 +415,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Ertragsgutschrift2.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift2.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -524,17 +445,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Ertragsgutschrift3.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift3.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -562,17 +478,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividendengutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Dividendengutschrift1.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -598,17 +509,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividendengutschrift2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Dividendengutschrift2.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -630,21 +536,17 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(65.1 + 3.58))));
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(303.60))));
     }
-    
+
     @Test
     public void testGemeinschaftskontoDividendengutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("INGDiBa_Gemeinschaftskonto_Dividendengutschrift1.txt")), errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "INGDiBa_Gemeinschaftskonto_Dividendengutschrift1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -664,14 +566,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getShares(), is(Values.Share.factorize(500)));
 
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(650.00))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(79.46 + 7.15 +  4.37 + 79.46 + 7.15 +  4.37))));
-    }
-
-    private String from(String resource)
-    {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next();
-        }
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
+                        Values.Amount.factorize(79.46 + 7.15 + 4.37 + 79.46 + 7.15 + 4.37))));
     }
 }

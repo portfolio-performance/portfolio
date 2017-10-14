@@ -1,39 +1,20 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation;
-import org.apache.pdfbox.util.PDFTextStripper;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 
 public class PDFImportAssistant
 {
-    public static Extractor detectBankIdentifier(File PDFfilename, List<Extractor> extractors) throws IOException
+    public static Extractor detectBankIdentifier(PDFInputFile PDFfilename, List<Extractor> extractors) throws IOException
     {
-        String author = null;
-        String text = null;
-
-        // Loading an existing document
-        try (PDDocument document = PDDocument.load(PDFfilename))
-        {
-
-            // Getting the PDDocumentInformation object
-            PDDocumentInformation pdd = document.getDocumentInformation();
-
-            // Getting the PDFTextStripper object
-            PDFTextStripper textStripper = new PDFTextStripper();
-            textStripper.setSortByPosition(true);
-            text = textStripper.getText(document);
-
-            author = pdd.getAuthor() == null ? "" : pdd.getAuthor(); //$NON-NLS-1$
-        }
+        String author = PDFfilename.getAuthor();
+        String text = PDFfilename.getText();
 
         // PDF import assistant - Level 1 - Allocate by PDF Author
 

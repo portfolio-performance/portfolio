@@ -5,15 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import org.junit.Test;
 
@@ -23,6 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -39,17 +36,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankErtragsgutschrift.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -77,17 +69,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankErtragsgutschrift2.txt")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -115,17 +102,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testWertpapierkauf() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("CommerzbankWertpapierkauf.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankWertpapierkauf.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -134,7 +116,6 @@ public class CommerzbankPDFExtractorTest
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny().get().getSecurity();
         assertThat(security.getName(), is("i S h s I I I - C o r e MSCI W o r l d U . E T F"));
-        //assertThat(security.getIsin(), is("DE26100400480680403302"));
         assertThat(security.getWkn(), is("A0RPWH"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
@@ -151,13 +132,5 @@ public class CommerzbankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.96))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-04-18")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.572)));
-    }
-
-    private String from(String resource)
-    {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next();
-        }
     }
 }

@@ -21,6 +21,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -39,7 +40,11 @@ public class DkbPDFExtractorPDFTest
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator
                         .resolve(getClass().getResource("DkBErtragsgutschrift2_GBP_Freibetrrag_ausgeschoepft.pdf"));
-        List<Item> results = extractor.extract(Arrays.asList(new File(url.getPath())), errors);
+        
+        PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
+        inputFile.parse();
+        
+        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
@@ -13,9 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -34,16 +30,13 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     private final Client client;
     private SecurityCache securityCache;
-    private final PDFTextStripper textStripper;
+
     private final List<String> bankIdentifier = new ArrayList<>();
     private final List<DocumentType> documentTypes = new ArrayList<>();
 
     public AbstractPDFExtractor(Client client) throws IOException
     {
         this.client = client;
-
-        textStripper = new PDFTextStripper();
-        textStripper.setSortByPosition(true);
     }
 
     protected final void addDocumentTyp(DocumentType type)
@@ -55,12 +48,12 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         this.bankIdentifier.add(identifier);
     }
-    
+
     public List<String> getBankIdentifier()
     {
         return bankIdentifier;
     }
-    
+
     public String getPDFAuthor()
     {
         return null;
@@ -73,23 +66,21 @@ public abstract class AbstractPDFExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
     {
         // careful: security cache makes extractor stateful
         securityCache = new SecurityCache(client);
 
         List<Item> results = new ArrayList<>();
-        for (File f : files)
+        for (Extractor.InputFile f : files)
         {
-            try
-            {
-                String text = strip(f);
-                results.addAll(extract(f.getName(), text, errors));
-            }
-            catch (IOException e)
-            {
-                errors.add(new IOException(f.getName() + ": " + e.getMessage(), e)); //$NON-NLS-1$
-            }
+            if (!(f instanceof PDFInputFile))
+                throw new IllegalArgumentException();
+
+            PDFInputFile inputFile = (PDFInputFile) f;
+
+            String text = inputFile.getText();
+            results.addAll(extract(inputFile.getFile().getName(), text, errors));
         }
 
         results.addAll(securityCache.createMissingSecurityItems(results));
@@ -97,14 +88,6 @@ public abstract class AbstractPDFExtractor implements Extractor
         securityCache = null;
 
         return results;
-    }
-
-    /* testing */ protected String strip(File file) throws IOException
-    {
-        try (PDDocument doc = PDDocument.load(file))
-        {
-            return textStripper.getText(doc);
-        }
     }
 
     private final List<Item> extract(String filename, String text, List<Exception> errors)
@@ -137,8 +120,9 @@ public abstract class AbstractPDFExtractor implements Extractor
             return Collections.emptyList();
         }
     }
-    
-    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text) {
+
+    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text)
+    {
         List<Item> items = new ArrayList<>();
         for (DocumentType type : documentTypes)
         {

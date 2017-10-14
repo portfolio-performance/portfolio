@@ -45,14 +45,10 @@
           <children xsi:type="menu:HandledMenuItem" xmi:id="_PouM4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.import.csv" label="%command.import.csv" tooltip="%command.import.csv.tooltip" command="_GgTyQBhXEeOR1rNFCzC82A"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_-_9i0LpsEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.bootstrap.menuseparator.0"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_k6K6cPr-EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-pdf" label="%command.import.pdf.import-pdf" enabled="false"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.assistant" tooltip="%command.import.pdf.assistant.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg">
-            <parameters xmi:id="_wGCoQI50Eeei6L14_E-zxg" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="pdfimportassistant"/>
-          </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_tHcwMI50Eeei6L14_E-zxg" elementId="name.abuchen.portfolio.ui.menu.file.import.PDFassistant" label="%command.import.pdf.assistant" tooltip="%command.import.pdf.assistant.tooltip" mnemonics="" command="_pgC00EYREeSRXYVe298mXg"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_30NnAAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.2"/>
           <children xsi:type="menu:DirectMenuItem" xmi:id="_24C5sAtvEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.import-xml" label="%command.import.xml.import-xml" tooltip="" enabled="false"/>
-          <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_pgC00EYREeSRXYVe298mXg">
-            <parameters xmi:id="_EbXUwQtwEeW4ucTlYYYvbw" elementId="" name="name.abuchen.portfolio.ui.param.pdf-type" value="ib"/>
-          </children>
+          <children xsi:type="menu:HandledMenuItem" xmi:id="_EbXUwAtwEeW4ucTlYYYvbw" elementId="name.abuchen.portfolio.ui.menu.file.import.ib" label="%command.import.xml.ib" tooltip="%command.import.xml.ib.tooltip" command="_QQsCcLCxEeefXq-wtldCQQ"/>
           <children xsi:type="menu:MenuSeparator" xmi:id="_gNzZUPr7EeS4ucTlYYYvbw" elementId="name.abuchen.portfolio.bootstrap.menuseparator.1"/>
           <children xsi:type="menu:HandledMenuItem" xmi:id="_C1cmoLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.menu.file.import.create-text" label="%command.import.pdf.create-text" tooltip="%command.import.pdf.create-text.tooltip" command="_Jw7yELptEeSHOs-ah25CLg"/>
         </children>
@@ -103,6 +99,7 @@
   <handlers xmi:id="_DRzO4BhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.import" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportCSVHandler" command="_GgTyQBhXEeOR1rNFCzC82A"/>
   <handlers xmi:id="_8lgp0EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.handler.import.pdf" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFHandler" command="_pgC00EYREeSRXYVe298mXg"/>
   <handlers xmi:id="_SL7BYLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.handler.import.pdf.create-text" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateTextFromPDFHandler" command="_Jw7yELptEeSHOs-ah25CLg"/>
+  <handlers xmi:id="_LyQvULCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.handler.import.ib" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportIBHandler" command="_QQsCcLCxEeefXq-wtldCQQ"/>
   <handlers xmi:id="_Gig3QBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.consistencychecks" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RunConsistencyChecksHandler" command="_D9tYMBiPEeOR1rNFCzC82A"/>
   <handlers xmi:id="_0fz04BiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.updatequotes" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateQuotesHandler" command="_tukxoBiQEeOR1rNFCzC82A"/>
   <handlers xmi:id="_NeLzcBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.updatecpi" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UpdateCPIHandler" command="_LwwoUBiQEeOR1rNFCzC82A"/>
@@ -142,10 +139,9 @@
   <commands xmi:id="_D9tYMBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.consistencychecks" commandName="consistencyChecksCommand"/>
   <commands xmi:id="_lcgCQBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.command.export" commandName="exportCommand"/>
   <commands xmi:id="_GgTyQBhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.import" commandName="importCommand"/>
-  <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="importCommand.pdf">
-    <parameters xmi:id="_t3In0Ec4EeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.param.pdf-type" name="pdf-type" optional="false"/>
-  </commands>
+  <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="importCommand.pdf"/>
   <commands xmi:id="_Jw7yELptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-text" commandName="importCommand.pdf.create-text"/>
+  <commands xmi:id="_QQsCcLCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.command.import.ib" commandName="importCommand.ib"/>
   <commands xmi:id="_tukxoBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updatequotes" commandName="updateQuotesCommand">
     <parameters xmi:id="_vkz6gBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.param.target" name="target"/>
   </commands>

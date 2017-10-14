@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.datatransfer;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -458,16 +456,16 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
     {
         results.clear();
-        for (File f : files)
+        for (Extractor.InputFile f : files)
         {
-            try
+            try(FileInputStream in = new FileInputStream(f.getFile()))
             {
-                importActivityStatement(new FileInputStream(f), errors);
+                importActivityStatement(in, errors);
             }
-            catch (FileNotFoundException e)
+            catch (IOException e)
             {
                 errors.add(e);
             }

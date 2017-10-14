@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;

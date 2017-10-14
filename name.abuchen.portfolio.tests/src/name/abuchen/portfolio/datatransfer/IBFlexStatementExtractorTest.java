@@ -43,7 +43,7 @@ public class IBFlexStatementExtractorTest
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
 
-        File tempFile = createTempFile(activityStatement);
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<Exception>();
         extractor.extract(Collections.singletonList(tempFile), errors);
@@ -143,7 +143,7 @@ public class IBFlexStatementExtractorTest
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
         InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift.txt");
-        File tempFile = createTempFile(otherFile);
+        Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
         List<Exception> errors = new ArrayList<Exception>();
@@ -154,12 +154,12 @@ public class IBFlexStatementExtractorTest
         assertThat(errors.size(), is(1));
     }
 
-    private File createTempFile(InputStream input) throws IOException
+    private Extractor.InputFile createTempFile(InputStream input) throws IOException
     {
         File tempFile = File.createTempFile("iBFlexStatementExtractorTest", null);
         FileOutputStream fos = new FileOutputStream(tempFile);
 
         IOUtils.copy(input, fos);
-        return tempFile;
+        return new Extractor.InputFile(tempFile);
     }
 }

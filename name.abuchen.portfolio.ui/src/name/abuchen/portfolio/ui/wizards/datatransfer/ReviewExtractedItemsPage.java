@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -94,11 +93,11 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private final Client client;
     private final Extractor extractor;
     private final IPreferenceStore preferences;
-    private List<File> files;
+    private List<Extractor.InputFile> files;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files,
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<Extractor.InputFile> files,
                     String pageId)
     {
         super(pageId);
@@ -112,7 +111,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         setDescription(Messages.PDFImportWizardDescription);
     }
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files)
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<Extractor.InputFile> files)
     {
         this(client, extractor, preferences, files, extractor.getClass().getSimpleName());
     }

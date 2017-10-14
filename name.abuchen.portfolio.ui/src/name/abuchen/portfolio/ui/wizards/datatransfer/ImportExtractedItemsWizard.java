@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
 import name.abuchen.portfolio.model.Client;
@@ -39,12 +39,12 @@ public class ImportExtractedItemsWizard extends Wizard
     private Client client;
     private List<Extractor> extractors = new ArrayList<>();
     private IPreferenceStore preferences;
-    private List<File> files;
+    private List<Extractor.InputFile> files;
 
     private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
 
     public ImportExtractedItemsWizard(Client client, Extractor extractor, IPreferenceStore preferences,
-                    List<File> files) throws IOException
+                    List<Extractor.InputFile> files) throws IOException
     {
         this.client = client;
         this.preferences = preferences;
@@ -96,7 +96,7 @@ public class ImportExtractedItemsWizard extends Wizard
         // assign files to extractors and create a page for each extractor that
         // has a file
 
-        Map<Extractor, List<File>> extractor2files = new HashMap<>();
+        Map<Extractor, List<Extractor.InputFile>> extractor2files = new HashMap<>();
 
         if (extractors.size() == 1)
             extractor2files.put(extractors.get(0), files);
@@ -105,10 +105,10 @@ public class ImportExtractedItemsWizard extends Wizard
 
         for (Extractor extractor : extractors)
         {
-            List<File> files4extractor = extractor2files.get(extractor);
+            List<Extractor.InputFile> files4extractor = extractor2files.get(extractor);
             if (files4extractor == null || files4extractor.isEmpty())
                 continue;
-
+            
             ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
                             files4extractor);
             pages.add(page);
@@ -118,20 +118,22 @@ public class ImportExtractedItemsWizard extends Wizard
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }
 
-    private void assignFilesToExtractors(Map<Extractor, List<File>> extractor2files)
+    private void assignFilesToExtractors(Map<Extractor, List<Extractor.InputFile>> extractor2files)
     {
         try
         {
-            List<File> unknown = new ArrayList<>();
+            List<Extractor.InputFile> unknown = new ArrayList<>();
 
-            for (File file : files)
+            for (Extractor.InputFile file : files)
             {
-                Extractor extractor = PDFImportAssistant.detectBankIdentifier(file, extractors);
+                PDFInputFile inputFile = (PDFInputFile) file;
+                
+                Extractor extractor = PDFImportAssistant.detectBankIdentifier(inputFile, extractors);
 
                 if (extractor != null)
-                    extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(file);
+                    extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(inputFile);
                 else
-                    unknown.add(file);
+                    unknown.add(inputFile);
             }
 
             if (!unknown.isEmpty())

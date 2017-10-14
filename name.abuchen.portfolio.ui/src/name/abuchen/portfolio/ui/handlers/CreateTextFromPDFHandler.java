@@ -2,18 +2,10 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
-
-import java.text.MessageFormat; 
+import java.text.MessageFormat;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.pdmodel.PDDocumentInformation; 
-import org.apache.pdfbox.util.PDFTextStripper;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -22,13 +14,17 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
+
 public class CreateTextFromPDFHandler
 {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) throws IOException
     {
-        // open file dialog to pick pdf files
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
         fileDialog.setText(Messages.PDFImportDebugTextExtraction);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
@@ -38,18 +34,15 @@ public class CreateTextFromPDFHandler
         String fileName = fileDialog.getFileName();
         if (fileName == null || fileName.isEmpty())
             return;
-        File file = new File(fileDialog.getFilterPath(), fileName);
 
-        try (PDDocument doc = PDDocument.load(file))
+        try
         {
-            String text;  
-            PDDocumentInformation info = doc.getDocumentInformation();  
-            String PDFauthor = info.getAuthor();  
-            text = MessageFormat.format(Messages.PDFImportDebugAuthor, ""); 
-            text+= "\n-----------------------------------------\n"; 
-            PDFTextStripper textStripper = new PDFTextStripper();
-            textStripper.setSortByPosition(true);
-            text+= textStripper.getText(doc); 
+            PDFInputFile inputFile = new PDFInputFile(new File(fileDialog.getFilterPath(), fileName));
+            inputFile.parse();
+
+            String text = MessageFormat.format(Messages.PDFImportDebugAuthor, inputFile.getAuthor());
+            text += "\n-----------------------------------------\n"; //$NON-NLS-1$
+            text += inputFile.getText();
 
             new DisplayTextDialog(shell, text).open();
         }

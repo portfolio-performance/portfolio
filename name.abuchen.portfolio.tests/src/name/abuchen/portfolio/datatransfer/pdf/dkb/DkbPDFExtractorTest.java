@@ -5,22 +5,21 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.stream.Collectors;
+
+import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -31,32 +30,9 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-import org.junit.Test;
-
 @SuppressWarnings("nls")
 public class DkbPDFExtractorTest
 {
-
-    @Test
-    public void testSanityCheckForBankName() throws IOException
-    {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return "some text";
-            }
-        };
-        List<Exception> errors = new ArrayList<Exception>();
-
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
-
-        assertThat(results, empty());
-        assertThat(errors.size(), is(1));
-        assertThat(errors.get(0), instanceOf(UnsupportedOperationException.class));
-    }
-
     private Security assertSecurityBuy(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -192,17 +168,12 @@ public class DkbPDFExtractorTest
     @Test
     public void testErtragsgutschriftZinsen() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbErtragsgutschrift.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschrift.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -226,17 +197,12 @@ public class DkbPDFExtractorTest
     @Test
     public void testErtragsgutschriftZinsenAlt() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbErtragsgutschriftAlt.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschriftAlt.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -255,23 +221,19 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2014-01-02")));
         assertThat(transaction.getAmount(), is(17302L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.23))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.23))));
     }
 
     @Test
     public void testErtragsgutschriftDividende() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbErtragsgutschriftDividende.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschriftDividende.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -295,17 +257,13 @@ public class DkbPDFExtractorTest
     @Test
     public void testErtragsgutschriftDividendeQuellensteuern() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbErtragsgutschriftDividendeQuellensteuern.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschriftDividendeQuellensteuern.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -324,23 +282,18 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-20")));
         assertThat(transaction.getAmount(), is(2995L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(66)));
-        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));
     }
 
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbKauf.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -369,17 +322,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbKaufAktien.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKaufAktien.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -409,17 +356,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierKaufFonds() throws IOException // Fonds
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbKaufFonds.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKaufFonds.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -449,17 +390,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbVerkauf.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -489,17 +424,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierVerkaufAktien() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbVerkaufAktien.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkaufAktien.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -527,17 +456,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierRueckzahlung() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbRueckzahlung.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbRueckzahlung.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -565,17 +488,12 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierRueckzahlungNennwertHerabschreibung() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbRueckzahlungHerabschreibung.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DkbRueckzahlungHerabschreibung.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -603,17 +521,11 @@ public class DkbPDFExtractorTest
     @Test
     public void testWertpapierTeilliquidation() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbTeilliquidation.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbTeilliquidation.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -639,17 +551,12 @@ public class DkbPDFExtractorTest
     @Test
     public void testDepotuebertragAusgang() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbDepotuebertragAusgehend.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbDepotuebertragAusgehend.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -673,17 +580,12 @@ public class DkbPDFExtractorTest
     @Test
     public void testStornoWertpapierTeilliquidation() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from("DkbStornoTeilliquidation.txt");
-            }
-        };
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("t")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbStornoTeilliquidation.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -712,13 +614,5 @@ public class DkbPDFExtractorTest
         assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(91.61))));
         assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2016-01-13"))));
-    }
-
-    private String from(String resource)
-    {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next();
-        }
     }
 }

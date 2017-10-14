@@ -20,6 +20,26 @@ import name.abuchen.portfolio.money.Money;
 
 public interface Extractor
 {
+    public static class InputFile
+    {
+        private File file;
+
+        public InputFile(File file)
+        {
+            this.file = file;
+        }
+
+        public File getFile()
+        {
+            return file;
+        }
+
+        public String getName()
+        {
+            return file.getName();
+        }
+    }
+    
     public abstract static class Item
     {
         public abstract Annotated getSubject();
@@ -331,6 +351,6 @@ public interface Extractor
     /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<File> files, List<Exception> errors);
+    List<Item> extract(List<InputFile> files, List<Exception> errors);
 
 }

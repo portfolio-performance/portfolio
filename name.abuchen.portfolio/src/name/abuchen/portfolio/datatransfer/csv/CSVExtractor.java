@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -30,7 +29,7 @@ public abstract class CSVExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
     {
         throw new UnsupportedOperationException();
     }

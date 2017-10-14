@@ -19,6 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -32,9 +33,9 @@ import name.abuchen.portfolio.money.Values;
  * <p>
  * Tests are in a separate class because the Infinitest plugin cannot run them.
  * <p>
- * To launch from within Eclipse, make sure to uncheck the option
- * "Use the -XstartOnFirstThread when launching with SWT" in the launch
- * configuration of the tests.
+ * To launch from within Eclipse, make sure to uncheck the option "Use the
+ * -XstartOnFirstThread when launching with SWT" in the launch configuration of
+ * the tests.
  */
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorPDFTest
@@ -43,10 +44,14 @@ public class ConsorsbankPDFExtractorPDFTest
     public void testErtragsgutschrift6_USD_Freibetrag_ausgeschoepft() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();        
+        List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift6_USD_Freibetrag_ausgeschoepft.pdf"));
-        List<Item> results = extractor.extract(Arrays.asList(new File(url.getPath())), errors);
+
+        PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
+        inputFile.parse();
+
+        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -73,11 +78,15 @@ public class ConsorsbankPDFExtractorPDFTest
     public void testErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft() throws IOException
     {
         ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();        
+        List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft.pdf"));
-        List<Item> results = extractor.extract(Arrays.asList(new File(url.getPath())), errors);
-        
+
+        PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
+        inputFile.parse();
+
+        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
+
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
