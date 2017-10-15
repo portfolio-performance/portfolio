@@ -56,7 +56,7 @@ public class ImportExtractedItemsWizard extends Wizard
             addDefaultExtractors();
 
         setWindowTitle(Messages.PDFImportWizardTitle);
-        setNeedsProgressMonitor(true);
+        setNeedsProgressMonitor(false);
     }
 
     private void addDefaultExtractors() throws IOException

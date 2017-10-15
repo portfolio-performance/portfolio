@@ -254,7 +254,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
-                        .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(70, 0)) //
+                        .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
                         .thenBelow(errorTable).right(targetContainer).bottom(new FormAttachment(100, 0));
 
         //

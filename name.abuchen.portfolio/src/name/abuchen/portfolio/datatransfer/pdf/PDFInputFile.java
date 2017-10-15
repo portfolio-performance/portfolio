@@ -74,9 +74,5 @@ public class PDFInputFile extends Extractor.InputFile
             textStripper.setSortByPosition(true);
             text = textStripper.getText(document);
         }
-        catch (IOException e)
-        {
-            System.err.println(e);
-        }
     }
 }
