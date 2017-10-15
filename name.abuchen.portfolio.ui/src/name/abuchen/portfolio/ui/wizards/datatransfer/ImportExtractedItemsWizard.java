@@ -152,22 +152,22 @@ public class ImportExtractedItemsWizard extends Wizard
     @Override
     public boolean performFinish()
     {
-
-        if (pages.size() > 0)
+        if (!pages.isEmpty())
         {
             boolean isDirty = false;
-            for (int PDFAssistantPageID = 0; PDFAssistantPageID < pages.size(); PDFAssistantPageID++)
+            for (int index = 0; index < pages.size(); index++)
             {
+                ReviewExtractedItemsPage page = pages.get(index);
+                page.afterPage();
 
-                pages.get(PDFAssistantPageID).afterPage();
                 InsertAction action = new InsertAction(client);
-                action.setConvertBuySellToDelivery(pages.get(PDFAssistantPageID).doConvertToDelivery());
+                action.setConvertBuySellToDelivery(page.doConvertToDelivery());
 
-                for (ExtractedEntry entry : pages.get(PDFAssistantPageID).getEntries())
+                for (ExtractedEntry entry : page.getEntries())
                 {
                     if (entry.isImported())
                     {
-                        entry.getItem().apply(action, pages.get(PDFAssistantPageID));
+                        entry.getItem().apply(action, page);
                         isDirty = true;
                     }
                 }

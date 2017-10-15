@@ -93,6 +93,7 @@ public class CSVImportWizard extends Wizard
 
         reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
                         Arrays.asList(new Extractor.InputFile(importer.getInputFile())), REVIEW_PAGE_ID);
+        reviewPage.setDoExtractBeforeEveryPageDisplay(true);
         addPage(reviewPage);
 
         selectSecurityPage = new SelectSecurityPage(client);
