@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.27.9</version>
+		<version>0.27.10-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
