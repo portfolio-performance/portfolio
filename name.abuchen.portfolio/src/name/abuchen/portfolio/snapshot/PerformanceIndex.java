@@ -201,7 +201,17 @@ public class PerformanceIndex
     public Drawdown getDrawdown()
     {
         if (drawdown == null)
-            drawdown = new Drawdown(accumulated, dates);
+        {
+            int startAt = 0;
+            for (; startAt < totals.length; startAt++)
+                if (totals[startAt] != 0)
+                    break;
+            
+            if (startAt == totals.length)
+                startAt = totals.length - 1;
+            
+            drawdown = new Drawdown(accumulated, dates, startAt);
+        }
 
         return drawdown;
     }
