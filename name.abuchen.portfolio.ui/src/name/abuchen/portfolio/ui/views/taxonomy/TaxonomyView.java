@@ -125,7 +125,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             Client filteredClient = filter.filter(getClient());
             ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
                             LocalDate.now());
-            model.setClientSnapshot(snapshot);
+            model.setClientSnapshot(filteredClient, snapshot);
             model.fireTaxonomyModelChange(model.getVirtualRootNode());
         };
 
@@ -164,7 +164,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     {
         Client filteredClient = this.clientFilter.getSelectedFilter().filter(getClient());
         ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
-        model.setClientSnapshot(snapshot);
+        model.setClientSnapshot(filteredClient, snapshot);
         model.fireTaxonomyModelChange(model.getVirtualRootNode());
     }
 

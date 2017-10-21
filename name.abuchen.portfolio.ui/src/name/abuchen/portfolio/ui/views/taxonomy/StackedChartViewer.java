@@ -37,7 +37,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 import name.abuchen.portfolio.util.Interval;
 
 public class StackedChartViewer extends AbstractChartPage
@@ -223,28 +222,23 @@ public class StackedChartViewer extends AbstractChartPage
         final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<>();
         final Map<TaxonomyNode, SeriesBuilder> node2series = new LinkedHashMap<>();
 
-        getModel().visitAll(new NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
+        getModel().visitAll(node -> {
+            if (node.isClassification())
             {
-                if (node.isClassification())
-                {
-                    node2series.put(node, new SeriesBuilder(node, dates.size()));
-                }
-                else
-                {
-                    InvestmentVehicle vehicle = node.getAssignment().getInvestmentVehicle();
+                node2series.put(node, new SeriesBuilder(node, dates.size()));
+            }
+            else
+            {
+                InvestmentVehicle vehicle = node.getAssignment().getInvestmentVehicle();
 
-                    VehicleBuilder builder = vehicle2builder.get(vehicle);
-                    if (builder == null)
-                    {
-                        builder = new VehicleBuilder();
-                        vehicle2builder.put(vehicle, builder);
-                    }
-
-                    builder.add(node.getWeight(), node2series.get(node.getParent()));
+                VehicleBuilder builder = vehicle2builder.get(vehicle);
+                if (builder == null)
+                {
+                    builder = new VehicleBuilder();
+                    vehicle2builder.put(vehicle, builder);
                 }
+
+                builder.add(node.getWeight(), node2series.get(node.getParent()));
             }
         });
 
@@ -253,8 +247,8 @@ public class StackedChartViewer extends AbstractChartPage
         int index = 0;
         for (LocalDate current : dates)
         {
-            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getClient(), getModel().getCurrencyConverter(),
-                            current);
+            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getFilteredClient(),
+                            getModel().getCurrencyConverter(), current);
             totals[index] = snapshot.getMonetaryAssets().getAmount();
 
             Map<InvestmentVehicle, AssetPosition> p = snapshot.getPositionsByVehicle();
@@ -277,7 +271,7 @@ public class StackedChartViewer extends AbstractChartPage
                 totals[ii] -= unassigned.values[ii];
         }
 
-        Stream<SeriesBuilder> seriesStream = node2series.values().stream().filter(s -> s.hasValues());
+        Stream<SeriesBuilder> seriesStream = node2series.values().stream().filter(SeriesBuilder::hasValues);
         if (getModel().isUnassignedCategoryInChartsExcluded())
             seriesStream = seriesStream.filter(s -> !s.node.isUnassignedCategory());
 

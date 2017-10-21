@@ -52,8 +52,16 @@ public final class TaxonomyModel
 
     private final Taxonomy taxonomy;
     private final Client client;
-    private ClientSnapshot snapshot;
     private final CurrencyConverter converter;
+
+    /**
+     * The Client file which was used to create the ClientSnapshot. When
+     * filtering, we cannot replace the original client as the filtered client
+     * may not contain all securities. But we need the filtered to calculate for
+     * example the stacked chart series.
+     */
+    private Client filteredClient;
+    private ClientSnapshot snapshot;
 
     private TaxonomyNode virtualRootNode;
     private TaxonomyNode classificationRootNode;
@@ -77,6 +85,8 @@ public final class TaxonomyModel
         this.taxonomy = taxonomy;
         this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+        
+        this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
@@ -289,7 +299,8 @@ public final class TaxonomyModel
     public TaxonomyNode getChartRenderingRootNode()
     {
         return isUnassignedCategoryInChartsExcluded() || getUnassignedNode().getActual().isZero()
-                        ? getClassificationRootNode() : getVirtualRootNode();
+                        ? getClassificationRootNode()
+                        : getVirtualRootNode();
     }
 
     public Client getClient()
@@ -307,10 +318,16 @@ public final class TaxonomyModel
         return converter.getTermCurrency();
     }
 
-    public void setClientSnapshot(ClientSnapshot newSnapshot)
+    public void setClientSnapshot(Client filteredClient, ClientSnapshot newSnapshot)
     {
+        this.filteredClient = filteredClient;
         this.snapshot = newSnapshot;
         recalculate();
+    }
+    
+    public Client getFilteredClient()
+    {
+        return filteredClient;
     }
 
     public ClientSnapshot getClientSnapshot()
@@ -352,7 +369,7 @@ public final class TaxonomyModel
 
     public void markDirty()
     {
-        dirtyListener.forEach(l -> l.onModelEdited());
+        dirtyListener.forEach(DirtyListener::onModelEdited);
     }
 
     public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)
