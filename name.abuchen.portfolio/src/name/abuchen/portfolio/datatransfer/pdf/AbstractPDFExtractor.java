@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -34,7 +33,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     private final List<String> bankIdentifier = new ArrayList<>();
     private final List<DocumentType> documentTypes = new ArrayList<>();
 
-    public AbstractPDFExtractor(Client client) throws IOException
+    public AbstractPDFExtractor(Client client)
     {
         this.client = client;
     }

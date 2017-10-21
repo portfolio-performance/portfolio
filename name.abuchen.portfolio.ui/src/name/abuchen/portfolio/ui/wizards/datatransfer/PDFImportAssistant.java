@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -11,10 +10,13 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 
 public class PDFImportAssistant
 {
-    public static Extractor detectBankIdentifier(PDFInputFile PDFfilename, List<Extractor> extractors) throws IOException
+    private PDFImportAssistant()
+    {}
+
+    public static Extractor detectBankIdentifier(PDFInputFile inputFile, List<Extractor> extractors)
     {
-        String author = PDFfilename.getAuthor();
-        String text = PDFfilename.getText();
+        String author = inputFile.getAuthor();
+        String text = inputFile.getText();
 
         // PDF import assistant - Level 1 - Allocate by PDF Author
 
@@ -47,7 +49,7 @@ public class PDFImportAssistant
                 continue;
 
             List<String> bankIdentifier = ((AbstractPDFExtractor) extractor).getBankIdentifier();
-            
+
             if (bankIdentifier.isEmpty() && text.contains(extractor.getLabel()))
                 return extractor;
 

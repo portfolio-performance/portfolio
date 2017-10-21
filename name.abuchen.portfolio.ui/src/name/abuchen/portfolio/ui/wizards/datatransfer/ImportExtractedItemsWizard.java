@@ -34,7 +34,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-public class ImportExtractedItemsWizard extends Wizard
+public final class ImportExtractedItemsWizard extends Wizard
 {
     private Client client;
     private List<Extractor> extractors = new ArrayList<>();
@@ -42,6 +42,13 @@ public class ImportExtractedItemsWizard extends Wizard
     private List<Extractor.InputFile> files;
 
     private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
+
+    /**
+     * in legacy mode, the PDF import does not try to assign extractors
+     * automatically. It is just a fallback in case the automatic assignment has
+     * problems. This mode is only available via keyboard shortcut.
+     */
+    private boolean isLegacyMode = false;
 
     public ImportExtractedItemsWizard(Client client, Extractor extractor, IPreferenceStore preferences,
                     List<Extractor.InputFile> files) throws IOException
@@ -77,6 +84,11 @@ public class ImportExtractedItemsWizard extends Wizard
         extractors.add(new UnicreditPDFExtractor(client));
     }
 
+    public void setLegacyMode(boolean isLegacyMode)
+    {
+        this.isLegacyMode = isLegacyMode;
+    }
+
     @Override
     public boolean canFinish()
     {
@@ -99,53 +111,56 @@ public class ImportExtractedItemsWizard extends Wizard
         Map<Extractor, List<Extractor.InputFile>> extractor2files = new HashMap<>();
 
         if (extractors.size() == 1)
+        {
             extractor2files.put(extractors.get(0), files);
+        }
+        else if (isLegacyMode)
+        {
+            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            extractors.add(e);
+            extractor2files.put(e, files);
+        }
         else
+        {
             assignFilesToExtractors(extractor2files);
+        }
 
         for (Extractor extractor : extractors)
         {
             List<Extractor.InputFile> files4extractor = extractor2files.get(extractor);
             if (files4extractor == null || files4extractor.isEmpty())
                 continue;
-            
+
             ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
                             files4extractor);
             pages.add(page);
             addPage(page);
         }
-        
+
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }
 
     private void assignFilesToExtractors(Map<Extractor, List<Extractor.InputFile>> extractor2files)
     {
-        try
+        List<Extractor.InputFile> unknown = new ArrayList<>();
+
+        for (Extractor.InputFile file : files)
         {
-            List<Extractor.InputFile> unknown = new ArrayList<>();
+            PDFInputFile inputFile = (PDFInputFile) file;
 
-            for (Extractor.InputFile file : files)
-            {
-                PDFInputFile inputFile = (PDFInputFile) file;
-                
-                Extractor extractor = PDFImportAssistant.detectBankIdentifier(inputFile, extractors);
+            Extractor extractor = PDFImportAssistant.detectBankIdentifier(inputFile, extractors);
 
-                if (extractor != null)
-                    extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(inputFile);
-                else
-                    unknown.add(inputFile);
-            }
-
-            if (!unknown.isEmpty())
-            {
-                Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
-                extractors.add(e);
-                extractor2files.put(e, unknown);
-            }
+            if (extractor != null)
+                extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(inputFile);
+            else
+                unknown.add(inputFile);
         }
-        catch (IOException e)
+
+        if (!unknown.isEmpty())
         {
-            throw new IllegalArgumentException(e);
+            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            extractors.add(e);
+            extractor2files.put(e, unknown);
         }
     }
 

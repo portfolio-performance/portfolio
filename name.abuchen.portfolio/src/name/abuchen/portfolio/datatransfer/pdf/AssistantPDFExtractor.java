@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.List;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -10,7 +9,7 @@ public class AssistantPDFExtractor extends AbstractPDFExtractor
 {
     private List<Extractor> availableExtractors;
 
-    public AssistantPDFExtractor(Client client, List<Extractor> availableExtractors) throws IOException
+    public AssistantPDFExtractor(Client client, List<Extractor> availableExtractors)
     {
         super(client);
         this.availableExtractors = availableExtractors;

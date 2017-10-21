@@ -49,6 +49,12 @@ public class ImportPDFHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
+        doExecute(part, shell, false);
+    }
+
+    /* package */ void doExecute(MPart part, Shell shell, boolean isLegacyMode)
+    {
+
         Client client = MenuHelper.getActiveClient(part);
         if (client == null)
             return;
@@ -99,7 +105,7 @@ public class ImportPDFHandler
                     @Override
                     protected IStatus run(IProgressMonitor monitor)
                     {
-                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, preferences));
+                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, preferences, isLegacyMode));
                         return Status.OK_STATUS;
                     }
                 }.schedule(50);
@@ -117,12 +123,14 @@ public class ImportPDFHandler
         }
     }
 
-    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files, IPreferenceStore preferences)
+    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files, IPreferenceStore preferences,
+                    boolean isLegacyMode)
     {
         try
         {
-            Dialog wizwardDialog = new WizardDialog(shell,
-                            new ImportExtractedItemsWizard(client, null, preferences, files));
+            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, null, preferences, files);
+            wizard.setLegacyMode(isLegacyMode);
+            Dialog wizwardDialog = new WizardDialog(shell, wizard);
             wizwardDialog.open();
         }
         catch (IOException e)
