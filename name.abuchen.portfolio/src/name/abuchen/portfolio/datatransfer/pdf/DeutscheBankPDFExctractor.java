@@ -131,6 +131,12 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
 
+                        .section("churchtax", "currency") //
+                        .optional()
+                        .match("Kirchensteuer auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<churchtax>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("churchtax"))))))
+
                         .section("provision", "currency") //
                         .optional().match("Provision.*(?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
