@@ -334,6 +334,10 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateShares()
     {
+        // do not auto-suggest shares and quote when editing an existing transaction
+        if (sourceTransaction != null)
+            return;
+        
         if (!supportsShares() || security == null)
             return;
 

@@ -71,6 +71,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public abstract boolean accepts(Type type);
 
     public abstract void setSource(Object source);
+    
+    public abstract boolean hasSource();
 
     @Override
     public void resetToNewTransaction()
@@ -263,6 +265,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateSharesAndQuote()
     {
+        // do not auto-suggest shares and quote when editing an existing transaction
+        if (hasSource())
+            return;
+        
         if (type == PortfolioTransaction.Type.SELL || type == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
         {
             boolean hasPosition = false;

@@ -128,6 +128,11 @@ public class SecurityTransferModel extends AbstractModel
 
     private void updateSharesAndQuote()
     {
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
+        if (source != null)
+            return;
+
         SecurityPosition position = null;
 
         if (security != null)
