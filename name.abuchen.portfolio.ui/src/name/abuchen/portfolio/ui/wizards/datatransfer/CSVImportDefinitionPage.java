@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -41,12 +42,10 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.RGB;
@@ -187,14 +186,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         lblSkipLines.setText(Messages.CSVImportLabelSkipLines);
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
-        skipLines.addModifyListener(new ModifyListener()
-        {
-            @Override
-            public void modifyText(ModifyEvent event)
-            {
-                onSkipLinesChanged(skipLines.getSelection());
-            }
-        });
+        skipLines.addModifyListener(event -> onSkipLinesChanged(skipLines.getSelection()));
 
         Label lblEncoding = new Label(container, SWT.NONE);
         lblEncoding.setText(Messages.CSVImportLabelEncoding);
@@ -208,17 +200,13 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         final Button firstLineIsHeader = new Button(container, SWT.CHECK);
         firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
         firstLineIsHeader.setSelection(true);
-        firstLineIsHeader.addSelectionListener(new SelectionListener()
+        firstLineIsHeader.addSelectionListener(new SelectionAdapter()
         {
             @Override
             public void widgetSelected(SelectionEvent event)
             {
                 onFirstLineIsHeaderChanged(firstLineIsHeader.getSelection());
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent event)
-            {}
         });
 
         Composite compositeTable = new Composite(container, SWT.NONE);
@@ -265,11 +253,11 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         table.addMouseListener(new MouseListener()
         {
             @Override
-            public void mouseUp(MouseEvent e)
+            public void mouseUp(MouseEvent e) // NOSONAR
             {}
 
             @Override
-            public void mouseDown(MouseEvent e)
+            public void mouseDown(MouseEvent e) // NOSONAR
             {}
 
             @Override
@@ -372,7 +360,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                 setColumnLabel(tableColumn, column);
             }
 
-            List<Object> input = new ArrayList<Object>();
+            List<Object> input = new ArrayList<>();
             input.add(importer);
             input.addAll(importer.getRawValues());
             tableViewer.setInput(input);
@@ -424,7 +412,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
     private void doUpdateErrorMessages()
     {
-        Set<Field> fieldsToMap = new HashSet<Field>(importer.getExtractor().getFields());
+        Set<Field> fieldsToMap = new HashSet<>(importer.getExtractor().getFields());
         for (Column column : importer.getColumns())
             fieldsToMap.remove(column.getField());
 
@@ -563,6 +551,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         }
 
         @Override
+        protected void createButtonsForButtonBar(Composite parent)
+        {
+            // do not create a CANCEL button as it implies that the user could
+            // cancel the operation. However, since we edit the original
+            // configuration immediately, cancellation is not possible.
+            createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
+        }
+
+        @Override
         protected Control createDialogArea(Composite parent)
         {
             Composite composite = (Composite) super.createDialogArea(parent);
@@ -572,7 +569,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
             ComboViewer mappedTo = new ComboViewer(composite, SWT.READ_ONLY);
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
-            List<Field> fields = new ArrayList<Field>();
+            List<Field> fields = new ArrayList<>();
             fields.add(EMPTY);
             fields.addAll(definition.getFields());
             mappedTo.setInput(fields);
@@ -611,7 +608,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             tableViewer.setContentProvider(new KeyMappingContentProvider());
             tableViewer.getTable().setLinesVisible(true);
             tableViewer.getTable().setHeaderVisible(true);
-            GridDataFactory.fillDefaults().grab(false, true).applyTo(tableViewer.getTable());
+            GridDataFactory.fillDefaults().grab(false, true).minSize(SWT.DEFAULT, 100).applyTo(tableViewer.getTable());
 
             TableViewerColumn col = new TableViewerColumn(tableViewer, SWT.NONE);
             col.getColumn().setText(Messages.CSVImportLabelExpectedValue);
@@ -760,7 +757,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             if (mapFormat == null)
                 return new Object[0];
 
-            List<Entry<?>> elements = new ArrayList<Entry<?>>();
+            List<Entry<?>> elements = new ArrayList<>();
 
             for (Enum<?> entry : mapFormat.map().keySet())
                 elements.add(new Entry(mapFormat.map(), entry));
