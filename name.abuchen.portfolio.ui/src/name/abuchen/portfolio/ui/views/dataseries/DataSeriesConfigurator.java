@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -76,7 +77,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     /* protected */ void fireUpdate()
     {
-        listeners.forEach(l -> l.onUpdate());
+        listeners.forEach(Listener::onUpdate);
         store.updateActive(new DataSeriesSerializer().toString(selectedSeries));
     }
 
@@ -202,19 +203,38 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
         MenuManager copyFromOthers = new MenuManager(Messages.ChartSeriesCopySeriesFromOtherChart);
         manager.add(copyFromOthers);
+        MenuManager replaceByOthers = new MenuManager(Messages.ChartSeriesReplaceSeriesByOtherChart);
+        manager.add(replaceByOthers);
+        
+        String currentConfigUUID = store.getActiveUUID();
 
         for (int ii = 0; ii < charts.length; ii += 2)
         {
             ConfigurationSet set = client.getSettings().getConfigurationSet(charts[ii] + IDENTIFIER_POSTFIX);
 
-            MenuManager menu = new MenuManager(charts[ii + 1]);
-            copyFromOthers.add(menu);
+            MenuManager menuCopy = new MenuManager(charts[ii + 1]);
+            copyFromOthers.add(menuCopy);
+            MenuManager menuReplace = new MenuManager(charts[ii + 1]);
+            replaceByOthers.add(menuReplace);
 
-            set.getConfigurations().forEach(config -> menu.add(new SimpleAction(config.getName(), a -> {
-                List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
-                list.stream().filter(s -> !selectedSeries.contains(s)).forEach(s -> selectedSeries.add(s));
-                fireUpdate();
-            })));
+            set.getConfigurations().forEach(config -> {
+                
+                if (Objects.equals(currentConfigUUID, config.getUUID()))
+                    return;
+                
+                menuCopy.add(new SimpleAction(config.getName(), a -> {
+                    List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
+                    list.stream().filter(s -> !selectedSeries.contains(s)).forEach(s -> selectedSeries.add(s));
+                    fireUpdate();
+                }));
+
+                menuReplace.add(new SimpleAction(config.getName(), a -> {
+                    List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
+                    selectedSeries.clear();
+                    list.stream().forEach(s -> selectedSeries.add(s));
+                    fireUpdate();
+                }));
+            });
         }
     }
 

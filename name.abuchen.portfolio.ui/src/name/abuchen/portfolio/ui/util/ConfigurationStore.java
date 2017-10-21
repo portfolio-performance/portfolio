@@ -192,6 +192,11 @@ public class ConfigurationStore
     {
         return active.getName();
     }
+    
+    public String getActiveUUID()
+    {
+        return active.getUUID();
+    }
 
     public void insertMigratedConfiguration(String data)
     {

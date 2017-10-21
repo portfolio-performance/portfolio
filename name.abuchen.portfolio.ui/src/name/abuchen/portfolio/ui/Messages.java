@@ -49,6 +49,7 @@ public class Messages extends NLS
     public static String ChartSeriesPickerRemove;
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;
+    public static String ChartSeriesReplaceSeriesByOtherChart;
     public static String ClientEditorLabelChart;
     public static String ClientEditorLabelClientMasterData;
     public static String ClientEditorLabelGeneralData;
