@@ -462,13 +462,13 @@ public class ComdirectPDFExtractorTest
     }
 
     @Test
-    public void testGutschrift() throws IOException
+    public void testGutschrift1() throws IOException
     {
         ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift.txt"),
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -593,5 +593,38 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1546.13)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3000)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(525 + 28.87)));
+    }
+
+    @Test
+    public void testGutschrift3() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift3.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US74348T1025"));
+        assertThat(security.getName(), is("P  r os p e c t  C  ap i t a l   C o r p."));
+        assertThat(security.getWkn(), is("A0B746"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-10-23")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(7.52)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(175)));
     }
 }
