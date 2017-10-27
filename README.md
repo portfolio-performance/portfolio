@@ -38,7 +38,7 @@ mvn clean install
 
 ### Setup
 
-To develop, use [Eclipse IDE](http://eclipse.org/downloads/) plus the **Plug-in Development Environment (PDE)**.
+To develop, use [Eclipse IDE](http://eclipse.org/downloads/) plus the **Eclipse for RCP and RAP Developers**.
 
 Clone the git repository.
 
