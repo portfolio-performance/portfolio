@@ -23,7 +23,7 @@ import name.abuchen.portfolio.money.Values;
 
 public abstract class AbstractPDFExtractor implements Extractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
