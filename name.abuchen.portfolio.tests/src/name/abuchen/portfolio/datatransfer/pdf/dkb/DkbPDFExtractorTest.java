@@ -285,6 +285,44 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.29))));
     }
+    
+    @Test
+    public void testInvestmentertraege() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DkbInvestmentertraege.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00B6YX5D40"));
+        assertThat(security.getWkn(), is("A1JKS0"));
+        assertThat(security.getName(), is("SPDR S&P US DIVID.ARISTOCR.ETF"));
+        assertThat(security.getCurrencyCode(), is("USD"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-10-04")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.09)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.39))));
+    }
 
     @Test
     public void testWertpapierKauf() throws IOException
