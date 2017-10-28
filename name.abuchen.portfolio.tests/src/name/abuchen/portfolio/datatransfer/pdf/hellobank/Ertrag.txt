@@ -1,0 +1,42 @@
+Frau
+"Vorname" "Nachname"
+"Straße" "Nummer"
+"PLZ" "Ort"
+Abrechnung Ereignis
+36011270-11.9.2017
+Depot-Nr.: "Depotnummer"
+"Vorname" "Nachname"
+22/9865
+Hello bank!
+Wir haben für Sie am 11.9.2017 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Ertrag
+200 Stk
+Titel: NO0003054108 M a r i n e H a r v est ASA
+Navne-Aksjer NK 7,50
+Dividende: 3,2 NOK
+Verwahrart: WR
+Positionsdaten: Loco: Oslo
+Bruttoertrag: 640,-- NOK
+KESt Ausländische Dividende: -176,01 NOK
+463,99 NOK
+Devisenkurs: 9,308 (5.9.2017) 49,85 EUR
+Inkassoprovision: -0,95 EUR
+Umsatzsteuer: -0,19 EUR
+Zu Gunsten IBAN "IBAN" 48,71 EUR
+Valuta 6.9.2017
+Es wurde Umsatzsteuer in der Höhe von 20% berücksichtigt.
+Extag: 1.9.2017
+Record-Tag: 4.9.2017
+Es wurde Auslands-KESt in der Höhe von +27,5% berücksichtigt.
+Die KESt-Abfuhr erfolgt an das Finanzamt Salzburg-Stadt (FA91).
+Devisenkurs: 9,308 (5.9.2017)
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 200 Stk
+Ertrag: 68,76 EUR
+Hellobank BNP Paribas Austria AG
+Elisabethstraße 22
+5020 Salzburg
+12.9.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+55884 Doknr.: ON00-036-0000000001

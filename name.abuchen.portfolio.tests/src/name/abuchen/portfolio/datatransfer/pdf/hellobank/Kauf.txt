@@ -1,0 +1,42 @@
+Frau
+"Vorname" "Nachname"
+"Straße" "Nummer"
+"PLZ" "Ort"
+Abrechnung Handel
+36914520-4.7.2017
+Depot-Nr.: "Depotnummer"
+"Vorname" "Nachname"
+22/9865
+Hello bank!
+Wir haben für Sie am 4.7.2017 unten angeführtes Geschäft abgerechnet:
+Geschäftsart: Kauf
+Auftrags-Nr.: 36460904-30.6.2017
+Auftragseingang: 15.6.2017-20:04:58
+Zugang: 126 Stk Teilausführung
+Titel: NO0003054108 M a r i n e H a r v est ASA
+Navne-Aksjer NK 7,50
+Kurs: 140 NOK
+Handelsplatz: XOSL OSLO BORS
+Handelszeit: 3.7.2017 um 15:11:09 Uhr
+Verwahrart: WR
+Positionsdaten: Loco: Oslo
+Kurswert: -17.640,-- NOK
+-17.640,-- NOK
+Devisenkurs: 9,457 (4.7.2017) -1.865,28 EUR
+Grundgebühr: -2,49 EUR
+Zu Lasten IBAN "IBAN" -1.867,77 EUR
+Valuta 5.7.2017
+Schlusstag: 3.7.2017
+Kassatag: 5.7.2017
+Devisenkurs: 9,457 (4.7.2017)
+Bestand nach Buchung:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren § 27a Abs. 4 Zi 3 EStG 126 Stk
+steuerlicher Anschaffungswert: 1.865,28 EUR
+Hellobank BNP Paribas Austria AG
+Elisabethstraße 22
+5020 Salzburg
+3.8.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+08555 Doknr.: ON00-036-0000000001
