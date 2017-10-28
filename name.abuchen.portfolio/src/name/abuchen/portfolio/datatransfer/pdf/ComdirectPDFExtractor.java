@@ -115,9 +115,19 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .section("wkn", "name", "isin", "shares") //
+                        .section("wkn", "name", "isin", "shares").optional() //
                         .match("p e r *\\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d (?<name>.*)      (?<wkn>.*)") //
                         .match("^S T K *(?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).*    .* {4}(?<isin>.*)$") //
+                        .assign((t, v) -> {
+                            v.put("isin", stripBlanks(v.get("isin")));
+                            v.put("wkn", stripBlanks(v.get("wkn")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                        })
+
+                        .section("wkn", "name", "isin", "shares").optional() //
+                        .match("p e r *\\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d (?<name>.*)      (?<wkn>.*)") //
+                        .match(" ST K *(?<shares>(\\d  )?(\\d )*(\\. )?(\\d )*,(\\d )*).*    .* {4}(?<isin>.*)$") //
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
