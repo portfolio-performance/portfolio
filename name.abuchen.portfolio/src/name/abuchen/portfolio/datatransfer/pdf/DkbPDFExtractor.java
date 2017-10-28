@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -16,6 +19,8 @@ import name.abuchen.portfolio.money.Money;
 @SuppressWarnings("nls")
 public class DkbPDFExtractor extends AbstractPDFExtractor
 {
+    private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
+
     public DkbPDFExtractor(Client client) throws IOException
     {
         super(client);
@@ -27,10 +32,11 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addSellTransaction();
         addInterestTransaction();
         addDividendTransaction();
+        addInvestmentEarningTransaction();
         addRemoveTransaction();
         addTransferOutTransaction();
     }
-    
+
     @Override
     public String getPDFAuthor()
     {
@@ -172,7 +178,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction);
+        addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
@@ -218,7 +224,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
-        addTaxesSectionsTransaction(pdfTransaction);
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
@@ -236,9 +243,9 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return transaction;
         });
         block.set(pdfTransaction);
-        pdfTransaction.section("shares", "name", "isin", "wkn")
+        pdfTransaction.section("shares", "name", "isin", "wkn") //
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(^St\\Dck) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
@@ -255,7 +262,58 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new);
-        addTaxesSectionsTransaction(pdfTransaction);
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
+        addFeesSectionsTransaction(pdfTransaction);
+    }
+
+    private void addInvestmentEarningTransaction()
+    {
+        DocumentType type = new DocumentType("Investmenterträge", (context, lines) -> {
+            Pattern pattern = Pattern
+                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)");
+            for (String line : lines)
+            {
+                Matcher m = pattern.matcher(line);
+                if (m.matches())
+                    context.put(EXCHANGE_RATE, m.group("exchangeRate"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Gutschrift von Investmenterträgen");
+        type.addBlock(block);
+        
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+        block.set(pdfTransaction);
+        
+        pdfTransaction.section("shares", "name", "isin", "wkn", "currency")
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                        .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$").match(".*") //
+                        .match("(?<isin>[^ ]*) \\((?<wkn>.*)\\)$") //
+                        .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3}+)").assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("date", "amount")
+                        .match("(^Ausmachender Betrag) (?<amount>[\\d,.]*)(.*) (?<currency>\\w{3}+)")
+                        .match("(^Lagerstelle) (.*)")
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
     }
 
@@ -311,7 +369,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
-        addTaxesSectionsTransaction(pdfTransaction);
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
         addTaxReturnBlock(type);
     }
@@ -359,39 +418,44 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new));
     }
 
-    private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
     {
-        pdfTransaction.section("tax").optional()
+        pdfTransaction.section("tax", "currency").optional()
                         .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(t, v, "tax"))
+                        .assign((t, v) -> addTax(documentType, t, v, "tax"))
 
-                        .section("soli").optional()
+                        .section("soli", "currency").optional()
                         .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(t, v, "soli"))
+                        .assign((t, v) -> addTax(documentType, t, v, "soli"))
 
-                        .section("kirchenst").optional()
+                        .section("kirchenst", "currency").optional()
                         .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(t, v, "kirchenst"))
+                        .assign((t, v) -> addTax(documentType, t, v, "kirchenst"))
 
-                        .section("quellenst")
-                        .optional()
+                        .section("quellenst", "currency").optional()
                         .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenst>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(t, v, "quellenst"));
+                        .assign((t, v) -> addTax(documentType, t, v, "quellenst"));
 
     }
 
-    private void addTax(Object t, Map<String, String> v, String taxtype)
+    private void addTax(DocumentType documentType, Object t, Map<String, String> v, String taxtype)
     {
-        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+
+        String currency = asCurrencyCode(v.get("currency"));
+        long amount = asAmount(v.get(taxtype));
+
+        if (!currency.equals(tx.getCurrencyCode()) && documentType.getCurrentContext().containsKey(EXCHANGE_RATE))
         {
-            ((name.abuchen.portfolio.model.Transaction) t).addUnit(new Unit(Unit.Type.TAX, //
-                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype)))));
+            BigDecimal rate = BigDecimal.ONE.divide( //
+                            asExchangeRate(documentType.getCurrentContext().get(EXCHANGE_RATE)), 10,
+                            BigDecimal.ROUND_HALF_DOWN);
+
+            currency = tx.getCurrencyCode();
+            amount = rate.multiply(BigDecimal.valueOf(amount)).longValue();
         }
-        else
-        {
-            ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
-                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get(taxtype)))));
-        }
+
+        tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T pdfTransaction)
