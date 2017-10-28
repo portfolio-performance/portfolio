@@ -10,6 +10,8 @@ import java.util.Scanner;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.util.PDFTextStripper;
+import org.osgi.framework.FrameworkUtil;
+import org.osgi.framework.Version;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 
@@ -35,8 +37,7 @@ public class PDFInputFile extends Extractor.InputFile
 
         for (String filename : filenames)
         {
-            try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename),
-                            StandardCharsets.UTF_8.name()))
+            try (Scanner scanner = new Scanner(testCase.getResourceAsStream(filename), StandardCharsets.UTF_8.name()))
             {
                 String extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
                 answer.add(new PDFInputFile(new File(filename), extractedText));
@@ -61,6 +62,11 @@ public class PDFInputFile extends Extractor.InputFile
     public String getAuthor()
     {
         return author;
+    }
+
+    public Version getPDFBoxVersion()
+    {
+        return FrameworkUtil.getBundle(PDDocument.class).getVersion();
     }
 
     public void parse() throws IOException
