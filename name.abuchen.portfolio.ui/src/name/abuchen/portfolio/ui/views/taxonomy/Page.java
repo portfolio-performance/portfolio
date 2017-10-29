@@ -35,7 +35,7 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
         return renderer;
     }
 
-    public IPreferenceStore getPreferenceStore()
+    public final IPreferenceStore getPreferenceStore()
     {
         return preferenceStore;
     }

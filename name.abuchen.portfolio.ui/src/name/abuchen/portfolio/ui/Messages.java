@@ -708,6 +708,8 @@ public class Messages extends NLS
     public static String WatchlistNewLabel;
     public static String WatchlistRename;
     public static String BookmarkMenu_EditBookmarks;
+    public static String FilterNotRetired;
+    public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
     static

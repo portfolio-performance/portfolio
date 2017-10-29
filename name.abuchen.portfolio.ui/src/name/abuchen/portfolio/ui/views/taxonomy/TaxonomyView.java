@@ -5,10 +5,15 @@ import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
@@ -16,6 +21,7 @@ import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -26,11 +32,114 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
+    private class FilterDropDown extends AbstractDropDown
+    {
+        private ClientFilterMenu clientFilterMenu;
+
+        public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
+        {
+            super(toolBar, Messages.SecurityFilter, Images.FILTER_OFF.image(), SWT.NONE);
+
+            this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
+
+            Consumer<ClientFilter> listener = filter -> {
+                Client filteredClient = filter.filter(getClient());
+                ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
+                                LocalDate.now());
+                model.setClientSnapshot(filteredClient, snapshot);
+                model.fireTaxonomyModelChange(model.getVirtualRootNode());
+            };
+
+            clientFilterMenu.addListener(listener);
+            clientFilterMenu.addListener(filter -> updateIcon());
+
+            loadPreselectedFilter(preferenceStore);
+
+            if (clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty())
+                getToolItem().setImage(Images.FILTER_ON.image());
+
+            // As the taxonomy model is initially calculated in the #init
+            // method, we must recalculate the values if an active filter
+            // exists.
+            clientFilter = clientFilterMenu.getSelectedFilter();
+            if (clientFilterMenu.hasActiveFilter())
+                listener.accept(clientFilterMenu.getSelectedFilter());
+        }
+
+        private void loadPreselectedFilter(IPreferenceStore preferenceStore)
+        {
+            String prefix = TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(); //$NON-NLS-1$
+
+            // client filter
+            String key = prefix + ClientFilterMenu.PREF_KEY_POSTFIX;
+
+            String selection = preferenceStore.getString(key);
+            if (selection != null)
+                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                                .ifPresent(clientFilterMenu::select);
+
+            clientFilterMenu.addListener(
+                            filter -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
+
+            // predicates
+            if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO))
+                model.getNodeFilters().add(TaxonomyModel.FILTER_NON_ZERO);
+
+            if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED))
+                model.getNodeFilters().add(TaxonomyModel.FILTER_NOT_RETIRED);
+
+            this.getToolBar().addDisposeListener(e -> {
+                preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO,
+                                model.getNodeFilters().contains(TaxonomyModel.FILTER_NON_ZERO));
+                preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED,
+                                model.getNodeFilters().contains(TaxonomyModel.FILTER_NOT_RETIRED));
+            });
+        }
+
+        private void updateIcon()
+        {
+            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty();
+            getToolItem().setImage(hasActiveFilter ? Images.FILTER_ON.image() : Images.FILTER_OFF.image());
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            // show the node filter menu only for the tree pages
+            getCurrentPage().filter(p -> p instanceof AbstractNodeTreeViewer).ifPresent(p -> {
+                manager.add(buildNodeFilterAction(Messages.FilterValuationNonZero, TaxonomyModel.FILTER_NON_ZERO));
+                manager.add(buildNodeFilterAction(Messages.FilterNotRetired, TaxonomyModel.FILTER_NOT_RETIRED));
+            });
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            clientFilterMenu.menuAboutToShow(manager);
+        }
+
+        private Action buildNodeFilterAction(String label, Predicate<TaxonomyNode> predicate)
+        {
+            Action action = new SimpleAction(label, a -> {
+                boolean isActive = model.getNodeFilters().contains(predicate);
+                if (!isActive)
+                    model.getNodeFilters().add(predicate);
+                else
+                    model.getNodeFilters().remove(predicate);
+
+                model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                updateIcon();
+            });
+
+            action.setChecked(model.getNodeFilters().contains(predicate));
+            return action;
+        }
+    }
+
     /** preference key: store last active view as index */
     private String identifierView;
     /** preference key: include unassigned category in charts */
@@ -44,7 +153,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
-    private ClientFilterDropDown clientFilter;
+    private ClientFilter clientFilter;
 
     private Composite container;
     private List<Action> viewActions = new ArrayList<>();
@@ -114,55 +223,36 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
         addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
         addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
-        addFilterButton(toolBar);
+
+        new ToolItem(toolBar, SWT.SEPARATOR);
+
+        new FilterDropDown(toolBar, getPreferenceStore());
         addExportButton(toolBar);
         addConfigButton(toolBar);
-    }
-
-    private void addFilterButton(ToolBar toolBar)
-    {
-        Consumer<ClientFilter> listener = filter -> {
-            Client filteredClient = filter.filter(getClient());
-            ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
-                            LocalDate.now());
-            model.setClientSnapshot(filteredClient, snapshot);
-            model.fireTaxonomyModelChange(model.getVirtualRootNode());
-        };
-
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
-                        TaxonomyView.class.getSimpleName() + "-" + this.taxonomy.getId(), //$NON-NLS-1$
-                        listener);
-
-        // As the taxonomy model is initially calculated in the #init method, we
-        // must recalculate the values if an active filter exists.
-        if (this.clientFilter.hasActiveFilter())
-            listener.accept(this.clientFilter.getSelectedFilter());
     }
 
     private void addExportButton(ToolBar toolBar)
     {
         AbstractDropDown.create(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE,
-                        (dropdown, manager) -> {
-                            StackLayout layout = (StackLayout) container.getLayout();
-                            if (layout.topControl != null)
-                                ((Page) layout.topControl.getData()).exportMenuAboutToShow(manager);
-                        });
+                        (dropdown, manager) -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager)));
     }
 
     private void addConfigButton(ToolBar toolBar)
     {
         AbstractDropDown.create(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE,
-                        (dropdown, manager) -> {
-                            StackLayout layout = (StackLayout) container.getLayout();
-                            if (layout.topControl != null)
-                                ((Page) layout.topControl.getData()).configMenuAboutToShow(manager);
-                        });
+                        (dropdown, manager) -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager)));
+    }
+
+    private Optional<Page> getCurrentPage()
+    {
+        StackLayout layout = (StackLayout) container.getLayout();
+        return layout.topControl != null ? Optional.of((Page) layout.topControl.getData()) : Optional.empty();
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        Client filteredClient = this.clientFilter.getSelectedFilter().filter(getClient());
+        Client filteredClient = this.clientFilter.filter(getClient());
         ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
         model.setClientSnapshot(filteredClient, snapshot);
         model.fireTaxonomyModelChange(model.getVirtualRootNode());
