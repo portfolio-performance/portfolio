@@ -349,6 +349,7 @@ public class Messages extends NLS
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
     public static String LabelClientFilterNew;
+    public static String LabelColorSchema;
     public static String LabelColumns;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
@@ -429,6 +430,8 @@ public class Messages extends NLS
     public static String LabelDividendsPerMonth;
     public static String LabelDividendsPerYear;
     public static String LabelDividendsSelectStartYear;
+    public static String LabelGreenWhiteRed;
+    public static String LabelGreenYellowRed;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHistoricalReturnsAndVolatiltity;
