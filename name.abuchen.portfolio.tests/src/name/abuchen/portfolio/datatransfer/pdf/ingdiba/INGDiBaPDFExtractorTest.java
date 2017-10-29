@@ -502,8 +502,8 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getDate(), is(LocalDate.parse("2016-11-29")));
         assertThat(t.getShares(), is(Values.Share.factorize(66)));
 
-        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.24))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.91 + 0.32))));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.24 + 8.87))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.91 + 0.32 + 8.87))));
     }
 
     @Test
@@ -535,6 +535,37 @@ public class INGDiBaPDFExtractorTest
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(65.1 + 3.58))));
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(303.60))));
+    }
+
+    @Test
+    public void testDividendengutschrift3() throws IOException
+    {
+        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift3.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CH0038389992"));
+        assertThat(security.getWkn(), is("A0NFN3"));
+        assertThat(security.getName(), is("BB Biotech AG Namens-Aktien SF 0,20"));
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(t.getAmount(), is(Values.Amount.factorize(58.19)));
+        assertThat(t.getDate(), is(LocalDate.parse("2017-03-20")));
+        assertThat(t.getShares(), is(Values.Share.factorize(35)));
+
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.34))));
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(89.53))));
     }
 
     @Test
