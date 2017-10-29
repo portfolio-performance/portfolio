@@ -36,6 +36,7 @@ public class Messages extends NLS
     public static String BookmarksListView_title;
     public static String BookmarksListView_url;
     public static String BtnLabelApply;
+    public static String BtnLabelOpenInvestmentPlanView;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
@@ -299,6 +300,7 @@ public class Messages extends NLS
     public static String IntroOpenHowtosText;
     public static String IntroOpenSample;
     public static String IntroOpenSampleText;
+    public static String InvestmentPlanAutoCreationJob;
     public static String InvestmentPlanInfoNoTransactionsGenerated;
     public static String InvestmentPlanIntervalLabel;
     public static String InvestmentPlanMenuCreate;
@@ -307,6 +309,8 @@ public class Messages extends NLS
     public static String InvestmentPlanOptionDelivery;
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
+    public static String InvestmentPlanTxCreated;
+    public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdateStackedLineChart;
