@@ -100,6 +100,7 @@ public class ClientSecurityFilter implements ClientFilter
         switch (pair.getTransaction().getType())
         {
             case DIVIDENDS:
+            case KICKBACK:
                 AccountTransaction t = pair.getTransaction();
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();

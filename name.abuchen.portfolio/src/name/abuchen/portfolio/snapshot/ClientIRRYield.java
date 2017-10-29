@@ -95,6 +95,7 @@ public class ClientIRRYield
                                     case FEES_REFUND:
                                     case TAXES:
                                     case DIVIDENDS:
+                                    case KICKBACK:
                                     case INTEREST:
                                     case INTEREST_CHARGE:
                                     case TAX_REFUND:

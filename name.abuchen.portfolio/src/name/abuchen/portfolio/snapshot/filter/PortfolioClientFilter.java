@@ -149,6 +149,7 @@ public class PortfolioClientFilter implements ClientFilter
                     // security must be non-null -> tax refund is relevant for
                     // performance of security
                 case DIVIDENDS:
+                case KICKBACK:
                     pseudoAccount.internalAddTransaction(t);
                     pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.REMOVAL));
@@ -203,6 +204,7 @@ public class PortfolioClientFilter implements ClientFilter
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:
+                case KICKBACK:
                 case TAX_REFUND:
                     if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
                         pseudoAccount.internalAddTransaction(t);

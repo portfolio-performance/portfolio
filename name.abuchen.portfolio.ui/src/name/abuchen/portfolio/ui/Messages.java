@@ -246,6 +246,7 @@ public class Messages extends NLS
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
+    public static String KickbackDialogTitleShares;
     public static String EditWizardAttributesTitle;
     public static String EditWizardLatestQuoteFeedTitle;
     public static String EditWizardMasterDataLinkNewCategory;
@@ -329,6 +330,7 @@ public class Messages extends NLS
     public static String LabelAccumulatedDividends;
     public static String LabelAccumulatedInterest;
     public static String LabelAccumulatedInterestCharge;
+    public static String LabelAccumulatedKickbacks;
     public static String LabelAccumulatedTaxes;
     public static String LabelAggregation;
     public static String LabelAggregationDaily;
@@ -429,6 +431,8 @@ public class Messages extends NLS
     public static String LabelDividendsPerMonth;
     public static String LabelDividendsPerYear;
     public static String LabelDividendsSelectStartYear;
+    public static String LabelKickbackPerShare;    
+    public static String LabelKickback;
     public static String LabelHeading;
     public static String LabelHeatmap;
     public static String LabelHistoricalReturnsAndVolatiltity;
@@ -656,6 +660,7 @@ public class Messages extends NLS
     public static String SecurityMenuExportCSV;
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
+    public static String SecurityMenuKickback;
     public static String SecurityMenuNewSecurity;
     public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;

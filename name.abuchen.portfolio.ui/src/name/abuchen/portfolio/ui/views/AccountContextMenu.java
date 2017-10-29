@@ -94,6 +94,13 @@ public class AccountContextMenu
                             .with(account) //
                             .with(security) //
                             .addTo(manager);
+            
+            new OpenDialogAction(owner, Messages.SecurityMenuKickback + "...") //$NON-NLS-1$
+                            .type(AccountTransactionDialog.class) //
+                            .parameters(AccountTransaction.Type.KICKBACK) //
+                            .with(account) //
+                            .with(security) //
+                            .addTo(manager);
         }
 
         new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
