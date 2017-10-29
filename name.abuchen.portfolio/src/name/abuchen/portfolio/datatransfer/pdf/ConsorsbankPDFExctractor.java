@@ -394,6 +394,11 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("basicfees"))))))
 
+                        .section("currency", "assetbasedfees").optional()
+                        .match("(^.*)(Consorsbank Ausgabegeb.hr.*%) (?<currency>\\w{3}+) (?<assetbasedfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("assetbasedfees"))))))
+
                         .section("currency", "expenses").optional()
                         .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
