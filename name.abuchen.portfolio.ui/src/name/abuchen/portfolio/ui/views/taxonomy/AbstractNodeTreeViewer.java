@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -257,7 +259,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 return false;
         }
     }
-
+    
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
@@ -271,7 +273,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     private ShowHideColumnHelper support;
 
     private boolean isFirstView = true;
-
+    
     public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
@@ -319,7 +321,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         onModified(element, newValue, oldValue);
     }
-
+    
     @Override
     public void configMenuAboutToShow(IMenuManager manager)
     {
@@ -362,6 +364,21 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
                         new NodeDropListener(this));
 
+        nodeViewer.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+            
+                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                    if (!predicate.test(node))
+                        return false;
+                
+                return true;
+            }
+        });
+        
         nodeViewer.setInput(getModel());
 
         new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
