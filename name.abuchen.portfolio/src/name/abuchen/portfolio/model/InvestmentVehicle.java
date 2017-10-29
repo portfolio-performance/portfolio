@@ -7,4 +7,8 @@ public interface InvestmentVehicle extends Named
     String getCurrencyCode();
 
     void setCurrencyCode(String currencyCode);
+    
+    boolean isRetired();
+    
+    void setRetired(boolean isRetired);
 }

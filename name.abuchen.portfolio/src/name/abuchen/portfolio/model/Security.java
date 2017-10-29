@@ -380,11 +380,13 @@ public final class Security implements Attributable, InvestmentVehicle
         }
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
