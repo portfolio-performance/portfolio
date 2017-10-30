@@ -11,9 +11,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
 import com.ibm.icu.text.MessageFormat;
@@ -30,9 +28,6 @@ final class CreateInvestmentPlanTxJob extends AbstractClientJob
 
     @Inject
     private ExchangeRateProviderFactory factory;
-
-    @Inject
-    private PortfolioPart part;
 
     @Inject
     public CreateInvestmentPlanTxJob(Client client)
@@ -88,14 +83,8 @@ final class CreateInvestmentPlanTxJob extends AbstractClientJob
                         message = builder.toString();
                     }
 
-                    int buttonIndex = MessageDialog.open(MessageDialog.INFORMATION,
-                                    Display.getCurrent().getActiveShell(), Messages.LabelInfo, message, SWT.SHEET,
-                                    IDialogConstants.OK_LABEL, Messages.BtnLabelOpenInvestmentPlanView);
-
-                    if (buttonIndex > 0)
-                    {
-                        part.activateView("InvestmentPlanList", null); //$NON-NLS-1$
-                    }
+                    // FIXME Oxygen supports custom button labels
+                    MessageDialog.openInformation(Display.getCurrent().getActiveShell(), Messages.LabelInfo, message);
                 });
             }
 
