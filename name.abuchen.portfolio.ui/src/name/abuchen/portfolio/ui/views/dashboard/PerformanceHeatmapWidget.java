@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.Arrays;
 import java.util.Locale;
 import java.util.function.DoubleFunction;
 
@@ -256,6 +257,14 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
 
+        // adapt interval to include the first and last month fully
+
+        Interval calcInterval = Interval.of(interval.getStart().withDayOfMonth(1).minusDays(1),
+                        interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
+
+        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries,
+                        new ReportingPeriod.FromXtoY(calcInterval));
+
         for (Integer year : interval.iterYears())
         {
             // year
@@ -270,7 +279,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             {
                 if (interval.contains(month))
                 {
-                    cell = createCell(dataSeries, month, coloring);
+                    cell = createCell(performanceIndex, month, coloring);
                     InfoToolTip.attach(cell, Messages.PerformanceHeatmapToolTip);
                 }
                 else
@@ -283,18 +292,20 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         table.layout(true);
     }
 
-    private Cell createCell(DataSeries dataSeries, LocalDate month, DoubleFunction<Color> coloring)
+    private Cell createCell(PerformanceIndex index, LocalDate month, DoubleFunction<Color> coloring)
     {
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(month.minusDays(1),
-                        month.withDayOfMonth(month.lengthOfMonth()));
-        PerformanceIndex performance = getDashboardData().calculate(dataSeries, period);
+        int start = Arrays.binarySearch(index.getDates(), month.minusDays(1));
+        int end = Arrays.binarySearch(index.getDates(), month.withDayOfMonth(month.lengthOfMonth()));
+
+        double performance = ((index.getAccumulatedPercentage()[end] + 1)
+                        / (index.getAccumulatedPercentage()[start] + 1)) - 1;
 
         return new Cell(table, new CellDataProvider()
         {
             @Override
             public Color getBackground()
             {
-                return coloring.apply(performance.getFinalAccumulatedPercentage());
+                return coloring.apply(performance);
             }
 
             @Override
@@ -306,7 +317,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             @Override
             public String getText()
             {
-                return Values.PercentShort.format(performance.getFinalAccumulatedPercentage());
+                return Values.PercentShort.format(performance);
             }
         });
     }
