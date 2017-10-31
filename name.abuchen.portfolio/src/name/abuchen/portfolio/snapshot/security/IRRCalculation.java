@@ -44,7 +44,22 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public void visit(CurrencyConverter converter, AccountTransaction t)
     {
-        // ignore tax refunds when calculating the irr for a single security
+        switch (t.getType())
+        {
+            case TAXES:
+            case TAX_REFUND:
+                // ignore tax and tax refunds when calculating the irr for a single security
+                break;
+            case FEES:
+                dates.add(t.getDate());
+                values.add(-converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                break;
+            case FEES_REFUND:
+                dates.add(t.getDate());
+                values.add(converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                break;
+            default:
+        }
     }
 
     @Override
