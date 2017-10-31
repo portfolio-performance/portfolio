@@ -17,6 +17,7 @@ import org.swtchart.IAxis;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TextUtil;
 
 /* package */class ChartContextMenu
 {
@@ -195,7 +196,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                     public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
                     {
                         FileDialog dialog = new FileDialog(chart.getShell(), SWT.SAVE);
-                        dialog.setFileName(label);
+                        dialog.setFileName(TextUtil.sanitizeFilename(label));
                         dialog.setFilterExtensions(EXTENSIONS);
                         dialog.setFilterIndex(lastUsedFileExtension);
                         dialog.setOverwrite(true);
