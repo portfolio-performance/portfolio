@@ -97,10 +97,11 @@ public class ClientSecurityFilter implements ClientFilter
     private void addAccountTransaction(Function<Account, ReadOnlyAccount> getAccount,
                     TransactionPair<AccountTransaction> pair)
     {
+        AccountTransaction t = pair.getTransaction();
+
         switch (pair.getTransaction().getType())
         {
             case DIVIDENDS:
-                AccountTransaction t = pair.getTransaction();
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
@@ -109,6 +110,17 @@ public class ClientSecurityFilter implements ClientFilter
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
                                 t.getCurrencyCode(), amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                 break;
+            case FEES:
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), t.getAmount(), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                break;
+            case FEES_REFUND:
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), t.getAmount(), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                break;
+            case TAXES:
             case TAX_REFUND:
                 // ignore taxes
                 break;
@@ -118,9 +130,6 @@ public class ClientSecurityFilter implements ClientFilter
             case REMOVAL:
             case TRANSFER_IN:
             case TRANSFER_OUT:
-            case FEES:
-            case FEES_REFUND:
-            case TAXES:
             case INTEREST:
             case INTEREST_CHARGE:
             default:

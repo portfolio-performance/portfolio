@@ -42,7 +42,20 @@ import name.abuchen.portfolio.money.MutableMoney;
     @Override
     public void visit(CurrencyConverter converter, AccountTransaction t)
     {
-        delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+        switch(t.getType())
+        {
+            case TAXES:
+            case FEES:
+                delta.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                break;
+            case TAX_REFUND:
+            case FEES_REFUND:
+                delta.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
+        
     }
 
     @Override

@@ -2,6 +2,7 @@ package scenarios;
 
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.hamcrest.number.IsCloseTo.closeTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.number.OrderingComparison.lessThan;
 import static org.junit.Assert.assertThat;
 
@@ -45,19 +46,22 @@ public class AccountPerformanceTaxRefundTestCase
         double endValue = account.getCurrentAmount();
         double ttwror = (endValue / startValue) - 1;
 
-        List<Exception> warnings = new ArrayList<Exception>();
+        List<Exception> warnings = new ArrayList<>();
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
-        assertThat(accountPerformance.getFinalAccumulatedPercentage(), closeTo(ttwror, 0.0001));
+        
+        double calculatedTtwror = accountPerformance.getFinalAccumulatedPercentage();
+        assertThat(calculatedTtwror, closeTo(ttwror, 0.0001));
 
         // if the tax_refund is for a security, it must not be included in the
         // performance of the account
-        AccountTransaction tax_refund = account.getTransactions().get(2);
-        tax_refund.setSecurity(new Security());
+        AccountTransaction taxRefund = account.getTransactions().get(1);
+        assertThat(taxRefund.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        taxRefund.setSecurity(new Security());
 
         accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
-        assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(ttwror));
+        assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(calculatedTtwror));
     }
 }

@@ -63,7 +63,7 @@ public class PortfolioClientFilter implements ClientFilter
             adaptPortfolioTransactions(portfolio, pseudoPortfolio, usedSecurities);
 
             if (!accounts.contains(portfolio.getReferenceAccount()))
-                collectDividends(portfolio, pseudoAccount, usedSecurities);
+                collectSecurityRelevantTx(portfolio, pseudoAccount, usedSecurities);
         }
 
         for (Account account : accounts)
@@ -130,7 +130,7 @@ public class PortfolioClientFilter implements ClientFilter
         }
     }
 
-    private void collectDividends(Portfolio portfolio, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
+    private void collectSecurityRelevantTx(Portfolio portfolio, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -146,12 +146,19 @@ public class PortfolioClientFilter implements ClientFilter
             switch (t.getType())
             {
                 case TAX_REFUND:
+                case FEES_REFUND:
                     // security must be non-null -> tax refund is relevant for
                     // performance of security
                 case DIVIDENDS:
                     pseudoAccount.internalAddTransaction(t);
                     pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.REMOVAL));
+                    break;
+                case TAXES:
+                case FEES:
+                    pseudoAccount.internalAddTransaction(t);
+                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case BUY:
                 case TRANSFER_IN:
@@ -161,9 +168,6 @@ public class PortfolioClientFilter implements ClientFilter
                 case REMOVAL:
                 case INTEREST:
                 case INTEREST_CHARGE:
-                case TAXES:
-                case FEES:
-                case FEES_REFUND:
                     // do nothing
                     break;
                 default:
@@ -204,18 +208,23 @@ public class PortfolioClientFilter implements ClientFilter
                     break;
                 case DIVIDENDS:
                 case TAX_REFUND:
+                case FEES_REFUND:
                     if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
                         pseudoAccount.internalAddTransaction(t);
                     else
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     break;
+                case TAXES:
+                case FEES:
+                    if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
+                        pseudoAccount.internalAddTransaction(t);
+                    else
+                        pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
+                    break;
                 case DEPOSIT:
                 case REMOVAL:
                 case INTEREST:
                 case INTEREST_CHARGE:
-                case TAXES:
-                case FEES:
-                case FEES_REFUND:
                     pseudoAccount.internalAddTransaction(t);
                     break;
                 default:

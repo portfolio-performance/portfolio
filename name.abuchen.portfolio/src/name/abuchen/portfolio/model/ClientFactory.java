@@ -203,7 +203,7 @@ public class ClientFactory
             this.password = password;
             this.keyLength = "AES256".equals(method) ? AES256_KEYLENGTH : AES128_KEYLENGTH; //$NON-NLS-1$
         }
-        
+
         @Override
         public Client load(final InputStream input) throws IOException
         {
@@ -353,7 +353,7 @@ public class ClientFactory
     }
 
     private static final String ZIP_DATA_FILE = "data.xml"; //$NON-NLS-1$
-    
+
     private static XStream xstream;
 
     public static boolean isEncrypted(File file)
@@ -391,8 +391,8 @@ public class ClientFactory
             monitor.beginTask(MessageFormat.format(Messages.MsgReadingFile, file.getName()), 20);
             // open an input stream for the file using a 64 KB buffer to speed
             // up reading
-            try (InputStream input = new ProgressMonitorInputStream(new BufferedInputStream(new FileInputStream(file),65536),
-                            increment, monitor))
+            try (InputStream input = new ProgressMonitorInputStream(
+                            new BufferedInputStream(new FileInputStream(file), 65536), increment, monitor))
             {
                 return buildPersister(file, null, password).load(input);
             }
@@ -543,6 +543,8 @@ public class ClientFactory
                 // added AED currency
             case 33:
                 // added FEES_REFUND transaction type
+            case 34:
+                // add optional security to FEES, FEES_REFUND, TAXES
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
