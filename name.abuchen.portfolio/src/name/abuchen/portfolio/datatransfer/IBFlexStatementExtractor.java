@@ -319,10 +319,11 @@ public class IBFlexStatementExtractor implements Extractor
             if (eElement.getAttribute("symbol").length() > 0)
                 transaction.setSecurity(this.getOrCreateSecurity(client, eElement, true));
 
-            if(amount > 0) {
+            if(amount <= 0)
+            {
                 transaction.setType(AccountTransaction.Type.TAXES);
             } else {
-                // Negative taxes are a tax refund: see #310
+                // Positive taxes are a tax refund: see #310
                 transaction.setType(AccountTransaction.Type.TAX_REFUND);
             }
         }
@@ -337,7 +338,13 @@ public class IBFlexStatementExtractor implements Extractor
         }
         else if (type.equals("Other Fees"))
         {
-            transaction.setType(AccountTransaction.Type.FEES);
+            if(amount <= 0)
+            {
+                transaction.setType(AccountTransaction.Type.FEES);
+            } else {
+                // Positive values are a fee refund
+                transaction.setType(AccountTransaction.Type.FEES_REFUND);
+            }
         }
         else
         {
