@@ -116,18 +116,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "name", "isin", "shares").optional() //
-                        .match("p e r *\\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d (?<name>.*)      (?<wkn>.*)") //
-                        .match("^S T K *(?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).*    .* {4}(?<isin>.*)$") //
-                        .assign((t, v) -> {
-                            v.put("isin", stripBlanks(v.get("isin")));
-                            v.put("wkn", stripBlanks(v.get("wkn")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(stripBlanks(v.get("shares"))));
-                        })
-
-                        .section("wkn", "name", "isin", "shares").optional() //
-                        .match("p e r *\\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d (?<name>.*)      (?<wkn>.*)") //
-                        .match(" ST K *(?<shares>(\\d  )?(\\d )*(\\. )?(\\d )*,(\\d )*).*    .* {4}(?<isin>.*)$") //
+                        .match("^(p e r| p e r) *\\+?[\\d .]+  (?<name>.*)      (?<wkn>.*)") //
+                        .match("^(S T K| ST K| S TK) *(?<shares>\\+?[\\d .]+,\\+?[\\d ]+).*    .* {4}(?<isin>.*)$") //
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
