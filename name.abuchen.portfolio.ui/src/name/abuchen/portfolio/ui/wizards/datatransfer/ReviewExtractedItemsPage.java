@@ -462,6 +462,19 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnNote);
+        column.setLabelProvider(new FormattedLabelProvider()
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                String note = entry.getItem().getNote();
+                return note != null ? note : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
     }
 
     private void attachContextMenu(final Table table)
