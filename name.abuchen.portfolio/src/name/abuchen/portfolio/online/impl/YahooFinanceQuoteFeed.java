@@ -92,7 +92,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
-        String wknUrl = MessageFormat.format("https://de.finance.yahoo.com/q?s={0}", //$NON-NLS-1$
+        String wknUrl = MessageFormat.format("https://de.finance.yahoo.com/quote/{0}?ltr=1", //$NON-NLS-1$
                         security.getTickerSymbol());
 
         try
