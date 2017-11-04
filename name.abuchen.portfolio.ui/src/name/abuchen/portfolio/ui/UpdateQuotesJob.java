@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -187,8 +184,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private void addLatestQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
     {
-        Map<QuoteFeed, List<Security>> feed2securities = new HashMap<>();
-
         for (Security s : securities)
         {
             // if configured, use feed for latest quotes
@@ -201,27 +196,25 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feed == null)
                 continue;
 
+            Job job = createLatestQuoteJob(dirtyable, feed, s);
+            jobs.add(job);
+
             // the HTML download makes request per URL (per security) -> execute
             // as parallel jobs (although the scheduling rule ensures that only
             // one request is made per host at a given time)
             if (HTMLTableQuoteFeed.ID.equals(feedId))
             {
-                Job job = createLatestQuoteJob(dirtyable, feed, Arrays.asList(s));
                 job.setRule(HostSchedulingRule
                                 .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL()));
-                jobs.add(job);
             }
             else
             {
-                feed2securities.computeIfAbsent(feed, key -> new ArrayList<>()).add(s);
+                job.setRule(new HostSchedulingRule("finance.yahoo.com")); //$NON-NLS-1$
             }
         }
-
-        for (Entry<QuoteFeed, List<Security>> entry : feed2securities.entrySet())
-            jobs.add(createLatestQuoteJob(dirtyable, entry.getKey(), entry.getValue()));
     }
 
-    private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, List<Security> securities)
+    private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, Security security)
     {
         return new Job(feed.getName())
         {
@@ -230,7 +223,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
             {
                 ArrayList<Exception> exceptions = new ArrayList<>();
 
-                if (feed.updateLatestQuotes(securities, exceptions))
+                if (feed.updateLatestQuotes(security, exceptions))
                     dirtyable.markDirty();
 
                 if (!exceptions.isEmpty())
