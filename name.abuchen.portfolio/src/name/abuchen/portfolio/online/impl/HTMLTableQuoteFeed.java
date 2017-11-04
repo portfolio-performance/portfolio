@@ -254,30 +254,26 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
         boolean isUpdated = false;
 
-        for (Security security : securities)
+        // if latestFeed is null, then the policy is 'use same configuration
+        // as historic quotes'
+        String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+
+        List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
+        int size = quotes.size();
+        if (size > 0)
         {
-            // if latestFeed is null, then the policy is 'use same configuration
-            // as historic quotes'
-            String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+            Collections.sort(quotes);
 
-            List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
-            int size = quotes.size();
-            if (size > 0)
-            {
-                Collections.sort(quotes);
+            LatestSecurityPrice latest = quotes.get(size - 1);
+            LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
+            latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
+            latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
-                LatestSecurityPrice latest = quotes.get(size - 1);
-                LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
-                latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
-                latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
-
-                boolean isAdded = security.setLatest(latest);
-                isUpdated = isUpdated || isAdded;
-            }
+            isUpdated = security.setLatest(latest);
         }
 
         return isUpdated;

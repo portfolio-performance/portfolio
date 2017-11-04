@@ -31,7 +31,7 @@ public interface QuoteFeed
      *            added to this list.
      * @return true if at least one quote was updated.
      */
-    boolean updateLatestQuotes(List<Security> securities, List<Exception> errors);
+    boolean updateLatestQuotes(Security security, List<Exception> errors);
 
     /**
      * Update the historical quotes of the given security.
