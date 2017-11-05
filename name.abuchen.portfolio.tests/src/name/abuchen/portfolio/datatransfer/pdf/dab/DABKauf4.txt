@@ -1,4 +1,4 @@
-DAB
+DAB Bank
 Kauf ADRESSZEILE2=XXX
 
 Wir haben für Sie gekauft
