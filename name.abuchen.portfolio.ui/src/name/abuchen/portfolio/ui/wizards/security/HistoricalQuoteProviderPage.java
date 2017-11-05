@@ -34,7 +34,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
     private QuotesTableViewer tableSampleData;
 
-    private Map<Object, List<LatestSecurityPrice>> cacheQuotes = new HashMap<Object, List<LatestSecurityPrice>>();
+    private Map<Object, List<LatestSecurityPrice>> cacheQuotes = new HashMap<>();
 
     // read and write 'currentJob' only from the UI thread; used to check
     // whether a more recent job has already been started
@@ -116,7 +116,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     @Override
     protected void reinitCaches()
     {
-        cacheQuotes = new HashMap<Object, List<LatestSecurityPrice>>();
+        cacheQuotes = new HashMap<>();
     }
 
     @Override
@@ -201,7 +201,12 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         currentJob = null;
-                        tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgErrorOrNoData);
+
+                        String message = e.getMessage();
+                        if (message == null || message.isEmpty())
+                            message = Messages.EditWizardQuoteFeedMsgErrorOrNoData;
+
+                        tableSampleData.setMessage(message);
                         tableSampleData.refresh();
                     }
                 });

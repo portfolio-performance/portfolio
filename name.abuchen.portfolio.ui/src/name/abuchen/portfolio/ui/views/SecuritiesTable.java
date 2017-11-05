@@ -264,6 +264,9 @@ public final class SecuritiesTable implements ModificationListener
                 return null;
 
             LatestSecurityPrice latest = (LatestSecurityPrice) price;
+            if (latest.getPreviousClose() == LatestSecurityPrice.NOT_AVAILABLE)
+                return null;
+            
             return (latest.getValue() - latest.getPreviousClose()) / (double) latest.getPreviousClose();
         }));
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
