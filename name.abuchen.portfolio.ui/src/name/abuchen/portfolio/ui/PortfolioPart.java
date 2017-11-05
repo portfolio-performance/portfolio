@@ -562,9 +562,9 @@ public class PortfolioPart implements LoadClientThread.Callback
             checkInvestmentPlans.startAfter(initialQuoteUpdate);
             checkInvestmentPlans.schedule(1100);
 
-            int tenMinutes = 1000 * 60 * 10;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(tenMinutes);
-            job.schedule(tenMinutes);
+            int thirtyMinutes = 1000 * 60 * 30;
+            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
+            job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;
