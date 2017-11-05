@@ -296,6 +296,13 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
     {
         int start = Arrays.binarySearch(index.getDates(), month.minusDays(1));
         int end = Arrays.binarySearch(index.getDates(), month.withDayOfMonth(month.lengthOfMonth()));
+        // make sure there is an end index if the binary search returns a
+        // negative value (i.e. if the current month is not finished)
+        if (end < 0)
+        {
+            // take the last available date
+            end = index.getDates().length - 1;
+        }
 
         double performance = ((index.getAccumulatedPercentage()[end] + 1)
                         / (index.getAccumulatedPercentage()[start] + 1)) - 1;
