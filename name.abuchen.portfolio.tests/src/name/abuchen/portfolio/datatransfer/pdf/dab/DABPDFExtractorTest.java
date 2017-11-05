@@ -42,12 +42,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf() throws IOException
+    public void testWertpapierKauf1() throws IOException
     {
         DABPDFExctractor extractor = new DABPDFExctractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -197,12 +197,12 @@ public class DABPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf() throws IOException
+    public void testWertpapierVerkauf1() throws IOException
     {
         DABPDFExctractor extractor = new DABPDFExctractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
