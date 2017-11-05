@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
-import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -15,6 +13,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -22,10 +21,8 @@ import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.jsoup.Connection.Response;
@@ -75,18 +72,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     public static final String ID = "YAHOO"; //$NON-NLS-1$
 
-    private static final String LATEST_URL = "https://download.finance.yahoo.com/d/quotes.csv?s={0}&f=sl1d1hgpv"; //$NON-NLS-1$
-    // s = symbol
-    // l1 = last trade (price only)
-    // d1 = last trade date
-    // h = day's high
-    // g = day's low
-    // p = previous close
-    // v = volume
-    // Source = http://cliffngan.net/a/13
-
     @SuppressWarnings("nls")
-
     private static final String HISTORICAL_URL = "https://query1.finance.yahoo.com/v7/finance/download/{0}?period1={1}&period2={2}&interval=1d&events=history&crumb={3}";
 
     private Crumb crumb;
@@ -104,92 +90,84 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public final boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
-        Map<String, List<Security>> symbol2security = securities.stream()
-                        //
-                        .filter(s -> s.getTickerSymbol() != null)
-                        .collect(Collectors.groupingBy(s -> s.getTickerSymbol().toUpperCase(Locale.ROOT)));
+        String wknUrl = MessageFormat.format("https://de.finance.yahoo.com/quote/{0}?ltr=1", //$NON-NLS-1$
+                        security.getTickerSymbol());
 
-        String symbolString = symbol2security.keySet().stream().collect(Collectors.joining("+")); //$NON-NLS-1$
-
-        boolean isUpdated = false;
-
-        String url = MessageFormat.format(LATEST_URL, symbolString);
-
-        try (BufferedReader reader = openReader(url, errors))
+        try
         {
-            if (reader == null)
+            Response response = Jsoup.connect(wknUrl) //
+                            .userAgent(OnlineHelper.getUserAgent()) //
+                            .timeout(30000).execute();
+
+            String body = response.body();
+
+            // some quick and dirty extraction. This scraping code will anyway
+            // not last long.
+
+            int startIndex = body.indexOf("QuoteSummaryStore"); //$NON-NLS-1$
+            if (startIndex < 0)
                 return false;
 
-            String line = null;
-            while ((line = reader.readLine()) != null)
+            LatestSecurityPrice price = new LatestSecurityPrice();
+
+            Optional<String> time = extract(body, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (time.isPresent())
             {
-                String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line)));
-                    return false;
-                }
-
-                String symbol = stripQuotes(values[0]);
-                List<Security> forSymbol = symbol2security.remove(symbol);
-                if (forSymbol == null)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedSymbol, symbol, line)));
-                    continue;
-                }
-
-                try
-                {
-                    LatestSecurityPrice price = buildPrice(values);
-
-                    for (Security security : forSymbol)
-                    {
-                        boolean isAdded = security.setLatest(price);
-                        isUpdated = isUpdated || isAdded;
-                    }
-                }
-                catch (NumberFormatException | ParseException | DateTimeParseException e)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
-                }
+                long epoch = Long.parseLong(time.get());
+                price.setTime(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
 
-            for (String symbol : symbol2security.keySet())
-                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
+            Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (value.isPresent())
+                price.setValue(asPrice(value.get()));
+
+            Optional<String> previousClose = extract(body, startIndex, "\"regularMarketPreviousClose\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (previousClose.isPresent())
+                price.setPreviousClose(asPrice(previousClose.get()));
+
+            Optional<String> high = extract(body, startIndex, "\"regularMarketDayLow\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (high.isPresent())
+                price.setHigh(asPrice(high.get()));
+
+            Optional<String> low = extract(body, startIndex, "\"regularMarketDayHigh\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (low.isPresent())
+                price.setLow(asPrice(low.get()));
+
+            Optional<String> volume = extract(body, startIndex, "\"regularMarketVolume\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (volume.isPresent())
+                price.setVolume(asNumber(volume.get()));
+            
+            if (price.getTime() == null || price.getValue() <= 0)
+            {
+                errors.add(new IOException(body));
+                return false;
+            }
+
+            security.setLatest(price);
+            return true;
+
         }
-        catch (IOException e)
+        catch (IOException | ParseException e)
         {
             errors.add(e);
+            return false;
         }
-
-        return isUpdated;
     }
 
-    private LatestSecurityPrice buildPrice(String[] values) throws ParseException
+    private Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
-        long lastTrade = asPrice(values[1]);
+        int begin = body.indexOf(startToken, startIndex);
 
-        LocalDate lastTradeDate = asDate(values[2]);
-        if (lastTradeDate == null) // can't work w/o date
-            lastTradeDate = LocalDate.now();
+        if (begin < 0)
+            return Optional.empty();
 
-        long daysHigh = asPrice(values[3]);
+        int end = body.indexOf(endToken, begin + startToken.length());
+        if (end < 0)
+            return Optional.empty();
 
-        long daysLow = asPrice(values[4]);
-
-        long previousClose = asPrice(values[5]);
-
-        int volume = asNumber(values[6]);
-
-        LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
-        price.setHigh(daysHigh);
-        price.setLow(daysLow);
-        price.setPreviousClose(previousClose);
-        price.setVolume(volume);
-
-        return price;
+        return Optional.of(body.substring(begin + startToken.length(), end));
     }
 
     @Override

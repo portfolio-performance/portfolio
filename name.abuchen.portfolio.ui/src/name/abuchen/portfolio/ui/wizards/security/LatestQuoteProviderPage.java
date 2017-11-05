@@ -53,7 +53,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         }
 
         @Override
-        public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+        public boolean updateLatestQuotes(Security security, List<Exception> errors)
         {
             return false;
         }
@@ -109,10 +109,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
-                List<Security> list = new ArrayList<>();
-                list.add(s);
-
-                feed.updateLatestQuotes(list, new ArrayList<Exception>());
+                feed.updateLatestQuotes(s, new ArrayList<Exception>());
 
                 Display.getDefault().asyncExec(() -> {
                     if (valueLatestPrices == null || valueLatestPrices.isDisposed())
