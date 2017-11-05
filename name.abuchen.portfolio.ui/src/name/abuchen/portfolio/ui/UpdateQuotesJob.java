@@ -207,7 +207,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 job.setRule(HostSchedulingRule
                                 .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL()));
             }
-            else
+            else if (feedId.startsWith("YAHOO")) //$NON-NLS-1$
             {
                 job.setRule(new HostSchedulingRule("finance.yahoo.com")); //$NON-NLS-1$
             }
