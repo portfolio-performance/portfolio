@@ -259,13 +259,17 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
         // adapt interval to include the first and last month fully
 
-        Interval calcInterval = Interval.of(interval.getStart().withDayOfMonth(1).minusDays(1),
+        Interval calcInterval = Interval.of(
+                        interval.getStart().getDayOfMonth() == interval.getStart().lengthOfMonth() ? interval.getStart()
+                                        : interval.getStart().withDayOfMonth(1).minusDays(1),
                         interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
 
         PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries,
                         new ReportingPeriod.FromXtoY(calcInterval));
 
-        for (Integer year : interval.iterYears())
+        Interval actualInterval = performanceIndex.getActualInterval();
+        
+        for (Integer year : actualInterval.iterYears())
         {
             // year
             Cell cell = new Cell(table, () -> {
@@ -277,7 +281,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             // monthly data
             for (LocalDate month = LocalDate.of(year, 1, 1); month.getYear() == year; month = month.plusMonths(1))
             {
-                if (interval.contains(month))
+                if (actualInterval.contains(month))
                 {
                     cell = createCell(performanceIndex, month, coloring);
                     InfoToolTip.attach(cell, Messages.PerformanceHeatmapToolTip);
@@ -295,6 +299,10 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
     private Cell createCell(PerformanceIndex index, LocalDate month, DoubleFunction<Color> coloring)
     {
         int start = Arrays.binarySearch(index.getDates(), month.minusDays(1));
+        // should not happen, but let's be defensive this time
+        if (start < 0)
+            return new Cell(table, () -> ""); //$NON-NLS-1$
+        
         int end = Arrays.binarySearch(index.getDates(), month.withDayOfMonth(month.lengthOfMonth()));
         // make sure there is an end index if the binary search returns a
         // negative value (i.e. if the current month is not finished)
