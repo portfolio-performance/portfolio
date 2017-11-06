@@ -127,11 +127,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (previousClose.isPresent())
                 price.setPreviousClose(asPrice(previousClose.get()));
 
-            Optional<String> high = extract(body, startIndex, "\"regularMarketDayLow\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            Optional<String> high = extract(body, startIndex, "\"regularMarketDayHigh\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (high.isPresent())
                 price.setHigh(asPrice(high.get()));
 
-            Optional<String> low = extract(body, startIndex, "\"regularMarketDayHigh\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            Optional<String> low = extract(body, startIndex, "\"regularMarketDayLow\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
             if (low.isPresent())
                 price.setLow(asPrice(low.get()));
 
