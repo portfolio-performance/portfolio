@@ -282,7 +282,7 @@ public class SecurityDetailsViewer
                 LatestSecurityPrice p = security.getLatest();
 
                 valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                valueLatestTrade.setText(Values.Date.format(p.getDate()));
                 long daysHigh = p.getHigh();
                 valueDaysHigh.setText(daysHigh == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
                                 : Values.Quote.format(daysHigh));

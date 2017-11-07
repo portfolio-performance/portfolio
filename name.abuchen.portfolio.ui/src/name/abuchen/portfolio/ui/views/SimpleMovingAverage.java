@@ -93,7 +93,7 @@ public class SimpleMovingAverage
 
         for (; index < prices.size(); index++)
         {
-            LocalDate nextDate = prices.get(index).getTime();
+            LocalDate nextDate = prices.get(index).getDate();
             LocalDate isBefore = nextDate.plusDays(1);
             LocalDate isAfter = isBefore.minusDays(rangeSMA + 1L);
             List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
@@ -105,7 +105,7 @@ public class SimpleMovingAverage
             double sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
 
             valuesSMA.add(sum / Values.Quote.divider() / filteredPrices.size());
-            datesSMA.add(prices.get(index).getTime());
+            datesSMA.add(prices.get(index).getDate());
         }
         LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[0]);
         Double[] tmpPrices = valuesSMA.toArray(new Double[0]);
@@ -135,7 +135,7 @@ public class SimpleMovingAverage
     public SecurityPrice getStartPrice()
     {
         // get Date of first possible SMA calculation
-        LocalDate smaPeriodEnd = prices.get(0).getTime().plusDays(rangeSMA - 1L);
+        LocalDate smaPeriodEnd = prices.get(0).getDate().plusDays(rangeSMA - 1L);
         int index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(smaPeriodEnd, 0),
                         new SecurityPrice.ByDate()));
         if (index >= prices.size())
@@ -150,7 +150,7 @@ public class SimpleMovingAverage
         List<SecurityPrice> filteredPrices = null;
         LocalDate isBefore = smaPeriodEnd.plusDays(1);
         LocalDate isAfter = smaPeriodEnd.minusDays(rangeSMA);
-        LocalDate lastDate = prices.get(prices.size() - 1).getTime();
+        LocalDate lastDate = prices.get(prices.size() - 1).getDate();
         filteredPrices = this.getFilteredList(isBefore, isAfter);
 
         int i = 1;
@@ -173,7 +173,7 @@ public class SimpleMovingAverage
 
     private List<SecurityPrice> getFilteredList(LocalDate isBefore, LocalDate isAfter)
     {
-        return prices.stream().filter(p -> p.getTime().isAfter(isAfter) && p.getTime().isBefore(isBefore))
+        return prices.stream().filter(p -> p.getDate().isAfter(isAfter) && p.getDate().isBefore(isBefore))
                         .collect(Collectors.toList());
     }
 }

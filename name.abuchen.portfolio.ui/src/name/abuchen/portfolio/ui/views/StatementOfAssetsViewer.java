@@ -297,12 +297,12 @@ public class StatementOfAssetsViewer
             public String getText(Object e)
             {
                 Element element = (Element) e;
-                return element.isSecurity() ? Values.Date.format(element.getSecurityPosition().getPrice().getTime())
+                return element.isSecurity() ? Values.Date.format(element.getSecurityPosition().getPrice().getDate())
                                 : null;
             }
         });
         column.setComparator(new ElementComparator(new AttributeComparator(e -> ((Element) e).isSecurity()
-                        ? ((Element) e).getSecurityPosition().getPrice().getTime() : null)));
+                        ? ((Element) e).getSecurityPosition().getPrice().getDate() : null)));
         column.setVisible(false);
         support.addColumn(column);
 
