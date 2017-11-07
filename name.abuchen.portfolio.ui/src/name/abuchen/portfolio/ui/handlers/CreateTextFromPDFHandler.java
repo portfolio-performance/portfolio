@@ -43,7 +43,7 @@ public class CreateTextFromPDFHandler
             String text = MessageFormat.format(Messages.PDFImportDebugAuthor, inputFile.getAuthor());
             text += "\nPDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$
             text += "\n-----------------------------------------\n"; //$NON-NLS-1$
-            text += inputFile.getText();
+            text += inputFile.getText().replace("\r","");   // CRLF to spac;
 
             new DisplayTextDialog(shell, text).open();
         }
