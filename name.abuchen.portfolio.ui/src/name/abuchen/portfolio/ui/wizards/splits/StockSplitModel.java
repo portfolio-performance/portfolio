@@ -112,7 +112,7 @@ public class StockSplitModel extends BindingHelper.Model
             List<SecurityPrice> quotes = security.getPrices();
             for (SecurityPrice p : quotes)
             {
-                if (p.getTime().isBefore(exDate))
+                if (p.getDate().isBefore(exDate))
                     p.setValue(p.getValue() * oldShares / newShares);
             }
         }

@@ -59,7 +59,7 @@ public class QuoteFromTransactionExtractor
                 SecurityPrice price = new SecurityPrice(d, q.getAmount());
                 bChanges |= security.addPrice(price);
                 // remember the lates price
-                if ((pLatest == null) || d.isAfter(pLatest.getTime()))
+                if ((pLatest == null) || d.isAfter(pLatest.getDate()))
                 {
                     pLatest = price;
                 }
@@ -68,7 +68,7 @@ public class QuoteFromTransactionExtractor
         // set the latest price (if at leas one price was found)
         if (pLatest != null)
         {
-            LatestSecurityPrice lsp = new LatestSecurityPrice(pLatest.getTime(), pLatest.getValue());
+            LatestSecurityPrice lsp = new LatestSecurityPrice(pLatest.getDate(), pLatest.getValue());
             bChanges |= security.setLatest(lsp);
         }
         return bChanges;

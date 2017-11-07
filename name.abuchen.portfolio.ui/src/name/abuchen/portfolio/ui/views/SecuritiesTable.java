@@ -301,7 +301,7 @@ public final class SecuritiesTable implements ModificationListener
             public String getText(Object element)
             {
                 SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
-                return latest != null ? Values.Date.format(latest.getTime()) : null;
+                return latest != null ? Values.Date.format(latest.getDate()) : null;
             }
 
             @Override
@@ -317,7 +317,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
-                return latest.getTime().isBefore(sevenDaysAgo) ? Colors.WARNING : null;
+                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.WARNING : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
@@ -329,7 +329,7 @@ public final class SecuritiesTable implements ModificationListener
             if (p2 == null)
                 return 1;
 
-            return p1.getTime().compareTo(p2.getTime());
+            return p1.getDate().compareTo(p2.getDate());
         }));
         support.addColumn(column);
     }
@@ -348,7 +348,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                return latest != null ? Values.Date.format(latest.getTime()) : null;
+                return latest != null ? Values.Date.format(latest.getDate()) : null;
             }
 
             @Override
@@ -363,7 +363,7 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (!((Security) element).isRetired() && latest.getTime().isBefore(LocalDate.now().minusDays(7)))
+                if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
                     return Colors.WARNING;
                 else
                     return null;
@@ -380,7 +380,7 @@ public final class SecuritiesTable implements ModificationListener
             if (p2 == null)
                 return 1;
 
-            return p1.getTime().compareTo(p2.getTime());
+            return p1.getDate().compareTo(p2.getDate());
         }));
         support.addColumn(column);
     }
@@ -403,7 +403,7 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getValue() == 0)
                 return null;
 
-            if (previous.getTime().isAfter(option.getStartDate()))
+            if (previous.getDate().isAfter(option.getStartDate()))
                 return null;
 
             return new Double((latest.getValue() - previous.getValue()) / (double) previous.getValue());

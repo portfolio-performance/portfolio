@@ -120,7 +120,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         LatestSecurityPrice p = s.getLatest();
 
                         valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                        valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                        valueLatestTrade.setText(Values.Date.format(p.getDate()));
                         long daysHigh = p.getHigh();
                         valueDaysHigh.setText(
                                         daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));

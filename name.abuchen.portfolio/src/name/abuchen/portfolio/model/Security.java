@@ -244,7 +244,7 @@ public final class Security implements Attributable, InvestmentVehicle
         if (latest == null)
             return getPrices();
 
-        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getTime(), latest.getValue()));
+        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getDate(), latest.getValue()));
 
         if (index >= 0) // historic quote exists -> use it
             return getPrices();
@@ -297,7 +297,7 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(LocalDate requestedTime)
+    public SecurityPrice getSecurityPrice(LocalDate requestedDate)
     {
         // assumption: prefer historic quote over latest if there are more
         // up-to-date historic quotes
@@ -313,19 +313,19 @@ public final class Security implements Attributable, InvestmentVehicle
 
         if (latest != null //
                         && (lastHistoric == null //
-                                        || (!requestedTime.isBefore(latest.getTime()) && //
-                                                        !latest.getTime().isBefore(lastHistoric.getTime()) //
+                                        || (!requestedDate.isBefore(latest.getDate()) && //
+                                                        !latest.getDate().isBefore(lastHistoric.getDate()) //
                                         )))
             return latest;
 
         if (lastHistoric == null)
-            return new SecurityPrice(requestedTime, 0);
+            return new SecurityPrice(requestedDate, 0);
 
         // avoid binary search if last historic quote <= requested date
-        if (!lastHistoric.getTime().isAfter(requestedTime))
+        if (!lastHistoric.getDate().isAfter(requestedDate))
             return lastHistoric;
 
-        SecurityPrice p = new SecurityPrice(requestedTime, 0);
+        SecurityPrice p = new SecurityPrice(requestedDate, 0);
         int index = Collections.binarySearch(prices, p);
 
         if (index >= 0)
