@@ -75,6 +75,8 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
@@ -113,17 +115,19 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         }
     }
 
+    private final Client client;
     private final CSVImporter importer;
     private final boolean onlySecurityPrices;
 
     private TableViewer tableViewer;
 
-    public CSVImportDefinitionPage(CSVImporter importer, boolean onlySecurityPrices)
+    public CSVImportDefinitionPage(Client client, CSVImporter importer, boolean onlySecurityPrices)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
         setDescription(Messages.CSVImportWizardDescription);
 
+        this.client = client;
         this.importer = importer;
         this.onlySecurityPrices = onlySecurityPrices;
 
@@ -334,7 +338,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
     private void onColumnSelected(int columnIndex)
     {
-        ColumnConfigDialog dialog = new ColumnConfigDialog(getShell(), importer.getExtractor(),
+        ColumnConfigDialog dialog = new ColumnConfigDialog(client, getShell(), importer.getExtractor(),
                         importer.getColumns()[columnIndex]);
         dialog.open();
 
@@ -446,8 +450,10 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
     private static final class ImportLabelProvider extends LabelProvider
                     implements ITableLabelProvider, ITableColorProvider
     {
-        private static final RGB GREEN = new RGB(152, 251, 152);
-        private static final RGB RED = new RGB(255, 127, 80);
+        private static final RGB GREEN       = new RGB(125, 152, 25);
+        private static final RGB LIGHTGREEN  = new RGB(152, 192, 25);
+        private static final RGB ORANGE      = new RGB(245, 120, 25);
+        private static final RGB RED         = new RGB(235,  25, 25);
 
         private CSVImporter importer;
 
@@ -515,14 +521,35 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                 if (column.getFormat() != null)
                 {
                     String text = getColumnText(element, columnIndex);
-                    if (text != null)
+                    if (text != null && !text.isEmpty())
+                    {
                         column.getFormat().getFormat().parseObject(text);
+                        return resources.createColor(GREEN);
+                    }
+                    else
+                    {
+                        if (column.getField().isOptional())
+                        {
+                            return resources.createColor(LIGHTGREEN);
+                        }
+                        else
+                        {
+                            return resources.createColor(ORANGE);
+                        }
+                    }
                 }
-                return resources.createColor(GREEN);
+                else
+                {
+                    String text = getColumnText(element, columnIndex);
+                    return resources.createColor(GREEN);
+                }
             }
             catch (ParseException e)
             {
-                return resources.createColor(RED);
+                if (column.getField().isOptional())
+                    return resources.createColor(ORANGE);
+                else
+                    return resources.createColor(RED);
             }
         }
     }
@@ -533,12 +560,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
         private CSVExtractor definition;
         private Column column;
+        private final Client client;
 
-        protected ColumnConfigDialog(Shell parentShell, CSVExtractor definition, Column column)
+        protected ColumnConfigDialog(Client client, Shell parentShell, CSVExtractor definition, Column column)
         {
             super(parentShell);
             setShellStyle(getShellStyle() | SWT.SHEET);
 
+            this.client = client;
             this.definition = definition;
             this.column = column;
         }
@@ -665,6 +694,10 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                             valueFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
                             valueFormats.setSelection(new StructuredSelection(valueFormats.getElementAt(0)));
+                    }
+                    else if (field instanceof ISINField)
+                    {
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField)
                     {

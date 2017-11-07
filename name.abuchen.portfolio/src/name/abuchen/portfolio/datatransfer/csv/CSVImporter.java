@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -33,6 +35,7 @@ import org.apache.commons.csv.CSVStrategy;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 
 public class CSVImporter
 {
@@ -290,6 +293,200 @@ public class CSVImporter
         }
     }
 
+    public static class ISINField extends CSVImporter.Field
+    {
+
+        /* package */ ISINField(String name)
+        {
+            super(name);
+        }
+
+        public ISINFormat createFormat(List<Security> securityList)
+        {
+            return new ISINFormat(securityList);
+        }
+    }
+
+    public static class ISINFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+        private List<String> isinList = new ArrayList<String>();
+        private static final String ISINpattern = "[A-Z]{2}[A-Z0-9]{9}\\d";
+
+        public ISINFormat(List<Security> securityList)
+        {
+            for (Security security : securityList)
+            {
+                if (security.getIsin() != null)
+                {
+                    String ISIN = security.getIsin().trim();
+                    if (CheckISIN(ISIN))
+                    {
+                        this.isinList.add(ISIN);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            String s = (String)obj;
+            if (s == null)
+                throw new IllegalArgumentException();
+
+            return toAppendTo.append(s);
+        }
+        /**
+         * Calculates the Double-Add-Double from String src (length 11 chars)
+         * alternatively checks validity (length 12 chars, result 0 if valid else undefinied.
+         * http://www.foxtrot-uniform-charlie-kilo.eu/programming/java-eu/isin-check.html
+         * https://rosettacode.org/wiki/Validate_International_Securities_Identification_Number#Java
+         */
+        public static boolean luhnTest(String number)
+        {
+            int s1 = 0, s2 = 0;
+            String reverse = new StringBuffer(number).reverse().toString();
+            for(int i = 0 ;i < reverse.length();i++)
+            {
+                int digit = Character.digit(reverse.charAt(i), 10);
+                if(i % 2 == 0)
+                {//this is for odd digits, they are 1-indexed in the algorithm
+                    s1 += digit;
+                }
+                else
+                {//add 2 * digit for 0-4, add 2 * digit - 9 for 5-9
+                    s2 += 2 * digit;
+                    if(digit >= 5)
+                    {
+                        s2 -= 9;
+                    }
+                }
+            }
+            return (s1 + s2) % 10 == 0;
+        }
+
+        static boolean CheckISIN(String isin)
+        {
+            isin = isin.trim().toUpperCase();
+            if (!isin.matches("^"+ ISINpattern + "$"))
+                return false;
+            StringBuilder sb = new StringBuilder();
+            for (char c : isin.substring(0, 12).toCharArray())
+                sb.append(Character.digit(c, 36));
+
+            return luhnTest(sb.toString());
+        }
+         /** END **/
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            int parseSuccessIndex = source.length();
+            source = source.trim();
+            if (pos == null)
+                throw new NullPointerException();
+            Object rObj = null;
+
+            Pattern pattern = Pattern.compile(" (" + ISINpattern + ") ");
+            Matcher matcher = pattern.matcher(source);
+            boolean success = false;
+            if (matcher.find())
+            {
+                source  = matcher.group(1);
+            }
+
+            if (source.equals("NA0123456789"))
+            {
+                success = true;
+                rObj = (Object) "DEADBEEF";
+            }
+            else if (CheckISIN(source))
+            {
+                if (isinList.contains((String) source))
+                {
+                    success = true;
+                    rObj = (Object) source.toString();
+                }
+            }
+            if (success)
+                pos.setIndex(parseSuccessIndex);
+            return rObj;
+        }
+    }
+
+    public static final class HeaderSet
+    {
+        private final List<Header> headerset = new ArrayList<Header>();
+
+        public HeaderSet()
+        {
+        }
+
+        public void add(Header.Type type, String label)
+        {
+            headerset.add(new Header (type, label));
+        }
+        
+        public Header[] get()
+        {
+            return headerset.toArray(new Header[0]);
+        }
+
+        public Header get(Header.Type type)
+        {
+            if (!headerset.isEmpty())
+            {
+                for (Header header : headerset)
+                {
+                    if (header.type.equals(type))
+                        return header;                    
+                }
+            }
+            return null;
+        }
+               
+        public String toString()
+        {
+            return Arrays.toString(this.get());
+        }
+    }
+
+    public static final class Header
+    {
+        private final Type type;
+        private final String label;
+
+        public enum Type
+        {
+            MANUAL,
+            DEFAULT,
+            FIRST
+        }
+
+        public Header(Type type, String label)
+        {
+            this.type = type;
+            this.label = label;
+        }
+
+        public Type getHeaderType()
+        {
+            return type;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return getLabel();
+        }
+    }
+
     private final Client client;
     private final File inputFile;
     private final List<CSVExtractor> extractors;
@@ -456,6 +653,10 @@ public class CSVImporter
                     else if (field instanceof AmountField)
                     {
                         column.setFormat(AmountField.FORMATS[0]);
+                    }
+                    else if (field instanceof ISINField)
+                    {
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {
