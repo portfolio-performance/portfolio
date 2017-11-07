@@ -88,7 +88,7 @@ public class CSVImportWizard extends Wizard
     @Override
     public void addPages()
     {
-        definitionPage = new CSVImportDefinitionPage(importer, target != null);
+        definitionPage = new CSVImportDefinitionPage(client, importer, target != null);
         addPage(definitionPage);
 
         selectSecurityPage = new SelectSecurityPage(client);
