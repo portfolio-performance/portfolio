@@ -70,6 +70,8 @@ public class ManagePluginsDialog extends Dialog
     private IWorkbench workbench;
     private EPartService partService;
 
+    private boolean restartRequired = false;
+
     public ManagePluginsDialog(final Shell parentShell, final IEclipsePreferences preferences,
                     final IWorkbench workbench, final EPartService partService, final P2Service p2Service)
     {
@@ -100,6 +102,19 @@ public class ManagePluginsDialog extends Dialog
         createPluginPane(area);
 
         return composite;
+    }
+
+    @Override
+    public boolean close()
+    {
+        if (restartRequired)
+        {
+            Display.getDefault().syncExec(() -> {
+                progressLabel.setText(Messages.ManagePluginsDialogOperationSuccessful);
+                UpdateHelper.promptForRestart(partService, workbench);
+            });
+        }
+        return super.close();
     }
 
     private void createRepositoryPane(Composite area)
@@ -339,12 +354,15 @@ public class ManagePluginsDialog extends Dialog
             public String getText(Object element)
             {
                 InstallableUnitState ius = (InstallableUnitState) element;
-                if (ius.isInstalled()) { return ius.getInstalledVersion() + (ius.updatable ? "*" : ""); }
-                return Messages.ManagePluginsDialogPluginNotInstalled;
+                if (ius.updatable)
+                    return ius.getAvailableVersion() + "*";
+                return ius.getAvailableVersion();
             }
         });
 
-        installedUnitsTable.setContentProvider((IStructuredContentProvider) inputElement -> {
+        installedUnitsTable.setContentProvider((IStructuredContentProvider) inputElement ->
+
+        {
             if (inputElement instanceof IEclipsePreferences)
             {
                 Collection<IInstallableUnit> installableUnits = fetchUnitsFromUpdateSite(
@@ -384,7 +402,12 @@ public class ManagePluginsDialog extends Dialog
                                 String property = iu.getProperty("org.eclipse.equinox.p2.type.group"); //$NON-NLS-1$
                                 return property != null && property.equals("true"); //$NON-NLS-1$
                             }).collect(Collectors.toList()));
-                            Display.getDefault().asyncExec(() -> installedUnitsTable.refresh());
+                            Display.getDefault().asyncExec(() -> {
+                                if (installedUnitsTable.getControl().isDisposed())
+                                {
+                                    installedUnitsTable.refresh();
+                                }
+                            });
                         }
                         catch (Exception e)
                         {
@@ -538,7 +561,8 @@ public class ManagePluginsDialog extends Dialog
                                 try
                                 {
                                     URI uri = new URI(updateSite);
-                                    if (!uri.isAbsolute()) { return Messages.ManagePluginsDialogURIMustBeAbsolute; }
+                                    if (!uri.isAbsolute())
+                                        return Messages.ManagePluginsDialogURIMustBeAbsolute;
                                 }
                                 catch (URISyntaxException e1)
                                 {
@@ -742,12 +766,7 @@ public class ManagePluginsDialog extends Dialog
         {
             if (event.getResult().isOK())
             {
-                Display.getDefault().asyncExec(() -> {
-                    progressLabel.setText(Messages.ManagePluginsDialogOperationSuccessful);
-                    installedUnitsTable.refresh();
-
-                    UpdateHelper.promptForRestart(partService, workbench);
-                });
+                restartRequired = true;
             }
         }
     }
