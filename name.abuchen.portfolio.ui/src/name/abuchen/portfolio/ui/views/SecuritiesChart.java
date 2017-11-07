@@ -309,7 +309,7 @@ public class SecuritiesChart
             for (int ii = 0; index < prices.size(); index++, ii++)
             {
                 SecurityPrice p = prices.get(index);
-                dates[ii] = p.getTime();
+                dates[ii] = p.getDate();
                 values[ii] = p.getValue() / Values.Quote.divider();
                 values2nd[ii] = (p.getValue() / Values.Quote.divider()) - firstQuote;
             }

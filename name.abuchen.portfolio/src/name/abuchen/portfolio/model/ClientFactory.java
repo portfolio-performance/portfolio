@@ -269,7 +269,8 @@ public class ClientFactory
                             // "Given final block not properly padded" is thrown
                             // if we do not read the stream - so ignore that
                             // kind of exception
-                            if (!(ex.getCause() instanceof BadPaddingException)) { throw ex; }
+                            if (!(ex.getCause() instanceof BadPaddingException)) 
+                                throw ex;
                         }
                     }
                 }
@@ -1065,8 +1066,8 @@ public class ClientFactory
                     xstream.alias("attribute-type", AttributeType.class);
 
                     xstream.alias("price", SecurityPrice.class);
-                    xstream.useAttributeFor(SecurityPrice.class, "time");
-                    xstream.aliasField("t", SecurityPrice.class, "time");
+                    xstream.useAttributeFor(SecurityPrice.class, "date");
+                    xstream.aliasField("t", SecurityPrice.class, "date");
                     xstream.useAttributeFor(SecurityPrice.class, "value");
                     xstream.aliasField("v", SecurityPrice.class, "value");
 

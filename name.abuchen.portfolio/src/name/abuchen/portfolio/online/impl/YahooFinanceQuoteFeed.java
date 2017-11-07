@@ -116,7 +116,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (time.isPresent())
             {
                 long epoch = Long.parseLong(time.get());
-                price.setTime(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
+                price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
 
             Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
@@ -139,7 +139,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (volume.isPresent())
                 price.setVolume(asNumber(volume.get()));
             
-            if (price.getTime() == null || price.getValue() <= 0)
+            if (price.getDate() == null || price.getValue() <= 0)
             {
                 errors.add(new IOException(body));
                 return false;
@@ -197,7 +197,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            return lastHistoricalQuote.getTime();
+            return lastHistoricalQuote.getDate();
         }
         else
         {
@@ -363,7 +363,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         long v = asPrice(values[CSVColumn.Close]);
 
-        price.setTime(date);
+        price.setDate(date);
         price.setValue(v);
 
         if (price instanceof LatestSecurityPrice)

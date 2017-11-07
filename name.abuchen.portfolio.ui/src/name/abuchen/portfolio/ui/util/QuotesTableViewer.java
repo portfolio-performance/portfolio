@@ -111,7 +111,7 @@ public class QuotesTableViewer
                 switch (columnIndex)
                 {
                     case 0:
-                        return Values.Date.format(p.getTime());
+                        return Values.Date.format(p.getDate());
                     case 1:
                         return p.getHigh() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getHigh());
                     case 2:
