@@ -101,6 +101,7 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance_Description;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Option;
+    public static String ColumnDelayedDividend;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
