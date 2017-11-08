@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio.ui;singleton:=true
-Bundle-Version: 0.28.1
+Bundle-Version: 0.28.2.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
@@ -92,4 +92,4 @@ Import-Package: de.engehausen.treemap,
  org.swtchart
 Require-Bundle: org.eclipse.core.expressions,
  com.ibm.icu;bundle-version="52.1.0",
- name.abuchen.portfolio;bundle-version="0.28.1"
+ name.abuchen.portfolio;bundle-version="0.28.2"
