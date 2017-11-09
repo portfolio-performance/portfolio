@@ -36,6 +36,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.util.Isin;
 
 public class CSVImporter
 {
@@ -337,47 +338,14 @@ public class CSVImporter
 
             return toAppendTo.append(s);
         }
-        /**
-         * Calculates the Double-Add-Double from String src (length 11 chars)
-         * alternatively checks validity (length 12 chars, result 0 if valid else undefinied.
-         * http://www.foxtrot-uniform-charlie-kilo.eu/programming/java-eu/isin-check.html
-         * https://rosettacode.org/wiki/Validate_International_Securities_Identification_Number#Java
-         */
-        public static boolean luhnTest(String number)
-        {
-            int s1 = 0, s2 = 0;
-            String reverse = new StringBuffer(number).reverse().toString();
-            for(int i = 0 ;i < reverse.length();i++)
-            {
-                int digit = Character.digit(reverse.charAt(i), 10);
-                if(i % 2 == 0)
-                {//this is for odd digits, they are 1-indexed in the algorithm
-                    s1 += digit;
-                }
-                else
-                {//add 2 * digit for 0-4, add 2 * digit - 9 for 5-9
-                    s2 += 2 * digit;
-                    if(digit >= 5)
-                    {
-                        s2 -= 9;
-                    }
-                }
-            }
-            return (s1 + s2) % 10 == 0;
-        }
 
         static boolean CheckISIN(String isin)
         {
             isin = isin.trim().toUpperCase();
             if (!isin.matches("^"+ ISINpattern + "$"))
                 return false;
-            StringBuilder sb = new StringBuilder();
-            for (char c : isin.substring(0, 12).toCharArray())
-                sb.append(Character.digit(c, 36));
-
-            return luhnTest(sb.toString());
+            return Isin.isValid(isin);
         }
-         /** END **/
 
         @Override
         public Object parseObject(String source, ParsePosition pos)
@@ -396,12 +364,7 @@ public class CSVImporter
                 source  = matcher.group(1);
             }
 
-            if (source.equals("NA0123456789"))
-            {
-                success = true;
-                rObj = (Object) "DEADBEEF";
-            }
-            else if (CheckISIN(source))
+            if (CheckISIN(source))
             {
                 if (isinList.contains((String) source))
                 {
