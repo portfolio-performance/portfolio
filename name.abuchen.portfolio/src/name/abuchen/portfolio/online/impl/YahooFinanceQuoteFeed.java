@@ -335,6 +335,25 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 if (values.length != 7)
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
+                // first check if all values except the date are not "null"
+                if (!"null".equals(values[0]))
+                {
+                    boolean hasValue = false;
+                    for (int i = 1; i < values.length; i++)
+                    {
+                        if (!"null".equals(values[i]))
+                        {
+                            hasValue = true;
+                            break;
+                        }
+                    }
+                    // skip this line if there are no values
+                    if (!hasValue)
+                    {
+                        continue;
+                    }
+                }
+
                 try
                 {
                     T price = klass.newInstance();
