@@ -101,6 +101,7 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance_Description;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Option;
+    public static String ColumnAutoGenerate;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
@@ -548,6 +549,7 @@ public class Messages extends NLS
     public static String MsgAccountToMissing;
     public static String MsgCannotRestartBecauseOfOpenDialog;
     public static String MsgConfirmInstall;
+    public static String MsgCreateTransactionsAutomaticallyUponOpening;
     public static String MsgDateIsInTheFuture;
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleDetail;
