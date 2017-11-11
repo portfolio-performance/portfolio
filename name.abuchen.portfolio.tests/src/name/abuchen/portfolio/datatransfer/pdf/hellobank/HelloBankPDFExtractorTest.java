@@ -35,13 +35,13 @@ import name.abuchen.portfolio.money.Values;
 public class HelloBankPDFExtractorTest
 {
     @Test
-    public void testErtrag() throws IOException
+    public void testErtrag01() throws IOException
     {
         HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -52,7 +52,7 @@ public class HelloBankPDFExtractorTest
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("NO0003054108"));
-        assertThat(security.getName(), is("M a r i n e H a r v est ASA"));
+        assertThat(security.getName(), is("M a r i n e  H a r v est ASA"));
         assertThat(security.getCurrencyCode(), is("NOK"));
 
         // check transaction
@@ -79,7 +79,7 @@ public class HelloBankPDFExtractorTest
     }
 
     @Test
-    public void testErtragWithExistingSecurity() throws IOException
+    public void testErtrag01WithExistingSecurity() throws IOException
     {
         Security security = new Security("Marine Harvest ASA", CurrencyUnit.EUR);
         security.setIsin("NO0003054108");
@@ -91,7 +91,7 @@ public class HelloBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -113,13 +113,139 @@ public class HelloBankPDFExtractorTest
     }
 
     @Test
-    public void testKauf() throws IOException
+    public void testErtrag02() throws IOException
     {
         HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US56035L1044"));
+        assertThat(security.getName(), is("M a i n  S t r e e t Capital Corp."));
+        assertThat(security.getCurrencyCode(), is("USD"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-05-15")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.34))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95 + 0.19 + ((3.05 + 2.55) / 1.0942)))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(110)));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(20.35 / 1.0942))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(20.35))));
+        assertThat(grossValueUnit.getExchangeRate(),
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.0942), 10, BigDecimal.ROUND_HALF_UP)));
+
+        assertThat(grossValueUnit.getAmount().getAmount() - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
+                        is(transaction.getMonetaryAmount().getAmount()));
+    }
+
+    @Test
+    public void testErtrag03() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("NL0012325773"));
+        assertThat(security.getName(), is("R o y a l  D u t c h Shell PLC"));
+        assertThat(security.getCurrencyCode(), is("EUR"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-26")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.43))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95 + 0.19 + 8.81 + 7.34))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(140)));
+
+        assertThat(Values.Amount.factorize(58.72) - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
+                        is(transaction.getMonetaryAmount().getAmount()));
+    }
+
+    @Test
+    public void testErtrag04() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US3682872078"));
+        assertThat(security.getName(), is("G a z p r o m  P J S C"));
+        assertThat(security.getCurrencyCode(), is("USD"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-08-21")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.91))));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
+                        Values.Amount.factorize(0.19 + 0.95 + ((32.14 + 26.79 + 16) / 1.1805)))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(800)));
+
+        Unit grossValueUnit = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(214.28 / 1.1805))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(214.28))));
+        assertThat(grossValueUnit.getExchangeRate(),
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.1805), 10, BigDecimal.ROUND_HALF_UP)));
+
+        assertThat(grossValueUnit.getAmount().getAmount() - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
+                        is(transaction.getMonetaryAmount().getAmount()));
+    }
+
+    @Test
+    public void testKauf01() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -130,7 +256,7 @@ public class HelloBankPDFExtractorTest
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("NO0003054108"));
-        assertThat(security.getName(), is("M a r i n e H a r v est ASA"));
+        assertThat(security.getName(), is("M a r i n e  H a r v est ASA"));
         assertThat(security.getCurrencyCode(), is("NOK"));
 
         // check transaction
@@ -144,20 +270,20 @@ public class HelloBankPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1867.77))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-07-03")));
-        assertThat(tx.getShares(), is(Values.Share.factorize(126)));
-        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.49))));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1118.8))));
+        assertThat(tx.getDate(), is(LocalDate.parse("2017-06-30")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(74)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.20 + 1.46))));
 
         Unit grossValueUnit = tx.getUnit(Unit.Type.GROSS_VALUE).get();
-        assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(1865.28))));
-        assertThat(grossValueUnit.getForex(), is(Money.of("NOK", Values.Amount.factorize(17640))));
+        assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(1092.14))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("NOK", Values.Amount.factorize(10360))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.457), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.486), 10, BigDecimal.ROUND_HALF_UP)));
     }
 
     @Test
-    public void testKaufWithExistingSecurity() throws IOException
+    public void testKauf01WithExistingSecurity() throws IOException
     {
         Security security = new Security("Marine Harvest ASA", CurrencyUnit.EUR);
         security.setIsin("NO0003054108");
@@ -169,7 +295,7 @@ public class HelloBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -186,20 +312,64 @@ public class HelloBankPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1867.77))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-07-03")));
-        assertThat(tx.getShares(), is(Values.Share.factorize(126)));
-        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.49))));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1118.8))));
+        assertThat(tx.getDate(), is(LocalDate.parse("2017-06-30")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(74)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.20 + 1.46))));
     }
 
     @Test
-    public void testVerkauf() throws IOException
+    public void testKauf02() throws IOException
     {
         HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("GB00B03MLX29"));
+        assertThat(security.getName(), is("R o y a l  D u t c h Shell"));
+        assertThat(security.getCurrencyCode(), is("GBP"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1314.03))));
+        assertThat(tx.getDate(), is(LocalDate.parse("2017-04-27")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(55)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.53 + 1.55))));
+
+        Unit grossValueUnit = tx.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(1305.95))));
+        assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(1100))));
+        assertThat(grossValueUnit.getExchangeRate(),
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(0.8423), 10, BigDecimal.ROUND_HALF_UP)));
+    }
+
+    @Test
+    public void testVerkauf01() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -210,7 +380,7 @@ public class HelloBankPDFExtractorTest
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("AU000000SHV6"));
-        assertThat(security.getName(), is("S E L E C T H A R V EST LTD."));
+        assertThat(security.getName(), is("S E L E C T  H A R V EST LTD."));
         assertThat(security.getCurrencyCode(), is("AUD"));
 
         // check transaction
@@ -244,7 +414,7 @@ public class HelloBankPDFExtractorTest
     }
 
     @Test
-    public void testVerkaufWithExistingSecurity() throws IOException
+    public void testVerkauf01WithExistingSecurity() throws IOException
     {
         Security security = new Security("SELECT HARVEST LTD.", CurrencyUnit.EUR);
         security.setIsin("AU000000SHV6");
@@ -256,7 +426,7 @@ public class HelloBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -282,4 +452,73 @@ public class HelloBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(254.1 / 1.5181))));
     }
 
+    @Test
+    public void testInboundDelivery01() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InboundDelivery01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DK0060534915"));
+        assertThat(security.getName(), is("N o v o - N o r d i s k AS"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+
+        PortfolioTransaction tx = (PortfolioTransaction) item.get().getSubject();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3225.37))));
+        assertThat(tx.getDate(), is(LocalDate.parse("2017-03-29")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(80)));
+    }
+
+    @Test
+    public void testInboundDelivery02() throws IOException
+    {
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InboundDelivery02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US56035L1044"));
+        assertThat(security.getName(), is("M a i n  S t r e e t Capital Corp."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+
+        PortfolioTransaction tx = (PortfolioTransaction) item.get().getSubject();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3021.70))));
+        assertThat(tx.getDate(), is(LocalDate.parse("2017-03-31")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(110)));
+    }
 }
