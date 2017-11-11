@@ -89,9 +89,8 @@ public class AboutDialog extends Dialog
         imageLabel.setImage(Images.LOGO_128.image());
 
         List<StyleRange> styles = new ArrayList<>();
-        aboutText = addContributorHyperlinks(aboutText, styles);
+        aboutText = addMarkdownLikeHyperlinks(aboutText, styles);
         addBoldFirstLine(aboutText, styles);
-        addHyperlinks(aboutText, styles);
 
         Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
@@ -153,34 +152,36 @@ public class AboutDialog extends Dialog
         }
     }
 
-    private String addContributorHyperlinks(String aboutText, List<StyleRange> styles)
+    private String addMarkdownLikeHyperlinks(String aboutText, List<StyleRange> styles)
     {
-        Pattern pattern = Pattern.compile("\\[([\\w]*)\\]"); //$NON-NLS-1$
+        Pattern pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
         Matcher matcher = pattern.matcher(aboutText);
 
         StringBuilder answer = new StringBuilder(aboutText.length());
         int pointer = 0;
-        int found = 0;
 
         while (matcher.find())
         {
             int start = matcher.start();
             int end = matcher.end();
+            
+            answer.append(aboutText.substring(pointer, start));
+            
+            String text = matcher.group("text"); //$NON-NLS-1$
+            String link = matcher.group("link"); //$NON-NLS-1$
 
             StyleRange styleRange = new StyleRange();
             styleRange.underline = true;
             styleRange.underlineStyle = SWT.UNDERLINE_LINK;
             styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
-            styleRange.data = "https://github.com/" + matcher.group(1); //$NON-NLS-1$
-            styleRange.start = start - (2 * found);
-            styleRange.length = end - start - 2;
+            styleRange.data = link;
+            styleRange.start = answer.length();
+            styleRange.length = text.length();
             styles.add(styleRange);
 
-            answer.append(aboutText.substring(pointer, start));
-            answer.append(aboutText.substring(start + 1, end - 1));
+            answer.append(text);
 
             pointer = end;
-            found++;
         }
 
         if (pointer < aboutText.length())
@@ -196,26 +197,6 @@ public class AboutDialog extends Dialog
         styleRange.start = 0;
         styleRange.length = aboutText.indexOf('\n');
         ranges.add(styleRange);
-    }
-
-    private void addHyperlinks(String aboutText, List<StyleRange> ranges)
-    {
-        Pattern pattern = Pattern.compile("https?://[^ \n]*"); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher(aboutText);
-        while (matcher.find())
-        {
-            int start = matcher.start();
-            int end = matcher.end();
-
-            StyleRange styleRange = new StyleRange();
-            styleRange.underline = true;
-            styleRange.underlineStyle = SWT.UNDERLINE_LINK;
-            styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
-            styleRange.data = matcher.group();
-            styleRange.start = start;
-            styleRange.length = end - start;
-            ranges.add(styleRange);
-        }
     }
 
     private void openBrowser(Event event)
