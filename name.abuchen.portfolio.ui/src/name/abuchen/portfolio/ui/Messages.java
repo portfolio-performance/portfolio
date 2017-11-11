@@ -375,6 +375,7 @@ public class Messages extends NLS
     public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
+    public static String LabelInstallationDetails;
     public static String LabelInterest;
     public static String LabelInterestCharge;
     public static String LabelInvestedCapital;
