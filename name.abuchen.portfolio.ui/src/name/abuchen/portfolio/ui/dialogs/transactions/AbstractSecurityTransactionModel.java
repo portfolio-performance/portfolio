@@ -196,7 +196,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         if (shares == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
 
-        if (grossValue == 0L || convertedGrossValue == 0L)
+        if ((grossValue == 0L || convertedGrossValue == 0L) && type != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnSubTotal));
 
         // check whether gross value is in range
