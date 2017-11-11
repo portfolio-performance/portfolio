@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -42,7 +43,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 
     public HistoricalQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
-        super(model);
+        super(model, bindings);
 
         setTitle(Messages.EditWizardQuoteFeedTitle);
 
@@ -126,12 +127,22 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         tableSampleData.setInput(null);
         tableSampleData.refresh();
     }
+    
+    private Object buildCacheKey(Exchange exchange)
+    {
+        if (exchange != null)
+            return exchange;
+        else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
+            return getModel().getTickerSymbol();
+        else
+            return getModel().getFeedURL();
+    }
 
     @Override
     protected void showSampleQuotes(QuoteFeed feed, Exchange exchange)
     {
-        Object cacheKey = exchange != null ? exchange : getModel().getFeedURL();
-
+        Object cacheKey = buildCacheKey(exchange);
+        
         List<LatestSecurityPrice> quotes = cacheQuotes.get(cacheKey);
 
         if (quotes != null)
@@ -144,7 +155,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgLoading);
             tableSampleData.refresh();
 
-            Job job = new LoadHistoricalQuotes(feed, exchange);
+            Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
             job.setUser(true);
             job.schedule(150);
         }
@@ -154,13 +165,15 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         private QuoteFeed feed;
         private Exchange exchange;
+        private Object cacheKey;
 
-        public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange)
+        public LoadHistoricalQuotes(QuoteFeed feed, Exchange exchange, Object cacheKey)
         {
             super(MessageFormat.format(Messages.JobMsgSamplingHistoricalQuotes,
                             exchange != null ? exchange.getName() : "")); //$NON-NLS-1$
             this.feed = feed;
             this.exchange = exchange;
+            this.cacheKey = cacheKey;
 
             HistoricalQuoteProviderPage.this.currentJob = this;
         }
@@ -185,7 +198,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         HistoricalQuoteProviderPage.this.currentJob = null;
-                        cacheQuotes.put(exchange, quotes);
+                        cacheQuotes.put(cacheKey, quotes);
                         if (!tableSampleData.getControl().isDisposed())
                         {
                             tableSampleData.setInput(quotes);

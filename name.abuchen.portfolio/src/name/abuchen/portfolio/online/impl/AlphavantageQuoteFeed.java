@@ -86,7 +86,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 // poor man's check
                 if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
                 {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, lines[0])));
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, body)));
                     return false;
                 }
 
@@ -166,7 +166,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             URL obj = new URL(wknUrl);
             HttpURLConnection con = (HttpURLConnection) obj.openConnection();
             con.setConnectTimeout(1000);
-            con.setReadTimeout(2000);
+            con.setReadTimeout(20000);
 
             int responseCode = con.getResponseCode();
             if (responseCode != HttpURLConnection.HTTP_OK)

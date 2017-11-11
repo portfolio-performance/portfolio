@@ -162,7 +162,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
     public LatestQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
-        super(model);
+        super(model, bindings);
 
         setTitle(Messages.EditWizardLatestQuoteFeedTitle);
 
