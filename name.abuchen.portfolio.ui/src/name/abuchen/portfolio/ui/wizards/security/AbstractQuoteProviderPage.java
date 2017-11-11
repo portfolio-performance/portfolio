@@ -503,7 +503,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         if (!hasTicker)
         {
             clearSampleQuotes();
-            setStatus("Ticker Symbol missing");
+            setStatus(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTicker));
         }
         else
         {

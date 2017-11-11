@@ -100,7 +100,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
                 LatestSecurityPrice price = new LatestSecurityPrice();
 
-                price.setTime(LocalDate.parse(values[0], formatter));
+                price.setDate(LocalDate.parse(values[0], formatter));
                 price.setValue(asPrice(values[4]));
                 price.setHigh(asPrice(values[2]));
                 price.setLow(asPrice(values[3]));
@@ -128,7 +128,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            int days = Dates.daysBetween(lastHistoricalQuote.getTime(), LocalDate.now());
+            int days = Dates.daysBetween(lastHistoricalQuote.getDate(), LocalDate.now());
             outputSize = days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT;
         }
 
@@ -204,7 +204,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                     if (values[0].length() > 10)
                         values[0] = values[0].substring(0, 10);
                     
-                    price.setTime(LocalDate.parse(values[0], formatter));
+                    price.setDate(LocalDate.parse(values[0], formatter));
                     price.setValue(asPrice(values[4]));
 
                     if (price instanceof LatestSecurityPrice)
