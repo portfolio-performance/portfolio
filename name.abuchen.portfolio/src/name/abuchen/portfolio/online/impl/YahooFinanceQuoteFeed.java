@@ -336,12 +336,12 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
                 // first check if all values except the date are not "null"
-                if (!"null".equals(values[0]))
+                if (!"null".equals(values[0])) //$NON-NLS-1$
                 {
                     boolean hasValue = false;
                     for (int i = 1; i < values.length; i++)
                     {
-                        if (!"null".equals(values[i]))
+                        if (!"null".equals(values[i])) //$NON-NLS-1$
                         {
                             hasValue = true;
                             break;
