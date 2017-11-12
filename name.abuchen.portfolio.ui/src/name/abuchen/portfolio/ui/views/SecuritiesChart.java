@@ -25,6 +25,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
+import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries;
@@ -101,7 +102,16 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator);
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy + "1");
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy + "2");
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "1");
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "2");
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
+
+        ILegend legend = chart.getLegend();
+        legend.setPosition(SWT.BOTTOM);
+        legend.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
+        legend.setVisible(true);
 
         Composite buttons = new Composite(parent, SWT.NONE);
         buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
@@ -323,6 +333,7 @@ public class SecuritiesChart
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
+            lineSeries.setVisibleInLegend(false);
 
             if (showAreaRelativeToFirstQuote)
             {
@@ -336,6 +347,7 @@ public class SecuritiesChart
                 lineSeries2nd.setYSeries(values2nd);
                 lineSeries2nd.setAntialias(SWT.ON);
                 lineSeries2nd.setYAxisId(1);
+                lineSeries2nd.setVisibleInLegend(false);
             }
 
             addChartMarker();
@@ -366,11 +378,11 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.SMA200))
-            addSMAMarkerLines(200);
-
         if (chartConfig.contains(ChartDetails.SMA50))
             addSMAMarkerLines(50);
+
+        if (chartConfig.contains(ChartDetails.SMA200))
+            addSMAMarkerLines(200);
 
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
@@ -394,24 +406,139 @@ public class SecuritiesChart
         lineSeriesSMA.setLineColor(
                         Display.getDefault().getSystemColor(SMADays == 200 ? SWT.COLOR_RED : SWT.COLOR_GREEN));
         lineSeriesSMA.setYAxisId(0);
+        lineSeriesSMA.setVisibleInLegend(true);
+
     }
 
     private void addInvestmentMarkerLines()
     {
+        int CounterBuy = 0;
+        int CounterSell = 0;
         for (Portfolio portfolio : client.getPortfolios())
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
-                    String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
-                    Color color = Display.getDefault().getSystemColor(
-                                    t.getType().isPurchase() ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
-                    double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
-                                    .getAmount() / Values.Quote.divider();
-                    chart.addMarkerLine(t.getDate(), color, label, value);
+                    if((t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN) &&
+                       (t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT))
+                    {
+                        if (t.getType().isPurchase()) {
+                            CounterBuy++;
+                        }
+                        else {
+                            CounterSell++;
+                        }
+                    }
                 }
             }
+        }
+        LocalDate[] DatesBuy;
+        LocalDate[] DatesSell;
+        double[] PriceBuy;
+        double[] PriceSell;
+        DatesBuy = new LocalDate[CounterBuy];
+        DatesSell = new LocalDate[CounterSell];
+        PriceBuy = new double[CounterBuy];
+        PriceSell = new double[CounterSell];
+        CounterBuy = 0;
+        CounterSell = 0;
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
+                {
+                    if((t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN) &&
+                                    (t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT))
+                    {
+                        if (t.getType().isPurchase()) {
+                            DatesBuy[CounterBuy] = t.getDate();
+                            PriceBuy[CounterBuy] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                                                    .getAmount() / Values.Quote.divider();
+                            CounterBuy++;
+                        }
+                        else {
+                            DatesSell[CounterSell] = t.getDate();
+                            PriceSell[CounterSell] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                                                    .getAmount() / Values.Quote.divider();
+                            CounterSell++;
+                        }
+                    }
+                }
+            }
+        }
+
+        if (CounterBuy != 0) {
+            ILineSeries lineSeriesBuyBorder= (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy + "2");
+            lineSeriesBuyBorder.setLineStyle(LineStyle.NONE);
+            lineSeriesBuyBorder.setXDateSeries(TimelineChart.toJavaUtilDate(DatesBuy));
+            lineSeriesBuyBorder.setYSeries(PriceBuy);
+            lineSeriesBuyBorder.setYAxisId(0);
+            lineSeriesBuyBorder.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesBuyBorder.setSymbolSize(7);
+            lineSeriesBuyBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            lineSeriesBuyBorder.setVisibleInLegend(false);
+
+            ILineSeries lineSeriesBuyBackground = (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy + "1");
+            lineSeriesBuyBackground.setLineStyle(LineStyle.NONE);
+            lineSeriesBuyBackground.setXDateSeries(TimelineChart.toJavaUtilDate(DatesBuy));
+            lineSeriesBuyBackground.setYSeries(PriceBuy);
+            lineSeriesBuyBackground.setYAxisId(0);
+            lineSeriesBuyBackground.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesBuyBackground.setSymbolSize(6);
+            lineSeriesBuyBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            lineSeriesBuyBackground.setVisibleInLegend(false);
+
+            ILineSeries lineSeriesBuy = (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy);
+            lineSeriesBuy.setLineStyle(LineStyle.NONE);
+            lineSeriesBuy.setXDateSeries(TimelineChart.toJavaUtilDate(DatesBuy));
+            lineSeriesBuy.setYSeries(PriceBuy);
+            lineSeriesBuy.setYAxisId(0);
+            lineSeriesBuy.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesBuy.setSymbolSize(4);
+            lineSeriesBuy.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+            lineSeriesBuy.setVisibleInLegend(true);
+            lineSeriesBuy.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
+        }
+
+        if (CounterSell != 0) {
+            ILineSeries lineSeriesSellBorder = (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "2");
+            lineSeriesSellBorder.setLineStyle(LineStyle.NONE);
+            lineSeriesSellBorder.setXDateSeries(TimelineChart.toJavaUtilDate(DatesSell));
+            lineSeriesSellBorder.setYSeries(PriceSell);
+            lineSeriesSellBorder.setYAxisId(0);
+            lineSeriesSellBorder.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesSellBorder.setSymbolSize(7);
+            lineSeriesSellBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            lineSeriesSellBorder.setVisibleInLegend(false);
+
+            ILineSeries lineSeriesSellBackground = (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "1");
+            lineSeriesSellBackground.setLineStyle(LineStyle.NONE);
+            lineSeriesSellBackground.setXDateSeries(TimelineChart.toJavaUtilDate(DatesSell));
+            lineSeriesSellBackground.setYSeries(PriceSell);
+            lineSeriesSellBackground.setYAxisId(0);
+            lineSeriesSellBackground.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesSellBackground.setSymbolSize(6);
+            lineSeriesSellBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            lineSeriesSellBackground.setVisibleInLegend(false);
+
+            ILineSeries lineSeriesSell = (ILineSeries) chart.getSeriesSet()
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell);
+            lineSeriesSell.setLineStyle(LineStyle.NONE);
+            lineSeriesSell.setXDateSeries(TimelineChart.toJavaUtilDate(DatesSell));
+            lineSeriesSell.setYSeries(PriceSell);
+            lineSeriesSell.setYAxisId(0);
+            lineSeriesSell.setSymbolType(PlotSymbolType.DIAMOND);
+            lineSeriesSell.setSymbolSize(4);
+            lineSeriesSell.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+            lineSeriesSell.setVisibleInLegend(true);
+            lineSeriesSell.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
         }
     }
 
@@ -470,6 +597,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
         lineSeriesBollingerBandsLowerBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
+        lineSeriesBollingerBandsLowerBand.setVisibleInLegend(true);
 
         ChartLineSeriesAxes bollingerBandsUpperBand = new BollingerBands(bollingerBandsDays, bollingerBandsFactor,
                         this.security, chartPeriod).getUpperBands();
@@ -484,6 +612,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand.setAntialias(SWT.ON);
         lineSeriesBollingerBandsUpperBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
+        lineSeriesBollingerBandsUpperBand.setVisibleInLegend(true);
 
     }
 }
