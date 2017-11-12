@@ -7,7 +7,6 @@ import java.time.temporal.TemporalAmount;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -20,7 +19,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -34,13 +32,13 @@ import org.swtchart.LineStyle;
 import org.swtchart.IAxis;
 import org.swtchart.Range;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -106,6 +104,9 @@ public class SecuritiesChart
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuBuy + "2");
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "1");
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailInvestments + " " + Messages.SecurityMenuSell + "2");
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends);
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "1");
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "2");
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
         ILegend legend = chart.getLegend();
@@ -544,30 +545,79 @@ public class SecuritiesChart
 
     private void addDividendMarkerLines()
     {
-        client.getAccounts().stream().flatMap(a -> a.getTransactions().stream()) //
-                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
-                        .filter(t -> t.getSecurity() == security)
-                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate())) //
-                        .forEach(t -> {
-                            Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA);
+        IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
+        Double LowerDividenPrice = yAxis1st.getRange().lower;
 
-                            if (t.getShares() == 0L)
-                            {
-                                chart.addMarkerLine(t.getDate(), color, "\u2211 " + t.getGrossValue().toString()); //$NON-NLS-1$
-                            }
-                            else
-                            {
-                                Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
-                                long gross = grossValue.isPresent() ? grossValue.get().getForex().getAmount()
-                                                : t.getGrossValueAmount();
+        int CounterDividend = 0;
+        for (Account account : this.client.getAccounts())
+        {
+            for (AccountTransaction t : account.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
+                {
+                    if (t.getType() == AccountTransaction.Type.DIVIDENDS)
+                        CounterDividend++;
+                }
+            }
+        }
+        System.out.println(">"+CounterDividend+"<");
 
-                                long perShare = Math.round(gross * Values.Share.divider() * Values.Quote.factorToMoney()
-                                                / t.getShares());
+        LocalDate[] DatesDividend;
+        double[] PriceDividend;
+        DatesDividend = new LocalDate[CounterDividend];
+        PriceDividend = new double[CounterDividend];
+        CounterDividend = 0;
+        for (Account account : this.client.getAccounts())
+        {
+            for (AccountTransaction t : account.getTransactions())
+            {
+                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
+                {
+                    if (t.getType() == AccountTransaction.Type.DIVIDENDS) {
+                        System.out.println(">>"+CounterDividend);
+                        DatesDividend[CounterDividend] = t.getDate();
+                        PriceDividend[CounterDividend] = LowerDividenPrice;
+                        CounterDividend++;
+                    }
+                }
+            }
+        }
 
-                                chart.addMarkerLine(t.getDate(), color, Values.Quote.format(perShare));
-                            }
-                        });
+        if (CounterDividend != 0) {
+            ILineSeries lineSeriesBorder = (ILineSeries) chart.getSeriesSet()  
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends + "2");
+            lineSeriesBorder.setLineStyle(LineStyle.NONE);
+            lineSeriesBorder.setXDateSeries(TimelineChart.toJavaUtilDate(DatesDividend));
+            lineSeriesBorder.setYSeries(PriceDividend);
+            lineSeriesBorder.setYAxisId(0);
+            lineSeriesBorder.setSymbolType(PlotSymbolType.SQUARE);
+            lineSeriesBorder.setSymbolSize(7);
+            lineSeriesBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            lineSeriesBorder.setVisibleInLegend(false);
 
+            ILineSeries lineSeriesBackground = (ILineSeries) chart.getSeriesSet()  
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends + "1");
+            lineSeriesBackground.setLineStyle(LineStyle.NONE);
+            lineSeriesBackground.setXDateSeries(TimelineChart.toJavaUtilDate(DatesDividend));
+            lineSeriesBackground.setYSeries(PriceDividend);
+            lineSeriesBackground.setYAxisId(0);
+            lineSeriesBackground.setSymbolType(PlotSymbolType.SQUARE);
+            lineSeriesBackground.setSymbolSize(6);
+            lineSeriesBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            lineSeriesBackground.setVisibleInLegend(false);
+
+            ILineSeries lineSeriesDividend = (ILineSeries) chart.getSeriesSet()  
+                            .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends);
+            lineSeriesDividend.setLineStyle(LineStyle.NONE);
+            lineSeriesDividend.setXDateSeries(TimelineChart.toJavaUtilDate(DatesDividend));
+            lineSeriesDividend.setYSeries(PriceDividend);
+            lineSeriesDividend.setYAxisId(0);
+            lineSeriesDividend.setSymbolType(PlotSymbolType.SQUARE);
+            lineSeriesDividend.setSymbolSize(4);
+            lineSeriesDividend.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+            lineSeriesDividend.setVisibleInLegend(true);
+            lineSeriesDividend.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA));
+        }  
     }
 
     private void addEventMarkerLines()
