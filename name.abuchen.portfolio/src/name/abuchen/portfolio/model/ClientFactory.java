@@ -546,6 +546,8 @@ public class ClientFactory
                 // added FEES_REFUND transaction type
             case 34:
                 // add optional security to FEES, FEES_REFUND, TAXES
+            case 35:
+                // added flag to auto-generate tx from investment plan
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

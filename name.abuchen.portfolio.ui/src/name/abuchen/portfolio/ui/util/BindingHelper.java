@@ -115,6 +115,11 @@ public class BindingHelper
         {
             propertyChangeSupport.removePropertyChangeListener(listener);
         }
+        
+        public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+        {
+            propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+        }
 
         public Client getClient()
         {
