@@ -423,15 +423,11 @@ public class SecuritiesChart
             {
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
-                    if((t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN) &&
-                       (t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT))
-                    {
-                        if (t.getType().isPurchase()) {
-                            CounterBuy++;
-                        }
-                        else {
-                            CounterSell++;
-                        }
+                    if (t.getType().isPurchase()) {
+                        CounterBuy++;
+                    }
+                    else {
+                        CounterSell++;
                     }
                 }
             }
@@ -452,21 +448,17 @@ public class SecuritiesChart
             {
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
-                    if((t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN) &&
-                                    (t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT))
-                    {
-                        if (t.getType().isPurchase()) {
-                            DatesBuy[CounterBuy] = t.getDate();
-                            PriceBuy[CounterBuy] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
-                                                    .getAmount() / Values.Quote.divider();
-                            CounterBuy++;
+                    if (t.getType().isPurchase()) {
+                        DatesBuy[CounterBuy] = t.getDate();
+                        PriceBuy[CounterBuy] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                                        .getAmount() / Values.Quote.divider();
+                        CounterBuy++;
                         }
-                        else {
-                            DatesSell[CounterSell] = t.getDate();
-                            PriceSell[CounterSell] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                    else {
+                        DatesSell[CounterSell] = t.getDate();
+                        PriceSell[CounterSell] = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
                                                     .getAmount() / Values.Quote.divider();
-                            CounterSell++;
-                        }
+                        CounterSell++;
                     }
                 }
             }
