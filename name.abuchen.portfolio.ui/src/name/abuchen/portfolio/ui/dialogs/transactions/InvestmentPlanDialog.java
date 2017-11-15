@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
@@ -78,13 +79,15 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
-        securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
+        securities.bindValue(Properties.security.name(), null, false);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
         // portfolio
 
         ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
-        portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
+        List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
+        portfolios.add(0, InvestmentPlanModel.DEPOSIT);
+        portfolio.value.setInput(portfolios);
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
         // account
@@ -145,10 +148,10 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         startingWith(valueName, lblName).width(3 * amountWidth)
                         //
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
+                        //
                         .thenBelow(securities.value.getControl()).label(securities.label)
                         .suffix(securities.currency, currencyWidth)
-                        //
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         //
                         .thenBelow(account.value.getControl()).label(account.label)
                         .suffix(account.currency, currencyWidth)

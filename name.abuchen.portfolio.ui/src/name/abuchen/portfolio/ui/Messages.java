@@ -156,6 +156,7 @@ public class Messages extends NLS
     public static String ColumnName;
     public static String ColumnNote;
     public static String ColumnOffsetAccount;
+    public static String ColumnPeer;
     public static String ColumnPerShare;
     public static String ColumnPerShare_Description;
     public static String ColumnPersonalDividendYield;
@@ -307,6 +308,7 @@ public class Messages extends NLS
     public static String InvestmentPlanMenuDelete;
     public static String InvestmentPlanMenuGenerateTransactions;
     public static String InvestmentPlanOptionDelivery;
+    public static String InvestmentPlanOptionDeposit;
     public static String InvestmentPlanTitleEditPlan;
     public static String InvestmentPlanTitleNewPlan;
     public static String InvestmentPlanTxCreated;
