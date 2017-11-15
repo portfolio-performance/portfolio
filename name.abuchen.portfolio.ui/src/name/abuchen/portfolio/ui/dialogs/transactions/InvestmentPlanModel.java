@@ -22,6 +22,7 @@ public class InvestmentPlanModel extends AbstractModel
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
+    public static final Portfolio DEPOSIT = new Portfolio(Messages.InvestmentPlanOptionDeposit);
 
     private final Client client;
 
@@ -56,7 +57,7 @@ public class InvestmentPlanModel extends AbstractModel
     @Override
     public void applyChanges()
     {
-        if (security == null)
+        if (security == null && !portfolio.equals(DEPOSIT))
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
         if (portfolio == null)
             throw new UnsupportedOperationException(Messages.MsgMissingPortfolio);
@@ -72,8 +73,8 @@ public class InvestmentPlanModel extends AbstractModel
         }
 
         plan.setName(name);
-        plan.setSecurity(security);
-        plan.setPortfolio(portfolio);
+        plan.setSecurity(portfolio.equals(DEPOSIT) ? null : security);
+        plan.setPortfolio(portfolio.equals(DEPOSIT) ? null : portfolio);
         plan.setAccount(account.equals(DELIVERY) ? null : account);
         plan.setAutoGenerate(autoGenerate);
         plan.setStart(start);
@@ -99,7 +100,7 @@ public class InvestmentPlanModel extends AbstractModel
 
         this.name = plan.getName();
         this.security = plan.getSecurity();
-        this.portfolio = plan.getPortfolio();
+        this.portfolio = plan.getPortfolio() != null ? plan.getPortfolio() : DEPOSIT;
         this.account = plan.getAccount() != null ? plan.getAccount() : DELIVERY;
         this.autoGenerate = plan.isAutoGenerate();
         this.start = plan.getStart();
@@ -116,9 +117,15 @@ public class InvestmentPlanModel extends AbstractModel
     
     private IStatus calculateStatus()
     {
+        if (account != null && account.equals(DELIVERY) && portfolio != null && portfolio.equals(DEPOSIT))
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnPeer));
+
         if (name == null || name.trim().length() == 0)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
         
+        if (security == null && portfolio != null && !portfolio.equals(DEPOSIT))
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.MsgMissingSecurity));
+
         if (amount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
         
@@ -150,6 +157,8 @@ public class InvestmentPlanModel extends AbstractModel
         firePropertyChange(Properties.securityCurrencyCode.name(), oldSecurityCurrency, getSecurityCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
     }
 
     public Portfolio getPortfolio()
@@ -160,9 +169,14 @@ public class InvestmentPlanModel extends AbstractModel
     public void setPortfolio(Portfolio portfolio)
     {
         String oldTransactionCurrency = getTransactionCurrencyCode();
+        if (portfolio.equals(InvestmentPlanModel.DEPOSIT))
+            this.security = null;
+        firePropertyChange(Properties.security.name(), this.security, this.security = security);
         firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio);
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
     }
 
     public Account getAccount()
@@ -178,6 +192,8 @@ public class InvestmentPlanModel extends AbstractModel
         firePropertyChange(Properties.accountCurrencyCode.name(), oldAccountCurrency, getAccountCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
     }
     
     public boolean isAutoGenerate()
@@ -244,7 +260,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public String getReferenceAccountCurrencyCode()
     {
-        return portfolio != null ? portfolio.getReferenceAccount().getCurrencyCode() : ""; //$NON-NLS-1$
+        return portfolio != null && !DEPOSIT.equals(portfolio) ? portfolio.getReferenceAccount().getCurrencyCode() : ""; //$NON-NLS-1$
     }
 
     public String getTransactionCurrencyCode()

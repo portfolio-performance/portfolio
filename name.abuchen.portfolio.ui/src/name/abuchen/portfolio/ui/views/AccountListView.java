@@ -605,10 +605,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private Color colorFor(AccountTransaction t)
     {
-        if (t.getType().isDebit())
-            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-        else
-            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+        return Display.getCurrent().getSystemColor(t.getType().isDebit() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);  
     }
 
     private void hookKeyListener()

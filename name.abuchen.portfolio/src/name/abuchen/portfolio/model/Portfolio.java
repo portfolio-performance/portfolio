@@ -20,6 +20,12 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
         this.uuid = UUID.randomUUID().toString();
     }
 
+    public Portfolio(String name)
+    {
+        this();
+        this.name = name;
+    }
+
     public String getUUID()
     {
         return uuid;
