@@ -378,43 +378,6 @@ public class CSVImporter
         }
     }
 
-    public static final class HeaderSet
-    {
-        private final List<Header> headerset = new ArrayList<Header>();
-
-        public HeaderSet()
-        {
-        }
-
-        public void add(Header.Type type, String label)
-        {
-            headerset.add(new Header (type, label));
-        }
-        
-        public Header[] get()
-        {
-            return headerset.toArray(new Header[0]);
-        }
-
-        public Header get(Header.Type type)
-        {
-            if (!headerset.isEmpty())
-            {
-                for (Header header : headerset)
-                {
-                    if (header.type.equals(type))
-                        return header;                    
-                }
-            }
-            return null;
-        }
-               
-        public String toString()
-        {
-            return Arrays.toString(this.get());
-        }
-    }
-
     public static final class Header
     {
         private final Type type;
