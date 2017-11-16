@@ -104,13 +104,13 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator);
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "1");
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "2");
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "1");
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "2");
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends);
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "1");
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "2");
+        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
+        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
         ILegend legend = chart.getLegend();
