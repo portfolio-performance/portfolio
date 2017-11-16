@@ -34,7 +34,7 @@ public class SimpleMovingAverageTest
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         formatter = formatter.withLocale(Locale.GERMANY);
         LocalDate date = LocalDate.parse("01.01.2017", formatter);
-        price.setTime(date);
+        price.setDate(date);
         price.setValue(0);
         securityOnePrice.addPrice(price);
 
@@ -47,7 +47,7 @@ public class SimpleMovingAverageTest
                 date = LocalDate.parse(i + ".01.2017", formatter);
 
             price = new SecurityPrice();
-            price.setTime(date);
+            price.setDate(date);
             price.setValue(i);
             securityTenPrices.addPrice(price);
             i++;

@@ -186,4 +186,5 @@
   <addons xmi:id="_D8SDphfFEeOders_POVQHQ" elementId="org.eclipse.e4.ui.workbench.bindings.model" contributionURI="bundleclass://org.eclipse.e4.ui.workbench.swt/org.eclipse.e4.ui.workbench.swt.util.BindingProcessingAddon"/>
   <addons xmi:id="_SBOEgLdnEeO0acAVfaNMbA" elementId="name.abuchen.portfolio.ui.addons.OSXStartupAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.OSXStartupAddon"/>
   <addons xmi:id="_czmqcPl_EeWALp6nnaAZRw" elementId="name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.CopyMenuToNewWindowAddon"/>
+  <addons xmi:id="_ITGS4MGeEeeACft0IXqMbg" elementId="name.abuchen.portfolio.ui.addons.Preference2EnvAddon" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.Preference2EnvAddon"/>
 </application:Application>

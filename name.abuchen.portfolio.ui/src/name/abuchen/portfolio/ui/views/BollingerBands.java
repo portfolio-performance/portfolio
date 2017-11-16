@@ -116,9 +116,9 @@ public class BollingerBands
         for (; index < prices.size(); index++)
         {
             if (index < BollingerBandsDays) continue; 
-            LocalDate nextDate = prices.get(index).getTime();
+            LocalDate nextDate = prices.get(index).getDate();
             LocalDate isBefore = nextDate.plusDays(1);
-            LocalDate isAfter = prices.get(index - BollingerBandsDays + 2).getTime();
+            LocalDate isAfter = prices.get(index - BollingerBandsDays + 2).getDate();
             List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
 
             if (filteredPrices.size() < calculatedMinimumDays)
@@ -141,7 +141,7 @@ public class BollingerBands
             valuesBollingerBandsLowerBands.add(valueBollingerBandsLowerBands);
             valuesBollingerBandsMiddleBands.add(QuotePriceAverage);
             valuesBollingerBandsUpperBands.add(valueBollingerBandsUpperBands);
-            datesBollingerBands.add(prices.get(index).getTime());
+            datesBollingerBands.add(prices.get(index).getDate());
         }
         LocalDate[] tmpDates = datesBollingerBands.toArray(new LocalDate[0]);
         Double[] tmpPricesLower = valuesBollingerBandsLowerBands.toArray(new Double[0]);
@@ -177,7 +177,7 @@ public class BollingerBands
     public SecurityPrice getStartPrice()
     {
         // get Date of first possible bollinger bands calculation
-        LocalDate BollingerBandsPeriodEnd = prices.get(0).getTime().plusDays(BollingerBandsDays - 1L);
+        LocalDate BollingerBandsPeriodEnd = prices.get(0).getDate().plusDays(BollingerBandsDays - 1L);
         int index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(BollingerBandsPeriodEnd, 0),
                         new SecurityPrice.ByDate()));
         if (index >= prices.size())
@@ -192,7 +192,7 @@ public class BollingerBands
         List<SecurityPrice> filteredPrices = null;
         LocalDate isBefore = BollingerBandsPeriodEnd.plusDays(1);
         LocalDate isAfter = BollingerBandsPeriodEnd.minusDays(BollingerBandsDays);
-        LocalDate lastDate = prices.get(prices.size() - 1).getTime();
+        LocalDate lastDate = prices.get(prices.size() - 1).getDate();
         filteredPrices = this.getFilteredList(isBefore, isAfter);
 
         int i = 1;
@@ -215,7 +215,7 @@ public class BollingerBands
 
     private List<SecurityPrice> getFilteredList(LocalDate isBefore, LocalDate isAfter)
     {
-        return prices.stream().filter(p -> p.getTime().isAfter(isAfter) && p.getTime().isBefore(isBefore))
+        return prices.stream().filter(p -> p.getDate().isAfter(isAfter) && p.getDate().isBefore(isBefore))
                         .collect(Collectors.toList());
     }
 

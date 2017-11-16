@@ -15,14 +15,14 @@ public class LatestSecurityPrice extends SecurityPrice
     public LatestSecurityPrice()
     {}
 
-    public LatestSecurityPrice(LocalDate time, long price)
+    public LatestSecurityPrice(LocalDate date, long price)
     {
-        super(time, price);
+        super(date, price);
     }
 
-    public LatestSecurityPrice(LocalDate time, long price, long high, long low, long volume)
+    public LatestSecurityPrice(LocalDate date, long price, long high, long low, long volume)
     {
-        super(time, price);
+        super(date, price);
 
         this.high = high;
         this.low = low;
