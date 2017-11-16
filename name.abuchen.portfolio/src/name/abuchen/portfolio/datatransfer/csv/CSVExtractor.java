@@ -16,6 +16,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
 {
@@ -64,7 +65,7 @@ public abstract class CSVExtractor implements Extractor
 
         String value = rawValues[columnIndex];
 
-        Pattern pattern = Pattern.compile(" ([A-Z]{2}[A-Z0-9]{9}\\d) ");
+        Pattern pattern = Pattern.compile("\\b("+Isin.PATTERN+")\\b");
         Matcher matcher = pattern.matcher(value);
         if (matcher.find())
         {

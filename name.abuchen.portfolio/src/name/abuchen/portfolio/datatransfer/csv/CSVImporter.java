@@ -312,7 +312,6 @@ public class CSVImporter
     {
         private static final long serialVersionUID = 1L;
         private List<String> isinList = new ArrayList<String>();
-        private static final String ISINpattern = "[A-Z]{2}[A-Z0-9]{9}\\d";
 
         public ISINFormat(List<Security> securityList)
         {
@@ -342,7 +341,7 @@ public class CSVImporter
         static boolean CheckISIN(String isin)
         {
             isin = isin.trim().toUpperCase();
-            if (!isin.matches("^"+ ISINpattern + "$"))
+            if (!isin.matches("^"+ Isin.PATTERN + "$"))
                 return false;
             return Isin.isValid(isin);
         }
@@ -356,13 +355,11 @@ public class CSVImporter
                 throw new NullPointerException();
             Object rObj = null;
 
-            Pattern pattern = Pattern.compile(" (" + ISINpattern + ") ");
+            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b");
             Matcher matcher = pattern.matcher(source);
             boolean success = false;
             if (matcher.find())
-            {
                 source  = matcher.group(1);
-            }
 
             if (CheckISIN(source))
             {
