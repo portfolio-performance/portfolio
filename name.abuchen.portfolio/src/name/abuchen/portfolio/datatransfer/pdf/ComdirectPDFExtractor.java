@@ -116,8 +116,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "name", "isin", "shares").optional() //
-                        .match("^(p e r| p e r) *\\+?[\\d .]+  (?<name>.*)      (?<wkn>.*)") //
-                        .match("^(S T K| ST K| S TK) *(?<shares>\\+?[\\d .]+,\\+?[\\d ]+).*    .* {4}(?<isin>.*)$") //
+                        .match("^\\s*(p\\s*e\\s*r) *\\+?[\\d .]+  (?<name>.*)      (?<wkn>.*)") //
+                        .match("^\\s*(S\\s*T\\s*K) *(?<shares>\\+?[\\d .]+,\\+?[\\d ]+).*    .* {4}(?<isin>.*)$") //
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
