@@ -529,19 +529,18 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     else
                     {
                         if (column.getField().isOptional())
-                        {
                             return resources.createColor(LIGHTGREEN);
-                        }
                         else
-                        {
                             return resources.createColor(ORANGE);
-                        }
                     }
                 }
                 else
                 {
                     String text = getColumnText(element, columnIndex);
-                    return resources.createColor(GREEN);
+                    if (column.getField().isOptional())
+                        return resources.createColor(LIGHTGREEN);
+                    else
+                        return resources.createColor(GREEN);
                 }
             }
             catch (ParseException e)
