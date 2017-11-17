@@ -128,7 +128,8 @@ public class BollingerBands
             double sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
             double QuotePriceAverage = sum / Values.Quote.divider() / filteredPrices.size();
             double tempQuotePriceVariance = 0;
-            for (int i = 0; i < filteredPrices.size(); i++) {
+            for (int i = 0; i < filteredPrices.size(); i++)
+            {
                 tempQuotePriceVariance += ((filteredPrices.get(i).getValue() / Values.Quote.divider()) - QuotePriceAverage) * ((filteredPrices.get(i).getValue() / Values.Quote.divider()) - QuotePriceAverage);
             }
 
