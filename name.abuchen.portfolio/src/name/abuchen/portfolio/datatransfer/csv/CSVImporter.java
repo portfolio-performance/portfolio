@@ -26,6 +26,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -33,6 +35,8 @@ import org.apache.commons.csv.CSVStrategy;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.util.Isin;
 
 public class CSVImporter
 {
@@ -290,6 +294,122 @@ public class CSVImporter
         }
     }
 
+    public static class ISINField extends CSVImporter.Field
+    {
+
+        /* package */ ISINField(String name)
+        {
+            super(name);
+        }
+
+        public ISINFormat createFormat(List<Security> securityList)
+        {
+            return new ISINFormat(securityList);
+        }
+    }
+
+    public static class ISINFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+        private List<String> isinList = new ArrayList<String>();
+
+        public ISINFormat(List<Security> securityList)
+        {
+            for (Security security : securityList)
+            {
+                if (security.getIsin() != null)
+                {
+                    String ISIN = security.getIsin().trim();
+                    if (CheckISIN(ISIN))
+                    {
+                        this.isinList.add(ISIN);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            String s = (String)obj;
+            if (s == null)
+                throw new IllegalArgumentException();
+
+            return toAppendTo.append(s);
+        }
+
+        static boolean CheckISIN(String isin)
+        {
+            isin = isin.trim().toUpperCase();
+            if (!isin.matches("^"+ Isin.PATTERN + "$"))
+                return false;
+            return Isin.isValid(isin);
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            int parseSuccessIndex = source.length();
+            source = source.trim();
+            if (pos == null)
+                throw new NullPointerException();
+            Object rObj = null;
+
+            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b");
+            Matcher matcher = pattern.matcher(source);
+            boolean success = false;
+            if (matcher.find())
+                source  = matcher.group(1);
+
+            if (CheckISIN(source))
+            {
+                if (isinList.contains((String) source))
+                {
+                    success = true;
+                    rObj = (Object) source.toString();
+                }
+            }
+            if (success)
+                pos.setIndex(parseSuccessIndex);
+            return rObj;
+        }
+    }
+
+    public static final class Header
+    {
+        private final Type type;
+        private final String label;
+
+        public enum Type
+        {
+            MANUAL,
+            DEFAULT,
+            FIRST
+        }
+
+        public Header(Type type, String label)
+        {
+            this.type = type;
+            this.label = label;
+        }
+
+        public Type getHeaderType()
+        {
+            return type;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        @Override
+        public String toString()
+        {
+            return getLabel();
+        }
+    }
+
     private final Client client;
     private final File inputFile;
     private final List<CSVExtractor> extractors;
@@ -456,6 +576,10 @@ public class CSVImporter
                     else if (field instanceof AmountField)
                     {
                         column.setFormat(AmountField.FORMATS[0]);
+                    }
+                    else if (field instanceof ISINField)
+                    {
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {

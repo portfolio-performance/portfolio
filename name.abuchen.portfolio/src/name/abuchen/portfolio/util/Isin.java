@@ -3,6 +3,7 @@ package name.abuchen.portfolio.util;
 public class Isin
 {
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //$NON-NLS-1$
+    public static final String PATTERN = "[A-Z]{2}[A-Z0-9]{9}\\d";
 
     public static final boolean isValid(String isin)
     {
