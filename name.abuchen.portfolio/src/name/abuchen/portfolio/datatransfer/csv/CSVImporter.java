@@ -363,39 +363,6 @@ public class CSVImporter
         }
     }
 
-    public static final class Header
-    {
-        private final Type type;
-        private final String label;
-
-        public enum Type
-        {
-            MANUAL, DEFAULT, FIRST
-        }
-
-        public Header(Type type, String label)
-        {
-            this.type = type;
-            this.label = label;
-        }
-
-        public Type getHeaderType()
-        {
-            return type;
-        }
-
-        public String getLabel()
-        {
-            return label;
-        }
-
-        @Override
-        public String toString()
-        {
-            return getLabel();
-        }
-    }
-
     private final Client client;
     private final File inputFile;
     private final List<CSVExtractor> extractors;
