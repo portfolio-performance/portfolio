@@ -218,6 +218,7 @@ public class Messages extends NLS
     public static String ConsumerPriceIndexMenuDelete;
     public static String CSVImportErrorMissingFields;
     public static String CSVImportInformationOptionalFields;
+    public static String CSVImportLabelDefaultHeader;
     public static String CSVImportLabelDelimiter;
     public static String CSVImportLabelDoubleClickHere;
     public static String CSVImportLabelEditMapping;
@@ -227,6 +228,8 @@ public class Messages extends NLS
     public static String CSVImportLabelFileCSV;
     public static String CSVImportLabelFirstLineIsHeader;
     public static String CSVImportLabelFormat;
+    public static String CSVImportLabelHeader;
+    public static String CSVImportLabelManualHeader;
     public static String CSVImportLabelMappedToField;
     public static String CSVImportLabelProvidedValue;
     public static String CSVImportLabelSkipLines;
