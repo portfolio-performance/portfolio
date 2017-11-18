@@ -386,7 +386,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
     
     private String stripBlanksAndUnderscores(String input){
-        return input.replaceAll("[\\s_]", "");
+        return input.replaceAll("[\\s_]", ""); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
 }
