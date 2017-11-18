@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.HashMap;
 import org.apache.commons.lang3.ArrayUtils;
+import java.util.ArrayList;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -419,8 +420,10 @@ public class SecuritiesChart
 
     private void addInvestmentMarkerLines()
     {
-        Map<LocalDate, Double> mapBuy = new HashMap<LocalDate, Double>(); 
-        Map<LocalDate, Double> mapSell = new HashMap<LocalDate, Double>(); 
+        List<LocalDate> mapDatesBuyTemp = new ArrayList<> ();
+        List<LocalDate> mapDatesSellTemp = new ArrayList<> ();
+        List<Double> mapPriceBuyTemp = new ArrayList<> ();
+        List<Double> mapPriceSellTemp = new ArrayList<> ();
         for (Portfolio portfolio : client.getPortfolios())
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
@@ -428,27 +431,29 @@ public class SecuritiesChart
                 if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
                 {
                     if (t.getType().isPurchase()) {
-                        mapBuy.put(t.getDate(), t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                        mapDatesBuyTemp.add(t.getDate());
+                        mapPriceBuyTemp.add(t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
                                         .getAmount() / Values.Quote.divider());
                         }
                     else {
-                        mapSell.put(t.getDate(), t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
+                        mapDatesSellTemp.add(t.getDate());
+                        mapPriceSellTemp.add(t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
                                         .getAmount() / Values.Quote.divider());
                     }
                 }
             }
         }
-        if (!mapBuy.isEmpty()) {
-            Map<LocalDate, Double> mapBuyTemp = new TreeMap(mapBuy);
-            LocalDate[] datesBuy = mapBuyTemp.keySet().toArray(new LocalDate[mapBuyTemp.size()]);
-            Double[] priceBuyTemp = mapBuyTemp.values().toArray(new Double[mapBuyTemp.size()]);
-            double[] priceBuy = ArrayUtils.toPrimitive(priceBuyTemp);
-
+        if (!mapDatesBuyTemp.isEmpty()) {
+            LocalDate[] mapDatesBuy;
+            mapDatesBuy = new LocalDate[mapDatesBuyTemp.size()];
+            mapDatesBuy = mapDatesBuyTemp.toArray(mapDatesBuy);
+            double[] mapPriceBuy = ArrayUtils.toPrimitive(mapPriceBuyTemp.toArray(new Double[mapPriceBuyTemp.size()]));
+            
             ILineSeries lineSeriesBuyBorder= (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
             lineSeriesBuyBorder.setLineStyle(LineStyle.NONE);
-            lineSeriesBuyBorder.setXDateSeries(TimelineChart.toJavaUtilDate(datesBuy));
-            lineSeriesBuyBorder.setYSeries(priceBuy);
+            lineSeriesBuyBorder.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
+            lineSeriesBuyBorder.setYSeries(mapPriceBuy);
             lineSeriesBuyBorder.setYAxisId(0);
             lineSeriesBuyBorder.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesBuyBorder.setSymbolSize(7);
@@ -458,8 +463,8 @@ public class SecuritiesChart
             ILineSeries lineSeriesBuyBackground = (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
             lineSeriesBuyBackground.setLineStyle(LineStyle.NONE);
-            lineSeriesBuyBackground.setXDateSeries(TimelineChart.toJavaUtilDate(datesBuy));
-            lineSeriesBuyBackground.setYSeries(priceBuy);
+            lineSeriesBuyBackground.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
+            lineSeriesBuyBackground.setYSeries(mapPriceBuy);
             lineSeriesBuyBackground.setYAxisId(0);
             lineSeriesBuyBackground.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesBuyBackground.setSymbolSize(6);
@@ -469,8 +474,8 @@ public class SecuritiesChart
             ILineSeries lineSeriesBuy = (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy);
             lineSeriesBuy.setLineStyle(LineStyle.NONE);
-            lineSeriesBuy.setXDateSeries(TimelineChart.toJavaUtilDate(datesBuy));
-            lineSeriesBuy.setYSeries(priceBuy);
+            lineSeriesBuy.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
+            lineSeriesBuy.setYSeries(mapPriceBuy);
             lineSeriesBuy.setYAxisId(0);
             lineSeriesBuy.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesBuy.setSymbolSize(4);
@@ -479,17 +484,18 @@ public class SecuritiesChart
             lineSeriesBuy.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN));
         }
 
-        if (!mapSell.isEmpty()) {
-            Map<LocalDate, Double> mapSellTemp = new TreeMap(mapSell);
-            LocalDate[] datesSell = mapSellTemp.keySet().toArray(new LocalDate[mapSellTemp.size()]);
-            Double[] priceSellTemp = mapSellTemp.values().toArray(new Double[mapSellTemp.size()]);
-            double[] priceSell = ArrayUtils.toPrimitive(priceSellTemp);
+        if (!mapDatesSellTemp.isEmpty()) {
+            LocalDate[] mapDatesSell;
+            mapDatesSell = new LocalDate[mapDatesSellTemp.size()];
+            mapDatesSell = mapDatesSellTemp.toArray(mapDatesSell);
+            double[] mapPriceSell = ArrayUtils.toPrimitive(mapPriceSellTemp.toArray(new Double[mapPriceSellTemp.size()]));
+            
 
             ILineSeries lineSeriesSellBorder = (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
             lineSeriesSellBorder.setLineStyle(LineStyle.NONE);
-            lineSeriesSellBorder.setXDateSeries(TimelineChart.toJavaUtilDate(datesSell));
-            lineSeriesSellBorder.setYSeries(priceSell);
+            lineSeriesSellBorder.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
+            lineSeriesSellBorder.setYSeries(mapPriceSell);
             lineSeriesSellBorder.setYAxisId(0);
             lineSeriesSellBorder.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesSellBorder.setSymbolSize(7);
@@ -499,8 +505,8 @@ public class SecuritiesChart
             ILineSeries lineSeriesSellBackground = (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
             lineSeriesSellBackground.setLineStyle(LineStyle.NONE);
-            lineSeriesSellBackground.setXDateSeries(TimelineChart.toJavaUtilDate(datesSell));
-            lineSeriesSellBackground.setYSeries(priceSell);
+            lineSeriesSellBackground.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
+            lineSeriesSellBackground.setYSeries(mapPriceSell);
             lineSeriesSellBackground.setYAxisId(0);
             lineSeriesSellBackground.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesSellBackground.setSymbolSize(6);
@@ -510,8 +516,8 @@ public class SecuritiesChart
             ILineSeries lineSeriesSell = (ILineSeries) chart.getSeriesSet()
                             .createSeries(SeriesType.LINE, Messages.SecurityMenuSell);
             lineSeriesSell.setLineStyle(LineStyle.NONE);
-            lineSeriesSell.setXDateSeries(TimelineChart.toJavaUtilDate(datesSell));
-            lineSeriesSell.setYSeries(priceSell);
+            lineSeriesSell.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
+            lineSeriesSell.setYSeries(mapPriceSell);
             lineSeriesSell.setYAxisId(0);
             lineSeriesSell.setSymbolType(PlotSymbolType.DIAMOND);
             lineSeriesSell.setSymbolSize(4);
