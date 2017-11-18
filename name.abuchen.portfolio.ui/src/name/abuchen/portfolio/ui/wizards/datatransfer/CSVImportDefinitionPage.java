@@ -48,7 +48,6 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -79,6 +78,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
@@ -450,10 +450,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
     private static final class ImportLabelProvider extends LabelProvider
                     implements ITableLabelProvider, ITableColorProvider
     {
-        private static final RGB GREEN       = new RGB(125, 152, 25);
-        private static final RGB LIGHTGREEN  = new RGB(152, 192, 25);
-        private static final RGB ORANGE      = new RGB(245, 120, 25);
-        private static final RGB RED         = new RGB(235,  25, 25);
+        private static final Color GREEN = Colors.getColor(163, 215, 113);
+        private static final Color LIGHTGREEN = Colors.getColor(188, 226, 158);
+        private static final Color ERROR = Colors.getColor(255, 152, 89);
 
         private CSVImporter importer;
 
@@ -524,31 +523,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     if (text != null && !text.isEmpty())
                     {
                         column.getFormat().getFormat().parseObject(text);
-                        return resources.createColor(GREEN);
-                    }
-                    else
-                    {
-                        if (column.getField().isOptional())
-                            return resources.createColor(LIGHTGREEN);
-                        else
-                            return resources.createColor(ORANGE);
+                        return GREEN;
                     }
                 }
-                else
-                {
-                    String text = getColumnText(element, columnIndex);
-                    if (column.getField().isOptional())
-                        return resources.createColor(LIGHTGREEN);
-                    else
-                        return resources.createColor(GREEN);
-                }
+
+                return column.getField().isOptional() ? LIGHTGREEN : GREEN;
             }
             catch (ParseException e)
             {
-                if (column.getField().isOptional())
-                    return resources.createColor(ORANGE);
-                else
-                    return resources.createColor(RED);
+                return column.getField().isOptional() ? Colors.WARNING : ERROR;
             }
         }
     }
@@ -696,7 +679,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(new FieldFormat(null,
+                                        ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField)
                     {

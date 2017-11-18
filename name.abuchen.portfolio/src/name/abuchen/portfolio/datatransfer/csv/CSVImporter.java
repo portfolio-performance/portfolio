@@ -25,9 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -311,67 +314,52 @@ public class CSVImporter
     public static class ISINFormat extends Format
     {
         private static final long serialVersionUID = 1L;
-        private List<String> isinList = new ArrayList<String>();
+
+        private Set<String> existingISINs;
 
         public ISINFormat(List<Security> securityList)
         {
-            for (Security security : securityList)
-            {
-                if (security.getIsin() != null)
-                {
-                    String ISIN = security.getIsin().trim();
-                    if (CheckISIN(ISIN))
-                    {
-                        this.isinList.add(ISIN);
-                    }
-                }
-            }
+            existingISINs = securityList.stream().map(Security::getIsin)
+                            .filter(isin -> isin != null && !isin.trim().isEmpty()).collect(Collectors.toSet());
         }
 
         @Override
         public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
         {
-            String s = (String)obj;
+            String s = (String) obj;
             if (s == null)
                 throw new IllegalArgumentException();
 
             return toAppendTo.append(s);
         }
 
-        static boolean CheckISIN(String isin)
-        {
-            isin = isin.trim().toUpperCase();
-            if (!isin.matches("^"+ Isin.PATTERN + "$"))
-                return false;
-            return Isin.isValid(isin);
-        }
-
         @Override
         public Object parseObject(String source, ParsePosition pos)
         {
-            int parseSuccessIndex = source.length();
-            source = source.trim();
-            if (pos == null)
-                throw new NullPointerException();
-            Object rObj = null;
+            Objects.requireNonNull(pos);
 
-            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b");
-            Matcher matcher = pattern.matcher(source);
-            boolean success = false;
+            String isin = source.trim().toUpperCase();
+
+            // check for a partial match (ISIN maybe only part of the field:
+            // "Zins/Dividende ISIN DE0007164600 SAP SE O."
+
+            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+            Matcher matcher = pattern.matcher(isin);
             if (matcher.find())
-                source  = matcher.group(1);
+                isin = matcher.group(1);
 
-            if (CheckISIN(source))
+            // return ISIN as valid if a) it is a valid ISIN number, and b) it
+            // is one of the existing ISIN
+
+            if (Isin.isValid(isin) && existingISINs.contains(isin))
             {
-                if (isinList.contains((String) source))
-                {
-                    success = true;
-                    rObj = (Object) source.toString();
-                }
+                pos.setIndex(source.length());
+                return isin;
             }
-            if (success)
-                pos.setIndex(parseSuccessIndex);
-            return rObj;
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -382,9 +370,7 @@ public class CSVImporter
 
         public enum Type
         {
-            MANUAL,
-            DEFAULT,
-            FIRST
+            MANUAL, DEFAULT, FIRST
         }
 
         public Header(Type type, String label)
@@ -497,10 +483,8 @@ public class CSVImporter
 
     public void processFile() throws IOException
     {
-        FileInputStream stream = null;
-        try
+        try (FileInputStream stream = new FileInputStream(inputFile))
         {
-            stream = new FileInputStream(inputFile);
             Reader reader = new InputStreamReader(stream, encoding);
 
             CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
@@ -537,18 +521,6 @@ public class CSVImporter
 
             mapToImportDefinition();
         }
-        finally
-        {
-            if (stream != null)
-            {
-                try
-                {
-                    stream.close();
-                }
-                catch (IOException ignore)
-                {}
-            }
-        }
     }
 
     private void mapToImportDefinition()
@@ -579,7 +551,8 @@ public class CSVImporter
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(new FieldFormat(null,
+                                        ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {

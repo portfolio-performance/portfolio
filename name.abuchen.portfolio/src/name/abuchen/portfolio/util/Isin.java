@@ -3,9 +3,12 @@ package name.abuchen.portfolio.util;
 public class Isin
 {
     private static final String CHARACTERS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"; //$NON-NLS-1$
-    public static final String PATTERN = "[A-Z]{2}[A-Z0-9]{9}\\d";
+    public static final String PATTERN = "[A-Z]{2}[A-Z0-9]{9}\\d"; //$NON-NLS-1$
 
-    public static final boolean isValid(String isin)
+    private Isin()
+    {}
+
+    public static final boolean isValid(String isin) // NOSONAR
     {
         if (isin == null || isin.length() != 12)
             return false;
