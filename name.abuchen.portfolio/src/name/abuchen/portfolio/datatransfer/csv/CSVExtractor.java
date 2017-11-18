@@ -64,15 +64,17 @@ public abstract class CSVExtractor implements Extractor
             return null;
 
         String value = rawValues[columnIndex];
+        if (value == null)
+            return null;
+        
+        value = value.trim().toUpperCase();
 
-        Pattern pattern = Pattern.compile("\\b("+Isin.PATTERN+")\\b");
+        Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
         Matcher matcher = pattern.matcher(value);
         if (matcher.find())
-        {
-            value= matcher.group(1);
-        }
+            value = matcher.group(1);
 
-        return value != null && value.trim().length() == 0 ? null : value;
+        return value.length() == 0 ? null : value;
     }
 
     protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
