@@ -521,4 +521,67 @@ public class DABPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2013-05-31")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
     }
+    
+    @Test
+    public void testProceeds1() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds1.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("IE00B3F81R35"));
+        assertThat(security.getName(), is("iShsIII-Core EO Corp.Bd U.ETF Registered Shares o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.47))));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-01-27")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(3.4256)));
+    }
+    
+
+    @Test
+    public void testProceeds2() throws IOException
+    {
+        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds2.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = getSecurity(results);
+        assertThat(security.getIsin(), is("LU0480132876"));
+        assertThat(security.getName(), is("UBS-ETF - UBS-ETF MSCI Em.Mkts Inhaber-Anteile A o.N."));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.06))));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-07")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(14.3755)));
+    }
 }
