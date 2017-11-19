@@ -57,8 +57,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction
-                        .section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
@@ -75,8 +74,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date", "amount")
-                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
@@ -103,8 +101,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction
-                        .section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{4})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
@@ -121,8 +118,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date", "amount")
-                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
@@ -149,8 +145,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction
-                        .section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
@@ -167,8 +162,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date", "amount")
-                        .match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
@@ -196,8 +190,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return transaction;
         });
         block.set(pdfTransaction);
-        pdfTransaction
-                        .section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
@@ -283,7 +276,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Gutschrift von Investmenterträgen");
         type.addBlock(block);
-        
+
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
             AccountTransaction transaction = new AccountTransaction();
@@ -291,7 +284,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return transaction;
         });
         block.set(pdfTransaction);
-        
+
         pdfTransaction.section("shares", "name", "isin", "wkn", "currency")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$").match(".*") //
@@ -333,8 +326,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
             return entry;
         });
         block.set(pdfTransaction);
-        pdfTransaction
-                        .section("notation", "shares", "name", "isin", "wkn")
+        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
@@ -407,12 +399,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             t.setSecurity(getOrCreateSecurity(v));
                         })
 
-                        .section("date")
-                        .match("(^Valuta) (?<date>\\d+.\\d+.\\d{4}+) (.*)")
-                        .assign((t, v) -> {
+                        .section("date").match("(^Valuta) (?<date>\\d+.\\d+.\\d{4}+) (.*)").assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(t.getPortfolioTransaction().getSecurity()
-                                            .getCurrencyCode()));
+                            t.setCurrencyCode(asCurrencyCode(
+                                            t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
                         })
 
                         .wrap(BuySellEntryItem::new));
@@ -460,12 +450,26 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T pdfTransaction)
     {
-        pdfTransaction.section("fees")
-                        .optional()
-                        .match("(^Provision) (?<fees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-])(.*)")
-                        .assign((t, v) -> getTransaction(t).addUnit(
-                                        new Unit(Unit.Type.FEE, Money.of(asCurrencyCode(v.get("currency")),
-                                                        asAmount(v.get("fees"))))));
+        pdfTransaction.section("fee", "currency").optional()
+                        .match("(^Provision) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+
+                        .section("fee", "currency").optional()
+                        .match("(^Transaktionsentgelt Börse) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+
+                        .section("fee", "currency").optional()
+                        .match("(^Übertragungs-/Liefergebühr) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        });
     }
 
     private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
@@ -493,22 +497,17 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("tax", "currency")
-                        .optional()
+                        .section("tax", "currency").optional()
                         .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
-                        })
-                        .section("soli", "currency")
-                        .optional()
+                        }).section("soli", "currency").optional()
                         .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("soli")));
-                        })
-                        .section("kirchenst", "currency")
-                        .optional()
+                        }).section("kirchenst", "currency").optional()
                         .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
