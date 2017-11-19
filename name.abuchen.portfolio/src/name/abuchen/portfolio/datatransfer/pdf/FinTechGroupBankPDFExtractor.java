@@ -860,7 +860,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                         }).wrap(t -> {
-                            if (t.getAmount() != 0) { return new TransactionItem(t); }
+                            if (t.getAmount() != 0)
+                                return new TransactionItem(t);
                             return null;
                         }));
     }
@@ -918,7 +919,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.TAXES);
                             }
                         }).wrap(t -> {
-                            if (t.getAmount() != 0) { return new TransactionItem(t); }
+                            if (t.getAmount() != 0)
+                                return new TransactionItem(t);
                             return null;
                         }));
     }
@@ -960,7 +962,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> {
-                            if (t.getCurrencyCode() != null && t.getAmount() != 0) { return new TransactionItem(t); }
+                            if (t.getCurrencyCode() != null && t.getAmount() != 0)
+                                return new TransactionItem(t);
                             return null;
                         }));
     }

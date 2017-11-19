@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -658,5 +660,87 @@ System.out.println(results);
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.54)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
+    }
+    
+    @Test
+    public void testDividende3() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US1266501006"));
+        assertThat(security.getName(), is("C V  S  He a  lt h  C  or  p ."));
+        assertThat(security.getWkn(), is("859034"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+    }
+    
+    @Test
+    public void testDividende3withTax() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt", "comdirectDividende3_Steuer.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US1266501006"));
+        assertThat(security.getName(), is("C V  S  He a  lt h  C  or  p ."));
+        assertThat(security.getWkn(), is("859034"));
+
+        List<AccountTransaction> items = results.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .map(i -> (AccountTransaction) i.getSubject())
+                        .collect(Collectors.toList());
+        assertThat(items.size(), is(2));
+        
+        // dividend
+        Optional<AccountTransaction> oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        AccountTransaction transaction = oTransaction.get();
+
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+        
+        
+        // tax
+        oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.TAXES.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        transaction = oTransaction.get();
+        
+        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
     }
 }

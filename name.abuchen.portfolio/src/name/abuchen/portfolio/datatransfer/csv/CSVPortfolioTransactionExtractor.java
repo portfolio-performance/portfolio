@@ -14,6 +14,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -32,7 +33,7 @@ import name.abuchen.portfolio.money.Money;
 
         List<Field> fields = getFields();
         fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
+        fields.add(new ISINField(Messages.CSVColumn_ISIN).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_SecurityName).setOptional(true));
