@@ -116,6 +116,7 @@ public abstract class Transaction implements Annotated
     private CrossEntry crossEntry;
     private long shares;
     private String note;
+    private String id;  // id from pdf documents (used f.e. in tax document and dividend document)
 
     private List<Unit> units;
 
@@ -298,5 +299,15 @@ public abstract class Transaction implements Annotated
     {
         Collections.sort(transactions, new ByDate());
         return transactions;
+    }
+
+    public String getId()
+    {
+        return id;
+    }
+
+    public void setId(String id)
+    {
+        this.id = id;
     }
 }

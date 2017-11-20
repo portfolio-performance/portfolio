@@ -144,6 +144,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
                         })
+                        
+                        .section("reference") //
+                        .optional() //
+                        .find("^\\(Referenz-Nr.\\s+(?<reference>[^\\)]+).*").assign((t, v) -> {
+                            t.setId(v.get("reference"));
+                        })
 
                         .wrap(TransactionItem::new));
     }
@@ -157,7 +163,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 //        type.setMustExclude("Wertpapierkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+        //Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+        Block block = new Block("^Kundennr.*"); // earlier for reference
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -222,6 +229,13 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                              v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
                              t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                              t.setAmount(asAmount(v.get("tax")));
+                        })
+                        
+                        .section("reference") //
+                        .optional() //  Referenznummer: horrible format a1 CONST: r e f a2 town - but fixed length (for now)
+                        .match("^.*R\\s*e\\s*f\\s*e\\s*r\\s*e\\s*n\\s*z\\s*-\\s*N\\s*u\\s*m\\s*m\\s*e\\s*r\\s*:" +
+                                        "(?<reference>.*)$").assign((t, v) -> {
+                            t.setId(stripBlanks(v.get("reference")).substring(0, 16));
                         })
 
                         .wrap(TransactionItem::new));

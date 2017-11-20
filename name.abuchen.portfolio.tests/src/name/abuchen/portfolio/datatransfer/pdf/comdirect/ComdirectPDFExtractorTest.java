@@ -730,6 +730,7 @@ System.out.println(results);
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+        assertThat(transaction.getId(), is("1BICAY8QGZE0000U"));
         
         
         // tax
@@ -742,5 +743,6 @@ System.out.println(results);
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
         assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
+        assertThat(transaction.getId(), is("1BICAY8QGZE0000U"));
     }
 }
