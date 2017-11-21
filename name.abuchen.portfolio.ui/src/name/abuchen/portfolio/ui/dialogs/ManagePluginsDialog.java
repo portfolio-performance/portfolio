@@ -2,13 +2,14 @@ package name.abuchen.portfolio.ui.dialogs;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -353,19 +354,28 @@ public class ManagePluginsDialog extends Dialog
             installedUnitsTable.setContentProvider((IStructuredContentProvider) inputElement -> {
                 if (inputElement instanceof IEclipsePreferences)
                 {
-                    Collection<IInstallableUnit> installableUnits = fetchUnitsFromUpdateSite(
+                    Set<IInstallableUnit> installablePlugins = fetchUnitsFromUpdateSite(
                                     P2Util.toURIs((IEclipsePreferences) inputElement));
 
-                    return installableUnits.stream().map(InstallableUnitState::new)
+                    p2Service.getInstalledPlugins().forEach(iu -> {
+                        if (!installablePlugins.contains(iu))
+                        {
+                            installablePlugins.add(iu);
+                        }
+                    });
+
+                    return installablePlugins.stream().map(InstallableUnitState::new)
                                     .toArray(InstallableUnitState[]::new);
                 }
                 return new Object[0];
             });
         }
 
-        private Collection<IInstallableUnit> fetchUnitsFromUpdateSite(Collection<URI> updateSites)
+        private Set<IInstallableUnit> fetchUnitsFromUpdateSite(Collection<URI> updateSites)
         {
-            Collection<IInstallableUnit> installableUnits = new ArrayList<>();
+            Set<IInstallableUnit> installableUnits = new TreeSet<>((iu1, iu2) -> {
+                return iu1.getId().compareTo(iu2.getId());
+            });
             for (URI updateSite : updateSites)
             {
                 Collection<IInstallableUnit> cachedUpdateSites = cachedInstallableUnits.get(updateSite);
@@ -381,7 +391,7 @@ public class ManagePluginsDialog extends Dialog
                             progressBar.setText(Messages.bind(Messages.ManagePluginsDialogFetchUpdateSite, updateSite));
                             try
                             {
-                                List<IInstallableUnit> installableUnits = p2Service.fetchPPPluginsFromUpdateSite(
+                                List<IInstallableUnit> installableUnits = p2Service.fetchPluginsFromUpdateSite(
                                                 updateSite, SubMonitor.convert(progressBar, 10));
 
                                 cachedInstallableUnits.put(updateSite, installableUnits);

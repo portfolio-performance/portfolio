@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -22,7 +21,6 @@ import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.metadata.IInstallableUnit;
-import org.eclipse.equinox.p2.metadata.IRequirement;
 import org.eclipse.equinox.p2.operations.InstallOperation;
 import org.eclipse.equinox.p2.operations.ProfileChangeOperation;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
@@ -55,7 +53,7 @@ public class P2Service
 
     }
 
-    public Set<IInstallableUnit> getInstalledUnits()
+    public Set<IInstallableUnit> getInstalledPlugins()
     {
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
         IProfile p2Profile = profileRegistry.getProfile(IProfileRegistry.SELF);
@@ -63,19 +61,12 @@ public class P2Service
         IQuery<IInstallableUnit> query = QueryUtil.createIUGroupQuery();
 
         IQueryResult<IInstallableUnit> queryResult = p2Profile.query(query, null);
-        return queryResult.toSet();
-    }
-
-    public Stream<IInstallableUnit> getInstalledPlugins()
-    {
-        final IInstallableUnit product = getProduct();
-        if (product != null)
-        {
-            final Collection<IRequirement> requirements = product.getRequirements();
-            return getInstalledUnits().stream().filter(iu -> !iu.equals(product)
-                            && !requirements.stream().filter(r -> r.isMatch(iu)).findFirst().isPresent());
-        }
-        return Stream.empty();
+        return queryResult.toUnmodifiableSet().stream().filter(iu -> {
+            String groupProperty = iu.getProperty("org.eclipse.equinox.p2.type.group"); //$NON-NLS-1$
+            String pluginTypeProperty = iu.getProperty("portfolio.plugin"); //$NON-NLS-1$
+            return groupProperty != null && groupProperty.equals("true") && pluginTypeProperty != null //$NON-NLS-1$
+                            && pluginTypeProperty.equals("true");
+        }).collect(Collectors.toSet());
     }
 
     public Set<IInstallableUnit> getLatestProductsFromUpdateSite(URI updateSite, IProgressMonitor monitor)
@@ -88,7 +79,7 @@ public class P2Service
                         .toUnmodifiableSet();
     }
 
-    public List<IInstallableUnit> fetchPPPluginsFromUpdateSite(URI updateSite, IProgressMonitor monitor)
+    public List<IInstallableUnit> fetchPluginsFromUpdateSite(URI updateSite, IProgressMonitor monitor)
                     throws ProvisionException
     {
         IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent
