@@ -26,6 +26,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         addBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
+        addProceedsTransaction();
     }
 
     @Override
@@ -233,7 +234,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .find("^Nominal Ex-Tag Zahltag .*") //
+                        .find("Nominal Ex-Tag Zahltag .*") //
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
@@ -286,6 +287,61 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                                 t.addUnit(unit);
                         })
 
+                        .wrap(t -> {
+                            if (t.getAmount() == 0)
+                                throw new IllegalArgumentException("No dividend amount found.");
+                            return new TransactionItem(t);
+                        }));
+    }
+
+    @SuppressWarnings("nls")
+    private void addProceedsTransaction()
+    {
+        DocumentType type = new DocumentType("Erträgnisgutschrift");
+        this.addDocumentTyp(type);
+                
+        //Block zweimal vorhanden, finde direkt 2. Block
+        Block block = new Block("^Erträgnisgutschrift (?!aus).*$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.DIVIDENDS);
+                            return entry;
+                        })
+
+                        .section("name", "isin")
+                        .find("Gattungsbezeichnung ISIN")
+                        .match("^(?<name>.*) (?<isin>[^ ]*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares")
+                        .find("Nominal Ex-Tag Zahltag .*")
+                        .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        //No exchange rate
+                        .section("date", "amount", "currency")
+                        .optional() //
+                        .find("Wert\\s*Konto-Nr.\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*) (?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        //With exchange rate
+                        .section("date", "amount", "currency") //
+                        .optional() //
+                        .find("Wert\\s*Konto-Nr.\\s*Devisenkurs\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
+                        .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*)\\s*(\\w{3}+)\\/(?<forign>\\w{3}+)\\s*(?<rate>[\\d.]+(,\\d+)?)\\s*(?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        
                         .wrap(t -> {
                             if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
