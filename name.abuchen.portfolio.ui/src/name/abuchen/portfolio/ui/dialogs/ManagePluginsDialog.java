@@ -40,8 +40,8 @@ import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.Point;
@@ -159,6 +159,8 @@ public class ManagePluginsDialog extends Dialog
 
         private TableViewer installedUnitsTable;
         private Composite progressPane;
+        private Button installUpdateButton;
+        private Button uninstallButton;
 
         public PluginPane(Composite area)
         {
@@ -167,7 +169,12 @@ public class ManagePluginsDialog extends Dialog
 
         public void refresh()
         {
-            installedUnitsTable.refresh();
+            if (!installedUnitsTable.getControl().isDisposed())
+            {
+                installedUnitsTable.refresh();
+                installUpdateButton.setEnabled(false);
+                uninstallButton.setEnabled(false);
+            }
         }
 
         private void createPane(Composite area)
@@ -191,10 +198,10 @@ public class ManagePluginsDialog extends Dialog
             Composite rightArea = new Composite(mainArea, SWT.NONE);
             GridDataFactory.fillDefaults().grab(false, true).applyTo(rightArea);
             rightArea.setLayout(new GridLayout(1, false));
-            Button installUpdateButton = new Button(rightArea, SWT.NONE);
+            installUpdateButton = new Button(rightArea, SWT.NONE);
             installUpdateButton.setText(Messages.ManagePluginsDialogInstallUpdate);
             installUpdateButton.setEnabled(false);
-            Button uninstallButton = new Button(rightArea, SWT.NONE);
+            uninstallButton = new Button(rightArea, SWT.NONE);
             uninstallButton.setText(Messages.ManagePluginsDialogUninstall);
             uninstallButton.setEnabled(false);
 
@@ -258,7 +265,7 @@ public class ManagePluginsDialog extends Dialog
                 }
             });
 
-            installUpdateButton.addSelectionListener(new SelectionListener()
+            installUpdateButton.addSelectionListener(new SelectionAdapter()
             {
                 @SuppressWarnings("unchecked")
                 @Override
@@ -277,18 +284,11 @@ public class ManagePluginsDialog extends Dialog
                         {
                             updateIUs(structuredSelection.toList());
                         }
-
                     }
-                }
-
-                @Override
-                public void widgetDefaultSelected(SelectionEvent e)
-                {
-                    // not used
                 }
             });
 
-            uninstallButton.addSelectionListener(new SelectionListener()
+            uninstallButton.addSelectionListener(new SelectionAdapter()
             {
                 @SuppressWarnings("unchecked")
                 @Override
@@ -299,12 +299,6 @@ public class ManagePluginsDialog extends Dialog
                     {
                         uninstallIUs(structuredSelection.toList());
                     }
-                }
-
-                @Override
-                public void widgetDefaultSelected(SelectionEvent e)
-                {
-                    // not used
                 }
             });
         }
@@ -332,7 +326,7 @@ public class ManagePluginsDialog extends Dialog
                 public String getText(Object element)
                 {
                     InstallableUnitState ius = (InstallableUnitState) element;
-                    if (!ius.isInstalled())
+                    if (ius.isInstalled())
                     {
                         return ius.getInstalledVersion();
                     }
@@ -352,19 +346,11 @@ public class ManagePluginsDialog extends Dialog
                 public String getText(Object element)
                 {
                     InstallableUnitState ius = (InstallableUnitState) element;
-                    if (ius.updatable)
-                    {
-                        return ius.getAvailableVersion() + " (*)"; //$NON-NLS-1$
-                    }
-                    else if (!ius.isInstalled())
-                        return ius.getAvailableVersion() + " (+)"; //$NON-NLS-1$
                     return ius.getAvailableVersion();
                 }
             });
 
-            installedUnitsTable.setContentProvider((IStructuredContentProvider) inputElement ->
-
-            {
+            installedUnitsTable.setContentProvider((IStructuredContentProvider) inputElement -> {
                 if (inputElement instanceof IEclipsePreferences)
                 {
                     Collection<IInstallableUnit> installableUnits = fetchUnitsFromUpdateSite(
@@ -399,12 +385,6 @@ public class ManagePluginsDialog extends Dialog
                                                 updateSite, SubMonitor.convert(progressBar, 10));
 
                                 cachedInstallableUnits.put(updateSite, installableUnits);
-                                Display.getDefault().asyncExec(() -> {
-                                    if (!installedUnitsTable.getControl().isDisposed())
-                                    {
-                                        installedUnitsTable.refresh();
-                                    }
-                                });
                             }
                             catch (Exception e)
                             {
@@ -499,7 +479,7 @@ public class ManagePluginsDialog extends Dialog
     private class RepositoryPane
     {
 
-        private final class RemoveRepositorySelectionListener implements SelectionListener
+        private final class RemoveRepositorySelectionListener extends SelectionAdapter
         {
             private final TableViewer availableRepositories;
 
@@ -525,15 +505,9 @@ public class ManagePluginsDialog extends Dialog
                     pluginPane.refresh();
                 }
             }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e)
-            {
-                // not used
-            }
         }
 
-        private final class AddRepositorySelectionListener implements SelectionListener
+        private final class AddRepositorySelectionListener extends SelectionAdapter
         {
             private final TableViewer availableRepositories;
 
@@ -566,12 +540,6 @@ public class ManagePluginsDialog extends Dialog
                     availableRepositories.refresh();
                     pluginPane.refresh();
                 }
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e)
-            {
-                // not used
             }
         }
 
@@ -701,20 +669,13 @@ public class ManagePluginsDialog extends Dialog
                 cancelButton = new Button(progressPane, SWT.NONE);
                 cancelButton.setText("x");
                 GridDataFactory.fillDefaults().grab(false, false).applyTo(cancelButton);
-                cancelButton.addSelectionListener(new SelectionListener()
+                cancelButton.addSelectionListener(new SelectionAdapter()
                 {
 
                     @Override
                     public void widgetSelected(SelectionEvent e)
                     {
                         done();
-                    }
-
-                    @Override
-                    public void widgetDefaultSelected(SelectionEvent e)
-                    {
-                        // not used
-
                     }
                 });
                 this.parent.getParent().layout();
@@ -726,6 +687,7 @@ public class ManagePluginsDialog extends Dialog
         {
             executeIfNotDisposed(() -> {
                 progressPane.dispose();
+                pluginPane.refresh();
                 this.parent.getParent().layout();
             });
         }
@@ -766,9 +728,7 @@ public class ManagePluginsDialog extends Dialog
         @Override
         public void worked(int work)
         {
-            executeIfNotDisposed(() -> {
-                progressBar.setSelection(progressBar.getSelection() + work);
-            });
+            executeIfNotDisposed(() -> progressBar.setSelection(progressBar.getSelection() + work));
         }
 
         public void paintControl(PaintEvent e)
@@ -848,9 +808,7 @@ public class ManagePluginsDialog extends Dialog
     {
         if (restartRequired)
         {
-            Display.getDefault().asyncExec(() -> {
-                UpdateHelper.promptForRestart(partService, workbench);
-            });
+            Display.getDefault().asyncExec(() -> UpdateHelper.promptForRestart(partService, workbench));
         }
         return super.close();
     }
@@ -859,7 +817,7 @@ public class ManagePluginsDialog extends Dialog
     protected void createButtonsForButtonBar(Composite parent)
     {
         Button okButton = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
-        okButton.addSelectionListener(new SelectionListener()
+        okButton.addSelectionListener(new SelectionAdapter()
         {
 
             @Override
@@ -873,12 +831,6 @@ public class ManagePluginsDialog extends Dialog
                 {
                     PortfolioPlugin.log(ex);
                 }
-            }
-
-            @Override
-            public void widgetDefaultSelected(SelectionEvent e)
-            {
-                // not used
             }
         });
         okButton.setFocus();
