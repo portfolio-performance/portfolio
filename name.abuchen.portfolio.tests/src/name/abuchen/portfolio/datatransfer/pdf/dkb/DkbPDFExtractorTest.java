@@ -354,11 +354,9 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
-                        Values.Amount.factorize(/* 80.66 */0.00))));assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
-                                        Values.Amount.factorize(/* 80.66 */0.00))));
-
-                        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.50))));
+                        Values.Amount.factorize(/* 80.66 */0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.50))));
     }
 
     @Test
