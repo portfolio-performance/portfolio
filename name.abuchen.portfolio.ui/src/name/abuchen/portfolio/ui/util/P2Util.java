@@ -29,17 +29,20 @@ public class P2Util
         }
         for (String updateSite : keys)
         {
-            try
+            if (preferences.getBoolean(updateSite, false))
             {
-                URI uri = new URI(updateSite);
-                if (uri.isAbsolute())
+                try
                 {
-                    uris.add(uri);
+                    URI uri = new URI(updateSite);
+                    if (uri.isAbsolute())
+                    {
+                        uris.add(uri);
+                    }
                 }
-            }
-            catch (Exception e)
-            {
-                PortfolioPlugin.log(e);
+                catch (Exception e)
+                {
+                    PortfolioPlugin.log(e);
+                }
             }
         }
 

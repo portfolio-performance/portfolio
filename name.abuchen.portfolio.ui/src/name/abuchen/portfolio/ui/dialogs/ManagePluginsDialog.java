@@ -28,11 +28,11 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.ListViewer;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -124,9 +124,9 @@ public class ManagePluginsDialog extends Dialog
         GridDataFactory.fillDefaults().grab(true, false).applyTo(topArea);
         GridLayoutFactory.fillDefaults().numColumns(2).applyTo(topArea);
 
-        ListViewer availableRepositories = new ListViewer(topArea);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(availableRepositories.getList());
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(availableRepositories.getList());
+        CheckboxTableViewer availableRepositories = CheckboxTableViewer.newCheckList(topArea, SWT.NONE);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(availableRepositories.getTable());
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(availableRepositories.getTable());
         availableRepositories.setContentProvider((IStructuredContentProvider) inputElement -> {
             if (inputElement instanceof IEclipsePreferences)
             {
@@ -142,6 +142,18 @@ public class ManagePluginsDialog extends Dialog
             return new Object[0];
         });
         availableRepositories.setInput(preferences);
+
+        try
+        {
+            for (String updateSite : preferences.keys())
+            {
+                availableRepositories.setChecked(updateSite, preferences.getBoolean(updateSite, false));
+            }
+        }
+        catch (BackingStoreException e)
+        {
+            e.printStackTrace();
+        }
 
         Composite buttonArea = new Composite(topArea, SWT.NONE);
         GridDataFactory.fillDefaults().grab(false, true).applyTo(buttonArea);
@@ -162,6 +174,12 @@ public class ManagePluginsDialog extends Dialog
         editButton.addSelectionListener(new EditRepositorySelectionListener(availableRepositories));
         removeButton.addSelectionListener(new RemoveRepositorySelectionListener(availableRepositories));
 
+        availableRepositories.addCheckStateListener(event -> {
+            preferences.put(event.getElement().toString(), String.valueOf(event.getChecked()));
+            availableRepositories.refresh();
+            installedUnitsTable.refresh();
+        });
+        
         availableRepositories.addSelectionChangedListener(event -> {
             IStructuredSelection structuredSelection = availableRepositories.getStructuredSelection();
             if (!structuredSelection.isEmpty())
@@ -543,9 +561,9 @@ public class ManagePluginsDialog extends Dialog
 
     private final class AddRepositorySelectionListener implements SelectionListener
     {
-        private final ListViewer availableRepositories;
+        private final TableViewer availableRepositories;
 
-        private AddRepositorySelectionListener(ListViewer availableRepositories)
+        private AddRepositorySelectionListener(TableViewer availableRepositories)
         {
             this.availableRepositories = availableRepositories;
         }
@@ -569,7 +587,7 @@ public class ManagePluginsDialog extends Dialog
                             });
             if (inputDialog.open() == Window.OK)
             {
-                preferences.put(inputDialog.getValue(), inputDialog.getValue());
+                preferences.put(inputDialog.getValue(), "false");
                 availableRepositories.refresh();
                 installedUnitsTable.refresh();
             }
@@ -584,9 +602,9 @@ public class ManagePluginsDialog extends Dialog
 
     private final class EditRepositorySelectionListener implements SelectionListener
     {
-        private final ListViewer availableRepositories;
+        private final CheckboxTableViewer availableRepositories;
 
-        private EditRepositorySelectionListener(ListViewer availableRepositories)
+        private EditRepositorySelectionListener(CheckboxTableViewer availableRepositories)
         {
             this.availableRepositories = availableRepositories;
         }
@@ -626,9 +644,9 @@ public class ManagePluginsDialog extends Dialog
 
     private final class RemoveRepositorySelectionListener implements SelectionListener
     {
-        private final ListViewer availableRepositories;
+        private final TableViewer availableRepositories;
 
-        private RemoveRepositorySelectionListener(ListViewer availableRepositories)
+        private RemoveRepositorySelectionListener(TableViewer availableRepositories)
         {
             this.availableRepositories = availableRepositories;
         }
