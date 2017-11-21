@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -15,7 +16,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.IJobChangeListener;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
@@ -46,12 +46,11 @@ public class P2Service
     {
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
         IProfile p2Profile = profileRegistry.getProfile(IProfileRegistry.SELF);
-        if (p2Profile != null)
-        {
-            IQuery<IInstallableUnit> query = QueryUtil.createIUProductQuery();
-            IQueryResult<IInstallableUnit> queryResult = p2Profile.query(query, null);
-            if (!queryResult.isEmpty()) { return queryResult.iterator().next(); }
-        }
+
+        IQuery<IInstallableUnit> query = QueryUtil.createIUProductQuery();
+        IQueryResult<IInstallableUnit> queryResult = p2Profile.query(query, null);
+        if (!queryResult.isEmpty())
+            return queryResult.iterator().next();
         return null;
 
     }
@@ -112,20 +111,23 @@ public class P2Service
         return repository.query(QueryUtil.createIUGroupQuery(), monitor).toUnmodifiableSet();
     }
 
-    public IStatus install(Collection<IInstallableUnit> toInstall, final Collection<URI> updateSites,
-                    final IJobChangeListener progressCallback)
-    {
+    public Function<ProfileChangeContext, IStatus> install = context -> {
+        final Collection<IInstallableUnit> toInstall = context.getInstallableUnits();
+        final Collection<URI> updateSites = context.getUpdateSites();
+        final IProgressMonitor monitor = context.getProgressMonitor();
+
         ProvisioningSession session = new ProvisioningSession(agent);
         InstallOperation operation = new InstallOperation(session, toInstall);
         configureOperation(operation, updateSites);
-        return executeProfileChangeOperation(operation, progressCallback);
-    }
+        return executeProfileChangeOperation(operation, monitor);
+    };
 
-    public IStatus uninstall(Collection<IInstallableUnit> toUninstall, final IJobChangeListener progressCallback)
-    {
+    public Function<ProfileChangeContext, IStatus> uninstall = context -> {
+        final Collection<IInstallableUnit> toUninstall = context.getInstallableUnits();
+        final IProgressMonitor monitor = context.getProgressMonitor();
         UninstallOperation operation = newUninstallOperation(toUninstall);
-        return executeProfileChangeOperation(operation, progressCallback);
-    }
+        return executeProfileChangeOperation(operation, monitor);
+    };
 
     public UninstallOperation newUninstallOperation(Collection<IInstallableUnit> toUninstall)
     {
@@ -135,12 +137,14 @@ public class P2Service
         return operation;
     }
 
-    public IStatus update(Collection<IInstallableUnit> toUpdate, final Collection<URI> updateSites,
-                    final IJobChangeListener progressCallback)
-    {
+    public Function<ProfileChangeContext, IStatus> update = context -> {
+        final Collection<IInstallableUnit> toUpdate = context.getInstallableUnits();
+        final Collection<URI> updateSites = context.getUpdateSites();
+        final IProgressMonitor monitor = context.getProgressMonitor();
+
         UpdateOperation operation = newUpdateOperation(toUpdate, updateSites);
-        return executeProfileChangeOperation(operation, progressCallback);
-    }
+        return executeProfileChangeOperation(operation, monitor);
+    };
 
     public UpdateOperation newUpdateOperation(final Collection<URI> updateSites)
     {
@@ -165,32 +169,22 @@ public class P2Service
             IQueryResult<IInstallableUnit> query = profile.query(QueryUtil.createIUQuery(installedVersion.getId()),
                             new NullProgressMonitor());
             Iterator<IInstallableUnit> iterator = query.iterator();
-            if (iterator.hasNext()) { return iterator.next(); }
+            if (iterator.hasNext())
+                return iterator.next();
         }
         return null;
     }
 
-    public IStatus executeProfileChangeOperation(final ProfileChangeOperation operation)
+    public IStatus executeProfileChangeOperation(final ProfileChangeOperation operation, final IProgressMonitor monitor)
     {
-        return executeProfileChangeOperation(operation, null);
-    }
-
-    public IStatus executeProfileChangeOperation(final ProfileChangeOperation operation,
-                    final IJobChangeListener progressCallback)
-    {
-        NullProgressMonitor monitor = new NullProgressMonitor();
-
         final IStatus status = operation.resolveModal(monitor);
 
-        if (!status.isOK()) { return status; }
+        if (!status.isOK())
+            return status;
 
         final ProvisioningJob provisioningJob = operation.getProvisioningJob(monitor);
-        if (provisioningJob == null) { return Status.CANCEL_STATUS; }
-
-        if (progressCallback != null)
-        {
-            provisioningJob.addJobChangeListener(progressCallback);
-        }
+        if (provisioningJob == null)
+            return Status.CANCEL_STATUS;
 
         provisioningJob.schedule();
         return status;
@@ -201,5 +195,35 @@ public class P2Service
         URI[] urisArray = updateSites.toArray(new URI[updateSites.size()]);
         operation.getProvisioningContext().setArtifactRepositories(urisArray);
         operation.getProvisioningContext().setMetadataRepositories(urisArray);
+    }
+
+    public static class ProfileChangeContext
+    {
+        private List<IInstallableUnit> installableUnits;
+        private Collection<URI> updateSites;
+        private IProgressMonitor progressMonitor;
+
+        public ProfileChangeContext(List<IInstallableUnit> installableUnits, Collection<URI> updateSites,
+                        IProgressMonitor progressMonitor)
+        {
+            this.installableUnits = installableUnits;
+            this.updateSites = updateSites;
+            this.progressMonitor = progressMonitor;
+        }
+
+        public List<IInstallableUnit> getInstallableUnits()
+        {
+            return installableUnits;
+        }
+
+        public IProgressMonitor getProgressMonitor()
+        {
+            return progressMonitor;
+        }
+
+        public Collection<URI> getUpdateSites()
+        {
+            return updateSites;
+        }
     }
 }

@@ -12,11 +12,10 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.IJobChangeEvent;
-import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.internal.provisional.p2.director.PlannerStatus;
@@ -56,16 +55,16 @@ public class UpdateHelper
         this.workbench = workbench;
         this.partService = partService;
         this.p2Service = p2Service;
-        
+
         IProvisioningAgent agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
         if (agent == null)
         {
             IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
             throw new CoreException(status);
         }
-        
+
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-        
+
         IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
         if (profile == null)
         {
@@ -237,23 +236,16 @@ public class UpdateHelper
             }
         }
 
-        p2Service.executeProfileChangeOperation(operation, new JobChangeAdapter()
+        IStatus status = p2Service.executeProfileChangeOperation(operation, new NullProgressMonitor());
+        if (status.getSeverity() == IStatus.CANCEL) { throw new OperationCanceledException(); }
+        if (status.isOK())
         {
-            @Override
-            public void done(IJobChangeEvent event)
-            {
-                IStatus status = event.getResult();
-                if (status.getSeverity() == IStatus.CANCEL) { throw new OperationCanceledException(); }
-                if (status.isOK())
-                {
-                    promptForRestart(partService, workbench);
-                }
-                else
-                {
-                    PortfolioPlugin.log(status);
-                }
-            }
-        });
+            promptForRestart(partService, workbench);
+        }
+        else
+        {
+            PortfolioPlugin.log(status);
+        }
 
     }
 

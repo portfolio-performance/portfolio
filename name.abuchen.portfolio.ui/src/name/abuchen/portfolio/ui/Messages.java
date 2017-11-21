@@ -461,9 +461,12 @@ public class Messages extends NLS
     public static String LabelXDays;
     public static String LabelYear;
     public static String ManagePluginsDialogAdd;
+    public static String ManagePluginsDialogError;
     public static String ManagePluginsDialogEdit;
     public static String ManagePluginsDialogEditRepositoryDialogText;
     public static String ManagePluginsDialogEditRepositoryDialogTitle;
+    public static String ManagePluginsDialogFetched;
+    public static String ManagePluginsDialogFetchUpdateSite;
     public static String ManagePluginsDialogHandlePlugins;
     public static String ManagePluginsDialogInstallUpdate;
     public static String ManagePluginsDialogInstallation;
