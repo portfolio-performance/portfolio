@@ -1,17 +1,12 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
-import java.util.Locale;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -21,7 +16,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MutableMoney;
 
 public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
@@ -146,6 +140,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return "degiro"; //$NON-NLS-1$
+        return "DEGIRO"; //$NON-NLS-1$
     }
 }

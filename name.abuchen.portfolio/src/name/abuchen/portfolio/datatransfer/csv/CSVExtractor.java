@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import java.io.File;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -9,12 +8,15 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
 {
@@ -30,7 +32,7 @@ public abstract class CSVExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
     {
         throw new UnsupportedOperationException();
     }
@@ -48,6 +50,31 @@ public abstract class CSVExtractor implements Extractor
 
         String value = rawValues[columnIndex];
         return value != null && value.trim().length() == 0 ? null : value;
+    }
+
+    protected String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
+    {
+        Column column = field2column.get(name);
+        if (column == null)
+            return null;
+
+        int columnIndex = column.getColumnIndex();
+
+        if (columnIndex < 0 || columnIndex >= rawValues.length)
+            return null;
+
+        String value = rawValues[columnIndex];
+        if (value == null)
+            return null;
+        
+        value = value.trim().toUpperCase();
+
+        Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+        Matcher matcher = pattern.matcher(value);
+        if (matcher.find())
+            value = matcher.group(1);
+
+        return value.length() == 0 ? null : value;
     }
 
     protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException

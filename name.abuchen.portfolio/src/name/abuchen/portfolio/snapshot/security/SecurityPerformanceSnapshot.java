@@ -84,23 +84,37 @@ public class SecurityPerformanceSnapshot
             if (!period.containsTransaction().test(t))
                 continue;
 
-            if (t.getType() == AccountTransaction.Type.DIVIDENDS //
-                            || t.getType() == AccountTransaction.Type.INTEREST)
+            switch (t.getType())
             {
-                DividendTransaction dt = new DividendTransaction();
-                dt.setDate(t.getDate());
-                dt.setSecurity(t.getSecurity());
-                dt.setAccount(account);
-                dt.setCurrencyCode(t.getCurrencyCode());
-                dt.setAmount(t.getAmount());
-                dt.setShares(t.getShares());
-                dt.setNote(t.getNote());
-                dt.addUnits(t.getUnits());
-                records.get(t.getSecurity()).addTransaction(dt);
-            }
-            else if (t.getType() == AccountTransaction.Type.TAX_REFUND)
-            {
-                records.get(t.getSecurity()).addTransaction(t);
+                case DIVIDENDS:
+                case INTEREST:
+                    DividendTransaction dt = new DividendTransaction();
+                    dt.setDate(t.getDate());
+                    dt.setSecurity(t.getSecurity());
+                    dt.setAccount(account);
+                    dt.setCurrencyCode(t.getCurrencyCode());
+                    dt.setAmount(t.getAmount());
+                    dt.setShares(t.getShares());
+                    dt.setNote(t.getNote());
+                    dt.addUnits(t.getUnits());
+                    records.get(t.getSecurity()).addTransaction(dt);
+                    break;
+                case TAXES:
+                case TAX_REFUND:
+                case FEES:
+                case FEES_REFUND:
+                    records.get(t.getSecurity()).addTransaction(t);
+                    break;
+                case BUY:
+                case SELL:
+                    break;
+                case DEPOSIT:
+                case REMOVAL:
+                case TRANSFER_IN:
+                case TRANSFER_OUT:
+                case INTEREST_CHARGE:
+                default:
+                    throw new IllegalArgumentException(t.toString());
             }
         }
     }
@@ -119,15 +133,15 @@ public class SecurityPerformanceSnapshot
         PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, period.getStartDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
-            records.get(position.getSecurity()).addTransaction(
-                            new DividendInitialTransaction(position, period.getStartDate()));
+            records.get(position.getSecurity())
+                            .addTransaction(new DividendInitialTransaction(position, period.getStartDate()));
         }
 
         snapshot = PortfolioSnapshot.create(portfolio, converter, period.getEndDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
-            records.get(position.getSecurity()).addTransaction(
-                            new DividendFinalTransaction(position, period.getEndDate()));
+            records.get(position.getSecurity())
+                            .addTransaction(new DividendFinalTransaction(position, period.getEndDate()));
         }
     }
 

@@ -23,6 +23,7 @@ Weitere Provision der Bank bei der börslichen Orderausführung EUR -2,00
 XETRA-Kosten EUR -0,60
 Kapitalertragsteuer EUR -122,94
 Solidaritätszuschlag auf Kapitalertragsteuer EUR -6,76
+Kirchensteuer auf Kapitalertragsteuer EUR -1,23
 Gutschrift
 Buchung auf Kontonummer 1234567 40 mit Wertstellung 08.04.2015 EUR 2.074,71
 Informationen zum Steuerabzug

@@ -2,40 +2,35 @@ package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.MessageFormat;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -52,85 +47,96 @@ public class ImportPDFHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Named("name.abuchen.portfolio.ui.param.pdf-type") String type) throws IOException
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
+        doExecute(part, shell, false);
+    }
+
+    /* package */ void doExecute(MPart part, Shell shell, boolean isLegacyMode)
+    {
+
         Client client = MenuHelper.getActiveClient(part);
         if (client == null)
             return;
 
+        FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
+        fileDialog.setText(Messages.PDFImportWizardAssistant);
+        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
+        fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
+        fileDialog.open();
+
+        String[] filenames = fileDialog.getFileNames();
+
+        if (filenames.length == 0)
+            return;
+
+        List<Extractor.InputFile> files = new ArrayList<>();
+        for (String filename : filenames)
+            files.add(new PDFInputFile(new File(fileDialog.getFilterPath(), filename)));
+
+        IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
+
         try
         {
-            // determine extractor class
-            Extractor extractor = createExtractor(type, client);
+            IRunnableWithProgress operation = monitor -> {
+                monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
-            // open file dialog to pick pdf files
+                for (Extractor.InputFile inputFile : files)
+                {
+                    monitor.setTaskName(inputFile.getName());
 
-            FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-            fileDialog.setText(extractor.getLabel());
-            fileDialog.setFilterNames(new String[] { MessageFormat.format("{0} ({1})", //$NON-NLS-1$
-                            extractor.getLabel(), extractor.getFilterExtension()) });
-            fileDialog.setFilterExtensions(new String[] { extractor.getFilterExtension() });
-            fileDialog.open();
+                    try
+                    {
+                        ((PDFInputFile) inputFile).parse();
+                    }
+                    catch (IOException e)
+                    {
+                        throw new IllegalArgumentException(MessageFormat.format(Messages.PDFImportErrorParsingDocument,
+                                        inputFile.getName()), e);
+                    }
 
-            String[] fileNames = fileDialog.getFileNames();
+                    monitor.worked(1);
+                }
 
-            if (fileNames.length == 0)
-                return;
+                // if we just run this async, then the main window on macOS does
+                // not regain focus and the menus are not usable
+                new Job("") //$NON-NLS-1$
+                {
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor)
+                    {
+                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, preferences, isLegacyMode));
+                        return Status.OK_STATUS;
+                    }
+                }.schedule(50);
 
-            List<File> files = new ArrayList<>();
-            for (String file : fileNames)
-                files.add(new File(fileDialog.getFilterPath(), file));
+            };
 
-            // open wizard dialog
-            IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
-            Dialog wizwardDialog = new WizardDialog(shell,
-                            new ImportExtractedItemsWizard(client, extractor, preferences, files));
-            wizwardDialog.open();
+            new ProgressMonitorDialog(shell).run(true, true, operation);
+
         }
-        catch (IllegalArgumentException e)
+        catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
         {
             PortfolioPlugin.log(e);
-            MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            MessageDialog.openError(shell, Messages.LabelError, message);
         }
     }
 
-    private Extractor createExtractor(String type, Client client) throws IOException, IllegalArgumentException
+    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files, IPreferenceStore preferences,
+                    boolean isLegacyMode)
     {
-        switch (type)
+        try
         {
-            case "baaderbank": //$NON-NLS-1$
-                return new BaaderBankPDFExtractor(client);
-            case "bankslm": //$NON-NLS-1$
-                return new BankSLMPDFExctractor(client);
-            case "comdirect": //$NON-NLS-1$
-                return new ComdirectPDFExtractor(client);
-            case "commerzbank": //$NON-NLS-1$
-                return new CommerzbankPDFExctractor(client);
-            case "consorsbank": //$NON-NLS-1$
-                return new ConsorsbankPDFExctractor(client);
-            case "dab": //$NON-NLS-1$
-                return new DABPDFExctractor(client);
-            case "db": //$NON-NLS-1$
-                return new DeutscheBankPDFExctractor(client);
-            case "degiro": //$NON-NLS-1$
-                return new DegiroPDFExtractor(client);
-            case "dkb": //$NON-NLS-1$
-                return new DkbPDFExtractor(client);
-            case "fintechgroupbank": //$NON-NLS-1$
-                return new FinTechGroupBankPDFExtractor(client);
-            case "ingdiba": //$NON-NLS-1$
-                return new INGDiBaExtractor(client);
-            case "onvista": //$NON-NLS-1$
-                return new OnvistaPDFExtractor(client);
-            case "sbroker": //$NON-NLS-1$
-                return new SBrokerPDFExtractor(client);
-            case "unicredit": //$NON-NLS-1$
-                return new UnicreditPDFExtractor(client);
-            case "ib": //$NON-NLS-1$
-                return new IBFlexStatementExtractor(client);
-            default:
-                throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, null, preferences, files);
+            wizard.setLegacyMode(isLegacyMode);
+            Dialog wizwardDialog = new WizardDialog(shell, wizard);
+            wizwardDialog.open();
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
         }
     }
 }

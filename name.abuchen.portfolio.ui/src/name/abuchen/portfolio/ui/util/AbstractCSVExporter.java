@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TextUtil;
 
 import org.apache.commons.csv.CSVStrategy;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -24,7 +25,7 @@ public abstract class AbstractCSVExporter
     public void export(String fileName)
     {
         FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
-        dialog.setFileName(fileName);
+        dialog.setFileName(TextUtil.sanitizeFilename(fileName));
         dialog.setOverwrite(true);
         String name = dialog.open();
         if (name == null)

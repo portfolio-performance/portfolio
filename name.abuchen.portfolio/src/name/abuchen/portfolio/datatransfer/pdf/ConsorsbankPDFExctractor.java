@@ -34,6 +34,12 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         addIncomeTransaction();
         addTaxAdjustmentTransaction();
     }
+    
+    @Override
+    public String getPDFAuthor()
+    {
+        return "Consorsbank"; //$NON-NLS-1$
+    }
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
@@ -145,12 +151,15 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date", "amount", "currency")
-                        .match("Wert (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .section("date")
+                        .match("VERKAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
+                        .assign((t,v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("amount", "currency")
+                        .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setDate(asDate(v.get("date")));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -384,6 +393,11 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("(^.*)(Grundgeb\\Dhr) (?<currency>\\w{3}+) (?<basicfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("basicfees"))))))
+
+                        .section("currency", "assetbasedfees").optional()
+                        .match("(^.*)(Consorsbank Ausgabegeb.hr.*%) (?<currency>\\w{3}+) (?<assetbasedfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("assetbasedfees"))))))
 
                         .section("currency", "expenses").optional()
                         .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")

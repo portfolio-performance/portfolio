@@ -3,7 +3,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.io.IOException;
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -132,6 +131,12 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("soli"))))))
 
+                        .section("churchtax", "currency") //
+                        .optional()
+                        .match("Kirchensteuer auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<churchtax>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, //
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("churchtax"))))))
+
                         .section("provision", "currency") //
                         .optional().match("Provision.*(?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
@@ -238,6 +243,6 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
     @Override
     public String getLabel()
     {
-        return Messages.PDFdbLabel;
+        return "Deutsche Bank"; //$NON-NLS-1$
     }
 }

@@ -20,12 +20,18 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("DAB"); //$NON-NLS-1$
-        addBankIdentifier("BNP Paribas"); //$NON-NLS-1$
+        addBankIdentifier("DAB Bank"); //$NON-NLS-1$
+        addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
+    }
+
+    @Override
+    public String getPDFAuthor()
+    {
+        return "Computershare Communication Services GmbH"; //$NON-NLS-1$
     }
 
     @SuppressWarnings("nls")

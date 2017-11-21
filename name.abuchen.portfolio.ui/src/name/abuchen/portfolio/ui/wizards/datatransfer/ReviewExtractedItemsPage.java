@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -23,13 +23,13 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.viewers.ViewerCell;
-import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.TextStyle;
@@ -48,6 +48,7 @@ import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
+import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -70,11 +71,18 @@ import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
 {
-    /* package */static final String PAGE_ID = "reviewitems"; //$NON-NLS-1$
 
     private static final String IMPORT_TARGET = "import-target"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_PORTFOLIO = IMPORT_TARGET + "-portfolio-"; //$NON-NLS-1$
     private static final String IMPORT_TARGET_ACCOUNT = IMPORT_TARGET + "-account-"; //$NON-NLS-1$
+    private static final String IMPORT_TARGET_EXTRACTOR = IMPORT_TARGET + "-extractor-"; //$NON-NLS-1$
+
+    /**
+     * If embedded into the CSV import, the first page can change the parsing
+     * result and transactions must be extracted before every page. If embedded
+     * into the PDF or XML import wizard, do not extract transactions again.
+     */
+    private boolean doExtractBeforeEveryPageDisplay = false;
 
     private TableViewer tableViewer;
     private TableViewer errorTableViewer;
@@ -86,19 +94,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private Label lblPrimaryAccount;
     private ComboViewer primaryAccount;
     private Label lblSecondaryAccount;
+    private Label lblImportAssistantExtractor;
+    private ComboViewer comboExtractors;
     private ComboViewer secondaryAccount;
     private Button cbConvertToDelivery;
 
     private final Client client;
     private final Extractor extractor;
     private final IPreferenceStore preferences;
-    private List<File> files;
+    private List<Extractor.InputFile> files;
 
-    private List<ExtractedEntry> allEntries = new ArrayList<ExtractedEntry>();
+    private List<ExtractedEntry> allEntries = new ArrayList<>();
 
-    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences, List<File> files)
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences,
+                    List<Extractor.InputFile> files, String pageId)
     {
-        super(PAGE_ID);
+        super(pageId);
 
         this.client = client;
         this.extractor = extractor;
@@ -107,6 +118,17 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         setTitle(extractor.getLabel());
         setDescription(Messages.PDFImportWizardDescription);
+    }
+
+    public ReviewExtractedItemsPage(Client client, Extractor extractor, IPreferenceStore preferences,
+                    List<Extractor.InputFile> files)
+    {
+        this(client, extractor, preferences, files, extractor.getClass().getSimpleName());
+    }
+
+    public void setDoExtractBeforeEveryPageDisplay(boolean doExtractBeforeEveryPageDisplay)
+    {
+        this.doExtractBeforeEveryPageDisplay = doExtractBeforeEveryPageDisplay;
     }
 
     public List<ExtractedEntry> getEntries()
@@ -143,10 +165,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         return cbConvertToDelivery.getSelection();
     }
 
-    @Override
-    public IWizardPage getNextPage()
+    public Extractor getPDFBankExtractor()
     {
-        return null;
+        return (Extractor) ((IStructuredSelection) comboExtractors.getSelection()).getFirstElement();
     }
 
     @Override
@@ -193,6 +214,31 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         secondaryPortfolio.setInput(client.getActivePortfolios());
         secondaryPortfolio.getControl().setVisible(false);
 
+        lblImportAssistantExtractor = new Label(targetContainer, SWT.NONE);
+        lblImportAssistantExtractor.setText(Messages.PDFImportWizardExtractor);
+        Combo cmbImportAssistantExtractor = new Combo(targetContainer, SWT.READ_ONLY);
+        comboExtractors = new ComboViewer(cmbImportAssistantExtractor);
+        comboExtractors.setLabelProvider(new LabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Extractor) element).getLabel();
+            }
+        });
+        comboExtractors.addSelectionChangedListener(e -> runExtractionJob());
+
+        if (extractor instanceof AssistantPDFExtractor)
+        {
+            List<Extractor> extractors = ((AssistantPDFExtractor) extractor).getAvailableExtractors();
+            comboExtractors.add(extractors.toArray());
+        }
+        else
+        {
+            lblImportAssistantExtractor.setVisible(false);
+            comboExtractors.getCombo().setVisible(false);
+        }
+
         preselectDropDowns();
 
         cbConvertToDelivery = new Button(container, SWT.CHECK);
@@ -208,7 +254,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         FormDataFactory.startingWith(targetContainer) //
                         .top(new FormAttachment(0, 0)).left(new FormAttachment(0, 0)).right(new FormAttachment(100, 0))
                         .thenBelow(cbConvertToDelivery) //
-                        .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(70, 0)) //
+                        .thenBelow(compositeTable).right(targetContainer).bottom(new FormAttachment(80, 0)) //
                         .thenBelow(errorTable).right(targetContainer).bottom(new FormAttachment(100, 0));
 
         //
@@ -264,6 +310,18 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                             .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
             secondaryPortfolio.getCombo().select(0);
         }
+
+        if (extractor instanceof AssistantPDFExtractor)
+        {
+            String clazz = preferences.getString(IMPORT_TARGET_EXTRACTOR);
+
+            List<Extractor> availableExtractors = ((AssistantPDFExtractor) extractor).getAvailableExtractors();
+
+            OptionalInt index = IntStream.range(0, availableExtractors.size())
+                            .filter(i -> clazz.equals(availableExtractors.get(i).getClass().getName())).findAny();
+
+            index.ifPresent(ii -> comboExtractors.getCombo().select(ii));
+        }
     }
 
     private void addColumnsExceptionTable(TableViewer viewer, TableColumnLayout layout)
@@ -287,7 +345,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         TableViewerColumn column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnStatus);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public Image getImage(ExtractedEntry element)
@@ -317,7 +375,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnDate);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
@@ -330,7 +388,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnTransactionType);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
@@ -362,7 +420,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnAmount);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
@@ -375,7 +433,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnShares);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
@@ -387,7 +445,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
-        column.setLabelProvider(new FormattedLabelProvider()
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
@@ -403,7 +461,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(manager -> showContextMenu(manager));
+        menuMgr.addMenuListener(this::showContextMenu);
 
         final Menu contextMenu = menuMgr.createContextMenu(table.getShell());
         table.setMenu(contextMenu);
@@ -442,7 +500,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                             .filter(s -> s.getCode() != ImportAction.Status.Code.OK) //
                             .forEach(s -> {
                                 Images image = s.getCode() == ImportAction.Status.Code.WARNING ? //
-                                                Images.WARNING : Images.ERROR;
+                                Images.WARNING : Images.ERROR;
                                 manager.add(new LabelOnly(s.getMessage(), image.descriptor()));
                             });
         }
@@ -481,12 +539,28 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void beforePage()
     {
-        setTitle(extractor.getLabel());
+        setTitle(extractor instanceof AssistantPDFExtractor ? Messages.PDFImportWizardAssistant : extractor.getLabel());
 
-        // clear all entries (if embedded into multi-page wizard)
+        if (!doExtractBeforeEveryPageDisplay
+                        && (!allEntries.isEmpty() || errorTableViewer.getTable().getItemCount() > 0))
+            return;
+
+        runExtractionJob();
+    }
+
+    private void runExtractionJob()
+    {
         allEntries.clear();
         tableViewer.setInput(allEntries);
         errorTableViewer.setInput(Collections.emptyList());
+
+        Extractor selectedExtractor = extractor instanceof AssistantPDFExtractor ? getPDFBankExtractor() : extractor;
+        if (selectedExtractor == null)
+        {
+            setResults(Collections.emptyList(), files.stream().map(f -> new UnsupportedOperationException(f.getName()))
+                            .collect(Collectors.toList()));
+            return;
+        }
 
         try
         {
@@ -496,17 +570,26 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 protected IStatus run(IProgressMonitor monitor)
                 {
                     monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
+                    final List<Exception> errors = new ArrayList<>();
 
-                    final List<Exception> errors = new ArrayList<Exception>();
-                    List<ExtractedEntry> entries = extractor //
-                                    .extract(files, errors).stream() //
-                                    .map(i -> new ExtractedEntry(i)) //
-                                    .collect(Collectors.toList());
+                    try
+                    {
 
-                    // Logging them is not a bad idea if the whole method fails
-                    PortfolioPlugin.log(errors);
+                        List<ExtractedEntry> entries = selectedExtractor //
+                                        .extract(files, errors).stream() //
+                                        .map(ExtractedEntry::new) //
+                                        .collect(Collectors.toList());
 
-                    Display.getDefault().asyncExec(() -> setResults(entries, errors));
+                        // Logging them is not a bad idea if the whole method
+                        // fails
+                        PortfolioPlugin.log(errors);
+
+                        Display.getDefault().asyncExec(() -> setResults(entries, errors));
+                    }
+                    catch (Exception e)
+                    {
+                        throw new UnsupportedOperationException(e);
+                    }
 
                     return Status.OK_STATUS;
                 }
@@ -523,6 +606,10 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         preferences.setValue(IMPORT_TARGET_ACCOUNT + extractor.getClass().getSimpleName(), getAccount().getUUID());
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getClass().getSimpleName(), getPortfolio().getUUID());
+
+        Extractor e = (Extractor) comboExtractors.getStructuredSelection().getFirstElement();
+        if (e != null)
+            preferences.setValue(IMPORT_TARGET_EXTRACTOR, e.getClass().getName());
     }
 
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
@@ -569,7 +656,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 
-    static class FormattedLabelProvider extends StyledCellLabelProvider
+    abstract static class FormattedLabelProvider extends StyledCellLabelProvider // NOSONAR
     {
         private static Styler strikeoutStyler = new Styler()
         {
@@ -580,12 +667,12 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         };
 
-        public String getText(ExtractedEntry element)
+        public String getText(ExtractedEntry element) // NOSONAR
         {
             return null;
         }
 
-        public Image getImage(ExtractedEntry element)
+        public Image getImage(ExtractedEntry element) // NOSONAR
         {
             return null;
         }

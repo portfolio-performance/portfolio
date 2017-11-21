@@ -133,6 +133,7 @@ public class DividendsView extends AbstractFinanceView
         folder = new CTabFolder(parent, SWT.BORDER);
 
         createTab(folder, DividendsMatrixTab.class);
+        createTab(folder, DividendsYearMatrixTab.class);
         createTab(folder, DividendsChartTab.class);
         createTab(folder, DividendsPerYearChartTab.class);
         createTab(folder, AccumulatedDividendsChartTab.class);

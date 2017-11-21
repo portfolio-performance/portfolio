@@ -53,7 +53,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         }
 
         @Override
-        public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+        public boolean updateLatestQuotes(Security security, List<Exception> errors)
         {
             return false;
         }
@@ -109,10 +109,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
-                List<Security> list = new ArrayList<>();
-                list.add(s);
-
-                feed.updateLatestQuotes(list, new ArrayList<Exception>());
+                feed.updateLatestQuotes(s, new ArrayList<Exception>());
 
                 Display.getDefault().asyncExec(() -> {
                     if (valueLatestPrices == null || valueLatestPrices.isDisposed())
@@ -123,7 +120,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         LatestSecurityPrice p = s.getLatest();
 
                         valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                        valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                        valueLatestTrade.setText(Values.Date.format(p.getDate()));
                         long daysHigh = p.getHigh();
                         valueDaysHigh.setText(
                                         daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));
@@ -165,7 +162,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
 
     public LatestQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
-        super(model);
+        super(model, bindings);
 
         setTitle(Messages.EditWizardLatestQuoteFeedTitle);
 

@@ -5,15 +5,11 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
-import java.util.Scanner;
 
 import org.junit.Test;
 
@@ -23,6 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -38,17 +35,12 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Kauf_Inland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Kauf_Inland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -78,17 +70,12 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland2() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Kauf_Inland2.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Kauf_Inland2.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -119,17 +106,12 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Kauf_Ausland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Kauf_Ausland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -153,24 +135,18 @@ public class BankSLMPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(92658.45))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-09-03")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(17000)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", 138_05L + 489_15L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CHF", 138_05L + 489_15L)));
     }
 
     @Test
     public void testVerkauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Verkauf_Inland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Verkauf_Inland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -201,17 +177,12 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testVerkauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Verkauf_Ausland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Verkauf_Ausland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -235,24 +206,18 @@ public class BankSLMPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(43180.00))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-01-24")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11500)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of("CHF", 65_25L + 264_30L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CHF", 65_25L + 264_30L)));
     }
 
     @Test
     public void testDividende_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Dividende_Inland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Dividende_Inland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -280,17 +245,12 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testDividende_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client())
-        {
-            @Override
-            protected String strip(File file) throws IOException
-            {
-                return from(file.getName());
-            }
-        };
+        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(Arrays.asList(new File("BankSLM_Dividende_Ausland1.txt")), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BankSLM_Dividende_Ausland1.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -313,13 +273,5 @@ public class BankSLMPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 1415_14L)));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", 4717_14L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(17000)));
-    }
-
-    private String from(String resource)
-    {
-        try (Scanner scanner = new Scanner(getClass().getResourceAsStream(resource), StandardCharsets.UTF_8.name()))
-        {
-            return scanner.useDelimiter("\\A").next();
-        }
     }
 }

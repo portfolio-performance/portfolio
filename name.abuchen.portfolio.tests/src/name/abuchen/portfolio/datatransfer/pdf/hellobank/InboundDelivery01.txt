@@ -1,0 +1,32 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+DurchfÜhrungsanzeige Lieferungen
+Hellobank BNP Paribas Austria AG 36800719-10.4.2017
+Elisabethstra¿e 22 Depot-Nr.: DEPOTNUMMER
+5020 Salzburg DEPOTINHABER                  
+22/9865
+Hello bank!                        
+Frau
+DEPOTINHABER
+STRASSE
+PLZ ORT                                                                                                                                                                                                      
+Wir haben fÜr Sie folgende Transaktion durchgefÜhrt:
+GeschÄftsart: Freier Erhalt
+Zugang: 80 Stk
+Titel: DK0060534915  N o v o - N o r d i s k AS                    
+Navne-Aktier B DK -,20             
+Lieferpflichtiger: Depotnummer: 99147           
+RLB OOE AG                         
+Verwahrart: WR
+Schlusstag: 28.3.2017
+Kassatag: 29.3.2017
+Positionsdaten: Loco: Kopenhagen                         
+Wir haben fÜr Sie folgende Anschaffungsdaten angesetzt:
+KESt-Neubestand mit Anschaffungskosten nach dem gleitenden
+Durchschnittsverfahren ? 27a Abs. 4 Zi 3 EStG 80 Stk
+steuerlicher Anschaffungswert: 3.225,37 EUR
+12.4.2017 Seite 1
+____________________________________________________________________________________
+Diese Mitteilung wird nicht unterschrieben. Irrtum vorbehalten! DVR: 1026402
+83795 Doknr.: ON00-036-0000000001

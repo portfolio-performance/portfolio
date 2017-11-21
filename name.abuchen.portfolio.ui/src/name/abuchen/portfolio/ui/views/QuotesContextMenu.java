@@ -26,6 +26,7 @@ import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportQuotesWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.util.QuoteFromTransactionExtractor;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class QuotesContextMenu
 {
@@ -155,7 +156,7 @@ public class QuotesContextMenu
             public void run()
             {
                 FileDialog fileDialog = new FileDialog(Display.getDefault().getActiveShell(), SWT.SAVE);
-                fileDialog.setFileName(security.getName() + ".csv"); //$NON-NLS-1$
+                fileDialog.setFileName(TextUtil.sanitizeFilename(security.getName() + ".csv")); //$NON-NLS-1$
                 fileDialog.setOverwrite(true);
                 String fileName = fileDialog.open();
 

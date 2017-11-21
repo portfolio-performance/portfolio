@@ -40,11 +40,11 @@ import name.abuchen.portfolio.util.TextUtil;
 public class DividendsMatrixTab implements DividendsTab
 {
     @Inject
-    private DividendsViewModel model;
+    protected DividendsViewModel model;
 
     private boolean showOnlyOneYear = false;
 
-    private Font boldFont;
+    protected Font boldFont;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
 
     private TableColumnLayout tableLayout;
@@ -59,12 +59,12 @@ public class DividendsMatrixTab implements DividendsTab
     @Override
     public void addExportActions(IMenuManager manager)
     {
-        manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.LabelDividendsByMonthAndVehicle))
+        manager.add(new Action(MessageFormat.format(Messages.LabelExport, getLabel()))
         {
             @Override
             public void run()
             {
-                new TableViewerCSVExporter(tableViewer).export(Messages.LabelDividendsByMonthAndVehicle + ".csv"); //$NON-NLS-1$
+                new TableViewerCSVExporter(tableViewer).export(getLabel() + ".csv"); //$NON-NLS-1$
             }
         });
     }
@@ -79,7 +79,7 @@ public class DividendsMatrixTab implements DividendsTab
         action.setChecked(showOnlyOneYear);
         manager.add(action);
     }
-
+    
     @Override
     public Control createControl(Composite parent)
     {
@@ -111,7 +111,7 @@ public class DividendsMatrixTab implements DividendsTab
         return container;
     }
 
-    private void createColumns(TableViewer records, TableColumnLayout layout)
+    protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
         createSecurityColumn(records, layout, true);
 
@@ -133,7 +133,7 @@ public class DividendsMatrixTab implements DividendsTab
         createSecurityColumn(records, layout, false);
     }
 
-    private void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
+    protected void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
@@ -211,7 +211,7 @@ public class DividendsMatrixTab implements DividendsTab
         layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
-    private void createSumColumn(TableViewer records, TableColumnLayout layout)
+    protected void createSumColumn(TableViewer records, TableColumnLayout layout)
     {
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);

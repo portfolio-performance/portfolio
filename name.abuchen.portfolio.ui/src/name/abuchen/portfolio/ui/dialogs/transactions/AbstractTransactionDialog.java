@@ -263,6 +263,11 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         {
             model.applyChanges();
             model.resetToNewTransaction();
+
+            // clear error message because users will confuse it with the
+            // previously (successfully created) transaction
+            setErrorMessage(null);
+
             getDialogArea().setFocus();
         }
         else
@@ -281,8 +286,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     {}
 
     /**
-     * make sure drop-down boxes contain the security, portfolio and account of this
-     * transaction (they might be "retired" and do not show by default)
+     * make sure drop-down boxes contain the security, portfolio and account of
+     * this transaction (they might be "retired" and do not show by default)
      */
     protected <T> List<T> including(List<T> list, T element)
     {

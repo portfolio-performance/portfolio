@@ -9,6 +9,8 @@ public class Messages extends NLS
     public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
     public static String AttributesAUMName;
+    public static String AttributesManagementFeeColumn;
+    public static String AttributesManagementFeeName;
     public static String AttributesTERColumn;
     public static String AttributesTERName;
     public static String AttributesVendorColumn;
@@ -51,6 +53,7 @@ public class Messages extends NLS
     public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
+    public static String CSVFormatISO;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
@@ -118,6 +121,7 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;
@@ -145,6 +149,7 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorsConvertingValue;
     public static String MsgErrorUnexpectedStatusCode;
+    public static String MsgErrorUnexpectedZipEntry;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;

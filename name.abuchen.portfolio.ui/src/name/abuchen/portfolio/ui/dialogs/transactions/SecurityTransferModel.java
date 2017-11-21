@@ -109,6 +109,9 @@ public class SecurityTransferModel extends AbstractModel
 
     private IStatus calculateStatus()
     {
+        if (shares == 0L)
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
+        
         // check whether gross value is in range
         long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
                         / Values.Share.divider());
@@ -125,6 +128,11 @@ public class SecurityTransferModel extends AbstractModel
 
     private void updateSharesAndQuote()
     {
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
+        if (source != null)
+            return;
+
         SecurityPosition position = null;
 
         if (security != null)

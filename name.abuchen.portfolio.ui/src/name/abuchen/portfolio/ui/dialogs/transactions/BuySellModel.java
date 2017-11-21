@@ -39,6 +39,12 @@ import name.abuchen.portfolio.ui.Messages;
         this.account = (Account) source.getOwner(source.getAccountTransaction());
         fillFromTransaction(source.getPortfolioTransaction());
     }
+    
+    @Override
+    public boolean hasSource()
+    {
+        return source != null;
+    }
 
     @Override
     public void applyChanges()

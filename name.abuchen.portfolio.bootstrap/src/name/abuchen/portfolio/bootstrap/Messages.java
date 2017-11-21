@@ -8,6 +8,7 @@ public class Messages extends NLS
     public static String LabelCancel;
     public static String LabelNo;
     public static String LabelSaveAll;
+    public static String LabelSaveNone;
     public static String LabelYes;
     public static String MsgMinimumRequiredVersion;
     public static String SaveHandlerMsgSelectFileToSave;

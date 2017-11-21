@@ -49,6 +49,12 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         addZinsgutschrift();
         addDividendengutschrift();
     }
+    
+    @Override
+    public String getPDFAuthor()
+    {
+        return "ING-DiBa"; //$NON-NLS-1$
+    }
 
     @Override
     public String getLabel()
@@ -84,12 +90,8 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date").optional() //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
-                        .section("date").optional() //
-                        .match("Schlusstag / -zeit (?<date>\\d+.\\d+.\\d{4}+) .*") //
+                        .section("date") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
@@ -150,7 +152,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date") //
-                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
@@ -430,7 +432,22 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                 Money.of(asCurrencyCode(v.get("currency1")), asAmount(v.get("tax1")))));
                         t.addUnit(new Unit(Unit.Type.TAX,                    
                                 Money.of(asCurrencyCode(v.get("currency2")), asAmount(v.get("tax2")))));
-                        });
+                        })
+
+                    // Quellensteuer
+                    .section("tax", "currency", "taxTx", "currencyTx") //
+                    .optional() //
+                    .match("QuSt \\d+,\\d+ % \\((?<currencyTx>\\w{3}+) (?<taxTx>[\\d.,]*)\\) (?<currency>\\w{3}+) (?<tax>[\\d.,]*)")
+                    .assign((t, v) -> {
+                        String currency = asCurrencyCode(v.get("currency"));
+                        String currencyTx = asCurrencyCode(v.get("currencyTx"));
+
+                        if (currency.equals(t.getCurrencyCode()))
+                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
+                        else
+                            t.addUnit(new Unit(Unit.Type.TAX, Money.of(currencyTx, asAmount(v.get("taxTx")))));
+                    });
+
     }
 
 }

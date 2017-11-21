@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -15,6 +16,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
@@ -75,7 +77,7 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
 
     /* protected */ void fireUpdate()
     {
-        listeners.forEach(l -> l.onUpdate());
+        listeners.forEach(Listener::onUpdate);
         store.updateActive(new DataSeriesSerializer().toString(selectedSeries));
     }
 
@@ -145,6 +147,8 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         if (dataSeriesSet.getUseCase() != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             manager.add(new SimpleAction(Messages.ChartSeriesPickerAddBenchmark, a -> doAddSeries(true)));
 
+        addCopyFromOtherChartsMenu(manager);
+
         manager.add(new SimpleAction(Messages.MenuResetChartSeries, a -> doResetSeries(null)));
     }
 
@@ -188,6 +192,50 @@ public class DataSeriesConfigurator implements ConfigurationStoreOwner
         selectedSeries = new DataSeriesSerializer().fromString(dataSeriesSet, config);
 
         fireUpdate();
+    }
+
+    private void addCopyFromOtherChartsMenu(IMenuManager manager)
+    {
+        String[] charts = new String[] { //
+                        "StatementOfAssetsHistoryView", Messages.LabelStatementOfAssetsHistory, //$NON-NLS-1$
+                        "PerformanceChartView", Messages.LabelPerformanceChart, //$NON-NLS-1$
+                        "ReturnsVolatilityChartView", Messages.LabelHistoricalReturnsAndVolatiltity }; //$NON-NLS-1$
+
+        MenuManager copyFromOthers = new MenuManager(Messages.ChartSeriesCopySeriesFromOtherChart);
+        manager.add(copyFromOthers);
+        MenuManager replaceByOthers = new MenuManager(Messages.ChartSeriesReplaceSeriesByOtherChart);
+        manager.add(replaceByOthers);
+        
+        String currentConfigUUID = store.getActiveUUID();
+
+        for (int ii = 0; ii < charts.length; ii += 2)
+        {
+            ConfigurationSet set = client.getSettings().getConfigurationSet(charts[ii] + IDENTIFIER_POSTFIX);
+
+            MenuManager menuCopy = new MenuManager(charts[ii + 1]);
+            copyFromOthers.add(menuCopy);
+            MenuManager menuReplace = new MenuManager(charts[ii + 1]);
+            replaceByOthers.add(menuReplace);
+
+            set.getConfigurations().forEach(config -> {
+                
+                if (Objects.equals(currentConfigUUID, config.getUUID()))
+                    return;
+                
+                menuCopy.add(new SimpleAction(config.getName(), a -> {
+                    List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
+                    list.stream().filter(s -> !selectedSeries.contains(s)).forEach(s -> selectedSeries.add(s));
+                    fireUpdate();
+                }));
+
+                menuReplace.add(new SimpleAction(config.getName(), a -> {
+                    List<DataSeries> list = new DataSeriesSerializer().fromString(dataSeriesSet, config.getData());
+                    selectedSeries.clear();
+                    list.stream().forEach(s -> selectedSeries.add(s));
+                    fireUpdate();
+                }));
+            });
+        }
     }
 
     /* package */ void doDeleteSeries(DataSeries series)
