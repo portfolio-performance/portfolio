@@ -4,7 +4,9 @@ import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.inject.Inject;
@@ -87,13 +89,18 @@ public class P2Service
                         .toUnmodifiableSet();
     }
 
-    public Set<IInstallableUnit> fetchInstallableUnitsFromUpdateSite(URI updateSite, IProgressMonitor monitor)
+    public List<IInstallableUnit> fetchPPPluginsFromUpdateSite(URI updateSite, IProgressMonitor monitor)
                     throws ProvisionException
     {
         IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent
                         .getService(IMetadataRepositoryManager.SERVICE_NAME);
         IMetadataRepository repository = manager.loadRepository(updateSite, monitor);
-        return repository.query(QueryUtil.createLatestIUQuery(), monitor).toUnmodifiableSet();
+        return repository.query(QueryUtil.createLatestIUQuery(), monitor).toUnmodifiableSet().stream().filter(iu -> {
+            String groupProperty = iu.getProperty("org.eclipse.equinox.p2.type.group"); //$NON-NLS-1$
+            String pluginTypeProperty = iu.getProperty("portfolio.plugin"); //$NON-NLS-1$
+            return groupProperty != null && groupProperty.equals("true") && pluginTypeProperty != null //$NON-NLS-1$
+                            && pluginTypeProperty.equals("true");
+        }).collect(Collectors.toList());
     }
 
     public Set<IInstallableUnit> fetchInstallableGroupsFromUpdateSite(URI updateSite, IProgressMonitor monitor)

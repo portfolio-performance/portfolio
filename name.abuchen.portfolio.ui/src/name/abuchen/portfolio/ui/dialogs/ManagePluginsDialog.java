@@ -5,10 +5,10 @@ import java.net.URISyntaxException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.LinkedHashSet;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -395,8 +395,8 @@ public class ManagePluginsDialog extends Dialog
                     {
                         try
                         {
-                            Set<IInstallableUnit> installNewUnits = p2Service
-                                            .fetchInstallableUnitsFromUpdateSite(updateSite, monitor);
+                            List<IInstallableUnit> installNewUnits = p2Service.fetchPPPluginsFromUpdateSite(updateSite,
+                                            monitor);
 
                             cachedInstallableUnits.put(updateSite, installNewUnits.stream().filter(iu -> {
                                 String property = iu.getProperty("org.eclipse.equinox.p2.type.group"); //$NON-NLS-1$
