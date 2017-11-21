@@ -398,12 +398,9 @@ public class ManagePluginsDialog extends Dialog
                             List<IInstallableUnit> installNewUnits = p2Service.fetchPPPluginsFromUpdateSite(updateSite,
                                             monitor);
 
-                            cachedInstallableUnits.put(updateSite, installNewUnits.stream().filter(iu -> {
-                                String property = iu.getProperty("org.eclipse.equinox.p2.type.group"); //$NON-NLS-1$
-                                return property != null && property.equals("true"); //$NON-NLS-1$
-                            }).collect(Collectors.toList()));
+                            cachedInstallableUnits.put(updateSite, installNewUnits);
                             Display.getDefault().asyncExec(() -> {
-                                if (installedUnitsTable.getControl().isDisposed())
+                                if (!installedUnitsTable.getControl().isDisposed())
                                 {
                                     installedUnitsTable.refresh();
                                 }
