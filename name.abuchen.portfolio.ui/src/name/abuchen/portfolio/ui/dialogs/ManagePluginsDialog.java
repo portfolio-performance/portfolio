@@ -30,12 +30,10 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.viewers.CheckboxTableViewer;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
-import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
@@ -68,42 +66,6 @@ public class ManagePluginsDialog extends Dialog
 {
     public class PluginPane
     {
-
-        private abstract class InstalledUnitsTableColumnProvider extends ColumnLabelProvider
-        {
-            @Override
-            public String getToolTipText(Object element)
-            {
-                StringBuilder sb = new StringBuilder();
-                InstallableUnitState ius = (InstallableUnitState) element;
-                if (ius.isInstalled())
-                {
-                    sb.append(Messages.ManagePluginsDialogPluginVersionInstalled);
-                    sb.append(": "); //$NON-NLS-1$
-                }
-                sb.append(ius.getInstalledVersion());
-                return sb.toString();
-            }
-
-            @Override
-            public Point getToolTipShift(Object object)
-            {
-                return new Point(5, 5);
-            }
-
-            @Override
-            public int getToolTipDisplayDelayTime(Object object)
-            {
-                return 100; // msec
-            }
-
-            @Override
-            public int getToolTipTimeDisplayed(Object object)
-            {
-                return 5000; // msec
-            }
-        }
-
         private class InstallableUnitState
         {
             private String availableVersion;
@@ -375,11 +337,10 @@ public class ManagePluginsDialog extends Dialog
 
         private void initInstalledUnitsTable(TableViewer installedUnitsTable)
         {
-            ColumnViewerToolTipSupport.enableFor(installedUnitsTable, ToolTip.NO_RECREATE);
             TableViewerColumn column = new TableViewerColumn(installedUnitsTable, SWT.NONE);
             column.getColumn().setText(Messages.ManagePluginsDialogPluginId);
             column.getColumn().setWidth(240);
-            column.setLabelProvider(new InstalledUnitsTableColumnProvider()
+            column.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
                 public String getText(Object element)
@@ -389,9 +350,29 @@ public class ManagePluginsDialog extends Dialog
             });
 
             column = new TableViewerColumn(installedUnitsTable, SWT.NONE);
+            column.getColumn().setText(Messages.ManagePluginsDialogPluginVersionInstalled);
+            column.getColumn().setWidth(125);
+            column.setLabelProvider(new ColumnLabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    InstallableUnitState ius = (InstallableUnitState) element;
+                    if (!ius.isInstalled())
+                    {
+                        return ius.getInstalledVersion();
+                    }
+                    else
+                    {
+                        return Messages.ManagePluginsDialogPluginNotInstalled;
+                    }
+                }
+            });
+
+            column = new TableViewerColumn(installedUnitsTable, SWT.NONE);
             column.getColumn().setText(Messages.ManagePluginsDialogPluginVersionAvailable);
             column.getColumn().setWidth(125);
-            column.setLabelProvider(new InstalledUnitsTableColumnProvider()
+            column.setLabelProvider(new ColumnLabelProvider()
             {
                 @Override
                 public String getText(Object element)
@@ -710,7 +691,7 @@ public class ManagePluginsDialog extends Dialog
                 progressBar.setBounds(0, 0, 170, 17);
                 GridDataFactory.fillDefaults().grab(true, false).hint(100, 20).applyTo(progressBar);
                 progressBar.addPaintListener(this);
-                
+
                 this.parent.getParent().layout();
             });
         }
@@ -748,24 +729,24 @@ public class ManagePluginsDialog extends Dialog
                 GridDataFactory.fillDefaults().grab(false, false).applyTo(cancelButton);
                 cancelButton.addSelectionListener(new SelectionListener()
                 {
-                    
+
                     @Override
                     public void widgetSelected(SelectionEvent e)
                     {
                         done();
                     }
-                    
+
                     @Override
                     public void widgetDefaultSelected(SelectionEvent e)
                     {
                         // not used
-                        
+
                     }
                 });
                 this.parent.getParent().layout();
             });
         }
-        
+
         @Override
         public void done()
         {
@@ -879,7 +860,7 @@ public class ManagePluginsDialog extends Dialog
         Composite composite = (Composite) super.createDialogArea(parent);
 
         Composite area = new Composite(composite, SWT.None);
-        GridDataFactory.fillDefaults().grab(true, true).hint(510, 500).applyTo(area);
+        GridDataFactory.fillDefaults().grab(true, true).hint(635, 500).applyTo(area);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(area);
 
         new RepositoryPane(area);
