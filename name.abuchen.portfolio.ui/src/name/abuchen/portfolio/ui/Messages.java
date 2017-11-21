@@ -478,8 +478,7 @@ public class Messages extends NLS
     public static String ManagePluginsDialogOperationSuccessful;
     public static String ManagePluginsDialogPluginDetails;
     public static String ManagePluginsDialogPluginDetailsDescription;
-    public static String ManagePluginsDialogPluginDetailsChangelogLatest;
-    public static String ManagePluginsDialogPluginDetailsChangelogHistory;
+    public static String ManagePluginsDialogPluginDetailsChangelog;
     public static String ManagePluginsDialogPluginId;
     public static String ManagePluginsDialogPluginNotInstalled;
     public static String ManagePluginsDialogPluginVersionAvailable;

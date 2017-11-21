@@ -71,8 +71,7 @@ public class ManagePluginsDialog extends Dialog
             private String availableVersion;
             private String installedVersion;
             private String description;
-            private String changelogLatest;
-            private String changelogHistory;
+            private String changelog;
             private String id;
 
             private boolean updatable = false;
@@ -87,8 +86,7 @@ public class ManagePluginsDialog extends Dialog
 
                 // description & changelog
                 description = iu.getProperty("org.eclipse.equinox.p2.description"); //$NON-NLS-1$
-                changelogLatest = iu.getProperty("changelog.latest"); //$NON-NLS-1$
-                changelogHistory = iu.getProperty("changelog.history"); //$NON-NLS-1$
+                changelog = iu.getProperty("portfolio.plugin.changelog"); //$NON-NLS-1$
 
                 // id
                 String name = iu.getProperty(IInstallableUnit.PROP_NAME, Locale.getDefault().getLanguage());
@@ -148,14 +146,9 @@ public class ManagePluginsDialog extends Dialog
                 return installedVersion;
             }
 
-            public String getChangelogLatest()
+            public String getChangelog()
             {
-                return changelogLatest == null ? "" : changelogLatest; //$NON-NLS-1$
-            }
-
-            public String getChangelogHistory()
-            {
-                return changelogHistory == null ? "" : changelogHistory; //$NON-NLS-1$
+                return changelog == null ? "" : changelog; //$NON-NLS-1$
             }
 
             public String getDescription()
@@ -229,7 +222,7 @@ public class ManagePluginsDialog extends Dialog
                         uninstallButton.setEnabled(ius.isInstalled());
 
                         StringBuilder sb = new StringBuilder();
-                        StyleRange[] styles = new StyleRange[3];
+                        StyleRange[] styles = new StyleRange[2];
 
                         StyleRange descriptionStyle = new StyleRange();
                         descriptionStyle.fontStyle = SWT.BOLD;
@@ -242,40 +235,21 @@ public class ManagePluginsDialog extends Dialog
 
                         sb.append(System.lineSeparator());
                         sb.append(System.lineSeparator());
-                        StyleRange latestChangesStyle = new StyleRange();
-                        latestChangesStyle.fontStyle = SWT.BOLD;
-                        latestChangesStyle.start = sb.length();
-                        sb.append(Messages.ManagePluginsDialogPluginDetailsChangelogLatest);
-                        latestChangesStyle.length = sb.length() - latestChangesStyle.start;
-                        styles[1] = latestChangesStyle;
+                        StyleRange changelogStyle = new StyleRange();
+                        changelogStyle.fontStyle = SWT.BOLD;
+                        changelogStyle.start = sb.length();
+                        sb.append(Messages.ManagePluginsDialogPluginDetailsChangelog);
+                        changelogStyle.length = sb.length() - changelogStyle.start;
+                        styles[1] = changelogStyle;
                         sb.append(System.lineSeparator());
-                        String changelogLatest = ius.getChangelogLatest();
-                        if (changelogLatest.isEmpty())
+                        String changelog = ius.getChangelog();
+                        if (changelog.isEmpty())
                         {
                             sb.append("---"); //$NON-NLS-1$
                         }
                         else
                         {
-                            sb.append(changelogLatest);
-                        }
-
-                        sb.append(System.lineSeparator());
-                        sb.append(System.lineSeparator());
-                        StyleRange changelogHistoryStyle = new StyleRange();
-                        changelogHistoryStyle.fontStyle = SWT.BOLD;
-                        changelogHistoryStyle.start = sb.length();
-                        sb.append(Messages.ManagePluginsDialogPluginDetailsChangelogHistory);
-                        changelogHistoryStyle.length = sb.length() - changelogHistoryStyle.start;
-                        styles[2] = changelogHistoryStyle;
-                        sb.append(System.lineSeparator());
-                        String changelogHistory = ius.getChangelogHistory();
-                        if (changelogHistory.isEmpty())
-                        {
-                            sb.append("---"); //$NON-NLS-1$
-                        }
-                        else
-                        {
-                            sb.append(changelogHistory);
+                            sb.append(changelog);
                         }
 
                         pluginDetailsText.setText(sb.toString());
