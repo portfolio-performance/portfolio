@@ -553,6 +553,51 @@ public class ManagePluginsDialog extends Dialog
             }
         }
 
+        private final class EditRepositorySelectionListener extends SelectionAdapter
+        {
+            private final CheckboxTableViewer availableRepositories;
+
+            private EditRepositorySelectionListener(CheckboxTableViewer availableRepositories)
+            {
+                this.availableRepositories = availableRepositories;
+            }
+
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                String selectedRepository = (String) availableRepositories.getStructuredSelection().getFirstElement();
+                InputDialog inputDialog = new InputDialog(getShell(),
+                                Messages.ManagePluginsDialogEditRepositoryDialogTitle,
+                                Messages.ManagePluginsDialogEditRepositoryDialogText, selectedRepository,
+                                updateSite -> {
+                                    try
+                                    {
+                                        URI uri = new URI(updateSite);
+                                        if (!uri.isAbsolute())
+                                            return Messages.ManagePluginsDialogURIMustBeAbsolute;
+                                    }
+                                    catch (URISyntaxException e1)
+                                    {
+                                        return Messages.ManagePluginsDialogInvalidURI;
+                                    }
+                                    return null;
+                                });
+                if (inputDialog.open() == Window.OK)
+                {
+                    preferences.remove(selectedRepository);
+                    preferences.put(inputDialog.getValue(), inputDialog.getValue());
+                    availableRepositories.refresh();
+                    pluginPane.refresh();
+                }
+            }
+
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                // not used
+            }
+        }
+
         public RepositoryPane(Composite area)
         {
             createPane(area);
@@ -602,12 +647,27 @@ public class ManagePluginsDialog extends Dialog
             Button addButton = new Button(buttonArea, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(addButton);
             addButton.setText(Messages.ManagePluginsDialogAdd);
+            Button editButton = new Button(buttonArea, SWT.NONE);
+            editButton.setEnabled(false);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(editButton);
+            editButton.setText(Messages.ManagePluginsDialogEdit);
             Button removeButton = new Button(buttonArea, SWT.NONE);
+            removeButton.setEnabled(false);
             GridDataFactory.fillDefaults().grab(true, false).applyTo(removeButton);
             removeButton.setText(Messages.ManagePluginsDialogRemove);
 
-            removeButton.addSelectionListener(new RemoveRepositorySelectionListener(availableRepositories));
             addButton.addSelectionListener(new AddRepositorySelectionListener(availableRepositories));
+            editButton.addSelectionListener(new EditRepositorySelectionListener(availableRepositories));
+            removeButton.addSelectionListener(new RemoveRepositorySelectionListener(availableRepositories));
+
+            availableRepositories.addSelectionChangedListener(event -> {
+                IStructuredSelection structuredSelection = availableRepositories.getStructuredSelection();
+                if (!structuredSelection.isEmpty())
+                {
+                    editButton.setEnabled(true);
+                    removeButton.setEnabled(true);
+                }
+            });
 
             availableRepositories.addCheckStateListener(event -> {
                 preferences.put(event.getElement().toString(), String.valueOf(event.getChecked()));
