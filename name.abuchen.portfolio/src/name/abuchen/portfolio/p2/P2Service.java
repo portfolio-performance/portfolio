@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.JobGroup;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
@@ -36,6 +37,7 @@ import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 @Creatable
 public class P2Service
 {
+    private JobGroup p2Jobs = new JobGroup("P2 Jobs", 1, 1);
 
     @Inject
     private IProvisioningAgent agent;
@@ -176,7 +178,7 @@ public class P2Service
         final ProvisioningJob provisioningJob = operation.getProvisioningJob(monitor);
         if (provisioningJob == null)
             return Status.CANCEL_STATUS;
-
+        provisioningJob.setJobGroup(p2Jobs);
         provisioningJob.schedule();
         return status;
     }

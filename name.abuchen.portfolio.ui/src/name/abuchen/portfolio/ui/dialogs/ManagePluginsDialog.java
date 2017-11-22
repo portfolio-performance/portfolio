@@ -78,7 +78,7 @@ public class ManagePluginsDialog extends Dialog
             private boolean updatable = false;
             private IInstallableUnit iu;
             private IInstallableUnit installedIU;
-
+            
             public InstallableUnitState(IInstallableUnit iu)
             {
                 this.iu = iu;
@@ -436,7 +436,7 @@ public class ManagePluginsDialog extends Dialog
 
         private void updateIUs(Collection<InstallableUnitState> toUpdate)
         {
-            changeIUs(p2Service.uninstall,
+            changeIUs(p2Service.update,
                             toUpdate.stream().map(InstallableUnitState::getInstalledIU).collect(Collectors.toList()),
                             Messages.ManagePluginsDialogUpdate, Messages.ManagePluginsDialogUpdateFailed);
         }
