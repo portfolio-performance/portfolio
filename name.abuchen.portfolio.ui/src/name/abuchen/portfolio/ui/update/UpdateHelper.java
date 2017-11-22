@@ -12,7 +12,6 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
-import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
@@ -236,7 +235,7 @@ public class UpdateHelper
             }
         }
 
-        IStatus status = p2Service.executeProfileChangeOperation(operation, new NullProgressMonitor());
+        IStatus status = p2Service.executeProfileChangeOperation(operation, monitor);
         if (status.getSeverity() == IStatus.CANCEL) { throw new OperationCanceledException(); }
         if (status.isOK())
         {

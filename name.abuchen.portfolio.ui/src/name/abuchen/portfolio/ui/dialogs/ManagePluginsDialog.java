@@ -50,7 +50,6 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -382,7 +381,7 @@ public class ManagePluginsDialog extends Dialog
                 if (cachedUpdateSites == null || cachedUpdateSites.isEmpty())
                 {
                     cachedInstallableUnits.put(updateSite, Collections.emptyList());
-                    new Job(String.format("Fetch installable units from %s", updateSite)) //$NON-NLS-1$
+                    Job fetchInstallableUnitsJob = new Job(String.format("Fetch installable units from %s", updateSite)) //$NON-NLS-1$
                     {
                         @Override
                         protected IStatus run(IProgressMonitor monitor)
@@ -409,7 +408,8 @@ public class ManagePluginsDialog extends Dialog
                             progressBar.done();
                             return Status.OK_STATUS;
                         }
-                    }.schedule();
+                    };
+                    p2Service.joinAndSchedule(fetchInstallableUnitsJob);
                 }
                 else
                 {
@@ -462,19 +462,39 @@ public class ManagePluginsDialog extends Dialog
                                     }
                                 }).collect(Collectors.joining(", ")))); //$NON-NLS-1$
 
-                IStatus status = changeOperation.apply(context);
+                Job job = new Job("Install/Update/Uninstall Plug-in")
+                {
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor)
+                    {
+                        try
+                        {
+                            IStatus status = changeOperation.apply(context);
 
-                if (status.isOK())
-                {
-                    restartRequired = true;
-                }
-                else
-                {
-                    jobProgressBar.setText(failureMessage);
-                    jobProgressBar.setTooltip(status.toString());
-                    jobProgressBar.error();
-                    PortfolioPlugin.log(status);
-                }
+                            if (status.isOK())
+                            {
+                                restartRequired = true;
+                            }
+                            else
+                            {
+                                jobProgressBar.setText(failureMessage);
+                                jobProgressBar.setTooltip(status.toString());
+                                jobProgressBar.error();
+                                PortfolioPlugin.log(status);
+                            }
+                            return status;
+                        }
+                        catch (Exception ex)
+                        {
+                            jobProgressBar.setText(failureMessage);
+                            jobProgressBar.setTooltip(ex.toString());
+                            jobProgressBar.error();
+                            PortfolioPlugin.log(ex);
+                            return new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, failureMessage, ex);
+                        }
+                    }
+                };
+                p2Service.joinAndSchedule(job);
             }
             catch (Exception ex)
             {
@@ -878,7 +898,7 @@ public class ManagePluginsDialog extends Dialog
     {
         if (restartRequired)
         {
-            Display.getDefault().asyncExec(() -> UpdateHelper.promptForRestart(partService, workbench));
+            UpdateHelper.promptForRestart(partService, workbench);
         }
         return super.close();
     }

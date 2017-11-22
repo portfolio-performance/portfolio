@@ -15,6 +15,7 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.NullProgressMonitor;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.jobs.JobGroup;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
@@ -168,6 +169,14 @@ public class P2Service
         return null;
     }
 
+    /**
+     * The given operation is resolved and executed, if it was resolved successfully.
+     * IMORTANT: the operation is run modal in the current thread. Therefore, this should never be true when called from the UI thread.
+     * 
+     * @param operation the operation to execute
+     * @param monitor the progress monitor that is used for resolving and executing
+     * @return returns either the status of the resolving step (if that fails) or the result of the operation execution
+     */
     public IStatus executeProfileChangeOperation(final ProfileChangeOperation operation, final IProgressMonitor monitor)
     {
         final IStatus status = operation.resolveModal(monitor);
@@ -178,8 +187,8 @@ public class P2Service
         final ProvisioningJob provisioningJob = operation.getProvisioningJob(monitor);
         if (provisioningJob == null)
             return Status.CANCEL_STATUS;
-        provisioningJob.setJobGroup(p2Jobs);
-        provisioningJob.schedule();
+            
+        provisioningJob.runModal(monitor);
         return status;
     }
 
@@ -188,6 +197,12 @@ public class P2Service
         URI[] urisArray = updateSites.toArray(new URI[updateSites.size()]);
         operation.getProvisioningContext().setArtifactRepositories(urisArray);
         operation.getProvisioningContext().setMetadataRepositories(urisArray);
+    }
+    
+    public void joinAndSchedule(Job job)
+    {
+        job.setJobGroup(p2Jobs);
+        job.schedule();
     }
 
     public static class ProfileChangeContext
