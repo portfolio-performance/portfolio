@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -63,5 +64,36 @@ public class AccountPerformanceTaxRefundTestCase
         accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
         assertThat(accountPerformance.getFinalAccumulatedPercentage(), lessThan(calculatedTtwror));
+    }
+
+    /**
+     * Feature: when calculating the performance of an account, do include taxes
+     * and tax refunds paid with interest and interest charge
+     */
+    @Test
+    public void testAccountPerformanceTax4Interest() throws IOException
+    {
+        Client client = ClientFactory.load(SecurityTestCase.class
+                        .getResourceAsStream("account_performance_interest_with_tax.xml"));
+
+        Account account = client.getAccounts().get(0);
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
+
+        AccountTransaction deposit = account.getTransactions().get(0);
+
+        // no changes in holdings, ttwror must be:
+        double startValue = deposit.getAmount();
+        double endValue = account.getCurrentAmount();
+        double taxValue = account.getTransactions().get(2).getUnitSum(Transaction.Unit.Type.TAX).getAmount();
+        double ttwror = (endValue / startValue) - 1;
+        System.err.println("testAccountPerformanceTax4Interest startValue: " + startValue + " Endvalue: " + endValue + "  ttwror: " + ttwror);
+        List<Exception> warnings = new ArrayList<>();
+        CurrencyConverter converter = new TestCurrencyConverter();
+        PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
+        assertThat(warnings, empty());
+
+        double calculatedTtwror = accountPerformance.getFinalAccumulatedPercentage();
+        assertThat(calculatedTtwror, closeTo(ttwror, 0.0001));
+        assertThat(taxValue, closeTo(30000.00, 0.0001));
     }
 }

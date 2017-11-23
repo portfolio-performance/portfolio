@@ -204,7 +204,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsTaxUnits()
     {
-        return type == AccountTransaction.Type.DIVIDENDS;
+        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST || type == AccountTransaction.Type.INTEREST_CHARGE;
     }
 
     public void setSource(Account account, AccountTransaction transaction)
