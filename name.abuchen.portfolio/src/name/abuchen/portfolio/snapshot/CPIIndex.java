@@ -18,7 +18,7 @@ import name.abuchen.portfolio.util.Interval;
         super(client, converter, reportInterval);
     }
 
-    /* package */void calculate(PerformanceIndex clientIndex)
+    /* package */void calculate(PerformanceIndex clientIndex, boolean isNormalized)
     {
         Interval actualInterval = clientIndex.getActualInterval();
         LocalDate firstDataPoint = clientIndex.getFirstDataPoint().orElse(actualInterval.getStart());
