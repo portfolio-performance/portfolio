@@ -178,6 +178,24 @@ public class SecuritiesChart
         }
     }
 
+    
+    private ILineSeries chartSeriesPainter (ILineSeries seriesIn, LocalDate[] dates, double[] values, int colorIndex, float setSaturation,
+                                            int lineWidth, LineStyle lineStyle, boolean enableArea, boolean visibleLegend)
+    { 
+        JSColors colors = new JSColors();
+        int[] rgbColor;
+        rgbColor = colors.byIndex(colorIndex, setSaturation);
+        if (lineWidth != 0) seriesIn.setLineWidth(lineWidth);
+        seriesIn.setLineStyle(lineStyle);
+        seriesIn.enableArea(enableArea);
+        seriesIn.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+        seriesIn.setYSeries(values);
+        seriesIn.setAntialias(SWT.ON);
+        if(setSaturation != 0) seriesIn.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
+        seriesIn.setVisibleInLegend(visibleLegend);
+        return(seriesIn);
+    }
+
     private final void readChartConfig(Client client)
     {
         String pref = client.getProperty(PREF_KEY);
@@ -314,7 +332,7 @@ public class SecuritiesChart
 
             chart.getTitle().setText(security.getName());
 
-            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING);
+            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING) || chartConfig.contains(ChartDetails.PURCHASEPRICE);
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
@@ -393,58 +411,32 @@ public class SecuritiesChart
                     }
                 }
             }
-            JSColors colors = new JSColors();
-            int[] rgbColor;
             if (showAreaRelativeToFirstQuote)
             {
                 ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Positive");
-                lineSeries2ndPositive.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                lineSeries2ndPositive.enableArea(true);
                 lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndPositive.setYSeries(valuesRelativePositive);
-                lineSeries2ndPositive.setAntialias(SWT.ON);
                 lineSeries2ndPositive.setYAxisId(1);
-                lineSeries2ndPositive.setVisibleInLegend(false);
-                rgbColor = colors.byIndex(10, 0.6f);
-                lineSeries2ndPositive.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
-
+                lineSeries2ndPositive = chartSeriesPainter(lineSeries2ndPositive, dates, valuesRelativePositive, 10, 0.6f, 2, LineStyle.SOLID, true, false);
+                
                 ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Negative");
-                lineSeries2ndNegative.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                lineSeries2ndNegative.enableArea(true);
                 lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndNegative.setYSeries(valuesRelativeNegative);
-                lineSeries2ndNegative.setAntialias(SWT.ON);
                 lineSeries2ndNegative.setYAxisId(1);
-                lineSeries2ndNegative.setVisibleInLegend(false);
-                rgbColor = colors.byIndex(3, 0.6f);
-                lineSeries2ndNegative.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
+                lineSeries2ndNegative = chartSeriesPainter(lineSeries2ndNegative, dates, valuesRelativePositive, 3, 0.6f, 2, LineStyle.SOLID, true, false);
 
                 ILineSeries lineSeries2ndZero = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Zero");
                 lineSeries2ndZero.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                lineSeries2ndZero.enableArea(true);
                 lineSeries2ndZero.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndZero.setYSeries(valuesZeroLine);
-                lineSeries2ndZero.setAntialias(SWT.ON);
                 lineSeries2ndZero.setYAxisId(1);
-                lineSeries2ndZero.setVisibleInLegend(false);
-                rgbColor = colors.byIndex(10, 0.464f);
-                lineSeries2ndZero.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
+                lineSeries2ndZero = chartSeriesPainter(lineSeries2ndZero, dates, valuesRelativeNegative, 10, 0.464f, 2, LineStyle.SOLID, true, false);
             }
 
             ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.ColumnQuote);
-            lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-            lineSeries.setLineWidth(2);
-            lineSeries.enableArea(!showAreaRelativeToFirstQuote);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
-            lineSeries.setYSeries(values);
-            lineSeries.setAntialias(SWT.ON);
-            lineSeries.setVisibleInLegend(false);
-            rgbColor = colors.byIndex(10, 0.464f);
-            lineSeries.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
+            lineSeries = chartSeriesPainter(lineSeries, dates, values, 10, 0.464f, 2, LineStyle.SOLID, !showAreaRelativeToFirstQuote, false);
 
             chart.adjustRange();
 
@@ -512,7 +504,6 @@ public class SecuritiesChart
         lineSeriesSMA.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
-
     }
 
     private void addInvestmentMarkerLines()
@@ -567,36 +558,27 @@ public class SecuritiesChart
 
                 ILineSeries lineSeriesBuyBorder= (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
-                lineSeriesBuyBorder.setLineStyle(LineStyle.NONE);
-                lineSeriesBuyBorder.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
-                lineSeriesBuyBorder.setYSeries(mapPriceBuy);
                 lineSeriesBuyBorder.setYAxisId(0);
+                lineSeriesBuyBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
                 lineSeriesBuyBorder.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesBuyBorder.setSymbolSize(7);
-                lineSeriesBuyBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-                lineSeriesBuyBorder.setVisibleInLegend(false);
+                lineSeriesBuyBorder = chartSeriesPainter(lineSeriesBuyBorder, mapDatesBuy, mapPriceBuy, 0, 0f, 0, LineStyle.NONE, false, false);
 
                 ILineSeries lineSeriesBuyBackground = (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
-                lineSeriesBuyBackground.setLineStyle(LineStyle.NONE);
-                lineSeriesBuyBackground.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
-                lineSeriesBuyBackground.setYSeries(mapPriceBuy);
                 lineSeriesBuyBackground.setYAxisId(0);
                 lineSeriesBuyBackground.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesBuyBackground.setSymbolSize(6);
                 lineSeriesBuyBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-                lineSeriesBuyBackground.setVisibleInLegend(false);
+                lineSeriesBuyBackground = chartSeriesPainter(lineSeriesBuyBackground, mapDatesBuy, mapPriceBuy, 0, 0f, 0, LineStyle.NONE, false, false);
 
                 ILineSeries lineSeriesBuy = (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuBuy);
-                lineSeriesBuy.setLineStyle(LineStyle.NONE);
-                lineSeriesBuy.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesBuy));
-                lineSeriesBuy.setYSeries(mapPriceBuy);
                 lineSeriesBuy.setYAxisId(0);
                 lineSeriesBuy.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesBuy.setSymbolSize(4);
                 lineSeriesBuy.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_GREEN));
-                lineSeriesBuy.setVisibleInLegend(true);
+                lineSeriesBuy = chartSeriesPainter(lineSeriesBuy, mapDatesBuy, mapPriceBuy, 0, 0f, 0, LineStyle.NONE, false, true);
             }
 
             if (!mapDatesSellTemp.isEmpty()) {
@@ -607,36 +589,27 @@ public class SecuritiesChart
 
                 ILineSeries lineSeriesSellBorder = (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
-                lineSeriesSellBorder.setLineStyle(LineStyle.NONE);
-                lineSeriesSellBorder.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
-                lineSeriesSellBorder.setYSeries(mapPriceSell);
                 lineSeriesSellBorder.setYAxisId(0);
                 lineSeriesSellBorder.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesSellBorder.setSymbolSize(7);
                 lineSeriesSellBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-                lineSeriesSellBorder.setVisibleInLegend(false);
+                lineSeriesSellBorder = chartSeriesPainter(lineSeriesSellBorder, mapDatesSell, mapPriceSell, 0, 0f, 0, LineStyle.NONE, false, false);
 
                 ILineSeries lineSeriesSellBackground = (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
-                lineSeriesSellBackground.setLineStyle(LineStyle.NONE);
-                lineSeriesSellBackground.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
-                lineSeriesSellBackground.setYSeries(mapPriceSell);
                 lineSeriesSellBackground.setYAxisId(0);
                 lineSeriesSellBackground.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesSellBackground.setSymbolSize(6);
                 lineSeriesSellBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-                lineSeriesSellBackground.setVisibleInLegend(false);
+                lineSeriesSellBackground = chartSeriesPainter(lineSeriesSellBackground, mapDatesSell, mapPriceSell, 0, 0f, 0, LineStyle.NONE, false, false);
 
                 ILineSeries lineSeriesSell = (ILineSeries) chart.getSeriesSet()
                                 .createSeries(SeriesType.LINE, Messages.SecurityMenuSell);
-                lineSeriesSell.setLineStyle(LineStyle.NONE);
-                lineSeriesSell.setXDateSeries(TimelineChart.toJavaUtilDate(mapDatesSell));
-                lineSeriesSell.setYSeries(mapPriceSell);
                 lineSeriesSell.setYAxisId(0);
                 lineSeriesSell.setSymbolType(PlotSymbolType.DIAMOND);
                 lineSeriesSell.setSymbolSize(4);
                 lineSeriesSell.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_RED));
-                lineSeriesSell.setVisibleInLegend(true);
+                lineSeriesSell = chartSeriesPainter(lineSeriesSell, mapDatesSell, mapPriceSell, 0, 0f, 0, LineStyle.NONE, false, true);
             }
         }
     }
@@ -689,36 +662,27 @@ public class SecuritiesChart
 
             ILineSeries lineSeriesBorder = (ILineSeries) chart.getSeriesSet()  
                             .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
-            lineSeriesBorder.setLineStyle(LineStyle.NONE);
-            lineSeriesBorder.setXDateSeries(TimelineChart.toJavaUtilDate(dividendDateTemp));
-            lineSeriesBorder.setYSeries(dividendAxisValueTemp);
             lineSeriesBorder.setYAxisId(0);
             lineSeriesBorder.setSymbolType(PlotSymbolType.SQUARE);
             lineSeriesBorder.setSymbolSize(6);
             lineSeriesBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            lineSeriesBorder.setVisibleInLegend(false);
+            lineSeriesBorder = chartSeriesPainter(lineSeriesBorder, dividendDateTemp, dividendAxisValueTemp, 0, 0f, 0, LineStyle.NONE, false, false);
 
             ILineSeries lineSeriesBackground = (ILineSeries) chart.getSeriesSet()  
                             .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
-            lineSeriesBackground.setLineStyle(LineStyle.NONE);
-            lineSeriesBackground.setXDateSeries(TimelineChart.toJavaUtilDate(dividendDateTemp));
-            lineSeriesBackground.setYSeries(dividendAxisValueTemp);
             lineSeriesBackground.setYAxisId(0);
             lineSeriesBackground.setSymbolType(PlotSymbolType.SQUARE);
             lineSeriesBackground.setSymbolSize(5);
             lineSeriesBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            lineSeriesBackground.setVisibleInLegend(false);
+            lineSeriesBackground = chartSeriesPainter(lineSeriesBackground, dividendDateTemp, dividendAxisValueTemp, 0, 0f, 0, LineStyle.NONE, false, false);
 
             ILineSeries lineSeriesDividend = (ILineSeries) chart.getSeriesSet()  
                             .createSeries(SeriesType.LINE, Messages.LabelChartDetailDividends);
-            lineSeriesDividend.setLineStyle(LineStyle.NONE);
-            lineSeriesDividend.setXDateSeries(TimelineChart.toJavaUtilDate(dividendDateTemp));
-            lineSeriesDividend.setYSeries(dividendAxisValueTemp);
             lineSeriesDividend.setYAxisId(0);
             lineSeriesDividend.setSymbolType(PlotSymbolType.SQUARE);
             lineSeriesDividend.setSymbolSize(3);
             lineSeriesDividend.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_MAGENTA));
-            lineSeriesDividend.setVisibleInLegend(true);
+            lineSeriesDividend = chartSeriesPainter(lineSeriesDividend, dividendDateTemp, dividendAxisValueTemp, 0, 0f, 0, LineStyle.NONE, false, true);
         }  
     }
 
@@ -745,9 +709,6 @@ public class SecuritiesChart
         ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                         Messages.LabelChartDetailBollingerBandsLower);
         lineSeriesBollingerBandsLowerBand.setXDateSeries(bollingerBandsLowerBand.getDates());
-        lineSeriesBollingerBandsLowerBand.setLineWidth(2);
-        lineSeriesBollingerBandsLowerBand.setLineStyle(LineStyle.SOLID);
-        lineSeriesBollingerBandsLowerBand.enableArea(false);
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsLowerBand.setYSeries(bollingerBandsLowerBand.getValues());
         lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
@@ -830,9 +791,6 @@ public class SecuritiesChart
             int lineSeriesCounter = 0;
             double fifoValue = 0;
             double fifoShare = 0;
-            JSColors colors = new JSColors();
-            int[] rgbColor;
-            rgbColor = colors.byIndex(3, 0.464f);
             for (Map.Entry<LocalDate, Double> e : purchaseDeltaValueMap.entrySet()) {
                 Map.Entry<LocalDate, Double> next = purchaseDeltaValueMap.higherEntry(e.getKey()); // next
 
@@ -866,14 +824,10 @@ public class SecuritiesChart
                     lineSeriesCounter++;
                     ILineSeries FIFOlineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                     Messages.LabelChartDetailFIFOpurchase + (lineSeriesCounter == 1 ? "" : " (" + lineSeriesCounter + ")"));
-                    FIFOlineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(datesChart));
-                    FIFOlineSeries.setYSeries(valuesChart);
-                    FIFOlineSeries.setLineWidth(2);
                     FIFOlineSeries.setSymbolType(PlotSymbolType.NONE);
-                    FIFOlineSeries.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
                     FIFOlineSeries.setYAxisId(0);
-                    FIFOlineSeries.setVisibleInLegend(lineSeriesCounter == 1 ? true : false);
-                }
+                    FIFOlineSeries = chartSeriesPainter(FIFOlineSeries, datesChart, valuesChart, 3, 0.464f, 2, LineStyle.NONE, false, lineSeriesCounter == 1 ? true : false);
+               }
             }
         }
     }
