@@ -413,24 +413,17 @@ public class SecuritiesChart
             }
             if (showAreaRelativeToFirstQuote)
             {
+                ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                Messages.LabelChartDetailClosingIndicator+"Negative");
+                lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
+                lineSeries2ndNegative.setYAxisId(1);
+                lineSeries2ndNegative = chartSeriesPainter(lineSeries2ndNegative, dates, valuesRelativeNegative, 3, 0.6f, 1, LineStyle.SOLID, true, false);
+
                 ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Positive");
                 lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndPositive.setYAxisId(1);
                 lineSeries2ndPositive = chartSeriesPainter(lineSeries2ndPositive, dates, valuesRelativePositive, 10, 0.6f, 1, LineStyle.SOLID, true, false);
-                
-                ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailClosingIndicator+"Negative");
-                lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndNegative.setYAxisId(1);
-                lineSeries2ndNegative = chartSeriesPainter(lineSeries2ndNegative, dates, valuesRelativePositive, 3, 0.6f, 1, LineStyle.SOLID, true, false);
-
-                ILineSeries lineSeries2ndZero = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailClosingIndicator+"Zero");
-                lineSeries2ndZero.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                lineSeries2ndZero.setSymbolType(PlotSymbolType.NONE);
-                lineSeries2ndZero.setYAxisId(1);
-                lineSeries2ndZero = chartSeriesPainter(lineSeries2ndZero, dates, valuesRelativeNegative, 10, 0.464f, 1, LineStyle.SOLID, true, false);
             }
 
             ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
