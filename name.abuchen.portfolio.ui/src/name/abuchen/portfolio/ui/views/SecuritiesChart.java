@@ -370,6 +370,7 @@ public class SecuritiesChart
                 if (Double.isInfinite(firstQuote) || firstQuote == 0) showAreaRelativeToFirstQuote = false;
             }
 
+            addChartMarkerBackground();
 
             for (int ii = 0; index < prices.size(); index++, ii++)
             {
@@ -446,7 +447,7 @@ public class SecuritiesChart
 
             chart.adjustRange();
 
-            addChartMarker();
+            addChartMarkerForeground();
 
             chart.adjustRange();
 
@@ -463,11 +464,20 @@ public class SecuritiesChart
         }
     }
 
-    private void addChartMarker()
+    private void addChartMarkerBackground()
     {
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
 
+        if (chartConfig.contains(ChartDetails.SMA50))
+            addSMAMarkerLines(50);
+
+        if (chartConfig.contains(ChartDetails.SMA200))
+            addSMAMarkerLines(200);
+    }
+
+    private void addChartMarkerForeground()
+    {
         if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
             addFIFOPurchasePrice();
 
@@ -479,14 +489,7 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.EVENTS))
             addEventMarkerLines();
-
-        if (chartConfig.contains(ChartDetails.SMA50))
-            addSMAMarkerLines(50);
-
-        if (chartConfig.contains(ChartDetails.SMA200))
-            addSMAMarkerLines(200);
-}
-
+    }
     private void addSMAMarkerLines(int SMADays)
     {
         JSColors colors = new JSColors();
