@@ -82,11 +82,18 @@ public abstract class AbstractPDFExtractor implements Extractor
             results.addAll(extract(inputFile.getFile().getName(), text, errors));
         }
 
+        results = mergeItems(results);
+
         results.addAll(securityCache.createMissingSecurityItems(results));
 
         securityCache = null;
 
         return results;
+    }
+
+    protected List<Item> mergeItems(List<Item> results)
+    {
+        return results;   // default: ignore
     }
 
     private final List<Item> extract(String filename, String text, List<Exception> errors)

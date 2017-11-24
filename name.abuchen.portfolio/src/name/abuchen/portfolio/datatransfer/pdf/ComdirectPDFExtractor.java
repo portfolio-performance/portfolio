@@ -1,8 +1,13 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -13,6 +18,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 
@@ -28,6 +34,70 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addTaxTransaction();
         addSellTransaction();
+    }
+    
+    @Override
+    protected List<Item> mergeItems(List<Item> items)
+    {
+        List<Item> results= new ArrayList<>();
+        
+        List<Item> idTransactions = items.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getId() != null)
+                        .collect(Collectors.toList());
+        List<Item> idTransactionsRef = new ArrayList<>(idTransactions);
+        List<Item> remainingTransactions = items.stream()
+                        .filter(i -> !(
+                                        i instanceof TransactionItem && 
+                                        i.getSubject() instanceof AccountTransaction && 
+                                        ((AccountTransaction) i.getSubject()).getId() != null
+                                        ))
+                        .collect(Collectors.toList());
+        
+        List<Item> mergedTransactions = idTransactions.stream()
+                        .map(item -> ((AccountTransaction) item.getSubject()).getId())
+                        .distinct()
+                        .map(id -> idTransactionsRef.stream()
+                                        .filter(item -> id.equals( ((AccountTransaction) item.getSubject()).getId()))
+                                        .collect(Collectors.toList()))
+                        .map(sameIdItemList -> {
+                            if (sameIdItemList.size() == 2){
+                                List<AccountTransaction> accountTransactions = sameIdItemList.stream()
+                                                .map(item -> (AccountTransaction) item.getSubject())
+                                                .collect(Collectors.toList());
+                                Optional<AccountTransaction> oDiv = accountTransactions.stream()
+                                                .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType()))
+                                                .findFirst();
+                                Optional<AccountTransaction> oTax = accountTransactions.stream()
+                                                .filter(t -> AccountTransaction.Type.TAXES.equals(t.getType()))
+                                                .findFirst();
+                                
+                                if (oDiv.isPresent() && oTax.isPresent()){
+                                    // update div-transaction with tax-transaction: add tax-unit, reduce amount
+                                    AccountTransaction tDiv = oDiv.get();
+                                    AccountTransaction tTax = oTax.get();
+                                    Money internalTax = tDiv.getUnitSum(Type.TAX);
+                                    Money externalTax = tTax.getUnitSum(Type.TAX);
+                                    
+                                    if (internalTax.getCurrencyCode().equals(externalTax.getCurrencyCode())){
+                                        tDiv.addUnit(new Unit(Unit.Type.TAX, externalTax));
+                                        tDiv.setAmount(tDiv.getAmount() - tTax.getAmount());
+                                    }
+                                    
+                                    return Arrays.asList(new TransactionItem(tDiv));    
+                                }
+                            }
+                            
+                            return sameIdItemList;
+                        })
+                        // TODO: remove all single tax-entries?
+                        .flatMap(l -> l.stream())
+                        .collect(Collectors.toList());
+
+        results.addAll(mergedTransactions);
+        results.addAll(remainingTransactions);
+        
+        return results;
     }
 
     @SuppressWarnings("nls")
