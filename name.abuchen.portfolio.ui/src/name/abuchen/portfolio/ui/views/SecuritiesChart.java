@@ -430,7 +430,8 @@ public class SecuritiesChart
                 lineSeries2ndZero.setAntialias(SWT.ON);
                 lineSeries2ndZero.setYAxisId(1);
                 lineSeries2ndZero.setVisibleInLegend(false);
-                lineSeries2ndZero.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+                rgbColor = colors.byIndex(10, 0.464f);
+                lineSeries2ndZero.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
             }
 
             ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
