@@ -399,8 +399,7 @@ public class SecuritiesChart
                 ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Positive");
                 lineSeries2ndPositive.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
-                    lineSeries2ndPositive.enableArea(true);
+                lineSeries2ndPositive.enableArea(true);
                 lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndPositive.setYSeries(valuesRelativePositive);
                 lineSeries2ndPositive.setAntialias(SWT.ON);
@@ -412,8 +411,7 @@ public class SecuritiesChart
                 ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Negative");
                 lineSeries2ndNegative.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
-                    lineSeries2ndNegative.enableArea(true);
+                lineSeries2ndNegative.enableArea(true);
                 lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndNegative.setYSeries(valuesRelativeNegative);
                 lineSeries2ndNegative.setAntialias(SWT.ON);
@@ -425,8 +423,7 @@ public class SecuritiesChart
                 ILineSeries lineSeries2ndZero = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator+"Zero");
                 lineSeries2ndZero.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
-                if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
-                    lineSeries2ndZero.enableArea(true);
+                lineSeries2ndZero.enableArea(true);
                 lineSeries2ndZero.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndZero.setYSeries(valuesZeroLine);
                 lineSeries2ndZero.setAntialias(SWT.ON);
@@ -439,8 +436,7 @@ public class SecuritiesChart
                             Messages.ColumnQuote);
             lineSeries.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
             lineSeries.setLineWidth(2);
-            if (!chartConfig.contains(ChartDetails.BOLLINGERBANDS))
-                lineSeries.enableArea(!showAreaRelativeToFirstQuote);
+            lineSeries.enableArea(!showAreaRelativeToFirstQuote);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
             lineSeries.setYSeries(values);
             lineSeries.setAntialias(SWT.ON);
@@ -469,15 +465,6 @@ public class SecuritiesChart
 
     private void addChartMarker()
     {
-        if (chartConfig.contains(ChartDetails.EVENTS))
-            addEventMarkerLines();
-
-        if (chartConfig.contains(ChartDetails.SMA50))
-            addSMAMarkerLines(50);
-
-        if (chartConfig.contains(ChartDetails.SMA200))
-            addSMAMarkerLines(200);
-
         if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
 
@@ -489,6 +476,15 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.DIVIDENDS))
             addDividendMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.EVENTS))
+            addEventMarkerLines();
+
+        if (chartConfig.contains(ChartDetails.SMA50))
+            addSMAMarkerLines(50);
+
+        if (chartConfig.contains(ChartDetails.SMA200))
+            addSMAMarkerLines(200);
 }
 
     private void addSMAMarkerLines(int SMADays)
@@ -508,7 +504,7 @@ public class SecuritiesChart
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(SMALines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
-        rgbColor = colors.byIndex(SMADays == 200 ? 7:2, 0.464f);
+        rgbColor = colors.byIndex(SMADays == 200 ? 7:0, 0.464f);
         lineSeriesSMA.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
@@ -648,7 +644,6 @@ public class SecuritiesChart
 
         Color color = Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA); 
         List<LocalDate> dividendDate = new ArrayList<> ();
-        List<Double> dividendValue = new ArrayList<> ();
         List<Double> dividendAxisValue = new ArrayList<> ();
         for (Account account : this.client.getAccounts())
         {
@@ -739,6 +734,10 @@ public class SecuritiesChart
                         || bollingerBandsLowerBand.getDates() == null)
             return;
 
+        JSColors colors = new JSColors();
+        int[] rgbColor;
+        rgbColor = colors.byIndex(4, 0.464f);
+
         ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                         Messages.LabelChartDetailBollingerBandsLower);
         lineSeriesBollingerBandsLowerBand.setXDateSeries(bollingerBandsLowerBand.getDates());
@@ -748,7 +747,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsLowerBand.setYSeries(bollingerBandsLowerBand.getValues());
         lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
-        lineSeriesBollingerBandsLowerBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+        lineSeriesBollingerBandsLowerBand.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
         lineSeriesBollingerBandsLowerBand.setVisibleInLegend(false);
 
@@ -757,13 +756,13 @@ public class SecuritiesChart
         ILineSeries lineSeriesBollingerBandsMiddleBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                         Messages.LabelChartDetailBollingerBands);
         lineSeriesBollingerBandsMiddleBand.setXDateSeries(bollingerBandsMiddleBand.getDates());
-        lineSeriesBollingerBandsMiddleBand.setLineWidth(1);
+        lineSeriesBollingerBandsMiddleBand.setLineWidth(2);
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
         lineSeriesBollingerBandsMiddleBand.enableArea(false);
         lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsMiddleBand.setYSeries(bollingerBandsMiddleBand.getValues());
         lineSeriesBollingerBandsMiddleBand.setAntialias(SWT.ON);
-        lineSeriesBollingerBandsMiddleBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+        lineSeriesBollingerBandsMiddleBand.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
         lineSeriesBollingerBandsMiddleBand.setYAxisId(0);
         lineSeriesBollingerBandsMiddleBand.setVisibleInLegend(true);
 
@@ -778,7 +777,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsUpperBand.setYSeries(bollingerBandsUpperBand.getValues());
         lineSeriesBollingerBandsUpperBand.setAntialias(SWT.ON);
-        lineSeriesBollingerBandsUpperBand.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+        lineSeriesBollingerBandsUpperBand.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
         lineSeriesBollingerBandsUpperBand.setVisibleInLegend(false);
     }
@@ -827,9 +826,11 @@ public class SecuritiesChart
             int lineSeriesCounter = 0;
             double fifoValue = 0;
             double fifoShare = 0;
+            JSColors colors = new JSColors();
+            int[] rgbColor;
+            rgbColor = colors.byIndex(3, 0.464f);
             for (Map.Entry<LocalDate, Double> e : purchaseDeltaValueMap.entrySet()) {
                 Map.Entry<LocalDate, Double> next = purchaseDeltaValueMap.higherEntry(e.getKey()); // next
-                Map.Entry<LocalDate, Double> prev = purchaseDeltaValueMap.lowerEntry(e.getKey());  // previous
 
                 LocalDate startDate = e.getKey();
                 fifoValue = fifoValue + e.getValue(); 
@@ -844,8 +845,8 @@ public class SecuritiesChart
                 if (daysBetween==0) continue;
                 List<LocalDate> datesChartTemp = new ArrayList<> ();
                 List<Double> valuesChartTemp = new ArrayList<> ();
-                for (int relevantDays=0; relevantDays <= daysBetween; relevantDays++) {
-                    if (startDate.isAfter(chartPeriod) || startDate.isEqual(chartPeriod))
+                for (int relevantDays=0; relevantDays < daysBetween; relevantDays++) {
+                    if ((chartPeriod == null) || (startDate.isAfter(chartPeriod) || startDate.isEqual(chartPeriod)))
                     {
                         datesChartTemp.add(startDate);
                         valuesChartTemp.add(fifoValuePerShare);
@@ -865,7 +866,7 @@ public class SecuritiesChart
                     FIFOlineSeries.setYSeries(valuesChart);
                     FIFOlineSeries.setLineWidth(2);
                     FIFOlineSeries.setSymbolType(PlotSymbolType.NONE);
-                    FIFOlineSeries.setLineColor(Display.getDefault().getSystemColor(SWT.COLOR_DARK_YELLOW));
+                    FIFOlineSeries.setLineColor(new Color(Display.getDefault(), new RGB(rgbColor[0], rgbColor[1], rgbColor[2])));
                     FIFOlineSeries.setYAxisId(0);
                     FIFOlineSeries.setVisibleInLegend(lineSeriesCounter == 1 ? true : false);
                 }
@@ -917,10 +918,6 @@ public class SecuritiesChart
             NavigableMap<LocalDate, Double> purchaseShareMap = new TreeMap(purchaseShareMapTemp);
 
             for (Map.Entry<LocalDate, Double> e : purchaseDeltaValueMap.entrySet()) {
-                Map.Entry<LocalDate, Double> next = purchaseDeltaValueMap.higherEntry(e.getKey()); // next
-                Map.Entry<LocalDate, Double> prev = purchaseDeltaValueMap.lowerEntry(e.getKey());  // previous
-
-                LocalDate startDate = e.getKey();
                 fifoValue = fifoValue + e.getValue(); 
                 fifoShare = fifoShare + purchaseShareMap.get(e.getKey());
                 fifoValuePerShare = Double.isInfinite(fifoValue / fifoShare) ? 0 : fifoValue / fifoShare;
