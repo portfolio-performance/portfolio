@@ -553,7 +553,7 @@ public class AccountTransactionModel extends AbstractModel
     protected long calculateGrossAmount4Total()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return total + totalTaxes;
+        return total + (type == AccountTransaction.Type.INTEREST_CHARGE ? -1 : 1) * totalTaxes;
     }
 
     protected long calculateGrossAmount4Dividend()
@@ -565,7 +565,7 @@ public class AccountTransactionModel extends AbstractModel
     private long calculateTotal()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return Math.max(0, grossAmount - totalTaxes);
+        return Math.max(0, grossAmount + (type == AccountTransaction.Type.INTEREST_CHARGE ? 1 : -1) * totalTaxes);
     }
 
     public String getNote()
