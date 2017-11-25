@@ -787,6 +787,8 @@ public class SecuritiesChart
         // calculate FIFO purchase price for each event
 
         List<Double> values = new ArrayList<>();
+        List<LocalDate> datesChart =  new ArrayList<>();
+        int seriesCounter = 0;
         for (int index = 0; index < dates.size(); index++)
         {
 
@@ -794,6 +796,7 @@ public class SecuritiesChart
 
             if (purchasePrice.isPresent())
             {
+                datesChart.add(dates.get(index));
                 values.add(purchasePrice.get());
             }
             else
@@ -802,20 +805,39 @@ public class SecuritiesChart
                 // future events)
 
                 if (index + 1 == dates.size() && index - 1 >= 0)
+                {
+                    datesChart.add(dates.get(index - 1));
                     values.add(values.get(index - 1));
+                }
                 else
-                    values.add(0d);
+                {
+                    if (!datesChart.isEmpty())
+                    {
+                        seriesCounter++;
+                        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                                        Messages.LabelChartDetailFIFOpurchase+seriesCounter);
+                        series.setSymbolType(PlotSymbolType.NONE);
+                        series.setYAxisId(0);
+                        series.enableStep(true);
+
+                        configureSeriesPainter(series, datesChart.toArray(new LocalDate[0]),
+                                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
+                                        LineStyle.SOLID, false, false);
+                    }
+                    values.clear();
+                    datesChart.clear();
+                }
             }
         }
 
         // add today if needed
 
         getPurchasePrice(filteredClient, securityCurrency, today).ifPresent(price -> {
-            dates.add(today);
+            datesChart.add(today);
             values.add(price);
         });
 
-        if (!dates.isEmpty())
+        if (!datesChart.isEmpty())
         {
             ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.LabelChartDetailFIFOpurchase);
@@ -823,7 +845,7 @@ public class SecuritiesChart
             series.setYAxisId(0);
             series.enableStep(true);
 
-            configureSeriesPainter(series, dates.toArray(new LocalDate[0]),
+            configureSeriesPainter(series, datesChart.toArray(new LocalDate[0]),
                             ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
                             LineStyle.SOLID, false, true);
         }
