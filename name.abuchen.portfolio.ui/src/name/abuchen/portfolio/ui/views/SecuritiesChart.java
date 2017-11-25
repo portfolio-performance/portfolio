@@ -811,6 +811,8 @@ public class SecuritiesChart
                 }
                 else
                 {
+                    datesChart.add(dates.get(index));
+                    values.add(values.get(index - 1));
                     if (!datesChart.isEmpty())
                     {
                         seriesCounter++;
