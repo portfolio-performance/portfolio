@@ -122,6 +122,7 @@ public class Messages extends NLS
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
     public static String MsgAlphaVantageAPIKeyMissing;
+    public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;
