@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.junit.Test;
@@ -702,10 +703,8 @@ System.out.println(results);
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt", "comdirectDividende3_Steuer.txt"), errors);
-
         
         assertThat(errors, empty());
-//        assertThat(results.size(), is(3));
         assertThat(results.size(), is(2));
 
         // security
@@ -720,7 +719,6 @@ System.out.println(results);
                         .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
                         .map(i -> (AccountTransaction) i.getSubject())
                         .collect(Collectors.toList());
-//        assertThat(items.size(), is(2));
         assertThat(items.size(), is(1));
         
         // dividend
@@ -731,32 +729,80 @@ System.out.println(results);
 
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
         assertThat(transaction.getSecurity(), is(security));
-//        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65 - 1.37 - 0.07)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getId(), is("1BICAY8QGZE0000U"));
-//        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 0)));   // ignores foreign taxes
         assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
-        
-        
-//        // tax
-//        oTransaction = items.stream()
-//                        .filter(t -> AccountTransaction.Type.TAXES.equals(t.getType())).findFirst();
-//        assertThat(oTransaction.isPresent(), is(true));
-//        transaction = oTransaction.get();
-//        
-//        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
-//        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
-//        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
-//        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
-//        assertThat(transaction.getId(), is("1BICAY8QGZE0000U"));
+    
     }
     
-    // TODO: more tests
-    // - ignore tax file without div-file?
-    // - no confusion-test:
-    //  - div with empty tax file
-    //  - div without tax file (div1)
-    //  - 2 x div with matching tax-file
+    @Test
+    public void testDividende4DifferentFiles() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), 
+                        "comdirectDividende1.txt",  // div without tax file (div1)  
+                        "comdirectDividende3.txt", "comdirectDividende3_Steuer.txt",    // with matching tax-file
+                        "comdirectDividende4.txt", "comdirectDividende4_Steuer.txt",    // with matching tax-file
+                        "comdirectDividende5.txt", "comdirectDividende5_Steuer.txt"     // with matching empty tax-file
+                        ), errors);
+
+        
+        assertThat(errors, empty());
+        assertThat(results.size(), is(7));
+        
+        Set<Item> secItems = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toSet());
+        assertThat(secItems.size(), is(3));
+        Set<Security> securities = secItems.stream().map(i -> i.getSecurity()).collect(Collectors.toSet());
+        assertThat(securities.stream().filter(sec -> "NL0000009355".equals(sec.getIsin())).findFirst().isPresent(), is(true));
+        assertThat(securities.stream().filter(sec -> "US1266501006".equals(sec.getIsin())).findFirst().isPresent(), is(true));
+        assertThat(securities.stream().filter(sec -> "US7561091049".equals(sec.getIsin())).findFirst().isPresent(), is(true));
+        
+        Set<Item> transactionItems = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toSet());
+        assertThat(transactionItems.size(), is(4));
+        Set<AccountTransaction> divTransactions = transactionItems.stream()
+                        .map(i -> (AccountTransaction)((TransactionItem)i).getSubject())
+                        .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType()))
+                        .collect(Collectors.toSet());
+        assertThat(divTransactions.size(), is(4));
+        
+        // comdirectDividende1.txt
+        Optional<AccountTransaction> divItem = divTransactions.stream().filter(div -> "NL0000009355".equals(div.getSecurity().getIsin())).findFirst();
+        assertThat(divItem.isPresent(), is(true));
+        AccountTransaction transaction = divItem.get();
+        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-15")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(335.92)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(59.28)));
+        
+        // comdirectDividende3.txt + comdirectDividende3_Steuer.txt
+        divItem = divTransactions.stream().filter(div -> "US1266501006".equals(div.getSecurity().getIsin())).findFirst();
+        assertThat(divItem.isPresent(), is(true));
+        transaction = divItem.get();
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65 - 1.37 - 0.07)));
+        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
+        
+     // comdirectDividende4.txt + comdirectDividende4_Steuer.txt
+        divItem = divTransactions.stream().filter(div -> "US7561091049".equals(div.getSecurity().getIsin()))
+                        .filter(div -> LocalDate.parse("2017-10-17").equals(div.getDate())).findFirst();
+        assertThat(divItem.isPresent(), is(true));
+        transaction = divItem.get();
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(5.93 - 0.70 - 0.03)));
+        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 70 + 3)));
+        
+        // comdirectDividende5.txt + comdirectDividende5_Steuer.txt
+        divItem = divTransactions.stream().filter(div -> "US7561091049".equals(div.getSecurity().getIsin()))
+                        .filter(div -> LocalDate.parse("2017-01-17").equals(div.getDate())).findFirst();
+        assertThat(divItem.isPresent(), is(true));
+        transaction = divItem.get();
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.29 - 0 - 0)));
+        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 0)));
+    }
+    
+    // TODO: ignore tax file without div-file?
+    // TODO: some kind of update if tax-file is used later?
 
 }
