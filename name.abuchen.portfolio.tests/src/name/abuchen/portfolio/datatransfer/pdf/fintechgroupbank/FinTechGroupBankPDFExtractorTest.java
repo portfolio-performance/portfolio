@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf.fintechgroupbank;
 
+import static org.hamcrest.CoreMatchers.allOf;
+import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
@@ -325,6 +328,31 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-15")));
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.9))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.703363)));
+    }
+    
+    @Test
+    public void testWertpapierKauf7() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf7.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(20));
+        
+        List<PortfolioTransaction> tx = results.stream() //
+                        .filter(i -> i instanceof BuySellEntryItem)
+                        .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
+                        .collect(Collectors.toList());
+        
+        assertThat(tx.size(), is(10));
+        
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("date", is(LocalDate.parse("2017-11-01"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3008.9)))))));
     }
 
     @Test
