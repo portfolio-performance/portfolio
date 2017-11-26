@@ -107,7 +107,8 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 price.setVolume(Long.parseLong(values[5]));
                 price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
-                security.setLatest(price);
+                if (price.getValue() != 0)
+                    security.setLatest(price);
 
                 return true;
             }
@@ -200,10 +201,10 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                         throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
                     T price = klass.newInstance();
-                    
+
                     if (values[0].length() > 10)
                         values[0] = values[0].substring(0, 10);
-                    
+
                     price.setDate(LocalDate.parse(values[0], formatter));
                     price.setValue(asPrice(values[4]));
 
@@ -216,7 +217,8 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                         lsp.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
                     }
 
-                    prices.add(price);
+                    if (price.getValue() != 0)
+                        prices.add(price);
                 }
 
                 return prices;
