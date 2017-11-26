@@ -36,6 +36,8 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -773,7 +775,7 @@ public class SecuritiesChart
 
         LocalDate today = LocalDate.now();
 
-        List<LocalDate> dates = client.getPortfolios().stream() //
+        List<LocalDate> candidates = client.getPortfolios().stream() //
                         .flatMap(p -> p.getTransactions().stream()) //
                         .filter(t -> t.getSecurity().equals(security))
                         .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
@@ -784,50 +786,41 @@ public class SecuritiesChart
                         .sorted() //
                         .collect(Collectors.toList());
 
-        // calculate FIFO purchase price for each event
+        // calculate FIFO purchase price for each event - separate lineSeries
+        // per holding period
 
         List<Double> values = new ArrayList<>();
-        List<LocalDate> datesChart =  new ArrayList<>();
+        List<LocalDate> dates = new ArrayList<>();
         int seriesCounter = 0;
-        for (int index = 0; index < dates.size(); index++)
-        {
 
-            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, dates.get(index));
+        for (LocalDate eventDate : candidates)
+        {
+            Optional<Double> purchasePrice = getPurchasePrice(filteredClient, securityCurrency, eventDate);
 
             if (purchasePrice.isPresent())
             {
-                datesChart.add(dates.get(index));
+                dates.add(eventDate);
                 values.add(purchasePrice.get());
             }
             else
             {
-                // add previous value if the data series ends here (no more
-                // future events)
-
-                if (index + 1 == dates.size() && index - 1 >= 0)
+                if (!dates.isEmpty())
                 {
-                    datesChart.add(dates.get(index - 1));
-                    values.add(values.get(index - 1));
-                }
-                else
-                {
-                    datesChart.add(dates.get(index));
-                    values.add(values.get(index - 1));
-                    if (!datesChart.isEmpty())
-                    {
-                        seriesCounter++;
-                        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                        Messages.LabelChartDetailFIFOpurchase+seriesCounter);
-                        series.setSymbolType(PlotSymbolType.NONE);
-                        series.setYAxisId(0);
-                        series.enableStep(true);
+                    // add previous value if the data series ends here (no more
+                    // future events)
 
-                        configureSeriesPainter(series, datesChart.toArray(new LocalDate[0]),
-                                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
-                                        LineStyle.SOLID, false, false);
-                    }
+                    dates.add(eventDate);
+                    values.add(values.get(values.size() - 1));
+
+                    createFIFOPurchaseLineSeries(values, dates, seriesCounter++);
+
                     values.clear();
-                    datesChart.clear();
+                    dates.clear();
+                }
+                else if (dates.isEmpty())
+                {
+                    // if no holding period exists, then do not add the event at
+                    // all
                 }
             }
         }
@@ -835,23 +828,28 @@ public class SecuritiesChart
         // add today if needed
 
         getPurchasePrice(filteredClient, securityCurrency, today).ifPresent(price -> {
-            datesChart.add(today);
+            dates.add(today);
             values.add(price);
         });
 
-        if (!datesChart.isEmpty())
-        {
-            ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailFIFOpurchase);
-            series.setSymbolType(PlotSymbolType.NONE);
-            series.setYAxisId(0);
-            series.enableStep(true);
+        if (!dates.isEmpty())
+            createFIFOPurchaseLineSeries(values, dates, seriesCounter);
+    }
 
-            configureSeriesPainter(series, datesChart.toArray(new LocalDate[0]),
-                            ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
-                            LineStyle.SOLID, false, true);
-        }
+    private void createFIFOPurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
+    {
+        String label = seriesCounter == 0 ? Messages.LabelChartDetailFIFOpurchase
+                        : MessageFormat.format(Messages.LabelChartDetailFIFOpurchaseHoldingPeriod, seriesCounter + 1);
 
+        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
+
+        series.setSymbolType(PlotSymbolType.NONE);
+        series.setYAxisId(0);
+        series.enableStep(true);
+
+        configureSeriesPainter(series, dates.toArray(new LocalDate[0]),
+                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
+                        LineStyle.SOLID, false, seriesCounter == 0);
     }
 
     private Optional<Double> getLatestPurchasePrice()

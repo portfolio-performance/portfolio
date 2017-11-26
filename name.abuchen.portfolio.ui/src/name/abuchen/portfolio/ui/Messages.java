@@ -352,6 +352,7 @@ public class Messages extends NLS
     public static String LabelChartDetailBollingerBandsLower;
     public static String LabelChartDetailBollingerBandsUpper;
     public static String LabelChartDetailFIFOpurchase;
+    public static String LabelChartDetailFIFOpurchaseHoldingPeriod;
     public static String LabelChartDetailPurchaseIndicator;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
