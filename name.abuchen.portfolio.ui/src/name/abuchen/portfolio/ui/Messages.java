@@ -122,6 +122,8 @@ public class Messages extends NLS
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
     public static String ColumnExDate;
+    public static String ColumnFeedURLHistoric;
+    public static String ColumnFeedURLLatest;
     public static String ColumnFees;
     public static String ColumnFees_Description;
     public static String ColumnFieldType;
@@ -175,6 +177,8 @@ public class Messages extends NLS
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
+    public static String ColumnQuoteFeedHistoric;
+    public static String ColumnQuoteFeedLatest;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnSecurity;
@@ -277,6 +281,7 @@ public class Messages extends NLS
     public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
     public static String GroupLabelPerformance;
+    public static String GroupLabelQuoteFeed;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
