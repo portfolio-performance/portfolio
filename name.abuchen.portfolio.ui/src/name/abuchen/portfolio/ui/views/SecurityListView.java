@@ -51,6 +51,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Quote;
@@ -760,6 +761,33 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         support.addColumn(column);
+        
+        
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 40);
+        column.setDescription(Messages.ColumnFees_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);        
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 40);
+        column.setDescription(Messages.ColumnTaxes_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);        
 
         column = new Column(Messages.ColumnPortfolio, SWT.NONE, 120);
         column.setLabelProvider(new ColumnLabelProvider()
