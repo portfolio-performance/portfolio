@@ -551,8 +551,7 @@ public class DABPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.47))));
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-01-27")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3.4256)));
-    }
-    
+    }    
 
     @Test
     public void testProceeds2() throws IOException
@@ -583,5 +582,6 @@ public class DABPDFExtractorTest
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(11.06))));
         assertThat(transaction.getDate(), is(LocalDate.parse("2017-02-07")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(14.3755)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.13))));
     }
 }
