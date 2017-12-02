@@ -461,6 +461,9 @@ public class Messages extends NLS
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelToday;
+    public static String LabelToolTipDividendDetails;
+    public static String LabelToolTipInvestmentDetails;
+    public static String LabelToolTipTransactionSummary;
     public static String LabelTotalSum;
     public static String LabelTotalValuePercent;
     public static String LabelTransactions;
