@@ -3,9 +3,12 @@ package name.abuchen.portfolio.ui.views;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.Period;
+import java.time.ZoneId;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
@@ -19,10 +22,12 @@ import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -38,13 +43,13 @@ import org.swtchart.Range;
 
 import com.ibm.icu.text.MessageFormat;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -65,6 +70,8 @@ public class SecuritiesChart
 {
     private enum ChartDetails
     {
+        SHOW_MARKER_LINES(Messages.LabelChartDetailShowMarkerLines), //
+        SHOW_DATA_LABELS(Messages.LabelChartDetailShowDataLabel + SEPERATOR), //
         CLOSING(Messages.LabelChartDetailClosingIndicator), //
         PURCHASEPRICE(Messages.LabelChartDetailPurchaseIndicator + SEPERATOR), //
         INVESTMENT(Messages.LabelChartDetailInvestments), //
@@ -116,6 +123,8 @@ public class SecuritiesChart
     private LocalDate chartPeriod = LocalDate.now().minusYears(2);
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS);
 
+    private List<PaintListener> customPaintListeners = new ArrayList<>();
+
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
         this.client = client;
@@ -124,6 +133,9 @@ public class SecuritiesChart
         readChartConfig(client);
 
         chart = new TimelineChart(parent);
+
+        chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+
         chart.getTitle().setText("..."); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
@@ -137,6 +149,7 @@ public class SecuritiesChart
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
         chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailBollingerBands);
+
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
         ILegend legend = chart.getLegend();
@@ -173,13 +186,13 @@ public class SecuritiesChart
         });
     }
 
-    private void configureSeriesPainter(ILineSeries series, LocalDate[] dates, double[] values, Color color,
-                    int lineWidth, LineStyle lineStyle, boolean enableArea, boolean visibleInLegend)
+    private void configureSeriesPainter(ILineSeries series, Date[] dates, double[] values, Color color, int lineWidth,
+                    LineStyle lineStyle, boolean enableArea, boolean visibleInLegend)
     {
         if (lineWidth != 0)
             series.setLineWidth(lineWidth);
         series.setLineStyle(lineStyle);
-        series.setXDateSeries(TimelineChart.toJavaUtilDate(dates));
+        series.setXDateSeries(dates);
         series.enableArea(enableArea);
         series.setYSeries(values);
         series.setAntialias(SWT.ON);
@@ -315,6 +328,7 @@ public class SecuritiesChart
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.clearMarkerLines();
+            customPaintListeners.clear();
 
             if (security == null || security.getPrices().isEmpty())
             {
@@ -410,27 +424,30 @@ public class SecuritiesChart
                 }
             }
 
+            Date[] javaDates = TimelineChart.toJavaUtilDate(dates);
+
             if (showAreaRelativeToFirstQuote)
             {
+
                 ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator + "Negative"); //$NON-NLS-1$
                 lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndNegative.setYAxisId(1);
-                configureSeriesPainter(lineSeries2ndNegative, dates, valuesRelativeNegative, colorAreaNegative, 1,
+                configureSeriesPainter(lineSeries2ndNegative, javaDates, valuesRelativeNegative, colorAreaNegative, 1,
                                 LineStyle.SOLID, true, false);
 
                 ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                                 Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
                 lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndPositive.setYAxisId(1);
-                configureSeriesPainter(lineSeries2ndPositive, dates, valuesRelativePositive, colorAreaPositive, 1,
+                configureSeriesPainter(lineSeries2ndPositive, javaDates, valuesRelativePositive, colorAreaPositive, 1,
                                 LineStyle.SOLID, true, false);
             }
 
             ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
                             Messages.ColumnQuote);
             lineSeries.setSymbolType(PlotSymbolType.NONE);
-            configureSeriesPainter(lineSeries, dates, values, colorQuote, 2, LineStyle.SOLID,
+            configureSeriesPainter(lineSeries, javaDates, values, colorQuote, 2, LineStyle.SOLID,
                             !showAreaRelativeToFirstQuote, false);
 
             chart.adjustRange();
@@ -501,164 +518,183 @@ public class SecuritiesChart
 
     private void addInvestmentMarkerLines()
     {
-        List<LocalDate> mapDatesBuyTemp = new ArrayList<>();
-        List<LocalDate> mapDatesSellTemp = new ArrayList<>();
-        List<Double> mapPriceBuyTemp = new ArrayList<>();
-        List<Double> mapPriceSellTemp = new ArrayList<>();
-        for (Portfolio portfolio : client.getPortfolios())
+        List<PortfolioTransaction> purchase = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(t -> t.getSecurity() == security)
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
+                                        || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+
+        addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase);
+
+        List<PortfolioTransaction> sales = client.getPortfolios().stream().flatMap(p -> p.getTransactions().stream())
+                        .filter(t -> t.getSecurity() == security)
+                        .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
+                                        || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
+
+        addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale);
+    }
+
+    private void addInvestmentMarkers(List<PortfolioTransaction> transactions, String seriesLabel, Color color)
+    {
+        if (transactions.isEmpty())
+            return;
+
+        if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            for (PortfolioTransaction t : portfolio.getTransactions())
+            transactions.forEach(t -> {
+                String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
+                double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
+                                / Values.Quote.divider();
+                chart.addMarkerLine(t.getDate(), color, label, value);
+            });
+        }
+        else
+        {
+            Date[] dates = transactions.stream().map(PortfolioTransaction::getDate)
+                            .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                            .collect(Collectors.toList()).toArray(new Date[0]);
+
+            double[] values = transactions.stream().mapToDouble(
+                            t -> t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
+                                            / Values.Quote.divider())
+                            .toArray();
+
+            ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel + "2"); //$NON-NLS-1$
+            border.setYAxisId(0);
+            border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            border.setSymbolType(PlotSymbolType.DIAMOND);
+            border.setSymbolSize(7);
+
+            configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
+
+            ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            seriesLabel + "1"); //$NON-NLS-1$
+            background.setYAxisId(0);
+            background.setSymbolType(PlotSymbolType.DIAMOND);
+            background.setSymbolSize(6);
+            background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
+
+            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, seriesLabel);
+            inner.setYAxisId(0);
+            inner.setSymbolType(PlotSymbolType.DIAMOND);
+            inner.setSymbolSize(4);
+            inner.setSymbolColor(color);
+            configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
+
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
             {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
-                {
-                    if ((t.getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_IN) && (t
-                                    .getType() != name.abuchen.portfolio.model.PortfolioTransaction.Type.TRANSFER_OUT))
+                customPaintListeners.add(event -> {
+                    IAxis xAxis = chart.getAxisSet().getXAxis(0);
+                    IAxis yAxis = chart.getAxisSet().getYAxis(0);
+
+                    for (int index = 0; index < dates.length; index++)
                     {
-                        if (t.getType().isPurchase())
-                        {
-                            mapDatesBuyTemp.add(t.getDate());
-                            mapPriceBuyTemp.add(
-                                            t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
-                                                            .getAmount() / Values.Quote.divider());
-                        }
-                        else
-                        {
-                            mapDatesSellTemp.add(t.getDate());
-                            mapPriceSellTemp.add(
-                                            t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode()))
-                                                            .getAmount() / Values.Quote.divider());
-                        }
+                        int x = xAxis.getPixelCoordinate(dates[index].getTime());
+                        int y = yAxis.getPixelCoordinate(values[index]);
+
+                        PortfolioTransaction t = transactions.get(index);
+                        String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
+                        Point textExtent = event.gc.textExtent(label);
+
+                        event.gc.setForeground(Colors.BLACK);
+                        event.gc.drawText(label, x - (textExtent.x / 2), y + 10, true);
                     }
-                }
+                });
             }
-        }
-
-        if (!mapDatesBuyTemp.isEmpty())
-        {
-            LocalDate[] mapDatesBuy;
-            mapDatesBuy = new LocalDate[mapDatesBuyTemp.size()];
-            mapDatesBuy = mapDatesBuyTemp.toArray(mapDatesBuy);
-            double[] mapPriceBuy = ArrayUtils.toPrimitive(mapPriceBuyTemp.toArray(new Double[mapPriceBuyTemp.size()]));
-
-            ILineSeries lineSeriesBuyBorder = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
-            lineSeriesBuyBorder.setYAxisId(0);
-            lineSeriesBuyBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            lineSeriesBuyBorder.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesBuyBorder.setSymbolSize(7);
-            configureSeriesPainter(lineSeriesBuyBorder, mapDatesBuy, mapPriceBuy, null, 0, LineStyle.NONE, false,
-                            false);
-
-            ILineSeries lineSeriesBuyBackground = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
-            lineSeriesBuyBackground.setYAxisId(0);
-            lineSeriesBuyBackground.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesBuyBackground.setSymbolSize(6);
-            lineSeriesBuyBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            configureSeriesPainter(lineSeriesBuyBackground, mapDatesBuy, mapPriceBuy, null, 0, LineStyle.NONE, false,
-                            false);
-
-            ILineSeries lineSeriesBuy = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuBuy);
-            lineSeriesBuy.setYAxisId(0);
-            lineSeriesBuy.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesBuy.setSymbolSize(4);
-            lineSeriesBuy.setSymbolColor(colorEventPurchase);
-            configureSeriesPainter(lineSeriesBuy, mapDatesBuy, mapPriceBuy, null, 0, LineStyle.NONE, false, true);
-        }
-
-        if (!mapDatesSellTemp.isEmpty())
-        {
-            LocalDate[] mapDatesSell;
-            mapDatesSell = new LocalDate[mapDatesSellTemp.size()];
-            mapDatesSell = mapDatesSellTemp.toArray(mapDatesSell);
-            double[] mapPriceSell = ArrayUtils
-                            .toPrimitive(mapPriceSellTemp.toArray(new Double[mapPriceSellTemp.size()]));
-
-            ILineSeries lineSeriesSellBorder = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
-            lineSeriesSellBorder.setYAxisId(0);
-            lineSeriesSellBorder.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesSellBorder.setSymbolSize(7);
-            lineSeriesSellBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            configureSeriesPainter(lineSeriesSellBorder, mapDatesSell, mapPriceSell, null, 0, LineStyle.NONE, false,
-                            false);
-
-            ILineSeries lineSeriesSellBackground = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
-            lineSeriesSellBackground.setYAxisId(0);
-            lineSeriesSellBackground.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesSellBackground.setSymbolSize(6);
-            lineSeriesSellBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            configureSeriesPainter(lineSeriesSellBackground, mapDatesSell, mapPriceSell, null, 0, LineStyle.NONE, false,
-                            false);
-
-            ILineSeries lineSeriesSell = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.SecurityMenuSell);
-            lineSeriesSell.setYAxisId(0);
-            lineSeriesSell.setSymbolType(PlotSymbolType.DIAMOND);
-            lineSeriesSell.setSymbolSize(4);
-            lineSeriesSell.setSymbolColor(colorEventSale);
-            configureSeriesPainter(lineSeriesSell, mapDatesSell, mapPriceSell, null, 0, LineStyle.NONE, false, true);
         }
     }
 
     private void addDividendMarkerLines()
     {
-        IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
-        Double yAxis1stAxisPrice = yAxis1st.getRange().lower;
+        List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                        .filter(t -> t.getSecurity() == security)
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .sorted(new Transaction.ByDate()).collect(Collectors.toList());
 
-        List<LocalDate> dividendDate = new ArrayList<>();
-        List<Double> dividendAxisValue = new ArrayList<>();
-        for (Account account : this.client.getAccounts())
+        if (dividends.isEmpty())
+            return;
+
+        if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            for (AccountTransaction t : account.getTransactions())
+            dividends.forEach(t -> chart.addMarkerLine(t.getDate(), colorEventDividend, getDividendLabel(t)));
+        }
+        else
+        {
+            Date[] dates = dividends.stream().map(AccountTransaction::getDate)
+                            .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+                            .collect(Collectors.toList()).toArray(new Date[0]);
+
+            IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
+            double yAxis1stAxisPrice = yAxis1st.getRange().lower;
+
+            double[] values = new double[dates.length];
+            Arrays.fill(values, yAxis1stAxisPrice);
+
+            ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
+            border.setYAxisId(0);
+            border.setSymbolType(PlotSymbolType.SQUARE);
+            border.setSymbolSize(6);
+            border.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
+
+            ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
+            background.setYAxisId(0);
+            background.setSymbolType(PlotSymbolType.SQUARE);
+            background.setSymbolSize(5);
+            background.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
+
+            ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
+                            Messages.LabelChartDetailDividends);
+            inner.setYAxisId(0);
+            inner.setSymbolType(PlotSymbolType.SQUARE);
+            inner.setSymbolSize(3);
+            inner.setSymbolColor(colorEventDividend);
+            configureSeriesPainter(inner, dates, values, null, 0, LineStyle.NONE, false, true);
+
+            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
             {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.isBefore(t.getDate())))
-                {
-                    if (t.getType() == AccountTransaction.Type.DIVIDENDS)
+                customPaintListeners.add(event -> {
+                    IAxis xAxis = chart.getAxisSet().getXAxis(0);
+                    IAxis yAxis = chart.getAxisSet().getYAxis(0);
+
+                    for (int index = 0; index < dates.length; index++)
                     {
-                        dividendDate.add(t.getDate());
-                        dividendAxisValue.add(yAxis1stAxisPrice);
+                        int x = xAxis.getPixelCoordinate(dates[index].getTime());
+                        int y = yAxis.getPixelCoordinate(values[index]);
+
+                        String label = getDividendLabel(dividends.get(index));
+                        Point textExtent = event.gc.textExtent(label);
+
+                        event.gc.setForeground(Colors.BLACK);
+                        event.gc.drawText(label, x - (textExtent.x / 2), y - 22, true);
                     }
-                }
+                });
             }
         }
+    }
 
-        if (!dividendDate.isEmpty())
+    private String getDividendLabel(AccountTransaction t)
+    {
+        if (t.getShares() == 0L)
         {
-            LocalDate[] dividendDateTemp;
-            dividendDateTemp = new LocalDate[dividendDate.size()];
-            dividendDateTemp = dividendDate.toArray(dividendDateTemp);
-            double[] dividendAxisValueTemp = ArrayUtils
-                            .toPrimitive(dividendAxisValue.toArray(new Double[dividendAxisValue.size()]));
+            return "\u2211 " + t.getGrossValue().toString(); //$NON-NLS-1$
+        }
+        else
+        {
+            Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
+            long gross = grossValue.isPresent() ? grossValue.get().getForex().getAmount() : t.getGrossValueAmount();
 
-            ILineSeries lineSeriesBorder = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
-            lineSeriesBorder.setYAxisId(0);
-            lineSeriesBorder.setSymbolType(PlotSymbolType.SQUARE);
-            lineSeriesBorder.setSymbolSize(6);
-            lineSeriesBorder.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            configureSeriesPainter(lineSeriesBorder, dividendDateTemp, dividendAxisValueTemp, null, 0, LineStyle.NONE,
-                            false, false);
+            long perShare = Math.round(gross * Values.Share.divider() * Values.Quote.factorToMoney() / t.getShares());
 
-            ILineSeries lineSeriesBackground = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
-            lineSeriesBackground.setYAxisId(0);
-            lineSeriesBackground.setSymbolType(PlotSymbolType.SQUARE);
-            lineSeriesBackground.setSymbolSize(5);
-            lineSeriesBackground.setSymbolColor(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-            configureSeriesPainter(lineSeriesBackground, dividendDateTemp, dividendAxisValueTemp, null, 0,
-                            LineStyle.NONE, false, false);
-
-            ILineSeries lineSeriesDividend = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends);
-            lineSeriesDividend.setYAxisId(0);
-            lineSeriesDividend.setSymbolType(PlotSymbolType.SQUARE);
-            lineSeriesDividend.setSymbolSize(3);
-            lineSeriesDividend.setSymbolColor(colorEventDividend);
-            configureSeriesPainter(lineSeriesDividend, dividendDateTemp, dividendAxisValueTemp, null, 0, LineStyle.NONE,
-                            false, true);
+            return Values.Quote.format(perShare);
         }
     }
 
@@ -806,7 +842,7 @@ public class SecuritiesChart
         series.setYAxisId(0);
         series.enableStep(true);
 
-        configureSeriesPainter(series, dates.toArray(new LocalDate[0]),
+        configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
                         ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
                         LineStyle.SOLID, false, seriesCounter == 0);
     }

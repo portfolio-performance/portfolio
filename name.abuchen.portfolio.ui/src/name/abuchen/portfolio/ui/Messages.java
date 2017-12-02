@@ -348,6 +348,8 @@ public class Messages extends NLS
     public static String LabelAvailableAttributes;
     public static String LabelChartDetailCompactView;
     public static String LabelChartDetailDividends;
+    public static String LabelChartDetailShowDataLabel;
+    public static String LabelChartDetailShowMarkerLines;
     public static String LabelChartDetailSMA50;
     public static String LabelChartDetailSMA200;
     public static String LabelChartDetailEvents;
