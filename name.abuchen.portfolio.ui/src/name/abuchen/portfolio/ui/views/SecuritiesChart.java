@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.DecimalFormat;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAmount;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,6 +34,7 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.swtchart.IAxis;
 import org.swtchart.ILegend;
@@ -62,6 +66,8 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.util.Interval;
 
 /**
  * Chart of historical quotes for a given security
@@ -113,6 +119,8 @@ public class SecuritiesChart
     private static final String SEPERATOR = "---"; //$NON-NLS-1$
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
+    private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
+
     private Menu contextMenu;
 
     private Client client;
@@ -124,6 +132,7 @@ public class SecuritiesChart
     private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
+    private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -133,22 +142,11 @@ public class SecuritiesChart
         readChartConfig(client);
 
         chart = new TimelineChart(parent);
+        chart.getTitle().setText("..."); //$NON-NLS-1$
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
 
-        chart.getTitle().setText("..."); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat(Values.Quote.pattern()));
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Negative"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Zero"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends);
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
-        chart.getToolTip().addSeriesExclude(Messages.LabelChartDetailBollingerBands);
+        setupTooltip();
 
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
 
@@ -184,6 +182,81 @@ public class SecuritiesChart
                 updateChart();
             }
         });
+    }
+
+    private void setupTooltip()
+    {
+        TimelineChartToolTip toolTip = chart.getToolTip();
+
+        toolTip.setValueFormat(new DecimalFormat(Values.Quote.pattern()));
+        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Negative"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Zero"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.SecurityMenuBuy);
+        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.SecurityMenuSell);
+        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends);
+        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailBollingerBands);
+
+        toolTip.addExtraInfo((composite, focus) -> {
+            if (focus instanceof Date)
+            {
+                Instant instant = ((Date) focus).toInstant();
+                ZonedDateTime zdt = instant.atZone(ZoneId.systemDefault());
+                LocalDate date = zdt.toLocalDate();
+
+                Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
+
+                customTooltipEvents.stream() //
+                                .filter(t -> displayInterval.contains(t.getDate())) //
+                                .forEach(t -> {
+                                    if (t instanceof AccountTransaction)
+                                        addDividendTooltip(composite, (AccountTransaction) t);
+                                    else if (t instanceof PortfolioTransaction)
+                                        addInvestmentTooltip(composite, (PortfolioTransaction) t);
+                                });
+            }
+        });
+    }
+
+    private void addInvestmentTooltip(Composite composite, PortfolioTransaction t)
+    {
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
+                        dateTimeFormatter.format(t.getDate()), t.getMonetaryAmount().toString()));
+
+        label = new Label(composite, SWT.NONE);
+        label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
+                        Values.Quote.format(
+                                        t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())))));
+    }
+
+    private void addDividendTooltip(Composite composite, AccountTransaction t)
+    {
+        Label label = new Label(composite, SWT.NONE);
+        label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
+                        dateTimeFormatter.format(t.getDate()), t.getMonetaryAmount().toString()));
+
+        if (t.getShares() == 0L)
+        {
+            label = new Label(composite, SWT.NONE);
+            label.setText("\u2211 " + t.getGrossValue().toString()); //$NON-NLS-1$
+        }
+        else
+        {
+            Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
+            long gross = grossValue.isPresent() ? grossValue.get().getForex().getAmount() : t.getGrossValueAmount();
+
+            label = new Label(composite, SWT.NONE);
+            label.setText(MessageFormat.format(Messages.LabelToolTipDividendDetails, Values.Share.format(t.getShares()),
+                            Values.Quote.format(Math.round(gross * Values.Share.divider() * Values.Quote.factorToMoney()
+                                            / t.getShares()))));
+        }
     }
 
     private void configureSeriesPainter(ILineSeries series, Date[] dates, double[] values, Color color, int lineWidth,
@@ -329,6 +402,7 @@ public class SecuritiesChart
 
             chart.clearMarkerLines();
             customPaintListeners.clear();
+            customTooltipEvents.clear();
 
             if (security == null || security.getPrices().isEmpty())
             {
@@ -542,6 +616,8 @@ public class SecuritiesChart
         if (transactions.isEmpty())
             return;
 
+        customTooltipEvents.addAll(transactions);
+
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
             transactions.forEach(t -> {
@@ -618,6 +694,8 @@ public class SecuritiesChart
 
         if (dividends.isEmpty())
             return;
+
+        customTooltipEvents.addAll(dividends);
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
