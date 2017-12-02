@@ -103,11 +103,15 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e");
-        this.addDocumentTyp(type);
+        DocumentType dividende = new DocumentType("Abrechnung Dividendengutschrift");
+        this.addDocumentTyp(dividende);
+        
+        DocumentType ertrag = new DocumentType("Abrechnung Ertragsgutschrift");
+        this.addDocumentTyp(ertrag);
 
-        Block block = new Block(".*G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e *");
-        type.addBlock(block);
+        Block block = new Block(".*G *u *t *s *c *h *r *i *f *t *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *- *E *r *t *r *ä *g *e *");
+        dividende.addBlock(block);
+        ertrag.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
