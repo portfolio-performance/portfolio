@@ -13,7 +13,7 @@ public class PreferencesInitializer extends AbstractPreferenceInitializer
     {
         IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
         store.setDefault(UIConstants.Preferences.AUTO_UPDATE, true);
-        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "http://updates.abuchen.name/portfolio"); //$NON-NLS-1$
+        store.setDefault(UIConstants.Preferences.UPDATE_SITE, "https://updates.portfolio-performance.info/portfolio"); //$NON-NLS-1$
         store.setDefault(UIConstants.Preferences.USE_INDIRECT_QUOTATION, true);
         store.setDefault(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true);
         store.setDefault(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true);
