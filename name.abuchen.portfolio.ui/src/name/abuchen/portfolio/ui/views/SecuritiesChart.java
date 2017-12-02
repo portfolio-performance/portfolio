@@ -102,16 +102,16 @@ public class SecuritiesChart
         }
     }
 
-    private Color colorQuote = Colors.getColor(97, 124, 232);
+    private Color colorQuote = Colors.getColor(52, 70, 235);
 
-    private Color colorEventPurchase = Colors.getColor(123, 230, 97);
-    private Color colorEventSale = Colors.getColor(232, 97, 124);
-    private Color colorEventDividend = Colors.getColor(217, 121, 226);
+    private Color colorEventPurchase = Colors.getColor(26, 173, 33);
+    private Color colorEventSale = Colors.getColor(232, 51, 69);
+    private Color colorEventDividend = Colors.getColor(128, 0, 128);
 
     private Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
-    private Color colorBollingerBands = Colors.getColor(226, 179, 121);
-    private Color colorSMA50 = Colors.getColor(192, 232, 97);
-    private Color colorSMA200 = Colors.getColor(232, 138, 97);
+    private Color colorBollingerBands = Colors.getColor(201, 141, 68);
+    private Color colorSMA50 = Colors.getColor(102, 171, 29);
+    private Color colorSMA200 = Colors.getColor(96, 104, 110);
 
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
