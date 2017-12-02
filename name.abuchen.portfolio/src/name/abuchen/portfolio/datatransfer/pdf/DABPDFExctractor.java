@@ -35,6 +35,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         return "Computershare Communication Services GmbH"; //$NON-NLS-1$
     }
 
+    @Override
+    public String getLabel()
+    {
+        return "DAB Bank"; //$NON-NLS-1$
+    }
+
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
@@ -120,15 +126,15 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block("^Verkauf .*$");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+        block.set(pdfTransaction);
 
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.SELL);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency") //
+        pdfTransaction.section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
                         .match("STK [\\d.]+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
@@ -178,37 +184,14 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign(this::addSellTaxUnit)
-
-                        .section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
-                        .assign(this::addSellTaxUnit)
-
-                        .section("tax", "currency", "label").optional()
-                        .match("^(?<label>.*)Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$") //
-                        .assign(this::addSellTaxUnit)
-
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getAmount() == 0L)
                                 throw new IllegalArgumentException("No amount found");
 
                             return new BuySellEntryItem(t);
-                        }));
-    }
+                        });
 
-    @SuppressWarnings("nls")
-    private void addSellTaxUnit(BuySellEntry t, Map<String, String> v)
-    {
-        if (v.get("label").contains("im laufenden Jahr einbehaltene"))
-            return;
-
-        String currency = asCurrencyCode(v.get("currency"));
-
-        // FIXME forex fees must update gross value
-        if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
-            t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
+        addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -219,15 +202,15 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
         Block block = new Block("^Dividendengutschrift .*$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+        block.set(pdfTransaction);
 
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
-                        })
-
-                        .section("isin", "name", "currency") //
+        pdfTransaction.section("isin", "name", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$") //
                         .match("STK ([\\d.]+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
@@ -291,7 +274,9 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
                             return new TransactionItem(t);
-                        }));
+                        });
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
     @SuppressWarnings("nls")
@@ -299,30 +284,27 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType("Erträgnisgutschrift");
         this.addDocumentTyp(type);
-                
-        //Block zweimal vorhanden, finde direkt 2. Block
+
+        // Block zweimal vorhanden, finde direkt 2. Block
         Block block = new Block("^Erträgnisgutschrift (?!aus).*$");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
-                        .subject(() -> {
-                            AccountTransaction entry = new AccountTransaction();
-                            entry.setType(AccountTransaction.Type.DIVIDENDS);
-                            return entry;
-                        })
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction entry = new AccountTransaction();
+            entry.setType(AccountTransaction.Type.DIVIDENDS);
+            return entry;
+        });
+        block.set(pdfTransaction);
 
-                        .section("name", "isin")
-                        .find("Gattungsbezeichnung ISIN")
-                        .match("^(?<name>.*) (?<isin>[^ ]*)$") //
+        pdfTransaction.section("name", "isin").find("Gattungsbezeichnung ISIN").match("^(?<name>.*) (?<isin>[^ ]*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares")
-                        .find("Nominal Ex-Tag Zahltag .*")
+                        .section("shares").find("Nominal Ex-Tag Zahltag .*")
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        //No exchange rate
-                        .section("date", "amount", "currency")
-                        .optional() //
+                        // No exchange rate
+                        .section("date", "amount", "currency").optional() //
                         .find("Wert\\s*Konto-Nr.\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*) (?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
@@ -331,7 +313,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        //With exchange rate
+                        // With exchange rate
                         .section("date", "amount", "currency") //
                         .optional() //
                         .find("Wert\\s*Konto-Nr.\\s*Devisenkurs\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
@@ -341,18 +323,57 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
+
                         .wrap(t -> {
                             if (t.getAmount() == 0)
                                 throw new IllegalArgumentException("No dividend amount found.");
                             return new TransactionItem(t);
-                        }));
+                        });
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
-    @Override
-    public String getLabel()
+    @SuppressWarnings("nls")
+    private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
     {
-        return "DAB Bank"; //$NON-NLS-1$
+        pdfTransaction.section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> addTax(documentType, t, v))
+
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Solidaritätszuschlag (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> addTax(documentType, t, v))
+
+                        .section("tax", "currency", "label").optional()
+                        .match("^(?<label>.*)Kirchensteuer (?<currency>\\w{3}+) (?<tax>[\\d.]+,\\d+)-?$")
+                        .assign((t, v) -> addTax(documentType, t, v));
     }
 
+    @SuppressWarnings("nls")
+    private void addTax(DocumentType documentType, Object t, Map<String, String> v)
+    {
+        if (v.get("label").contains("im laufenden Jahr einbehaltene"))
+            return;
+
+        name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+
+        String currency = asCurrencyCode(v.get("currency"));
+        long amount = asAmount(v.get("tax"));
+
+        // FIXME forex fees must update gross value
+        if (currency.equals(tx.getCurrencyCode()))
+            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
+    }
+
+    private name.abuchen.portfolio.model.Transaction getTransaction(Object t)
+    {
+        if (t instanceof name.abuchen.portfolio.model.Transaction)
+        {
+            return ((name.abuchen.portfolio.model.Transaction) t);
+        }
+        else
+        {
+            return ((name.abuchen.portfolio.model.BuySellEntry) t).getPortfolioTransaction();
+        }
+    }
 }

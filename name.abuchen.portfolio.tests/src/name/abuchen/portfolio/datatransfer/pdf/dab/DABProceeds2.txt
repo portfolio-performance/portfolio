@@ -38,9 +38,9 @@ zu versteuern EUR 7,68
 einbehaltene Kapitalertragsteuer EUR 1,88
 einbehaltener Solidaritätszuschlag EUR 0,10
 einbehaltene Kirchensteuer EUR 0,15
-im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 5,21
-im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,28
-im laufenden Jahr einbehaltene Kirchensteuer EUR 0,41
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 55,55
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 55,55
+im laufenden Jahr einbehaltene Kirchensteuer EUR 5,55
 Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
 Finanzamt Frankfurt/M. V-Höchst, Steuernummer xxxxx.
 Steuerlicher Stichtag 07.02.2017
