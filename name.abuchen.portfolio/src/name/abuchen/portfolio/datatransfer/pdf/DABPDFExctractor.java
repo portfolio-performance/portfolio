@@ -41,6 +41,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         return "DAB Bank"; //$NON-NLS-1$
     }
 
+    @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
         DocumentType type = new DocumentType("Kauf");
@@ -117,6 +118,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         }));
     }
 
+    @SuppressWarnings("nls")
     private void addSellTransaction()
     {
         DocumentType type = new DocumentType("Verkauf");
@@ -177,7 +179,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                             String currency = asCurrencyCode(v.get("currency"));
                             if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
                             {
-                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                                t.getPortfolioTransaction().addUnit(
+                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
                             }
                         })
 
@@ -191,6 +194,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
+    @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
         DocumentType type = new DocumentType("Dividende");
@@ -275,6 +279,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
+    @SuppressWarnings("nls")
     private void addProceedsTransaction()
     {
         DocumentType type = new DocumentType("Erträgnisgutschrift");
@@ -328,6 +333,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         addTaxesSectionsTransaction(type, pdfTransaction);
     }
 
+    @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
     {
         pdfTransaction.section("tax", "currency", "label").optional()
@@ -343,6 +349,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .assign((t, v) -> addTax(documentType, t, v));
     }
 
+    @SuppressWarnings("nls")
     private void addTax(DocumentType documentType, Object t, Map<String, String> v)
     {
         if (v.get("label").contains("im laufenden Jahr einbehaltene"))

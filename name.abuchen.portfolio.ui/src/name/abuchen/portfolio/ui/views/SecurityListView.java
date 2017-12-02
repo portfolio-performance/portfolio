@@ -443,7 +443,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     protected void createBottomTable(Composite parent)
     {
         Composite sash = new Composite(parent, SWT.NONE);
-        
+
         sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
@@ -663,7 +663,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -761,9 +761,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         support.addColumn(column);
-        
-        
-        column = new Column(Messages.ColumnFees, SWT.RIGHT, 40);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnFees_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -774,9 +773,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
             }
         });
-        support.addColumn(column);        
+        support.addColumn(column);
 
-        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 40);
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
         column.setDescription(Messages.ColumnTaxes_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -787,7 +786,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
-        support.addColumn(column);        
+        support.addColumn(column);
 
         column = new Column(Messages.ColumnPortfolio, SWT.NONE, 120);
         column.setLabelProvider(new ColumnLabelProvider()
