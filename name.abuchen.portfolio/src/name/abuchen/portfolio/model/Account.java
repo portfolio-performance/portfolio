@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -106,6 +107,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
+        client.getPlans().stream().forEach(plan -> plan.removeTransaction(transaction));
     }
 
     public long getCurrentAmount()
