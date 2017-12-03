@@ -301,7 +301,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // add empty security only if it has not been added previously
         // --> happens when editing an existing transaction
         if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
+        {
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
+            
+            if (model().getSecurity() == null)
+                model().setSecurity(AccountTransactionModel.EMPTY_SECURITY);
+        }
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
