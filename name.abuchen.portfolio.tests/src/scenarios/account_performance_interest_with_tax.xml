@@ -1,0 +1,42 @@
+<client>
+  <version>25</version>
+  <securities>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>7c6d057f-30d6-4830-95f1-18de9c0fe494</uuid>
+      <name>Account A</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2014-01-02</date>
+          <shares>0</shares>
+          <type>DEPOSIT</type>
+          <amount>2000000</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2014-06-01</date>
+          <shares>0</shares>
+          <type>INTEREST</type>
+          <amount>60000</amount>
+        </account-transaction>
+        <account-transaction>
+          <date>2014-11-01</date>
+          <shares>0</shares>
+          <type>INTEREST</type>
+          <amount>70000</amount>
+          <units>
+          	<unit type='TAX'>
+          		<amount currency='EUR' amount='30000'></amount></unit></units></account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <properties/>
+</client>

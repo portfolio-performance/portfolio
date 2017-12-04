@@ -272,7 +272,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
