@@ -19,9 +19,17 @@ import name.abuchen.portfolio.util.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
+    boolean normalize = false;
+
     /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         super(client, converter, reportInterval);
+    }
+
+    /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval, boolean normalize)
+    {
+        super(client, converter, reportInterval);
+        this.normalize = normalize;
     }
 
     /* package */void calculate(List<Exception> warnings)
@@ -49,6 +57,7 @@ import name.abuchen.portfolio.util.Interval;
         totals = new long[size];
         delta = new double[size];
         accumulated = new double[size];
+        accumulatedNormalized = new double[size];
         inboundTransferals = new long[size];
         outboundTransferals = new long[size];
         taxes = new long[size];
@@ -62,11 +71,13 @@ import name.abuchen.portfolio.util.Interval;
         dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
+        accumulatedNormalized[0] = 0;
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
         long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
 
         // calculate series
         int index = 1;
+        int invested = 0;
         LocalDate date = interval.getStart().plusDays(1);
         while (date.compareTo(interval.getEnd()) <= 0)
         {
@@ -74,6 +85,8 @@ import name.abuchen.portfolio.util.Interval;
 
             snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
             long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
+            if (thisValuation != 0)
+                invested++;
 
             if (valuation + inboundTransferals[index] == 0)
             {
@@ -89,16 +102,22 @@ import name.abuchen.portfolio.util.Interval;
             }
             else
             {
-                delta[index] = (double) (thisValuation + outboundTransferals[index])
-                                / (double) (valuation + inboundTransferals[index]) - 1;
+                delta[index] = ((double) (thisValuation + outboundTransferals[index]) - (double) (valuation + inboundTransferals[index])) 
+                                / Math.abs((double) (valuation + inboundTransferals[index]));
             }
 
             accumulated[index] = ((accumulated[index - 1] + 1) * (delta[index] + 1)) - 1;
+            if (invested > 0)
+                accumulatedNormalized[index] = (double) ((accumulated[index] / invested) * 365);
+            else
+                accumulatedNormalized[index] = 0;
 
             date = date.plusDays(1);
             valuation = thisValuation;
             index++;
         }
+        if (normalize)
+            accumulated = accumulatedNormalized;
     }
 
     protected void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)

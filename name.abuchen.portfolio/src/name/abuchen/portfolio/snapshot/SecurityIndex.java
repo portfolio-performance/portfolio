@@ -19,7 +19,7 @@ import name.abuchen.portfolio.util.Interval;
         super(client, converter, reportInterval);
     }
 
-    /* package */void calculate(PerformanceIndex clientIndex, Security security)
+    /* package */void calculate(PerformanceIndex clientIndex, Security security, boolean isNormalized)
     {
         List<SecurityPrice> prices = security.getPrices();
         if (prices.isEmpty())

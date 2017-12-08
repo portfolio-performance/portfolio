@@ -75,6 +75,8 @@ public final class DataSeries
 
     private RGB color;
 
+    private boolean isNormalized = false;
+
     private boolean showArea;
     private LineStyle lineStyle = LineStyle.SOLID;
 
@@ -84,6 +86,17 @@ public final class DataSeries
         this.instance = instance;
         this.label = label;
         this.color = color;
+    }
+
+    /* package */ DataSeries(Type type, Object instance, String label, RGB color, boolean isNormalized)
+    {
+        this.type = type;
+        this.instance = instance;
+        this.label = label;
+        this.color = color;
+        this.isNormalized = isNormalized;
+        if (isNormalized)
+            this.lineStyle = LineStyle.DOT;
     }
 
     public Type getType()
@@ -132,6 +145,11 @@ public final class DataSeries
     public RGB getColor()
     {
         return color;
+    }
+
+    public boolean isNormalized()
+    {
+        return isNormalized;
     }
 
     public boolean isLineChart()
@@ -197,7 +215,10 @@ public final class DataSeries
 
     public String getUUID()
     {
-        return this.type.buildUUID(instance);
+        String prefix = "";
+        if (isNormalized)
+            prefix = "[n]";
+        return prefix + this.type.buildUUID(instance);
     }
 
     @Override
