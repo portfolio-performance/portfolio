@@ -5,7 +5,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -193,7 +193,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         });
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> model().getDate().isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$

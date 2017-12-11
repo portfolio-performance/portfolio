@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -51,7 +51,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             Consumer<ClientFilter> listener = filter -> {
                 Client filteredClient = filter.filter(getClient());
                 ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
-                                LocalDate.now());
+                                LocalDateTime.now());
                 model.setClientSnapshot(filteredClient, snapshot);
                 model.fireTaxonomyModelChange(model.getVirtualRootNode());
             };
@@ -253,7 +253,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void notifyModelUpdated()
     {
         Client filteredClient = this.clientFilter.filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
+        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDateTime.now());
         model.setClientSnapshot(filteredClient, snapshot);
         model.fireTaxonomyModelChange(model.getVirtualRootNode());
     }

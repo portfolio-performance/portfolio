@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -98,7 +98,7 @@ public final class TaxonomyModel
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.filteredClient = client;
-        this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+        this.snapshot = ClientSnapshot.create(client, converter, LocalDateTime.now());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
                         Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());

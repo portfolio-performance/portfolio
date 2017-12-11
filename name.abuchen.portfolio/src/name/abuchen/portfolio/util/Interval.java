@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -40,6 +41,12 @@ public final class Interval
     public boolean contains(LocalDate other)
     {
         return other.isAfter(start) && !other.isAfter(end);
+    }
+    
+    public boolean contains(LocalDateTime other)
+    {
+        LocalDate otherDate = other.toLocalDate();
+        return otherDate.isAfter(start) && !otherDate.isAfter(end);
     }
 
     public long getDays()

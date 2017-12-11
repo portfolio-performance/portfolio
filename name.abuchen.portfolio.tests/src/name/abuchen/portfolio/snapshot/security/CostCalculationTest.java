@@ -2,6 +2,11 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.time.LocalDateTime;
+
+import org.junit.Test;
+
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
@@ -11,8 +16,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class CostCalculationTest
@@ -26,10 +29,10 @@ public class CostCalculationTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .buy(security, "2010-01-01", 109 * Values.Share.factor(), 314920) //
-                        .sell(security, "2010-02-01", 15 * Values.Share.factor(), 53150) //
-                        .buy(security, "2010-03-01", 52 * Values.Share.factor(), 168492) //
-                        .buy(security, "2010-03-01", 32 * Values.Share.factor(), 95930) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 109 * Values.Share.factor(), 314920) //
+                        .sell(security, LocalDateTime.of(2010, 02, 01, 0, 0), 15 * Values.Share.factor(), 53150) //
+                        .buy(security, LocalDateTime.of(2010, 03, 01, 0, 0), 52 * Values.Share.factor(), 168492) //
+                        .buy(security, LocalDateTime.of(2010, 03, 01, 0, 0), 32 * Values.Share.factor(), 95930) //
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();
@@ -51,10 +54,10 @@ public class CostCalculationTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .buy(security, "2010-01-01", 10 * Values.Share.factor(), 1) //
-                        .sell(security, "2010-02-01", 3 * Values.Share.factor(), 1) //
-                        .sell(security, "2010-03-01", 3 * Values.Share.factor(), 1) //
-                        .sell(security, "2010-03-01", 4 * Values.Share.factor(), 1) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 10 * Values.Share.factor(), 1) //
+                        .sell(security, LocalDateTime.of(2010, 02, 01, 0, 0), 3 * Values.Share.factor(), 1) //
+                        .sell(security, LocalDateTime.of(2010, 03, 01, 0, 0), 3 * Values.Share.factor(), 1) //
+                        .sell(security, LocalDateTime.of(2010, 03, 01, 0, 0), 4 * Values.Share.factor(), 1) //
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();
@@ -73,10 +76,10 @@ public class CostCalculationTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .buy(security, "2010-01-01", 100 * Values.Share.factor(), 314920) //
-                        .sell(security, "2010-02-01", 100 * Values.Share.factor(), 53150) //
-                        .buy(security, "2010-03-01", 50 * Values.Share.factor(), 168492) //
-                        .sell(security, "2010-04-01", 50 * Values.Share.factor(), 53150) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100 * Values.Share.factor(), 314920) //
+                        .sell(security, LocalDateTime.of(2010, 02, 01, 0, 0), 100 * Values.Share.factor(), 53150) //
+                        .buy(security, LocalDateTime.of(2010, 03, 01, 0, 0), 50 * Values.Share.factor(), 168492) //
+                        .sell(security, LocalDateTime.of(2010, 04, 01, 0, 0), 50 * Values.Share.factor(), 53150) //
                         .addTo(client);
 
         CostCalculation cost = new CostCalculation();

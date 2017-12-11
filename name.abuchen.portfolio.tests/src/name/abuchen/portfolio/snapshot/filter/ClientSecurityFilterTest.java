@@ -6,6 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,17 +48,17 @@ public class ClientSecurityFilterTest
                         .addTo(client);
 
         accountEUR = new AccountBuilder(CurrencyUnit.EUR) //
-                        .dividend("2017-01-01", Values.Amount.factorize(20), securityEUR) //
+                        .dividend(LocalDateTime.of(2017, 01, 01, 0, 0), Values.Amount.factorize(20), securityEUR) //
                         .addTo(client);
 
         accountUSD = new AccountBuilder(CurrencyUnit.USD) //
-                        .dividend("2017-01-01", Values.Amount.factorize(20), securityUSD) //
+                        .dividend(LocalDateTime.of(2017, 01, 01, 0, 0), Values.Amount.factorize(20), securityUSD) //
                         .addTo(client);
 
         new PortfolioBuilder(accountEUR) //
-                        .inbound_delivery(securityEUR, "2016-06-01", Values.Share.factorize(20),
+                        .inbound_delivery(securityEUR, LocalDateTime.of(2016, 06, 01, 0, 0), Values.Share.factorize(20),
                                         Values.Amount.factorize(2000)) //
-                        .inbound_delivery(securityUSD, "2016-06-01", Values.Share.factorize(20),
+                        .inbound_delivery(securityUSD, LocalDateTime.of(2016, 06, 01, 0, 0), Values.Share.factorize(20),
                                         Values.Amount.factorize(2000)) //
                         .addTo(client);
     }

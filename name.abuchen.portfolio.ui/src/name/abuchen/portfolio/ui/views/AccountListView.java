@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -384,7 +385,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public String getText(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
-                return Values.Date.format(t.getDate());
+                return Values.TransactionDate.format(t);
             }
 
             @Override
@@ -770,9 +771,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
             CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
             Collections.sort(tx, new Transaction.ByDate());
 
-            LocalDate now = LocalDate.now();
-            LocalDate start = tx.get(0).getDate();
-            LocalDate end = tx.get(tx.size() - 1).getDate();
+            LocalDateTime now = LocalDateTime.now();
+            LocalDateTime start = tx.get(0).getDateTime();
+            LocalDateTime end = tx.get(tx.size() - 1).getDateTime();
             if (now.isAfter(end))
                 end = now;
             if (now.isBefore(start))
@@ -783,14 +784,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
             LocalDate[] dates = new LocalDate[days];
             double[] values = new double[days];
 
-            dates[0] = start.minusDays(1);
+            dates[0] = start.minusDays(1).toLocalDate();
             values[0] = 0d;
 
             for (int ii = 1; ii < dates.length; ii++)
             {
                 values[ii] = AccountSnapshot.create(account, converter, start) //
                                 .getFunds().getAmount() / Values.Amount.divider();
-                dates[ii] = start;
+                dates[ii] = start.toLocalDate();
                 start = start.plusDays(1);
             }
 

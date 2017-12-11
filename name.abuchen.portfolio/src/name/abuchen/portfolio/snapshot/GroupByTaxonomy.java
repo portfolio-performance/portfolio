@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,11 +33,11 @@ public final class GroupByTaxonomy
 
     private final Taxonomy taxonomy;
     private final CurrencyConverter converter;
-    private final LocalDate date;
+    private final LocalDateTime date;
     private final Money valuation;
     private final List<AssetCategory> categories = new ArrayList<>();
 
-    private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, LocalDate date, Money valuation)
+    private GroupByTaxonomy(Taxonomy taxonomy, CurrencyConverter converter, LocalDateTime date, Money valuation)
     {
         this.taxonomy = taxonomy;
         this.converter = converter;
@@ -192,7 +192,7 @@ public final class GroupByTaxonomy
             categories.add(unassigned);
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDate()
     {
         return date;
     }

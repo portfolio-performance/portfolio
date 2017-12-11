@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,19 +40,19 @@ public class ClientIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_("2011-12-31", 10000 * Values.Amount.factor()) //
-                        .interest("2012-01-01", 230 * Values.Amount.factor()) //
-                        .deposit_("2012-01-02", 200 * Values.Amount.factor()) //
-                        .interest("2012-01-02", 200 * Values.Amount.factor()) //
-                        .withdraw("2012-01-03", 400 * Values.Amount.factor()) //
-                        .fees____("2012-01-03", 23441) //
-                        .interest("2012-01-04", 29399) //
-                        .interest("2012-01-05", 29399) //
-                        .deposit_("2012-01-06", 5400 * Values.Amount.factor()) //
-                        .interest("2012-01-06", 19599) //
-                        .withdraw("2012-01-07", 369704) //
-                        .fees____("2012-01-07", 88252) //
-                        .fees____("2012-01-08", 100385) //
+                        .deposit_(LocalDateTime.of(2011, 12, 31, 0, 0), 10000 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 1, 1, 0, 0), 230 * Values.Amount.factor()) //
+                        .deposit_(LocalDateTime.of(2012, 1, 2, 0, 0), 200 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 1, 2, 0, 0), 200 * Values.Amount.factor()) //
+                        .withdraw(LocalDateTime.of(2012, 1, 3, 0, 0), 400 * Values.Amount.factor()) //
+                        .fees____(LocalDateTime.of(2012, 1, 3, 0, 0), 23441) //
+                        .interest(LocalDateTime.of(2012, 1, 4, 0, 0), 29399) //
+                        .interest(LocalDateTime.of(2012, 1, 5, 0, 0), 29399) //
+                        .deposit_(LocalDateTime.of(2012, 1, 6, 0, 0), 5400 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 1, 6, 0, 0), 19599) //
+                        .withdraw(LocalDateTime.of(2012, 1, 7, 0, 0), 369704) //
+                        .fees____(LocalDateTime.of(2012, 1, 7, 0, 0), 88252) //
+                        .fees____(LocalDateTime.of(2012, 1, 8, 0, 0), 100385) //
                         .addTo(client);
 
         return client;
@@ -104,7 +105,7 @@ public class ClientIndexTest
 
         AccountBuilder account = new AccountBuilder();
 
-        LocalDate time = LocalDate.parse("2012-01-01");
+        LocalDateTime time = LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0);
 
         long valuation = 0;
         double quote = 1;
@@ -187,7 +188,7 @@ public class ClientIndexTest
     {
         Client client = new Client();
         new AccountBuilder() //
-                        .interest("2012-01-02", 100) //
+                        .interest(LocalDateTime.of(2012, 01, 02, 0, 0), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
@@ -244,7 +245,7 @@ public class ClientIndexTest
             // use the closing quote of the previous day
 
             long p = security.getSecurityPrice(date.minusDays(1)).getValue();
-            portfolio.inbound_delivery(security, date, Values.Share.factorize(100), p);
+            portfolio.inbound_delivery(security, date.atStartOfDay(), Values.Share.factorize(100), p);
             date = date.plusDays(20);
         }
 
@@ -284,7 +285,7 @@ public class ClientIndexTest
         Account account = new AccountBuilder().addTo(client);
 
         new PortfolioBuilder(account) //
-                        .inbound_delivery(security, "2014-01-01", Values.Share.factorize(100), 100) //
+                        .inbound_delivery(security, LocalDateTime.of(2014, 01, 01, 0, 0), Values.Share.factorize(100), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
@@ -347,9 +348,9 @@ public class ClientIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_("2012-01-01", 10000) //
-                        .interest("2012-01-02", 1000) //
-                        .deposit_("2012-01-10", 10000) //
+                        .deposit_(LocalDateTime.of(2012, 01, 01, 0, 0), 10000) //
+                        .interest(LocalDateTime.of(2012, 01, 02, 0, 0), 1000) //
+                        .deposit_(LocalDateTime.of(2012, 01, 10, 0, 0), 10000) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
@@ -369,8 +370,8 @@ public class ClientIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_("2012-01-01", 10000) //
-                        .interest("2012-01-02", 1000) //
+                        .deposit_(LocalDateTime.of(2012, 01, 01, 0, 0), 10000) //
+                        .interest(LocalDateTime.of(2012, 01, 02, 0, 0), 1000) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //

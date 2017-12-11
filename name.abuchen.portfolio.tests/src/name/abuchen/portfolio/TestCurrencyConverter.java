@@ -2,6 +2,7 @@ package name.abuchen.portfolio;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -56,7 +57,7 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public Money convert(LocalDate date, Money amount)
+    public Money convert(LocalDateTime date, Money amount)
     {
         if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
@@ -74,7 +75,7 @@ public class TestCurrencyConverter implements CurrencyConverter
     }
 
     @Override
-    public ExchangeRate getRate(LocalDate date, String currencyCode)
+    public ExchangeRate getRate(LocalDateTime date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);

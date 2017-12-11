@@ -7,6 +7,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.Test;
@@ -58,9 +59,9 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
-                        .inbound_delivery(c, "2010-01-01", Values.Share.factorize(10), 12000) //
-                        .inbound_delivery(d, "2010-01-01", Values.Share.factorize(10), 12000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(c, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 12000) //
+                        .inbound_delivery(d, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 12000) //
                         .addTo(client);
 
         LocalDate date = LocalDate.parse("2010-01-01");
@@ -98,7 +99,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         LocalDate date = LocalDate.parse("2010-01-01");
@@ -134,7 +135,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         LocalDate date = LocalDate.parse("2010-01-01");
@@ -166,7 +167,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         LocalDate date = LocalDate.parse("2010-01-01");
@@ -202,7 +203,7 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Portfolio portfolio = new PortfolioBuilder() //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         LocalDate date = LocalDate.parse("2010-01-01");
@@ -245,17 +246,17 @@ public class GroupByTaxonomyTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
-                        .deposit_("2010-01-01", Values.Amount.factorize(100))
+                        .deposit_(LocalDateTime.of(2010, 01, 01, 0, 0), Values.Amount.factorize(100))
                         .assign(taxonomy, "debt", Classification.ONE_HUNDRED_PERCENT) //
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .inbound_delivery(a, LocalDateTime.of(2010, 01, 01, 0, 0), Values.Share.factorize(10), 10000) //
                         .addTo(client);
 
         ClientFilter filter = new ClientClassificationFilter(taxonomy.getClassificationById("debt"));
         
-        LocalDate date = LocalDate.parse("2010-01-01");
+        LocalDateTime date =  LocalDateTime.of(2010, 1, 1, 0, 0);
         ClientSnapshot snapshot = ClientSnapshot.create(filter.filter(client), new TestCurrencyConverter(), date);
         assertNotNull(snapshot);
 

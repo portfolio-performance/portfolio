@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -829,7 +830,7 @@ public class StatementOfAssetsViewer
             throw new IllegalArgumentException();
     }
 
-    private LocalDate getDate()
+    private LocalDateTime getDate()
     {
         if (clientSnapshot != null)
             return clientSnapshot.getTime();

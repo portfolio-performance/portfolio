@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -36,7 +36,7 @@ public class SecurityTransferModel extends AbstractModel
     private Security security;
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
-    private LocalDate date = LocalDate.now();
+    private LocalDateTime date = LocalDateTime.now();
 
     private long shares;
     private BigDecimal quote = BigDecimal.ONE;
@@ -154,7 +154,7 @@ public class SecurityTransferModel extends AbstractModel
         else if (security != null)
         {
             setShares(0);
-            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
+            setQuote(new BigDecimal(security.getSecurityPrice(date.toLocalDate()).getValue() / Values.Quote.divider()));
         }
         else
         {
@@ -170,7 +170,7 @@ public class SecurityTransferModel extends AbstractModel
         this.targetPortfolio = (Portfolio) entry.getOwner(entry.getTargetTransaction());
 
         this.security = entry.getSourceTransaction().getSecurity();
-        this.date = entry.getSourceTransaction().getDate();
+        this.date = entry.getSourceTransaction().getDateTime();
         this.shares = entry.getSourceTransaction().getShares();
         this.quote = entry.getSourceTransaction().getGrossPricePerShare().toBigDecimal();
         this.amount = entry.getTargetTransaction().getAmount();
@@ -233,12 +233,12 @@ public class SecurityTransferModel extends AbstractModel
         return targetPortfolio != null ? targetPortfolio.getReferenceAccount().getName() : ""; //$NON-NLS-1$
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDate()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDate(LocalDateTime date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateSharesAndQuote();

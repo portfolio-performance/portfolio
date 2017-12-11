@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,16 +23,22 @@ public class PortfolioSnapshot
     // //////////////////////////////////////////////////////////////
     // factory methods
     // //////////////////////////////////////////////////////////////
-
+    @Deprecated
     public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, LocalDate date)
+    {
+        // set the time to the last second of the day to not change the behavior
+        return create(portfolio, converter, date.atTime(23, 59, 59));
+    }
+    
+    public static PortfolioSnapshot create(Portfolio portfolio, CurrencyConverter converter, LocalDateTime date)
     {
         List<SecurityPosition> positions = portfolio.getTransactions() //
                         .stream() //
-                        .filter(t -> !t.getDate().isAfter(date)) //
-                        .collect(Collectors.groupingBy(t -> t.getSecurity())) //
+                        .filter(t -> !t.getDateTime().isAfter(date)) //
+                        .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
-                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date),
+                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date.toLocalDate()),
                                         e.getValue())) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
@@ -74,10 +81,10 @@ public class PortfolioSnapshot
 
     private final Portfolio portfolio;
     private final CurrencyConverter converter;
-    private final LocalDate date;
+    private final LocalDateTime date;
     private final List<SecurityPosition> positions;
 
-    private PortfolioSnapshot(Portfolio source, CurrencyConverter converter, LocalDate date,
+    private PortfolioSnapshot(Portfolio source, CurrencyConverter converter, LocalDateTime date,
                     List<SecurityPosition> positions)
     {
         this.portfolio = source;
@@ -101,7 +108,7 @@ public class PortfolioSnapshot
         return converter;
     }
 
-    public LocalDate getTime()
+    public LocalDateTime getTime()
     {
         return date;
     }

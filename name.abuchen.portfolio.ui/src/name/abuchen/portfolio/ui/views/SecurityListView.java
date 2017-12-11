@@ -672,7 +672,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.TransactionDate.format(((TransactionPair<?>) element).getTransaction());
             }
         });
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> ((TransactionPair<?>) o1).getTransaction().getDate()

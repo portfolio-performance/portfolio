@@ -297,10 +297,10 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.TransactionDate.format(((TransactionPair<?>) element).getTransaction());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);

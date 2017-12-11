@@ -59,7 +59,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return Values.Date.format(t.getDate());
+                    return Values.TransactionDate.format(t);
                 case 1:
                     if (t instanceof AccountTransaction)
                         return ((AccountTransaction) t).getType().toString();

@@ -1,6 +1,6 @@
 package name.abuchen.portfolio;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Account;
@@ -31,12 +31,7 @@ public class PortfolioBuilder
         this.portfolio.setReferenceAccount(referenceAccount);
     }
 
-    public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
-    {
-        return inbound_delivery(security, LocalDate.parse(date), shares, amount);
-    }
-
-    public PortfolioBuilder inbound_delivery(Security security, LocalDate date, long shares, long amount)
+    public PortfolioBuilder inbound_delivery(Security security, LocalDateTime date, long shares, long amount)
     {
         portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, amount, security, shares,
                         Type.DELIVERY_INBOUND, 0, 0));
@@ -51,22 +46,22 @@ public class PortfolioBuilder
         return portfolio;
     }
 
-    public PortfolioBuilder buy(Security security, String date, long shares, long amount)
+    public PortfolioBuilder buy(Security security, LocalDateTime date, long shares, long amount)
     {
         return buysell(Type.BUY, security, date, shares, amount, 0);
     }
 
-    public PortfolioBuilder sell(Security security, String date, long shares, long amount)
+    public PortfolioBuilder sell(Security security, LocalDateTime date, long shares, long amount)
     {
         return buysell(Type.SELL, security, date, shares, amount, 0);
     }
 
-    public PortfolioBuilder sell(Security security, String date, long shares, long amount, int fees)
+    public PortfolioBuilder sell(Security security, LocalDateTime date, long shares, long amount, int fees)
     {
         return buysell(Type.SELL, security, date, shares, amount, fees);
     }
 
-    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, int fees)
+    private PortfolioBuilder buysell(Type type, Security security, LocalDateTime date, long shares, long amount, int fees)
     {
         if (portfolio.getReferenceAccount() == null)
         {
@@ -76,7 +71,7 @@ public class PortfolioBuilder
 
         BuySellEntry entry = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
         entry.setType(type);
-        entry.setDate(LocalDate.parse(date));
+        entry.setDate(date);
         entry.setSecurity(security);
         entry.setShares(shares);
         entry.setCurrencyCode(CurrencyUnit.EUR);

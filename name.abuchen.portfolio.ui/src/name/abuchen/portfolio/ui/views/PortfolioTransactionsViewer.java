@@ -160,7 +160,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((PortfolioTransaction) element).getDate());
+                return Values.TransactionDate.format((PortfolioTransaction) element);
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$

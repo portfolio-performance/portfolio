@@ -6,7 +6,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -287,7 +287,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         });
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> model().getDate().isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
@@ -365,7 +365,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         if (position != null)
         {
             Action action = new Action(MessageFormat.format(Messages.DividendsDialogLabelPortfolioSharesHeld,
-                            Values.Share.format(position.getShares()), label, Values.Date.format(portfolio.getTime())))
+                            Values.Share.format(position.getShares()), label, Values.DateTime.format(portfolio.getTime())))
             {
                 @Override
                 public void run()

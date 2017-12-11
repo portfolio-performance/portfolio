@@ -151,13 +151,13 @@ public class PortfolioClientFilter implements ClientFilter
                     // performance of security
                 case DIVIDENDS:
                     pseudoAccount.internalAddTransaction(t);
-                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.REMOVAL));
                     break;
                 case TAXES:
                 case FEES:
                     pseudoAccount.internalAddTransaction(t);
-                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
                     break;
                 case BUY:
@@ -237,7 +237,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         PortfolioTransaction clone = new PortfolioTransaction();
         clone.setType(type);
-        clone.setDate(t.getDate());
+        clone.setDate(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(t.getSecurity());
         clone.setAmount(t.getAmount());
@@ -250,7 +250,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         AccountTransaction clone = new AccountTransaction();
         clone.setType(type);
-        clone.setDate(t.getDate());
+        clone.setDate(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null); // no security for REMOVAL or DEPOSIT
         clone.setAmount(t.getAmount());

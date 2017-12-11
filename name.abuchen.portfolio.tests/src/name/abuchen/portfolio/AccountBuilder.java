@@ -1,6 +1,6 @@
 package name.abuchen.portfolio;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import name.abuchen.portfolio.model.Account;
@@ -35,77 +35,49 @@ public class AccountBuilder
         return account;
     }
 
-    public AccountBuilder deposit_(String date, long amount)
+    public AccountBuilder deposit_(LocalDateTime date, long amount)
     {
         return transaction(Type.DEPOSIT, date, amount);
     }
 
-    public AccountBuilder deposit_(LocalDate date, long amount)
-    {
-        return transaction(Type.DEPOSIT, date, amount);
-    }
-
-    public AccountBuilder interest(String date, long amount)
-    {
-        return transaction(Type.INTEREST, date, amount);
-    }
-
-    public AccountBuilder interest(LocalDate date, long amount)
+    public AccountBuilder interest(LocalDateTime date, long amount)
     {
         return transaction(Type.INTEREST, date, amount);
     }
     
-    public AccountBuilder interest_charge(String date, long amount)
+    public AccountBuilder interest_charge(LocalDateTime date, long amount)
     {
         return transaction(Type.INTEREST_CHARGE, date, amount);
     }
 
-    public AccountBuilder interest_charge(LocalDate date, long amount)
-    {
-        return transaction(Type.INTEREST_CHARGE, date, amount);
-    }
-
-    public AccountBuilder fees____(String date, long amount)
+    public AccountBuilder fees____(LocalDateTime date, long amount)
     {
         return transaction(Type.FEES, date, amount);
     }
 
-    public AccountBuilder fees____(LocalDate date, long amount)
-    {
-        return transaction(Type.FEES, date, amount);
-    }
-
-    public AccountBuilder fees_refund(String date, long amount)
+    public AccountBuilder fees_refund(LocalDateTime date, long amount)
     {
         return transaction(Type.FEES_REFUND, date, amount);
     }
 
-    public AccountBuilder withdraw(String date, long amount)
+    public AccountBuilder withdraw(LocalDateTime date, long amount)
     {
         return transaction(Type.REMOVAL, date, amount);
     }
 
-    public AccountBuilder withdraw(LocalDate date, long amount)
+    public AccountBuilder dividend(LocalDateTime date, long amount, Security security)
     {
-        return transaction(Type.REMOVAL, date, amount);
+        return transaction(Type.DIVIDENDS, date, security, amount);
     }
 
-    public AccountBuilder dividend(String date, long amount, Security security)
+    private AccountBuilder transaction(Type type, LocalDateTime date, long amount)
     {
-        AccountTransaction t = new AccountTransaction(LocalDate.parse(date), account.getCurrencyCode(), amount,
-                        security, Type.DIVIDENDS);
-        account.addTransaction(t);
-        return this;
+        return transaction(type, date, null, amount);
     }
-
-    private AccountBuilder transaction(Type type, String date, long amount)
+    
+    private AccountBuilder transaction(Type type, LocalDateTime date, Security security, long amount)
     {
-        return transaction(type, LocalDate.parse(date), amount);
-    }
-
-    private AccountBuilder transaction(Type type, LocalDate date, long amount)
-    {
-        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, null, type);
+        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, security, type);
         account.addTransaction(t);
         return this;
     }

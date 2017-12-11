@@ -5,6 +5,8 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,28 +56,28 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
-                        .deposit_("2011-12-31", 10000 * Values.Amount.factor()) //
-                        .interest("2012-01-01", 230 * Values.Amount.factor()) //
-                        .deposit_("2012-01-02", 200 * Values.Amount.factor()) //
-                        .interest("2012-01-02", 200 * Values.Amount.factor()) //
-                        .withdraw("2012-01-03", 400 * Values.Amount.factor()) //
-                        .fees____("2012-01-03", 234 * Values.Amount.factor()) //
-                        .interest("2012-01-04", 293 * Values.Amount.factor()) //
-                        .interest("2012-01-05", 293 * Values.Amount.factor()) //
-                        .deposit_("2012-01-06", 5400 * Values.Amount.factor()) //
-                        .interest("2012-01-06", 195 * Values.Amount.factor()) //
-                        .withdraw("2012-01-07", 3697 * Values.Amount.factor()) //
-                        .fees____("2012-01-07", 882 * Values.Amount.factor()) //
-                        .fees____("2012-01-08", 1003 * Values.Amount.factor()) //
-                        .dividend("2012-01-08", 100 * Values.Amount.factor(), security) //
+                        .deposit_(LocalDateTime.of(2011, Month.DECEMBER, 31, 0, 0), 10000 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 01, 1, 0, 0), 230 * Values.Amount.factor()) //
+                        .deposit_(LocalDateTime.of(2012, Month.JANUARY, 2, 0, 0), 200 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 01, 2, 0, 0), 200 * Values.Amount.factor()) //
+                        .withdraw(LocalDateTime.of(2012, 01, 3, 0, 0), 400 * Values.Amount.factor()) //
+                        .fees____(LocalDateTime.of(2012, 01, 3, 0, 0), 234 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 01, 4, 0, 0), 293 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 01, 5, 0, 0), 293 * Values.Amount.factor()) //
+                        .deposit_(LocalDateTime.of(2012, Month.JANUARY, 6, 0, 0), 5400 * Values.Amount.factor()) //
+                        .interest(LocalDateTime.of(2012, 01, 6, 0, 0), 195 * Values.Amount.factor()) //
+                        .withdraw(LocalDateTime.of(2012, 01, 7, 0, 0), 3697 * Values.Amount.factor()) //
+                        .fees____(LocalDateTime.of(2012, 01, 7, 0, 0), 882 * Values.Amount.factor()) //
+                        .fees____(LocalDateTime.of(2012, 01, 8, 0, 0), 1003 * Values.Amount.factor()) //
+                        .dividend(LocalDateTime.of(2012, 01, 8, 0, 0), 100 * Values.Amount.factor(), security) //
                         .assign(taxonomy, "one", weight) //
                         .addTo(client);
 
         new PortfolioBuilder(account) //
-                        .buy(security, "2012-01-01", 50 * Values.Share.factor(), 50 * 101 * Values.Amount.factor()) //
-                        .inbound_delivery(security, "2012-01-01", 100 * Values.Share.factor(),
+                        .buy(security, LocalDateTime.of(2012, 01, 01, 0, 0), 50 * Values.Share.factor(), 50 * 101 * Values.Amount.factor()) //
+                        .inbound_delivery(security, LocalDateTime.of(2012, 01, 01, 0, 0), 100 * Values.Share.factor(),
                                         100 * 100 * Values.Amount.factor()) //
-                        .sell(security, "2012-01-05", 50 * Values.Share.factor(), 50 * 105 * Values.Amount.factor()) //
+                        .sell(security, LocalDateTime.of(2012, 01, 05, 0, 0), 50 * Values.Share.factor(), 50 * 105 * Values.Amount.factor()) //
                         .addTo(client);
 
         return client;
@@ -171,7 +173,7 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
-                        .deposit_("2014-01-01", Values.Amount.factorize(1000))
+                        .deposit_(LocalDateTime.of(2014, Month.JANUARY, 1, 0, 0), Values.Amount.factorize(1000))
                         .addTo(client);
 
         AccountTransaction t = new AccountTransaction();
@@ -187,7 +189,7 @@ public class ClassificationIndexTest
 
         BuySellEntry buy = new BuySellEntry(portfolio, account);
         buy.setType(PortfolioTransaction.Type.BUY);
-        buy.setDate(LocalDate.parse("2015-12-31"));
+        buy.setDate(LocalDateTime.of(2015, Month.DECEMBER, 31, 0, 0));
         buy.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
         buy.setShares(Values.Share.factorize(10));
         buy.setSecurity(security);
@@ -195,7 +197,7 @@ public class ClassificationIndexTest
 
         BuySellEntry sell = new BuySellEntry(portfolio, account);
         sell.setType(PortfolioTransaction.Type.SELL);
-        sell.setDate(LocalDate.parse("2016-12-31"));
+        sell.setDate(LocalDateTime.of(2016, Month.DECEMBER, 31, 0, 0));
         sell.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1070)));
         sell.setShares(Values.Share.factorize(10));
         sell.setSecurity(security);

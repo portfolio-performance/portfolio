@@ -2,7 +2,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -36,7 +36,7 @@ public class AccountTransferModel extends AbstractModel
 
     private Account sourceAccount;
     private Account targetAccount;
-    private LocalDate date = LocalDate.now();
+    private LocalDateTime date = LocalDateTime.now();
 
     private long fxAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
@@ -137,7 +137,7 @@ public class AccountTransferModel extends AbstractModel
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
         this.targetAccount = (Account) entry.getOwner(entry.getTargetTransaction());
 
-        this.date = entry.getSourceTransaction().getDate();
+        this.date = entry.getSourceTransaction().getDateTime();
         this.note = entry.getSourceTransaction().getNote();
 
         this.fxAmount = entry.getSourceTransaction().getAmount();
@@ -242,12 +242,12 @@ public class AccountTransferModel extends AbstractModel
         }
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDate()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDate(LocalDateTime date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateExchangeRate();

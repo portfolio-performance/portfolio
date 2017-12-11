@@ -1,19 +1,37 @@
 package name.abuchen.portfolio.money;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface CurrencyConverter
 {
     String getTermCurrency();
 
-    Money convert(LocalDate date, Money amount);
+    Money convert(LocalDateTime date, Money amount);
+    
+    @Deprecated
+    default Money convert(LocalDate date, Money amount)
+    {
+        return convert(date.atStartOfDay(), amount);
+    }
 
+    @Deprecated
     default MonetaryOperator at(LocalDate date)
     {
         return m -> convert(date, m);
     }
+    
+    default MonetaryOperator at(LocalDateTime date)
+    {
+        return m -> convert(date, m);
+    }
 
-    ExchangeRate getRate(LocalDate date, String currencyCode);
+    default ExchangeRate getRate(LocalDate date, String currencyCode)
+    {
+        return getRate(date.atStartOfDay(), currencyCode);
+    }
+    
+    ExchangeRate getRate(LocalDateTime date, String currencyCode);
 
     /**
      * Returns a CurrencyConverter with the provided term currency

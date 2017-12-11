@@ -9,6 +9,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -468,7 +469,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(59.55))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-12")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2015, 1, 12, 10, 11)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.05))));
@@ -1190,7 +1191,7 @@ public class OnvistaPDFExtractorTest
         assertThat(firstEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(firstEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(623.49))));
-        assertThat(firstEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
+        assertThat(firstEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2016, 9, 2, 9, 10)));
         assertThat(firstEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
 

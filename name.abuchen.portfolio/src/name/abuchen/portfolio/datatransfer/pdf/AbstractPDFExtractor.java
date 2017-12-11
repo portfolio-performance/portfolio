@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,7 @@ import name.abuchen.portfolio.money.Values;
 public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY); //$NON-NLS-1$
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
@@ -220,8 +222,13 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */LocalDate asDate(String value)
+    /* protected */LocalDateTime asDate(String value)
     {
-        return LocalDate.parse(value, DATE_FORMAT);
+        return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+    }
+    
+    /* protected */LocalDateTime asDate(String date, String time)
+    {
+        return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT);
     }
 }

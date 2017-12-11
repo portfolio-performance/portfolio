@@ -98,10 +98,10 @@ public class TransactionsTab implements DividendsTab
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.TransactionDate.format(((TransactionPair<?>) element).getTransaction());
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column, SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);

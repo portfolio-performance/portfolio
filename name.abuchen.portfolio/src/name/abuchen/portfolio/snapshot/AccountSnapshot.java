@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -13,14 +13,13 @@ public class AccountSnapshot
     // //////////////////////////////////////////////////////////////
     // factory methods
     // //////////////////////////////////////////////////////////////
-
-    public static AccountSnapshot create(Account account, CurrencyConverter converter, LocalDate date)
+    public static AccountSnapshot create(Account account, CurrencyConverter converter, LocalDateTime date)
     {
         long funds = 0;
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (!t.getDate().isAfter(date))
+            if (!t.getDateTime().isAfter(date))
             {
                 if (t.getType().isDebit())
                     funds -= t.getAmount();
@@ -37,21 +36,21 @@ public class AccountSnapshot
     // //////////////////////////////////////////////////////////////
 
     private final Account account;
-    private final LocalDate date;
+    private final LocalDateTime date;
     private final CurrencyConverter converter;
     private final Money funds;
 
-    private AccountSnapshot(Account account, LocalDate date, CurrencyConverter converter, Money funds)
+    private AccountSnapshot(Account account, LocalDateTime date, CurrencyConverter converter, Money funds)
     {
         this.account = account;
         this.date = date;
         this.converter = converter;
         this.funds = funds;
     }
-    
+
     /* package */ Account unwrapAccount()
     {
-        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount)account).getSource() : account;
+        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount) account).getSource() : account;
     }
 
     public Account getAccount()
@@ -59,7 +58,7 @@ public class AccountSnapshot
         return account;
     }
 
-    public LocalDate getTime()
+    public LocalDateTime getTime()
     {
         return date;
     }
