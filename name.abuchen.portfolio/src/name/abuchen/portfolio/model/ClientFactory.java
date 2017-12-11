@@ -61,6 +61,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
+import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
 
 @SuppressWarnings("deprecation")
 public class ClientFactory
@@ -1044,6 +1045,7 @@ public class ClientFactory
                     xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
                     xstream.registerConverter(new XStreamLocalDateConverter());
+                    xstream.registerConverter(new XStreamLocalDateTimeConverter());
                     xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(),
                                     xstream.getReflectionProvider()));
 

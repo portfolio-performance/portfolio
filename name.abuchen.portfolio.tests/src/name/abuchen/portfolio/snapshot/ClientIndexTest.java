@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,7 +105,7 @@ public class ClientIndexTest
 
         AccountBuilder account = new AccountBuilder();
 
-        LocalDate time = LocalDate.parse("2012-01-01");
+        LocalDateTime time = LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0);
 
         long valuation = 0;
         double quote = 1;
@@ -187,7 +188,7 @@ public class ClientIndexTest
     {
         Client client = new Client();
         new AccountBuilder() //
-                        .interest("2012-01-02", 100) //
+                        .interest(LocalDateTime.of(2012, 01, 02, 0, 0), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
@@ -244,7 +245,7 @@ public class ClientIndexTest
             // use the closing quote of the previous day
 
             long p = security.getSecurityPrice(date.minusDays(1)).getValue();
-            portfolio.inbound_delivery(security, date, Values.Share.factorize(100), p);
+            portfolio.inbound_delivery(security, date.atStartOfDay(), Values.Share.factorize(100), p);
             date = date.plusDays(20);
         }
 
@@ -284,7 +285,7 @@ public class ClientIndexTest
         Account account = new AccountBuilder().addTo(client);
 
         new PortfolioBuilder(account) //
-                        .inbound_delivery(security, "2014-01-01", Values.Share.factorize(100), 100) //
+                        .inbound_delivery(security, LocalDateTime.of(2014, 01, 01, 0, 0), Values.Share.factorize(100), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);

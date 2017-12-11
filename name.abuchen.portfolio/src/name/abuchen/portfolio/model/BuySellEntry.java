@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.Money;
@@ -48,7 +49,14 @@ public class BuySellEntry implements CrossEntry, Annotated
         return this.account;
     }
 
+    @Deprecated
     public void setDate(LocalDate date)
+    {
+        this.portfolioTransaction.setDate(date.atStartOfDay());
+        this.accountTransaction.setDate(date.atStartOfDay());
+    }
+    
+    public void setDate(LocalDateTime date)
     {
         this.portfolioTransaction.setDate(date);
         this.accountTransaction.setDate(date);
@@ -113,13 +121,13 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         if (t == accountTransaction)
         {
-            portfolioTransaction.setDate(accountTransaction.getDate());
+            portfolioTransaction.setDate(accountTransaction.getDateTime());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setNote(accountTransaction.getNote());
         }
         else if (t == portfolioTransaction)
         {
-            accountTransaction.setDate(portfolioTransaction.getDate());
+            accountTransaction.setDate(portfolioTransaction.getDateTime());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setNote(portfolioTransaction.getNote());
         }

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -67,7 +67,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
     private SecurityPrice extract(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        LocalDate date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
@@ -75,6 +75,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
-        return new SecurityPrice(date, Math.abs(amount));
+        return new SecurityPrice(date.toLocalDate(), Math.abs(amount));
     }
 }

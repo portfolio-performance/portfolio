@@ -45,10 +45,10 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -107,12 +107,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
-        // date
+        // date & time
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.date.name()).observe(model));
 
         // shares
@@ -218,9 +218,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date
         // shares
-        forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
+        forms = forms.thenBelow(valueDate.getControl()).label(lblDate);
                         // shares [- amount per share]
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
+        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //

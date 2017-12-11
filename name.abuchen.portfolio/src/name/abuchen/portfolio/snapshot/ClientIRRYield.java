@@ -54,7 +54,7 @@ public class ClientIRRYield
         for (Portfolio portfolio : client.getPortfolios())
         {
             portfolio.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDate())) //
+                            .filter(t -> interval.contains(t.getDateTime())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -79,7 +79,7 @@ public class ClientIRRYield
         for (Account account : client.getAccounts())
         {
             account.getTransactions().stream() //
-                            .filter(t -> interval.contains(t.getDate())) //
+                            .filter(t -> interval.contains(t.getDateTime())) //
                             .forEach(t -> {
                                 switch (t.getType())
                                 {
@@ -123,7 +123,7 @@ public class ClientIRRYield
             if (t instanceof AccountTransaction)
             {
                 AccountTransaction at = (AccountTransaction) t;
-                long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (at.getType() == Type.DEPOSIT || at.getType() == Type.TRANSFER_IN)
                     amount = -amount;
                 values.add(amount / Values.Amount.divider());
@@ -131,7 +131,7 @@ public class ClientIRRYield
             else if (t instanceof PortfolioTransaction)
             {
                 PortfolioTransaction pt = (PortfolioTransaction) t;
-                long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 if (pt.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                 || pt.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                     amount = -amount;

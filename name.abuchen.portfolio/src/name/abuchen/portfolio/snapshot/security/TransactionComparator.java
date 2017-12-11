@@ -17,7 +17,7 @@ import name.abuchen.portfolio.model.Transaction;
     @Override
     public int compare(Transaction t1, Transaction t2)
     {
-        int compare = t1.getDate().compareTo(t2.getDate());
+        int compare = t1.getDateTime().compareTo(t2.getDateTime());
         if (compare != 0)
             return compare;
 

@@ -333,7 +333,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
         for (Transaction t : transactions)
             if (t instanceof DividendFinalTransaction)
-                mv.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                mv.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
 
         this.marketValue = mv.toMoney();
         this.quote = security.getSecurityPrice(period.getEndDate());

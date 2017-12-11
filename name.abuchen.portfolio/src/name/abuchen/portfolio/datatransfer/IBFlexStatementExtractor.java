@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -62,7 +63,6 @@ public class IBFlexStatementExtractor implements Extractor
 
     private LocalDate convertDate(String date) throws DateTimeParseException
     {
-
         if (date.length() > 8)
         {
             return LocalDate.parse(date);
@@ -71,6 +71,11 @@ public class IBFlexStatementExtractor implements Extractor
         {
             return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd"));
         }
+    }
+    
+    private LocalDateTime convertDate(String date, String time) throws DateTimeParseException
+    {
+        return LocalDateTime.parse(String.format("%s %s", date, time), DateTimeFormatter.ofPattern("yyyyMMdd HHmmss"));
     }
 
     /**
@@ -269,13 +274,7 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            String d = element.getAttribute("tradeDate");
-            if (d == null || d.length() == 0)
-            {
-                // use reportDate for CorporateActions
-                d = element.getAttribute("reportDate");
-            }
-            transaction.setDate(convertDate(d));
+            transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
 
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));

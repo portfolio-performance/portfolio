@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -26,7 +28,7 @@ public class SecurityTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, targetPortfolio, targetPortfolioLabel, date, shares, quote, amount, note, calculationStatus;
+        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, targetPortfolio, targetPortfolioLabel, date, time, shares, quote, amount, note, calculationStatus;
     }
 
     private final Client client;
@@ -37,6 +39,7 @@ public class SecurityTransferModel extends AbstractModel
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
     private LocalDate date = LocalDate.now();
+    private LocalTime time = LocalTime.now();
 
     private long shares;
     private BigDecimal quote = BigDecimal.ONE;
@@ -90,7 +93,7 @@ public class SecurityTransferModel extends AbstractModel
         }
 
         t.setSecurity(security);
-        t.setDate(date);
+        t.setDate(LocalDateTime.of(date, time));
         t.setShares(shares);
         t.setAmount(amount);
         t.setCurrencyCode(security.getCurrencyCode());
@@ -170,7 +173,9 @@ public class SecurityTransferModel extends AbstractModel
         this.targetPortfolio = (Portfolio) entry.getOwner(entry.getTargetTransaction());
 
         this.security = entry.getSourceTransaction().getSecurity();
-        this.date = entry.getSourceTransaction().getDate();
+        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
+        this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
         this.shares = entry.getSourceTransaction().getShares();
         this.quote = entry.getSourceTransaction().getGrossPricePerShare().toBigDecimal();
         this.amount = entry.getTargetTransaction().getAmount();
@@ -237,10 +242,21 @@ public class SecurityTransferModel extends AbstractModel
     {
         return date;
     }
+    
+    public LocalTime getTime()
+    {
+        return time;
+    }
 
     public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        updateSharesAndQuote();
+    }
+    
+    public void setTime(LocalTime time)
+    {
+        firePropertyChange(Properties.time.name(), this.time, this.time = time);
         updateSharesAndQuote();
     }
 

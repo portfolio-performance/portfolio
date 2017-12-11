@@ -10,9 +10,9 @@ import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
 
-public class SimpleDateTimeSelectionProperty extends WidgetValueProperty
+public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty
 {
-    public SimpleDateTimeSelectionProperty()
+    public SimpleDateTimeDateSelectionProperty()
     {
         super(SWT.Selection);
     }

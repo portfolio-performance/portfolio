@@ -33,7 +33,7 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
-        long amount = converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+        long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
         fifo.add(new LineItem(t.getPosition().getShares(), amount, amount));
     }
 
@@ -92,16 +92,16 @@ import name.abuchen.portfolio.money.Money;
         switch (t.getType())
         {
             case TAXES:
-                taxes += converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                taxes += converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 break;
             case TAX_REFUND:
-                taxes -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                taxes -= converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 break;
             case FEES:
-                fees += converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                fees += converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 break;
             case FEES_REFUND:
-                fees -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                fees -= converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
                 break;
             default:
         }
