@@ -61,6 +61,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -102,7 +103,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     @Inject
     private ExchangeRateProviderFactory factory;
-
+    
     @Override
     protected String getDefaultTitle()
     {
@@ -378,14 +379,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         getPreferenceStore(), transactions, layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                AccountTransaction t = (AccountTransaction) e;
-                return Values.TransactionDate.format(t);
+                return DateUtils.formatTransactionDate((AccountTransaction) e);
             }
 
             @Override

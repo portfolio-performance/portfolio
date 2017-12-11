@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
-import name.abuchen.portfolio.model.Transaction;
-
 public abstract class Values<E>
 {
     public static final class MoneyValues extends Values<Money>
@@ -187,15 +185,6 @@ public abstract class Values<E>
         }
     };
 
-    public static final Values<Transaction> TransactionDate = new Values<Transaction>("", 1D, 1) //$NON-NLS-1$
-    {
-        @Override
-        public String format(Transaction transaction)
-        {
-            return DateTime.format(transaction.getDateTime());
-        }
-    };
-    
     public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
         DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);

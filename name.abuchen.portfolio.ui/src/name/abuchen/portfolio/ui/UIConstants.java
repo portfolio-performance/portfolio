@@ -77,6 +77,11 @@ public interface UIConstants
         String USE_INDIRECT_QUOTATION = "USE_INDIRECT_QUOTATION"; //$NON-NLS-1$
 
         /**
+         * Preference key to use date & time for transaction executions.
+         */
+        String USE_DATE_TIME = "USE_DATE_TIME"; //$NON-NLS-1$
+        
+        /**
          * Preference key whether to create a backup of the original file before
          * saving. The backup file has the postfix ".backup".
          */

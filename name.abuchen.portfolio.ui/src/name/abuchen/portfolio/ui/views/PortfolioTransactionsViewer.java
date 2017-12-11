@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -154,13 +155,13 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
     private void addColumns()
     {
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
         column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return Values.TransactionDate.format((PortfolioTransaction) element);
+                return DateUtils.formatTransactionDate((PortfolioTransaction) element);
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "dateTime").attachTo(column, SWT.DOWN); //$NON-NLS-1$
