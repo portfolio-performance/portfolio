@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -361,7 +362,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5794_56L)));
         assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 26_65L)));
         assertThat(t.getUnitSum(Type.TAX), is(Money.of(CurrencyUnit.EUR, 226_79L)));
-        assertThat(t.getDate(), is(LocalDate.parse("2015-02-18")));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2015, 2, 18, 12, 10, 30)));
         assertThat(t.getShares(), is(Values.Share.factorize(140)));
         assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(43.2))));
     }
@@ -391,7 +392,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5000_00L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-15")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2015, 1, 15, 8, 13, 35)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(132_802120L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
     }
@@ -427,7 +428,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1387_85L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-09-21")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2015, 9, 21, 12, 45, 38)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(250)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 17_85L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
@@ -465,7 +466,7 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 25_00L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-10-16")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2017, 10, 16, 15, 24, 22)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.95126)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 61L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
