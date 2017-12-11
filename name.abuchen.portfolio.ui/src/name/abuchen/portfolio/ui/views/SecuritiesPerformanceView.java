@@ -738,7 +738,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return Values.Date.format(t.getDate());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "date"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(Transaction.class, "dateTime"), SWT.DOWN); //$NON-NLS-1$
         support.addColumn(column);
 
         // transaction type

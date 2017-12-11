@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -115,7 +116,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
     }
-    
+
     @Override
     protected int getSashStyle()
     {
@@ -383,8 +384,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             @Override
             public String getText(Object e)
             {
-                AccountTransaction t = (AccountTransaction) e;
-                return Values.Date.format(t.getDate());
+                return DateUtils.formatTransactionDate((AccountTransaction) e);
             }
 
             @Override
@@ -771,8 +771,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
             Collections.sort(tx, new Transaction.ByDate());
 
             LocalDate now = LocalDate.now();
-            LocalDate start = tx.get(0).getDate();
-            LocalDate end = tx.get(tx.size() - 1).getDate();
+            LocalDate start = tx.get(0).getDateTime().toLocalDate();
+            LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
             if (now.isAfter(end))
                 end = now;
             if (now.isBefore(start))

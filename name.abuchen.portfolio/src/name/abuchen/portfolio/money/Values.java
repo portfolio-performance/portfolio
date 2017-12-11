@@ -3,6 +3,7 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -190,6 +191,17 @@ public abstract class Values<E>
 
         @Override
         public String format(LocalDate date)
+        {
+            return formatter.format(date);
+        }
+    };
+    
+    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1D, 1) //$NON-NLS-1$
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+
+        @Override
+        public String format(LocalDateTime date)
         {
             return formatter.format(date);
         }

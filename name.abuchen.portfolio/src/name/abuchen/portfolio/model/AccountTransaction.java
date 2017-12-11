@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.ResourceBundle;
 
@@ -58,7 +58,7 @@ public class AccountTransaction extends Transaction
         @Override
         public int compare(AccountTransaction t1, AccountTransaction t2)
         {
-            int compare = t1.getDate().compareTo(t2.getDate());
+            int compare = t1.getDateTime().compareTo(t2.getDateTime());
             if (compare != 0)
                 return compare;
 
@@ -81,7 +81,7 @@ public class AccountTransaction extends Transaction
         // needed for xstream de-serialization
     }
 
-    public AccountTransaction(LocalDate date, String currencyCode, long amount, Security security, Type type)
+    public AccountTransaction(LocalDateTime date, String currencyCode, long amount, Security security, Type type)
     {
         super(date, currencyCode, amount, security, 0, null);
         this.type = type;
@@ -125,7 +125,7 @@ public class AccountTransaction extends Transaction
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s", Values.Date.format(getDate()), type.name(), getCurrencyCode(), //$NON-NLS-1$
+        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTime()), type.name(), getCurrencyCode(), //$NON-NLS-1$
                         Values.Amount.format(getAmount()), getSecurity() != null ? getSecurity().getName() : ""); //$NON-NLS-1$
     }
 }

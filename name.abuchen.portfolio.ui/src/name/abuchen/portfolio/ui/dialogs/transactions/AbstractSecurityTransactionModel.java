@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -31,7 +33,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     public enum Properties
     {
-        portfolio, security, account, date, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
+        portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
         convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
         calculationStatus;
@@ -43,6 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Portfolio portfolio;
     protected Security security;
     protected LocalDate date = LocalDate.now();
+    protected LocalTime time = LocalTime.now();
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
@@ -92,7 +95,9 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         this.security = transaction.getSecurity();
 
-        this.date = transaction.getDate();
+        LocalDateTime transactionDate = transaction.getDateTime();
+        this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
 
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
@@ -323,10 +328,21 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     {
         return date;
     }
+    
+    public LocalTime getTime()
+    {
+        return time;
+    }
 
     public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        updateExchangeRate();
+    }
+    
+    public void setTime(LocalTime time)
+    {
+        firePropertyChange(Properties.time.name(), this.time, this.time = time);
         updateExchangeRate();
     }
 

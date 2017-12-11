@@ -34,8 +34,11 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.DateTimeTimePicker;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -116,10 +119,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.date.name()).observe(model));
+        DateTimeTimePicker valueTime = new DateTimeTimePicker(editArea);
+        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime.getControl()),
+                        BeanProperties.value(Properties.time.name()).observe(model));
 
         // other input fields
 
@@ -200,12 +205,17 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         int width = amountWidth(grossValue.value);
         int currencyWidth = currencyWidth(grossValue.currency);
 
-        startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
+        FormDataFactory forms = startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
-                        .suffix(comboInput.value.getControl()).thenBelow(valueDate.getControl()).label(lblDate)
+                        .suffix(comboInput.value.getControl()).thenBelow(valueDate.getControl()).label(lblDate);
+        
                         // shares - quote - gross value
-                        .thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
-                        .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
+                        forms = forms.thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
+                        .thenRight(quote.value).width(width);
+                        
+                        forms.thenUp(valueTime.getControl()); // attach date
+                        
+                        forms.thenRight(quote.currency).width(width)
                         .thenRight(grossValue.label).thenRight(grossValue.value).width(width)
                         .thenRight(grossValue.currency);
 

@@ -70,7 +70,7 @@ public class SecurityPosition
                     while (iter.hasNext())
                     {
                         PortfolioTransaction t_inbound = iter.next();
-                        if (t_inbound.getDate().equals(t.getDate()) && t_inbound.getShares() == t.getShares())
+                        if (t_inbound.getDateTime().equals(t.getDateTime()) && t_inbound.getShares() == t.getShares())
                         {
                             iter.remove();
                             continue TransactionLoop;
@@ -270,7 +270,7 @@ public class SecurityPosition
         for (PortfolioTransaction t : position.transactions)
         {
             PortfolioTransaction t2 = new PortfolioTransaction();
-            t2.setDate(t.getDate());
+            t2.setDate(t.getDateTime());
             t2.setSecurity(t.getSecurity());
             t2.setType(t.getType());
             t2.setCurrencyCode(t.getCurrencyCode());

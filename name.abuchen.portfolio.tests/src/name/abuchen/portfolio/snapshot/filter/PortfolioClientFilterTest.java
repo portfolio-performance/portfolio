@@ -5,6 +5,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -111,7 +112,7 @@ public class PortfolioClientFilterTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.parse("2016-04-01T00:00"));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setCurrencyCode(accountA.getCurrencyCode());
         entry.insert();
@@ -155,7 +156,7 @@ public class PortfolioClientFilterTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.parse("2016-04-01T00:00"));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setCurrencyCode(accountA.getCurrencyCode());
         entry.insert();
@@ -205,7 +206,7 @@ public class PortfolioClientFilterTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.parse("2016-04-01T00:00"));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setShares(Values.Share.factorize(1));
         entry.setSecurity(client.getSecurities().get(0));
@@ -240,7 +241,7 @@ public class PortfolioClientFilterTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.parse("2016-04-01T00:00"));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setShares(Values.Share.factorize(1));
         entry.setSecurity(client.getSecurities().get(0));

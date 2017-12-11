@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -10,7 +9,6 @@ import org.eclipse.nebula.widgets.cdatetime.CDT;
 import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.nebula.widgets.cdatetime.CDateTimeBuilder;
 import org.eclipse.nebula.widgets.cdatetime.Footer;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -22,9 +20,9 @@ import org.eclipse.swt.widgets.DateTime;
  * And on Windows, I prefer the DateTime widget. Keep in mind that the behavior
  * slightly differs because CDateTime allows a null selection.
  */
-public class DateTimePicker
+public abstract class DateTimePicker<T>
 {
-    private Control control;
+    protected Control control;
 
     public DateTimePicker(Composite parent)
     {
@@ -43,9 +41,11 @@ public class DateTimePicker
         }
         else
         {
-            this.control = new DateTime(parent, SWT.DATE | SWT.DROP_DOWN | SWT.BORDER);
+            this.control = newDateTimeControl(parent);
         }
     }
+
+    protected abstract DateTime newDateTimeControl(Composite parent);
 
     public Control getControl()
     {
@@ -66,21 +66,7 @@ public class DateTimePicker
         }
     }
 
-    public LocalDate getSelection()
-    {
-        if (control instanceof CDateTime)
-        {
-            Date d = ((CDateTime) control).getSelection();
-            return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).toLocalDate();
-
-        }
-        else
-        {
-            DateTime dateTime = (DateTime) control;
-            // DateTime widget has zero-based months
-            return LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
-        }
-    }
+    public abstract T getSelection();
 
     public void setLayoutData(Object layoutData)
     {

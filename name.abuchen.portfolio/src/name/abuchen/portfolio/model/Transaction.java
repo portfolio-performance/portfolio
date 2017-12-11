@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -108,7 +109,7 @@ public abstract class Transaction implements Annotated
         }
     }
 
-    private LocalDate date;
+    private LocalDateTime date;
     private String currencyCode;
     private long amount;
 
@@ -122,12 +123,12 @@ public abstract class Transaction implements Annotated
     public Transaction()
     {}
 
-    public Transaction(LocalDate date, String currencyCode, long amount)
+    public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
         this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(LocalDate date, String currencyCode, long amount, Security security, long shares, String note)
+    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares, String note)
     {
         this.date = date;
         this.currencyCode = currencyCode;
@@ -137,12 +138,32 @@ public abstract class Transaction implements Annotated
         this.note = note;
     }
 
+    @Deprecated
     public LocalDate getDate()
+    {
+        return date == null ? null : date.toLocalDate();
+    }
+    
+    public LocalDateTime getDateTime()
     {
         return date;
     }
 
+    @Deprecated
     public void setDate(LocalDate date)
+    {
+        this.date = date == null ? null : date.atStartOfDay();
+    }
+    
+    public void setDate(LocalDateTime date)
+    {
+        this.date = date;
+    }
+    
+    /**
+     * Convenience method to support java.beans 
+     */
+    public void setDateTime(LocalDateTime date)
     {
         this.date = date;
     }
