@@ -58,10 +58,10 @@ public class ClientPerformanceSnapshotTest
         assertNotNull(snapshot);
 
         assertNotNull(snapshot.getStartClientSnapshot());
-        assertEquals(startDate, snapshot.getStartClientSnapshot().getTime());
+        assertEquals(startDate, snapshot.getStartClientSnapshot().getTime().toLocalDate());
 
         assertNotNull(snapshot.getEndClientSnapshot());
-        assertEquals(endDate, snapshot.getEndClientSnapshot().getTime());
+        assertEquals(endDate, snapshot.getEndClientSnapshot().getTime().toLocalDate());
 
         List<Category> categories = snapshot.getCategories();
         assertNotNull(categories);
