@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -26,7 +28,7 @@ public class SecurityTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, targetPortfolio, targetPortfolioLabel, date, shares, quote, amount, note, calculationStatus;
+        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, targetPortfolio, targetPortfolioLabel, date, time, shares, quote, amount, note, calculationStatus;
     }
 
     private final Client client;
@@ -36,7 +38,8 @@ public class SecurityTransferModel extends AbstractModel
     private Security security;
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
-    private LocalDateTime date = LocalDateTime.now();
+    private LocalDate date = LocalDate.now();
+    private LocalTime time = LocalTime.now();
 
     private long shares;
     private BigDecimal quote = BigDecimal.ONE;
@@ -90,7 +93,7 @@ public class SecurityTransferModel extends AbstractModel
         }
 
         t.setSecurity(security);
-        t.setDate(date);
+        t.setDate(LocalDateTime.of(date, time));
         t.setShares(shares);
         t.setAmount(amount);
         t.setCurrencyCode(security.getCurrencyCode());
@@ -140,8 +143,8 @@ public class SecurityTransferModel extends AbstractModel
             CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                             client.getBaseCurrency());
             PortfolioSnapshot snapshot = sourcePortfolio != null
-                            ? PortfolioSnapshot.create(sourcePortfolio, converter, date)
-                            : ClientSnapshot.create(client, converter, date).getJointPortfolio();
+                            ? PortfolioSnapshot.create(sourcePortfolio, converter, LocalDateTime.of(date, time))
+                            : ClientSnapshot.create(client, converter, LocalDateTime.of(date, time)).getJointPortfolio();
             position = snapshot.getPositionsBySecurity().get(security);
         }
 
@@ -154,7 +157,7 @@ public class SecurityTransferModel extends AbstractModel
         else if (security != null)
         {
             setShares(0);
-            setQuote(new BigDecimal(security.getSecurityPrice(date.toLocalDate()).getValue() / Values.Quote.divider()));
+            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
         }
         else
         {
@@ -170,7 +173,9 @@ public class SecurityTransferModel extends AbstractModel
         this.targetPortfolio = (Portfolio) entry.getOwner(entry.getTargetTransaction());
 
         this.security = entry.getSourceTransaction().getSecurity();
-        this.date = entry.getSourceTransaction().getDateTime();
+        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
+        this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
         this.shares = entry.getSourceTransaction().getShares();
         this.quote = entry.getSourceTransaction().getGrossPricePerShare().toBigDecimal();
         this.amount = entry.getTargetTransaction().getAmount();
@@ -233,14 +238,25 @@ public class SecurityTransferModel extends AbstractModel
         return targetPortfolio != null ? targetPortfolio.getReferenceAccount().getName() : ""; //$NON-NLS-1$
     }
 
-    public LocalDateTime getDate()
+    public LocalDate getDate()
     {
         return date;
     }
+    
+    public LocalTime getTime()
+    {
+        return time;
+    }
 
-    public void setDate(LocalDateTime date)
+    public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
+        updateSharesAndQuote();
+    }
+    
+    public void setTime(LocalTime time)
+    {
+        firePropertyChange(Properties.time.name(), this.time, this.time = time);
         updateSharesAndQuote();
     }
 

@@ -5,7 +5,6 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import javax.inject.Inject;
@@ -31,8 +30,11 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.DateTimeTimePicker;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
@@ -110,9 +112,12 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.date.name()).observe(model));
+        DateTimeTimePicker valueTime = new DateTimeTimePicker(editArea);
+        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime.getControl()),
+                        BeanProperties.value(Properties.time.name()).observe(model));
 
         // amount
 
@@ -142,12 +147,13 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         int amountWidth = amountWidth(amount.value);
         int currencyWidth = currencyWidth(amount.currency);
 
-        startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
+        FormDataFactory forms = startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(source.value.getControl()).label(source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
-                        .thenBelow(valueDate.getControl()).label(lblDate)
+                        .thenBelow(valueDate.getControl()).label(lblDate);
+                        forms.thenRight(valueTime.getControl()); // attach date to the right
                         // shares - quote - amount
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
+                        forms.thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(amountWidth).thenRight(quote.currency).width(currencyWidth)
                         .thenRight(amount.label).thenRight(amount.value).width(amountWidth).thenRight(amount.currency)
                         .width(currencyWidth);
@@ -159,8 +165,8 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         startingWith(securities.label).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
-        warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate().toLocalDate()));
+        warnings.add(() -> LocalDateTime.of(model().getDate(), model().getTime()).isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
         model.addPropertyChangeListener(Properties.security.name(), e -> warnings.check());
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
     }

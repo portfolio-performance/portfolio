@@ -44,7 +44,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -163,8 +163,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 return Values.TransactionDate.format((PortfolioTransaction) element);
             }
         });
-        ColumnViewerSorter.create(PortfolioTransaction.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new DateEditingSupport(PortfolioTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(PortfolioTransaction.class, "dateTime").attachTo(column, SWT.DOWN); //$NON-NLS-1$
+        new DateTimeEditingSupport(PortfolioTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);

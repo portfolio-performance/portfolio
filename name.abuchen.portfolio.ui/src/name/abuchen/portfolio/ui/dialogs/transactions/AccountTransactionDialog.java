@@ -45,10 +45,12 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.DateTimeTimePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -107,13 +109,16 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
-        // date
+        // date & time
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.date.name()).observe(model));
+        DateTimeTimePicker valueTime = new DateTimeTimePicker(editArea);
+        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime.getControl()),
+                        BeanProperties.value(Properties.time.name()).observe(model));
 
         // shares
 
@@ -218,9 +223,10 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date
         // shares
-        forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
+        forms = forms.thenBelow(valueDate.getControl()).label(lblDate);
+        forms.thenRight(valueTime.getControl()); // attach date to the right
                         // shares [- amount per share]
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
+        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //
@@ -287,7 +293,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         });
 
         WarningMessages warnings = new WarningMessages(this);
-        warnings.add(() -> model().getDate().isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
+        warnings.add(() -> LocalDateTime.of(model().getDate(), model().getTime()).isAfter(LocalDateTime.now()) ? Messages.MsgDateIsInTheFuture : null);
         model.addPropertyChangeListener(Properties.date.name(), e -> warnings.check());
 
         model.firePropertyChange(Properties.exchangeRateCurrencies.name(), "", model().getExchangeRateCurrencies()); //$NON-NLS-1$
@@ -334,7 +340,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDateTime.of(model().getDate(), model().getTime()));
 
         if (snapshot != null && model().getSecurity() != null)
         {

@@ -159,6 +159,14 @@ public abstract class Transaction implements Annotated
     {
         this.date = date;
     }
+    
+    /**
+     * Convenience method to support java.beans 
+     */
+    public void setDateTime(LocalDateTime date)
+    {
+        this.date = date;
+    }
 
     public String getCurrencyCode()
     {

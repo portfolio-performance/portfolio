@@ -26,8 +26,8 @@ import org.eclipse.swt.widgets.Spinner;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class SelectSplitPage extends AbstractWizardPage
@@ -85,7 +85,7 @@ public class SelectSplitPage extends AbstractWizardPage
         Label labelExDate = new Label(container, SWT.NONE);
         labelExDate.setText(Messages.ColumnExDate);
 
-        DateTimePicker boxExDate = new DateTimePicker(container);
+        DateTimeDatePicker boxExDate = new DateTimeDatePicker(container);
 
         Label labelSplit = new Label(container, SWT.NONE);
         labelSplit.setText(Messages.SplitWizardLabelSplit);
@@ -151,7 +151,7 @@ public class SelectSplitPage extends AbstractWizardPage
         context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity),
                         BeanProperties.value("security").observe(model), null, null); //$NON-NLS-1$
 
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(boxExDate.getControl()), //
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxExDate.getControl()), //
                         BeanProperties.value("exDate").observe(model), //$NON-NLS-1$
                         new UpdateValueStrategy() //
                                         .setAfterConvertValidator(value -> {
