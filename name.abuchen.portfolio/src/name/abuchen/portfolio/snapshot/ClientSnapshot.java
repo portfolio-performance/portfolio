@@ -31,7 +31,7 @@ public class ClientSnapshot
     private Money assets;
 
     @Deprecated
-    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
+    public static ClientSnapshot createEndOfDay(Client client, CurrencyConverter converter, LocalDate date)
     {
         return create(client, converter, date.atTime(23, 59, 59));
     }

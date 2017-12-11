@@ -62,7 +62,7 @@ import name.abuchen.portfolio.util.Interval;
         dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
-        ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(getClient(), getCurrencyConverter(), dates[0]);
         long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
 
         // calculate series
@@ -72,7 +72,7 @@ import name.abuchen.portfolio.util.Interval;
         {
             dates[index] = date;
 
-            snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
+            snapshot = ClientSnapshot.createEndOfDay(getClient(), getCurrencyConverter(), dates[index]);
             long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
 
             if (valuation + inboundTransferals[index] == 0)

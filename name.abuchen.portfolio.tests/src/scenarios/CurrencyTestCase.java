@@ -59,7 +59,7 @@ public class CurrencyTestCase
     {
         LocalDate requestedTime = LocalDate.parse("2015-01-16");
 
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(client, converter, requestedTime);
 
         AccountSnapshot accountEURsnapshot = lookupAccountSnapshot(snapshot, accountEUR);
         assertThat(accountEURsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, 1000_00)));

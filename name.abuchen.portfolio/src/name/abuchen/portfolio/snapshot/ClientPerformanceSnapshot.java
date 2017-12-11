@@ -124,8 +124,8 @@ public class ClientPerformanceSnapshot
         this.client = client;
         this.converter = converter;
         this.period = period;
-        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStartDate());
-        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEndDate());
+        this.snapshotStart = ClientSnapshot.createEndOfDay(client, converter, period.getStartDate());
+        this.snapshotEnd = ClientSnapshot.createEndOfDay(client, converter, period.getEndDate());
 
         calculate();
     }

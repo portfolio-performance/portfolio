@@ -939,7 +939,7 @@ public class SecuritiesChart
     private Optional<Double> getPurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(filteredClient, currencyConverter, date);
         AssetPosition position = snapshot.getPositionsByVehicle().get(security);
         if (position == null)
             return Optional.empty();
