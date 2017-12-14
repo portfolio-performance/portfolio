@@ -99,10 +99,11 @@ public class CrossEntryCheckTest
     @Test
     public void testThatMatchingBuySellEntriesAreFixed()
     {
-        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
+        LocalDateTime date = LocalDateTime.now();
+        portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 1, security, 1,
                         PortfolioTransaction.Type.SELL, 1, 0));
 
-        account.addTransaction(new AccountTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, //
+        account.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 1, security, //
                         AccountTransaction.Type.SELL));
 
         assertThat(new CrossEntryCheck().execute(client).size(), is(0));
@@ -113,10 +114,11 @@ public class CrossEntryCheckTest
     @Test
     public void testThatAlmostMatchingBuySellEntriesAreNotMatched()
     {
-        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
+        LocalDateTime date = LocalDateTime.now();
+        portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 1, security, 1,
                         PortfolioTransaction.Type.SELL, 1, 0));
 
-        account.addTransaction(new AccountTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 2, security,
+        account.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 2, security,
                         AccountTransaction.Type.SELL));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
@@ -164,14 +166,15 @@ public class CrossEntryCheckTest
         Account second = new Account();
         client.addAccount(second);
 
-        account.addTransaction(new AccountTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 2, security,
+        LocalDateTime date = LocalDateTime.now();
+        account.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 2, security,
                         AccountTransaction.Type.TRANSFER_IN));
 
-        AccountTransaction umatched = new AccountTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 2, security,
+        AccountTransaction umatched = new AccountTransaction(date, CurrencyUnit.EUR, 2, security,
                         AccountTransaction.Type.TRANSFER_OUT);
         account.addTransaction(umatched);
 
-        second.addTransaction(new AccountTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 2, security,
+        second.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 2, security,
                         AccountTransaction.Type.TRANSFER_OUT));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
@@ -222,14 +225,15 @@ public class CrossEntryCheckTest
         Portfolio second = new Portfolio();
         client.addPortfolio(second);
 
-        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 3, security, 1,
+        LocalDateTime date = LocalDateTime.now();
+        portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
                         PortfolioTransaction.Type.TRANSFER_IN, 1, 0));
 
-        PortfolioTransaction umatched = new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 3, security, 1,
+        PortfolioTransaction umatched = new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
                         PortfolioTransaction.Type.TRANSFER_OUT, 1, 0);
         portfolio.addTransaction(umatched);
 
-        second.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 3, security, 1,
+        second.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
                         PortfolioTransaction.Type.TRANSFER_OUT, 1, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);

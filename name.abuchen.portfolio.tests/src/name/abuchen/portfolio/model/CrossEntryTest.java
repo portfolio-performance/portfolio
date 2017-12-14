@@ -4,7 +4,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 
@@ -43,7 +42,8 @@ public class CrossEntryTest
 
         BuySellEntry entry = new BuySellEntry(portfolio, account);
         entry.setCurrencyCode(CurrencyUnit.EUR);
-        entry.setDate(LocalDateTime.now());
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
         entry.setSecurity(security);
         entry.setShares(1 * Values.Share.factor());
         entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, 10)));
@@ -61,8 +61,8 @@ public class CrossEntryTest
         assertThat(pt.getSecurity(), is(security));
         assertThat(pa.getSecurity(), is(security));
         assertThat(pt.getAmount(), is(pa.getAmount()));
-        assertThat(pt.getDateTime(), is(LocalDateTime.now()));
-        assertThat(pa.getDateTime(), is(LocalDateTime.now()));
+        assertThat(pt.getDateTime(), is(date));
+        assertThat(pa.getDateTime(), is(date));
 
         assertThat(pt.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10L)));
         assertThat(pt.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 11L)));
@@ -92,7 +92,8 @@ public class CrossEntryTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(LocalDateTime.now());
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
         entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(1000 * Values.Amount.factor());
         entry.insert();
@@ -109,8 +110,8 @@ public class CrossEntryTest
         assertThat(pA.getSecurity(), nullValue());
         assertThat(pB.getSecurity(), nullValue());
         assertThat(pA.getAmount(), is(pB.getAmount()));
-        assertThat(pA.getDateTime(), is(LocalDateTime.now()));
-        assertThat(pB.getDateTime(), is(LocalDateTime.now()));
+        assertThat(pA.getDateTime(), is(date));
+        assertThat(pB.getDateTime(), is(date));
 
         // check cross entity identification
         assertThat(entry.getCrossOwner(pA), is((Object) accountB));
@@ -143,7 +144,8 @@ public class CrossEntryTest
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
         entry.setCurrencyCode(CurrencyUnit.EUR);
-        entry.setDate(LocalDateTime.now());
+        LocalDateTime date = LocalDateTime.now();
+        entry.setDate(date);
         entry.setAmount(1000);
         entry.setSecurity(security);
         entry.setShares(1);
@@ -161,8 +163,8 @@ public class CrossEntryTest
         assertThat(pA.getSecurity(), is(security));
         assertThat(pB.getSecurity(), is(security));
         assertThat(pA.getAmount(), is(pB.getAmount()));
-        assertThat(pA.getDateTime(), is(LocalDateTime.now()));
-        assertThat(pB.getDateTime(), is(LocalDateTime.now()));
+        assertThat(pA.getDateTime(), is(date));
+        assertThat(pB.getDateTime(), is(date));
 
         // check cross entity identification
         assertThat(entry.getCrossOwner(pA), is((Object) portfolioB));
