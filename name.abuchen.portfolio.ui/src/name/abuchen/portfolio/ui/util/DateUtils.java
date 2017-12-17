@@ -29,6 +29,6 @@ public class DateUtils
 
     public static int getTransactionDateColumnWidth()
     {
-        return useTransactionDateTime() ? 120 : 80;
+        return useTransactionDateTime() ? 100 : 80;
     }
 }

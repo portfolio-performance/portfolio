@@ -198,7 +198,7 @@ public abstract class Values<E>
     
     public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1D, 1) //$NON-NLS-1$
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM);
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT);
 
         @Override
         public String format(LocalDateTime date)

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 
@@ -8,7 +9,7 @@ public class XStreamLocalDateTimeConverter extends AbstractSingleValueConverter
 {
     public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
     {
-        return type.equals(LocalDate.class);
+        return type.equals(LocalDateTime.class);
     }
 
     public String toString(Object source)
@@ -20,11 +21,21 @@ public class XStreamLocalDateTimeConverter extends AbstractSingleValueConverter
     {
         try
         {
-            return LocalDate.parse(s);
+            return LocalDateTime.parse(s);
         }
         catch (Exception e)
         {
-            throw new UnsupportedOperationException(e);
+            try
+            {
+                // legacy models could have values stored as LocalDate 
+                LocalDate localDate = LocalDate.parse(s);
+                return localDate.atStartOfDay();
+            }
+            catch (Exception ex)
+            {
+                ex.addSuppressed(e);
+                throw new UnsupportedOperationException(ex);
+            }
         }
     }
 }

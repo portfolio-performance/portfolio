@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,7 +34,7 @@ public class InvestmentPlanTest
         investmentPlan.setSecurity(security);
         investmentPlan.setAmount(Values.Amount.factorize(100));
         investmentPlan.setInterval(1);
-        investmentPlan.setStart(LocalDate.parse("2016-01-31"));
+        investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00:00"));
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 

@@ -9,7 +9,7 @@ public class XStreamLocalDateConverter extends AbstractSingleValueConverter
 {
     public boolean canConvert(@SuppressWarnings("rawtypes") Class type)
     {
-        return type.equals(LocalDateTime.class);
+        return type.equals(LocalDate.class);
     }
 
     public String toString(Object source)
@@ -21,21 +21,11 @@ public class XStreamLocalDateConverter extends AbstractSingleValueConverter
     {
         try
         {
-            return LocalDateTime.parse(s);
+            return LocalDate.parse(s);
         }
         catch (Exception e)
         {
-            try
-            {
-                // legacy models could have values stored as LocalDate 
-                LocalDate localDate = LocalDate.parse(s);
-                return localDate.atStartOfDay();
-            }
-            catch (Exception ex)
-            {
-                ex.addSuppressed(e);
-                throw new UnsupportedOperationException(ex);
-            }
+            throw new UnsupportedOperationException(e);
         }
     }
 }
