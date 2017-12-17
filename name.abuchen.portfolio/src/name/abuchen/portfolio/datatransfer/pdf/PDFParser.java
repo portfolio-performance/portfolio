@@ -6,11 +6,13 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -179,7 +181,32 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             for (Section<T> section : sections)
                 section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
+            
+            //Check for grouped sections
+            Map<Integer, List<Section<T>>> groupedSections = sections.stream().filter((sec)-> sec.IsGroup())
+                              .collect(Collectors.groupingBy(Section::GetGroupID, Collectors.toList()));
 
+            //Check if only one section is valid per group 
+            for (Entry<Integer, List<Section<T>>> group :groupedSections.entrySet())
+            {
+               long validSections = group.getValue().stream().filter((sec)-> sec.groupError == null).count();
+               if( validSections < 1)
+               {
+                   //at least one pattern couldn't be located in any of the groups.
+                   //Just show the first error message which was preserved
+                   throw new IllegalArgumentException(group.getValue().get(0).groupError);
+               }
+               else if( validSections > 1)
+               {
+                   //this should never happen
+                   throw new IllegalArgumentException("More than one section were successfully parsed"); //$NON-NLS-1$
+               }
+               else
+               {
+                   //ToDo: remove invalid sections?! to not mess up wrapper?
+               }
+            }
+            
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
@@ -192,6 +219,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
+        
+        
+        private boolean isGroup = false;
+        private int groupID;
+        private String groupError = null;
+        
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
@@ -207,6 +240,23 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         {
             this.isOptional = true;
             return this;
+        }
+
+        public Section<T> exclusiveOrGroup(int groupID)
+        {
+            this.isGroup = true;
+            this.groupID = groupID;
+            return this;
+        }
+        
+        public boolean IsGroup()
+        {
+            return this.isGroup;
+        }
+        
+        public int GetGroupID()
+        {
+            return this.groupID;
         }
 
         public Section<T> find(String string)
@@ -247,12 +297,20 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                         break;
                 }
             }
-
+            
             if (patternNo < pattern.size())
             {
                 // if section is optional, ignore if patterns do not match
                 if (isOptional)
                     return;
+                
+                if(this.isGroup)
+                {
+                    //preserve error message
+                    groupError = MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
+                                    patternNo, pattern.size(), pattern.toString(), filename);
+                    return;
+                }
 
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
                                 patternNo, pattern.size(), pattern.toString(), filename));
