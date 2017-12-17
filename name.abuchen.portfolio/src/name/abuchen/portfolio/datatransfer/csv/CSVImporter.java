@@ -25,7 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -33,6 +38,8 @@ import org.apache.commons.csv.CSVStrategy;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.util.Isin;
 
 public class CSVImporter
 {
@@ -155,6 +162,7 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
         };
 
@@ -290,6 +298,72 @@ public class CSVImporter
         }
     }
 
+    public static class ISINField extends CSVImporter.Field
+    {
+
+        /* package */ ISINField(String name)
+        {
+            super(name);
+        }
+
+        public ISINFormat createFormat(List<Security> securityList)
+        {
+            return new ISINFormat(securityList);
+        }
+    }
+
+    public static class ISINFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+
+        private Set<String> existingISINs;
+
+        public ISINFormat(List<Security> securityList)
+        {
+            existingISINs = securityList.stream().map(Security::getIsin)
+                            .filter(isin -> isin != null && !isin.trim().isEmpty()).collect(Collectors.toSet());
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            String s = (String) obj;
+            if (s == null)
+                throw new IllegalArgumentException();
+
+            return toAppendTo.append(s);
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            Objects.requireNonNull(pos);
+
+            String isin = source.trim().toUpperCase();
+
+            // check for a partial match (ISIN maybe only part of the field:
+            // "Zins/Dividende ISIN DE0007164600 SAP SE O."
+
+            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+            Matcher matcher = pattern.matcher(isin);
+            if (matcher.find())
+                isin = matcher.group(1);
+
+            // return ISIN as valid if a) it is a valid ISIN number, and b) it
+            // is one of the existing ISIN
+
+            if (Isin.isValid(isin) && existingISINs.contains(isin))
+            {
+                pos.setIndex(source.length());
+                return isin;
+            }
+            else
+            {
+                return null;
+            }
+        }
+    }
+
     private final Client client;
     private final File inputFile;
     private final List<CSVExtractor> extractors;
@@ -377,10 +451,8 @@ public class CSVImporter
 
     public void processFile() throws IOException
     {
-        FileInputStream stream = null;
-        try
+        try (FileInputStream stream = new FileInputStream(inputFile))
         {
-            stream = new FileInputStream(inputFile);
             Reader reader = new InputStreamReader(stream, encoding);
 
             CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
@@ -417,18 +489,6 @@ public class CSVImporter
 
             mapToImportDefinition();
         }
-        finally
-        {
-            if (stream != null)
-            {
-                try
-                {
-                    stream.close();
-                }
-                catch (IOException ignore)
-                {}
-            }
-        }
     }
 
     private void mapToImportDefinition()
@@ -456,6 +516,11 @@ public class CSVImporter
                     else if (field instanceof AmountField)
                     {
                         column.setFormat(AmountField.FORMATS[0]);
+                    }
+                    else if (field instanceof ISINField)
+                    {
+                        column.setFormat(new FieldFormat(null,
+                                        ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {

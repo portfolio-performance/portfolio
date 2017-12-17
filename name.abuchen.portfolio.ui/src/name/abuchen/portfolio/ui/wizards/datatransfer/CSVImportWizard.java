@@ -88,16 +88,17 @@ public class CSVImportWizard extends Wizard
     @Override
     public void addPages()
     {
-        definitionPage = new CSVImportDefinitionPage(importer, target != null);
+        definitionPage = new CSVImportDefinitionPage(client, importer, target != null);
         addPage(definitionPage);
 
+        selectSecurityPage = new SelectSecurityPage(client);
+        addPage(selectSecurityPage);
+        
         reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
                         Arrays.asList(new Extractor.InputFile(importer.getInputFile())), REVIEW_PAGE_ID);
         reviewPage.setDoExtractBeforeEveryPageDisplay(true);
         addPage(reviewPage);
 
-        selectSecurityPage = new SelectSecurityPage(client);
-        addPage(selectSecurityPage);
 
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }

@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ExportWizard extends Wizard
 {
@@ -150,7 +151,7 @@ public class ExportWizard extends Wizard
             FileDialog dialog = new FileDialog(getShell(), SWT.SAVE);
             dialog.setOverwrite(true);
             if (name != null)
-                dialog.setFileName(name + ".csv"); //$NON-NLS-1$
+                dialog.setFileName(TextUtil.sanitizeFilename(name + ".csv")); //$NON-NLS-1$
             String fileName = dialog.open();
 
             if (fileName != null)

@@ -197,7 +197,7 @@ public class CSVExporter
 
             for (SecurityPrice p : security.getPrices())
             {
-                printer.print(p.getTime().toString());
+                printer.print(p.getDate().toString());
                 printer.print(Values.Quote.format(p.getValue()));
                 printer.println();
             }
@@ -223,7 +223,7 @@ public class CSVExporter
             {
                 export.add(s);
 
-                LocalDate quoteDate = prices.get(0).getTime();
+                LocalDate quoteDate = prices.get(0).getDate();
                 if (earliestDate == null)
                     earliestDate = quoteDate;
                 else

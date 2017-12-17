@@ -75,11 +75,13 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.note = note;
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;

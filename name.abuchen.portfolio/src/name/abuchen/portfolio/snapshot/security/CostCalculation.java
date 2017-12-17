@@ -89,8 +89,22 @@ import name.abuchen.portfolio.money.Money;
     @Override
     public void visit(CurrencyConverter converter, AccountTransaction t)
     {
-        if (t.getType() == AccountTransaction.Type.TAX_REFUND)
-            taxes -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+        switch (t.getType())
+        {
+            case TAXES:
+                taxes += converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                break;
+            case TAX_REFUND:
+                taxes -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                break;
+            case FEES:
+                fees += converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                break;
+            case FEES_REFUND:
+                fees -= converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount();
+                break;
+            default:
+        }
     }
 
     @Override

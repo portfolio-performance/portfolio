@@ -51,6 +51,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Quote;
@@ -442,7 +443,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     protected void createBottomTable(Composite parent)
     {
         Composite sash = new Composite(parent, SWT.NONE);
-        
+
         sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
@@ -502,7 +503,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((SecurityPrice) element).getTime());
+                return Values.Date.format(((SecurityPrice) element).getDate());
             }
 
             @Override
@@ -516,12 +517,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return null;
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
-                int days = Dates.daysBetween(previous.getTime(), current.getTime());
+                int days = Dates.daysBetween(previous.getDate(), current.getDate());
                 return days > 3 ? Colors.WARNING : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -566,7 +567,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         return;
 
                     SecurityPrice price = new SecurityPrice();
-                    price.setTime(LocalDate.now());
+                    price.setDate(LocalDate.now());
 
                     security.addPrice(price);
 
@@ -662,7 +663,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -757,6 +758,32 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     }
                 }
                 return null;
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnFees_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnTaxes_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);

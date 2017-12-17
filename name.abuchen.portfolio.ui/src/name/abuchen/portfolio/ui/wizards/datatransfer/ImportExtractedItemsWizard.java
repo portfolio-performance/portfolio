@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.HelloBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
@@ -82,6 +84,9 @@ public final class ImportExtractedItemsWizard extends Wizard
         extractors.add(new OnvistaPDFExtractor(client));
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
+        extractors.add(new HelloBankPDFExtractor(client));
+
+        Collections.sort(extractors, (r, l) -> r.getLabel().compareToIgnoreCase(l.getLabel()));
     }
 
     public void setLegacyMode(boolean isLegacyMode)

@@ -403,7 +403,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 SecurityPerformanceRecord record = (SecurityPerformanceRecord) element;
 
                 return MessageFormat.format(Messages.TooltipQuoteAtDate, getText(element),
-                                Values.Date.format(record.getLatestSecurityPrice().getTime()));
+                                Values.Date.format(record.getLatestSecurityPrice().getDate()));
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$

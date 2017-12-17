@@ -554,12 +554,17 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC))
-                            .schedule(1000);
+            Job initialQuoteUpdate = new UpdateQuotesJob(client,
+                            EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
+            initialQuoteUpdate.schedule(1000);
 
-            int tenMinutes = 1000 * 60 * 10;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(tenMinutes);
-            job.schedule(tenMinutes);
+            CreateInvestmentPlanTxJob checkInvestmentPlans = make(CreateInvestmentPlanTxJob.class, this);
+            checkInvestmentPlans.startAfter(initialQuoteUpdate);
+            checkInvestmentPlans.schedule(1100);
+
+            int thirtyMinutes = 1000 * 60 * 30;
+            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
+            job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;

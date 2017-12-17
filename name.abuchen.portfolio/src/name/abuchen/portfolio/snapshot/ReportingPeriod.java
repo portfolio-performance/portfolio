@@ -265,6 +265,11 @@ public abstract class ReportingPeriod
         {
             super(startDate, endDate);
         }
+        
+        public FromXtoY(Interval interval)
+        {
+            super(interval.getStart(), interval.getEnd());
+        }
 
         @Override
         public void writeTo(StringBuilder buffer)

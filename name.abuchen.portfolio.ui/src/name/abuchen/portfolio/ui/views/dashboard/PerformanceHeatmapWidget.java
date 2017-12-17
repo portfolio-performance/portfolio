@@ -3,8 +3,13 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.TextStyle;
+import java.util.Arrays;
 import java.util.Locale;
+import java.util.function.DoubleFunction;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -20,13 +25,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
+import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
@@ -101,6 +109,69 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
     }
 
+    private class ColorSchemaConfig implements WidgetConfig
+    {
+        private final WidgetDelegate delegate;
+
+        private ColorSchema colorSchema = ColorSchema.GREEN_YELLOW_RED;
+
+        public ColorSchemaConfig(WidgetDelegate delegate)
+        {
+            this.delegate = delegate;
+
+            String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.COLOR_SCHEMA.name());
+
+            if (code != null)
+            {
+                try
+                {
+                    colorSchema = ColorSchema.valueOf(code);
+                }
+                catch (IllegalArgumentException ignore)
+                {
+                    PortfolioPlugin.log(ignore);
+                }
+            }
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            MenuManager subMenu = new MenuManager(getLabel());
+            manager.add(subMenu);
+
+            subMenu.add(buildAction(Messages.LabelGreenYellowRed, ColorSchema.GREEN_YELLOW_RED));
+            subMenu.add(buildAction(Messages.LabelGreenWhiteRed, ColorSchema.GREEN_WHITE_RED));
+        }
+
+        private Action buildAction(String label, ColorSchema schema)
+        {
+            Action action = new SimpleAction(label, a -> {
+                this.colorSchema = schema;
+                delegate.getWidget().getConfiguration().put(Dashboard.Config.COLOR_SCHEMA.name(), schema.name());
+                delegate.getClient().markDirty();
+            });
+            action.setChecked(this.colorSchema == schema);
+            return action;
+        }
+
+        @Override
+        public String getLabel()
+        {
+            return Messages.LabelColorSchema;
+        }
+
+        public ColorSchema getColorSchema()
+        {
+            return colorSchema;
+        }
+    }
+
+    private enum ColorSchema
+    {
+        GREEN_YELLOW_RED, GREEN_WHITE_RED
+    }
+
     private Composite table;
     private Label title;
     private DashboardResources resources;
@@ -111,6 +182,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
 
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, true));
+        addConfig(new ColorSchemaConfig(this));
     }
 
     @Override
@@ -137,19 +209,38 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         return container;
     }
 
-    private Color getScaledColorForPerformance(double performance)
+    private DoubleFunction<Color> buildColorFunction()
     {
-        // convert to 0 = -0.07 -> 1 = +0.07
+        ColorSchema schema = get(ColorSchemaConfig.class).getColorSchema();
 
-        final float max = 0.07f;
+        switch (schema)
+        {
+            case GREEN_YELLOW_RED:
+                return performance -> {
+                    // convert to 0 = -0.07 -> 1 = +0.07
+                    final double max = 0.07f;
 
-        float p = (float) performance;
-        p = Math.max(-max, p);
-        p = Math.min(max, p);
-        p = (p + max) * (1 / (2 * max));
+                    double p = performance;
+                    p = Math.max(-max, p);
+                    p = Math.min(max, p);
+                    p = (p + max) * (1 / (2 * max));
 
-        float hue = p * 120f; // 0 = red, 60 = yellow, 120 = red
-        return resources.getResourceManager().createColor(new RGB(hue, 0.9f, 1f));
+                    // 0 = red, 60 = yellow, 120 = red
+                    float hue = (float) p * 120f;
+                    return resources.getResourceManager().createColor(new RGB(hue, 0.9f, 1f));
+                };
+            case GREEN_WHITE_RED:
+                return performance -> {
+                    double max = 0.07;
+                    double p = Math.min(max, Math.abs(performance));
+                    int colorValue = (int) (255 * (1 - p / max));
+                    RGB color = performance > 0d ? new RGB(colorValue, 255, colorValue)
+                                    : new RGB(255, colorValue, colorValue);
+                    return resources.getResourceManager().createColor(color);
+                };
+            default:
+                throw new IllegalArgumentException();
+        }
     }
 
     private void fillTable()
@@ -160,11 +251,25 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         // the median
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval();
 
+        DoubleFunction<Color> coloring = buildColorFunction();
+
         addHeaderRow();
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
 
-        for (Integer year : interval.iterYears())
+        // adapt interval to include the first and last month fully
+
+        Interval calcInterval = Interval.of(
+                        interval.getStart().getDayOfMonth() == interval.getStart().lengthOfMonth() ? interval.getStart()
+                                        : interval.getStart().withDayOfMonth(1).minusDays(1),
+                        interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
+
+        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries,
+                        new ReportingPeriod.FromXtoY(calcInterval));
+
+        Interval actualInterval = performanceIndex.getActualInterval();
+        
+        for (Integer year : actualInterval.iterYears())
         {
             // year
             Cell cell = new Cell(table, () -> {
@@ -176,9 +281,9 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             // monthly data
             for (LocalDate month = LocalDate.of(year, 1, 1); month.getYear() == year; month = month.plusMonths(1))
             {
-                if (interval.contains(month))
+                if (actualInterval.contains(month))
                 {
-                    cell = createCell(dataSeries, month);
+                    cell = createCell(performanceIndex, month, coloring);
                     InfoToolTip.attach(cell, Messages.PerformanceHeatmapToolTip);
                 }
                 else
@@ -191,18 +296,31 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         table.layout(true);
     }
 
-    private Cell createCell(DataSeries dataSeries, LocalDate month)
+    private Cell createCell(PerformanceIndex index, LocalDate month, DoubleFunction<Color> coloring)
     {
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(month.minusDays(1),
-                        month.withDayOfMonth(month.lengthOfMonth()));
-        PerformanceIndex performance = getDashboardData().calculate(dataSeries, period);
+        int start = Arrays.binarySearch(index.getDates(), month.minusDays(1));
+        // should not happen, but let's be defensive this time
+        if (start < 0)
+            return new Cell(table, () -> ""); //$NON-NLS-1$
+        
+        int end = Arrays.binarySearch(index.getDates(), month.withDayOfMonth(month.lengthOfMonth()));
+        // make sure there is an end index if the binary search returns a
+        // negative value (i.e. if the current month is not finished)
+        if (end < 0)
+        {
+            // take the last available date
+            end = index.getDates().length - 1;
+        }
+
+        double performance = ((index.getAccumulatedPercentage()[end] + 1)
+                        / (index.getAccumulatedPercentage()[start] + 1)) - 1;
 
         return new Cell(table, new CellDataProvider()
         {
             @Override
             public Color getBackground()
             {
-                return getScaledColorForPerformance(performance.getFinalAccumulatedPercentage());
+                return coloring.apply(performance);
             }
 
             @Override
@@ -214,7 +332,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             @Override
             public String getText()
             {
-                return Values.PercentShort.format(performance.getFinalAccumulatedPercentage());
+                return Values.PercentShort.format(performance);
             }
         });
     }

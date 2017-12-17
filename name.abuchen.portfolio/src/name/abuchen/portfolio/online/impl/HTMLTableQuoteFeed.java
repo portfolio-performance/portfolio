@@ -157,7 +157,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 try
                 {
                     LocalDate date = LocalDate.parse(text, formatters[ii]);
-                    price.setTime(date);
+                    price.setDate(date);
                     return;
                 }
                 catch (DateTimeParseException e) // NOSONAR
@@ -254,30 +254,26 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
         boolean isUpdated = false;
 
-        for (Security security : securities)
+        // if latestFeed is null, then the policy is 'use same configuration
+        // as historic quotes'
+        String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+
+        List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
+        int size = quotes.size();
+        if (size > 0)
         {
-            // if latestFeed is null, then the policy is 'use same configuration
-            // as historic quotes'
-            String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
+            Collections.sort(quotes);
 
-            List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
-            int size = quotes.size();
-            if (size > 0)
-            {
-                Collections.sort(quotes);
+            LatestSecurityPrice latest = quotes.get(size - 1);
+            LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
+            latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
+            latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
-                LatestSecurityPrice latest = quotes.get(size - 1);
-                LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
-                latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
-                latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
-
-                boolean isAdded = security.setLatest(latest);
-                isUpdated = isUpdated || isAdded;
-            }
+            isUpdated = security.setLatest(latest);
         }
 
         return isUpdated;
@@ -291,7 +287,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         boolean isUpdated = false;
         for (LatestSecurityPrice quote : quotes)
         {
-            boolean isAdded = security.addPrice(new SecurityPrice(quote.getTime(), quote.getValue()));
+            boolean isAdded = security.addPrice(new SecurityPrice(quote.getDate(), quote.getValue()));
             isUpdated = isUpdated || isAdded;
         }
 
@@ -548,7 +544,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         for (LatestSecurityPrice p : prices)
         {
-            writer.print(Values.Date.format(p.getTime()));
+            writer.print(Values.Date.format(p.getDate()));
             writer.print("\t");
             writer.print(Values.Quote.format(p.getValue()));
             writer.print("\t");

@@ -9,7 +9,6 @@ import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -17,9 +16,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -41,6 +38,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -149,28 +147,18 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         plans.setContentProvider(ArrayContentProvider.getInstance());
         plans.setInput(getClient().getPlans());
 
-        plans.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        plans.addSelectionChangedListener(event -> {
+            InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
-                if (plan != null)
-                    transactions.setInput(plan.getPortfolio(), plan.getTransactions());
-                else
-                    transactions.setInput(null, null);
+            if (plan != null)
+                transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+            else
+                transactions.setInput(null, null);
 
-                transactions.refresh();
-            }
+            transactions.refresh();
         });
 
-        hookContextMenu(plans.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillPlansContextMenu(manager);
-            }
-        });
+        hookContextMenu(plans.getTable(), this::fillPlansContextMenu);
     }
 
     private void addColumns(ShowHideColumnHelper support)
@@ -195,7 +183,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
-        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
+        List<Security> securities = new ArrayList<>(getClient().getSecurities());
         Collections.sort(securities, new Security.ByName());
         new ListEditingSupport(InvestmentPlan.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
@@ -238,7 +226,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
-        List<Account> accounts = new ArrayList<Account>();
+        List<Account> accounts = new ArrayList<>();
         accounts.add(InvestmentPlanModel.DELIVERY);
         accounts.addAll(getClient().getAccounts());
         new ListEditingSupport(InvestmentPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
@@ -267,7 +255,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "interval").attachTo(column); //$NON-NLS-1$
-        List<Integer> available = new ArrayList<Integer>();
+        List<Integer> available = new ArrayList<>();
         for (int ii = 1; ii <= 12; ii++)
             available.add(ii);
         new ListEditingSupport(InvestmentPlan.class, "interval", available).addListener(this).attachTo(column); //$NON-NLS-1$
@@ -299,6 +287,25 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
         new ValueEditingSupport(InvestmentPlan.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnAutoGenerate, SWT.LEFT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return ((InvestmentPlan) e).isAutoGenerate() ? Images.CHECK.image() : null;
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "autoGenerate").attachTo(column); //$NON-NLS-1$
+        new BooleanEditingSupport(InvestmentPlan.class, "autoGenerate").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new NoteColumn();

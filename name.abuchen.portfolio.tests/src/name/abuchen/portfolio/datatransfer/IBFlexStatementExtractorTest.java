@@ -46,13 +46,12 @@ public class IBFlexStatementExtractorTest
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<Exception>();
-        extractor.extract(Collections.singletonList(tempFile), errors);
-        List<Item> results = extractor.getResults();
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
 
-        assertThat(results.size(), is(26));
+        assertThat(results.size(), is(29));
 
         assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
@@ -65,9 +64,54 @@ public class IBFlexStatementExtractorTest
                         .filter(i -> i.getSubject() instanceof AccountTransaction
                                         && ((AccountTransaction) i.getSubject()).getType() == Type.INTEREST_CHARGE)
                         .findFirst());
+        assertTax(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction
+                                        && ((AccountTransaction) i.getSubject()).getType() == Type.TAXES)
+                        .findFirst());
+        assertFee(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction
+                                        && ((AccountTransaction) i.getSubject()).getType() == Type.FEES)
+                        .skip(2).findFirst());
+        assertFeeRefund(results.stream().filter(i -> i instanceof TransactionItem)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction
+                                        && ((AccountTransaction) i.getSubject()).getType() == Type.FEES_REFUND)
+                        .findFirst());
         // TODO Check CorporateActions
     }
 
+    private void assertTax(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(Type.TAXES));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 2_07L)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2017-09-15")));
+    }
+    
+    private void assertFee(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(Type.FEES));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_18L)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2017-05-03")));
+    }
+    
+    private void assertFeeRefund(Optional<Item> item)
+    {
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+
+        assertThat(entry.getType(), is(Type.FEES_REFUND));
+        assertThat(entry.getMonetaryAmount(), is(Money.of("USD", 9_18L)));
+        assertThat(entry.getDate(), is(LocalDate.parse("2017-05-03")));
+    }
+    
     private void assertInterestCharge(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
@@ -142,13 +186,12 @@ public class IBFlexStatementExtractorTest
     @Test
     public void testThatExceptionIsAddedForNonFlexStatementDocuments() throws IOException
     {
-        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift.txt");
+        InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
         List<Exception> errors = new ArrayList<Exception>();
-        extractor.extract(Collections.singletonList(tempFile), errors);
-        List<Item> results = extractor.getResults();
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
 
         assertThat(results.isEmpty(), is(true));
         assertThat(errors.size(), is(1));

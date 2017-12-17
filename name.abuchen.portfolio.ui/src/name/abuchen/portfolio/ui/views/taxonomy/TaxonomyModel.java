@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -49,6 +50,14 @@ public final class TaxonomyModel
     {
         void onModelEdited();
     }
+    
+    public static final String KEY_FILTER_NON_ZERO = "-filter-non-zero"; //$NON-NLS-1$
+    public static final String KEY_FILTER_NOT_RETIRED = "-filter-not-retired"; //$NON-NLS-1$
+
+    public static final Predicate<TaxonomyNode> FILTER_NON_ZERO = node -> node.isClassification()
+                    || !node.getActual().isZero();
+    public static final Predicate<TaxonomyNode> FILTER_NOT_RETIRED = node -> node.isClassification()
+                    || !node.getAssignment().getInvestmentVehicle().isRetired();
 
     private final Taxonomy taxonomy;
     private final Client client;
@@ -73,6 +82,8 @@ public final class TaxonomyModel
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
 
+    private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
+
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
@@ -85,7 +96,7 @@ public final class TaxonomyModel
         this.taxonomy = taxonomy;
         this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        
+
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
@@ -260,6 +271,11 @@ public final class TaxonomyModel
         this.expansionStateRebalancing = expansionStateRebalancing;
     }
 
+    public List<Predicate<TaxonomyNode>> getNodeFilters()
+    {
+        return nodeFilters;
+    }
+
     public Taxonomy getTaxonomy()
     {
         return taxonomy;
@@ -324,7 +340,7 @@ public final class TaxonomyModel
         this.snapshot = newSnapshot;
         recalculate();
     }
-    
+
     public Client getFilteredClient()
     {
         return filteredClient;

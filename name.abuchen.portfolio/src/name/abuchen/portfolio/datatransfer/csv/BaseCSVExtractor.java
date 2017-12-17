@@ -92,7 +92,7 @@ import name.abuchen.portfolio.money.Money;
     {
         Security security = null;
 
-        String isin = getText(Messages.CSVColumn_ISIN, rawValues, field2column);
+        String isin = getISIN(Messages.CSVColumn_ISIN, rawValues, field2column);
         String tickerSymbol = getText(Messages.CSVColumn_TickerSymbol, rawValues, field2column);
         String wkn = getText(Messages.CSVColumn_WKN, rawValues, field2column);
         String name = getText(Messages.CSVColumn_SecurityName, rawValues, field2column);

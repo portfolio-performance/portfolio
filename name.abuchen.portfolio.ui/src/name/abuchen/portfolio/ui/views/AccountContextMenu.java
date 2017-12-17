@@ -32,12 +32,13 @@ public class AccountContextMenu
             return;
 
         for (final AccountTransaction.Type type : EnumSet.of( //
-                        AccountTransaction.Type.INTEREST, //
                         AccountTransaction.Type.DEPOSIT, //
                         AccountTransaction.Type.REMOVAL, //
                         AccountTransaction.Type.TAXES, //
+                        AccountTransaction.Type.TAX_REFUND, //
                         AccountTransaction.Type.FEES, //
                         AccountTransaction.Type.FEES_REFUND, //
+                        AccountTransaction.Type.INTEREST, //
                         AccountTransaction.Type.INTEREST_CHARGE))
         {
             new OpenDialogAction(owner, type.toString() + "...") //$NON-NLS-1$
@@ -95,12 +96,5 @@ public class AccountContextMenu
                             .with(security) //
                             .addTo(manager);
         }
-
-        new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
-                        .type(AccountTransactionDialog.class) //
-                        .parameters(AccountTransaction.Type.TAX_REFUND) //
-                        .with(account) //
-                        .with(security) //
-                        .addTo(manager);
     }
 }

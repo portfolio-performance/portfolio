@@ -980,8 +980,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             if (t.getType() != AccountTransaction.Type.DIVIDENDS
                                             && t.getType() != AccountTransaction.Type.BUY
                                             && t.getType() != AccountTransaction.Type.SELL
-                                            && t.getType() != AccountTransaction.Type.TAX_REFUND) { return new TransactionItem(
-                                                            t); }
+                                            && t.getType() != AccountTransaction.Type.TAX_REFUND)
+                                                return new TransactionItem(t);
                             return null;
                         });
     }
@@ -1081,8 +1081,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             if (t.getType() != AccountTransaction.Type.DIVIDENDS
                                             && t.getType() != AccountTransaction.Type.BUY
                                             && t.getType() != AccountTransaction.Type.SELL
-                                            && t.getType() != AccountTransaction.Type.TAX_REFUND) { return new TransactionItem(
-                                                            t); }
+                                            && t.getType() != AccountTransaction.Type.TAX_REFUND)
+                                return new TransactionItem(t);
                             return null;
                         });
     }

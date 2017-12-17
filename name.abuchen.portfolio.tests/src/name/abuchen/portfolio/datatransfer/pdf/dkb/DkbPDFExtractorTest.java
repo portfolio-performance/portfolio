@@ -287,6 +287,43 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testInvestmentertraege() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbInvestmentertraege.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00B6YX5D40"));
+        assertThat(security.getWkn(), is("A1JKS0"));
+        assertThat(security.getName(), is("SPDR S&P US DIVID.ARISTOCR.ETF"));
+        assertThat(security.getCurrencyCode(), is("USD"));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-10-04")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2.09)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(10.6841)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.39))));
+    }
+
+    @Test
     public void testWertpapierKauf() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
@@ -317,6 +354,9 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
                         Values.Amount.factorize(/* 80.66 */0.00))));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.50))));
     }
 
     @Test
@@ -344,13 +384,13 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1760.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1760.91))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-01-25")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1000)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.91))));
     }
 
     @Test
@@ -378,13 +418,47 @@ public class DkbPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1400.00))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1410.00))));
         assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-03-06")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(29.2893)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+    }
+
+    @Test
+    public void testWertpapierKaufFonds2() throws IOException // Fonds, only 3 decimal places for amount of shares
+    {       
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbKaufFonds2.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertSecurityBuyFonds(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(130.41))));
+        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-10-05")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2.521)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.41))));
     }
 
     @Test
