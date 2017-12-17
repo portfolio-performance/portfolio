@@ -319,28 +319,25 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     @SuppressWarnings("nls")
     private XStream xstream()
     {
-        if (xstream == null)
-        {
             synchronized (this)
             {
-                if (xstream == null)
-                {
-                    xstream = new XStream();
+            if (xstream == null)
+            {
+                xstream = new XStream();
 
-                    xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
+                xstream.setClassLoader(ECBExchangeRateProvider.class.getClassLoader());
 
-                    xstream.registerConverter(new XStreamLocalDateConverter());
+                xstream.registerConverter(new XStreamLocalDateConverter());
 
-                    xstream.alias("data", ECBData.class);
-                    xstream.alias("series", ExchangeRateTimeSeriesImpl.class);
+                xstream.alias("data", ECBData.class);
+                xstream.alias("series", ExchangeRateTimeSeriesImpl.class);
 
-                    xstream.alias("rate", ExchangeRate.class);
-                    xstream.useAttributeFor(ExchangeRate.class, "time");
-                    xstream.aliasField("t", ExchangeRate.class, "time");
-                    xstream.useAttributeFor(ExchangeRate.class, "value");
-                    xstream.aliasField("v", ExchangeRate.class, "value");
+                xstream.alias("rate", ExchangeRate.class);
+                xstream.useAttributeFor(ExchangeRate.class, "time");
+                xstream.aliasField("t", ExchangeRate.class, "time");
+                xstream.useAttributeFor(ExchangeRate.class, "value");
+                xstream.aliasField("v", ExchangeRate.class, "value");
 
-                }
             }
         }
         return xstream;
