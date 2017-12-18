@@ -38,6 +38,8 @@ public class AccountContextMenu
                         AccountTransaction.Type.TAX_REFUND, //
                         AccountTransaction.Type.FEES, //
                         AccountTransaction.Type.FEES_REFUND, //
+                        AccountTransaction.Type.LOST, //
+                        AccountTransaction.Type.LOST_REFUND, //
                         AccountTransaction.Type.INTEREST, //
                         AccountTransaction.Type.INTEREST_CHARGE))
         {

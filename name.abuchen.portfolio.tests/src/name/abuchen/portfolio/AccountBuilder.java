@@ -79,6 +79,16 @@ public class AccountBuilder
     {
         return transaction(Type.FEES_REFUND, date, amount);
     }
+    
+    public AccountBuilder losts____(LocalDate date, long amount)
+    {
+        return transaction(Type.LOST, date, amount);
+    }
+
+    public AccountBuilder losts_refund(String date, long amount)
+    {
+        return transaction(Type.LOST_REFUND, date, amount);
+    }
 
     public AccountBuilder withdraw(String date, long amount)
     {

@@ -227,6 +227,10 @@ public class PortfolioClientFilter implements ClientFilter
                 case INTEREST_CHARGE:
                     pseudoAccount.internalAddTransaction(t);
                     break;
+                case LOST:
+                case LOST_REFUND:
+                    pseudoAccount.internalAddTransaction(t);
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }

@@ -81,6 +81,8 @@ public class AccountTransactionModel extends AbstractModel
             case REMOVAL:
             case FEES:
             case FEES_REFUND:
+            case LOST:
+            case LOST_REFUND:
             case TAXES:
             case TAX_REFUND:
             case INTEREST:

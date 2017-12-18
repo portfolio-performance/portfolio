@@ -132,6 +132,8 @@ public class ClientSecurityFilter implements ClientFilter
             case TRANSFER_OUT:
             case INTEREST:
             case INTEREST_CHARGE:
+            case LOST:
+            case LOST_REFUND:
             default:
                 throw new IllegalArgumentException();
         }

@@ -125,6 +125,7 @@ public class Messages extends NLS
     public static String ColumnFeedURLHistoric;
     public static String ColumnFeedURLLatest;
     public static String ColumnFees;
+    public static String ColumnLosts;
     public static String ColumnFees_Description;
     public static String ColumnFieldType;
     public static String ColumnFix;
@@ -635,6 +636,7 @@ public class Messages extends NLS
     public static String PerformanceTabEarnings;
     public static String PerformanceTabEarningsByAccount;
     public static String PerformanceTabFees;
+    public static String PerformanceTabLosts;
     public static String PerformanceTabOverview;
     public static String PerformanceTabTaxes;
     public static String PortfolioFilterRetiredPortfolios;

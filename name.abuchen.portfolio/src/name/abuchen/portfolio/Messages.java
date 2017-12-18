@@ -21,6 +21,7 @@ public class Messages extends NLS
     public static String ColumnFinalValue;
     public static String ColumnInitialValue;
     public static String ColumnPaidFees;
+    public static String ColumnLosts;
     public static String ColumnPaidTaxes;
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
