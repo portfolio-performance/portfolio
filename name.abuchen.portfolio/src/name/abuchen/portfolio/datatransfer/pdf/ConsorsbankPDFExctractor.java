@@ -372,27 +372,27 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
         pdfTransaction.section("currency", "stockfees").optional()
                         .match("(^.*)(B\\Drsenplatzgeb\\Dhr) (?<currency>\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("stockfees"))))))
 
                         .section("currency", "brokerage").optional()
                         .match("(^.*)(Provision) (?<currency>\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("brokerage"))))))
 
                         .section("currency", "fee").optional()
                         .match("(^.*)(Handelsentgelt) (?<currency>\\w{3}+) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .section("currency", "basicfees").optional()
                         .match("(^.*)(Grundgeb\\Dhr) (?<currency>\\w{3}+) (?<basicfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("basicfees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("basicfees"))))))
 
                         .section("currency", "assetbasedfees").optional()
                         .match("(^.*)(Consorsbank Ausgabegeb.hr.*%) (?<currency>\\w{3}+) (?<assetbasedfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("assetbasedfees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("assetbasedfees"))))))
 
                         .section("currency", "expenses").optional()
                         .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")

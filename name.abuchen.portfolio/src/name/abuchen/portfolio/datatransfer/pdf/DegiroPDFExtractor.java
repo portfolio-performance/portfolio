@@ -98,7 +98,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 
                                 // the difference between the accountMoney and the amount after changing the currency
                                 // are the fees and taxes which had to be paid in Fx
-                                Money feesAndTaxes = Money.of(currencyCode, asAmount(v.get("amount"))).subtract(accountMoney);        // in EUR
+                                Money feesAndTaxes = Money.of(currencyCode, v.asAmount(v.get("amount"))).subtract(accountMoney);        // in EUR
                                 BigDecimal feesAndTaxesFxValue = BigDecimal.valueOf(feesAndTaxes.getAmount())
                                                                            .multiply(exchangeRate);            // in USD
                                 Money feesAndTaxesFx = Money.of(t.getPortfolioTransaction().getSecurity().getCurrencyCode(),

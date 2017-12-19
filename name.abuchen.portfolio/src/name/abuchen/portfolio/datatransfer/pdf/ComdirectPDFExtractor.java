@@ -299,22 +299,22 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.section("fee", "currency").optional()
                         .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*B.rsenplatzabh.ng. Entgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Abwickl.entgelt Clearstream *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Gesamtprovision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
