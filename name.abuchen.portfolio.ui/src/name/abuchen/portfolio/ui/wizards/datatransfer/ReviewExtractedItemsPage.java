@@ -576,7 +576,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                     {
 
                         List<ExtractedEntry> entries = selectedExtractor //
-                                        .extract(files, errors).stream() //
+                                        .extract(client, files, errors).stream() //
                                         .map(ExtractedEntry::new) //
                                         .collect(Collectors.toList());
 

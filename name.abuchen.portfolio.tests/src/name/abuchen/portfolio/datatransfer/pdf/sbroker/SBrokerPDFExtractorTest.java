@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -32,14 +33,22 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class SBrokerPDFExtractorTest
 {
+    private Client client;
+
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sBroker_Kauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "sBroker_Kauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -67,11 +76,11 @@ public class SBrokerPDFExtractorTest
     @Test
     public void testWertpapierVerkauf1() throws IOException
     {
-        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sBroker_Verkauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "sBroker_Verkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -99,11 +108,11 @@ public class SBrokerPDFExtractorTest
     @Test
     public void testErtragsgutschrift1() throws IOException
     {
-        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sBroker_Ertragsgutschrift1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "sBroker_Ertragsgutschrift1.txt"),
                         errors);
 
         assertThat(errors, empty());

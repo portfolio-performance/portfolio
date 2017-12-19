@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -32,11 +33,18 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class DkbPDFExtractorPDFTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testErtragsgutschriftDividende() throws IOException
     {
-        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+        DkbPDFExtractor extractor = new DkbPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator
                         .resolve(getClass().getResource("DkBErtragsgutschrift2_GBP_Freibetrrag_ausgeschoepft.pdf"));
@@ -44,7 +52,7 @@ public class DkbPDFExtractorPDFTest
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
         inputFile.parse();
         
-        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
+        List<Item> results = extractor.extract(client, Arrays.asList(inputFile), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

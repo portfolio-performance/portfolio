@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -351,6 +352,6 @@ public interface Extractor
     /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<InputFile> files, List<Exception> errors);
+    List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors);
 
 }

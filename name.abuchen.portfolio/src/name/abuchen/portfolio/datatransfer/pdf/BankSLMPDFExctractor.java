@@ -3,11 +3,11 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
-import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -17,16 +17,12 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
 public class BankSLMPDFExctractor extends AbstractPDFExtractor
 {
-    private final NumberFormat swissNumberFormat = NumberFormat.getInstance(new Locale("de", "CH")); //$NON-NLS-1$ //$NON-NLS-2$
 
-    public BankSLMPDFExctractor(Client client) throws IOException
+    public BankSLMPDFExctractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier(getLabel());
         addBankIdentifier("Spar + Leihkasse"); //$NON-NLS-1$
 
@@ -59,14 +55,14 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match("Total Kurswert (?<currency>\\w{3}+) .*") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(v.asShares(v.get("shares")));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("amount", "currency") //
                         .match("Netto (?<currency>\\w{3}+) -(?<amount>[\\d.']+)") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
 
@@ -102,14 +98,14 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match("Total Kurswert (?<currency>\\w{3}+) .*") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(v.asShares(v.get("shares")));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("amount", "currency") //
                         .match("Netto (?<currency>\\w{3}+) (?<amount>[\\d.']+)") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
 
@@ -129,10 +125,10 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match("Total Kurswert (?<forexCurrency>\\w{3}+) (?<forexSum>[\\d.'-]+)") //
                         .match("Change .../... (?<exchangeRate>[\\d.']+) (?<currency>\\w{3}+) (?<grossValue>[\\d.'-]+)") //
                         .assign((t, v) -> {
-                            Money grossValue = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("grossValue")));
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexSum")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money grossValue = Money.of(v.asCurrencyCode(v.get("currency")),
+                                            v.asAmount(v.get("grossValue")));
+                            Money forex = Money.of(v.asCurrencyCode(v.get("forexCurrency")), v.asAmount(v.get("forexSum")));
+                            BigDecimal exchangeRate = v.asExchangeRate(v.get("exchangeRate"));
                             Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate);
 
                             // add gross value unit only if currency code of
@@ -150,22 +146,22 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
         extractor.section("fees", "currency") //
                         .match("Eidg. Umsatzabgabe (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional() //
                         .match("B.rsengeb.hr (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional() //
                         .match("B.rsengeb.hr Inland (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional() //
                         .match("Eigene Courtage (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))));
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))));
     }
 
     @SuppressWarnings("nls")
@@ -192,31 +188,31 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match("Brutto \\((?<shares>[\\d.']+) \\* ... ([\\d.']+)\\) (?<currency>\\w{3}+) ([\\d.']+)") //
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(v.asShares(v.get("shares")));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("amount", "currency") //
                         .match("Netto (?<currency>\\w{3}+) (?<amount>[\\d.']+)") //
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                             t.setCurrencyCode(v.get("currency"));
                         })
 
                         .section("fees", "currency").optional() //
                         .match(".* Verrechnungssteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional() //
                         .match(".* Quellensteuer (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("fees", "currency").optional() //
                         .match(".* Nicht r.ckforderbare Steuern (?<currency>\\w{3}+) -(?<fees>[\\d.']+)") //
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fees"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fees"))))))
 
                         .section("grossValue", "forexSum", "forexCurrency", "totalValue", "currency", "exchangeRate") //
                         .optional() // only present if forex is available
@@ -228,17 +224,17 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                             // if we end up in the branch, then we have forex
                             // dividends and must convert taxes in local
                             // currency
-                            Money totalValue = Money.of(asCurrencyCode(v.get("currency")),
-                                            asAmount(v.get("totalValue")));
+                            Money totalValue = Money.of(v.asCurrencyCode(v.get("currency")),
+                                            v.asAmount(v.get("totalValue")));
                             t.setMonetaryAmount(totalValue);
 
                             // keep tax units in case we need to convert them
                             List<Unit> tax = t.getUnits().collect(Collectors.toList());
                             t.clearUnits();
 
-                            Money forexGrossValue = Money.of(asCurrencyCode(v.get("forexCurrency")),
-                                            asAmount(v.get("grossValue")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money forexGrossValue = Money.of(v.asCurrencyCode(v.get("forexCurrency")),
+                                            v.asAmount(v.get("grossValue")));
+                            BigDecimal exchangeRate = v.asExchangeRate(v.get("exchangeRate"));
                             Money grossValue = Money.of(totalValue.getCurrencyCode(),
                                             Math.round(exchangeRate.doubleValue() * forexGrossValue.getAmount()));
                             Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forexGrossValue, exchangeRate);
@@ -272,40 +268,10 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
     }
 
     @Override
-    protected long asAmount(String value)
+    protected PDFExtractionContext newExtractionContext(Client client, SecurityCache securityCache)
     {
-        return asValue(value, Values.Amount);
+        PDFExtractionContext extractionContext = super.newExtractionContext(client, securityCache);
+        extractionContext.setNumberFormat(NumberFormat.getInstance(new Locale("de", "CH"))); //$NON-NLS-1$ //$NON-NLS-2$
+        return extractionContext;
     }
-
-    @Override
-    protected long asShares(String value)
-    {
-        return asValue(value, Values.Share);
-    }
-
-    protected long asValue(String value, Values<Long> valueType)
-    {
-        try
-        {
-            return Math.abs(Math.round(swissNumberFormat.parse(value).doubleValue() * valueType.factor()));
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Override
-    protected BigDecimal asExchangeRate(String value)
-    {
-        try
-        {
-            return BigDecimal.valueOf(swissNumberFormat.parse(value).doubleValue());
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
 }

@@ -1,9 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -12,7 +9,6 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
 /* package */final class PDFParser
@@ -22,8 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         private String mustInclude;
         private String mustExclude;
 
-        private List<Block> blocks = new ArrayList<>();
-        private Map<String, String> context = new HashMap<>();
+        List<Block> blocks = new ArrayList<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
 
         public DocumentType(String mustInclude)
@@ -64,28 +59,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         }
 
         /**
-         * Gets the current context for this parse run.
-         * 
-         * @return current context map
-         */
-        public Map<String, String> getCurrentContext()
-        {
-            return context;
-        }
-
-        public void parse(String filename, List<Item> items, String text)
-        {
-            String[] lines = text.split("\\r?\\n"); //$NON-NLS-1$
-
-            // reset context and parse it from this file
-            context.clear();
-            parseContext(context, filename, lines);
-
-            for (Block block : blocks)
-                block.parse(filename, items, lines);
-        }
-
-        /**
          * Parses the current context and could be overridden in a subclass to
          * fill the context.
          * 
@@ -106,16 +79,16 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             }
         }
 
-       public String getMustInclude()
-       {
-           return mustInclude;
-       }
+        public String getMustInclude()
+        {
+            return mustInclude;
+        }
     }
 
     /* package */static class Block
     {
-        private Pattern marker;
-        private Transaction<?> transaction;
+        Pattern marker;
+        Transaction<?> transaction;
 
         public Block(String marker)
         {
@@ -127,32 +100,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             this.transaction = transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines)
-        {
-            List<Integer> blocks = new ArrayList<>();
-
-            for (int ii = 0; ii < lines.length; ii++)
-            {
-                Matcher matcher = marker.matcher(lines[ii]);
-                if (matcher.matches())
-                    blocks.add(ii);
-            }
-
-            for (int ii = 0; ii < blocks.size(); ii++)
-            {
-                int startLine = blocks.get(ii);
-                int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
-
-                transaction.parse(filename, items, lines, startLine, endLine);
-            }
-        }
     }
 
     /* package */static class Transaction<T>
     {
-        private Supplier<T> supplier;
-        private Function<T, Item> wrapper;
-        private List<Section<T>> sections = new ArrayList<>();
+        Supplier<T> supplier;
+        Function<T, Item> wrapper;
+        List<Section<T>> sections = new ArrayList<>();
 
         public Transaction<T> subject(Supplier<T> supplier)
         {
@@ -172,30 +126,15 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             this.wrapper = wrapper;
             return this;
         }
-
-        public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
-        {
-            T target = supplier.get();
-
-            for (Section<T> section : sections)
-                section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
-
-            if (wrapper == null)
-                throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
-
-            Item item = wrapper.apply(target);
-            if (item != null)
-                items.add(item);
-        }
     }
 
     /* package */static class Section<T>
     {
-        private boolean isOptional = false;
+        boolean isOptional = false;
         private Transaction<T> transaction;
-        private String[] attributes;
-        private List<Pattern> pattern = new ArrayList<>();
-        private BiConsumer<T, Map<String, String>> assignment;
+        String[] attributes;
+        List<Pattern> pattern = new ArrayList<>();
+        BiConsumer<T, PDFExtractionContext> assignment;
 
         public Section(Transaction<T> transaction, String[] attributes)
         {
@@ -221,54 +160,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return this;
         }
 
-        public Transaction<T> assign(BiConsumer<T, Map<String, String>> assignment)
+        public Transaction<T> assign(BiConsumer<T, PDFExtractionContext> assignment)
         {
             this.assignment = assignment;
             return transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo, int lineNoEnd, T target)
-        {
-            Map<String, String> values = new HashMap<>();
-
-            int patternNo = 0;
-            for (int ii = lineNo; ii <= lineNoEnd; ii++)
-            {
-                Pattern p = pattern.get(patternNo);
-                Matcher m = p.matcher(lines[ii]);
-                if (m.matches())
-                {
-                    // extract attributes
-                    extractAttributes(values, p, m);
-
-                    // next pattern?
-                    patternNo++;
-                    if (patternNo >= pattern.size())
-                        break;
-                }
-            }
-
-            if (patternNo < pattern.size())
-            {
-                // if section is optional, ignore if patterns do not match
-                if (isOptional)
-                    return;
-
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
-                                patternNo, pattern.size(), pattern.toString(), filename));
-            }
-
-            if (values.size() != attributes.length)
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
-                                values.keySet().toString(), Arrays.toString(attributes), filename));
-
-            if (assignment == null)
-                throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
-
-            assignment.accept(target, values);
-        }
-
-        private void extractAttributes(Map<String, String> values, Pattern p, Matcher m)
+        void extractAttributes(Map<String, String> values, Pattern p, Matcher m)
         {
             for (String attribute : attributes)
             {

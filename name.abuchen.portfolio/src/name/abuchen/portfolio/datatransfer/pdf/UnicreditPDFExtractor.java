@@ -6,7 +6,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -14,14 +13,12 @@ import name.abuchen.portfolio.money.Money;
 public class UnicreditPDFExtractor extends AbstractPDFExtractor
 {
 
-    public UnicreditPDFExtractor(Client client) throws IOException
+    public UnicreditPDFExtractor() throws IOException
     {
-        super(client);
-        
         addBankIdentifier("UniCredit Bank AG"); //$NON-NLS-1$
 
         addBuyTransaction();
-        
+
     }
 
     @SuppressWarnings("nls")
@@ -44,19 +41,19 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         .find("Nennbetrag Wertpapierbezeichnung Wertpapierkennnummer/ISIN")
                         .match("^(?<name>.*) (?<wkn>[^ ]*)$")
                         .match("^.* (?<isin>[A-Z]{2}[A-Z\\d]{9}\\d)$")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
                         
                         // ST 22
                         .section("shares")
                         .match("^ST *(?<shares>[\\.\\d]+[,\\d]*)$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
                         
                         // Belastung (vor Steuern) EUR 1.560,83
                         .section("amount", "currency")
                         .match("^Belastung.* (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2})$")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                         })
                         
                         // Valuta 17.02.2016 -----------------------
@@ -68,19 +65,19 @@ public class UnicreditPDFExtractor extends AbstractPDFExtractor
                         .section("fee", "currency").optional()
                         .match("^Brokerkommission.* (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d{2})$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                          Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                          Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
                         
                         // Transaktionsentgelt* EUR 3,09
                         .section("fee", "currency").optional()
                         .match("^Transaktionsentgelt.* (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d{2})$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                          Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                          Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
                         
                         // Provision EUR 10,21
                         .section("fee", "currency").optional()
                         .match("^Provision.* (?<currency>\\w{3}) (?<fee>[\\d.]+,\\d{2})$")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                          Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                          Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))))
 
                         .wrap(t -> new BuySellEntryItem(t)));
     }

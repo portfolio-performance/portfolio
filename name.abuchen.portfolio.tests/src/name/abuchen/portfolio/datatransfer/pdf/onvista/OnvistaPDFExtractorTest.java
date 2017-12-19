@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -37,6 +38,14 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class OnvistaPDFExtractorTest
 {
+    private Client client;
+
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     private Security assertSecurityBuyAktien(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -261,11 +270,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftDividende() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftDividende.txt"), errors);
 
         assertThat(errors, empty());
@@ -290,11 +299,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftDividende2() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftDividende2.txt"), errors);
 
         assertThat(errors, empty());
@@ -344,12 +353,12 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftKupon() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftKupon.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftKupon.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -377,11 +386,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftErtraegnisgutschrift() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftErtraegnisgutschrift.txt"),
                         errors);
 
@@ -409,11 +418,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftErtraegnisgutschrift2() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftErtraegnisgutschrift2.txt"),
                         errors);
 
@@ -445,11 +454,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaKaufAktien.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaKaufAktien.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -477,11 +486,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierKaufSparplanMitSteuerausgleich() throws IOException // Aktien
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaKaufSparplanMitSteuerausgleich.txt"), errors);
 
         assertThat(errors, empty());
@@ -514,11 +523,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierKaufBezugsrechte() throws IOException // Aktien
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaKaufBezugsrechte.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaKaufBezugsrechte.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -545,11 +554,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaVerkauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -583,11 +592,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierEinloesung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaEinloesung.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaEinloesung.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -615,11 +624,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapieruebertrag() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaWertpapieruebertragEingang.txt"), errors);
 
         assertThat(errors, empty());
@@ -642,11 +651,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testErtragsgutschriftDividendeReinvestition() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftDividendeReinvestition.txt"),
                         errors);
 
@@ -687,11 +696,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testKapitalherabsetzung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaKapitalherabsetzung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaKapitalherabsetzung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -754,11 +763,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testKapitalerhoehung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaKapitalerhoehung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaKapitalerhoehung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -781,11 +790,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testEinbuchungDividendenRechte() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaEinbuchungDividendenRechte.txt"), errors);
 
         assertThat(errors, empty());
@@ -808,11 +817,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testAusbuchungDividendenRechte() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaAusbuchungDividendenRechte.txt"), errors);
 
         assertThat(errors, empty());
@@ -835,11 +844,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testUmtausch() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaUmtausch.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaUmtausch.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -861,11 +870,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testUmtauschFonds() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaUmtauschFonds.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaUmtauschFonds.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -937,11 +946,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testWertpapierVerkaufSpitzeMitSteuerrückerstattung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaVerkaufSpitzeMitSteuerErstattung.txt"), errors);
 
         assertThat(errors, empty());
@@ -976,11 +985,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testZwangsabfindung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaZwangsabfindung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaZwangsabfindung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1007,11 +1016,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testDividendeAbfindung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaDividendeAbfindung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaDividendeAbfindung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1038,11 +1047,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testDepotauszug() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaDepotauszug.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaDepotauszug.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(26));
@@ -1080,11 +1089,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testKontoauszugEinzelneBuchung() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaKontoauszugEinzelneBuchung.txt"), errors);
 
         assertThat(errors, empty());
@@ -1105,11 +1114,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testKontoauszugMehrereBuchungen() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaKontoauszugMehrereBuchungen.txt"), errors);
 
         assertThat(errors, empty());
@@ -1130,10 +1139,10 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testKontoauszugMehrereBuchungen2017() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "OnvistaKontoauszugMehrereBuchungen2017.txt"), errors);
 
         assertThat(errors, empty());
@@ -1165,11 +1174,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testMehrereTransaktionenInEinerDatei() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaMultipartKaufVerkauf.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaMultipartKaufVerkauf.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -1213,11 +1222,11 @@ public class OnvistaPDFExtractorTest
     @Test
     public void testMultiTypeDocument() throws IOException
     {
-        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaMultiTypePDFDokument.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "OnvistaMultiTypePDFDokument.txt"),
                         errors);
 
         assertThat(errors, empty());

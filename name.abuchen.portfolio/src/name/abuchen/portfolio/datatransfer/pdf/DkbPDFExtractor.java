@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +10,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -21,10 +19,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 {
     private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
 
-    public DkbPDFExtractor(Client client) throws IOException
+    public DkbPDFExtractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier(""); //$NON-NLS-1$
 
         addBuyTransaction();
@@ -65,21 +61,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
+                                t.setShares((v.asShares(v.get("shares")) / 100));
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -109,21 +105,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
+                                t.setShares((v.asShares(v.get("shares")) / 100));
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -153,21 +149,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
+                                t.setShares(v.asShares(v.get("shares")) / 100);
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
                         .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?) (?<currency>\\w{3}+)(.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -198,13 +194,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
+                                t.setShares(v.asShares(v.get("shares")) / 100);
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount")
@@ -212,8 +208,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new);
@@ -240,8 +236,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(v.asShares(v.get("shares")));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount")
@@ -250,8 +246,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new);
@@ -290,8 +286,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$").match(".*") //
                         .match("(?<isin>[^ ]*) \\((?<wkn>.*)\\)$") //
                         .match("^Ertrag pro St. [\\d,.]* (?<currency>\\w{3}+)").assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(v.asShares(v.get("shares")));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date", "amount")
@@ -300,8 +296,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(TransactionItem::new);
@@ -334,15 +330,15 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
+                                t.setShares(v.asShares(v.get("shares")) / 100);
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                             // Merken für evtl. Steuerrückerstattung:
-                            type.getCurrentContext().put("isin", v.get("isin"));
+                            v.getCurrentContext().put("isin", v.get("isin"));
                         })
 
                         .section("date", "amount", "sign")
@@ -356,8 +352,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                                 t.getAccountTransaction().setType(AccountTransaction.Type.TRANSFER_OUT);
                             }
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(BuySellEntryItem::new);
@@ -390,18 +386,18 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
                             {
                                 // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
+                                t.setShares(v.asShares(v.get("shares")) / 100);
                             }
                             else
                             {
-                                t.setShares(asShares(v.get("shares")));
+                                t.setShares(v.asShares(v.get("shares")));
                             }
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .section("date").match("(^Valuta) (?<date>\\d+.\\d+.\\d{4}+) (.*)").assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setCurrencyCode(asCurrencyCode(
+                            t.setCurrencyCode(v.asCurrencyCode(
                                             t.getPortfolioTransaction().getSecurity().getCurrencyCode()));
                         })
 
@@ -428,17 +424,17 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     }
 
-    private void addTax(DocumentType documentType, Object t, Map<String, String> v, String taxtype)
+    private void addTax(DocumentType documentType, Object t, PDFExtractionContext v, String taxtype)
     {
         name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
 
-        String currency = asCurrencyCode(v.get("currency"));
-        long amount = asAmount(v.get(taxtype));
+        String currency = v.asCurrencyCode(v.get("currency"));
+        long amount = v.asAmount(v.get(taxtype));
 
-        if (!currency.equals(tx.getCurrencyCode()) && documentType.getCurrentContext().containsKey(EXCHANGE_RATE))
+        if (!currency.equals(tx.getCurrencyCode()) && v.getCurrentContext().containsKey(EXCHANGE_RATE))
         {
             BigDecimal rate = BigDecimal.ONE.divide( //
-                            asExchangeRate(documentType.getCurrentContext().get(EXCHANGE_RATE)), 10,
+            		v.asExchangeRate(v.getCurrentContext().get(EXCHANGE_RATE)), 10,
                             BigDecimal.ROUND_HALF_DOWN);
 
             currency = tx.getCurrencyCode();
@@ -454,21 +450,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("(^Provision) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                                            Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee")))));
                         })
 
                         .section("fee", "currency").optional()
                         .match("(^Transaktionsentgelt Börse) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                                            Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee")))));
                         })
 
                         .section("fee", "currency").optional()
                         .match("(^Übertragungs-/Liefergebühr) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                                            Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee")))));
                         });
     }
 
@@ -500,26 +496,26 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .section("tax", "currency").optional()
                         .match("^Kapitalertragsteuer (.*) (\\w{3}+) (?<tax>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("tax")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("tax")));
                         }).section("soli", "currency").optional()
                         .match("^Solidarit(.*) (\\w{3}+) (?<soli>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(t.getAmount() + asAmount(v.get("soli")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(t.getAmount() + v.asAmount(v.get("soli")));
                         }).section("kirchenst", "currency").optional()
                         .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(\\+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(t.getAmount() + asAmount(v.get("kirchenst")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(t.getAmount() + v.asAmount(v.get("kirchenst")));
                         })
 
                         .section("date")
                         .match("(^Den Betrag buchen wir mit Valuta) (?<date>\\d+.\\d+.\\d{4}+) zu Lasten des Kontos (.*)")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            v.put("isin", type.getCurrentContext().get("isin"));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            v.put("isin", v.getCurrentContext().get("isin"));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .wrap(TransactionItem::new));

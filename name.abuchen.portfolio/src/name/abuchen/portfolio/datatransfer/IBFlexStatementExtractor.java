@@ -42,23 +42,6 @@ import name.abuchen.portfolio.online.QuoteFeed;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
 {
-    private List<Security> allSecurities;
-
-    private Map<String, String> exchanges;
-
-    public IBFlexStatementExtractor(Client client)
-    {
-        allSecurities = new ArrayList<>(client.getSecurities());
-
-        // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
-        this.exchanges = new HashMap<>();
-
-        this.exchanges.put("EBS", "SW");
-        this.exchanges.put("LSE", "L");
-        this.exchanges.put("SWX", "SW");
-        this.exchanges.put("TSE", "TO");
-        this.exchanges.put("VENTURE", "V");
-    }
 
     private LocalDate convertDate(String date) throws DateTimeParseException
     {
@@ -78,9 +61,8 @@ public class IBFlexStatementExtractor implements Extractor
      * currently only imports Trades, Corporate Transactions and Cash
      * Transactions.
      */
-    /* package */IBFlexStatementExtractorResult importActivityStatement(InputStream f)
+    /* package */IBExtractionContext importActivityStatement(IBExtractionContext result, InputStream f)
     {
-        IBFlexStatementExtractorResult result = new IBFlexStatementExtractorResult();
         try
         {
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
@@ -124,14 +106,17 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     @Override
-    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+    public List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors)
     {
+        SecurityCache securityCache = new SecurityCache(client);
+
         List<Item> results = new ArrayList<>();
         for (Extractor.InputFile f : files)
         {
             try (FileInputStream in = new FileInputStream(f.getFile()))
             {
-                IBFlexStatementExtractorResult result = importActivityStatement(in);
+                IBExtractionContext result = new IBExtractionContext(securityCache);
+                importActivityStatement(result, in);
                 errors.addAll(result.getErrors());
                 results.addAll(result.getResults());
             }
@@ -140,15 +125,17 @@ public class IBFlexStatementExtractor implements Extractor
                 errors.add(e);
             }
         }
+        results.addAll(securityCache.createMissingSecurityItems(results));
         return results;
     }
 
-    private class IBFlexStatementExtractorResult
+    private class IBExtractionContext
     {
         private Document document;
         private List<Exception> errors = new ArrayList<>();
         private List<Item> results = new ArrayList<>();
         private String ibAccountCurrency = null;
+        private Map<String, String> exchanges;
 
         private Function<Element, Item> importAccountInformation = element -> {
             String currency = asCurrencyUnit(element.getAttribute("currency"));
@@ -189,7 +176,7 @@ public class IBFlexStatementExtractor implements Extractor
 
                 // Set the Symbol
                 if (element.getAttribute("symbol").length() > 0)
-                    transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                    transaction.setSecurity(this.getOrCreateSecurity(element));
 
                 this.calculateShares(transaction, element);
             }
@@ -197,7 +184,7 @@ public class IBFlexStatementExtractor implements Extractor
             {
                 // Set the Symbol
                 if (element.getAttribute("symbol").length() > 0)
-                    transaction.setSecurity(this.getOrCreateSecurity(element, true));
+                    transaction.setSecurity(this.getOrCreateSecurity(element));
 
                 if(amount <= 0)
                 {
@@ -300,7 +287,7 @@ public class IBFlexStatementExtractor implements Extractor
             Unit taxUnit = createUnit(element, Unit.Type.TAX, taxes, currency);
             transaction.getPortfolioTransaction().addUnit(taxUnit);
 
-            transaction.setSecurity(this.getOrCreateSecurity(element, true));
+            transaction.setSecurity(this.getOrCreateSecurity(element));
 
             transaction.setNote(element.getAttribute("description"));
 
@@ -332,7 +319,7 @@ public class IBFlexStatementExtractor implements Extractor
                 double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
                 transaction.setShares(Values.Share.factorize(qty));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
+                transaction.setSecurity(this.getOrCreateSecurity(eElement));
                 transaction.setNote(eElement.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
@@ -357,7 +344,7 @@ public class IBFlexStatementExtractor implements Extractor
                 Double qty = Math.abs(Double.parseDouble(eElement.getAttribute("quantity")));
                 transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
 
-                transaction.setSecurity(this.getOrCreateSecurity(eElement, true));
+                transaction.setSecurity(this.getOrCreateSecurity(eElement));
                 transaction.setNote(eElement.getAttribute("description"));
 
                 transaction.setMonetaryAmount(proceeds);
@@ -365,6 +352,21 @@ public class IBFlexStatementExtractor implements Extractor
                 return new TransactionItem(transaction);
             }
         };
+        private SecurityCache securityCache;
+
+        public IBExtractionContext(SecurityCache securityCache)
+        {
+            this.securityCache = securityCache;
+            
+            // Maps Interactive Broker Exchange to Yahoo Exchanges, to be completed
+            this.exchanges = new HashMap<>();
+
+            this.exchanges.put("EBS", "SW");
+            this.exchanges.put("LSE", "L");
+            this.exchanges.put("SWX", "SW");
+            this.exchanges.put("TSE", "TO");
+            this.exchanges.put("VENTURE", "V");
+        }
 
         private Unit createUnit(Element element, Unit.Type unitType, Double amount, String currency)
         {
@@ -502,56 +504,55 @@ public class IBFlexStatementExtractor implements Extractor
          * exist It uses IB ContractID (conID) for the WKN, tries to degrade if
          * conID or ISIN are not available
          */
-        private Security getOrCreateSecurity(Element element, boolean doCreate)
+        private Security getOrCreateSecurity(Element element)
         {
             // Lookup the Exchange Suffix for Yahoo
             String tickerSymbol = element.getAttribute("symbol");
             // yahoo uses '-' instead of ' '
-            String yahooSymbol = tickerSymbol == null ? tickerSymbol : tickerSymbol.replaceAll(" ", "-");
             String exchange = element.getAttribute("exchange");
             String currency = asCurrencyUnit(element.getAttribute("currency"));
-            String isin = element.getAttribute("isin");
+            String isinAttribute = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
             // Store cusip in isin if isin is not available
-            if (isin.length() == 0 && cusip.length() > 0)
+            final String isin;
+            if (isinAttribute.length() == 0 && cusip.length() > 0)
+            {
                 isin = cusip;
+            }
+            else
+            {
+                isin = isinAttribute;
+            }
 
             String conID = element.getAttribute("conid");
             String description = element.getAttribute("description");
 
+            final String yahooSymbol;
             if (tickerSymbol != null)
             {
+                tickerSymbol = tickerSymbol.replaceAll(" ", "-");
                 String exch = exchanges.get(exchange);
                 if (exch != null && exch.length() > 0)
+                {
                     yahooSymbol = tickerSymbol + '.' + exch;
-            }
-
-            for (Security s : allSecurities)
+                }
+                else 
+                {
+                    yahooSymbol = tickerSymbol;
+                }
+            } else 
             {
-                // Find security with same conID or isin or yahooSymbol
-                if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
-                    return s;
-                if (isin.length() > 0 && isin.equals(s.getIsin()))
-                    return s;
-                if (yahooSymbol != null && yahooSymbol.length() > 0 && yahooSymbol.equals(s.getTickerSymbol()))
-                    return s;
+                yahooSymbol = null;
             }
 
-            if (!doCreate)
-                return null;
-
-            Security security = new Security(description, isin, yahooSymbol, QuoteFeed.MANUAL);
-            // We use the Wkn to store the IB conID as a unique identifier
-            security.setWkn(conID);
-            security.setCurrencyCode(currency);
-            security.setNote(description);
-
-            // Store
-            allSecurities.add(security);
-            // add to result
-            SecurityItem item = new SecurityItem(security);
-            results.add(item);
-
+            Security security = securityCache.lookup(isin, yahooSymbol, conID, description, () -> {
+                Security s = new Security();
+                s.setFeed(QuoteFeed.MANUAL);
+                s.setCurrencyCode(currency);
+                s.setNote(description);
+                return s;
+            });
+            
             return security;
         }
 

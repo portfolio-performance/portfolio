@@ -41,12 +41,12 @@ public class IBFlexStatementExtractorTest
     {
         InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatement.xml");
         Client client = new Client();
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor();
 
         Extractor.InputFile tempFile = createTempFile(activityStatement);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+        List<Item> results = extractor.extract(client, Collections.singletonList(tempFile), errors);
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
@@ -189,9 +189,9 @@ public class IBFlexStatementExtractorTest
         InputStream otherFile = getClass().getResourceAsStream("pdf/comdirect/comdirectGutschrift1.txt");
         Extractor.InputFile tempFile = createTempFile(otherFile);
         Client client = new Client();
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor();
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+        List<Item> results = extractor.extract(client, Collections.singletonList(tempFile), errors);
 
         assertThat(results.isEmpty(), is(true));
         assertThat(errors.size(), is(1));

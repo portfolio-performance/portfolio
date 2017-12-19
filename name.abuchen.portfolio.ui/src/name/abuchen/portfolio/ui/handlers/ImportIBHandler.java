@@ -47,7 +47,7 @@ public class ImportIBHandler
 
         try
         {
-            Extractor extractor = new IBFlexStatementExtractor(client);
+            Extractor extractor = new IBFlexStatementExtractor();
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(extractor.getLabel());

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -39,7 +40,14 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     private Security assertSecurity(List<Item> results, boolean mustHaveIsin)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -57,11 +65,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -94,11 +102,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift2.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift2.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -114,11 +122,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift3() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift3.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift3.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -146,11 +154,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift4() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift4.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift4.txt"), errors);
 
         assertThat(errors, empty());
 
@@ -178,11 +186,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift5() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift5.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift5.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -208,11 +216,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift8() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift8.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift8.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -240,11 +248,11 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift9() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift9.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift9.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -272,8 +280,7 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift8WithExistingSecurity() throws IOException
     {
-        Client client = new Client();
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(client);
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         Security existingSecurity = new Security("ROCHE HOLDING AG", CurrencyUnit.EUR);
         existingSecurity.setWkn("891106");
@@ -281,7 +288,7 @@ public class ConsorsbankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift8.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift8.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -305,10 +312,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testBezug1() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankBezug1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankBezug1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -338,10 +345,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf1() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankVerkauf1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankVerkauf1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -369,10 +376,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -399,10 +406,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -437,10 +444,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -475,10 +482,10 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKaufSparplan() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKaufSparplan.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankKaufSparplan.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -514,16 +521,15 @@ public class ConsorsbankPDFExtractorTest
     @Test
     public void testWertpapierKaufIfSecurityIsPresent() throws IOException
     {
-        Client client = new Client();
         Security s = new Security();
         s.setName("COMS.-MSCI WORL.T.U.ETF I");
         s.setWkn("ETF110");
         client.addSecurity(s);
 
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(client);
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));

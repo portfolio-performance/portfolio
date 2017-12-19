@@ -7,16 +7,13 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
 @SuppressWarnings("nls")
 public class CommerzbankPDFExctractor extends AbstractPDFExtractor
 {
-    public CommerzbankPDFExctractor(Client client) throws IOException
+    public CommerzbankPDFExctractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier("C O M M E R Z B A N K"); //$NON-NLS-1$
 
         addBuyTransaction();
@@ -42,8 +39,8 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         .match(".*Zu I h r e n L a s t e n.*")
                         .match("^.* (\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<currency>\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(stripBlanks(v.get("amount"))));
                         })
 
                         .section("date") //
@@ -52,7 +49,7 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
 
                         .section("shares") //
                         .match("S t . (?<shares>[\\d ,.]*) .*")
-                        .assign((t, v) -> t.setShares(asShares(stripBlanks(v.get("shares")))))
+                        .assign((t, v) -> t.setShares(v.asShares(stripBlanks(v.get("shares")))))
 
                         .section("wkn", "name", "isin", "currency")
                         .match(".*W e r t p a p i e r - B e z e i c h n u n g.*").match("(?<name>.*) (?<wkn>\\S*)")
@@ -60,7 +57,7 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         .match("^(?<isin>.*) (?<currency>\\w{3}+) (\\d \\d . \\d \\d . \\d \\d \\d \\d) (\\w{3}+)(( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
-                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setSecurity(v.getOrCreateSecurity());
                         })
 
                         .wrap(BuySellEntryItem::new));
@@ -86,8 +83,8 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         .match("^.* (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<currency>\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(stripBlanks(v.get("date"))));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(stripBlanks(v.get("amount"))));
                         })
 
                         .section("wkn", "name", "shares", "isin")
@@ -98,8 +95,8 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                             // if necessary, create the security with the
                             // currency of the transaction
                             v.put("currency", t.getCurrencyCode());
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                            t.setSecurity(v.getOrCreateSecurity());
+                            t.setShares(v.asShares(stripBlanks(v.get("shares"))));
                         })
 
                         .wrap(TransactionItem::new));

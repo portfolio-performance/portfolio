@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -34,15 +35,22 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ComdirectPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf.txt"), errors);
 
         assertThat(errors, empty());
@@ -76,11 +84,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf2.txt"), errors);
 
         assertThat(errors, empty());
@@ -114,11 +122,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf3.txt"), errors);
 
         assertThat(errors, empty());
@@ -152,11 +160,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf4.txt"), errors);
 
         assertThat(errors, empty());
@@ -190,11 +198,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf5() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf5.txt"), errors);
 
         assertThat(errors, empty());
@@ -228,11 +236,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf6() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf6.txt"), errors);
 
         assertThat(errors, empty());
@@ -266,11 +274,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf7() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf7.txt"), errors);
 
         assertThat(errors, empty());
@@ -304,11 +312,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierKauf8() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf8.txt"), errors);
 
         assertThat(errors, empty());
@@ -342,11 +350,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf.txt"), errors);
 
         assertThat(errors, empty());
@@ -384,11 +392,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf2.txt"), errors);
 
         assertThat(errors, empty());
@@ -422,11 +430,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Verkauf3.txt"), errors);
 
         assertThat(errors, empty());
@@ -466,11 +474,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testGutschrift1() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -499,11 +507,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testGutschrift2() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -532,11 +540,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende1() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectDividende1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -566,11 +574,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende2() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectDividende2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -600,11 +608,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testGutschrift3() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift3.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift3.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -633,11 +641,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testGutschrift4() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift4.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift4.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -666,11 +674,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testGutschrift5() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift5.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift5.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -699,11 +707,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende3() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -731,11 +739,11 @@ public class ComdirectPDFExtractorTest
     @Test
     public void testDividende3withTax() throws IOException
     {
-        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt", "comdirectDividende3_Steuer.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt", "comdirectDividende3_Steuer.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));

@@ -44,7 +44,7 @@ public class CSVImportWizard extends Wizard
         }
 
         @Override
-        public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+        public List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors)
         {
             return this.importer.createItems(errors);
         }

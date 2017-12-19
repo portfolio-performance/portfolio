@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.eclipse.core.runtime.FileLocator;
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -40,10 +41,18 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class ConsorsbankPDFExtractorPDFTest
 {
+    private Client client;
+
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testErtragsgutschrift6_USD_Freibetrag_ausgeschoepft() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift6_USD_Freibetrag_ausgeschoepft.pdf"));
@@ -51,7 +60,7 @@ public class ConsorsbankPDFExtractorPDFTest
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
         inputFile.parse();
 
-        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
+        List<Item> results = extractor.extract(client, Arrays.asList(inputFile), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -77,7 +86,7 @@ public class ConsorsbankPDFExtractorPDFTest
     @Test
     public void testErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor();
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft.pdf"));
@@ -85,7 +94,7 @@ public class ConsorsbankPDFExtractorPDFTest
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
         inputFile.parse();
 
-        List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
+        List<Item> results = extractor.extract(client, Arrays.asList(inputFile), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

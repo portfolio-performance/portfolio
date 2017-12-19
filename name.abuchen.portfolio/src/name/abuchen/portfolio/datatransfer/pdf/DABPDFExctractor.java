@@ -2,24 +2,20 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 public class DABPDFExctractor extends AbstractPDFExtractor
 {
-    public DABPDFExctractor(Client client) throws IOException
+    public DABPDFExctractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier("DAB Bank"); //$NON-NLS-1$
         addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$
 
@@ -61,20 +57,20 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
                         .match("STK [\\d.]+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .find("Nominal Kurs") //
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Lasten")
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("amount", "currency", "exchangeRate", "forex", "forexCurrency").optional() //
@@ -83,12 +79,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) .../... (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
 
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            Money amount = Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("amount")));
                             t.setMonetaryAmount(amount);
 
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                                            v.asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                            Money forex = Money.of(v.asCurrencyCode(v.get("forexCurrency")), v.asAmount(v.get("forex")));
 
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                             t.getPortfolioTransaction().addUnit(grossValue);
@@ -101,12 +97,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .section("fees", "currency") //
                         .optional().match("^.* Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$")
                         .assign((t, v) -> {
-                            String currency = asCurrencyCode(v.get("currency"));
+                            String currency = v.asCurrencyCode(v.get("currency"));
                             // FIXME forex fees must update gross value
                             if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
                             {
                                 t.getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                                                new Unit(Unit.Type.FEE, Money.of(currency, v.asAmount(v.get("fees")))));
                             }
                         })
 
@@ -138,19 +134,19 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$")
                         .match("STK [\\d.]+(,\\d+)? (?<currency>\\w{3}+) ([\\d.]+,\\d+)$")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .find("Nominal Kurs") //
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) (\\w{3}+) ([\\d.]+,\\d+)$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency").optional() //
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("amount", "currency", "exchangeRate", "forex", "forexCurrency").optional() //
@@ -159,12 +155,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) .../... (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
 
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            Money amount = Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("amount")));
                             t.setMonetaryAmount(amount);
 
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                                            v.asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                            Money forex = Money.of(v.asCurrencyCode(v.get("forexCurrency")), v.asAmount(v.get("forex")));
 
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                             t.getPortfolioTransaction().addUnit(grossValue);
@@ -176,11 +172,11 @@ public class DABPDFExctractor extends AbstractPDFExtractor
 
                         .section("fees", "currency").optional()
                         .match("^.*Provision (?<currency>\\w{3}+) (?<fees>[\\d.]+,\\d+)-$").assign((t, v) -> {
-                            String currency = asCurrencyCode(v.get("currency"));
+                            String currency = v.asCurrencyCode(v.get("currency"));
                             if (currency.equals(t.getAccountTransaction().getCurrencyCode()))
                             {
                                 t.getPortfolioTransaction().addUnit(
-                                                new Unit(Unit.Type.FEE, Money.of(currency, asAmount(v.get("fees")))));
+                                                new Unit(Unit.Type.FEE, Money.of(currency, v.asAmount(v.get("fees")))));
                             }
                         })
 
@@ -214,12 +210,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Gattungsbezeichnung ISIN") //
                         .match("^(?<name>.*) (?<isin>[^ ]*)$") //
                         .match("STK ([\\d.]+(,\\d+)?) (\\d+.\\d+.\\d{4}+) (\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (\\d+,\\d+)")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .find("Nominal Ex-Tag Zahltag .*") //
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency") //
                         .optional() //
@@ -227,8 +223,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("date", "amount", "currency", "forexCurrency", "exchangeRate") //
@@ -237,12 +233,12 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
 
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
+                            BigDecimal exchangeRate = v.asExchangeRate(v.get("exchangeRate")).setScale(10,
                                             BigDecimal.ROUND_HALF_DOWN);
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
+                            Money forex = Money.of(v.asCurrencyCode(v.get("forexCurrency")),
                                             Math.round(t.getAmount() / exchangeRate.doubleValue()));
                             Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, exchangeRate);
                             if (unit.getForex().getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
@@ -258,9 +254,9 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(\\d+.\\d+.\\d{4}+) ([0-9]*) (\\w{3}+) (?<forex>[\\d.]+,\\d+)$")
                         .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
+                            BigDecimal exchangeRate = v.asExchangeRate(v.get("exchangeRate")).setScale(10,
                                             BigDecimal.ROUND_HALF_DOWN);
-                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            Money forex = Money.of(v.asCurrencyCode(v.get("forexCurrency")), v.asAmount(v.get("forex")));
                             Money localAmount = Money.of(v.get("localCurrency"), Math.round(forex.getAmount()
                                             / Double.parseDouble(v.get("exchangeRate").replace(',', '.'))));
                             t.setAmount(forex.getAmount());
@@ -297,11 +293,11 @@ public class DABPDFExctractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
 
         pdfTransaction.section("name", "isin").find("Gattungsbezeichnung ISIN").match("^(?<name>.*) (?<isin>[^ ]*)$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares").find("Nominal Ex-Tag Zahltag .*")
                         .match("^STK (?<shares>[\\d.]+(,\\d+)?) .*$")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         // No exchange rate
                         .section("date", "amount", "currency").optional() //
@@ -309,8 +305,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*) (?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         // With exchange rate
@@ -320,8 +316,8 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*)\\s*(\\w{3}+)\\/(?<forign>\\w{3}+)\\s*(?<rate>[\\d.]+(,\\d+)?)\\s*(?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .wrap(t -> {
@@ -350,15 +346,15 @@ public class DABPDFExctractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private void addTax(DocumentType documentType, Object t, Map<String, String> v)
+    private void addTax(DocumentType documentType, Object t, PDFExtractionContext v)
     {
         if (v.get("label").contains("im laufenden Jahr einbehaltene"))
             return;
 
         name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
 
-        String currency = asCurrencyCode(v.get("currency"));
-        long amount = asAmount(v.get("tax"));
+        String currency = v.asCurrencyCode(v.get("currency"));
+        long amount = v.asAmount(v.get("tax"));
 
         // FIXME forex fees must update gross value
         if (currency.equals(tx.getCurrencyCode()))

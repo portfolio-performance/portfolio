@@ -10,7 +10,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
@@ -18,10 +17,8 @@ import name.abuchen.portfolio.money.MutableMoney;
 
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-    public ComdirectPDFExtractor(Client client) throws IOException
+    public ComdirectPDFExtractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier("comdirect bank"); //$NON-NLS-1$
 
         addBuyTransaction();
@@ -54,28 +51,28 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
                         .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares").optional() //
                         .match("^St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("shares").optional() //
                         .match("^ Summe *St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Lasten( vor Steuern)? *") //
                         .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                         })
 
                         .section("tax").optional() //
                         .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
-                            Unit unit = createTaxUnit(v.get("tax"));
+                            Unit unit = createTaxUnit(v, v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
                                 return;
 
@@ -126,25 +123,25 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                            t.setSecurity(v.getOrCreateSecurity());
+                            t.setShares(v.asShares(stripBlanks(v.get("shares"))));
                         })
 
                         .section("currency", "amount", "date") //
                         .find(".*Zu Ihren Gunsten vor Steuern *") //
                         .match("^.*(?<date>\\d{2}.\\d{2}.\\d{4}) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *$") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                             t.setDate(asDate(v.get("date")));
                         })
 
                         .section("currency", "gross") //
                         .optional() //
                         .find("^Bruttobetrag: *(?<currency>\\w{3}+) *(?<gross>[\\d.]+,\\d+)").assign((t, v) -> {
-                            long gross = asAmount(v.get("gross"));
+                            long gross = v.asAmount(v.get("gross"));
                             long tax = gross - t.getAmount();
-                            Unit unit = new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax));
+                            Unit unit = new Unit(Unit.Type.TAX, Money.of(v.asCurrencyCode(v.get("currency")), tax));
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
                         })
@@ -176,8 +173,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             v.put("isin", stripBlanks(v.get("isin")));
                             v.put("wkn", stripBlanks(v.get("wkn")));
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                            t.setSecurity(v.getOrCreateSecurity());
+                            t.setShares(v.asShares(stripBlanks(v.get("shares"))));
                         })
                         
                         .section("date") //
@@ -193,9 +190,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
                             v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                             t.addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                                            Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("tax")))));
                         })
 
                         .section("tax", "currency").optional()  // Kirchensteuer
@@ -205,7 +202,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                              v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
                              v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
                              t.addUnit(new Unit(Unit.Type.TAX,
-                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                                             Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("tax")))));
                         })
                         
                         .section("tax", "currency").optional() // Solidaritätszuschlag
@@ -215,7 +212,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
                             v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX,
-                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                                            Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("tax")))));
                         })
 
                         .section("tax", "currency") // abgeführte Steuern
@@ -224,8 +221,8 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                              v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
                              v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
-                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                             t.setAmount(asAmount(v.get("tax")));
+                             t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                             t.setAmount(v.asAmount(v.get("tax")));
                         })
 
                         .wrap(TransactionItem::new));
@@ -255,28 +252,28 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
                         .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares").optional() //
                         .match("^St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("shares").optional() // teilausführung
                         .match("^ Summe *St\\. *(?<shares>[\\d.]+(,\\d+)?) .*") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .find(".*Zu Ihren Gunsten vor Steuern *") //
                         .match(".* \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+).*") //
                         .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
                         })
 
                         .section("tax").optional() //
                         .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
-                            Unit unit = createTaxUnit(v.get("tax"));
+                            Unit unit = createTaxUnit(v, v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
                                 return;
 
@@ -303,27 +300,27 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         pdfTransaction.section("fee", "currency").optional()
                         .match(".*Provision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*B.rsenplatzabh.ng. Entgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Abwickl.entgelt Clearstream *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Gesamtprovision *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional()
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))));
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("fee"))))));
     }
 
     @SuppressWarnings("nls")
@@ -349,12 +346,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
                         .match("(\\S{1,} )* *(?<isin>\\S*) *$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("tax").optional() //
                         .match("^e *r *s *t *a *t *t *e *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
-                            Unit unit = createTaxUnit(v.get("tax"));
+                            Unit unit = createTaxUnit(v, v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
                                 return;
 
@@ -365,7 +362,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
     }
 
     @SuppressWarnings("nls")
-    private Unit createTaxUnit(String taxString)
+    private Unit createTaxUnit(PDFExtractionContext context, String taxString)
     {
         String tax = taxString.replaceAll("[_ ]*", "");
 
@@ -375,7 +372,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
             return null;
 
         return new Unit(Unit.Type.TAX,
-                        Money.of(asCurrencyCode(matcher.group("currency")), asAmount(matcher.group("amount"))));
+                        Money.of(context.asCurrencyCode(matcher.group("currency")), context.asAmount(matcher.group("amount"))));
     }
 
     @Override

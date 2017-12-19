@@ -70,21 +70,21 @@ public final class ImportExtractedItemsWizard extends Wizard
 
     private void addDefaultExtractors() throws IOException
     {
-        extractors.add(new BaaderBankPDFExtractor(client));
-        extractors.add(new BankSLMPDFExctractor(client));
-        extractors.add(new ComdirectPDFExtractor(client));
-        extractors.add(new CommerzbankPDFExctractor(client));
-        extractors.add(new ConsorsbankPDFExctractor(client));
-        extractors.add(new DABPDFExctractor(client));
-        extractors.add(new DegiroPDFExtractor(client));
-        extractors.add(new DeutscheBankPDFExctractor(client));
-        extractors.add(new DkbPDFExtractor(client));
-        extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new INGDiBaExtractor(client));
-        extractors.add(new OnvistaPDFExtractor(client));
-        extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new UnicreditPDFExtractor(client));
-        extractors.add(new HelloBankPDFExtractor(client));
+        extractors.add(new BaaderBankPDFExtractor());
+        extractors.add(new BankSLMPDFExctractor());
+        extractors.add(new ComdirectPDFExtractor());
+        extractors.add(new CommerzbankPDFExctractor());
+        extractors.add(new ConsorsbankPDFExctractor());
+        extractors.add(new DABPDFExctractor());
+        extractors.add(new DegiroPDFExtractor());
+        extractors.add(new DeutscheBankPDFExctractor());
+        extractors.add(new DkbPDFExtractor());
+        extractors.add(new FinTechGroupBankPDFExtractor());
+        extractors.add(new INGDiBaExtractor());
+        extractors.add(new OnvistaPDFExtractor());
+        extractors.add(new SBrokerPDFExtractor());
+        extractors.add(new UnicreditPDFExtractor());
+        extractors.add(new HelloBankPDFExtractor());
 
         Collections.sort(extractors, (r, l) -> r.getLabel().compareToIgnoreCase(l.getLabel()));
     }
@@ -121,7 +121,7 @@ public final class ImportExtractedItemsWizard extends Wizard
         }
         else if (isLegacyMode)
         {
-            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            Extractor e = new AssistantPDFExtractor(new ArrayList<>(extractors));
             extractors.add(e);
             extractor2files.put(e, files);
         }
@@ -163,7 +163,7 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         if (!unknown.isEmpty())
         {
-            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            Extractor e = new AssistantPDFExtractor(new ArrayList<>(extractors));
             extractors.add(e);
             extractor2files.put(e, unknown);
         }

@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,17 +11,14 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
-    public HelloBankPDFExtractor(Client client) throws IOException
+    public HelloBankPDFExtractor() throws IOException
     {
-        super(client);
-
         addBankIdentifier("Hellobank"); //$NON-NLS-1$
         addBankIdentifier("Hello bank!"); //$NON-NLS-1$
 
@@ -51,16 +47,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .match("Titel: (?<isin>\\S*) (?<name>.*)$") //
                         .match("Kurs: [\\d+,.]* (?<currency>\\w{3}+) *")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .match("^Zugang: (?<shares>[\\d+,.]*) Stk.*")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .match("Zu Lasten .* -(?<amount>[\\d+,.]*) (?<currency>\\w{3}+) *$").assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("date") //
@@ -72,16 +68,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("Grundgebühr: -(?<fee>[\\d+,.]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                        Money.of(v.asCurrencyCode(v.get("currency")),
+                                                                        v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency") //
                         .optional() //
                         .match("Fremde Spesen: -(?<fee>[\\d+,.]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                        Money.of(v.asCurrencyCode(v.get("currency")),
+                                                                        v.asAmount(v.get("fee"))))))
 
                         .section("gross", "currency", "exchangeRate") //
                         .optional() //
@@ -89,9 +85,9 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("-[\\d+,.-]* \\w{3}+ *")
                         .match("Devisenkurs: (?<exchangeRate>[\\d+,.]*) \\(\\d+.\\d+.\\d{4}+\\) -[\\d+,.]* \\w{3}+ *")
                         .assign((t, v) -> {
-                            long gross = asAmount(v.get("gross"));
-                            String currency = asCurrencyCode(v.get("currency"));
-                            BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10,
+                            long gross = v.asAmount(v.get("gross"));
+                            String currency = v.asCurrencyCode(v.get("currency"));
+                            BigDecimal exchangeRate = BigDecimal.ONE.divide(v.asExchangeRate(v.get("exchangeRate")), 10,
                                             BigDecimal.ROUND_HALF_UP);
 
                             PortfolioTransaction tx = t.getPortfolioTransaction();
@@ -128,16 +124,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .match("Titel: (?<isin>\\S*) (?<name>.*)$") //
                         .match("Kurs: [\\d+,.]* (?<currency>\\w{3}+) *")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .match("^Abgang: (?<shares>[\\d+,.]*) Stk.*")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency") //
                         .match("Zu Gunsten .* (?<amount>[\\d+,.]*) (?<currency>\\w{3}+) *$").assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("date") //
@@ -149,24 +145,24 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("Grundgebühr: -(?<fee>[\\d+,.]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                        Money.of(v.asCurrencyCode(v.get("currency")),
+                                                                        v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency") //
                         .optional() //
                         .match("Fremde Spesen: -(?<fee>[\\d+,.]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                        Money.of(v.asCurrencyCode(v.get("currency")),
+                                                                        v.asAmount(v.get("fee"))))))
 
                         .section("fee", "currency") //
                         .optional() //
                         .match("Eigene Spesen: -(?<fee>[\\d+,.]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                                                        Money.of(v.asCurrencyCode(v.get("currency")),
+                                                                        v.asAmount(v.get("fee"))))))
 
                         .section("gross", "tax", "currency", "exchangeRate") //
                         // .optional() //
@@ -175,10 +171,10 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .match("[\\d+,.-]* \\w{3}+ *") //
                         .match("Devisenkurs: (?<exchangeRate>[\\d+,.]*) \\(\\d+.\\d+.\\d{4}+\\) [\\d+,.]* \\w{3}+ *")
                         .assign((t, v) -> {
-                            long gross = asAmount(v.get("gross"));
-                            long tax = asAmount(v.get("tax"));
-                            String currency = asCurrencyCode(v.get("currency"));
-                            BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10,
+                            long gross = v.asAmount(v.get("gross"));
+                            long tax = v.asAmount(v.get("tax"));
+                            String currency = v.asCurrencyCode(v.get("currency"));
+                            BigDecimal exchangeRate = BigDecimal.ONE.divide(v.asExchangeRate(v.get("exchangeRate")), 10,
                                             BigDecimal.ROUND_HALF_UP);
 
                             PortfolioTransaction tx = t.getPortfolioTransaction();
@@ -225,10 +221,10 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
         Block block = new Block("Geschäftsart: Ertrag");
         type.addBlock(block);
 
-        BiConsumer<AccountTransaction, Map<String, String>> taxProcessor = (t, v) -> {
+        BiConsumer<AccountTransaction, PDFExtractionContext> taxProcessor = (t, v) -> {
 
-            long tax = asAmount(v.get("tax"));
-            String currency = asCurrencyCode(v.get("currency"));
+            long tax = v.asAmount(v.get("tax"));
+            String currency = v.asCurrencyCode(v.get("currency"));
 
             // logic: if taxes are in the transaction currency, simply add them
             // if taxes are in forex then convert them, but add them with forex
@@ -240,11 +236,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
             }
             else
             {
-                String exchangeRateString = type.getCurrentContext().get("exchangeRate");
+                String exchangeRateString = v.getCurrentContext().get("exchangeRate");
 
                 if (exchangeRateString != null)
                 {
-                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(exchangeRateString), 10,
+                    BigDecimal exchangeRate = BigDecimal.ONE.divide(v.asExchangeRate(exchangeRateString), 10,
                                     BigDecimal.ROUND_HALF_UP);
 
                     if (currency.equals(t.getSecurity().getCurrencyCode()))
@@ -275,16 +271,16 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .match("Titel: (?<isin>\\S*) (?<name>.*)$") //
                         .match("Dividende: [\\d+,.]* (?<currency>\\w{3}+) *")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .match("^(Abgang: )?(?<shares>[\\d+,.]*) Stk$") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("amount", "currency")
                         .match("Zu Gunsten .* (?<amount>[\\d+,.]*) (?<currency>\\w{3}+) *$").assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(v.asAmount(v.get("amount")));
+                            t.setCurrencyCode(v.asCurrencyCode(v.get("currency")));
                         })
 
                         .section("date") //
@@ -320,8 +316,8 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .optional() //
                         .match("Bruttoertrag: (?<gross>[\\d+,.-]*) (?<currency>\\w{3}+) *").assign((t, v) -> {
 
-                            long gross = asAmount(v.get("gross"));
-                            String currency = asCurrencyCode(v.get("currency"));
+                            long gross = v.asAmount(v.get("gross"));
+                            String currency = v.asCurrencyCode(v.get("currency"));
 
                             // record fx only if security currency actually
                             // matches the fx currency of the transaction (many
@@ -330,11 +326,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                             if (currency.equals(t.getSecurity().getCurrencyCode()))
                             {
-                                String exchangeRateString = type.getCurrentContext().get("exchangeRate");
+                                String exchangeRateString = v.getCurrentContext().get("exchangeRate");
 
                                 if (exchangeRateString != null)
                                 {
-                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(exchangeRateString),
+                                    BigDecimal exchangeRate = BigDecimal.ONE.divide(v.asExchangeRate(exchangeRateString),
                                                     10, BigDecimal.ROUND_HALF_UP);
 
                                     long convertedGross = BigDecimal.valueOf(gross).multiply(exchangeRate)
@@ -368,11 +364,11 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "currency") //
                         .match("Titel: (?<isin>\\S*) (?<name>.*)$") //
                         .match("steuerlicher Anschaffungswert: [\\d+,.-]* (?<currency>\\w{3}+) *")
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+                        .assign((t, v) -> t.setSecurity(v.getOrCreateSecurity()))
 
                         .section("shares") //
                         .match("^Zugang: (?<shares>[\\d+,.]*) Stk.*")
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+                        .assign((t, v) -> t.setShares(v.asShares(v.get("shares"))))
 
                         .section("date") //
                         .match("Kassatag: (?<date>\\d+.\\d+.\\d{4}+).*")
@@ -381,7 +377,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                         .section("amount", "currency") //
                         .match("steuerlicher Anschaffungswert: (?<amount>[\\d+,.-]*) (?<currency>\\w{3}+) *")
                         .assign((t, v) -> t.setMonetaryAmount(
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")))))
+                                        Money.of(v.asCurrencyCode(v.get("currency")), v.asAmount(v.get("amount")))))
 
                         .wrap(TransactionItem::new));
     }
