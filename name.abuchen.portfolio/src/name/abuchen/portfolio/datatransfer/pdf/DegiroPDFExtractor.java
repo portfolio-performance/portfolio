@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
@@ -20,8 +19,8 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
 
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.GERMANY); //$NON-NLS-1$
-
-    public DegiroPDFExtractor() throws IOException
+    
+    public DegiroPDFExtractor()
     {
         addBankIdentifier("DEGIRO"); //$NON-NLS-1$
         addBankAccountTransactions();    

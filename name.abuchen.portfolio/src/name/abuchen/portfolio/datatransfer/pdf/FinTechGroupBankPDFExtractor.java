@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -19,7 +18,7 @@ import name.abuchen.portfolio.money.Values;
 public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    public FinTechGroupBankPDFExtractor() throws IOException
+    public FinTechGroupBankPDFExtractor()
     {
         addBankIdentifier("biw AG"); //$NON-NLS-1$
         addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$

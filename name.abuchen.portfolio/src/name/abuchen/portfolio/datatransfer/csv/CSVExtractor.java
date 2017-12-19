@@ -27,9 +27,9 @@ public abstract class CSVExtractor implements Extractor
                     List<Exception> errors);
 
     @Override
-    public String getFilterExtension()
+    public String getFileExtension()
     {
-        return "*.csv"; //$NON-NLS-1$
+        return "csv"; //$NON-NLS-1$
     }
 
     @Override

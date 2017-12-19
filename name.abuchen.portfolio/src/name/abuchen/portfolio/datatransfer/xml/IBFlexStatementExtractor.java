@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.datatransfer;
+package name.abuchen.portfolio.datatransfer.xml;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -27,6 +27,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -100,9 +102,9 @@ public class IBFlexStatementExtractor implements Extractor
     }
 
     @Override
-    public String getFilterExtension()
+    public String getFileExtension()
     {
-        return "*.xml"; //$NON-NLS-1$
+        return "xml"; //$NON-NLS-1$
     }
 
     @Override
@@ -521,7 +523,7 @@ public class IBFlexStatementExtractor implements Extractor
             }
             else
             {
-                isin = isinAttribute;
+                isin = isinAttribute.isEmpty() ? null : isinAttribute;
             }
 
             String conID = element.getAttribute("conid");
@@ -545,15 +547,13 @@ public class IBFlexStatementExtractor implements Extractor
                 yahooSymbol = null;
             }
 
-            Security security = securityCache.lookup(isin, yahooSymbol, conID, description, () -> {
+            return securityCache.lookup(isin, yahooSymbol, conID, description, () -> {
                 Security s = new Security();
                 s.setFeed(QuoteFeed.MANUAL);
                 s.setCurrencyCode(currency);
                 s.setNote(description);
                 return s;
             });
-            
-            return security;
         }
 
         /**

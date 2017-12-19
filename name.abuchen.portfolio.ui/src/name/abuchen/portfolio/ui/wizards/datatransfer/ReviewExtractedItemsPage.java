@@ -539,7 +539,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     @Override
     public void beforePage()
     {
-        setTitle(extractor instanceof AssistantPDFExtractor ? Messages.PDFImportWizardAssistant : extractor.getLabel());
+        setTitle(extractor instanceof AssistantPDFExtractor ? Messages.FileImportWizardAssistantTitle : extractor.getLabel());
 
         if (!doExtractBeforeEveryPageDisplay
                         && (!allEntries.isEmpty() || errorTableViewer.getTable().getItemCount() > 0))
@@ -569,7 +569,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
+                    monitor.beginTask(Messages.FileImportWizardMsgExtracting, files.size());
                     final List<Exception> errors = new ArrayList<>();
 
                     try

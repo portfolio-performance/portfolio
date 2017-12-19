@@ -1,11 +1,9 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-// import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -19,7 +17,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
 {
-    public ConsorsbankPDFExctractor() throws IOException
+    public ConsorsbankPDFExctractor()
     {
         addBankIdentifier("Consorsbank"); //$NON-NLS-1$
         addBankIdentifier("Cortal Consors"); //$NON-NLS-1$

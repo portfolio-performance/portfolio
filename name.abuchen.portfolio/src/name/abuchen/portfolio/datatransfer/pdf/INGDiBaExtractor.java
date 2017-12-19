@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -38,7 +37,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
     };
 
-    public INGDiBaExtractor() throws IOException
+    public INGDiBaExtractor()
     {
         addBuyTransaction();
         addSellTransaction();

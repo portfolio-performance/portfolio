@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -17,7 +16,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-    public ComdirectPDFExtractor() throws IOException
+    public ComdirectPDFExtractor()
     {
         addBankIdentifier("comdirect bank"); //$NON-NLS-1$
 

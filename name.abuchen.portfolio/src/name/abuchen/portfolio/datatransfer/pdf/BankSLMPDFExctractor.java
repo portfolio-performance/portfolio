@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.NumberFormat;
 import java.util.List;
@@ -21,7 +20,7 @@ import name.abuchen.portfolio.money.Money;
 public class BankSLMPDFExctractor extends AbstractPDFExtractor
 {
 
-    public BankSLMPDFExctractor() throws IOException
+    public BankSLMPDFExctractor()
     {
         addBankIdentifier(getLabel());
         addBankIdentifier("Spar + Leihkasse"); //$NON-NLS-1$

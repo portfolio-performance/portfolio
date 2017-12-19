@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -14,7 +13,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class DABPDFExctractor extends AbstractPDFExtractor
 {
-    public DABPDFExctractor() throws IOException
+    public DABPDFExctractor()
     {
         addBankIdentifier("DAB Bank"); //$NON-NLS-1$
         addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$

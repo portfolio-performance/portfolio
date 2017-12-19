@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -17,7 +16,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
-    public HelloBankPDFExtractor() throws IOException
+    public HelloBankPDFExtractor()
     {
         addBankIdentifier("Hellobank"); //$NON-NLS-1$
         addBankIdentifier("Hello bank!"); //$NON-NLS-1$

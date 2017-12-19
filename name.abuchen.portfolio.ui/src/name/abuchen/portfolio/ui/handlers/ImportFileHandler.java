@@ -3,8 +3,11 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
@@ -23,13 +26,11 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.FileExtractorService;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
@@ -37,8 +38,9 @@ import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
-public class ImportPDFHandler
+public class ImportFileHandler
 {
+
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
@@ -47,39 +49,54 @@ public class ImportPDFHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
+                    FileExtractorService fileExtractorService,
+                    @Named("name.abuchen.portfolio.ui.param.extractor-type") String extractorType)
     {
-        doExecute(part, shell, false);
+        doExecute(part, shell, fileExtractorService, extractorType, false);
     }
 
-    /* package */ void doExecute(MPart part, Shell shell, boolean isLegacyMode)
+    /* package */ void doExecute(MPart part, Shell shell, FileExtractorService fileExtractorService,
+                    String extractorType, boolean isLegacyMode)
     {
-
         Client client = MenuHelper.getActiveClient(part);
         if (client == null)
             return;
 
+        Map<String, Extractor> extractors = fileExtractorService.getExtractors(extractorType);
+
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-        fileDialog.setText(Messages.PDFImportWizardAssistant);
-        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
-        fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
+        fileDialog.setText(Messages.bind(Messages.FileImportWizardAssistant, extractorType.toUpperCase()));
+        fileDialog.setFilterNames(new String[] {
+                        Messages.bind(Messages.FileImportFilterName, extractorType.toUpperCase(), extractorType.toLowerCase()) });
+        fileDialog.setFilterExtensions(new String[] { "*." + extractorType.toLowerCase() });
         fileDialog.open();
 
-        String[] filenames = fileDialog.getFileNames();
+        String[] fileNames = fileDialog.getFileNames();
 
-        if (filenames.length == 0)
+        if (fileNames.length == 0)
             return;
 
         List<Extractor.InputFile> files = new ArrayList<>();
-        for (String filename : filenames)
-            files.add(new PDFInputFile(new File(fileDialog.getFilterPath(), filename)));
+        for (String fileName : fileNames)
+        {
+            switch (extractorType.toLowerCase())
+            {
+                case "pdf":
+                    files.add(new PDFInputFile(new File(fileDialog.getFilterPath(), fileName)));
+                    break;
+                default:
+                    files.add(new Extractor.InputFile(new File(fileDialog.getFilterPath(), fileName)));
+                    break;
+            }
+        }
 
         IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
-
         try
         {
+
             IRunnableWithProgress operation = monitor -> {
-                monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
+                monitor.beginTask(Messages.FileImportWizardMsgExtracting, files.size());
 
                 for (Extractor.InputFile inputFile : files)
                 {
@@ -87,11 +104,11 @@ public class ImportPDFHandler
 
                     try
                     {
-                        ((PDFInputFile) inputFile).parse();
+                        inputFile.parse();
                     }
                     catch (IOException e)
                     {
-                        throw new IllegalArgumentException(MessageFormat.format(Messages.PDFImportErrorParsingDocument,
+                        throw new IllegalArgumentException(MessageFormat.format(Messages.FileImportErrorParsingDocument,
                                         inputFile.getName()), e);
                     }
 
@@ -105,7 +122,8 @@ public class ImportPDFHandler
                     @Override
                     protected IStatus run(IProgressMonitor monitor)
                     {
-                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, preferences, isLegacyMode));
+                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, extractors.values(),
+                                        preferences, isLegacyMode));
                         return Status.OK_STATUS;
                     }
                 }.schedule(50);
@@ -113,7 +131,6 @@ public class ImportPDFHandler
             };
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
-
         }
         catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
         {
@@ -123,20 +140,12 @@ public class ImportPDFHandler
         }
     }
 
-    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files, IPreferenceStore preferences,
-                    boolean isLegacyMode)
+    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files,
+                    Collection<Extractor> extractors, IPreferenceStore preferences, boolean isLegacyMode)
     {
-        try
-        {
-            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, null, preferences, files);
-            wizard.setLegacyMode(isLegacyMode);
-            Dialog wizwardDialog = new WizardDialog(shell, wizard);
-            wizwardDialog.open();
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
-        }
+        ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, extractors, preferences, files);
+        wizard.setLegacyMode(isLegacyMode);
+        Dialog wizwardDialog = new WizardDialog(shell, wizard);
+        wizwardDialog.open();
     }
 }

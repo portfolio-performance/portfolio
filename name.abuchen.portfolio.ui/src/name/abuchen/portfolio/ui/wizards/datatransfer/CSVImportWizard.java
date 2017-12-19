@@ -38,9 +38,9 @@ public class CSVImportWizard extends Wizard
         }
 
         @Override
-        public String getFilterExtension()
+        public String getFileExtension()
         {
-            return this.importer.getExtractor().getFilterExtension();
+            return this.importer.getExtractor().getFileExtension();
         }
 
         @Override

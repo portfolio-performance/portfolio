@@ -1,19 +1,18 @@
-package name.abuchen.portfolio.ui.wizards.datatransfer;
+package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 
 public class PDFImportAssistant
 {
     private PDFImportAssistant()
     {}
 
-    public static Extractor detectBankIdentifier(PDFInputFile inputFile, List<Extractor> extractors)
+    public static Extractor detectBankIdentifier(PDFInputFile inputFile, Collection<Extractor> extractors)
     {
         String author = inputFile.getAuthor();
         String text = inputFile.getText();

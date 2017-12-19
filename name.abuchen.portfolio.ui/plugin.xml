@@ -21,4 +21,11 @@
          </not>
       </definition>
    </extension>
+   <extension
+         id="name.abuchen.portfolio.ui.fragment"
+         point="org.eclipse.e4.workbench.model">
+      <fragment
+            uri="portfolio-ui-fragment.e4xmi">
+      </fragment>
+   </extension>
 </plugin>

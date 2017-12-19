@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -17,7 +16,7 @@ import name.abuchen.portfolio.money.Money;
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    public BaaderBankPDFExtractor() throws IOException
+    public BaaderBankPDFExtractor()
     {
         // Scalable Capital would actually be the preferred Bank Identifier. However, the bill sent from Scalable Capital is not correctly
         // read with PDFBox and the sort-option set to true. Therefore, we currently have to rely on the Baader Bank identifier.

@@ -42,11 +42,11 @@ public abstract class AbstractPDFExtractor implements Extractor
     }
 
     @Override
-    public String getFilterExtension()
+    public String getFileExtension()
     {
-        return "*.pdf"; //$NON-NLS-1$
+        return "pdf"; //$NON-NLS-1$
     }
-
+    
     @Override
     public List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors)
     {

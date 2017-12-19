@@ -279,6 +279,12 @@ public class Messages extends NLS
     public static String ExportWizardSelectDirectory;
     public static String ExportWizardTitle;
     public static String ExportWizardUnsupportedExport;
+    public static String FileImportErrorParsingDocument;  
+    public static String FileImportFilterName;
+    public static String FileImportMenuLabel;
+    public static String FileImportWizardAssistant;
+    public static String FileImportWizardAssistantTitle;
+    public static String FileImportWizardMsgExtracting;
     public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
     public static String GroupLabelPerformance;
@@ -618,14 +624,10 @@ public class Messages extends NLS
     public static String PageDescriptionSelectSecurity;
     public static String PageTitleSelectSecurity;
     public static String PDFImportDebugTextExtraction;
-    public static String PDFImportFilterName;
     public static String PDFImportWizardDescription;
-    public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
-    public static String PDFImportWizardAssistant;
     public static String PDFImportWizardExtractor;
     public static String PDFImportDebugAuthor;
-    public static String PDFImportErrorParsingDocument;  
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;

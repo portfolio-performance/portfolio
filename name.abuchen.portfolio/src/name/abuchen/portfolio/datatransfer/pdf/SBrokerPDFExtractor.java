@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -14,7 +12,7 @@ import name.abuchen.portfolio.money.Money;
 public class SBrokerPDFExtractor extends AbstractPDFExtractor
 {
 
-    public SBrokerPDFExtractor() throws IOException
+    public SBrokerPDFExtractor()
     {
         addBuyTransaction();
         addSellTransaction();

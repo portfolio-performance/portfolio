@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ import name.abuchen.portfolio.money.Money;
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
 
-    public OnvistaPDFExtractor() throws IOException
+    public OnvistaPDFExtractor()
     {
         addBankIdentifier(""); //$NON-NLS-1$
 
@@ -965,6 +964,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     case "AbgSt. Optimierung":
                                         t.setType(AccountTransaction.Type.TAX_REFUND);
                                         break;
+                                    default:
+                                        break;
                                 }
                             }
                         })
@@ -1066,6 +1067,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     case "AbgSt. Optimierung":
                                         t.setType(AccountTransaction.Type.TAX_REFUND);
                                         break;
+                                    default:
+                                        break;
                                 }
                             }
                         })
@@ -1079,7 +1082,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                             && t.getType() != AccountTransaction.Type.BUY
                                             && t.getType() != AccountTransaction.Type.SELL
                                             && t.getType() != AccountTransaction.Type.TAX_REFUND)
+                            { 
                                 return new TransactionItem(t);
+                            }
                             return null;
                         });
     }

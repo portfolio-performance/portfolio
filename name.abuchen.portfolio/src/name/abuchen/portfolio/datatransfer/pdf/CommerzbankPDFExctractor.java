@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -12,7 +10,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 @SuppressWarnings("nls")
 public class CommerzbankPDFExctractor extends AbstractPDFExtractor
 {
-    public CommerzbankPDFExctractor() throws IOException
+    public CommerzbankPDFExctractor()
     {
         addBankIdentifier("C O M M E R Z B A N K"); //$NON-NLS-1$
 
