@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
@@ -69,6 +70,11 @@ public class PDFInputFile extends Extractor.InputFile
         return FrameworkUtil.getBundle(PDDocument.class).getVersion();
     }
 
+    public Extractor findMatchingExtractor(final Collection<Extractor> extractors)
+    {
+        return PDFImportAssistant.detectBankIdentifier(this, extractors);
+    }
+    
     public void parse() throws IOException
     {
         try (PDDocument document = PDDocument.load(getFile()))

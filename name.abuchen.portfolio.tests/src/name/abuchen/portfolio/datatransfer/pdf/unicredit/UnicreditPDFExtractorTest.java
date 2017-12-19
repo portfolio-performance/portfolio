@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -33,14 +34,21 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class UnicreditPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        UnicreditPDFExtractor extractor = new UnicreditPDFExtractor(new Client());
+        UnicreditPDFExtractor extractor = new UnicreditPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "UniCreditHypoVereinsbankWertpapierKauf1.txt"), errors);
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

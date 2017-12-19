@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -32,16 +33,23 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class CommerzbankPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -69,12 +77,12 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift2.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "CommerzbankErtragsgutschrift2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -102,11 +110,11 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testWertpapierkauf() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "CommerzbankWertpapierkauf.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "CommerzbankWertpapierkauf.txt"),
                         errors);
 
         assertThat(errors, empty());

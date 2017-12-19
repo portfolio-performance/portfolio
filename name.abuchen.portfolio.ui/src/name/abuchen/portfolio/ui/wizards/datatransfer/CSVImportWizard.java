@@ -38,13 +38,13 @@ public class CSVImportWizard extends Wizard
         }
 
         @Override
-        public String getFilterExtension()
+        public String getFileExtension()
         {
-            return this.importer.getExtractor().getFilterExtension();
+            return this.importer.getExtractor().getFileExtension();
         }
 
         @Override
-        public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+        public List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors)
         {
             return this.importer.createItems(errors);
         }

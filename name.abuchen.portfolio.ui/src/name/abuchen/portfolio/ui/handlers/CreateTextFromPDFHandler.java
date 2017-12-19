@@ -27,7 +27,7 @@ public class CreateTextFromPDFHandler
     {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.SINGLE);
         fileDialog.setText(Messages.PDFImportDebugTextExtraction);
-        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
+        fileDialog.setFilterNames(new String[] { Messages.bind(Messages.FileImportFilterName, "pdf") });
         fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
         fileDialog.open();
 

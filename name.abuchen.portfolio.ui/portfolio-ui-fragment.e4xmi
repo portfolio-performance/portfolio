@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ASCII"?>
+<fragment:ModelFragments xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:fragment="http://www.eclipse.org/ui/2010/UIModel/fragment" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmi:id="_l3TD4IdDEeepY5e_tOul4w">
+  <fragments xsi:type="fragment:StringModelFragment" xmi:id="_mhpocIdDEeepY5e_tOul4w" featurename="children" parentElementId="name.abuchen.portfolio.ui.menu.file.import" positionInList="after:name.abuchen.portfolio.ui.menu.file.import.csv">
+    <elements xsi:type="menu:DynamicMenuContribution" xmi:id="_y3kcQIdDEeepY5e_tOul4w" elementId="name.abuchen.portfolio.bootstrap.importmenu.files" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.menu.ImportFileMenuContribution"/>
+  </fragments>
+</fragment:ModelFragments>

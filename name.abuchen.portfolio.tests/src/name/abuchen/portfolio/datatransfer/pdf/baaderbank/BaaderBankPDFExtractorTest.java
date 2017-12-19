@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -33,15 +34,21 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class BaaderBankPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierKauf1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierKauf1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -81,11 +88,10 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierKauf2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierKauf2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -124,12 +130,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierVerkauf1.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankWertpapierVerkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -165,11 +170,10 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testSteuerausgleichsrechnung() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "BaaderBankSteuerausgleichsrechnung1.txt"), errors);
 
         assertThat(errors, empty());
@@ -191,11 +195,10 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testMonatlicherKontoauszug1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "BaaderBankMonatlicherKontoauszug1.txt"), errors);
 
         assertThat(errors, empty());
@@ -219,11 +222,10 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testRechnung1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankRechnung1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankRechnung1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -247,12 +249,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testFondsausschuettung1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankFondsausschuettung1.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankFondsausschuettung1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -287,12 +288,11 @@ public class BaaderBankPDFExtractorTest
     @Test
     public void testErtragsthesaurierung1() throws IOException
     {
-        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
-
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankErtragsthesaurierung1.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "BaaderBankErtragsthesaurierung1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

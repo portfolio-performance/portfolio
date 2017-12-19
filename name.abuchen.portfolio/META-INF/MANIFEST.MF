@@ -38,7 +38,10 @@ Import-Package: com.google.common.util.concurrent;version="23.5.0",
  org.json.simple;version="1.1.1",
  org.jsoup;version="1.7.2",
  org.jsoup.nodes;version="1.7.2",
- org.jsoup.select;version="1.7.2"
+ org.jsoup.select;version="1.7.2",
+ org.osgi.service.component.annotations;version="1.2.0"
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0"
+Bundle-ActivationPolicy: lazy
+Service-Component: OSGI-INF/name.abuchen.portfolio.datatransfer.PortfolioFileExtractorService.xml

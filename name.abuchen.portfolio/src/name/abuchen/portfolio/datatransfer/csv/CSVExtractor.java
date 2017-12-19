@@ -15,6 +15,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
 
@@ -26,13 +27,13 @@ public abstract class CSVExtractor implements Extractor
                     List<Exception> errors);
 
     @Override
-    public String getFilterExtension()
+    public String getFileExtension()
     {
-        return "*.csv"; //$NON-NLS-1$
+        return "csv"; //$NON-NLS-1$
     }
 
     @Override
-    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+    public List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors)
     {
         throw new UnsupportedOperationException();
     }

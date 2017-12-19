@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -34,14 +35,22 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class HelloBankPDFExtractorTest
 {
+    private Client client;
+
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testErtrag01() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -87,11 +96,11 @@ public class HelloBankPDFExtractorTest
         Client client = new Client();
         client.addSecurity(security);
 
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(client);
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Ertrag01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -115,11 +124,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testErtrag02() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag02.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Ertrag02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -159,11 +168,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testErtrag03() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag03.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Ertrag03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -197,11 +206,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testErtrag04() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Ertrag04.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Ertrag04.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -241,11 +250,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testKauf01() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -288,14 +297,13 @@ public class HelloBankPDFExtractorTest
         Security security = new Security("Marine Harvest ASA", CurrencyUnit.EUR);
         security.setIsin("NO0003054108");
 
-        Client client = new Client();
         client.addSecurity(security);
 
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(client);
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Kauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -321,11 +329,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testKauf02() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Kauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -365,11 +373,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testVerkauf01() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -419,14 +427,13 @@ public class HelloBankPDFExtractorTest
         Security security = new Security("SELECT HARVEST LTD.", CurrencyUnit.EUR);
         security.setIsin("AU000000SHV6");
 
-        Client client = new Client();
         client.addSecurity(security);
 
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(client);
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "Verkauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -455,11 +462,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testInboundDelivery01() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InboundDelivery01.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "InboundDelivery01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -490,11 +497,11 @@ public class HelloBankPDFExtractorTest
     @Test
     public void testInboundDelivery02() throws IOException
     {
-        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor(new Client());
+        HelloBankPDFExtractor extractor = new HelloBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "InboundDelivery02.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "InboundDelivery02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));

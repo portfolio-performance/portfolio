@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -32,15 +33,22 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class INGDiBaPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -70,11 +78,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -102,11 +110,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -134,11 +142,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf4.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf4.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -165,11 +173,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf5() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf5.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf5.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -196,11 +204,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf6() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf6.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf6.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -227,11 +235,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf7() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf7.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf7.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -259,11 +267,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierKauf8() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf8.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Kauf8.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -290,11 +298,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf1.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -321,11 +329,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -353,11 +361,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Verkauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -385,11 +393,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -415,11 +423,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -445,11 +453,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testErtragsgutschrift3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift3.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Ertragsgutschrift3.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -478,12 +486,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividendengutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift1.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -509,12 +517,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividendengutschrift2() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift2.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -540,12 +548,12 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testDividendengutschrift3() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift3.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "INGDiBa_Dividendengutschrift3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -571,11 +579,11 @@ public class INGDiBaPDFExtractorTest
     @Test
     public void testGemeinschaftskontoDividendengutschrift1() throws IOException
     {
-        INGDiBaExtractor extractor = new INGDiBaExtractor(new Client());
+        INGDiBaExtractor extractor = new INGDiBaExtractor();
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "INGDiBa_Gemeinschaftskonto_Dividendengutschrift1.txt"),
                         errors);
 

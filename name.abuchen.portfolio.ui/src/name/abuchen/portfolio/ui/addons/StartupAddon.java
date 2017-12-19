@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.addons;
 
 import java.io.IOException;
 import java.text.MessageFormat;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -18,6 +20,11 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
+import org.eclipse.e4.ui.model.application.MApplication;
+import org.eclipse.e4.ui.model.application.commands.MCommand;
+import org.eclipse.e4.ui.model.application.commands.MCommandsFactory;
+import org.eclipse.e4.ui.model.application.commands.MKeyBinding;
+import org.eclipse.e4.ui.model.application.commands.MParameter;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
@@ -28,6 +35,7 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.swt.graphics.Image;
 import org.osgi.service.event.Event;
 
+import name.abuchen.portfolio.datatransfer.FileExtractorService;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Images;
@@ -210,4 +218,44 @@ public class StartupAddon
         registry.put(Dialog.DLG_IMG_MESSAGE_WARNING, Images.WARNING.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_INFO, Images.INFO.descriptor());
     }
+    
+    
+    @PostConstruct
+    public void initExtractorKeyBindings(MApplication application, FileExtractorService fileExtractorService)
+    {
+        // key bindings must be created programmatically created at startup, because the menu items are created dynamically
+        fileExtractorService.getAll().forEach((type, extractorMap) -> {
+            java.util.Optional<MCommand> commandOptional = application.getCommands().stream()
+                            .filter(c -> c.getElementId().equals("name.abuchen.portfolio.ui.command.import.file"))
+                            .findAny();
+            if (commandOptional.isPresent())
+            {
+                MCommand command = commandOptional.get();
+                
+                java.util.Optional<MKeyBinding> matchingKeyBinding = application.getBindingTables().stream().map(bt -> {
+                    return bt.getBindings().stream().filter(
+                                    b -> ("name.abuchen.portfolio.ui.menu.extractor-type-" + type).equals(b.getElementId()))
+                                    .collect(Collectors.toList());
+                }).flatMap(Collection::stream).findFirst();
+                if (!matchingKeyBinding.isPresent())
+                {
+                    MKeyBinding keyBinding = MCommandsFactory.INSTANCE.createKeyBinding();
+                    keyBinding.setElementId("name.abuchen.portfolio.ui.menu.extractor-type-" + type);
+                    keyBinding.setKeySequence("M1+I " + type.substring(0, 1).toUpperCase());
+    
+                    MParameter keyBindingParameter = MCommandsFactory.INSTANCE.createParameter();
+                    keyBindingParameter.setContributorURI("platform:/plugin/name.abuchen.portfolio.bootstrap");
+                    keyBindingParameter.setElementId("name.abuchen.portfolio.ui.menu.param.extractor-type-" + type);
+                    keyBindingParameter.setName("name.abuchen.portfolio.ui.param.extractor-type");
+                    keyBindingParameter.setValue(type);
+    
+                    keyBinding.getParameters().add(keyBindingParameter);
+                    keyBinding.setCommand(command);
+    
+                    application.getBindingTables().stream().findFirst().get().getBindings().add(keyBinding);
+                }
+            }
+        });
+    }
+    
 }

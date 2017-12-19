@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.EnumSet;
 import java.util.List;
 
@@ -12,6 +14,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -27,6 +30,15 @@ public interface Extractor
         public InputFile(File file)
         {
             this.file = file;
+        }
+        
+        public Extractor findMatchingExtractor(final Collection<Extractor> extractors)
+        {
+            return null;
+        }
+        
+        public void parse() throws IOException
+        {
         }
 
         public File getFile()
@@ -346,11 +358,19 @@ public interface Extractor
     /**
      * Returns the filter extension for the file dialog, e.g. "*.pdf"
      */
-    String getFilterExtension();
+    default String getFilterExtension()
+    {
+        return "*." + getFileExtension();
+    }
+    
+    /**
+     * Shall return the file extension, e.g. "pdf"
+     */
+    String getFileExtension();
 
     /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<InputFile> files, List<Exception> errors);
+    List<Item> extract(Client client, List<Extractor.InputFile> files, List<Exception> errors);
 
 }

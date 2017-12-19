@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -39,15 +40,22 @@ import name.abuchen.portfolio.money.Values;
 @SuppressWarnings("nls")
 public class FinTechGroupBankPDFExtractorTest
 {
+    private Client client;
 
+    @Before
+    public void setup()
+    {
+        client = new Client();
+    }
+    
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(6));
@@ -158,11 +166,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testGutschriftsBelastungsanzeige() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "FlatexGutschriftsBelastungsanzeige.txt"), errors);
 
         assertThat(errors, empty());
@@ -192,11 +200,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -229,11 +237,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -264,11 +272,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf4.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf4.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -299,10 +307,10 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKauf6() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf6.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf6.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -333,10 +341,10 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKauf7() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf7.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKauf7.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(20));
@@ -358,11 +366,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testKontoauszug() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -382,11 +390,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testKontoauszug2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(1));
@@ -405,11 +413,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -440,11 +448,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -473,11 +481,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift3() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift3.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift3.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -508,11 +516,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testDividendeAusland() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland1.txt"), errors);
 
         assertThat(errors, empty());
@@ -543,11 +551,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testZinsgutschriftInland() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexZinsgutschriftInland.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexZinsgutschriftInland.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -576,11 +584,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -613,11 +621,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf2.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -650,11 +658,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf3.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf3.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -687,11 +695,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierÜbertrag1() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang1.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang1.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -721,11 +729,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierÜbertrag2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -755,11 +763,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierAusgang() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang.txt"), errors);
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -790,11 +798,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierAusgang2() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -825,11 +833,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchung() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -925,11 +933,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung2.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung2.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -961,11 +969,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testZinsBelastung() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexZinsBelastung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexZinsBelastung.txt"),
                         errors);
 
         assertThat(errors, empty());
@@ -985,12 +993,12 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierVerkaufSteuererstattung() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
         List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkaufSteuererstattung.txt"), errors);
+                        .extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexVerkaufSteuererstattung.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
@@ -1034,11 +1042,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testWertpapierKaufVerkaufSteuererstattung() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(
+        List<Item> results = extractor.extract(client, 
                         PDFInputFile.loadTestCase(getClass(), "FlatexKaufVerkaufSteuererstattung.txt"), errors);
 
         assertThat(errors, empty());
@@ -1130,11 +1138,11 @@ public class FinTechGroupBankPDFExtractorTest
     @Test
     public void testSteuertopfoptimierung() throws IOException
     {
-        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor();
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexSteuertopfoptimierung.txt"),
+        List<Item> results = extractor.extract(client, PDFInputFile.loadTestCase(getClass(), "FlatexSteuertopfoptimierung.txt"),
                         errors);
 
         assertThat(errors, empty());

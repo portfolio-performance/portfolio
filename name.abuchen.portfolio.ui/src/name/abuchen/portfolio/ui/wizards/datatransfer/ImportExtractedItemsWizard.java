@@ -1,8 +1,7 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,22 +13,6 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.HelloBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.INGDiBaExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.OnvistaPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
-import name.abuchen.portfolio.datatransfer.pdf.SBrokerPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.UnicreditPDFExtractor;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.Images;
@@ -52,41 +35,17 @@ public final class ImportExtractedItemsWizard extends Wizard
      */
     private boolean isLegacyMode = false;
 
-    public ImportExtractedItemsWizard(Client client, Extractor extractor, IPreferenceStore preferences,
-                    List<Extractor.InputFile> files) throws IOException
+    public ImportExtractedItemsWizard(Client client, Collection<Extractor> extractors, IPreferenceStore preferences,
+                    List<Extractor.InputFile> files)
     {
         this.client = client;
         this.preferences = preferences;
         this.files = files;
 
-        if (extractor != null)
-            extractors.add(extractor);
-        else
-            addDefaultExtractors();
+        this.extractors.addAll(extractors);
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(false);
-    }
-
-    private void addDefaultExtractors() throws IOException
-    {
-        extractors.add(new BaaderBankPDFExtractor(client));
-        extractors.add(new BankSLMPDFExctractor(client));
-        extractors.add(new ComdirectPDFExtractor(client));
-        extractors.add(new CommerzbankPDFExctractor(client));
-        extractors.add(new ConsorsbankPDFExctractor(client));
-        extractors.add(new DABPDFExctractor(client));
-        extractors.add(new DegiroPDFExtractor(client));
-        extractors.add(new DeutscheBankPDFExctractor(client));
-        extractors.add(new DkbPDFExtractor(client));
-        extractors.add(new FinTechGroupBankPDFExtractor(client));
-        extractors.add(new INGDiBaExtractor(client));
-        extractors.add(new OnvistaPDFExtractor(client));
-        extractors.add(new SBrokerPDFExtractor(client));
-        extractors.add(new UnicreditPDFExtractor(client));
-        extractors.add(new HelloBankPDFExtractor(client));
-
-        Collections.sort(extractors, (r, l) -> r.getLabel().compareToIgnoreCase(l.getLabel()));
     }
 
     public void setLegacyMode(boolean isLegacyMode)
@@ -121,7 +80,7 @@ public final class ImportExtractedItemsWizard extends Wizard
         }
         else if (isLegacyMode)
         {
-            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            Extractor e = new AssistantPDFExtractor(new ArrayList<>(extractors));
             extractors.add(e);
             extractor2files.put(e, files);
         }
@@ -151,19 +110,17 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         for (Extractor.InputFile file : files)
         {
-            PDFInputFile inputFile = (PDFInputFile) file;
-
-            Extractor extractor = PDFImportAssistant.detectBankIdentifier(inputFile, extractors);
+            Extractor extractor = file.findMatchingExtractor(extractors);
 
             if (extractor != null)
-                extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(inputFile);
+                extractor2files.computeIfAbsent(extractor, k -> new ArrayList<>()).add(file);
             else
-                unknown.add(inputFile);
+                unknown.add(file);
         }
 
         if (!unknown.isEmpty())
         {
-            Extractor e = new AssistantPDFExtractor(client, new ArrayList<>(extractors));
+            Extractor e = new AssistantPDFExtractor(new ArrayList<>(extractors));
             extractors.add(e);
             extractor2files.put(e, unknown);
         }
