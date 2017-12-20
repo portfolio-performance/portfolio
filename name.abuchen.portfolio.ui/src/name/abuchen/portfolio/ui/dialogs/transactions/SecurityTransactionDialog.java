@@ -213,7 +213,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         forms = forms.thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
                         .thenRight(quote.value).width(width);
                         
-                        forms.thenUp(valueTime.getControl()); // attach date to the right
+                        forms.thenUp(valueTime.getControl()); // attach date
                         
                         forms.thenRight(quote.currency).width(width)
                         .thenRight(grossValue.label).thenRight(grossValue.value).width(width)

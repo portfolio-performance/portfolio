@@ -151,10 +151,13 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                         .thenBelow(source.value.getControl()).label(source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
                         .thenBelow(valueDate.getControl()).label(lblDate);
-                        forms.thenRight(valueTime.getControl()); // attach date to the right
+                       
                         // shares - quote - amount
-                        forms.thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
-                        .thenRight(quote.value).width(amountWidth).thenRight(quote.currency).width(currencyWidth)
+        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
+                        .thenRight(quote.value).width(amountWidth);
+        
+        forms.thenUp(valueTime.getControl()); // attach date
+        forms.thenRight(quote.currency).width(currencyWidth)
                         .thenRight(amount.label).thenRight(amount.value).width(amountWidth).thenRight(amount.currency)
                         .width(currencyWidth);
 
