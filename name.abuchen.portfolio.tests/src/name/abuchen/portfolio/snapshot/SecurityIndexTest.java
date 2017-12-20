@@ -35,7 +35,7 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, startPrice) //
+                        .deposit_(startDate.atStartOfDay(), startPrice) //
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
@@ -79,8 +79,8 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
-                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
+                        .interest(startDate.atStartOfDay().plusDays(10), 10 * Values.Amount.factor()) //
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
@@ -134,8 +134,8 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
-                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
+                        .interest(startDate.atStartOfDay().plusDays(10), 10 * Values.Amount.factor()) //
                         .addTo(client);
 
         int startPrice = 50 * Values.Amount.factor();
@@ -186,7 +186,7 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
                         .addTo(client);
 
         Security security = new Security();

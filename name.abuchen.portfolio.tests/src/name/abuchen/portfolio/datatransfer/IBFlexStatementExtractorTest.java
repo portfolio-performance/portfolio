@@ -10,6 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -159,7 +160,7 @@ public class IBFlexStatementExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("GRAN COLOMBIA GOLD CORP"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("CAD", 1356_75L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-04-01")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2013, 4, 1, 9, 34, 6)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(5000_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CAD", 6_75L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),

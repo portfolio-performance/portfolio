@@ -87,7 +87,7 @@ public class DetectDuplicatesAction implements ImportAction
 
     private boolean isPotentialDuplicate(Transaction subject, Transaction other)
     {
-        if (!other.getDate().equals(subject.getDate()))
+        if (!other.getDateTime().equals(subject.getDateTime()))
             return false;
 
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))

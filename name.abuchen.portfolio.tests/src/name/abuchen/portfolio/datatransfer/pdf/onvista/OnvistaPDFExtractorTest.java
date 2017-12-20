@@ -8,7 +8,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -282,7 +282,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-04-21")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-04-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
     }
@@ -316,7 +316,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-16")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.0545)));
 
@@ -336,7 +336,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-16")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-16T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.8))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1.2879)));
     }
@@ -367,7 +367,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2010-11-17")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-11-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.14))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -399,7 +399,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-03-04")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-03-04T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.69))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(28)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -436,7 +436,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-12-15")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.16))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(5.8192)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 0L)));
@@ -468,7 +468,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(59.55))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-12")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2015, 1, 12, 10, 11)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(5)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.05))));
@@ -501,14 +501,14 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.00))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-07-17")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-07-17T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5638)));
 
         // check Steuererstattung
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         AccountTransaction entryTaxReturn = (AccountTransaction) item.get().getSubject();
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06))));
-        assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2017-07-18"))));
+        assertThat(entryTaxReturn.getDateTime(), is(is(LocalDateTime.parse("2017-07-18T00:00"))));
     }
 
     @Test
@@ -538,7 +538,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.40))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-05-30")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-05-30T12:19")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
     }
 
@@ -568,7 +568,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(21.45))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2011-04-08"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2011-04-08T12:30"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.75))));
@@ -577,7 +577,7 @@ public class OnvistaPDFExtractorTest
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         AccountTransaction entryTaxReturn = (AccountTransaction) item.get().getSubject();
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.28))));
-        assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2011-04-12"))));
+        assertThat(entryTaxReturn.getDateTime(), is(is(LocalDateTime.parse("2011-04-12T00:00"))));
     }
 
     @Test
@@ -606,7 +606,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(51.85))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2014-11-17"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2014-11-17T00:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.45))));
@@ -635,7 +635,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_IN));
 
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2011-12-02"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2011-12-02T00:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(28)));
     }
 
@@ -664,7 +664,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2013-05-17")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-05-17T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.50))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(25)));
 
@@ -678,7 +678,7 @@ public class OnvistaPDFExtractorTest
         BuySellEntry entry2 = (BuySellEntry) reinvestItem.getSubject();
         assertThat(entry2.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry2.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry2.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-05-17")));
+        assertThat(entry2.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-05-17T00:00")));
         assertThat(entry2.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
         assertThat(entry2.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.50))));
@@ -708,7 +708,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2013-04-24")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2013-04-24T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(55)));
 
         assertSecurityKapitalherabsetzungTransfer(
@@ -721,7 +721,7 @@ public class OnvistaPDFExtractorTest
         PortfolioTransaction entry2 = (PortfolioTransaction) transferItem.getSubject();
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry2.getDate(), is(LocalDate.parse("2013-04-24")));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2013-04-24T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(5.5)));
 
         assertSecurityKapitalherabsetzungZiel(
@@ -734,7 +734,7 @@ public class OnvistaPDFExtractorTest
         PortfolioTransaction entry3 = (PortfolioTransaction) transferItem2.getSubject();
         assertThat(entry3.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(entry3.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry3.getDate(), is(LocalDate.parse("2013-04-24")));
+        assertThat(entry3.getDateTime(), is(LocalDateTime.parse("2013-04-24T00:00")));
         assertThat(entry3.getShares(), is(Values.Share.factorize(5)));
 
         assertSecurityKapitalherabsetzungZiel(
@@ -747,7 +747,7 @@ public class OnvistaPDFExtractorTest
         PortfolioTransaction entry4 = (PortfolioTransaction) targetItem.getSubject();
         assertThat(entry4.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(entry4.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry4.getDate(), is(LocalDate.parse("2013-04-24")));
+        assertThat(entry4.getDateTime(), is(LocalDateTime.parse("2013-04-24T00:00")));
         assertThat(entry4.getShares(), is(Values.Share.factorize(5)));
     }
 
@@ -774,7 +774,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getDate(), is(is(LocalDate.parse("2011-04-06"))));
+        assertThat(entry.getDateTime(), is(is(LocalDateTime.parse("2011-04-06T00:00"))));
         assertThat(entry.getShares(), is(Values.Share.factorize(25)));
     }
 
@@ -801,7 +801,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
-        assertThat(entry.getDate(), is(is(LocalDate.parse("2016-05-25"))));
+        assertThat(entry.getDateTime(), is(is(LocalDateTime.parse("2016-05-25T00:00"))));
         assertThat(entry.getShares(), is(Values.Share.factorize(25)));
     }
 
@@ -828,7 +828,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(entry.getDate(), is(is(LocalDate.parse("2016-06-21"))));
+        assertThat(entry.getDateTime(), is(is(LocalDateTime.parse("2016-06-21T00:00"))));
         assertThat(entry.getShares(), is(Values.Share.factorize(25)));
     }
 
@@ -854,7 +854,7 @@ public class OnvistaPDFExtractorTest
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
 
-        assertThat(entry.getDate(), is(is(LocalDate.parse("2011-06-06"))));
+        assertThat(entry.getDateTime(), is(is(LocalDateTime.parse("2011-06-06T00:00"))));
         assertThat(entry.getShares(), is(Values.Share.factorize(33)));
     }
 
@@ -886,7 +886,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-11-26")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-11-26T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(156.729)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
@@ -901,7 +901,7 @@ public class OnvistaPDFExtractorTest
         AccountTransaction entryTaxReturn = (AccountTransaction) itemTaxReturn.getSubject();
         assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.90))));
-        assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2015-11-26"))));
+        assertThat(entryTaxReturn.getDateTime(), is(is(LocalDateTime.parse("2015-11-26T00:00"))));
 
         // check security (original)
         assertSecurityUmtauschOriginal(
@@ -917,7 +917,7 @@ public class OnvistaPDFExtractorTest
         PortfolioTransaction entry2 = (PortfolioTransaction) targetItem.getSubject();
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry2.getDate(), is(LocalDate.parse("2015-11-23")));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2015-11-23T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(28)));
         assertThat(entry2.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
         assertThat(entry2.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
@@ -931,7 +931,7 @@ public class OnvistaPDFExtractorTest
         AccountTransaction entryTax = (AccountTransaction) itemTax.getSubject();
         assertThat(entryTax.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(entryTax.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
-        assertThat(entryTax.getDate(), is(is(LocalDate.parse("2015-11-23"))));
+        assertThat(entryTax.getDateTime(), is(is(LocalDateTime.parse("2015-11-23T00:00"))));
     }
 
     @Test
@@ -962,14 +962,14 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.41))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2013-05-06"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2013-05-06T12:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.5)));
 
         // check Steuererstattung
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         AccountTransaction entryTaxReturn = (AccountTransaction) item.get().getSubject();
         assertThat(entryTaxReturn.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.05))));
-        assertThat(entryTaxReturn.getDate(), is(is(LocalDate.parse("2013-05-06"))));
+        assertThat(entryTaxReturn.getDateTime(), is(is(LocalDateTime.parse("2013-05-06T00:00"))));
 
     }
 
@@ -1000,7 +1000,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(167.00))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2015-09-22"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2015-09-22T00:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
     }
 
@@ -1031,7 +1031,7 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.50))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(is(LocalDate.parse("2013-06-11"))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2013-06-11T00:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
     }
 
@@ -1058,7 +1058,7 @@ public class OnvistaPDFExtractorTest
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-31")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(transaction.getShares(), is(Values.Share.factorize(4)));
 
         // check second security
@@ -1072,7 +1072,7 @@ public class OnvistaPDFExtractorTest
         PortfolioTransaction entry2 = (PortfolioTransaction) secondItem.getSubject();
         assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
-        assertThat(entry2.getDate(), is(LocalDate.parse("2010-12-31")));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(1)));
 
     }
@@ -1097,7 +1097,7 @@ public class OnvistaPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2010-10-31")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-10-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(37.66))));
 
     }
@@ -1122,7 +1122,7 @@ public class OnvistaPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-04-03")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-04-03T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.62))));
 
     }
@@ -1140,13 +1140,13 @@ public class OnvistaPDFExtractorTest
         assertThat(results.size(), is(7));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertTransaction(results, 0, "2017-04-04", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
-        assertTransaction(results, 1, "2017-04-10", AccountTransaction.Type.REMOVAL, CurrencyUnit.EUR, 0.89);
-        assertTransaction(results, 2, "2017-05-03", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
-        assertTransaction(results, 3, "2017-06-01", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 100.00);
-        assertTransaction(results, 4, "2017-06-02", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
-        assertTransaction(results, 5, "2017-06-26", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 300.00);
-        assertTransaction(results, 6, "2017-06-26", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 0, "2017-04-04T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 1, "2017-04-10T00:00", AccountTransaction.Type.REMOVAL, CurrencyUnit.EUR, 0.89);
+        assertTransaction(results, 2, "2017-05-03T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 3, "2017-06-01T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 100.00);
+        assertTransaction(results, 4, "2017-06-02T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
+        assertTransaction(results, 5, "2017-06-26T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 300.00);
+        assertTransaction(results, 6, "2017-06-26T00:00", AccountTransaction.Type.DEPOSIT, CurrencyUnit.EUR, 200.00);
 
     }
 
@@ -1158,7 +1158,7 @@ public class OnvistaPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.getSubject();
 
         assertThat(transaction.getType(), is(type));
-        assertThat(transaction.getDate(), is(LocalDate.parse(date)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse(date)));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(unit, Values.Amount.factorize(amount))));
     }
 
@@ -1190,7 +1190,7 @@ public class OnvistaPDFExtractorTest
         assertThat(firstEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
         assertThat(firstEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(623.49))));
-        assertThat(firstEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
+        assertThat(firstEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2016, 9, 2, 9, 10)));
         assertThat(firstEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5))));
 
@@ -1205,7 +1205,7 @@ public class OnvistaPDFExtractorTest
         assertThat(secondEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(80)));
         assertThat(secondEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2508.47))));
-        assertThat(secondEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-02")));
+        assertThat(secondEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-02T09:10")));
         assertThat(secondEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.5))));
     }
@@ -1253,7 +1253,7 @@ public class OnvistaPDFExtractorTest
         assertThat(mphEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
         assertThat(mphEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(32.70))));
-        assertThat(mphEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-14")));
+        assertThat(mphEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-14T09:02")));
         assertThat(mphEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.5))));
 
@@ -1268,7 +1268,7 @@ public class OnvistaPDFExtractorTest
         assertThat(paragonEntry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(55)));
         assertThat(paragonEntry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1665.41))));
-        assertThat(paragonEntry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-09-14")));
+        assertThat(paragonEntry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-09-14T12:54")));
         assertThat(paragonEntry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.5))));
         assertThat(paragonEntry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
@@ -1280,7 +1280,7 @@ public class OnvistaPDFExtractorTest
         assertThat(taxReturnItem.getSubject(), instanceOf(AccountTransaction.class));
         AccountTransaction taxReturnEntry = (AccountTransaction) taxReturnItem.getSubject();
         assertThat(taxReturnEntry.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.18))));
-        assertThat(taxReturnEntry.getDate(), is(is(LocalDate.parse("2016-09-14"))));
+        assertThat(taxReturnEntry.getDateTime(), is(is(LocalDateTime.parse("2016-09-14T00:00"))));
         Security taxReturnSecurity = taxReturnEntry.getSecurity();
         assertThat(((Security) mphSecurity.getSubject()).getIsin(), is(taxReturnSecurity.getIsin()));
     }

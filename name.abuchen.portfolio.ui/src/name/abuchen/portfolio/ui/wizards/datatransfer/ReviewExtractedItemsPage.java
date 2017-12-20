@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -380,8 +380,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                LocalDate date = entry.getItem().getDate();
-                return date != null ? Values.Date.format(date) : null;
+                LocalDateTime date = entry.getItem().getDate();
+                return date != null ? Values.DateTime.format(date) : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(80, true));

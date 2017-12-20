@@ -80,15 +80,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("date", "amount", "currency") //
+                        .section("date", "time", "amount", "currency") //
                         .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .match("Handelszeit (?<time>\\d+:\\d+)(.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
                         // 14.01.2015 172306238 EUR 59,55
                         // Wert Konto-Nr. Betrag zu Ihren Lasten
                         // 01.06.2011 172306238 EUR 6,40
                         .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDate(asDate(v.get("date"), v.get("time")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -134,12 +135,13 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("date", "amount", "currency") //
+                        .section("date", "time", "amount", "currency") //
                         .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .match("Handelszeit (?<time>\\d+:\\d+)(.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Gunsten(\\s*)$")
                         .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDate(asDate(v.get("date"), v.get("time")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -465,7 +467,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 t.setShares(asShares(v.get("shares")));
                             }
                             t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
-                            if (t.getDate() == null)
+                            if (t.getDateTime() == null)
                             {
                                 t.setDate(asDate(type.getCurrentContext().get("date")));
                             }
@@ -873,7 +875,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                             t.setSecurity(getOrCreateSecurity(v));
 
-                            if (t.getDate() == null)
+                            if (t.getDateTime() == null)
                             {
                                 t.setDate(asDate(type.getCurrentContext().get("date")));
                             }
@@ -967,6 +969,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         break;
                                     case "AbgSt. Optimierung":
                                         t.setType(AccountTransaction.Type.TAX_REFUND);
+                                        break;
+                                    default:
                                         break;
                                 }
                             }
@@ -1068,6 +1072,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         break;
                                     case "AbgSt. Optimierung":
                                         t.setType(AccountTransaction.Type.TAX_REFUND);
+                                        break;
+                                    default:
                                         break;
                                 }
                             }

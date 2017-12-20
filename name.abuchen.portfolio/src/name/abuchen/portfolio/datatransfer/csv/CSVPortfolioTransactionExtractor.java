@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -82,7 +82,7 @@ import name.abuchen.portfolio.money.Money;
         Type type = inferType(rawValues, field2column, amount);
 
         // determine remaining fields
-        LocalDate date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
@@ -116,7 +116,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createBuySell(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
                     throws ParseException
     {
         BuySellEntry entry = new BuySellEntry();
@@ -166,7 +166,7 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDate date, String note,
+    private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDateTime date, String note,
                     Long shares, Unit grossAmount)
     {
         PortfolioTransferEntry entry = new PortfolioTransferEntry();
@@ -181,7 +181,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createDelivery(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
                     throws ParseException
     {
         PortfolioTransaction t = new PortfolioTransaction();

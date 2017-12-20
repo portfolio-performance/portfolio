@@ -68,9 +68,9 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
-                        .section("date")
-                        .match("KAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
-                        .assign((t,v) -> t.setDate(asDate(v.get("date"))))
+                        .section("date", "time")
+                        .match("KAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+:\\d+).*")
+                        .assign((t,v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency")
                         .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
@@ -151,9 +151,9 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date")
-                        .match("VERKAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+).*")
-                        .assign((t,v) -> t.setDate(asDate(v.get("date"))))
+                        .section("date", "time")
+                        .match("VERKAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+:\\d+).*.*")
+                        .assign((t,v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency")
                         .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //

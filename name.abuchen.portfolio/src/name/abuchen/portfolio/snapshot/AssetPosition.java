@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -21,11 +21,11 @@ public class AssetPosition
 
     private final SecurityPosition position;
     private final CurrencyConverter converter;
-    private final LocalDate date;
+    private final LocalDateTime date;
     private final Money totalAssets;
     private final Money valuation;
 
-    /* package */ AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDate date,
+    /* package */ AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDateTime date,
                     Money totalAssets)
     {
         this.position = position;

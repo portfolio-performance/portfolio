@@ -71,7 +71,7 @@ public class InsertAction implements ImportAction
             delivery.setType(t.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
                             : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
 
-            delivery.setDate(t.getDate());
+            delivery.setDate(t.getDateTime());
             delivery.setSecurity(t.getSecurity());
             delivery.setMonetaryAmount(t.getMonetaryAmount());
             delivery.setNote(t.getNote());

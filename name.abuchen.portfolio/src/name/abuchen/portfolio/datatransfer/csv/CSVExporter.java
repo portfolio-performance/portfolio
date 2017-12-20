@@ -54,7 +54,7 @@ public class CSVExporter
 
             for (AccountTransaction t : account.getTransactions())
             {
-                printer.print(t.getDate().toString());
+                printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
@@ -101,7 +101,7 @@ public class CSVExporter
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                printer.print(t.getDate().toString());
+                printer.print(t.getDateTime().toString());
                 printer.print(t.getType().toString());
                 printer.print(Values.Amount.format(t.getType().isLiquidation() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());

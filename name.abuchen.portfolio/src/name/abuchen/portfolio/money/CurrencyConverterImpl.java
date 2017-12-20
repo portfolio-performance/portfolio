@@ -2,7 +2,7 @@ package name.abuchen.portfolio.money;
 
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
@@ -25,7 +25,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
     }
 
     @Override
-    public Money convert(LocalDate date, Money amount)
+    public Money convert(LocalDateTime date, Money amount)
     {
         if (termCurrency.equals(amount.getCurrencyCode()))
             return amount;
@@ -39,7 +39,7 @@ public class CurrencyConverterImpl implements CurrencyConverter
     }
 
     @Override
-    public ExchangeRate getRate(LocalDate date, String currencyCode)
+    public ExchangeRate getRate(LocalDateTime date, String currencyCode)
     {
         if (termCurrency.equals(currencyCode))
             return new ExchangeRate(date, BigDecimal.ONE);

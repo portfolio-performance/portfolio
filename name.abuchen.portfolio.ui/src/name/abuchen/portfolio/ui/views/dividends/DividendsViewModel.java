@@ -192,7 +192,7 @@ public class DividendsViewModel
                 transactions.add(new TransactionPair<>(account, t));
 
                 Money dividendValue = useGrossValue ? t.getGrossValue() : t.getMonetaryAmount();
-                long value = dividendValue.with(converter.at(t.getDate())).getAmount();
+                long value = dividendValue.with(converter.at(t.getDateTime())).getAmount();
                 int index = (t.getDate().getYear() - startYear) * 12 + t.getDate().getMonthValue() - 1;
 
                 Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));

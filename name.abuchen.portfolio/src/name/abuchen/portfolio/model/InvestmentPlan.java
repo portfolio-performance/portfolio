@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class InvestmentPlan implements Named, Adaptable
      */
     private boolean autoGenerate = false;
 
-    private LocalDate start;
+    private LocalDateTime start;
     private int interval = 1;
 
     private long amount;
@@ -109,10 +110,15 @@ public class InvestmentPlan implements Named, Adaptable
 
     public LocalDate getStart()
     {
-        return start;
+        return start.toLocalDate();
     }
 
     public void setStart(LocalDate start)
+    {
+        this.start = start.atStartOfDay();
+    }
+    
+    public void setStart(LocalDateTime start)
     {
         this.start = start;
     }
@@ -240,7 +246,7 @@ public class InvestmentPlan implements Named, Adaptable
 
     public LocalDate getDateOfNextTransactionToBeGenerated()
     {
-        return transactions.isEmpty() ? start : next(getLastDate());
+        return transactions.isEmpty() ? start.toLocalDate() : next(getLastDate());
     }
 
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)

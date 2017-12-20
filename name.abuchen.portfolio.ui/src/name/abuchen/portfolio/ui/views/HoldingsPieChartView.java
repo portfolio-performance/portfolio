@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.StringJoiner;
 
 import javax.inject.Inject;
@@ -98,7 +98,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
             {
                 CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
                 Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-                ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+                ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, LocalDateTime.now());
 
                 StringJoiner joiner = new StringJoiner(",", "[", "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 JSColors colors = new JSColors();

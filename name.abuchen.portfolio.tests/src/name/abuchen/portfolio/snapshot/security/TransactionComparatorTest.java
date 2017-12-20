@@ -3,8 +3,11 @@ package name.abuchen.portfolio.snapshot.security;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+
+import org.junit.Test;
 
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
@@ -13,8 +16,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class TransactionComparatorTest
@@ -28,8 +29,8 @@ public class TransactionComparatorTest
     public void testBuyIsPreferredOverSell()
     {
         Portfolio portfolio = new PortfolioBuilder() //
-                        .sell(security, "2010-01-01", 100, 100) //
-                        .buy(security, "2010-01-01", 100, 100) //
+                        .sell(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100, 100) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100, 100) //
                         .addTo(client);
 
         List<PortfolioTransaction> list = portfolio.getTransactions();
@@ -44,8 +45,8 @@ public class TransactionComparatorTest
     public void testBuyIsPreferredOverSell2()
     {
         Portfolio portfolio = new PortfolioBuilder() //
-                        .buy(security, "2010-01-01", 100, 100) //
-                        .sell(security, "2010-01-01", 100, 100) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100, 100) //
+                        .sell(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100, 100) //
                         .addTo(client);
 
         List<PortfolioTransaction> list = portfolio.getTransactions();
@@ -60,8 +61,8 @@ public class TransactionComparatorTest
     public void testTwoInboundTransactionsStay()
     {
         Portfolio portfolio = new PortfolioBuilder() //
-                        .buy(security, "2010-01-01", 1, 100) //
-                        .buy(security, "2010-01-01", 2, 100) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 1, 100) //
+                        .buy(security, LocalDateTime.of(2010, 01, 01, 0, 0), 2, 100) //
                         .addTo(client);
 
         List<PortfolioTransaction> list = portfolio.getTransactions();
@@ -76,8 +77,8 @@ public class TransactionComparatorTest
     public void testThatDatePreceedsType()
     {
         Portfolio portfolio = new PortfolioBuilder() //
-                        .sell(security, "2010-01-01", 100, 100) //
-                        .buy(security, "2010-01-02", 100, 100) //
+                        .sell(security, LocalDateTime.of(2010, 01, 01, 0, 0), 100, 100) //
+                        .buy(security, LocalDateTime.of(2010, 01, 02, 0, 0), 100, 100) //
                         .addTo(client);
 
         List<PortfolioTransaction> list = portfolio.getTransactions();

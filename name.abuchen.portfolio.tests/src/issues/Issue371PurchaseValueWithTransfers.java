@@ -44,7 +44,7 @@ public class Issue371PurchaseValueWithTransfers
                         is(true));
 
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, period.getEndDate());
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(client, converter, period.getEndDate());
         SecurityPosition securityPosition = snapshot.getPositionsByVehicle().get(adidas).getPosition();
 
         SecurityPerformanceSnapshot securitySnapshot = SecurityPerformanceSnapshot.create(client, converter, period);

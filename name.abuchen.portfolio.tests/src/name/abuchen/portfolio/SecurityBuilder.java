@@ -2,6 +2,7 @@ package name.abuchen.portfolio;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Random;
 import java.util.UUID;
 
@@ -48,6 +49,11 @@ public class SecurityBuilder
         return this;
     }
 
+    public SecurityBuilder generatePrices(long startPrice, LocalDateTime start, LocalDateTime end)
+    {
+        return  generatePrices(startPrice, start.toLocalDate(), end.toLocalDate());
+    }
+    
     public SecurityBuilder generatePrices(long startPrice, LocalDate start, LocalDate end)
     {
         security.addPrice(new SecurityPrice(start, startPrice));

@@ -4,7 +4,8 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 
@@ -49,13 +50,13 @@ public class PortfolioClientFilterTest
 
         Arrays.asList("A", "B", "C").forEach(index -> {
             Account a = new AccountBuilder() //
-                            .deposit_("2016-01-01", Values.Amount.factorize(100))
-                            .dividend("2016-03-01", Values.Amount.factorize(10), security) //
+                            .deposit_(LocalDateTime.of(2016, Month.JANUARY, 1, 0, 0), Values.Amount.factorize(100))
+                            .dividend(LocalDateTime.of(2016, 03, 01, 0, 0), Values.Amount.factorize(10), security) //
                             .addTo(client);
             a.setName(index);
 
             Portfolio p = new PortfolioBuilder(a) //
-                            .buy(security, "2016-02-01", Values.Share.factorize(1), Values.Amount.factorize(100))
+                            .buy(security, LocalDateTime.of(2016, 02, 01, 0, 0), Values.Share.factorize(1), Values.Amount.factorize(100))
                             .addTo(client);
             p.setName(index);
         });
@@ -78,7 +79,7 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().stream().filter(t -> t.getType() == AccountTransaction.Type.REMOVAL)
                         .findAny().isPresent(), is(true));
 
-        assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDate.parse("2016-09-03"))
+        assertThat(AccountSnapshot.create(account, new TestCurrencyConverter(), LocalDateTime.of(2016, 9, 3, 23, 59))
                         .getFunds(), is(Money.of(CurrencyUnit.EUR, 0)));
     }
 
@@ -111,7 +112,7 @@ public class PortfolioClientFilterTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.of(2016, 04, 01, 0, 0));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setCurrencyCode(accountA.getCurrencyCode());
         entry.insert();
@@ -132,19 +133,19 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().size(), is(4));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-02-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 02, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-01-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 01, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-03-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 03, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.TRANSFER_OUT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
     }
 
@@ -155,7 +156,7 @@ public class PortfolioClientFilterTest
         Account accountB = client.getAccounts().get(1);
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.of(2016, 04, 01, 0, 0));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setCurrencyCode(accountA.getCurrencyCode());
         entry.insert();
@@ -175,26 +176,26 @@ public class PortfolioClientFilterTest
         assertThat(account.getTransactions().size(), is(4));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-02-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 02, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-01-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 01, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-03-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 03, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(account.getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.REMOVAL) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
 
         // check other account
         result = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(accountB)).filter(client);
         assertThat(result.getAccounts().get(0).getTransactions().stream() //
                         .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
     }
 
@@ -205,7 +206,7 @@ public class PortfolioClientFilterTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.of(2016, 04, 01, 0, 0));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setShares(Values.Share.factorize(1));
         entry.setSecurity(client.getSecurities().get(0));
@@ -225,11 +226,11 @@ public class PortfolioClientFilterTest
         assertThat(portfolio.getTransactions().size(), is(2));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-02-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 02, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.TRANSFER_OUT) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
     }
 
@@ -240,7 +241,7 @@ public class PortfolioClientFilterTest
         Portfolio portfolioB = client.getPortfolios().get(1);
 
         PortfolioTransferEntry entry = new PortfolioTransferEntry(portfolioA, portfolioB);
-        entry.setDate(LocalDate.parse("2016-04-01"));
+        entry.setDate(LocalDateTime.of(2016, 04, 01, 0, 0));
         entry.setAmount(Values.Amount.factorize(10));
         entry.setShares(Values.Share.factorize(1));
         entry.setSecurity(client.getSecurities().get(0));
@@ -260,18 +261,18 @@ public class PortfolioClientFilterTest
         assertThat(portfolio.getTransactions().size(), is(2));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-02-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 02, 01, 0, 0))).findAny().isPresent(),
                         is(true));
         assertThat(portfolio.getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
 
         // check the other portfolio
         result = new PortfolioClientFilter(Arrays.asList(portfolioB), Collections.emptyList()).filter(client);
         assertThat(result.getPortfolios().get(0).getTransactions().stream() //
                         .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND) //
-                        .filter(t -> t.getDate().equals(LocalDate.parse("2016-04-01"))).findAny().isPresent(),
+                        .filter(t -> t.getDateTime().equals(LocalDateTime.of(2016, 04, 01, 0, 0))).findAny().isPresent(),
                         is(true));
     }
 }

@@ -15,7 +15,7 @@ public class TransactionPair<T extends Transaction> implements Adaptable
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            return t1.getTransaction().getDate().compareTo(t2.getTransaction().getDate());
+            return t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
         }
     }
 

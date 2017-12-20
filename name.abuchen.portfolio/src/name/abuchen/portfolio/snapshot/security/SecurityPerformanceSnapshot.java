@@ -89,7 +89,7 @@ public class SecurityPerformanceSnapshot
                 case DIVIDENDS:
                 case INTEREST:
                     DividendTransaction dt = new DividendTransaction();
-                    dt.setDate(t.getDate());
+                    dt.setDate(t.getDateTime());
                     dt.setSecurity(t.getSecurity());
                     dt.setAccount(account);
                     dt.setCurrencyCode(t.getCurrencyCode());

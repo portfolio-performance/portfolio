@@ -33,8 +33,9 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
@@ -117,8 +118,8 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.date.name()).observe(model));
 
         // other input fields
@@ -157,11 +158,13 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         int amountWidth = amountWidth(amount.value);
         int currencyWidth = currencyWidth(fxAmount.currency);
 
-        startingWith(source.value.getControl(), source.label).suffix(source.currency)
+        
+        FormDataFactory forms = startingWith(source.value.getControl(), source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
-                        .thenBelow(valueDate.getControl()).label(lblDate) //
+                        .thenBelow(valueDate.getControl()).label(lblDate);
+                        
                         // fxAmount - exchange rate - amount
-                        .thenBelow(fxAmount.value).width(amountWidth).label(fxAmount.label) //
+                        forms.thenBelow(fxAmount.value).width(amountWidth).label(fxAmount.label) //
                         .thenRight(fxAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //

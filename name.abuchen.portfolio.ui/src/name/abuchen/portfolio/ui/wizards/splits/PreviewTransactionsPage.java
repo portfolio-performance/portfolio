@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class PreviewTransactionsPage extends AbstractWizardPage
@@ -59,7 +60,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return Values.Date.format(t.getDate());
+                    return DateUtils.formatTransactionDate(t);
                 case 1:
                     if (t instanceof AccountTransaction)
                         return ((AccountTransaction) t).getType().toString();
@@ -130,7 +131,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDate);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
+        layout.setColumnData(column, new ColumnPixelData(100, true));
 
         column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnTransactionType);

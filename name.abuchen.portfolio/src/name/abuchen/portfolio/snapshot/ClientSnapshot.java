@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 public class ClientSnapshot
 {
     private final CurrencyConverter converter;
-    private final LocalDate date;
+    private final LocalDateTime date;
 
     private List<AccountSnapshot> accounts = new ArrayList<>();
     private List<PortfolioSnapshot> portfolios = new ArrayList<>();
@@ -29,7 +30,13 @@ public class ClientSnapshot
     private PortfolioSnapshot jointPortfolio;
     private Money assets;
 
-    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
+    @Deprecated
+    public static ClientSnapshot createEndOfDay(Client client, CurrencyConverter converter, LocalDate date)
+    {
+        return create(client, converter, date.atTime(23, 59, 59));
+    }
+    
+    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDateTime date)
     {
         ClientSnapshot snapshot = new ClientSnapshot(converter, date);
 
@@ -42,7 +49,7 @@ public class ClientSnapshot
         return snapshot;
     }
 
-    private ClientSnapshot(CurrencyConverter converter, LocalDate date)
+    private ClientSnapshot(CurrencyConverter converter, LocalDateTime date)
     {
         this.converter = converter;
         this.date = date;
@@ -58,7 +65,7 @@ public class ClientSnapshot
         return converter;
     }
 
-    public LocalDate getTime()
+    public LocalDateTime getTime()
     {
         return date;
     }

@@ -247,7 +247,7 @@ public class StackedChartViewer extends AbstractChartPage
         int index = 0;
         for (LocalDate current : dates)
         {
-            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getFilteredClient(),
+            ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(getModel().getFilteredClient(),
                             getModel().getCurrencyConverter(), current);
             totals[index] = snapshot.getMonetaryAssets().getAmount();
 

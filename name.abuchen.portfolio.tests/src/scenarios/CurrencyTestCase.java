@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
@@ -58,7 +59,7 @@ public class CurrencyTestCase
     {
         LocalDate requestedTime = LocalDate.parse("2015-01-16");
 
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, requestedTime);
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(client, converter, requestedTime);
 
         AccountSnapshot accountEURsnapshot = lookupAccountSnapshot(snapshot, accountEUR);
         assertThat(accountEURsnapshot.getFunds(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
@@ -96,9 +97,9 @@ public class CurrencyTestCase
         assertThat(positionUSD.getValuation(), is(Money.of(CurrencyUnit.EUR, Math.round(1000_00 * (1 / 1.1588)))));
 
         Money equityEURvaluation = Money.of(CurrencyUnit.EUR, Math.round(20
-                        * securityEUR.getSecurityPrice(grouping.getDate()).getValue() / Values.Quote.dividerToMoney()));
+                        * securityEUR.getSecurityPrice(grouping.getDate().toLocalDate()).getValue() / Values.Quote.dividerToMoney()));
         Money equityUSDvaluation = Money.of("USD", Math.round(10
-                        * securityUSD.getSecurityPrice(grouping.getDate()).getValue() / Values.Quote.dividerToMoney()))
+                        * securityUSD.getSecurityPrice(grouping.getDate().toLocalDate()).getValue() / Values.Quote.dividerToMoney()))
                         .with(converter.at(grouping.getDate()));
         Money equityValuation = Money.of(CurrencyUnit.EUR,
                         equityEURvaluation.getAmount() + equityUSDvaluation.getAmount());
@@ -170,7 +171,7 @@ public class CurrencyTestCase
     @Test
     public void testFIFOPurchasePriceWithForex()
     {
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDate.parse("2015-08-09"));
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, LocalDateTime.of(2015, 8, 9, 0, 0));
 
         // 1.1. ........ -> 454.60 EUR
         // 1.1. 571.90 $ -> 471.05 EUR (exchange rate: 1.2141)

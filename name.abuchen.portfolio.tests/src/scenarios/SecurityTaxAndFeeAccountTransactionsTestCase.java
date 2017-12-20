@@ -146,7 +146,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
         // check balance is zero
 
-        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEndDate());
+        ClientSnapshot balance = ClientSnapshot.createEndOfDay(filteredClient, converter, interval.getEndDate());
         assertThat(balance.getMonetaryAssets(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1456.5 * weight))));
         assertThat(balance.getAccounts().size(), is(1));
@@ -308,7 +308,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
         // check balance is zero
 
-        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEndDate());
+        ClientSnapshot balance = ClientSnapshot.createEndOfDay(filteredClient, converter, interval.getEndDate());
         assertThat(balance.getMonetaryAssets(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1456.5))));
         assertThat(balance.getAccounts().size(), is(1));
         assertThat(balance.getAccounts().iterator().next().getFunds(), is(Money.of(CurrencyUnit.EUR, 0)));

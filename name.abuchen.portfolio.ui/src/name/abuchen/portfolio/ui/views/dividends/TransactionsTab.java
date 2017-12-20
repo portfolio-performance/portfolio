@@ -25,6 +25,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -41,7 +42,7 @@ public class TransactionsTab implements DividendsTab
 
     @Inject
     private IPreferenceStore preferences;
-
+    
     private TableViewer tableViewer;
 
     @Override
@@ -98,10 +99,10 @@ public class TransactionsTab implements DividendsTab
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return DateUtils.formatTransactionDate(((TransactionPair<?>) element).getTransaction());
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column, SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);

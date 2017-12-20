@@ -33,8 +33,8 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
 {
@@ -110,8 +110,8 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
+        DateTimeDatePicker valueDate = new DateTimeDatePicker(editArea);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
                         BeanProperties.value(Properties.start.name()).observe(model));
 
         // interval

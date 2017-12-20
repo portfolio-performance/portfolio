@@ -55,7 +55,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate);
+        ClientSnapshot snapshot = ClientSnapshot.createEndOfDay(filteredClient, converter, snapshotDate);
 
         assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
         updateTitle(getDefaultTitle());
