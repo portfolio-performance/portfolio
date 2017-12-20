@@ -667,7 +667,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                         SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
+        Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;

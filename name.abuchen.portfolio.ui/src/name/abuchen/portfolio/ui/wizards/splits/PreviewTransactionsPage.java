@@ -131,7 +131,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDate);
-        layout.setColumnData(column, new ColumnPixelData(DateUtils.getTransactionDateColumnWidth(), true));
+        layout.setColumnData(column, new ColumnPixelData(100, true));
 
         column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnTransactionType);

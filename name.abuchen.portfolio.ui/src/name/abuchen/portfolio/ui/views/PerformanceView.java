@@ -292,7 +292,7 @@ public class PerformanceView extends AbstractHistoricView
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@2" + title, //$NON-NLS-1$
                         getPreferenceStore(), transactionViewer, layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
+        Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

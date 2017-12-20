@@ -650,7 +650,6 @@ public class Messages extends NLS
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
-    public static String PrefLabelUseDateTime;
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;

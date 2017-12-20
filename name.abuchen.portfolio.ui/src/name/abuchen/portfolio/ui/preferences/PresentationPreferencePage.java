@@ -17,8 +17,6 @@ public class PresentationPreferencePage extends FieldEditorPreferencePage
 
     public void createFieldEditors()
     {
-        addField(new BooleanFieldEditor(UIConstants.Preferences.USE_DATE_TIME, //
-                        Messages.PrefLabelUseDateTime, getFieldEditorParent()));
         addField(new BooleanFieldEditor(UIConstants.Preferences.USE_INDIRECT_QUOTATION, //
                         Messages.PrefLabelUseIndirectQuotation, getFieldEditorParent()));
 

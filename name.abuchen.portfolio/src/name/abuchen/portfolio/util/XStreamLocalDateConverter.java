@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.util;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 import com.thoughtworks.xstream.converters.basic.AbstractSingleValueConverter;
 

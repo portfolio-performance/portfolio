@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;

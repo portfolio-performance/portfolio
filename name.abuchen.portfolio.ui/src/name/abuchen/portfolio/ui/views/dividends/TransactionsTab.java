@@ -93,7 +93,7 @@ public class TransactionsTab implements DividendsTab
 
     private void addColumns(ShowHideColumnHelper support)
     {
-        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
+        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

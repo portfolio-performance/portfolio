@@ -155,7 +155,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
     private void addColumns()
     {
-        Column column = new Column(Messages.ColumnDate, SWT.None, DateUtils.getTransactionDateColumnWidth());
+        Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(new TransactionLabelProvider()
         {
             @Override

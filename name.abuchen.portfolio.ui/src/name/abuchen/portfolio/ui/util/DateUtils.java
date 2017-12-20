@@ -1,23 +1,27 @@
 package name.abuchen.portfolio.ui.util;
 
-import org.eclipse.jface.preference.IPreferenceStore;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
+import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
 
 public class DateUtils
 {
-    public static boolean useTransactionDateTime()
+    public static boolean isDateTimeTransaction(Transaction transaction)
     {
-        IPreferenceStore store = PortfolioPlugin.getDefault().getPreferenceStore();
-        return store.getBoolean(UIConstants.Preferences.USE_DATE_TIME);
+        if (transaction instanceof PortfolioTransaction)
+        {
+            LocalDateTime dateTime = transaction.getDateTime();
+            return !dateTime.toLocalTime().equals(LocalTime.MIDNIGHT);
+        }
+        return false;
     }
     
     public static String formatTransactionDate(Transaction transaction)
     {
-        if (useTransactionDateTime())
+        if (isDateTimeTransaction(transaction))
         {
             return Values.DateTime.format(transaction.getDateTime());
         }
@@ -25,10 +29,5 @@ public class DateUtils
         {
             return Values.Date.format(transaction.getDate());
         }
-    }
-
-    public static int getTransactionDateColumnWidth()
-    {
-        return useTransactionDateTime() ? 100 : 80;
     }
 }

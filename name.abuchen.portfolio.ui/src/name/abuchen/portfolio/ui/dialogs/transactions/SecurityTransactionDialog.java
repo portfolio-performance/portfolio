@@ -208,11 +208,14 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         FormDataFactory forms = startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         .suffix(comboInput.value.getControl()).thenBelow(valueDate.getControl()).label(lblDate);
-                        forms.thenRight(valueTime.getControl()); // attach date to the right
         
                         // shares - quote - gross value
-                        forms.thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
-                        .thenRight(quote.value).width(width).thenRight(quote.currency).width(width)
+                        forms = forms.thenBelow(shares.value).width(width).label(shares.label).thenRight(quote.label)
+                        .thenRight(quote.value).width(width);
+                        
+                        forms.thenUp(valueTime.getControl()); // attach date to the right
+                        
+                        forms.thenRight(quote.currency).width(width)
                         .thenRight(grossValue.label).thenRight(grossValue.value).width(width)
                         .thenRight(grossValue.currency);
 
