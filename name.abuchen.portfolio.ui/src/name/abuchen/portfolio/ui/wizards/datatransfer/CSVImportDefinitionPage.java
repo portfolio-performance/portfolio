@@ -77,8 +77,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
-import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Header;
-import name.abuchen.portfolio.datatransfer.csv.CSVImporter.HeaderSet;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -718,8 +716,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField)
                     {

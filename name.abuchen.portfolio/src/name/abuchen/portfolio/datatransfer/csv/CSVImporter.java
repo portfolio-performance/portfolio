@@ -342,7 +342,6 @@ public class CSVImporter
 
             return toAppendTo.append(s);
         }
-
         @Override
         public Object parseObject(String source, ParsePosition pos)
         {
@@ -624,8 +623,7 @@ public class CSVImporter
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {
