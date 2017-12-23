@@ -18,7 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -36,7 +36,7 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -69,7 +69,7 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -102,7 +102,7 @@ public class CommerzbankPDFExtractorTest
     @Test
     public void testWertpapierkauf() throws IOException
     {
-        CommerzbankPDFExctractor extractor = new CommerzbankPDFExctractor(new Client());
+        CommerzbankPDFExtractor extractor = new CommerzbankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 

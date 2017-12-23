@@ -19,7 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -38,7 +38,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testSanityCheckForBankName() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -65,7 +65,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -100,7 +100,7 @@ public class DeutscheBankPDFExtractorTest
         Security security = new Security("BASF", "DE000BASF111", null, null);
         client.addSecurity(security);
 
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client);
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -124,7 +124,7 @@ public class DeutscheBankPDFExtractorTest
         Security security = new Security("CISCO", "US17275R1023", null, null);
         client.addSecurity(security);
 
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client);
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -151,7 +151,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -191,7 +191,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -223,7 +223,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -254,7 +254,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -289,7 +289,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -324,7 +324,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 

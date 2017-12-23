@@ -15,13 +15,13 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.BaaderBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
 import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.HelloBankPDFExtractor;
@@ -71,11 +71,11 @@ public final class ImportExtractedItemsWizard extends Wizard
     private void addDefaultExtractors() throws IOException
     {
         extractors.add(new BaaderBankPDFExtractor(client));
-        extractors.add(new BankSLMPDFExctractor(client));
+        extractors.add(new BankSLMPDFExtractor(client));
         extractors.add(new ComdirectPDFExtractor(client));
-        extractors.add(new CommerzbankPDFExctractor(client));
-        extractors.add(new ConsorsbankPDFExctractor(client));
-        extractors.add(new DABPDFExctractor(client));
+        extractors.add(new CommerzbankPDFExtractor(client));
+        extractors.add(new ConsorsbankPDFExtractor(client));
+        extractors.add(new DABPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
         extractors.add(new DeutscheBankPDFExctractor(client));
         extractors.add(new DkbPDFExtractor(client));

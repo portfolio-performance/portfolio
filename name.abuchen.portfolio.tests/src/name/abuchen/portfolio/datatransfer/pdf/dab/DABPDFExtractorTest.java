@@ -18,7 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DABPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -44,7 +44,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf.txt"), errors);
@@ -77,7 +77,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf2.txt"), errors);
@@ -110,7 +110,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf3() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf3.txt"), errors);
@@ -139,7 +139,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf4() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf4.txt"), errors);
@@ -169,7 +169,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierKauf5() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABKauf5.txt"), errors);
@@ -199,7 +199,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf.txt"), errors);
@@ -234,7 +234,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf2.txt"), errors);
@@ -269,7 +269,7 @@ public class DABPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABVerkauf3.txt"), errors);
@@ -304,7 +304,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividend() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend.txt"), errors);
@@ -335,7 +335,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividendForeignCurrency() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividendForeignCurrency.txt"),
@@ -375,7 +375,7 @@ public class DABPDFExtractorTest
         security.setCurrencyCode(CurrencyUnit.EUR);
         client.addSecurity(security);
 
-        DABPDFExctractor extractor = new DABPDFExctractor(client);
+        DABPDFExtractor extractor = new DABPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividendForeignCurrency.txt"),
@@ -401,7 +401,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividend3() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend3.txt"), errors);
@@ -432,7 +432,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividend4() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend4.txt"), errors);
@@ -463,7 +463,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividend5() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend5.txt"), errors);
@@ -494,7 +494,7 @@ public class DABPDFExtractorTest
     @Test
     public void testDividend6() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABDividend6.txt"), errors);
