@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,7 +62,7 @@ public class HelloBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-09-06")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.71))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95 + 0.19 + (176.01 / 9.308)))));
@@ -104,7 +104,7 @@ public class HelloBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-09-06")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(48.71))));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
@@ -140,7 +140,7 @@ public class HelloBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-05-15")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-05-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.34))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(
                         Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95 + 0.19 + ((3.05 + 2.55) / 1.0942)))));
@@ -184,7 +184,7 @@ public class HelloBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-06-26")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-06-26T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(41.43))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95 + 0.19 + 8.81 + 7.34))));
@@ -222,7 +222,7 @@ public class HelloBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-08-21")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-08-21T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.91))));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR,
                         Values.Amount.factorize(0.19 + 0.95 + ((32.14 + 26.79 + 16) / 1.1805)))));
@@ -271,7 +271,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1118.8))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-06-30")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(74)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.20 + 1.46))));
 
@@ -313,7 +313,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1118.8))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-06-30")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-06-30T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(74)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.20 + 1.46))));
     }
@@ -351,7 +351,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1314.03))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-04-27")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-04-27T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(55)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.53 + 1.55))));
 
@@ -395,7 +395,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3096.85))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-10-12")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-10-12T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(1000)));
         assertThat(tx.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.99 + 6.42 + 7.95))));
@@ -444,7 +444,7 @@ public class HelloBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3096.85))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-10-12")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-10-12T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(1000)));
         assertThat(tx.getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(14.99 + 6.42 + 7.95))));
@@ -483,7 +483,7 @@ public class HelloBankPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3225.37))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-03-29")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-03-29T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(80)));
     }
 
@@ -518,7 +518,7 @@ public class HelloBankPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
         assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3021.70))));
-        assertThat(tx.getDate(), is(LocalDate.parse("2017-03-31")));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2017-03-31T00:00")));
         assertThat(tx.getShares(), is(Values.Share.factorize(110)));
     }
 }

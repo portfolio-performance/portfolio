@@ -189,7 +189,7 @@ public class InvestmentPlan implements Named, Adaptable
         LocalDate last = null;
         for (PortfolioTransaction t : transactions)
         {
-            LocalDate date = t.getDate();
+            LocalDate date = t.getDateTime().toLocalDate();
             if (last == null || last.isBefore(date))
                 last = date;
         }
@@ -298,7 +298,7 @@ public class InvestmentPlan implements Named, Adaptable
 
             BuySellEntry entry = new BuySellEntry(portfolio, account);
             entry.setType(PortfolioTransaction.Type.BUY);
-            entry.setDate(tDate);
+            entry.setDate(tDate.atStartOfDay());
             entry.setShares(shares);
             entry.setCurrencyCode(targetCurrencyCode);
             entry.setAmount(amount);
@@ -319,7 +319,7 @@ public class InvestmentPlan implements Named, Adaptable
             // create inbound delivery
 
             PortfolioTransaction transaction = new PortfolioTransaction();
-            transaction.setDate(tDate);
+            transaction.setDateTime(tDate.atStartOfDay());
             transaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             transaction.setSecurity(security);
             transaction.setCurrencyCode(targetCurrencyCode);

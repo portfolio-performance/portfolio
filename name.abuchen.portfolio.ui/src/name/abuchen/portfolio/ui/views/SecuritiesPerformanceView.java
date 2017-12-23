@@ -735,7 +735,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public String getText(Object e)
             {
                 Transaction t = (Transaction) e;
-                return Values.Date.format(t.getDate());
+                return Values.DateTime.format(t.getDateTime());
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "dateTime"), SWT.DOWN); //$NON-NLS-1$

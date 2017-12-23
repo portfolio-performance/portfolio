@@ -27,8 +27,8 @@ public class PortfolioSnapshot
     {
         List<SecurityPosition> positions = portfolio.getTransactions() //
                         .stream() //
-                        .filter(t -> !t.getDate().isAfter(date)) //
-                        .collect(Collectors.groupingBy(t -> t.getSecurity())) //
+                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(date)) //
+                        .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
                         .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date),
@@ -42,7 +42,7 @@ public class PortfolioSnapshot
     public static PortfolioSnapshot merge(List<PortfolioSnapshot> snapshots, CurrencyConverter converter)
     {
         if (snapshots.isEmpty())
-            throw new RuntimeException("Error: PortfolioSnapshots to be merged must not be empty"); //$NON-NLS-1$
+            throw new IllegalArgumentException("Error: PortfolioSnapshots to be merged must not be empty"); //$NON-NLS-1$
 
         Portfolio portfolio = new Portfolio()
         {

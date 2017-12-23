@@ -119,7 +119,7 @@ import name.abuchen.portfolio.money.Money;
                 t.setCurrencyCode(amount.getCurrencyCode());
                 if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
                     t.setSecurity(security);
-                t.setDate(date);
+                t.setDateTime(date);
                 t.setNote(note);
                 if (shares != null && type == Type.DIVIDENDS)
                     t.setShares(Math.abs(shares));

@@ -136,7 +136,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                         })
 
                         .section("currency", "gross") //
@@ -183,7 +183,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("^.*Die Gutschrift erfolgt mit Valuta\\s+(?<date>\\d{2}.\\d{2}.\\d{4}).*$") //
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                         })
 
                          
@@ -343,7 +343,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("isin", "name", "wkn") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //

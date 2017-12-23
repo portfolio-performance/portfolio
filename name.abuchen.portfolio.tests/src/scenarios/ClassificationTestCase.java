@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -101,7 +102,7 @@ public class ClassificationTestCase
         assertThat(txp, hasSize(1));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60)))))));
@@ -110,7 +111,7 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60)))))));
@@ -118,7 +119,7 @@ public class ClassificationTestCase
         // check that other purchase transactions are converted into removals
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-01"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1019.80)))))));
@@ -126,13 +127,13 @@ public class ClassificationTestCase
         // check that dividend is included without taxes
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DIVIDENDS)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.44)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5)))))));
 
@@ -173,14 +174,14 @@ public class ClassificationTestCase
         assertThat(txp, hasSize(2));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
                         hasProperty("shares", is(Values.Share.factorize(23.5))), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 / 2d)))))));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_INBOUND)), //
                         hasProperty("shares", is(Values.Share.factorize(23.5))), //
                         hasProperty("monetaryAmount",
@@ -190,13 +191,13 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 / 2d)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-01"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1019.80 / 2d)))))));
@@ -204,7 +205,7 @@ public class ClassificationTestCase
         // check that dividend is included without taxes
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DIVIDENDS)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.44)))))));
@@ -212,7 +213,7 @@ public class ClassificationTestCase
         // check correction for dividend payment (w/o taxes and only 50%)
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.44 - 19.44 / 2)))))));
@@ -248,7 +249,7 @@ public class ClassificationTestCase
         assertThat(txp, hasSize(1));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.3d)))))));
@@ -257,19 +258,19 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.3d)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.2d)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-01"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1019.80 / 2d)))))));
@@ -277,7 +278,7 @@ public class ClassificationTestCase
         // check that dividend is included without taxes
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DIVIDENDS)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.44 * 0.3d)))))));
@@ -285,7 +286,7 @@ public class ClassificationTestCase
         // check correction for dividend payment (w/o taxes and only 50%)
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR,
                                         Values.Amount.factorize(19.44 / 2 - 24.44 * 0.3d)))))));
@@ -323,7 +324,7 @@ public class ClassificationTestCase
                         .collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60)))))));
@@ -331,12 +332,12 @@ public class ClassificationTestCase
         // check that transfer between two accounts is created
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)))))));
 
@@ -344,19 +345,19 @@ public class ClassificationTestCase
 
         // tax refund w/o security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-26"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-26T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10)))))));
 
         // tax refund w/ security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-27"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-27T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10)))))));
 
         // tax transaction
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-28"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-28T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10)))))));
 
@@ -393,7 +394,7 @@ public class ClassificationTestCase
                         .collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.7)))))));
@@ -401,19 +402,19 @@ public class ClassificationTestCase
         // check that transfer between two accounts is created
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.4)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
@@ -422,21 +423,21 @@ public class ClassificationTestCase
 
         // tax refund w/o security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-26"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-26T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 * 0.3)))))));
 
         // tax refund w/ security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-27"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-27T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 * 0.3)))))));
 
         // tax transaction
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-28"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-28T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 * 0.3)))))));
@@ -474,7 +475,7 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.3)))))));
@@ -482,7 +483,7 @@ public class ClassificationTestCase
         // check that transfer between two accounts is created
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
@@ -491,13 +492,13 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.5)))))));
@@ -535,7 +536,7 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2397.60 * 0.3)))))));
@@ -543,7 +544,7 @@ public class ClassificationTestCase
         // check that transfer between two accounts is created
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
@@ -552,7 +553,7 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-25"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-25T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100 * 0.3)))))));
@@ -586,13 +587,13 @@ public class ClassificationTestCase
 
         // check that inbound delivery is w/o taxes
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-01"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_INBOUND)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3813.58 - 20)))))));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-02"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-02T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_INBOUND)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6640.30)))))));
@@ -604,19 +605,19 @@ public class ClassificationTestCase
         // assignment of the account
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DIVIDENDS)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.5)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.5 * 0.7)))))));
 
         // tax refund w/ security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-27"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-27T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 * 0.3)))))));
@@ -650,34 +651,34 @@ public class ClassificationTestCase
 
         // check that inbound delivery is w/o taxes
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-01"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-01T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_INBOUND)), //
                         hasProperty("shares", is(Values.Share.factorize(33))), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3813.58 - 20)))))));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(688.36 * 0.3d)))))));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_OUTBOUND)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR,
                                         Values.Amount.factorize((688.36 + 10) - (688.36 * 0.3d))))))));
 
         // check that shares of the split transaction add up to the expected
         // value, e.g. the total value of the original transaction
-        assertThat(txp.stream().filter(t -> t.getDate().equals(LocalDate.parse("2012-01-10")))
+        assertThat(txp.stream().filter(t -> t.getDateTime().equals(LocalDateTime.parse("2012-01-10T00:00")))
                         .mapToLong(PortfolioTransaction::getShares).sum(), is(Values.Share.factorize(74.8)));
 
         List<AccountTransaction> txa = categoryClient.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(688.36 * 0.3)))))));
@@ -686,19 +687,19 @@ public class ClassificationTestCase
         // assignment of the account
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DIVIDENDS)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.5)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(16.5 * 0.7)))))));
 
         // tax refund w/ security
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-27"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-27T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10 * 0.3)))))));
@@ -731,7 +732,7 @@ public class ClassificationTestCase
                         .flatMap(p -> p.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("shares", is(Values.Share.factorize(74.8 * 0.3d))), //
                         hasProperty("monetaryAmount",
@@ -741,13 +742,13 @@ public class ClassificationTestCase
                         .collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(698.36 * 0.3)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR,
                                         Values.Amount.factorize(688.36 - (698.36 * 0.3))))))));
@@ -780,20 +781,20 @@ public class ClassificationTestCase
                         .flatMap(p -> p.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-16"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-16T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(476.48 * 0.7d)))))));
 
         assertThat(txp, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-16"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-16T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.DELIVERY_INBOUND)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.USD,
                                         Values.Amount.factorize((476.48 - 10) - (476.48 * 0.7d))))))));
 
         // check that shares of the split transaction add up to the expected
         // value, e.g. the total value of the original transaction
-        assertThat(txp.stream().filter(t -> t.getDate().equals(LocalDate.parse("2012-01-16")))
+        assertThat(txp.stream().filter(t -> t.getDateTime().equals(LocalDateTime.parse("2012-01-16T00:00")))
                         .mapToLong(PortfolioTransaction::getShares).sum(), is(Values.Share.factorize(1)));
 
         List<AccountTransaction> txa = categoryClient.getAccounts().stream()
@@ -801,7 +802,7 @@ public class ClassificationTestCase
                         .collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-16"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-16T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.BUY)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(476.48 * 0.7d)))))));
@@ -809,7 +810,7 @@ public class ClassificationTestCase
         // check cash transfers
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(100 * 0.7d)))))));
@@ -818,13 +819,13 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.19 * 0.7d)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.19 * 0.3d)))))));
@@ -861,7 +862,7 @@ public class ClassificationTestCase
 
         List<PortfolioTransaction> txp = categoryClient.getPortfolios().stream()
                         .flatMap(p -> p.getTransactions().stream()).collect(Collectors.toList());
-        
+
         assertThat(txp, hasSize(0));
 
         List<AccountTransaction> txa = categoryClient.getAccounts().stream()
@@ -871,13 +872,12 @@ public class ClassificationTestCase
         // check cash transfers
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_OUT)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(50)))))));
+                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(50)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(50)))))));
 
@@ -885,7 +885,7 @@ public class ClassificationTestCase
                         .flatMap(a -> a.getTransactions().stream()).collect(Collectors.toList());
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2012-01-17"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2012-01-17T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.TRANSFER_IN)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(78.19 * 0.5d)))))));

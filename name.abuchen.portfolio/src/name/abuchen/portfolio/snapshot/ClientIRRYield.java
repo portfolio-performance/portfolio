@@ -23,13 +23,13 @@ public class ClientIRRYield
     {
         Interval interval = Interval.of(snapshotStart.getTime(), snapshotEnd.getTime());
 
-        List<Transaction> transactions = new ArrayList<Transaction>();
+        List<Transaction> transactions = new ArrayList<>();
         collectAccountTransactions(client, interval, transactions);
         collectPortfolioTransactions(client, interval, transactions);
         Collections.sort(transactions, new Transaction.ByDate());
 
-        List<LocalDate> dates = new ArrayList<LocalDate>();
-        List<Double> values = new ArrayList<Double>();
+        List<LocalDate> dates = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
         double irr = IRR.calculate(dates, values);
@@ -118,7 +118,7 @@ public class ClientIRRYield
 
         for (Transaction t : transactions)
         {
-            dates.add(t.getDate());
+            dates.add(t.getDateTime().toLocalDate());
 
             if (t instanceof AccountTransaction)
             {

@@ -191,7 +191,7 @@ public class BankSLMPDFExctractor extends AbstractPDFExtractor
                         .match("^Valor: (?<wkn>[^ ]*)$") //
                         .match("Brutto \\((?<shares>[\\d.']+) \\* ... ([\\d.']+)\\) (?<currency>\\w{3}+) ([\\d.']+)") //
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setShares(asShares(v.get("shares")));
                             t.setSecurity(getOrCreateSecurity(v));
                         })

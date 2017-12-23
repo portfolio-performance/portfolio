@@ -52,14 +52,14 @@ public class BuySellEntry implements CrossEntry, Annotated
     @Deprecated
     public void setDate(LocalDate date)
     {
-        this.portfolioTransaction.setDate(date.atStartOfDay());
-        this.accountTransaction.setDate(date.atStartOfDay());
+        this.portfolioTransaction.setDateTime(date.atStartOfDay());
+        this.accountTransaction.setDateTime(date.atStartOfDay());
     }
     
     public void setDate(LocalDateTime date)
     {
-        this.portfolioTransaction.setDate(date);
-        this.accountTransaction.setDate(date);
+        this.portfolioTransaction.setDateTime(date);
+        this.accountTransaction.setDateTime(date);
     }
 
     public void setType(Type type)
@@ -121,13 +121,13 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         if (t == accountTransaction)
         {
-            portfolioTransaction.setDate(accountTransaction.getDateTime());
+            portfolioTransaction.setDateTime(accountTransaction.getDateTime());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
             portfolioTransaction.setNote(accountTransaction.getNote());
         }
         else if (t == portfolioTransaction)
         {
-            accountTransaction.setDate(portfolioTransaction.getDateTime());
+            accountTransaction.setDateTime(portfolioTransaction.getDateTime());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
             accountTransaction.setNote(portfolioTransaction.getNote());
         }

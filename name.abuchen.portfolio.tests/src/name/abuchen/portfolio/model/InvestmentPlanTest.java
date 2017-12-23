@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -39,12 +38,13 @@ public class InvestmentPlanTest
         investmentPlan.generateTransactions(new TestCurrencyConverter());
 
         List<PortfolioTransaction> tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDate().isBefore(LocalDate.parse("2017-04-10"))).collect(Collectors.toList());
+                        .filter(t -> t.getDateTime().isBefore(LocalDateTime.parse("2017-04-10T00:00")))
+                        .collect(Collectors.toList());
 
         assertThat(tx.size(), is(15));
 
         tx = investmentPlan.getTransactions().stream()
-                        .filter(t -> t.getDate().getYear() == 2016 && t.getDate().getMonth() == Month.MAY)
+                        .filter(t -> t.getDateTime().getYear() == 2016 && t.getDateTime().getMonth() == Month.MAY)
                         .collect(Collectors.toList());
 
         // May 2016 should contain two transactions:
@@ -52,17 +52,18 @@ public class InvestmentPlanTest
         // and the regular one from 31 May
 
         assertThat(tx.size(), is(2));
-        assertThat(tx.get(0).getDate(), is(LocalDate.parse("2016-05-02")));
-        assertThat(tx.get(1).getDate(), is(LocalDate.parse("2016-05-31")));
+        assertThat(tx.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
+        assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
 
         // check that delta generation of transactions also takes into account
         // the transaction "spilled over" into the next month
 
-        investmentPlan.getTransactions().stream().filter(t -> t.getDate().isAfter(LocalDate.parse("2016-05-10")))
+        investmentPlan.getTransactions().stream()
+                        .filter(t -> t.getDateTime().isAfter(LocalDateTime.parse("2016-05-10T00:00")))
                         .collect(Collectors.toList()).forEach(t -> investmentPlan.removeTransaction(t));
 
         List<PortfolioTransaction> newlyGenerated = investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(newlyGenerated.isEmpty(), is(false));
-        assertThat(newlyGenerated.get(0).getDate(), is(LocalDate.parse("2016-05-31")));
+        assertThat(newlyGenerated.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
     }
 }

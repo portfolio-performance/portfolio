@@ -31,14 +31,15 @@ import name.abuchen.portfolio.util.Dates;
         sum.add(t.getGrossValue().with(converter.at(t.getDateTime())));
         numOfEvents++;
 
-        if (t.getShares() > 0 && (lastPayment == null || Dates.daysBetween(lastPayment, t.getDate()) > 30))
+        if (t.getShares() > 0
+                        && (lastPayment == null || Dates.daysBetween(lastPayment, t.getDateTime().toLocalDate()) > 30))
         {
             regularEvents++;
         }
 
         if (firstPayment == null)
-            firstPayment = t.getDate();
-        lastPayment = t.getDate();
+            firstPayment = t.getDateTime().toLocalDate();
+        lastPayment = t.getDateTime().toLocalDate();
     }
 
     public Money getSum()

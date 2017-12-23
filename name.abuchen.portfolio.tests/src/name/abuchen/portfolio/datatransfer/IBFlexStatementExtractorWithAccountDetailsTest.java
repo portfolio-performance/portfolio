@@ -9,7 +9,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -87,7 +87,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
 
         assertThat(entry.getPortfolioTransaction().getSecurity().getName(), is("ORACLE CORP"));
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("EUR", 4185_05L)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-09-15")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0_00L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),

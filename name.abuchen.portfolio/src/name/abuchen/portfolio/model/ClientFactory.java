@@ -270,7 +270,7 @@ public class ClientFactory
                             // "Given final block not properly padded" is thrown
                             // if we do not read the stream - so ignore that
                             // kind of exception
-                            if (!(ex.getCause() instanceof BadPaddingException)) 
+                            if (!(ex.getCause() instanceof BadPaddingException))
                                 throw ex;
                         }
                     }
@@ -792,8 +792,8 @@ public class ClientFactory
             List<TransactionPair<?>> transactions = security.getTransactions(client);
 
             // sort by date of transaction
-            Collections.sort(transactions,
-                            (one, two) -> one.getTransaction().getDate().compareTo(two.getTransaction().getDate()));
+            Collections.sort(transactions, (one, two) -> one.getTransaction().getDateTime()
+                            .compareTo(two.getTransaction().getDateTime()));
 
             // count and assign number of shares by account
             Map<Account, Long> account2shares = new HashMap<>();

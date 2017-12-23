@@ -232,11 +232,11 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         try
         {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT);
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT); //$NON-NLS-1$
         }
         catch (Exception e)
         {
-            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT);
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
         }
     }
 }

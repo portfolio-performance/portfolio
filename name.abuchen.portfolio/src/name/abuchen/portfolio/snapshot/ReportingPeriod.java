@@ -49,7 +49,6 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-
     public final LocalDate getStartDate()
     {
         return startDate;
@@ -62,7 +61,7 @@ public abstract class ReportingPeriod
 
     public final Predicate<Transaction> containsTransaction()
     {
-        return t -> t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate);
+        return t -> t.getDateTime().toLocalDate().isAfter(startDate) && !t.getDateTime().toLocalDate().isAfter(endDate);
     }
 
     public final Interval toInterval()
@@ -230,7 +229,7 @@ public abstract class ReportingPeriod
 
                 date = date.minusDays(1);
             }
-            
+
             while (calendar.isHoliday(date))
                 date = date.minusDays(1);
 
@@ -246,8 +245,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays,
-                            tradingDays);
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
         }
     }
 
@@ -265,7 +263,7 @@ public abstract class ReportingPeriod
         {
             super(startDate, endDate);
         }
-        
+
         public FromXtoY(Interval interval)
         {
             super(interval.getStart(), interval.getEnd());

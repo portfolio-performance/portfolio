@@ -7,7 +7,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(10)));
         assertThat(t.getSecurity(), is(security));
     }
@@ -95,7 +95,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(10)));
         assertThat(t.getSecurity(), is(security));
     }
@@ -159,7 +159,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-02")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-02T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -183,7 +183,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }
@@ -251,7 +251,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.BUY));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(security));
     }
@@ -314,7 +314,7 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.TRANSFER_OUT));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDate(), is(LocalDate.parse("2013-01-01")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-01T00:00")));
         assertThat(t.getShares(), is(0L));
         assertThat(t.getSecurity(), is(nullValue()));
     }

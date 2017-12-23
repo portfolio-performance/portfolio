@@ -6,7 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -67,7 +67,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1.0)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2000-01-01")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2000-01-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0.0))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
@@ -105,7 +105,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1413.46)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2011-01-01")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-01-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(13.6))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(42)));
@@ -143,7 +143,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(822.66)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-27")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-27T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(9.9))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
@@ -181,7 +181,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1431.40)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-11-22")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(11.40))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(20)));
@@ -219,7 +219,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(19359.18)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-07-18")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-07-18T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(55.66))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(160)));
@@ -257,7 +257,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(16312.80)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-03-14")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-03-14T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(47.66))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1437)));
@@ -295,7 +295,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(7586.80)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2008-10-16")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2008-10-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(23.80 + 1.5 + 0.6))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
@@ -333,7 +333,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1469.55)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-11-08")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-11-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(2.9 + 9.9))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
@@ -373,7 +373,7 @@ public class ComdirectPDFExtractorTest
         // expected total is total amount minux taxes
         long expectedTotal = Values.Amount.factorize(10111.11 - 11.11);
         assertThat(entry.getPortfolioTransaction().getAmount(), is(expectedTotal));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2010-01-01")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-01-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(11.51))));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
@@ -413,7 +413,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(20413.33)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-12-08")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(56.07))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1140)));
@@ -451,7 +451,7 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(21239.83)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-02-25")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-25T00:00")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(66.47))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(570)));
@@ -491,7 +491,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2011-01-08")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-01-08T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.99)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(14)));
     }
@@ -524,7 +524,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2011-01-09")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2011-01-09T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(13.78)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
     }
@@ -557,7 +557,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2010-12-15")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-15T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(335.92)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1900)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(59.28)));
@@ -591,7 +591,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2009-04-27")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2009-04-27T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1546.13)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(3000)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(525 + 28.87)));
@@ -625,7 +625,7 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-10-23")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-23T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(7.52)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(175)));
     }
@@ -657,7 +657,7 @@ public class ComdirectPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-10-31")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-10-31T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(8.54)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
@@ -690,7 +690,7 @@ public class ComdirectPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-20")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-20T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.5)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.914)));
@@ -722,7 +722,7 @@ public class ComdirectPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
@@ -760,7 +760,7 @@ public class ComdirectPDFExtractorTest
         assertThat(oTransaction.isPresent(), is(true));
         AccountTransaction transaction = oTransaction.get();
 
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
@@ -773,7 +773,7 @@ public class ComdirectPDFExtractorTest
         transaction = oTransaction.get();
         
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-07")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
         assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
     }

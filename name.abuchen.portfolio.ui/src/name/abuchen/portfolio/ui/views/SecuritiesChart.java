@@ -213,7 +213,7 @@ public class SecuritiesChart
                 Interval displayInterval = Interval.of(date.minusDays(5), date.plusDays(5));
 
                 customTooltipEvents.stream() //
-                                .filter(t -> displayInterval.contains(t.getDate())) //
+                                .filter(t -> displayInterval.contains(t.getDateTime())) //
                                 .forEach(t -> {
                                     if (t instanceof AccountTransaction)
                                         addDividendTooltip(composite, (AccountTransaction) t);
@@ -228,7 +228,7 @@ public class SecuritiesChart
     {
         Label label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDate()), t.getMonetaryAmount().toString()));
+                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
 
         label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipInvestmentDetails, Values.Share.format(t.getShares()),
@@ -240,7 +240,7 @@ public class SecuritiesChart
     {
         Label label = new Label(composite, SWT.NONE);
         label.setText(MessageFormat.format(Messages.LabelToolTipTransactionSummary, t.getType().toString(),
-                        dateTimeFormatter.format(t.getDate()), t.getMonetaryAmount().toString()));
+                        dateTimeFormatter.format(t.getDateTime().toLocalDate()), t.getMonetaryAmount().toString()));
 
         if (t.getShares() == 0L)
         {
@@ -596,7 +596,7 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.BUY
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
-                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDateTime().toLocalDate()))
                         .sorted(new Transaction.ByDate()).collect(Collectors.toList());
 
         addInvestmentMarkers(purchase, Messages.SecurityMenuBuy, colorEventPurchase);
@@ -605,7 +605,7 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == PortfolioTransaction.Type.SELL
                                         || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDateTime().toLocalDate()))
                         .sorted(new Transaction.ByDate()).collect(Collectors.toList());
 
         addInvestmentMarkers(sales, Messages.SecurityMenuSell, colorEventSale);
@@ -624,13 +624,13 @@ public class SecuritiesChart
                 String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
                 double value = t.getGrossPricePerShare(converter.with(t.getSecurity().getCurrencyCode())).getAmount()
                                 / Values.Quote.divider();
-                chart.addMarkerLine(t.getDate(), color, label, value);
+                chart.addMarkerLine(t.getDateTime().toLocalDate(), color, label, value);
             });
         }
         else
         {
-            Date[] dates = transactions.stream().map(PortfolioTransaction::getDate)
-                            .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            Date[] dates = transactions.stream().map(PortfolioTransaction::getDateTime)
+                            .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
                             .collect(Collectors.toList()).toArray(new Date[0]);
 
             double[] values = transactions.stream().mapToDouble(
@@ -689,7 +689,7 @@ public class SecuritiesChart
         List<AccountTransaction> dividends = client.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
                         .filter(t -> t.getSecurity() == security)
                         .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
-                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDate()))
+                        .filter(t -> chartPeriod == null || chartPeriod.isBefore(t.getDateTime().toLocalDate()))
                         .sorted(new Transaction.ByDate()).collect(Collectors.toList());
 
         if (dividends.isEmpty())
@@ -699,12 +699,13 @@ public class SecuritiesChart
 
         if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
         {
-            dividends.forEach(t -> chart.addMarkerLine(t.getDate(), colorEventDividend, getDividendLabel(t)));
+            dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
+                            getDividendLabel(t)));
         }
         else
         {
-            Date[] dates = dividends.stream().map(AccountTransaction::getDate)
-                            .map(d -> Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant()))
+            Date[] dates = dividends.stream().map(AccountTransaction::getDateTime)
+                            .map(d -> Date.from(d.atZone(ZoneId.systemDefault()).toInstant()))
                             .collect(Collectors.toList()).toArray(new Date[0]);
 
             IAxis yAxis1st = chart.getAxisSet().getYAxis(0);
@@ -853,8 +854,10 @@ public class SecuritiesChart
                         .filter(t -> t.getSecurity().equals(security))
                         .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
                                         || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT))
-                        .filter(t -> t.getDate().isBefore(today))
-                        .map(t -> (chartPeriod == null || t.getDate().isAfter(chartPeriod)) ? t.getDate() : chartPeriod)
+                        .filter(t -> t.getDateTime().toLocalDate().isBefore(today))
+                        .map(t -> (chartPeriod == null || t.getDateTime().toLocalDate().isAfter(chartPeriod))
+                                        ? t.getDateTime().toLocalDate()
+                                        : chartPeriod)
                         .distinct() //
                         .sorted() //
                         .collect(Collectors.toList());
