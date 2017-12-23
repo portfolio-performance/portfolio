@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -15,6 +16,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Header;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
 
@@ -37,6 +39,31 @@ public abstract class CSVExtractor implements Extractor
         throw new UnsupportedOperationException();
     }
 
+    public int getDefaultSkipLines()
+    {
+        return 0;
+    }
+
+    public Header.Type getDefaultHeadering()
+    {
+        return Header.Type.FIRST;
+    }
+
+    public String getDefaultEncoding()
+    {
+        return "UTF-8";
+    }
+
+    public <E extends Enum<E>> EnumMap<E, String> getDefaultEnum(Class<E> enumType)
+    {
+        return null;
+    }
+
+    public String[] getDefaultHeader()
+    {
+        return null;
+    }
+    
     protected String getText(String name, String[] rawValues, Map<String, Column> field2column)
     {
         Column column = field2column.get(name);

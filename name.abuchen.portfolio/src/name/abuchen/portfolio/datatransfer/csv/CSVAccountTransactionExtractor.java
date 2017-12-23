@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -29,7 +30,17 @@ import name.abuchen.portfolio.money.Money;
     /* package */ CSVAccountTransactionExtractor(Client client)
     {
         super(client, Messages.CSVDefAccountTransactions);
+        addFields();        
+    }
 
+    CSVAccountTransactionExtractor(Client client, String label)
+    {
+        super(client, label);
+        addFields();
+    }
+    
+    List<Field> addFields()
+    {
         List<Field> fields = getFields();
         fields.add(new DateField(Messages.CSVColumn_Date));
         fields.add(new ISINField(Messages.CSVColumn_ISIN).setOptional(true));
@@ -42,6 +53,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField(Messages.CSVColumn_Shares).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
         fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
+        return fields;
     }
 
     @Override
