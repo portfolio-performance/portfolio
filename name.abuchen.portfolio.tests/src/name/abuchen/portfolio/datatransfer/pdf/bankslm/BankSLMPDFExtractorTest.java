@@ -18,7 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -35,7 +35,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -70,7 +70,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland2() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -106,7 +106,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -141,7 +141,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testVerkauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -177,7 +177,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testVerkauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -212,7 +212,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testDividende_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -245,7 +245,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testDividende_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
