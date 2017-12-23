@@ -1,15 +1,21 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 import javax.inject.Named;
+import javax.naming.InvalidNameException;
+import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
@@ -17,17 +23,20 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
+import org.osgi.framework.Bundle;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -36,7 +45,13 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class AboutDialog extends Dialog
 {
-    private StyledText text;
+    private static final int DETAILS_BTN_ID = 4711;
+
+    private Composite container;
+    private StackLayout layout;
+
+    private StyledText aboutTextBox;
+    private Text infoTextBox;
 
     @Inject
     public AboutDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell)
@@ -47,8 +62,22 @@ public class AboutDialog extends Dialog
     @Override
     protected Control createDialogArea(Composite parent)
     {
+        container = new Composite(parent, SWT.NONE);
+        layout = new StackLayout();
+        container.setLayout(layout);
+
+        layout.topControl = createAboutText(container);
+        createInfoArea(container);
+
+        return container;
+    }
+
+    private Control createAboutText(Composite parent)
+    {
         String aboutText = MessageFormat.format(Messages.AboutText,
-                        PortfolioPlugin.getDefault().getBundle().getVersion().toString());
+                        PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
+                        System.getProperty("osgi.os"), //$NON-NLS-1$
+                        System.getProperty("osgi.arch")); //$NON-NLS-1$
 
         Composite area = new Composite(parent, SWT.NONE);
 
@@ -59,39 +88,33 @@ public class AboutDialog extends Dialog
         imageLabel.setBackground(area.getBackground());
         imageLabel.setImage(Images.LOGO_128.image());
 
-        List<StyleRange> styles = new ArrayList<StyleRange>();
-        aboutText = addContributorHyperlinks(aboutText, styles);
+        List<StyleRange> styles = new ArrayList<>();
+        aboutText = addMarkdownLikeHyperlinks(aboutText, styles);
         addBoldFirstLine(aboutText, styles);
-        addHyperlinks(aboutText, styles);
 
-        Collections.sort(styles, new Comparator<StyleRange>()
-        {
-            @Override
-            public int compare(StyleRange o1, StyleRange o2)
-            {
-                return Integer.compare(o1.start, o2.start);
-            }
-        });
+        Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
-        text = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
-        text.setText(aboutText);
-        text.setStyleRanges(styles.toArray(new StyleRange[0]));
+        aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        aboutTextBox.setText(aboutText);
+        aboutTextBox.setStyleRanges(styles.toArray(new StyleRange[0]));
 
-        text.addListener(SWT.MouseDown, new Listener()
-        {
-            public void handleEvent(Event event)
-            {
-                openBrowser(event);
-            }
-        });
+        aboutTextBox.addListener(SWT.MouseDown, this::openBrowser);
 
         // layout
 
         GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 3).applyTo(area);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.CENTER, SWT.TOP).applyTo(imageLabel);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
+        GridDataFactory.fillDefaults().grab(true, true).applyTo(aboutTextBox);
 
         return area;
+    }
+
+    private void createInfoArea(Composite container)
+    {
+        Composite area = new Composite(container, SWT.NONE);
+        area.setLayout(new FillLayout());
+
+        infoTextBox = new Text(area, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
     }
 
     @Override
@@ -99,36 +122,66 @@ public class AboutDialog extends Dialog
     {
         Button b = createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
         b.setFocus();
+
+        createButton(parent, DETAILS_BTN_ID, Messages.LabelInstallationDetails, false);
     }
 
-    private String addContributorHyperlinks(String aboutText, List<StyleRange> styles)
+    @Override
+    protected void buttonPressed(int buttonId)
     {
-        Pattern pattern = Pattern.compile("\\[([\\w]*)\\]"); //$NON-NLS-1$
+        if (buttonId != DETAILS_BTN_ID)
+        {
+            super.buttonPressed(buttonId);
+            return;
+        }
+
+        boolean showsAbout = layout.topControl == container.getChildren()[0];
+
+        if (showsAbout)
+        {
+            infoTextBox.setText(buildInfoText());
+            layout.topControl = container.getChildren()[1];
+            container.layout();
+            getButton(DETAILS_BTN_ID).setText(Messages.LabelInfo);
+        }
+        else
+        {
+            layout.topControl = container.getChildren()[0];
+            container.layout();
+            getButton(DETAILS_BTN_ID).setText(Messages.LabelInstallationDetails);
+        }
+    }
+
+    private String addMarkdownLikeHyperlinks(String aboutText, List<StyleRange> styles)
+    {
+        Pattern pattern = Pattern.compile("\\[(?<text>[^\\]]*)\\]\\((?<link>[^\\)]*)\\)"); //$NON-NLS-1$
         Matcher matcher = pattern.matcher(aboutText);
 
         StringBuilder answer = new StringBuilder(aboutText.length());
         int pointer = 0;
-        int found = 0;
 
         while (matcher.find())
         {
             int start = matcher.start();
             int end = matcher.end();
+            
+            answer.append(aboutText.substring(pointer, start));
+            
+            String text = matcher.group("text"); //$NON-NLS-1$
+            String link = matcher.group("link"); //$NON-NLS-1$
 
             StyleRange styleRange = new StyleRange();
             styleRange.underline = true;
             styleRange.underlineStyle = SWT.UNDERLINE_LINK;
             styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
-            styleRange.data = "https://github.com/" + matcher.group(1); //$NON-NLS-1$
-            styleRange.start = start - (2 * found);
-            styleRange.length = end - start - 2;
+            styleRange.data = link;
+            styleRange.start = answer.length();
+            styleRange.length = text.length();
             styles.add(styleRange);
 
-            answer.append(aboutText.substring(pointer, start));
-            answer.append(aboutText.substring(start + 1, end - 1));
+            answer.append(text);
 
             pointer = end;
-            found++;
         }
 
         if (pointer < aboutText.length())
@@ -146,32 +199,12 @@ public class AboutDialog extends Dialog
         ranges.add(styleRange);
     }
 
-    private void addHyperlinks(String aboutText, List<StyleRange> ranges)
-    {
-        Pattern pattern = Pattern.compile("https?://[^ \n]*"); //$NON-NLS-1$
-        Matcher matcher = pattern.matcher(aboutText);
-        while (matcher.find())
-        {
-            int start = matcher.start();
-            int end = matcher.end();
-
-            StyleRange styleRange = new StyleRange();
-            styleRange.underline = true;
-            styleRange.underlineStyle = SWT.UNDERLINE_LINK;
-            styleRange.underlineColor = Display.getDefault().getSystemColor(SWT.COLOR_DARK_BLUE);
-            styleRange.data = matcher.group();
-            styleRange.start = start;
-            styleRange.length = end - start;
-            ranges.add(styleRange);
-        }
-    }
-
     private void openBrowser(Event event)
     {
         try
         {
-            int offset = text.getOffsetAtLocation(new Point(event.x, event.y));
-            StyleRange style = text.getStyleRangeAtOffset(offset);
+            int offset = aboutTextBox.getOffsetAtLocation(new Point(event.x, event.y));
+            StyleRange style = aboutTextBox.getStyleRangeAtOffset(offset);
             if (style != null && style.data != null)
                 DesktopAPI.browse(String.valueOf(style.data));
         }
@@ -180,4 +213,75 @@ public class AboutDialog extends Dialog
             // no character at position
         }
     }
+
+    @SuppressWarnings("nls")
+    private String buildInfoText()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        builder.append("Generated at " + LocalDateTime.now());
+        builder.append("\n\nSystem Properties:\n\n");
+
+        System.getProperties().entrySet().stream()
+                        .sorted((r, l) -> r.getKey().toString().compareTo(l.getKey().toString()))
+                        .forEach(e -> builder.append(e.getKey() + ": " + e.getValue() + "\n"));
+
+        builder.append("\n\nOSGi Bundles:\n\n");
+
+        Bundle[] bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
+        Arrays.sort(bundles, (r, l) -> r.getSymbolicName().compareTo(l.getSymbolicName()));
+
+        for (int ii = 0; ii < bundles.length; ii++)
+        {
+            Bundle b = bundles[ii];
+
+            builder.append(b.getSymbolicName() + " (" + b.getVersion().toString() + ")");
+
+            addSignerInfo(builder, b);
+
+            if (!b.getSignerCertificates(Bundle.SIGNERS_TRUSTED).isEmpty())
+                builder.append(" [trusted]");
+
+            builder.append("\n");
+        }
+
+        return builder.toString();
+    }
+
+    @SuppressWarnings("nls")
+    private void addSignerInfo(StringBuilder builder, Bundle b)
+    {
+        Map<X509Certificate, List<X509Certificate>> certificates = b.getSignerCertificates(Bundle.SIGNERS_ALL);
+        if (certificates.isEmpty())
+            return;
+
+        builder.append(" [signed by ");
+
+        boolean isFirstCertificate = true;
+
+        for (X509Certificate cert : certificates.keySet())
+        {
+            try
+            {
+                LdapName ldapDN = new LdapName(cert.getSubjectDN().getName());
+                for (Rdn rdn : ldapDN.getRdns())
+                {
+                    if ("CN".equals(rdn.getType()))
+                    {
+                        if (!isFirstCertificate)
+                            builder.append(", ");
+                        builder.append(rdn.getValue());
+                        isFirstCertificate = false;
+                    }
+                }
+            }
+            catch (InvalidNameException ignore)
+            {
+                // ignore
+            }
+        }
+
+        builder.append("]");
+    }
+
 }

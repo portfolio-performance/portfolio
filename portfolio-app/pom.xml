@@ -9,14 +9,17 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.28.1</version>
+	<version>0.28.3-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
 		<tycho-version>1.0.0</tycho-version>
-		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
+		<!-- jarsigner 1.4 does not support the certchain attribute (needed b/c 
+			the hardware token does not contain the whole certificate chain). Using the 
+			1.5-SNAPSHOT build which supports the argument since Aug 2017 -->
+		<jarsigner.plugin.version>1.5-SNAPSHOT</jarsigner.plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
@@ -282,10 +285,13 @@
 						<skip>${jarsigner.skip}</skip>
 						<certs>true</certs>
 						<verbose>true</verbose>
-						<keystore>${keystore}</keystore>
-						<alias>${alias}</alias>
-						<storepass>${storepass}</storepass>
-						<keypass>${keypass}</keypass>
+						<keystore>NONE</keystore>
+						<storetype>PKCS11</storetype>
+						<providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
+						<storepass>${jarsigner.storepass}</storepass>
+						<alias>Open Source Developer, Andreas Buchen</alias>
+						<providerArg>${jarsigner.providerArg}</providerArg>
+						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
 						<tsa>http://time.certum.pl/</tsa>
 					</configuration>
 				</plugin>

@@ -101,6 +101,7 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance_Description;
     public static String ColumnAbsolutePerformance;
     public static String ColumnAbsolutePerformance_Option;
+    public static String ColumnAutoGenerate;
     public static String ColumnDeltaPercent;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
@@ -218,6 +219,7 @@ public class Messages extends NLS
     public static String ConsumerPriceIndexMenuDelete;
     public static String CSVImportErrorMissingFields;
     public static String CSVImportInformationOptionalFields;
+    public static String CSVImportLabelDefaultHeader;
     public static String CSVImportLabelDelimiter;
     public static String CSVImportLabelDoubleClickHere;
     public static String CSVImportLabelEditMapping;
@@ -227,6 +229,8 @@ public class Messages extends NLS
     public static String CSVImportLabelFileCSV;
     public static String CSVImportLabelFirstLineIsHeader;
     public static String CSVImportLabelFormat;
+    public static String CSVImportLabelHeader;
+    public static String CSVImportLabelManualHeader;
     public static String CSVImportLabelMappedToField;
     public static String CSVImportLabelProvidedValue;
     public static String CSVImportLabelSkipLines;
@@ -376,6 +380,7 @@ public class Messages extends NLS
     public static String LabelIncludeUnassignedCategoryInCharts;
     public static String LabelInfo;
     public static String LabelInputValidationFailed;
+    public static String LabelInstallationDetails;
     public static String LabelInterest;
     public static String LabelInterestCharge;
     public static String LabelInvestedCapital;
@@ -444,6 +449,7 @@ public class Messages extends NLS
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
+    public static String LabelPerformanceNormalizedPerYear;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
@@ -550,6 +556,7 @@ public class Messages extends NLS
     public static String MsgAccountToMissing;
     public static String MsgCannotRestartBecauseOfOpenDialog;
     public static String MsgConfirmInstall;
+    public static String MsgCreateTransactionsAutomaticallyUponOpening;
     public static String MsgDateIsInTheFuture;
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleDetail;
@@ -626,8 +633,10 @@ public class Messages extends NLS
     public static String PortfolioMenuAdd;
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
+    public static String PrefAlphaVantageAPIKey;
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
+    public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionProxy;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
@@ -641,6 +650,7 @@ public class Messages extends NLS
     public static String PrefUpdateQuotesAfterFileOpen;
     public static String PrefUpdateSite;
     public static String PrefTitle;
+    public static String PrefTitleAlphaVantage;
     public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;

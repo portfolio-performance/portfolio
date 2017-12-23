@@ -42,13 +42,14 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -79,6 +80,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
@@ -119,6 +121,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
     private final CSVImporter importer;
     private final boolean onlySecurityPrices;
 
+    private HeaderSet headerset = new HeaderSet();
+
+    private Spinner skipLinesSpinner = null;
+    private ComboViewer encodingComboViewer = null;
+    private ComboViewer headeringComboViewer = null;
+
     private TableViewer tableViewer;
 
     public CSVImportDefinitionPage(Client client, CSVImporter importer, boolean onlySecurityPrices)
@@ -131,8 +139,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         this.importer = importer;
         this.onlySecurityPrices = onlySecurityPrices;
 
+        headerset.add(Header.Type.MANUAL, Messages.CSVImportLabelManualHeader);
+        headerset.add(Header.Type.DEFAULT, Messages.CSVImportLabelDefaultHeader);
+        headerset.add(Header.Type.FIRST, Messages.CSVImportLabelFirstLineIsHeader);
+
         if (onlySecurityPrices)
-            importer.setExtractor(importer.getSecurityPriceExtractor());
+            this.changeExtractor(importer.getSecurityPriceExtractor());
+        else
+            this.changeExtractor(importer.getExtractor());
     }
 
     public CSVImporter getImporter()
@@ -188,30 +202,38 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
         Label lblSkipLines = new Label(container, SWT.NONE);
         lblSkipLines.setText(Messages.CSVImportLabelSkipLines);
-        final Spinner skipLines = new Spinner(container, SWT.BORDER);
+        skipLinesSpinner = new Spinner(container, SWT.BORDER);
+        final Spinner skipLines = skipLinesSpinner;
         skipLines.setMinimum(0);
-        skipLines.addModifyListener(event -> onSkipLinesChanged(skipLines.getSelection()));
+        skipLines.setSelection(importer.getSkipLines());
+        skipLines.addModifyListener(new ModifyListener()
+        {
+            @Override
+            public void modifyText(ModifyEvent event)
+            {
+                onSkipLinesChanged(skipLines.getSelection());
+            }
+        });
 
         Label lblEncoding = new Label(container, SWT.NONE);
         lblEncoding.setText(Messages.CSVImportLabelEncoding);
         Combo cmbEncoding = new Combo(container, SWT.READ_ONLY);
-        ComboViewer encoding = new ComboViewer(cmbEncoding);
+        encodingComboViewer = new ComboViewer(cmbEncoding);
+        ComboViewer encoding = encodingComboViewer;
         encoding.setContentProvider(ArrayContentProvider.getInstance());
         encoding.setInput(Charset.availableCharsets().values().toArray());
-        encoding.setSelection(new StructuredSelection(Charset.defaultCharset()));
+        encoding.setSelection(new StructuredSelection(importer.getEncoding()));
         encoding.addSelectionChangedListener(this);
 
-        final Button firstLineIsHeader = new Button(container, SWT.CHECK);
-        firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
-        firstLineIsHeader.setSelection(true);
-        firstLineIsHeader.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent event)
-            {
-                onFirstLineIsHeaderChanged(firstLineIsHeader.getSelection());
-            }
-        });
+        Label lblHeader = new Label(container, SWT.NONE);
+        lblHeader.setText(Messages.CSVImportLabelHeader);
+        Combo cmbHeader = new Combo(container, SWT.READ_ONLY);
+        headeringComboViewer  = new ComboViewer(cmbHeader);
+        ComboViewer headering = headeringComboViewer; 
+        headering.setContentProvider(ArrayContentProvider.getInstance());
+        headering.setInput(headerset.get());
+        headering.setSelection(new StructuredSelection(importer.getHeader()));
+        headering.addSelectionChangedListener(this);
 
         Composite compositeTable = new Composite(container, SWT.NONE);
 
@@ -224,14 +246,13 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         FormDataFactory.startingWith(lblTarget).width(width).top(new FormAttachment(0, 5)).thenRight(cmbTarget)
                         .right(new FormAttachment(50, -5)).thenBelow(cmbDelimiter).label(lblDelimiter)
                         .right(new FormAttachment(50, -5)).thenBelow(cmbEncoding).label(lblEncoding)
+                        .right(new FormAttachment(50, -5)).thenBelow(cmbHeader).label(lblHeader)
                         .right(new FormAttachment(50, -5));
 
-        FormDataFactory.startingWith(cmbDelimiter).thenRight(lblSkipLines).suffix(skipLines);
-
-        FormDataFactory.startingWith(cmbEncoding).thenRight(firstLineIsHeader);
+        FormDataFactory.startingWith(cmbHeader).thenRight(lblSkipLines).suffix(skipLines);
 
         FormData data = new FormData();
-        data.top = new FormAttachment(cmbEncoding, 10);
+        data.top = new FormAttachment(cmbHeader, 10);
         data.left = new FormAttachment(0, 0);
         data.right = new FormAttachment(100, 0);
         data.bottom = new FormAttachment(100, 0);
@@ -313,13 +334,35 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             importer.setEncoding((Charset) element);
             doProcessFile();
         }
+        else if (element instanceof Header)
+        {
+            importer.setHeader((Header) element);
+            doProcessFile();
+        }
+    }
+
+    private void changeExtractor(CSVExtractor def)
+    {
+            importer.setExtractor(def);
+            importer.setEncoding(Charset.forName(def.getDefaultEncoding()));
+            importer.setSkipLines(def.getDefaultSkipLines());
+            importer.setHeader(headerset.get(def.getDefaultHeadering()));
+
+            if (skipLinesSpinner != null)
+                skipLinesSpinner.setSelection(importer.getSkipLines());
+
+            if (encodingComboViewer != null)
+                encodingComboViewer.setSelection(new StructuredSelection(importer.getEncoding()));
+
+            if (headeringComboViewer != null)
+                headeringComboViewer.setSelection(new StructuredSelection(importer.getHeader()));
     }
 
     private void onTargetChanged(CSVExtractor def)
     {
         if (!def.equals(importer.getExtractor()))
         {
-            importer.setExtractor(def);
+            this.changeExtractor(def);
             doProcessFile();
         }
     }
@@ -327,12 +370,6 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
     private void onSkipLinesChanged(int linesToSkip)
     {
         importer.setSkipLines(linesToSkip);
-        doProcessFile();
-    }
-
-    private void onFirstLineIsHeaderChanged(boolean isFirstLineHeader)
-    {
-        importer.setFirstLineHeader(isFirstLineHeader);
         doProcessFile();
     }
 
@@ -364,7 +401,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                 setColumnLabel(tableColumn, column);
             }
 
-            List<Object> input = new ArrayList<>();
+            List<Object> input = new ArrayList<Object>();
             input.add(importer);
             input.addAll(importer.getRawValues());
             tableViewer.setInput(input);
@@ -416,7 +453,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
     private void doUpdateErrorMessages()
     {
-        Set<Field> fieldsToMap = new HashSet<>(importer.getExtractor().getFields());
+        Set<Field> fieldsToMap = new HashSet<Field>(importer.getExtractor().getFields());
         for (Column column : importer.getColumns())
             fieldsToMap.remove(column.getField());
 
@@ -450,10 +487,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
     private static final class ImportLabelProvider extends LabelProvider
                     implements ITableLabelProvider, ITableColorProvider
     {
-        private static final RGB GREEN       = new RGB(125, 152, 25);
-        private static final RGB LIGHTGREEN  = new RGB(152, 192, 25);
-        private static final RGB ORANGE      = new RGB(245, 120, 25);
-        private static final RGB RED         = new RGB(235,  25, 25);
+        private static final Color GREEN = Colors.getColor(163, 215, 113);
+        private static final Color LIGHTGREEN = Colors.getColor(188, 226, 158);
+        private static final Color ERROR = Colors.getColor(255, 152, 89);
 
         private CSVImporter importer;
 
@@ -524,32 +560,15 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     if (text != null && !text.isEmpty())
                     {
                         column.getFormat().getFormat().parseObject(text);
-                        return resources.createColor(GREEN);
-                    }
-                    else
-                    {
-                        if (column.getField().isOptional())
-                        {
-                            return resources.createColor(LIGHTGREEN);
-                        }
-                        else
-                        {
-                            return resources.createColor(ORANGE);
-                        }
+                        return GREEN;
                     }
                 }
-                else
-                {
-                    String text = getColumnText(element, columnIndex);
-                    return resources.createColor(GREEN);
-                }
+
+                return column.getField().isOptional() ? LIGHTGREEN : GREEN;
             }
             catch (ParseException e)
             {
-                if (column.getField().isOptional())
-                    return resources.createColor(ORANGE);
-                else
-                    return resources.createColor(RED);
+                return column.getField().isOptional() ? Colors.WARNING : ERROR;
             }
         }
     }
@@ -598,7 +617,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
             ComboViewer mappedTo = new ComboViewer(composite, SWT.READ_ONLY);
             mappedTo.setContentProvider(ArrayContentProvider.getInstance());
-            List<Field> fields = new ArrayList<>();
+            List<Field> fields = new ArrayList<Field>();
             fields.add(EMPTY);
             fields.addAll(definition.getFields());
             mappedTo.setInput(fields);

@@ -18,7 +18,7 @@ public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode;
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate;
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -33,6 +33,8 @@ public class InvestmentPlanModel extends AbstractModel
     private Portfolio portfolio;
     private Account account;
 
+    private boolean autoGenerate;
+    
     private LocalDate start = LocalDate.now();
 
     private int interval = 1;
@@ -74,6 +76,7 @@ public class InvestmentPlanModel extends AbstractModel
         plan.setSecurity(portfolio.equals(DEPOSIT) ? null : security);
         plan.setPortfolio(portfolio.equals(DEPOSIT) ? null : portfolio);
         plan.setAccount(account.equals(DELIVERY) ? null : account);
+        plan.setAutoGenerate(autoGenerate);
         plan.setStart(start);
         plan.setInterval(interval);
         plan.setAmount(amount);
@@ -86,6 +89,7 @@ public class InvestmentPlanModel extends AbstractModel
         this.source = null;
 
         setName(null);
+        setAutoGenerate(false);
         setAmount(0);
         setFees(0);
     }
@@ -98,6 +102,7 @@ public class InvestmentPlanModel extends AbstractModel
         this.security = plan.getSecurity();
         this.portfolio = plan.getPortfolio() != null ? plan.getPortfolio() : DEPOSIT;
         this.account = plan.getAccount() != null ? plan.getAccount() : DELIVERY;
+        this.autoGenerate = plan.isAutoGenerate();
         this.start = plan.getStart();
         this.interval = plan.getInterval();
         this.amount = plan.getAmount();
@@ -189,6 +194,16 @@ public class InvestmentPlanModel extends AbstractModel
                         getTransactionCurrencyCode());
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
                         this.calculationStatus = calculateStatus());
+    }
+    
+    public boolean isAutoGenerate()
+    {
+        return autoGenerate;
+    }
+
+    public void setAutoGenerate(boolean autoGenerate)
+    {
+        firePropertyChange(Properties.autoGenerate.name(), this.autoGenerate, this.autoGenerate = autoGenerate);
     }
 
     public LocalDate getStart()

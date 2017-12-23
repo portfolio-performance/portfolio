@@ -25,9 +25,12 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
@@ -227,9 +230,14 @@ public class CSVImporter
             return enumType;
         }
 
+        public EnumMapFormat<M> createFormat(EnumMap<M, String> enumMap)
+        {
+            return new EnumMapFormat<>(enumType, enumMap);
+        }
+
         public EnumMapFormat<M> createFormat()
         {
-            return new EnumMapFormat<>(enumType);
+            return new EnumMapFormat<>(enumType, null);
         }
     }
 
@@ -239,11 +247,16 @@ public class CSVImporter
 
         private EnumMap<M, String> enumMap;
 
-        public EnumMapFormat(Class<M> enumType)
+        public EnumMapFormat(Class<M> enumType, EnumMap<M, String> enumMap)
         {
-            enumMap = new EnumMap<>(enumType);
+            this.enumMap = new EnumMap<>(enumType);
             for (M element : enumType.getEnumConstants())
-                enumMap.put(element, element.toString());
+            {
+                    if ((enumMap != null) && enumMap.containsKey(element))
+                        this.enumMap.put(element, enumMap.get(element).toString());
+                    else
+                        this.enumMap.put(element, element.toString());
+            }
         }
 
         public EnumMap<M, String> map()
@@ -311,70 +324,51 @@ public class CSVImporter
     public static class ISINFormat extends Format
     {
         private static final long serialVersionUID = 1L;
-        private List<String> isinList = new ArrayList<String>();
-        private static final String ISINpattern = "[A-Z]{2}[A-Z0-9]{9}\\d";
+
+        private Set<String> existingISINs;
 
         public ISINFormat(List<Security> securityList)
         {
-            for (Security security : securityList)
-            {
-                if (security.getIsin() != null)
-                {
-                    String ISIN = security.getIsin().trim();
-                    if (CheckISIN(ISIN))
-                    {
-                        this.isinList.add(ISIN);
-                    }
-                }
-            }
+            existingISINs = securityList.stream().map(Security::getIsin)
+                            .filter(isin -> isin != null && !isin.trim().isEmpty()).collect(Collectors.toSet());
         }
 
         @Override
         public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
         {
-            String s = (String)obj;
+            String s = (String) obj;
             if (s == null)
                 throw new IllegalArgumentException();
 
             return toAppendTo.append(s);
         }
-
-        static boolean CheckISIN(String isin)
-        {
-            isin = isin.trim().toUpperCase();
-            if (!isin.matches("^"+ ISINpattern + "$"))
-                return false;
-            return Isin.isValid(isin);
-        }
-
         @Override
         public Object parseObject(String source, ParsePosition pos)
         {
-            int parseSuccessIndex = source.length();
-            source = source.trim();
-            if (pos == null)
-                throw new NullPointerException();
-            Object rObj = null;
+            Objects.requireNonNull(pos);
 
-            Pattern pattern = Pattern.compile(" (" + ISINpattern + ") ");
-            Matcher matcher = pattern.matcher(source);
-            boolean success = false;
+            String isin = source.trim().toUpperCase();
+
+            // check for a partial match (ISIN maybe only part of the field:
+            // "Zins/Dividende ISIN DE0007164600 SAP SE O."
+
+            Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+            Matcher matcher = pattern.matcher(isin);
             if (matcher.find())
-            {
-                source  = matcher.group(1);
-            }
+                isin = matcher.group(1);
 
-            if (CheckISIN(source))
+            // return ISIN as valid if a) it is a valid ISIN number, and b) it
+            // is one of the existing ISIN
+
+            if (Isin.isValid(isin) && existingISINs.contains(isin))
             {
-                if (isinList.contains((String) source))
-                {
-                    success = true;
-                    rObj = (Object) source.toString();
-                }
+                pos.setIndex(source.length());
+                return isin;
             }
-            if (success)
-                pos.setIndex(parseSuccessIndex);
-            return rObj;
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -390,7 +384,7 @@ public class CSVImporter
         {
             headerset.add(new Header (type, label));
         }
-        
+
         public Header[] get()
         {
             return headerset.toArray(new Header[0]);
@@ -403,12 +397,12 @@ public class CSVImporter
                 for (Header header : headerset)
                 {
                     if (header.type.equals(type))
-                        return header;                    
+                        return header;
                 }
             }
             return null;
         }
-               
+
         public String toString()
         {
             return Arrays.toString(this.get());
@@ -459,7 +453,7 @@ public class CSVImporter
     private char delimiter = ';';
     private Charset encoding = Charset.defaultCharset();
     private int skipLines = 0;
-    private boolean isFirstLineHeader = true;
+    private Header header = new Header (Header.Type.DEFAULT, "<none>");
 
     private Column[] columns;
     private List<String[]> values;
@@ -470,9 +464,9 @@ public class CSVImporter
         this.inputFile = file;
 
         this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
-                        new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
+                        new CSVPortfolioTransactionExtractor(client), new CSVDibaAccountTransactionExtractor(client), new CSVSecurityExtractor(client),
                         new CSVSecurityPriceExtractor(client)));
-        this.currentExtractor = extractors.get(0);
+        this.setExtractor(extractors.get(0));
     }
 
     public Client getClient()
@@ -493,6 +487,8 @@ public class CSVImporter
     public void setExtractor(CSVExtractor extractor)
     {
         this.currentExtractor = extractor;
+        this.skipLines = extractor.getDefaultSkipLines();
+        this.setEncoding(Charset.forName(extractor.getDefaultEncoding()));
     }
 
     public CSVExtractor getExtractor()
@@ -515,14 +511,29 @@ public class CSVImporter
         this.encoding = encoding;
     }
 
+    public Charset getEncoding()
+    {
+        return this.encoding;
+    }
+
     public void setSkipLines(int skipLines)
     {
         this.skipLines = skipLines;
     }
 
-    public void setFirstLineHeader(boolean isFirstLineHeader)
+    public int getSkipLines()
     {
-        this.isFirstLineHeader = isFirstLineHeader;
+        return this.skipLines;
+    }
+
+    public void setHeader(Header header)
+    {
+        this.header = header;
+    }
+
+    public Header getHeader()
+    {
+        return this.header;
     }
 
     public List<String[]> getRawValues()
@@ -537,10 +548,8 @@ public class CSVImporter
 
     public void processFile() throws IOException
     {
-        FileInputStream stream = null;
-        try
+        try (FileInputStream stream = new FileInputStream(inputFile))
         {
-            stream = new FileInputStream(inputFile);
             Reader reader = new InputStreamReader(stream, encoding);
 
             CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
@@ -554,9 +563,16 @@ public class CSVImporter
             List<String[]> input = new ArrayList<>();
             String[] header = null;
             String[] line = parser.getLine();
-            if (isFirstLineHeader)
+            if (this.header.getHeaderType().equals(Header.Type.FIRST))
             {
                 header = line;
+            }
+            else if (this.header.getHeaderType().equals(Header.Type.DEFAULT))
+            {
+                header = this.currentExtractor.getDefaultHeader();
+                // Backup, if no default header defined, but selected return same as first
+                if (header == null)
+                    header = line;
             }
             else
             {
@@ -576,18 +592,6 @@ public class CSVImporter
             this.values = input;
 
             mapToImportDefinition();
-        }
-        finally
-        {
-            if (stream != null)
-            {
-                try
-                {
-                    stream.close();
-                }
-                catch (IOException ignore)
-                {}
-            }
         }
     }
 
@@ -623,7 +627,7 @@ public class CSVImporter
                     }
                     else if (field instanceof EnumField<?>)
                     {
-                        column.setFormat(new FieldFormat(null, ((EnumField<?>) field).createFormat()));
+                        column.setFormat(new FieldFormat(null, ((EnumField<?>) field).createFormat(currentExtractor.getDefaultEnum(((EnumField) field).getEnumType()))));
                     }
 
                     iter.remove();
@@ -641,7 +645,7 @@ public class CSVImporter
             if (column.getField() != null)
                 field2column.put(column.getField().name, column);
 
-        int startingLineNo = skipLines + (isFirstLineHeader ? 1 : 0);
+        int startingLineNo = skipLines + (header.equals(Header.Type.FIRST) ? 1 : 0);
         return currentExtractor.extract(startingLineNo, values, field2column, errors);
     }
 
@@ -657,7 +661,10 @@ public class CSVImporter
         int index = column.getColumnIndex();
         for (String[] rawValues : values)
         {
-            String value = rawValues[index];
+            String value = null; 
+            // check if Array of Strings has sufficient amount of elemets
+            if (rawValues.length > index)
+                value = rawValues[index];
             // check if value is set and is not empty (ignore whitespace)
             if ((value != null) && (!value.trim().isEmpty()))
                 return value;

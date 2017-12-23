@@ -14,14 +14,14 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
-public class DABPDFExctractor extends AbstractPDFExtractor
+public class DABPDFExtractor extends AbstractPDFExtractor
 {
-    public DABPDFExctractor(Client client) throws IOException
+    public DABPDFExtractor(Client client) throws IOException
     {
         super(client);
 
-        addBankIdentifier("DAB"); //$NON-NLS-1$
-        addBankIdentifier("BNP Paribas"); //$NON-NLS-1$
+        addBankIdentifier("DAB Bank"); //$NON-NLS-1$
+        addBankIdentifier("BNP Paribas S.A. Niederlassung Deutschland"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();

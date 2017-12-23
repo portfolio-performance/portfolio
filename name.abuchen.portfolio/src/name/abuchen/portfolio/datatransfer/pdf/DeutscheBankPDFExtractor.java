@@ -14,9 +14,9 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 
-public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
+public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 {
-    public DeutscheBankPDFExctractor(Client client) throws IOException
+    public DeutscheBankPDFExtractor(Client client) throws IOException
     {
         super(client);
 

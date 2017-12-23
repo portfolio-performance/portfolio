@@ -46,6 +46,7 @@ public class Messages extends NLS
     public static String CSVColumn_TransactionCurrency;
     public static String CSVColumn_Transferals;
     public static String CSVDefAccountTransactions;
+    public static String CSVDefDibaAccountTransactions;
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
@@ -121,6 +122,7 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;

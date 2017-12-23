@@ -24,6 +24,12 @@ public class InvestmentPlan implements Named, Adaptable
     private Portfolio portfolio;
     private Account account;
 
+    /**
+     * Indicates whether the transactions of this investment plan are
+     * automatically generated after opening the file (and updating the quotes).
+     */
+    private boolean autoGenerate = false;
+
     private LocalDate start;
     private int interval = 1;
 
@@ -94,6 +100,16 @@ public class InvestmentPlan implements Named, Adaptable
     public void setAccount(Account account)
     {
         this.account = account;
+    }
+    
+    public boolean isAutoGenerate()
+    {
+        return autoGenerate;
+    }
+
+    public void setAutoGenerate(boolean autoGenerate)
+    {
+        this.autoGenerate = autoGenerate;
     }
 
     public LocalDate getStart()

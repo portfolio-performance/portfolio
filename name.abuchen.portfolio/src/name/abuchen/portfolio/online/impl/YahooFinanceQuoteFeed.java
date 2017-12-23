@@ -116,7 +116,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (time.isPresent())
             {
                 long epoch = Long.parseLong(time.get());
-                price.setTime(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
+                price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
 
             Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
@@ -139,7 +139,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             if (volume.isPresent())
                 price.setVolume(asNumber(volume.get()));
             
-            if (price.getTime() == null || price.getValue() <= 0)
+            if (price.getDate() == null || price.getValue() <= 0)
             {
                 errors.add(new IOException(body));
                 return false;
@@ -197,7 +197,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            return lastHistoricalQuote.getTime();
+            return lastHistoricalQuote.getDate();
         }
         else
         {
@@ -335,6 +335,25 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 if (values.length != 7)
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
+                // first check if all values except the date are not "null"
+                if (!"null".equals(values[0])) //$NON-NLS-1$
+                {
+                    boolean hasValue = false;
+                    for (int i = 1; i < values.length; i++)
+                    {
+                        if (!"null".equals(values[i])) //$NON-NLS-1$
+                        {
+                            hasValue = true;
+                            break;
+                        }
+                    }
+                    // skip this line if there are no values
+                    if (!hasValue)
+                    {
+                        continue;
+                    }
+                }
+
                 try
                 {
                     T price = klass.newInstance();
@@ -363,7 +382,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
         long v = asPrice(values[CSVColumn.Close]);
 
-        price.setTime(date);
+        price.setDate(date);
         price.setValue(v);
 
         if (price instanceof LatestSecurityPrice)

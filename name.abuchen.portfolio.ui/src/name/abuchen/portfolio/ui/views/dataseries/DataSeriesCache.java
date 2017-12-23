@@ -109,42 +109,42 @@ public class DataSeriesCache
             switch (series.getType())
             {
                 case CLIENT:
-                    return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
+                    return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings, series.isNormalized());
 
                 case SECURITY:
                     return PerformanceIndex.forInvestment(client, converter, (Security) series.getInstance(),
-                                    reportingPeriod, warnings);
+                                    reportingPeriod, warnings, series.isNormalized());
 
                 case SECURITY_BENCHMARK:
                     return PerformanceIndex.forSecurity(
                                     lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod),
-                                    (Security) series.getInstance());
+                                    (Security) series.getInstance(), series.isNormalized());
 
                 case PORTFOLIO:
                     return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
-                                    reportingPeriod, warnings);
+                                    reportingPeriod, warnings, series.isNormalized());
 
                 case PORTFOLIO_PLUS_ACCOUNT:
                     return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
-                                    reportingPeriod, warnings);
+                                    reportingPeriod, warnings, series.isNormalized());
 
                 case ACCOUNT:
                     Account account = (Account) series.getInstance();
-                    return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+                    return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings, series.isNormalized());
 
                 case CLASSIFICATION:
                     Classification classification = (Classification) series.getInstance();
                     return PerformanceIndex.forClassification(client, converter, classification, reportingPeriod,
-                                    warnings);
+                                    warnings, series.isNormalized());
 
                 case CONSUMER_PRICE_INDEX:
                     return PerformanceIndex.forConsumerPriceIndex(
-                                    lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod));
+                                    lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod), series.isNormalized());
 
                 case CLIENT_FILTER:
                     ClientFilterMenu.Item item = (ClientFilterMenu.Item) series.getInstance();
                     return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,
-                                    warnings);
+                                    warnings, series.isNormalized());
 
                 default:
                     throw new IllegalArgumentException(series.getType().name());
