@@ -329,7 +329,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate().minusDays((long) model().getSecurity().getDelayedDividend()));
 
         if (snapshot != null && model().getSecurity() != null)
         {
