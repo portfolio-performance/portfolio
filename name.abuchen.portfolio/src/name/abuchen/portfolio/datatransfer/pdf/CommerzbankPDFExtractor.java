@@ -11,9 +11,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 
 @SuppressWarnings("nls")
-public class CommerzbankPDFExctractor extends AbstractPDFExtractor
+public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 {
-    public CommerzbankPDFExctractor(Client client) throws IOException
+    public CommerzbankPDFExtractor(Client client) throws IOException
     {
         super(client);
 
