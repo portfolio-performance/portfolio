@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.util.Dates;
 
@@ -38,11 +38,11 @@ public class ReportingPeriodDialog extends Dialog
     private Spinner tradingDays;
 
     private Button radioFromXtoY;
-    private DateTimeDatePicker dateFrom;
-    private DateTimeDatePicker dateTo;
+    private DatePicker dateFrom;
+    private DatePicker dateTo;
 
     private Button radioSinceX;
-    private DateTimeDatePicker dateSince;
+    private DatePicker dateSince;
 
     private Button radioYearX;
     private Spinner year;
@@ -99,14 +99,14 @@ public class ReportingPeriodDialog extends Dialog
 
         radioFromXtoY = new Button(editArea, SWT.RADIO);
         radioFromXtoY.setText(Messages.LabelReportingDialogFrom);
-        dateFrom = new DateTimeDatePicker(editArea);
+        dateFrom = new DatePicker(editArea);
         Label lblTo = new Label(editArea, SWT.NONE);
         lblTo.setText(Messages.LabelReportingDialogUntil);
-        dateTo = new DateTimeDatePicker(editArea);
+        dateTo = new DatePicker(editArea);
 
         radioSinceX = new Button(editArea, SWT.RADIO);
         radioSinceX.setText(Messages.LabelReportingDialogSince);
-        dateSince = new DateTimeDatePicker(editArea);
+        dateSince = new DatePicker(editArea);
 
         radioYearX = new Button(editArea, SWT.RADIO);
         radioYearX.setText(Messages.LabelReportingDialogYear);

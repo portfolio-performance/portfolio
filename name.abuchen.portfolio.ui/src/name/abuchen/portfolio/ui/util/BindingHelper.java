@@ -297,7 +297,7 @@ public class BindingHelper
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
 
-        DateTimeDatePicker boxDate = new DateTimeDatePicker(editArea);
+        DatePicker boxDate = new DatePicker(editArea);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate.getControl());
 
         context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxDate.getControl()),
