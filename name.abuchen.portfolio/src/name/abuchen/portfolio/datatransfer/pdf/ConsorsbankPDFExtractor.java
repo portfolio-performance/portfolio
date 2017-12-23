@@ -18,9 +18,9 @@ import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 
-public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
+public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 {
-    public ConsorsbankPDFExctractor(Client client) throws IOException
+    public ConsorsbankPDFExtractor(Client client) throws IOException
     {
         super(client);
 

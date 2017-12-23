@@ -18,7 +18,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
-import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -43,7 +43,7 @@ public class ConsorsbankPDFExtractorPDFTest
     @Test
     public void testErtragsgutschrift6_USD_Freibetrag_ausgeschoepft() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift6_USD_Freibetrag_ausgeschoepft.pdf"));
@@ -77,7 +77,7 @@ public class ConsorsbankPDFExtractorPDFTest
     @Test
     public void testErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft() throws IOException
     {
-        ConsorsbankPDFExctractor extractor = new ConsorsbankPDFExctractor(new Client());
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
         List<Exception> errors = new ArrayList<Exception>();
         URL url = FileLocator.resolve(
                         getClass().getResource("ConsorsbankErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft.pdf"));
