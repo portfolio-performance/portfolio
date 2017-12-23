@@ -60,7 +60,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.DateUtils;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -384,7 +383,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             @Override
             public String getText(Object e)
             {
-                return DateUtils.formatTransactionDate((AccountTransaction) e);
+                return Values.DateTime.format(((AccountTransaction) e).getDateTime());
             }
 
             @Override

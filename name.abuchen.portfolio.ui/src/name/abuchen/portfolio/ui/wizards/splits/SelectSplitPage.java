@@ -26,7 +26,7 @@ import org.eclipse.swt.widgets.Spinner;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.DateTimeDatePicker;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -85,7 +85,7 @@ public class SelectSplitPage extends AbstractWizardPage
         Label labelExDate = new Label(container, SWT.NONE);
         labelExDate.setText(Messages.ColumnExDate);
 
-        DateTimeDatePicker boxExDate = new DateTimeDatePicker(container);
+        DatePicker boxExDate = new DatePicker(container);
 
         Label labelSplit = new Label(container, SWT.NONE);
         labelSplit.setText(Messages.SplitWizardLabelSplit);
