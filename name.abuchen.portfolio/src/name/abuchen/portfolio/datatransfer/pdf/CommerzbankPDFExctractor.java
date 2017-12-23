@@ -85,7 +85,7 @@ public class CommerzbankPDFExctractor extends AbstractPDFExtractor
                         .match(".*Zu I h r e n Gunsten.*")
                         .match("^.* (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<currency>\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(stripBlanks(v.get("date"))));
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(stripBlanks(v.get("amount"))));
                         })

@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -9,10 +9,10 @@ public class DividendInitialTransaction extends Transaction
 {
     private SecurityPosition position;
 
-    public DividendInitialTransaction(SecurityPosition position, LocalDate time)
+    public DividendInitialTransaction(SecurityPosition position, LocalDateTime time)
     {
         this.position = position;
-        this.setDate(time);
+        this.setDateTime(time);
         this.setSecurity(position.getSecurity());
         this.setMonetaryAmount(position.calculateValue());
     }

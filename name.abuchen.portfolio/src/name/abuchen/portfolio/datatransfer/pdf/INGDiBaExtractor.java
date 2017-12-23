@@ -118,7 +118,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
                         .wrap(t -> {
-                            if (t.getPortfolioTransaction().getDate() == null)
+                            if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
                             return new BuySellEntryItem(t);
                         }));
@@ -212,7 +212,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
                         .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
@@ -251,7 +251,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
                         .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
@@ -293,7 +293,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Ex-Tag (?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
                         .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //

@@ -2,7 +2,6 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.junit.Assert.assertThat;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.ArrayList;
@@ -37,7 +36,7 @@ public class IRRCalculationTest
                         Values.Amount.factorize(10), 0));
 
         DividendTransaction t = new DividendTransaction();
-        t.setDate(LocalDate.parse("2016-06-01"));
+        t.setDateTime(LocalDateTime.parse("2016-06-01T00:00"));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
         t.setShares(Values.Share.factorize(10));

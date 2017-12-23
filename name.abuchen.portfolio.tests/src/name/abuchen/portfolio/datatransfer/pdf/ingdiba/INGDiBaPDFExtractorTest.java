@@ -6,7 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -61,7 +61,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(533.39)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-17")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-17T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(14)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0))));
@@ -93,7 +93,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(726.28)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-06-11")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-06-11T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(0))));
@@ -125,7 +125,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1027.40)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-11-06")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-11-06T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(40)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", 2_50L + 9_90L + 3_00L)));
@@ -157,7 +157,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-15")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.19591)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 86L)));
     }
@@ -188,7 +188,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-15")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3.67647)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0L)));
     }
@@ -219,7 +219,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-12-15")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.53245)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0L)));
     }
@@ -250,7 +250,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(5009.71)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2012-03-20")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-03-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(12.49))));
@@ -282,7 +282,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(75.00)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2012-02-01")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2012-02-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(6.41234)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0L)));
     }
@@ -313,7 +313,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1887.64)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-05-07")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-05-07T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(31)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
     }
@@ -344,7 +344,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(568.41)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-12-22")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-12-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(30)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 19_32)));
@@ -376,7 +376,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(3421.66)));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-06-21")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-06-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 9_90L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX), is(Money.of("EUR", 0)));
@@ -408,7 +408,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(6.70)));
-        assertThat(t.getDate(), is(LocalDate.parse("2015-09-15")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2015-09-15T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(18)));
     }
 
@@ -438,7 +438,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(72.50)));
-        assertThat(t.getDate(), is(LocalDate.parse("2015-12-15")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2015-12-15T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(0)));
     }
 
@@ -468,7 +468,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(101.32)));
-        assertThat(t.getDate(), is(LocalDate.parse("2016-10-17")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-10-17T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(1112.0958)));
 
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(116.84))));
@@ -499,7 +499,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(44.01)));
-        assertThat(t.getDate(), is(LocalDate.parse("2016-11-29")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-11-29T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(66)));
 
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50.24 + 8.87))));
@@ -530,7 +530,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(234.92)));
-        assertThat(t.getDate(), is(LocalDate.parse("2016-12-15")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-12-15T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(694)));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(65.1 + 3.58))));
@@ -561,7 +561,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(58.19)));
-        assertThat(t.getDate(), is(LocalDate.parse("2017-03-20")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2017-03-20T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(35)));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(31.34))));
@@ -593,7 +593,7 @@ public class INGDiBaPDFExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
 
         assertThat(t.getAmount(), is(Values.Amount.factorize(468.04)));
-        assertThat(t.getDate(), is(LocalDate.parse("2016-05-12")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2016-05-12T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(500)));
 
         assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(650.00))));

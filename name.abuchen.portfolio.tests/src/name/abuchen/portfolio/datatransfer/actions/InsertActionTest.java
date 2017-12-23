@@ -117,11 +117,10 @@ public class InsertActionTest
         assertThat(properties, hasItem("currencyCode"));
         assertThat(properties, hasItem("amount"));
         assertThat(properties, hasItem("shares"));
-        assertThat(properties, hasItem("date"));
         assertThat(properties, hasItem("dateTime"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
 
-        assertThat(properties.size(), is(9));
+        assertThat(properties.size(), is(8));
     }
 }

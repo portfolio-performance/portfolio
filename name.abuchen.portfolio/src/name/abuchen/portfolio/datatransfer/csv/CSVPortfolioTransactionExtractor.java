@@ -188,7 +188,7 @@ import name.abuchen.portfolio.money.Money;
 
         t.setType(type);
         t.setSecurity(security);
-        t.setDate(date);
+        t.setDateTime(date);
         t.setAmount(Math.abs(amount.getAmount()));
         t.setCurrencyCode(amount.getCurrencyCode());
         t.setShares(shares);

@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -275,7 +276,7 @@ public class PerformanceIndex
      */
     public long[] calculateAbsoluteInvestedCapital()
     {
-        ToLongBiFunction<Money, LocalDate> convertIfNecessary = (amount, date) -> {
+        ToLongBiFunction<Money, LocalDateTime> convertIfNecessary = (amount, date) -> {
             if (amount.getCurrencyCode().equals(getCurrencyConverter().getTermCurrency()))
                 return amount.getAmount();
             else
@@ -284,18 +285,20 @@ public class PerformanceIndex
 
         long startValue = 0;
         Interval interval = getActualInterval();
+        
+        LocalDateTime intervalStart = interval.getStart().atStartOfDay();
 
         for (Account account : getClient().getAccounts())
             startValue += account.getTransactions() //
                             .stream() //
                             .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT
                                             || t.getType() == AccountTransaction.Type.REMOVAL)
-                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == AccountTransaction.Type.DEPOSIT)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else if (t.getType() == AccountTransaction.Type.REMOVAL)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else
                                     return 0;
                             }).sum();
@@ -305,12 +308,12 @@ public class PerformanceIndex
                             .stream() //
                             .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                             || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else
                                     return 0;
                             }).sum();

@@ -289,7 +289,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // FIXME should be fee (not tax) -> change once dividend
                         // transactions support fees
@@ -376,7 +376,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Kassatag: (?<date>\\d+.\\d+.\\d{4}+).*")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
                         .match("steuerlicher Anschaffungswert: (?<amount>[\\d+,.-]*) (?<currency>\\w{3}+) *")

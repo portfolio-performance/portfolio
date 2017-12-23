@@ -226,7 +226,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Wert *Konto-Nr. *Betrag *zu *Ihren *Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -236,7 +236,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+) ([0-9]*) \\w{3}+/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
@@ -308,7 +308,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Wert\\s*Konto-Nr.\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*) (?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -319,7 +319,7 @@ public class DABPDFExctractor extends AbstractPDFExtractor
                         .find("Wert\\s*Konto-Nr.\\s*Devisenkurs\\s*Betrag\\s*zu\\s*Ihren\\s*Gunsten")
                         .match("^(?<date>\\d+.\\d+.\\d{4}+)\\s*([0-9]*)\\s*(\\w{3}+)\\/(?<forign>\\w{3}+)\\s*(?<rate>[\\d.]+(,\\d+)?)\\s*(?<currency>\\w{3}+)\\s*(?<amount>[\\d.]+,\\d+)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

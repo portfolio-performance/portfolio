@@ -218,7 +218,7 @@ public class SecurityPositionTest
 
         PortfolioTransaction t = new PortfolioTransaction();
         t.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-        t.setDate(LocalDate.parse("2017-01-25"));
+        t.setDateTime(LocalDateTime.parse("2017-01-25T00:00"));
         t.setShares(Values.Share.factorize(13));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9659.24)));
@@ -273,7 +273,7 @@ public class SecurityPositionTest
 
         PortfolioTransaction inbound_delivery = new PortfolioTransaction();
         inbound_delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-        inbound_delivery.setDate(LocalDate.parse("2016-01-01"));
+        inbound_delivery.setDateTime(LocalDateTime.parse("2016-01-01T00:00"));
         inbound_delivery.setSecurity(security);
         inbound_delivery.setMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(27409.55)));
         inbound_delivery.setShares(Values.Share.factorize(2415.794));

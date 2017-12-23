@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,8 +40,8 @@ public class GroupEarningsByAccount
     public GroupEarningsByAccount(ClientPerformanceSnapshot snapshot)
     {
         Client client = snapshot.getClient();
-        LocalDate startDate = snapshot.getStartClientSnapshot().getTime();
-        LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
+        LocalDateTime startDate = snapshot.getStartClientSnapshot().getTime().atTime(LocalTime.MAX);
+        LocalDateTime endDate = snapshot.getEndClientSnapshot().getTime().atTime(LocalTime.MAX);
 
         for (Account account : client.getAccounts())
         {
@@ -48,7 +49,7 @@ public class GroupEarningsByAccount
 
             for (AccountTransaction t : account.getTransactions())
             {
-                if (t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate))
+                if (t.getDateTime().isAfter(startDate) && !t.getDateTime().isAfter(endDate))
                 {
                     switch (t.getType())
                     {

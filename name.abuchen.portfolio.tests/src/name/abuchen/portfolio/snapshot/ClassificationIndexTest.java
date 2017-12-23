@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -176,7 +177,7 @@ public class ClassificationIndexTest
 
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
-        t.setDate(LocalDate.parse("2016-06-01"));
+        t.setDateTime(LocalDateTime.parse("2016-06-01T00:00"));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
         t.setShares(Values.Share.factorize(10));
@@ -187,7 +188,7 @@ public class ClassificationIndexTest
 
         BuySellEntry buy = new BuySellEntry(portfolio, account);
         buy.setType(PortfolioTransaction.Type.BUY);
-        buy.setDate(LocalDate.parse("2015-12-31"));
+        buy.setDate(LocalDateTime.parse("2015-12-31T00:00"));
         buy.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1000)));
         buy.setShares(Values.Share.factorize(10));
         buy.setSecurity(security);
@@ -195,7 +196,7 @@ public class ClassificationIndexTest
 
         BuySellEntry sell = new BuySellEntry(portfolio, account);
         sell.setType(PortfolioTransaction.Type.SELL);
-        sell.setDate(LocalDate.parse("2016-12-31"));
+        sell.setDate(LocalDateTime.parse("2016-12-31T00:00"));
         sell.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1070)));
         sell.setShares(Values.Share.factorize(10));
         sell.setSecurity(security);

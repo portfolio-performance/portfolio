@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -155,13 +156,13 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         // check for additional transactions
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.0 * weight)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.0 * weight)))))));
@@ -195,22 +196,22 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         // check for additional transactions
 
         assertThat(txa1, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.FEES)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.0)))))));
 
         assertThat(txa1, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.FEES_REFUND)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.0)))))));
 
         assertThat(txa1, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-11"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-11T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.0)))))));
 
         assertThat(txa1, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-12"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-12T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.0)))))));
 
@@ -238,22 +239,22 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         // check for additional transactions
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.FEES)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.FEES_REFUND)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.5)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.5)))))));
     }
@@ -283,12 +284,12 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         // check for additional transactions
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5)))))));
     }
@@ -314,22 +315,22 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
         assertThat(balance.getAccounts().iterator().next().getFunds(), is(Money.of(CurrencyUnit.EUR, 0)));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-09"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-09T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.0)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-10"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-10T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.0)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-11"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-11T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.DEPOSIT)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(25.0)))))));
 
         assertThat(txa, hasItem(allOf( //
-                        hasProperty("date", is(LocalDate.parse("2017-01-12"))), //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2017-01-12T00:00"))), //
                         hasProperty("type", is(AccountTransaction.Type.REMOVAL)), //
                         hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.0)))))));
 

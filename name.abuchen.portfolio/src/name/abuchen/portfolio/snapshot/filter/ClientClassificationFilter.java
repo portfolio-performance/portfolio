@@ -224,7 +224,7 @@ public class ClientClassificationFilter implements ClientFilter
         if (securityAmount - commonAmount > 0)
         {
             PortfolioTransaction tp = new PortfolioTransaction();
-            tp.setDate(t.getDateTime());
+            tp.setDateTime(t.getDateTime());
             tp.setCurrencyCode(t.getCurrencyCode());
             tp.setSecurity(t.getSecurity());
             tp.setShares(value(t.getShares(), securityWeight - commonWeight));
@@ -244,7 +244,7 @@ public class ClientClassificationFilter implements ClientFilter
                     PortfolioTransaction.Type targetType, int weight)
     {
         PortfolioTransaction copy = new PortfolioTransaction();
-        copy.setDate(t.getDateTime());
+        copy.setDateTime(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
         copy.setShares(value(t.getShares(), weight));

@@ -153,7 +153,7 @@ public class SBrokerPDFExtractor extends AbstractPDFExtractor
                         .find("Wert Konto-Nr. Betrag zu Ihren Gunsten")
                         .match("(?<date>\\d+.\\d+.\\d{4}) \\d{2}/\\d{4}/\\d{3} (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

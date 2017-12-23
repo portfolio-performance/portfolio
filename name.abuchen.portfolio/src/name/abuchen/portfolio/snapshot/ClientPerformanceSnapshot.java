@@ -410,8 +410,8 @@ public class ClientPerformanceSnapshot
     {
         this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
 
-        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDate()));
-        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDate()));
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTime()));
+        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTime()));
 
         mEarnings.add(earned);
 

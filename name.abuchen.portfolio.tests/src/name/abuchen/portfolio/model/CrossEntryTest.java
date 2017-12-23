@@ -75,7 +75,7 @@ public class CrossEntryTest
         assertThat(entry.getCrossTransaction(pa), is((Transaction) pt));
 
         // check cross editing
-        pa.setDate(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
+        pa.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
         entry.updateFrom(pa);
         assertThat(pt.getDateTime(), is(pa.getDateTime()));
 
@@ -125,7 +125,7 @@ public class CrossEntryTest
         entry.updateFrom(pA);
         assertThat(pB.getNote(), is(pA.getNote()));
 
-        pB.setDate(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
+        pB.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
         entry.updateFrom(pB);
         assertThat(pA.getDateTime(), is(pB.getDateTime()));
 
@@ -178,7 +178,7 @@ public class CrossEntryTest
         entry.updateFrom(pA);
         assertThat(pB.getShares(), is(2L));
 
-        pB.setDate(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
+        pB.setDateTime(LocalDateTime.of(2013, Month.MARCH, 16, 0, 0));
         entry.updateFrom(pB);
         assertThat(pA.getDateTime(), is(pB.getDateTime()));
 

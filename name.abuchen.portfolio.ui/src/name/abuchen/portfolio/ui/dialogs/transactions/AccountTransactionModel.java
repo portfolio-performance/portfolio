@@ -126,7 +126,7 @@ public class AccountTransactionModel extends AbstractModel
             account.addTransaction(t);
         }
 
-        t.setDate(date.atStartOfDay());
+        t.setDateTime(date.atStartOfDay());
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);

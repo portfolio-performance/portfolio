@@ -192,7 +192,7 @@ public class DeutscheBankPDFExctractor extends AbstractPDFExtractor
                         .section("date", "amount", "currency")
                         .match("Gutschrift mit Wert (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })

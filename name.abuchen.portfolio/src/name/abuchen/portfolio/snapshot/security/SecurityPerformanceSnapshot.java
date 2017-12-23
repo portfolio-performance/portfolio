@@ -89,7 +89,7 @@ public class SecurityPerformanceSnapshot
                 case DIVIDENDS:
                 case INTEREST:
                     DividendTransaction dt = new DividendTransaction();
-                    dt.setDate(t.getDateTime());
+                    dt.setDateTime(t.getDateTime());
                     dt.setSecurity(t.getSecurity());
                     dt.setAccount(account);
                     dt.setCurrencyCode(t.getCurrencyCode());
@@ -134,14 +134,14 @@ public class SecurityPerformanceSnapshot
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity())
-                            .addTransaction(new DividendInitialTransaction(position, period.getStartDate()));
+                            .addTransaction(new DividendInitialTransaction(position, period.getStartDate().atStartOfDay()));
         }
 
         snapshot = PortfolioSnapshot.create(portfolio, converter, period.getEndDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity())
-                            .addTransaction(new DividendFinalTransaction(position, period.getEndDate()));
+                            .addTransaction(new DividendFinalTransaction(position, period.getEndDate().atStartOfDay()));
         }
     }
 

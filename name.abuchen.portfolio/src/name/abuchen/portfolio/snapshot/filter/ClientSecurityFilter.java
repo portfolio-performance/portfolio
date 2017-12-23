@@ -140,7 +140,7 @@ public class ClientSecurityFilter implements ClientFilter
     private PortfolioTransaction convertToDelivery(PortfolioTransaction t, PortfolioTransaction.Type targetType)
     {
         PortfolioTransaction pseudo = new PortfolioTransaction();
-        pseudo.setDate(t.getDateTime());
+        pseudo.setDateTime(t.getDateTime());
         pseudo.setCurrencyCode(t.getCurrencyCode());
         pseudo.setSecurity(t.getSecurity());
         pseudo.setShares(t.getShares());

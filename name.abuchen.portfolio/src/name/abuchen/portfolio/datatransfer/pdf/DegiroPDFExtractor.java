@@ -49,7 +49,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .match("(?<date>\\d+-\\d+-\\d{4}) \\d+:\\d+ Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*")
                         .assign((t, v) -> {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                t.setDate(asDate(v.get("date")));
+                                t.setDateTime(asDate(v.get("date")));
                                 t.setAmount(asAmount(v.get("amount")));
                         })
                         .wrap(t -> new TransactionItem(t)));

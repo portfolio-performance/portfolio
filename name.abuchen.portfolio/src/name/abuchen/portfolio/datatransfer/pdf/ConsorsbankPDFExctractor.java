@@ -281,7 +281,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("currency", "amount").optional() //
                         .match("WERT \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")
@@ -424,7 +424,7 @@ public class ConsorsbankPDFExctractor extends AbstractPDFExtractor
                         // Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017
                         .section("date")
                         .match(" *Den Steuerausgleich buchen wir mit Wertstellung (?<date>\\d+.\\d+.\\d{4}) .*")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // Erstattung/Belastung (-) von Steuern
                         // Anteil                             100,00%

@@ -250,7 +250,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 {
                                     // create a long date from the year in the
                                     // context
-                                    t.setDate(asDate(date + context.get("year")));
+                                    t.setDateTime(asDate(date + context.get("year")));
                                 }
                                 t.setNote(v.get("text"));
                                 t.setAmount(asAmount(v.get("amount")));
@@ -281,7 +281,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                 {
                     // create a long date from the year in the
                     // context
-                    t.setDate(asDate(date + context.get("year")));
+                    t.setDateTime(asDate(date + context.get("year")));
                 }
                 t.setNote(v.get("text"));
                 t.setAmount(asAmount(v.get("amount")));
@@ -334,7 +334,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
     }
@@ -464,7 +464,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Valuta * : *(?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(t -> new TransactionItem(t)));
     }
@@ -551,7 +551,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         })
                         // Datum          : 16.03.2015
                         .section("date").match("Datum(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // Depoteingang                                       DEKAFONDS CF (DE0008474503)
                         .section("isin", "name")
@@ -854,7 +854,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 // create a long date from the year in the
                                 // context
-                                t.setDate(asDate(date + context.get("year")));
+                                t.setDateTime(asDate(date + context.get("year")));
                             }
                             t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -907,7 +907,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 // create a long date from the year in the
                                 // context
-                                t.setDate(asDate(date + context.get("year")));
+                                t.setDateTime(asDate(date + context.get("year")));
                             }
                             t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
@@ -957,7 +957,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
 
                         })
 

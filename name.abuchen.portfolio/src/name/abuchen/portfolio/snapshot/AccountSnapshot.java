@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.snapshot;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -17,10 +19,12 @@ public class AccountSnapshot
     public static AccountSnapshot create(Account account, CurrencyConverter converter, LocalDate date)
     {
         long funds = 0;
+        
+        LocalDateTime reference = date.atTime(LocalTime.MAX);
 
         for (AccountTransaction t : account.getTransactions())
         {
-            if (!t.getDate().isAfter(date))
+            if (t.getDateTime().isBefore(reference))
             {
                 if (t.getType().isDebit())
                     funds -= t.getAmount();

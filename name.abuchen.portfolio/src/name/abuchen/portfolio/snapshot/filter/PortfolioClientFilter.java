@@ -237,7 +237,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         PortfolioTransaction clone = new PortfolioTransaction();
         clone.setType(type);
-        clone.setDate(t.getDateTime());
+        clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(t.getSecurity());
         clone.setAmount(t.getAmount());
@@ -250,7 +250,7 @@ public class PortfolioClientFilter implements ClientFilter
     {
         AccountTransaction clone = new AccountTransaction();
         clone.setType(type);
-        clone.setDate(t.getDateTime());
+        clone.setDateTime(t.getDateTime());
         clone.setCurrencyCode(t.getCurrencyCode());
         clone.setSecurity(null); // no security for REMOVAL or DEPOSIT
         clone.setAmount(t.getAmount());

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -105,7 +104,7 @@ public abstract class Transaction implements Annotated
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t1.getDate().compareTo(t2.getDate());
+            return t1.getDateTime().compareTo(t2.getDateTime());
         }
     }
 
@@ -137,37 +136,17 @@ public abstract class Transaction implements Annotated
         this.shares = shares;
         this.note = note;
     }
-
-    @Deprecated
-    public LocalDate getDate()
-    {
-        return date == null ? null : date.toLocalDate();
-    }
     
     public LocalDateTime getDateTime()
     {
         return date;
     }
-
-    @Deprecated
-    public void setDate(LocalDate date)
-    {
-        this.date = date == null ? null : date.atStartOfDay();
-    }
     
-    public void setDate(LocalDateTime date)
-    {
-        this.date = date;
-    }
-    
-    /**
-     * Convenience method to support java.beans 
-     */
     public void setDateTime(LocalDateTime date)
     {
         this.date = date;
     }
-
+    
     public String getCurrencyCode()
     {
         return currencyCode;
