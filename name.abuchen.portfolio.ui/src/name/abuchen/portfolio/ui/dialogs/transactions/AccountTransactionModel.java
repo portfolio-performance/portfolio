@@ -41,7 +41,7 @@ public class AccountTransactionModel extends AbstractModel
     private Account sourceAccount;
     private AccountTransaction sourceTransaction;
 
-    private Security security = EMPTY_SECURITY;
+    private Security security;
     private Account account;
     private LocalDate date = LocalDate.now();
     private long shares;

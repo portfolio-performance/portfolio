@@ -17,7 +17,8 @@ Schlusstag 06.03.2017 Auftraggeber Max Mustermann
 Ausführungskurs 47,799 EUR Auftragserteilung sonstige
 Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
 Kurswert 1.400,00- EUR
-Ausmachender Betrag 1.400,00- EUR
+Provision 10,00- EUR
+Ausmachender Betrag 1.410,00- EUR
 Den Gegenwert buchen wir mit Valuta 08.03.2017 zu Lasten des Kontos 1234567890
 (IBAN DE76 1234 0000 1234 1234 01), BLZ 12030000 (BIC BYLADEM1001).
 Die Wertpapiere schreiben wir Ihrem Depotkonto gut.

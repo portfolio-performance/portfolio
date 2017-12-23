@@ -629,6 +629,7 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(7.52)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(175)));
     }
+    
     @Test
     public void testGutschrift4() throws IOException
     {
@@ -638,7 +639,7 @@ public class ComdirectPDFExtractorTest
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift4.txt"),
                         errors);
-System.out.println(results);
+
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
@@ -662,6 +663,39 @@ System.out.println(results);
         assertThat(transaction.getShares(), is(Values.Share.factorize(42)));
     }
     
+    @Test
+    public void testGutschrift5() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectGutschrift5.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("US0378331005"));
+        assertThat(security.getName(), is("A p  pl e  I  nc  ."));
+        assertThat(security.getWkn(), is("865985"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getDate(), is(LocalDate.parse("2017-11-20")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.5)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(9.914)));
+    }
+
     @Test
     public void testDividende3() throws IOException
     {

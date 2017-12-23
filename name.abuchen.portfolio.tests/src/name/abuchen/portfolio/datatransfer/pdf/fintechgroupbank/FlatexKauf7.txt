@@ -1,0 +1,313 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0303502000000844161980
+Herrn
+xxxx xxxx
+xxxxx
+xxxx xxxx
+SCHWEIZ
+          Frankfurt, den 02.11.2017
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: xxxxxxxxx
+Depotinhaber:     xxxx xxxxx
+Nr.98599748/1  Kauf                CITI.GL.M. CALL19 MGA (DE000CQ0U7Z4/CQ0U7Z)
+Ordervolumen  : 4.550,00 St.            Handelsplatz  :              Citigroup
+davon ausgef. : 4.550,00 St.            Schlusstag    :  01.11.2017, 14:41 Uhr
+Kurs          : 0,6600 EUR              Kurswert      :           3.003,00 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.008,90 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301138113.
+______________________________________________________________________________
+                                                                    Seite 1/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980 0113303500000101
+Nr.98599996/1  Kauf                CITI.GL.M. CALL19 NVD (DE000CY1SEV5/CY1SEV)
+Ordervolumen  : 745,00 St.              Handelsplatz  :              Citigroup
+davon ausgef. : 745,00 St.              Schlusstag    :  01.11.2017, 14:46 Uhr
+Kurs          : 4,0200 EUR              Kurswert      :           2.994,90 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.000,80 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301140879.
+______________________________________________________________________________
+                                                                    Seite 2/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98600023/1  Kauf                CITI.GL.M. CALL19 AZ5 (DE000CY49224/CY4922)
+Ordervolumen  : 4.100,00 St.            Handelsplatz  :              Citigroup
+davon ausgef. : 4.100,00 St.            Schlusstag    :  01.11.2017, 14:46 Uhr
+Kurs          : 0,7400 EUR              Kurswert      :           3.034,00 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.039,90 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301141388.
+______________________________________________________________________________
+                                                                    Seite 3/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98600115/1  Kauf                CITI.GL.M. CALL19 XIX (DE000CQ0J2E5/CQ0J2E)
+Ordervolumen  : 2.870,00 St.            Handelsplatz  :              Citigroup
+davon ausgef. : 2.870,00 St.            Schlusstag    :  01.11.2017, 14:48 Uhr
+Kurs          : 1,0500 EUR              Kurswert      :           3.013,50 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.019,40 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301141655.
+______________________________________________________________________________
+                                                                    Seite 4/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98600248/1  Kauf               CITI.GL.M. CALL19 IUI1 (DE000CQ0L8X8/CQ0L8X)
+Ordervolumen  : 4.300,00 St.            Handelsplatz  :              Citigroup
+davon ausgef. : 4.300,00 St.            Schlusstag    :  01.11.2017, 14:51 Uhr
+Kurs          : 0,7000 EUR              Kurswert      :           3.010,00 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.015,90 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301143554.
+______________________________________________________________________________
+                                                                    Seite 5/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98600336/1  Kauf                  HSBC T+B CALL19 HDI (DE000TD53H52/TD53H5)
+Ordervolumen  : 2.050,00 St.            Handelsplatz  :                   HSBC
+davon ausgef. : 2.050,00 St.            Schlusstag    :  01.11.2017, 14:53 Uhr
+Kurs          : 1,4700 EUR              Kurswert      :           3.013,50 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.019,40 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301143813.
+______________________________________________________________________________
+                                                                    Seite 6/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98601220/1  Kauf                 DEUT.BANK CALL19 MSF (DE000DM6DCB5/DM6DCB)
+Ordervolumen  : 2.470,00 St.            Handelsplatz  :          Deutsche Bank
+davon ausgef. : 2.470,00 St.            Schlusstag    :  01.11.2017, 15:09 Uhr
+Kurs          : 1,2100 EUR              Kurswert      :           2.988,70 EUR
+Devisenkurs   :                         Provision     :               3,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -2.992,60 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301160198.
+______________________________________________________________________________
+                                                                    Seite 7/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98602214/1  Kauf                CITI.GL.M. CALL19 MCP (DE000CQ0LAL1/CQ0LAL)
+Ordervolumen  : 2.280,00 St.            Handelsplatz  :              Citigroup
+davon ausgef. : 2.280,00 St.            Schlusstag    :  01.11.2017, 15:30 Uhr
+Kurs          : 1,3200 EUR              Kurswert      :           3.009,60 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.015,50 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301175761.
+______________________________________________________________________________
+                                                                    Seite 8/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98602241/1  Kauf                 HSBC T+B CALL19 FB2A (DE000TD53FP5/TD53FP)
+Ordervolumen  : 1.145,00 St.            Handelsplatz  :                   HSBC
+davon ausgef. : 1.145,00 St.            Schlusstag    :  01.11.2017, 15:31 Uhr
+Kurs          : 2,6300 EUR              Kurswert      :           3.011,35 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -3.017,25 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301175892.
+______________________________________________________________________________
+                                                                    Seite 9/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980
+Nr.98603325/1  Kauf                  HSBC T+B CALL19 TL0 (DE000TD752U9/TD752U)
+Ordervolumen  : 1.247,00 St.            Handelsplatz  :                   HSBC
+davon ausgef. : 1.247,00 St.            Schlusstag    :  01.11.2017, 15:52 Uhr
+Kurs          : 4,3400 EUR              Kurswert      :           5.411,98 EUR
+Devisenkurs   :                         Provision     :               5,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                        grundlage     :               0,00 EUR
+Valuta        : 03.11.2017            **Einbeh. Steuer:               0,00 EUR
+                                        Endbetrag     :          -5.417,88 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                        Tradinggebühr :               0,00 EUR
+                                        Regulierung   :               0,00 EUR
+                                        Schlussnoten  :               0,00 EUR
+                                        Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  :               0,00 EUR
+                                 Solidaritätszuschlag :               0,00 EUR
+                                 Kirchensteuer        :               0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1301188569.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 1010542052
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                   Seite 10/10
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000844161980

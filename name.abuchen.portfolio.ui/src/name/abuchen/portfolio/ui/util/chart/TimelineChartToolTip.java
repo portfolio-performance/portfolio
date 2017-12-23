@@ -1,17 +1,21 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -32,7 +36,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
-    
+
     private Set<String> excludeFromTooltip = new HashSet<>();
 
     public TimelineChartToolTip(Chart chart)
@@ -59,13 +63,20 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     {
         this.valueFormat = valueFormat;
     }
-    
+
     /**
      * Add a series id which is not displayed in the tool tip.
      */
     public void addSeriesExclude(String id)
     {
         this.excludeFromTooltip.add(id);
+    }
+
+    private List<BiConsumer<Composite, Object>> extraInfoProvider = new ArrayList<>();
+
+    public void addExtraInfo(BiConsumer<Composite, Object> extraInfoProvider)
+    {
+        this.extraInfoProvider.add(extraInfoProvider);
     }
 
     @Override
@@ -135,19 +146,25 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     {
         final Composite container = new Composite(parent, SWT.NONE);
         container.setBackgroundMode(SWT.INHERIT_FORCE);
-        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
+        RowLayout layout = new RowLayout(SWT.VERTICAL);
+        layout.center = true;
+        container.setLayout(layout);
 
         Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
         container.setForeground(foregroundColor);
         container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
 
-        Label left = new Label(container, SWT.NONE);
+        Composite data = new Composite(container, SWT.NONE);
+        GridLayoutFactory.swtDefaults().numColumns(2).applyTo(data);
+
+        Label left = new Label(data, SWT.NONE);
         left.setForeground(foregroundColor);
         left.setText(Messages.ColumnDate);
 
-        Label right = new Label(container, SWT.NONE);
+        Label right = new Label(data, SWT.NONE);
         right.setForeground(foregroundColor);
-        right.setText(categoryEnabled ? getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) getFocusedObject()]
+        right.setText(categoryEnabled
+                        ? getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) getFocusedObject()]
                         : String.format(dateFormat, getFocusedObject()));
 
         ISeries[] allSeries = getChart().getSeriesSet().getSeries();
@@ -158,7 +175,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         {
             if (excludeFromTooltip.contains(series.getId()))
                 continue;
-            
+
             double value;
 
             if (categoryEnabled)
@@ -176,20 +193,23 @@ public class TimelineChartToolTip extends AbstractChartToolTip
                 value = series.getYSeries()[line];
             }
 
-            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor() : ((IBarSeries) series)
-                            .getBarColor();
+            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor()
+                            : ((IBarSeries) series).getBarColor();
 
-            left = new Label(container, SWT.NONE);
+            left = new Label(data, SWT.NONE);
             left.setBackground(color);
             left.setForeground(Colors.getTextColor(color));
             left.setText(series.getId());
             GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
 
-            right = new Label(container, SWT.RIGHT);
+            right = new Label(data, SWT.RIGHT);
             right.setForeground(foregroundColor);
             right.setText(valueFormat.format(value));
             GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
         }
+
+        Object focus = getFocusedObject();
+        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
     }
 
 }

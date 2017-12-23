@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.util.RateLimitExceededException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -221,15 +222,23 @@ public final class UpdateQuotesJob extends AbstractClientJob
             @Override
             protected IStatus run(IProgressMonitor monitor)
             {
-                ArrayList<Exception> exceptions = new ArrayList<>();
+                try
+                {
+                    ArrayList<Exception> exceptions = new ArrayList<>();
 
-                if (feed.updateLatestQuotes(security, exceptions))
-                    dirtyable.markDirty();
+                    if (feed.updateLatestQuotes(security, exceptions))
+                        dirtyable.markDirty();
 
-                if (!exceptions.isEmpty())
-                    PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
+                    if (!exceptions.isEmpty())
+                        PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
 
-                return Status.OK_STATUS;
+                    return Status.OK_STATUS;
+                }
+                catch (RateLimitExceededException e)
+                {
+                    schedule(2000);
+                    return Status.OK_STATUS;
+                }
             }
         };
     }
@@ -247,19 +256,27 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-                    if (feed == null)
+                    try
+                    {
+                        QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+                        if (feed == null)
+                            return Status.OK_STATUS;
+
+                        ArrayList<Exception> exceptions = new ArrayList<>();
+
+                        if (feed.updateHistoricalQuotes(security, exceptions))
+                            dirtyable.markDirty();
+
+                        if (!exceptions.isEmpty())
+                            PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
+
                         return Status.OK_STATUS;
-
-                    ArrayList<Exception> exceptions = new ArrayList<>();
-
-                    if (feed.updateHistoricalQuotes(security, exceptions))
-                        dirtyable.markDirty();
-
-                    if (!exceptions.isEmpty())
-                        PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
-
-                    return Status.OK_STATUS;
+                    }
+                    catch (RateLimitExceededException e)
+                    {
+                        schedule(2000);
+                        return Status.OK_STATUS;
+                    }
                 }
             };
 

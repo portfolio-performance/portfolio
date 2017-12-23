@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.AbstractFinanceView;
@@ -115,6 +117,7 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         addAttributeColumns();
+        addQuoteFeedColumns();
 
         support.createColumns();
 
@@ -266,7 +269,7 @@ public final class SecuritiesTable implements ModificationListener
             LatestSecurityPrice latest = (LatestSecurityPrice) price;
             if (latest.getPreviousClose() == LatestSecurityPrice.NOT_AVAILABLE)
                 return null;
-            
+
             return (latest.getValue() - latest.getPreviousClose()) / (double) latest.getPreviousClose();
         }));
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
@@ -446,6 +449,86 @@ public final class SecuritiesTable implements ModificationListener
                             column.getEditingSupport().addListener(this);
                             support.addColumn(column);
                         });
+    }
+
+    private void addQuoteFeedColumns()
+    {
+        Function<Object, String> quoteFeed = e -> {
+            String feedId = ((Security) e).getFeed();
+            if (feedId == null || feedId.isEmpty())
+                return null;
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
+            return feed != null ? feed.getName() : null;
+        };
+
+        Column column = new Column("qf-historic", Messages.ColumnQuoteFeedHistoric, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return quoteFeed.apply(e);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(quoteFeed::apply));
+        support.addColumn(column);
+
+        Function<Object, String> latestQuoteFeed = e -> {
+            Security security = (Security) e;
+            String feedId = security.getLatestFeed();
+            if (feedId == null || feedId.isEmpty())
+                return security.getFeed() != null ? Messages.EditWizardOptionSameAsHistoricalQuoteFeed : null;
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
+            return feed != null ? feed.getName() : null;
+        };
+
+        column = new Column("qf-latest", Messages.ColumnQuoteFeedLatest, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return latestQuoteFeed.apply(e);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(latestQuoteFeed::apply));
+        support.addColumn(column);
+
+        column = new Column("url-history", Messages.ColumnFeedURLHistoric, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Security security = (Security) e;
+                return security.getFeedURL();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "feedURL")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("url-latest", Messages.ColumnFeedURLLatest, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Security security = (Security) e;
+                return security.getLatestFeedURL();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "latestFeedURL")); //$NON-NLS-1$
+        support.addColumn(column);
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener)

@@ -123,6 +123,8 @@ public class Messages extends NLS
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
     public static String ColumnExDate;
+    public static String ColumnFeedURLHistoric;
+    public static String ColumnFeedURLLatest;
     public static String ColumnFees;
     public static String ColumnFees_Description;
     public static String ColumnFieldType;
@@ -177,6 +179,8 @@ public class Messages extends NLS
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;
     public static String ColumnQuoteChange_Option;
+    public static String ColumnQuoteFeedHistoric;
+    public static String ColumnQuoteFeedLatest;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnSecurity;
@@ -193,6 +197,7 @@ public class Messages extends NLS
     public static String ColumnSymbol;
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
+    public static String ColumnTaxes_Description;
     public static String ColumnTaxonomy;
     public static String ColumnTermCurrency;
     public static String ColumnTicker;
@@ -282,6 +287,7 @@ public class Messages extends NLS
     public static String GroupLabelAttributes;
     public static String GroupLabelDividends;
     public static String GroupLabelPerformance;
+    public static String GroupLabelQuoteFeed;
     public static String ImportWizardPasteSourceDescription;
     public static String ImportWizardPasteSourceExplanation;
     public static String ImportWizardPasteSourcePasteHere;
@@ -347,7 +353,10 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelChartDetailCompactView;
     public static String LabelChartDetailDividends;
+    public static String LabelChartDetailShowDataLabel;
+    public static String LabelChartDetailShowMarkerLines;
     public static String LabelChartDetailSMA50;
     public static String LabelChartDetailSMA200;
     public static String LabelChartDetailEvents;
@@ -356,6 +365,9 @@ public class Messages extends NLS
     public static String LabelChartDetailBollingerBands;
     public static String LabelChartDetailBollingerBandsLower;
     public static String LabelChartDetailBollingerBandsUpper;
+    public static String LabelChartDetailFIFOpurchase;
+    public static String LabelChartDetailFIFOpurchaseHoldingPeriod;
+    public static String LabelChartDetailPurchaseIndicator;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
@@ -457,6 +469,9 @@ public class Messages extends NLS
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelToday;
+    public static String LabelToolTipDividendDetails;
+    public static String LabelToolTipInvestmentDetails;
+    public static String LabelToolTipTransactionSummary;
     public static String LabelTotalSum;
     public static String LabelTotalValuePercent;
     public static String LabelTransactions;

@@ -1,0 +1,32 @@
+10919 Berlin
+Depotnummer 123456789
+Kundennummer 123456789
+Max Mustermann
+Auftragsnummer 123456789/123456789
+Herrn Datum 06.10.2017
+Max Mustermann Rechnungsnummer 123456789
+Muster Straße Umsatzsteuer-ID 123456789
+Muster Ort
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Auftrag vom 05.10.2017 00:05:54 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2,521 COMSTAGE-MSCI WORLD TRN U.ETF LU0392494562 (ETF110)
+INHABER-ANTEILE I O.N.
+Börse Außerbörslich (gemäß Weisung)
+Schlusstag 05.10.2017 Auftraggeber Max Mustermann
+Ausführungskurs 47,601 EUR Auftragserteilung sonstige
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 120,00- EUR
+Provision 1,50- EUR
+Transaktionsentgelt Börse 0,71- EUR
+Übertragungs-/Liefergebühr 0,20- EUR
+Ausmachender Betrag 130,41- EUR
+Den Gegenwert buchen wir mit Valuta 09.10.2017 zu Lasten des Kontos 123456789
+(IBAN DE10 123456789123456789123456789), BLZ 123456789 (BIC 123456789).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR. 2
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+123456789.123456789.123456789
