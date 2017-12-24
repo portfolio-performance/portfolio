@@ -19,7 +19,7 @@ import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.ComdirectPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.CommerzbankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.ConsorsbankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.DABPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DABPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DegiroPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.DkbPDFExtractor;
@@ -77,7 +77,7 @@ public final class ImportExtractedItemsWizard extends Wizard
         extractors.add(new ConsorsbankPDFExtractor(client));
         extractors.add(new DABPDFExtractor(client));
         extractors.add(new DegiroPDFExtractor(client));
-        extractors.add(new DeutscheBankPDFExctractor(client));
+        extractors.add(new DeutscheBankPDFExtractor(client));
         extractors.add(new DkbPDFExtractor(client));
         extractors.add(new FinTechGroupBankPDFExtractor(client));
         extractors.add(new INGDiBaExtractor(client));
