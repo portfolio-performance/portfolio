@@ -525,7 +525,7 @@ public class DABPDFExtractorTest
     @Test
     public void testProceeds1() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds1.txt"), errors);
@@ -556,7 +556,7 @@ public class DABPDFExtractorTest
     @Test
     public void testProceeds2() throws IOException
     {
-        DABPDFExctractor extractor = new DABPDFExctractor(new Client());
+        DABPDFExtractor extractor = new DABPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DABProceeds2.txt"), errors);
