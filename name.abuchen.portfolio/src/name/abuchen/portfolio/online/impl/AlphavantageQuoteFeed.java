@@ -102,6 +102,12 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     @Override
     public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
+        if (security.getTickerSymbol() == null)
+        {
+            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
+            return false;
+        }
+        
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
 
@@ -203,6 +209,12 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     private <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security,
                     OutputSize outputSize, List<Exception> errors)
     {
+        if (security.getTickerSymbol() == null)
+        {
+            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
+            return Collections.emptyList();
+        }
+        
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
 
