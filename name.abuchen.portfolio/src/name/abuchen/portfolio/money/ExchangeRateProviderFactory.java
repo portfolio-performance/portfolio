@@ -10,10 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.ServiceLoader;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.imageio.spi.ServiceRegistry;
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
@@ -148,7 +148,7 @@ public class ExchangeRateProviderFactory
     public ExchangeRateProviderFactory()
     {
         providers = new ArrayList<>();
-        Iterator<ExchangeRateProvider> registeredProvider = ServiceRegistry.lookupProviders(ExchangeRateProvider.class);
+        Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
         while (registeredProvider.hasNext())
         {
             ExchangeRateProvider provider = registeredProvider.next();

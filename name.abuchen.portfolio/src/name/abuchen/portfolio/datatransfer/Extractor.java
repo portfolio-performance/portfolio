@@ -20,6 +20,26 @@ import name.abuchen.portfolio.money.Money;
 
 public interface Extractor
 {
+    public static class InputFile
+    {
+        private File file;
+
+        public InputFile(File file)
+        {
+            this.file = file;
+        }
+
+        public File getFile()
+        {
+            return file;
+        }
+
+        public String getName()
+        {
+            return file.getName();
+        }
+    }
+    
     public abstract static class Item
     {
         public abstract Annotated getSubject();
@@ -29,6 +49,8 @@ public interface Extractor
         public abstract String getTypeInformation();
 
         public abstract LocalDate getDate();
+
+        public abstract String getNote();
 
         public Money getAmount()
         {
@@ -75,6 +97,11 @@ public interface Extractor
             return transaction;
         }
 
+        public Transaction getTransaction()
+        {
+            return transaction;
+        }
+
         @Override
         public String getTypeInformation()
         {
@@ -108,6 +135,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return transaction.getSecurity();
+        }
+
+        @Override
+        public String getNote()
+        {
+            return transaction.getNote();
         }
 
         @Override
@@ -168,6 +201,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getAccountTransaction().getNote();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(entry, context.getAccount(), context.getPortfolio());
@@ -214,6 +253,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return null;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
         }
 
         @Override
@@ -272,6 +317,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(entry, context.getPortfolio(), context.getSecondaryPortfolio());
@@ -312,6 +363,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return security.getNote();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security);
@@ -331,6 +388,6 @@ public interface Extractor
     /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<File> files, List<Exception> errors);
+    List<Item> extract(List<InputFile> files, List<Exception> errors);
 
 }

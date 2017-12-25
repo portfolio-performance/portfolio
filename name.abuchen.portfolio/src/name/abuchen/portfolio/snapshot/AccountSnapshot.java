@@ -29,9 +29,7 @@ public class AccountSnapshot
             }
         }
 
-        return new AccountSnapshot(
-                        account instanceof ReadOnlyAccount ? ((ReadOnlyAccount) account).getSource() : account, date,
-                        converter, Money.of(account.getCurrencyCode(), funds));
+        return new AccountSnapshot(account, date, converter, Money.of(account.getCurrencyCode(), funds));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -49,6 +47,11 @@ public class AccountSnapshot
         this.date = date;
         this.converter = converter;
         this.funds = funds;
+    }
+    
+    /* package */ Account unwrapAccount()
+    {
+        return account instanceof ReadOnlyAccount ? ((ReadOnlyAccount)account).getSource() : account;
     }
 
     public Account getAccount()

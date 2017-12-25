@@ -3,14 +3,16 @@ package name.abuchen.portfolio.online;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import javax.imageio.spi.ServiceRegistry;
+import java.util.ServiceLoader;
 
 public class Factory
 {
     private static final List<QuoteFeed> FEEDS;
     private static final List<EventFeed> EVENTS;
     private static final List<SecuritySearchProvider> SEARCH;
+
+    private Factory()
+    {}
 
     public static final List<QuoteFeed> getQuoteFeedProvider()
     {
@@ -49,8 +51,8 @@ public class Factory
 
     static
     {
-        FEEDS = new ArrayList<QuoteFeed>();
-        Iterator<QuoteFeed> feeds = ServiceRegistry.lookupProviders(QuoteFeed.class);
+        FEEDS = new ArrayList<>();
+        Iterator<QuoteFeed> feeds = ServiceLoader.load(QuoteFeed.class).iterator();
         while (feeds.hasNext())
             FEEDS.add(feeds.next());
 
@@ -59,8 +61,10 @@ public class Factory
         while (events.hasNext())
             EVENTS.add(events.next());
 
-        SEARCH = new ArrayList<SecuritySearchProvider>();
-        Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
+        // SEARCH = new ArrayList<SecuritySearchProvider>();
+        // Iterator<SecuritySearchProvider> search = ServiceRegistry.lookupProviders(SecuritySearchProvider.class);
+        SEARCH = new ArrayList<>();
+        Iterator<SecuritySearchProvider> search = ServiceLoader.load(SecuritySearchProvider.class).iterator();
         while (search.hasNext())
             SEARCH.add(search.next());
 

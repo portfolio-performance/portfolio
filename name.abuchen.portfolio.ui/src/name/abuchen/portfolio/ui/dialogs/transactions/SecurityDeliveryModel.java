@@ -42,6 +42,12 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         this.transactionCurrency = CurrencyUnit.getInstance(source.getTransaction().getCurrencyCode());
         fillFromTransaction(source.getTransaction());
     }
+    
+    @Override
+    public boolean hasSource()
+    {
+        return source != null;
+    }
 
     @Override
     public void applyChanges()
@@ -95,6 +101,7 @@ public class SecurityDeliveryModel extends AbstractSecurityTransactionModel
         return transactionCurrency.getCurrencyCode();
     }
 
+    @Override
     public void setPortfolio(Portfolio portfolio)
     {
         setTransactionCurrency(CurrencyUnit.getInstance(portfolio.getReferenceAccount().getCurrencyCode()));

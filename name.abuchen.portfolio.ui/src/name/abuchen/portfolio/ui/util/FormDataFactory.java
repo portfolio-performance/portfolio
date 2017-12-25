@@ -33,8 +33,13 @@ public final class FormDataFactory
 
     public FormDataFactory thenBelow(Control control)
     {
+        return thenBelow(control, 5);
+    }
+
+    public FormDataFactory thenBelow(Control control, int offset)
+    {
         FormData data = from(control);
-        data.top = new FormAttachment(reference, 5);
+        data.top = new FormAttachment(reference, offset);
         data.left = new FormAttachment(reference, 0, SWT.LEFT);
         return new FormDataFactory(control);
     }

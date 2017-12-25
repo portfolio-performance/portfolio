@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views.settings;
 
+import java.util.Arrays;
+import java.util.List;
+
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
@@ -27,6 +30,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -104,7 +109,7 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         bookmarks.setInput(client.getSettings().getBookmarks());
         bookmarks.refresh();
 
-        new ContextMenu(bookmarks.getTable(), m -> fillContextMenu(m)).hook();
+        new ContextMenu(bookmarks.getTable(), this::fillContextMenu).hook();
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.BookmarksListView_title);
@@ -179,6 +184,9 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
         });
 
         manager.add(new Separator());
+        addSubmenuWithPlaceholders(manager);
+
+        manager.add(new Separator());
         manager.add(new Action(Messages.BookmarksListView_delete)
         {
             @Override
@@ -195,19 +203,46 @@ public class BookmarksListTab implements SettingsView.Tab, ModificationListener
 
     }
 
+    private void addSubmenuWithPlaceholders(IMenuManager manager)
+    {
+        MenuManager submenu = new MenuManager(Messages.BookmarksListView_replacements);
+        manager.add(submenu);
+
+        @SuppressWarnings("nls")
+        List<String> defaultReplacements = Arrays
+                        .asList(new String[] { "isin", "name", "wkn", "tickerSymbol", "tickerSymbolPrefix" });
+
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelDefaultReplacements));
+        defaultReplacements.forEach(r -> addReplacementMenu(submenu, r));
+
+        submenu.add(new Separator());
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelAttributeReplacements));
+        client.getSettings().getAttributeTypes().filter(a -> a.supports(Security.class))
+                        .filter(a -> !defaultReplacements.contains(a.getColumnLabel()))
+                        .forEach(a -> addReplacementMenu(submenu, a.getColumnLabel()));
+
+        submenu.add(new Separator());
+        submenu.add(new LabelOnly(Messages.BookmarksListView_LabelReplaceFirstAvailable));
+        addReplacementMenu(submenu, "isin,wkn"); //$NON-NLS-1$
+    }
+
+    private void addReplacementMenu(MenuManager manager, String replacement)
+    {
+        manager.add(new SimpleAction('{' + replacement + '}', a -> {
+            Bookmark bookmark = (Bookmark) ((IStructuredSelection) bookmarks.getSelection()).getFirstElement();
+            bookmark.setPattern(bookmark.getPattern() + '{' + replacement + '}');
+            bookmarks.refresh(bookmark);
+            client.markDirty();
+        }));
+    }
+
     private void addTestMenu(IMenuManager manager, Bookmark bookmark)
     {
         MenuManager securities = new MenuManager(Messages.MenuOpenSecurityOnSite);
         for (Security security : client.getSecurities())
         {
-            securities.add(new Action(security.getName())
-            {
-                @Override
-                public void run()
-                {
-                    DesktopAPI.browse(bookmark.constructURL(security));
-                }
-            });
+            securities.add(new SimpleAction(security.getName(),
+                            a -> DesktopAPI.browse(bookmark.constructURL(client, security))));
         }
         manager.add(securities);
         manager.add(new Separator());

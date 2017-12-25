@@ -1,0 +1,26 @@
+﻿10919 Berlin
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Auftragsnummer 489130/67.00
+Herrn Datum 30.11.2015
+Max Muster Umsatzsteuer-ID DE137178746
+Musterstr. 2
+54321 Musterhausen
+Depotbuchung - Belastung
+unentgeltlicher Depotübertrag, Gläubigeridentität
+Anschaffungsdaten wurden soweit vorhanden übermittelt.
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 25.000,00 24,75 % UBS AG (LONDON BRANCH) DE000US9RGR9 (US9RGR)
+EO-ANL. 14(16) RWE
+Girosammelverw. mehrere Sammelurkunden - kein
+Stückeausdruck -
+Schlusstag 30.11.2015 Auftrags-Nr. 489130/67.00
+Valuta 30.11.2015 externe Referenz-Nr. KP40030120300340
+Empfängerdaten
+Depotkonto-Inhaber Max Muster
+Depotkonto-Nr. 100235452280
+BIW Bank
+Die entsprechenden Werte haben wir Ihrem Depotkonto belastet.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.11302105.0000013OD06

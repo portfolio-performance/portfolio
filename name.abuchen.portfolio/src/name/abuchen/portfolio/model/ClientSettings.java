@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
-import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
 public class ClientSettings
@@ -69,7 +69,7 @@ public class ClientSettings
         ter.setColumnLabel(Messages.AttributesTERColumn);
         ter.setTarget(Security.class);
         ter.setType(Double.class);
-        ter.setConverter(PercentPlainConverter.class);
+        ter.setConverter(PercentConverter.class);
         attributeTypes.add(ter);
 
         AttributeType aum = new AttributeType("aum"); //$NON-NLS-1$
@@ -93,8 +93,16 @@ public class ClientSettings
         fee.setColumnLabel(Messages.AttributesAcquisitionFeeColumn);
         fee.setTarget(Security.class);
         fee.setType(Double.class);
-        fee.setConverter(PercentPlainConverter.class);
+        fee.setConverter(PercentConverter.class);
         attributeTypes.add(fee);
+
+        AttributeType managementFee = new AttributeType("managementFee"); //$NON-NLS-1$
+        managementFee.setName(Messages.AttributesManagementFeeName);
+        managementFee.setColumnLabel(Messages.AttributesManagementFeeColumn);
+        managementFee.setTarget(Security.class);
+        managementFee.setType(Double.class);
+        managementFee.setConverter(PercentConverter.class);
+        attributeTypes.add(managementFee);
     }
 
     public List<Bookmark> getBookmarks()

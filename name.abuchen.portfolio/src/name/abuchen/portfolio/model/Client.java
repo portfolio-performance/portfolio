@@ -22,7 +22,7 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 35;
+    public static final int CURRENT_VERSION = 37;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport;
@@ -535,4 +535,26 @@ public class Client
     {
         propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
     }
+
+    public String debugTransactionsToString()
+    {
+        StringBuilder answer = new StringBuilder();
+
+        for (Portfolio portfolio : portfolios)
+        {
+            answer.append(portfolio.getName()).append('\n');
+            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        for (Account account : accounts)
+        {
+            answer.append(account.getName()).append('\n');
+            account.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        return answer.toString();
+    }
+
 }

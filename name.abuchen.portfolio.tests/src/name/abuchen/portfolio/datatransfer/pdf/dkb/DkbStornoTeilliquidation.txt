@@ -1,0 +1,58 @@
+﻿10919 Berlin Seite 1 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Auftragsnummer 9796635950
+Herrn Datum 30.05.2016
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Storno zur Abrechnung vom 13.01.2016
+Teilrückzahlung mit Nennwertänderung
+Storno wegen geänderter/ergänzter steuerlicher Daten.
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 2.000,00 6,875 % MS DEUTSCHLAND GMBH DE000A1RE7V0 (A1RE7V)
+INH.-SCHV. V.2012(2017)
+Rückzahlungskurs 100 % Rückzahlungsdatum 13.01.2016
+Rückzahlungswährung EUR Fälligkeitstag 13.01.2016
+Bestandsstichtag 12.01.2016
+Rückzahlungsbetrag 2.000,00- EUR
+Einnahmen Differenzmethode (§ 43a Abs. 2 S.2 EStG) 327,24 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 327,24 EUR
+Kapitalertragsteuer 24,45 % auf 327,24 EUR 80,01+ EUR
+Solidaritätszuschlag 5,5 % auf 80,01 EUR 4,40+ EUR
+Kirchensteuer 9 % auf 80,01 EUR 7,20+ EUR
+Ausmachender Betrag 1.908,39- EUR
+Den Betrag buchen wir mit Valuta 13.01.2016 zu Lasten des Kontos 16765097 (IBAN DE30 1203 0000 0026 6741 97), BLZ
+12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Mit dem Storno erfolgt eine Berichtigung der Verrechnungstöpfe / des Sparer-Pauschbetrags.
+Wir bitten die Unannehmlichkeiten zu entschuldigen.
+0883.05310015.0000018FA02
+Seite 2 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Auftragsnummer 9796635950
+Datum 30.05.2016
+Steuerliche Ausgleichrechnung
+Eingebuchte sonstige negative Kapitalerträge 327,24 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 327,24 EUR
+Kapitalertragsteuer 24,45 % auf 327,24 EUR 80,01- EUR
+Solidaritätszuschlag 5,5 % auf 80,01 EUR 4,40- EUR
+Kirchensteuer 9 % auf 80,01 EUR 7,20- EUR
+Steuerausgleich 91,61- EUR
+Den Betrag buchen wir mit Valuta 30.05.2016 zu Lasten des Kontos 12664197 (IBAN DE30 1203 0000 0026 6741 97), BLZ
+12030000 (BIC BYLADEM1001).
+Mit der Abrechnung erfolgt eine Optimierung der Verrechnungstöpfe / des Sparer-Pauschbetrags.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2016 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 3.003,62 50,00 0,00 0,00
+Storno Einnahmen 0,00 0,00 0,00 0,00 327,24-
+Kapitalrückzahlung
+Steuerausgleich 0,00 327,24 0,00 0,00 327,24
+Nachher 0,00 3.330,86 50,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.05310015.0000019FA02

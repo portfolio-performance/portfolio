@@ -3,7 +3,6 @@ package name.abuchen.portfolio.snapshot;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public final class GroupByTaxonomy
             if (account.getFunds().isZero())
                 continue;
 
-            vehicle2position.put(account.getAccount(), new Item(new SecurityPosition(account)));
+            vehicle2position.put(account.unwrapAccount(), new Item(new SecurityPosition(account)));
         }
 
         // portfolio
@@ -162,15 +161,10 @@ public final class GroupByTaxonomy
 
     private void sortCategoriesByRank()
     {
-        Collections.sort(categories, new Comparator<AssetCategory>()
-        {
-            @Override
-            public int compare(AssetCategory o1, AssetCategory o2)
-            {
-                int rank1 = o1.getClassification().getRank();
-                int rank2 = o2.getClassification().getRank();
-                return rank1 < rank2 ? -1 : rank1 == rank2 ? 0 : 1;
-            }
+        Collections.sort(categories, (o1, o2) -> {
+            int rank1 = o1.getClassification().getRank();
+            int rank2 = o2.getClassification().getRank();
+            return rank1 < rank2 ? -1 : rank1 == rank2 ? 0 : 1;
         });
     }
 

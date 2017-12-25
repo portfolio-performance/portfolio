@@ -18,8 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -33,7 +31,6 @@ import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
@@ -55,6 +52,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Quote;
@@ -73,6 +71,8 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -184,9 +184,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private LocalResourceManager resources;
-    private Color warningColor;
-
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -213,12 +210,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return title.toString();
-    }
-
-    @Override
-    protected int[] getDefaultWeights(int numOfChildren)
-    {
-        return new int[] { 50, 50 };
     }
 
     @Override
@@ -372,9 +363,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createTopTable(Composite parent)
     {
-        this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        this.warningColor = resources.createColor(Colors.WARNING.swt());
-
         securities = new SecuritiesTable(parent, this);
         updateTitle(getDefaultTitle());
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
@@ -457,14 +445,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createBottomTable(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+        Composite sash = new Composite(parent, SWT.NONE);
+
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
+        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -531,7 +521,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
                 int days = Dates.daysBetween(previous.getDate(), current.getDate());
-                return days > 3 ? warningColor : null;
+                return days > 3 ? Colors.WARNING : null;
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
@@ -676,7 +666,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -771,6 +761,32 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     }
                 }
                 return null;
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnFees_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnTaxes_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);

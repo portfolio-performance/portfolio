@@ -49,6 +49,12 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     {
         return Messages.LabelConsumerPriceIndex;
     }
+    
+    @Override
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.BEGINNING;
+    }
 
     protected void addButtons(ToolBar toolBar)
     {

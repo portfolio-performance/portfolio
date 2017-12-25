@@ -112,4 +112,10 @@ public final class Interval
             return false;
         return true;
     }
+
+    @Override
+    public String toString()
+    {
+        return start + " -> " + end; //$NON-NLS-1$
+    }
 }

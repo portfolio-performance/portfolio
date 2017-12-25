@@ -16,12 +16,18 @@ public final class Risk
         private Interval intervalMaxDD;
         private Interval recoveryTime;
 
-        public Drawdown(double[] values, LocalDate[] dates)
+        public Drawdown(double[] values, LocalDate[] dates, int startAt)
         {
-            double peak = values[0] + 1;
-            double bottom = values[0] + 1;
-            LocalDate lastPeakDate = dates[0];
-            LocalDate lastBottomDate = dates[0];
+            if (values.length != dates.length)
+                throw new IllegalArgumentException();
+                
+            if (startAt >= values.length)
+                throw new IllegalArgumentException();
+            
+            double peak = values[startAt] + 1;
+            double bottom = values[startAt] + 1;
+            LocalDate lastPeakDate = dates[startAt];
+            LocalDate lastBottomDate = dates[startAt];
 
             maxDD = 0;
             intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
@@ -30,7 +36,7 @@ public final class Risk
             Interval currentDrawdownDuration = null;
             Interval currentRecoveryTime = null;
 
-            for (int ii = 0; ii < values.length; ii++)
+            for (int ii = startAt; ii < values.length; ii++)
             {
                 double value = values[ii] + 1;
                 currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii]);

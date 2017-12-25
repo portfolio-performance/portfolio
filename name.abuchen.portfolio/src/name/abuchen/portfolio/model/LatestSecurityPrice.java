@@ -18,6 +18,15 @@ public class LatestSecurityPrice extends SecurityPrice
         super(date, price);
     }
 
+//    public LatestSecurityPrice(LocalDate date, long price, long high, long low, long volume)
+//    {
+//        super(date, price);
+
+//        this.high = high;
+//        this.low = low;
+//        this.volume = volume;
+//    }
+
     public long getHigh()
     {
         return high;

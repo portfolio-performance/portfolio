@@ -88,7 +88,7 @@ public class AttributeType
                         after *= 10;
                 }
 
-                long resultValue = before.longValue() * (int) values.factor() + after;
+                long resultValue = before.longValue() * values.factor() + after;
                 return Long.valueOf(resultValue);
             }
             catch (ParseException e)
@@ -168,6 +168,42 @@ public class AttributeType
         }
     }
 
+    public static class PercentConverter implements Converter
+    {
+        private final NumberFormat format = NumberFormat.getPercentInstance();
+
+        public PercentConverter()
+        {
+            format.setMinimumFractionDigits(2);
+        }
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? format.format((double) object) : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                String inputValue = value.trim();
+                if (inputValue.length() == 0)
+                    return null;
+                // ensure there is a percent sign at the end
+                if (!inputValue.endsWith("%")) //$NON-NLS-1$
+                    inputValue += "%"; //$NON-NLS-1$
+
+                return format.parse(inputValue).doubleValue();
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
     public static class PercentPlainConverter extends DoubleConverter
     {
         public PercentPlainConverter()
@@ -226,7 +262,7 @@ public class AttributeType
      * Converter. Do not persist (includes formats, etc.) but recreate out of
      * type and value parameters.
      */
-    private transient Converter converter;
+    private transient Converter converter; // NOSONAR
     private String converterClass;
 
     public AttributeType(String id)
@@ -299,7 +335,7 @@ public class AttributeType
         }
         catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
         {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
         return converter;
     }

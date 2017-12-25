@@ -1,0 +1,71 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        20.06.2017
+0202272000000784540900
+Herr Auftragsdatum     15.06.2017n
+ Schlusstag        15.06.2017
+Ausführungszeit   00:00 Uhr. 1
+ Valuta            20.06.2017
+Auftragsnummer    95767880/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  
+Depotinhaber      
+Nr.95767880/1  Kauf            ISHSII-JPM DL EM BD DLDIS (IE00B2NPKV68/A0NECU)
+Ausgeführt     9,703363 St.            Kurswert       EUR               999,10
+Kurs           102,964300 EUR          Provision      EUR                 0,90
+Devisenkurs                            Eigene Spesen
+Verwahrart     Wertpapierrechnung     *Fremde Spesen
+Lagerstelle    Clearstream Lux.
+Lagerland      Großbritannien
+                                       Bemessungs-
+Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
+                                     **Einbeh. Steuer EUR                 0,00
+                                       Endbetrag      EUR            -1.000,00
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  EUR                 0,00
+                                 Solidaritätszuschlag EUR                 0,00
+                                 Kirchensteuer        EUR                 0,00
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1234387912.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                   gezahlter AA   EUR                 0,00
+Kurs           102,9643 EUR            Kurswert       EUR               999,10
+               Zwischengewinn je Anteil               USD               0,3485
+               Zwischengewinn Gesamt                  USD               3,3800
+               ausschüttungsgleiche Erträge je Anteil EUR         3,4629699000
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784540900 0113202270000102
+               ausschüttungsgleiche Erträge gesamt    EUR                33,60
+               Substanzauschüttungen je Anteil        EUR         4,9579393700
+               Substanzauschüttungen gesamt           EUR                48,11
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1008691386
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+Viel Freiheit für wenig Zins - Ihr flatex flex-Kredit zu günstigen
+Konditionen: 3,90% p.a.
+Weitere Informationen finden Sie unter: www.flatex.de/kredit/
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784540900 0113202270000202

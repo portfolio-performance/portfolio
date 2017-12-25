@@ -21,6 +21,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -29,6 +30,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
@@ -78,13 +80,15 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
-        securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
+        securities.bindValue(Properties.security.name(), null, false);
         securities.bindCurrency(Properties.securityCurrencyCode.name());
 
         // portfolio
 
         ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
-        portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
+        List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
+        portfolios.add(0, InvestmentPlanModel.DEPOSIT);
+        portfolio.value.setInput(portfolios);
         portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
         // account
@@ -96,6 +100,15 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         account.bindCurrency(Properties.accountCurrencyCode.name());
 
+        // auto-generate
+
+        Label labelAutoGenerate = new Label(editArea, SWT.NONE);
+        labelAutoGenerate.setText(Messages.MsgCreateTransactionsAutomaticallyUponOpening);
+
+        Button buttonAutoGenerate = new Button(editArea, SWT.CHECK);
+        context.bindValue(WidgetProperties.selection().observe(buttonAutoGenerate), //
+                        BeanProperties.value(Properties.autoGenerate.name()).observe(model));
+
         // date
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
@@ -106,7 +119,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // interval
 
-        List<Integer> available = new ArrayList<Integer>();
+        List<Integer> available = new ArrayList<>();
         for (int ii = 1; ii <= 12; ii++)
             available.add(ii);
 
@@ -145,23 +158,23 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         startingWith(valueName, lblName).width(3 * amountWidth)
                         //
-                        .thenBelow(securities.value.getControl()).label(securities.label)
-                        .suffix(securities.currency, currencyWidth)
-                        //
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         //
+                        .thenBelow(securities.value.getControl()).label(securities.label)
+                        .suffix(securities.currency, currencyWidth) //
+                        .thenBelow(portfolio.value.getControl()).label(portfolio.label) //
                         .thenBelow(account.value.getControl()).label(account.label)
-                        .suffix(account.currency, currencyWidth)
-                        //
-                        .thenBelow(valueDate.getControl()).label(lblDate)
-                        //
-                        .thenBelow(interval.value.getControl()).label(interval.label)
-                        //
-                        .thenBelow(amount.value).width(amountWidth).label(amount.label)
-                        .suffix(amount.currency, currencyWidth)
-                        //
+                        .suffix(account.currency, currencyWidth) //
+                        .thenBelow(labelAutoGenerate, 10) //
+                        .thenBelow(valueDate.getControl(), 10).label(lblDate) //
+                        .thenBelow(amount.value, 10).width(amountWidth).label(amount.label)
+                        .suffix(amount.currency, currencyWidth) //
                         .thenBelow(fees.value).width(amountWidth).label(fees.label)
                         .suffix(fees.currency, currencyWidth); //
+
+        startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
+        
+        startingWith(valueDate.getControl()).thenRight(interval.label).thenRight(interval.value.getControl());
 
         int widest = widest(lblName, securities.label, portfolio.label, account.label, lblDate, interval.label,
                         amount.label, fees.label);

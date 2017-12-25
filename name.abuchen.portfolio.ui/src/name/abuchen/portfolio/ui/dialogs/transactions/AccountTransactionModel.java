@@ -35,7 +35,7 @@ public class AccountTransactionModel extends AbstractModel
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
 
-    public static final Security EMPTY_SECURITY = new Security("", ""); //$NON-NLS-1$ //$NON-NLS-2$
+    public static final Security EMPTY_SECURITY = new Security("-----", ""); //$NON-NLS-1$ //$NON-NLS-2$
 
     private final Client client;
     private AccountTransaction.Type type;
@@ -123,6 +123,7 @@ public class AccountTransactionModel extends AbstractModel
             }
 
             t = new AccountTransaction();
+            t.setCurrencyCode(getAccountCurrencyCode());
             account.addTransaction(t);
         }
 
@@ -132,7 +133,6 @@ public class AccountTransactionModel extends AbstractModel
         t.setAmount(total);
         t.setType(type);
         t.setNote(note);
-        t.setCurrencyCode(getAccountCurrencyCode());
 
         t.clearUnits();
 
@@ -167,7 +167,6 @@ public class AccountTransactionModel extends AbstractModel
         this.sourceAccount = null;
         this.sourceTransaction = null;
 
-        setShares(0);
         setFxGrossAmount(0);
         setDividendAmount(BigDecimal.ZERO);
         setGrossAmount(0);
@@ -183,17 +182,36 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsSecurity()
     {
-        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.TAX_REFUND;
+        switch (type)
+        {
+            case DIVIDENDS:
+            case TAXES:
+            case TAX_REFUND:
+            case FEES:
+            case FEES_REFUND:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public boolean supportsOptionalSecurity()
     {
-        return type == AccountTransaction.Type.TAX_REFUND;
+        switch (type)
+        {
+            case TAXES:
+            case TAX_REFUND:
+            case FEES:
+            case FEES_REFUND:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public boolean supportsTaxUnits()
     {
-        return type == AccountTransaction.Type.DIVIDENDS;
+        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST || type == AccountTransaction.Type.INTEREST_CHARGE;
     }
 
     public void setSource(Account account, AccountTransaction transaction)
@@ -350,6 +368,11 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateShares()
     {
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
+        if (sourceTransaction != null)
+            return;
+
         if (!supportsShares() || security == null)
             return;
 
@@ -550,7 +573,7 @@ public class AccountTransactionModel extends AbstractModel
     protected long calculateGrossAmount4Total()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return total + totalTaxes;
+        return total + (type == AccountTransaction.Type.INTEREST_CHARGE ? -1 : 1) * totalTaxes;
     }
 
     protected long calculateGrossAmount4Dividend()
@@ -562,7 +585,7 @@ public class AccountTransactionModel extends AbstractModel
     private long calculateTotal()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return Math.max(0, grossAmount - totalTaxes);
+        return Math.max(0, grossAmount + (type == AccountTransaction.Type.INTEREST_CHARGE ? 1 : -1) * totalTaxes);
     }
 
     public String getNote()

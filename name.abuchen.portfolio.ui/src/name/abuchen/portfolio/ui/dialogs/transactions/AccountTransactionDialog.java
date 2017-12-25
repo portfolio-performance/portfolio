@@ -273,7 +273,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
@@ -302,7 +302,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // add empty security only if it has not been added previously
         // --> happens when editing an existing transaction
         if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
+        {
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
+            
+            if (model().getSecurity() == null)
+                model().setSecurity(AccountTransactionModel.EMPTY_SECURITY);
+        }
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
@@ -330,7 +335,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate().minusDays((long) model().getSecurity().getDelayedDividend()));
 
         if (snapshot != null && model().getSecurity() != null)
         {
@@ -341,7 +346,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             if (list.size() > 1)
             {
                 for (PortfolioSnapshot ps : list)
-                    addAction(manager, ps, ps.getSource().getName());
+                    addAction(manager, ps, ps.getPortfolio().getName());
             }
         }
 

@@ -9,6 +9,8 @@ public class Messages extends NLS
     public static String AttributesAcquisitionFeeName;
     public static String AttributesAUMColumn;
     public static String AttributesAUMName;
+    public static String AttributesManagementFeeColumn;
+    public static String AttributesManagementFeeName;
     public static String AttributesTERColumn;
     public static String AttributesTERName;
     public static String AttributesVendorColumn;
@@ -23,6 +25,7 @@ public class Messages extends NLS
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
     public static String CSVColumn_Fees;
+    public static String CSVColumn_InboundTransferals;
     public static String CSVColumn_ISIN;
     public static String CSVColumn_Quote;
     public static String CSVColumn_SecurityName;
@@ -39,9 +42,11 @@ public class Messages extends NLS
     public static String CSVColumn_ExchangeRate;
     public static String CSVColumn_GrossAmount;
     public static String CSVColumn_Note;
+    public static String CSVColumn_OutboundTransferals;
     public static String CSVColumn_TransactionCurrency;
     public static String CSVColumn_Transferals;
     public static String CSVDefAccountTransactions;
+    public static String CSVDefDibaAccountTransactions;
     public static String CSVDefHistoricalQuotes;
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
@@ -49,6 +54,7 @@ public class Messages extends NLS
     public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
+    public static String CSVFormatISO;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
@@ -80,6 +86,7 @@ public class Messages extends NLS
     public static String FixSetSecurity;
     public static String FixSetSecurityDone;
     public static String IBXML_Label;
+    public static String InvestmentPlanAutoNoteLabel;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
     public static String IssueInconsistentSharesHeld;
@@ -121,6 +128,8 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String MsgAlphaVantageAPIKeyMissing;
+    public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;
@@ -135,6 +144,7 @@ public class Messages extends NLS
     public static String MsgCheckUnsupportedCurrency;
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
+    public static String MsgErrorDownloadYahoo;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;
@@ -142,9 +152,12 @@ public class Messages extends NLS
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorMissingValueMatches;
+    public static String MsgErrorNoCrumbFound;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorsConvertingValue;
+    public static String MsgErrorUnexpectedStatusCode;
+    public static String MsgErrorUnexpectedZipEntry;
     public static String MsgErrorUnitCurrencyMismatch;
     public static String MsgFileNotFound;
     public static String MsgIncorrectPassword;

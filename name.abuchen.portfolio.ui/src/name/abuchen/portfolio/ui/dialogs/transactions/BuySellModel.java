@@ -39,6 +39,12 @@ import name.abuchen.portfolio.ui.Messages;
         this.account = (Account) source.getOwner(source.getAccountTransaction());
         fillFromTransaction(source.getPortfolioTransaction());
     }
+    
+    @Override
+    public boolean hasSource()
+    {
+        return source != null;
+    }
 
     @Override
     public void applyChanges()
@@ -67,6 +73,7 @@ import name.abuchen.portfolio.ui.Messages;
             }
 
             entry = new BuySellEntry(portfolio, account);
+            entry.setCurrencyCode(account.getCurrencyCode());
             entry.insert();
         }
 

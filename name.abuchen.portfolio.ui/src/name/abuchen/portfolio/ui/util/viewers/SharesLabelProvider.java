@@ -135,7 +135,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
         Rectangle layoutBounds = textLayout.getBounds();
         int x = event.x + tableItem.width - Math.min(size.width, tableItem.width);
-        int y = tableItem.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
+        int y = event.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
 
         textLayout.draw(event.gc, x, y);
 

@@ -116,7 +116,7 @@ public abstract class AbstractFinanceView
     private Control createHeader(Composite parent)
     {
         Composite header = new Composite(parent, SWT.NONE);
-        header.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        header.setBackground(Colors.WHITE);
 
         Font boldFont = resourceManager.createFont(FontDescriptor
                         .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
@@ -124,7 +124,7 @@ public abstract class AbstractFinanceView
         title = new Label(header, SWT.NONE);
         title.setText(getDefaultTitle());
         title.setFont(boldFont);
-        title.setForeground(resourceManager.createColor(Colors.HEADINGS.swt()));
+        title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
         ToolBar toolBar = new ToolBar(header, SWT.FLAT | SWT.RIGHT);

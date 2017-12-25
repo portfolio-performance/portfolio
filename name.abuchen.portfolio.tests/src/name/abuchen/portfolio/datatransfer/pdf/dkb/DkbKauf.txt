@@ -1,0 +1,50 @@
+﻿10919 Berlin Seite 1 von 2
+Depotnummer 500123451
+Kundennummer 51234561
+Max Mustermann
+Auftragsnummer 495752/48.00
+Herrn Datum 25.11.2015
+Max Mustermann Rechnungsnummer W00221-0000511454/16
+Musterstraße 2 Umsatzsteuer-ID DE137178746
+12345 Musterhausen
+Wertpapier Abrechnung Kauf
+Auftrag vom 28.10.2015 20:44:16 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 2.000,00 8,75 % METALCORP GROUP B.V. DE000A1HLTD2 (A1HLTD)
+EO-ANLEIHE 2013(18)
+Börse Tradegate (gemäß Weisung)
+Limit-Order
+Limit 97,50 %
+Schlusstag/-Zeit 25.11.2015 11:02:54 Zinstermin Monat(e) 27. Juni
+Ausführungskurs 97,50 % Fällig am 27.06.2018
+Auftraggeber Max Mustermann
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 1.950,00- EUR
+Provision 7,50- EUR
+Stückzinsen für 153 Tage per 26.11.2015 73,16- EUR
+Ermittlung steuerrelevante Erträge
+Stückzinsen für 153 Tage per 26.11.2015 73,16- EUR
+Eingebuchte sonstige negative Kapitalerträge 73,16 EUR
+Ausmachender Betrag 2.030,66- EUR
+Den Gegenwert buchen wir mit Valuta 27.11.2015 zu Lasten des Kontos 12345678 (IBAN DE30 1203 0000 0012 3456 78),
+BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Ich/wir habe(n) den Auftrag aus eigener Initiative erteilt.
+0993.11252056.0000527OR06
+Seite 2 von 2
+Depotnummer 500123451
+Kundennummer 51234561
+Auftragsnummer 495752/48.00
+Datum 25.11.2015
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2015 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 1.865,61 625,00 0,00 0,00
+Kauf 0,00 73,16 0,00 0,00 0,00
+Nachher 0,00 1.938,77 625,00 0,00 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0993.11252056.0000527OR06

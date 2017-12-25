@@ -27,7 +27,7 @@ public final class ManualQuoteFeed extends QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
         boolean isUpdated = false;
         for (Security security : securities)

@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -243,7 +244,10 @@ public class SecurityPositionTest
 
         Client client = new Client();
         client.addSecurity(security);
+        Account a = new Account();
+        client.addAccount(a);
         Portfolio p = new Portfolio();
+        p.setReferenceAccount(a);
         p.addTransaction(t);
         client.addPortfolio(p);
 

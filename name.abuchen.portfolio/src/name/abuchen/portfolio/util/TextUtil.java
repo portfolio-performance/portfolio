@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.util;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -35,5 +37,26 @@ public final class TextUtil
     public static final String tooltip(String text)
     {
         return text == null ? null : text.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static final String sanitizeFilename(String label)
+    {
+        // https://stackoverflow.com/a/10151795/1158146
+            
+        String filename = label;
+
+        try
+        {
+            filename = new String(label.getBytes(), StandardCharsets.UTF_8.name());
+        }
+        catch (UnsupportedEncodingException ignore)
+        {
+            // UTF-8 is available
+        }
+
+        // filter ? \ / : | < > // *
+        filename = filename.replaceAll("[\\?\\\\/:|<>\\*]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        filename = filename.replaceAll("\\s+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        return filename;
     }
 }

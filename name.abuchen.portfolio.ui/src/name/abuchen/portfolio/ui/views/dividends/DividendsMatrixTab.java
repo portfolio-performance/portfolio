@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
@@ -39,11 +40,14 @@ import name.abuchen.portfolio.util.TextUtil;
 public class DividendsMatrixTab implements DividendsTab
 {
     @Inject
-    private DividendsViewModel model;
+    protected DividendsViewModel model;
 
-    private Font boldFont;
+    private boolean showOnlyOneYear = false;
+
+    protected Font boldFont;
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM yy"); //$NON-NLS-1$
 
+    private TableColumnLayout tableLayout;
     private TableViewer tableViewer;
 
     @Override
@@ -55,16 +59,27 @@ public class DividendsMatrixTab implements DividendsTab
     @Override
     public void addExportActions(IMenuManager manager)
     {
-        manager.add(new Action(MessageFormat.format(Messages.LabelExport, Messages.LabelDividendsByMonthAndVehicle))
+        manager.add(new Action(MessageFormat.format(Messages.LabelExport, getLabel()))
         {
             @Override
             public void run()
             {
-                new TableViewerCSVExporter(tableViewer).export(Messages.LabelDividendsByMonthAndVehicle + ".csv"); //$NON-NLS-1$
+                new TableViewerCSVExporter(tableViewer).export(getLabel() + ".csv"); //$NON-NLS-1$
             }
         });
     }
 
+    @Override
+    public void addConfigActions(IMenuManager manager)
+    {
+        Action action = new SimpleAction(Messages.LabelShowOnlyOneYear, a -> {
+            showOnlyOneYear = !showOnlyOneYear;
+            updateColumns(tableViewer, tableLayout);
+        });
+        action.setChecked(showOnlyOneYear);
+        manager.add(action);
+    }
+    
     @Override
     public Control createControl(Composite parent)
     {
@@ -73,13 +88,13 @@ public class DividendsMatrixTab implements DividendsTab
 
         Composite container = new Composite(parent, SWT.NONE);
 
-        TableColumnLayout layout = new TableColumnLayout();
-        container.setLayout(layout);
+        tableLayout = new TableColumnLayout();
+        container.setLayout(tableLayout);
 
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 
-        createColumns(tableViewer, layout);
+        createColumns(tableViewer, tableLayout);
 
         tableViewer.getTable().setHeaderVisible(true);
         tableViewer.getTable().setLinesVisible(true);
@@ -91,18 +106,21 @@ public class DividendsMatrixTab implements DividendsTab
         for (TableColumn c : tableViewer.getTable().getColumns())
             c.pack();
 
-        model.addUpdateListener(() -> updateColumns(tableViewer, layout));
+        model.addUpdateListener(() -> updateColumns(tableViewer, tableLayout));
 
         return container;
     }
 
-    private void createColumns(TableViewer records, TableColumnLayout layout)
+    protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
         createSecurityColumn(records, layout, true);
 
         // create monthly columns
         LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
-        for (int index = 0; index < model.getNoOfMonths(); index++)
+
+        int noOfMonths = showOnlyOneYear ? Math.min(12, model.getNoOfMonths()) : model.getNoOfMonths();
+
+        for (int index = 0; index < noOfMonths; index++)
         {
             createMonthColumn(records, layout, date, index);
             date = date.plusMonths(1);
@@ -115,7 +133,7 @@ public class DividendsMatrixTab implements DividendsTab
         createSecurityColumn(records, layout, false);
     }
 
-    private void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
+    protected void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
@@ -193,7 +211,7 @@ public class DividendsMatrixTab implements DividendsTab
         layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
-    private void createSumColumn(TableViewer records, TableColumnLayout layout)
+    protected void createSumColumn(TableViewer records, TableColumnLayout layout)
     {
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);
@@ -203,7 +221,22 @@ public class DividendsMatrixTab implements DividendsTab
             @Override
             public String getText(Object element)
             {
-                return Values.Amount.formatNonZero(((DividendsViewModel.Line) element).getSum());
+                DividendsViewModel.Line line = (DividendsViewModel.Line) element;
+
+                if (showOnlyOneYear)
+                {
+                    int noOfMonths = Math.min(12, line.getNoOfMonths());
+
+                    long sum = 0;
+                    for (int ii = 0; ii < noOfMonths; ii++)
+                        sum += line.getValue(ii);
+
+                    return Values.Amount.formatNonZero(sum);
+                }
+                else
+                {
+                    return Values.Amount.formatNonZero(line.getSum());
+                }
             }
 
             @Override

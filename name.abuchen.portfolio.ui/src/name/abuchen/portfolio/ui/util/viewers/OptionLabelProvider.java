@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Table;
 
@@ -22,6 +23,11 @@ public class OptionLabelProvider<O> extends CellLabelProvider
     {
         return null;
     }
+    
+    public Font getFont(Object element, O option)
+    {
+        return null;
+    }
 
     @Override
     public void update(ViewerCell cell)
@@ -35,5 +41,6 @@ public class OptionLabelProvider<O> extends CellLabelProvider
         cell.setText(getText(element, option));
         cell.setForeground(getForeground(element, option));
         cell.setImage(getImage(element, option));
+        cell.setFont(getFont(element, option));
     }
 }

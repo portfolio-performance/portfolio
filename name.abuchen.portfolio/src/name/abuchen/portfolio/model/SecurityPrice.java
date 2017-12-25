@@ -17,6 +17,9 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
         }
     }
 
+    //private LocalDate date;
+    //private long value;
+
     public SecurityPrice()
     {}
 
@@ -25,6 +28,26 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
         super.setDate(date);
         super.setValue(price);
     }
+
+//public LocalDate getDate()
+    //{
+    //    return date;
+    //}
+
+    //public void setDate(LocalDate date)
+    //{
+    //    this.date = date;
+    //}
+
+    //public long getValue()
+    //{
+    //    return value;
+    //}
+
+    //public void setValue(long value)
+    //{
+    //    this.value = value;
+    //}
 
     @Override
     public int compareTo(SecurityPrice o)
@@ -64,5 +87,12 @@ public class SecurityPrice extends SecurityElement implements Comparable<Securit
             return false;
         return true;
     }
+
+    //@Override
+    //@SuppressWarnings("nls")
+    //public String toString()
+    //{
+    //    return String.format("%tF: %,10.2f", date, value / Values.Quote.divider());
+    //}
 
 }

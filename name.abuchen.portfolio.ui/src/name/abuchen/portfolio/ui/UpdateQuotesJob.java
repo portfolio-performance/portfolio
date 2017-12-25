@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -26,6 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.util.RateLimitExceededException;
 
 public final class UpdateQuotesJob extends AbstractClientJob
 {
@@ -187,8 +185,6 @@ public final class UpdateQuotesJob extends AbstractClientJob
 
     private void addLatestQuotesJobs(Dirtyable dirtyable, List<Job> jobs)
     {
-        Map<QuoteFeed, List<Security>> feed2securities = new HashMap<>();
-
         for (Security s : securities)
         {
             // if configured, use feed for latest quotes
@@ -201,42 +197,48 @@ public final class UpdateQuotesJob extends AbstractClientJob
             if (feed == null)
                 continue;
 
+            Job job = createLatestQuoteJob(dirtyable, feed, s);
+            jobs.add(job);
+
             // the HTML download makes request per URL (per security) -> execute
             // as parallel jobs (although the scheduling rule ensures that only
             // one request is made per host at a given time)
             if (HTMLTableQuoteFeed.ID.equals(feedId))
             {
-                Job job = createLatestQuoteJob(dirtyable, feed, Arrays.asList(s));
                 job.setRule(HostSchedulingRule
                                 .createFor(s.getLatestFeedURL() == null ? s.getFeedURL() : s.getLatestFeedURL()));
-                jobs.add(job);
             }
-            else
+            else if (feedId.startsWith("YAHOO")) //$NON-NLS-1$
             {
-                feed2securities.computeIfAbsent(feed, key -> new ArrayList<>()).add(s);
+                job.setRule(new HostSchedulingRule("finance.yahoo.com")); //$NON-NLS-1$
             }
         }
-
-        for (Entry<QuoteFeed, List<Security>> entry : feed2securities.entrySet())
-            jobs.add(createLatestQuoteJob(dirtyable, entry.getKey(), entry.getValue()));
     }
 
-    private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, List<Security> securities)
+    private Job createLatestQuoteJob(Dirtyable dirtyable, QuoteFeed feed, Security security)
     {
         return new Job(feed.getName())
         {
             @Override
             protected IStatus run(IProgressMonitor monitor)
             {
-                ArrayList<Exception> exceptions = new ArrayList<>();
+                try
+                {
+                    ArrayList<Exception> exceptions = new ArrayList<>();
 
-                if (feed.updateLatestQuotes(securities, exceptions))
-                    dirtyable.markDirty();
+                    if (feed.updateLatestQuotes(security, exceptions))
+                        dirtyable.markDirty();
 
-                if (!exceptions.isEmpty())
-                    PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
+                    if (!exceptions.isEmpty())
+                        PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
 
-                return Status.OK_STATUS;
+                    return Status.OK_STATUS;
+                }
+                catch (RateLimitExceededException e)
+                {
+                    schedule(2000);
+                    return Status.OK_STATUS;
+                }
             }
         };
     }
@@ -254,19 +256,27 @@ public final class UpdateQuotesJob extends AbstractClientJob
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
                 {
-                    QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
-                    if (feed == null)
+                    try
+                    {
+                        QuoteFeed feed = Factory.getQuoteFeedProvider(security.getFeed());
+                        if (feed == null)
+                            return Status.OK_STATUS;
+
+                        ArrayList<Exception> exceptions = new ArrayList<>();
+
+                        if (feed.updateHistoricalQuotes(security, exceptions))
+                            dirtyable.markDirty();
+
+                        if (!exceptions.isEmpty())
+                            PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
+
                         return Status.OK_STATUS;
-
-                    ArrayList<Exception> exceptions = new ArrayList<>();
-
-                    if (feed.updateHistoricalQuotes(security, exceptions))
-                        dirtyable.markDirty();
-
-                    if (!exceptions.isEmpty())
-                        PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
-
-                    return Status.OK_STATUS;
+                    }
+                    catch (RateLimitExceededException e)
+                    {
+                        schedule(2000);
+                        return Status.OK_STATUS;
+                    }
                 }
             };
 
