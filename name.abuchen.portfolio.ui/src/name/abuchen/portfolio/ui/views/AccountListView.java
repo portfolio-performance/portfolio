@@ -66,7 +66,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -393,7 +393,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
-        new DateEditingSupport(AccountTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
+        new DateTimeEditingSupport(AccountTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 100);
