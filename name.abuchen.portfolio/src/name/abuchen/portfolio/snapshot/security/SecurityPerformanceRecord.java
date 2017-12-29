@@ -150,6 +150,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Periodicity periodicity = Periodicity.UNKNOWN;
 
     /**
+     * rate of return per year {@link #calculateDividends()}
+     */
+    private double rateOfReturnPerYear;
+    
+    /**
      * market value - fifo cost of shares held
      * {@link #calculateFifoAndMovingAverageCosts()}
      */
@@ -326,6 +331,17 @@ public final class SecurityPerformanceRecord implements Adaptable
     {
         return periodicity.ordinal();
     }
+    
+    /**
+     * Gets the rate of return of dividends per year as a percentage of
+     * invested.
+     * 
+     * @return rate of return per year on success, else 0
+     */
+    public double getRateOfReturnPerYear()
+    {
+        return this.rateOfReturnPerYear;
+    }
 
     public double getTotalRateOfReturnDiv()
     {
@@ -385,7 +401,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateSharesHeld(CurrencyConverter converter, ReportingPeriod period)
     {
-        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, transactions).getSharesHeld();
+        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions).getSharesHeld();
     }
 
     private void calculateMarketValue(CurrencyConverter converter, ReportingPeriod period)
@@ -401,7 +417,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateIRR(CurrencyConverter converter)
     {
-        this.irr = Calculation.perform(IRRCalculation.class, converter, transactions).getIRR();
+        this.irr = Calculation.perform(IRRCalculation.class, converter, security, transactions).getIRR();
     }
 
     private void calculateTTWROR(Client client, CurrencyConverter converter, ReportingPeriod period)
@@ -415,14 +431,14 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDelta(CurrencyConverter converter)
     {
-        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, transactions);
+        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, security, transactions);
         this.delta = calculation.getDelta();
         this.deltaPercent = calculation.getDeltaPercent();
     }
 
     private void calculateFifoAndMovingAverageCosts(CurrencyConverter converter)
     {
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, transactions);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
         this.fifoCost = cost.getFifoCost();
         this.movingAverageCost = cost.getMovingAverageCost();
 
@@ -454,16 +470,17 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDividends(CurrencyConverter converter)
     {
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security, transactions);
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
+        this.rateOfReturnPerYear = dividends.getRateOfReturnPerYear();
     }
 
     private void calculatePeriodicity(CurrencyConverter converter)
     {
         // periodicity is calculated by looking at all dividend transactions, so
-        // collect them
+        // collect all of them instead of using just a fraction in the current filter
         List<Transaction> allTransactions = security.getTransactions(client).stream()
                         .filter(t -> t.getTransaction() instanceof AccountTransaction) //
                         .filter(t -> {
@@ -473,7 +490,7 @@ public final class SecurityPerformanceRecord implements Adaptable
                         .map(t -> DividendTransaction.from((AccountTransaction) t.getTransaction()))
                         .collect(Collectors.toList());
 
-        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, allTransactions);
+        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security, allTransactions);
         this.periodicity = allDividends.getPeriodicity();
     }
 }

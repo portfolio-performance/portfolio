@@ -4,11 +4,13 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */abstract class Calculation
 {
+    private Security security;
     private String termCurrency;
 
     /**
@@ -16,6 +18,27 @@ import name.abuchen.portfolio.money.CurrencyConverter;
      */
     public void finish()
     {}
+    
+    /**
+     * Gets the underlying {@link Security}.
+     * 
+     * @return {@link Security} on success, else null
+     */
+    public Security getSecurity()
+    {
+        return this.security;
+    }
+    
+    /**
+     * Sets the underlying {@link Security}.
+     * 
+     * @param security
+     *            {@link Security} (can be null)
+     */
+    public void setSecurity(Security security)
+    {
+        this.security = security;
+    }
     
     public String getTermCurrency()
     {
@@ -61,12 +84,13 @@ import name.abuchen.portfolio.money.CurrencyConverter;
         }
     }
 
-    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter,
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
                     List<? extends Transaction> transactions)
     {
         try
         {
             T thing = type.newInstance();
+            thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
             thing.visitAll(converter, transactions);
             thing.finish();

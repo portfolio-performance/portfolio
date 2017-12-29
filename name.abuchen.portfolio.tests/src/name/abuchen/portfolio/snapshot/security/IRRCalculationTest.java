@@ -48,7 +48,7 @@ public class IRRCalculationTest
                         security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
                         Values.Amount.factorize(10), Values.Amount.factorize(30)));
 
-        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), tx);
+        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security, tx);
 
         // Excel verification
         // 31.12.15 -1000
