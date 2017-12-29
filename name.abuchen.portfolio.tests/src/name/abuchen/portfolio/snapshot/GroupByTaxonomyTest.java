@@ -11,10 +11,12 @@ import java.util.List;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TaxonomyBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -23,6 +25,8 @@ import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 
 @SuppressWarnings("nls")
 public class GroupByTaxonomyTest
@@ -223,4 +227,54 @@ public class GroupByTaxonomyTest
         assertThat(unassigned.getPositions().size(), is(1));
     }
 
+    @Test
+    public void testThatAccountsAreClassifiedCorrectlyWhenFiltered()
+    {
+        // bug report:
+        // https://forum.portfolio-performance.info/t/vermoegensaufstellung-klassifizierung-mit-filter/1129
+
+        Client client = new Client();
+
+        Taxonomy taxonomy = new TaxonomyBuilder() //
+                        .addClassification("debt") //
+                        .addTo(client);
+
+        Security a = new SecurityBuilder() //
+                        .addPrice("2010-01-01", Values.Quote.factorize(10)) //
+                        .assign(taxonomy, "debt", Classification.ONE_HUNDRED_PERCENT) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2010-01-01", Values.Amount.factorize(100))
+                        .assign(taxonomy, "debt", Classification.ONE_HUNDRED_PERCENT) //
+                        .addTo(client);
+
+        new PortfolioBuilder(account) //
+                        .inbound_delivery(a, "2010-01-01", Values.Share.factorize(10), 10000) //
+                        .addTo(client);
+
+        ClientFilter filter = new ClientClassificationFilter(taxonomy.getClassificationById("debt"));
+        
+        LocalDate date = LocalDate.parse("2010-01-01");
+        ClientSnapshot snapshot = ClientSnapshot.create(filter.filter(client), new TestCurrencyConverter(), date);
+        assertNotNull(snapshot);
+
+        GroupByTaxonomy grouping = snapshot.groupByTaxonomy(taxonomy);
+
+        // everything is classified
+        assertThat(grouping.asList().size(), is(1));
+
+        // two positions in 'debt' category
+        AssetCategory debt = grouping.byClassification(taxonomy.getClassificationById("debt"));
+        assertThat(debt.getValuation(), is(Money.of(CurrencyUnit.EUR, Values.Money.factorize(200))));
+        assertThat(debt.getPositions().size(), is(2));
+        
+        // nothing in unassigned
+        AssetCategory unassigned = null;
+        for (AssetCategory category : grouping.asList())
+            if (category.getClassification().getId().equals(Classification.UNASSIGNED_ID))
+                unassigned = category;
+        
+        assertThat(unassigned, nullValue());
+    }
 }

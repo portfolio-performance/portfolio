@@ -90,11 +90,18 @@ public class StockSplitModel extends BindingHelper.Model
                         this.changeHistoricalQuotes = changeHistoricalQuotes);
     }
 
+    public void setEvent(SecurityEvent event)
+    {
+        setExDate(event.getDate());
+        setOldShares((int) event.getRatio()[0]);
+        setNewShares((int) event.getRatio()[1]);
+    }
+
     @Override
     public void applyChanges()
     {
-        SecurityEvent event = new SecurityEvent(exDate, SecurityEvent.Type.STOCK_SPLIT, newShares + ":" + oldShares); //$NON-NLS-1$
-        security.addEvent(event);
+
+        security.addEvent((new SecurityEvent(exDate, SecurityEvent.Type.STOCK_SPLIT)).setRatio(newShares, oldShares));
 
         if (isChangeTransactions())
         {

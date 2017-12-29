@@ -27,15 +27,9 @@ public final class ManualQuoteFeed extends QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
-        boolean isUpdated = false;
-        for (Security security : securities)
-        {
-            boolean isAdded = security.setLatest((LatestSecurityPrice) null);
-            isUpdated = isUpdated || isAdded;
-        }
-        return isUpdated;
+        return security.setLatest((LatestSecurityPrice) null);
     }
 
     @Override

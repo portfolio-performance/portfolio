@@ -48,7 +48,7 @@ public class SecurityIndexTest
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -93,7 +93,7 @@ public class SecurityIndexTest
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -150,7 +150,7 @@ public class SecurityIndexTest
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -198,7 +198,7 @@ public class SecurityIndexTest
 
         ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts

@@ -4,17 +4,13 @@ import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
-
-import name.abuchen.portfolio.ui.util.Colors;
 
 final class DashboardResources
 {
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
-    private Color headingColor;
     private Font kpiFont;
     private Font boldFont;
     private Font smallFont;
@@ -29,8 +25,6 @@ final class DashboardResources
 
         smallFont = resourceManager.createFont(FontDescriptor.createFrom(container.getFont()).increaseHeight(-2));
 
-        headingColor = resourceManager.createColor(Colors.HEADINGS.swt());
-
         container.addDisposeListener(e -> resourceManager.dispose());
     }
 
@@ -42,11 +36,6 @@ final class DashboardResources
     public Font getSmallFont()
     {
         return smallFont;
-    }
-
-    public Color getHeadingColor()
-    {
-        return headingColor;
     }
 
     public Font getKpiFont()

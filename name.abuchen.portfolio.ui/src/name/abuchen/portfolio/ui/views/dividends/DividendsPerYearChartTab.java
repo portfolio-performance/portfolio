@@ -60,9 +60,7 @@ public class DividendsPerYearChartTab extends AbstractChartTab
 
             Color foregroundColor = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
             container.setForeground(foregroundColor);
-            Color backgroundColor = new Color(container.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
-            container.addDisposeListener(e -> backgroundColor.dispose());
-            container.setBackground(backgroundColor);
+            container.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setForeground(foregroundColor);
@@ -149,6 +147,6 @@ public class DividendsPerYearChartTab extends AbstractChartTab
 
         IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
         barSeries.setYSeries(series);
-        barSeries.setBarColor(getResources().createColor(Colors.HEADINGS.swt()));
+        barSeries.setBarColor(Colors.DARK_BLUE);
     }
 }

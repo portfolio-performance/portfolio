@@ -35,6 +35,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -272,7 +273,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
@@ -301,7 +302,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // add empty security only if it has not been added previously
         // --> happens when editing an existing transaction
         if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
+        {
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
+            
+            if (model().getSecurity() == null)
+                model().setSecurity(AccountTransactionModel.EMPTY_SECURITY);
+        }
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
@@ -329,7 +335,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
-        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
+        ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate().minusDays((long) model().getSecurity().getDelayedDividend()));
 
         if (snapshot != null && model().getSecurity() != null)
         {
@@ -340,7 +346,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             if (list.size() > 1)
             {
                 for (PortfolioSnapshot ps : list)
-                    addAction(manager, ps, ps.getSource().getName());
+                    addAction(manager, ps, ps.getPortfolio().getName());
             }
         }
 
@@ -417,6 +423,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     public void setTransaction(Account account, AccountTransaction transaction)
     {
         model().setSource(account, transaction);
+    }
+
+    public void setEvent(SecurityEvent event)
+    {
+        model().setEvent(event);
     }
 
 }

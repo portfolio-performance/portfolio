@@ -13,14 +13,23 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
+    boolean normalize = false;
+
     /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
     {
         super(client, converter, reportInterval);
+    }
+
+    /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval, boolean normalize)
+    {
+        super(client, converter, reportInterval);
+        this.normalize = normalize;
     }
 
     /* package */void calculate(List<Exception> warnings)
@@ -48,7 +57,9 @@ import name.abuchen.portfolio.util.Interval;
         totals = new long[size];
         delta = new double[size];
         accumulated = new double[size];
-        transferals = new long[size];
+        accumulatedNormalized = new double[size];
+        inboundTransferals = new long[size];
+        outboundTransferals = new long[size];
         taxes = new long[size];
         dividends = new long[size];
         interest = new long[size];
@@ -60,11 +71,13 @@ import name.abuchen.portfolio.util.Interval;
         dates[0] = interval.getStart();
         delta[0] = 0;
         accumulated[0] = 0;
+        accumulatedNormalized[0] = 0;
         ClientSnapshot snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[0]);
         long valuation = totals[0] = snapshot.getMonetaryAssets().getAmount();
 
         // calculate series
         int index = 1;
+        int invested = 0;
         LocalDate date = interval.getStart().plusDays(1);
         while (date.compareTo(interval.getEnd()) <= 0)
         {
@@ -72,33 +85,39 @@ import name.abuchen.portfolio.util.Interval;
 
             snapshot = ClientSnapshot.create(getClient(), getCurrencyConverter(), dates[index]);
             long thisValuation = totals[index] = snapshot.getMonetaryAssets().getAmount();
-            long thisDelta = thisValuation - transferals[index] - valuation;
+            if (thisValuation != 0)
+                invested++;
 
-            if (valuation == 0)
+            if (valuation + inboundTransferals[index] == 0)
             {
                 delta[index] = 0;
 
-                if (thisDelta != 0d)
+                long thisDelta = thisValuation - inboundTransferals[index] + outboundTransferals[index] - valuation;
+                if (thisDelta != 0)
                 {
-                    if (transferals[index] != 0)
-                        delta[index] = (double) thisDelta / (double) transferals[index];
-                    else
-                        warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets,
-                                        thisDelta,
-                                        date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))));
+                    warnings.add(new RuntimeException(MessageFormat.format(Messages.MsgDeltaWithoutAssets,
+                                    Values.Amount.format(thisDelta),
+                                    date.format(DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM)))));
                 }
             }
             else
             {
-                delta[index] = (double) thisDelta / (double) valuation;
+                delta[index] = ((double) (thisValuation + outboundTransferals[index]) - (double) (valuation + inboundTransferals[index])) 
+                                / Math.abs((double) (valuation + inboundTransferals[index]));
             }
 
             accumulated[index] = ((accumulated[index - 1] + 1) * (delta[index] + 1)) - 1;
+            if (invested > 0)
+                accumulatedNormalized[index] = (double) ((accumulated[index] / invested) * 365);
+            else
+                accumulatedNormalized[index] = 0;
 
             date = date.plusDays(1);
             valuation = thisValuation;
             index++;
         }
+        if (normalize)
+            accumulated = accumulatedNormalized;
     }
 
     protected void addValue(long[] array, String currencyCode, long value, Interval interval, LocalDate time)
@@ -126,11 +145,11 @@ import name.abuchen.portfolio.util.Interval;
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
-                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDate());
                                         break;
                                     case REMOVAL:
-                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
+                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDate());
                                         break;
                                     case TAXES:
@@ -146,11 +165,15 @@ import name.abuchen.portfolio.util.Interval;
                                         break;
                                     case INTEREST:
                                         addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, t.getDate());
                                         break;
                                     case INTEREST_CHARGE:
                                         addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
                                         addValue(interestCharge, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDate());
+                                        addValue(taxes, t.getCurrencyCode(), -t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, t.getDate());
                                         break;
                                     default:
                                         // do nothing
@@ -175,11 +198,11 @@ import name.abuchen.portfolio.util.Interval;
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
-                                        addValue(transferals, t.getCurrencyCode(), t.getAmount(), interval,
+                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDate());
                                         break;
                                     case DELIVERY_OUTBOUND:
-                                        addValue(transferals, t.getCurrencyCode(), -t.getAmount(), interval,
+                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
                                                         t.getDate());
                                         break;
                                     default:

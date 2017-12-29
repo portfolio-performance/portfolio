@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -226,7 +225,7 @@ abstract class HTMLTableParser
             }
             catch (Exception e)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgParsingFailedWithHTML, cells.toString())));
+                errors.add(new IOException(MessageFormat.format(Messages.MsgParsingFailedWithHTML, spec.column.toString() + " [" + spec.index + "] : " + cells.toString())));
             }
         }
 

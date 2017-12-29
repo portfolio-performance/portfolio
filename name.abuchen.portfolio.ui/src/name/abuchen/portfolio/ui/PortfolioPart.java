@@ -41,7 +41,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -61,6 +60,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.ExceptionView;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -121,7 +123,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     IEclipsePreferences preferences;
 
     @PostConstruct
-    public void createComposite(Composite parent, MPart part) throws IOException
+    public void createComposite(Composite parent, MPart part)
     {
         // is client available? (e.g. via new file wizard)
         Client attachedClient = (Client) part.getTransientData().get(Client.class.getName());
@@ -163,25 +165,34 @@ public class PortfolioPart implements LoadClientThread.Callback
         container = new Composite(parent, SWT.NONE);
         container.setLayout(new FillLayout());
 
-        SashForm sash = new SashForm(container, SWT.HORIZONTAL | SWT.SMOOTH);
-        sash.setSashWidth(3);
+        Composite sash = new Composite(container, SWT.NONE);
+        SashLayout sashLayout = new SashLayout(sash, SWT.HORIZONTAL | SWT.BEGINNING);
+        sash.setLayout(sashLayout);
 
         Composite navigationBar = new Composite(sash, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
+        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
         ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
 
-        ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
+        sashLayout.addQuickNavigation(sidebar::menuAboutToShow);
 
+        Composite divider = new Composite(navigationBar, SWT.NONE);
+        divider.setBackground(Colors.SIDEBAR_BORDER);
+        GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
+
+        ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
 
         book = new PageBook(sash, SWT.NONE);
 
-        SashHelper sashHelper = new SashHelper(PortfolioPart.class.getSimpleName() + "-sash", getPreferenceStore()); //$NON-NLS-1$
-        sashHelper.setConstantWidth(new int[] { 180, -1 });
-        sashHelper.attachTo(sash);
+        // restore & save size of navigation bar
+        final String sashIdentifier = PortfolioPart.class.getSimpleName() + "-newsash"; //$NON-NLS-1$
+        int size = getPreferenceStore().getInt(sashIdentifier);
+        navigationBar.setLayoutData(new SashLayoutData(size != 0 ? size : 180));
+        sash.addDisposeListener(e -> getPreferenceStore().setValue(sashIdentifier,
+                        ((SashLayoutData) navigationBar.getLayoutData()).getSize()));
 
         sidebar.selectDefaultView();
 
@@ -338,7 +349,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     public void destroy()
     {
         if (clientFile != null)
-            storePreferences();
+            storePreferences(false);
 
         regularJobs.forEach(Job::cancel);
     }
@@ -363,7 +374,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
             dirty.setDirty(false);
 
-            storePreferences();
+            storePreferences(false);
         }
         catch (IOException e)
         {
@@ -398,6 +409,7 @@ public class PortfolioPart implements LoadClientThread.Callback
     public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod) // NOSONAR
     {
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setOverwrite(true);
 
         // if an extension is given, make sure the file name proposal has the
         // right extension in the save as dialog
@@ -443,7 +455,7 @@ public class PortfolioPart implements LoadClientThread.Callback
             part.setLabel(clientFile.getName());
             part.setTooltip(clientFile.getAbsolutePath());
 
-            storePreferences();
+            storePreferences(true);
         }
         catch (IOException e)
         {
@@ -540,14 +552,19 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     private void scheduleOnlineUpdateJobs()
     {
-        if (!"no".equals(System.getProperty("name.abuchen.portfolio.auto-updates"))) //$NON-NLS-1$ //$NON-NLS-2$
+        if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
         {
-            new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC))
-                            .schedule(1000);
+            Job initialQuoteUpdate = new UpdateQuotesJob(client,
+                            EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
+            initialQuoteUpdate.schedule(1000);
 
-            int tenMinutes = 1000 * 60 * 10;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(tenMinutes);
-            job.schedule(tenMinutes);
+            CreateInvestmentPlanTxJob checkInvestmentPlans = make(CreateInvestmentPlanTxJob.class, this);
+            checkInvestmentPlans.startAfter(initialQuoteUpdate);
+            checkInvestmentPlans.schedule(1100);
+
+            int thirtyMinutes = 1000 * 60 * 30;
+            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
+            job.schedule(thirtyMinutes);
             regularJobs.add(job);
 
             int sixHours = 1000 * 60 * 60 * 6;
@@ -609,9 +626,9 @@ public class PortfolioPart implements LoadClientThread.Callback
         getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
 
-    private void storePreferences()
+    private void storePreferences(boolean forceWrite)
     {
-        if (clientFile != null && preferenceStore.needsSaving())
+        if (clientFile != null && (forceWrite || preferenceStore.needsSaving()))
         {
             try
             {
@@ -647,21 +664,35 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     private File getPreferenceStoreFile(File file) throws IOException
     {
-        try
+        boolean storeNextToFile = preferences.getBoolean(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
+
+        if (storeNextToFile)
         {
-            byte[] digest = MessageDigest.getInstance("MD5").digest(file.getAbsolutePath().getBytes()); //$NON-NLS-1$
-
-            StringBuilder filename = new StringBuilder();
-            filename.append("prf_"); //$NON-NLS-1$
-            for (int i = 0; i < digest.length; i++)
-                filename.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
-            filename.append(".txt"); //$NON-NLS-1$
-
-            return new File(PortfolioPlugin.getDefault().getStateLocation().toFile(), filename.toString());
+            String filename = file.getName();
+            int last = filename.lastIndexOf('.');
+            if (last > 0)
+                filename = filename.substring(0, last);
+            
+            return new File(file.getParentFile(), filename + ".settings"); //$NON-NLS-1$
         }
-        catch (NoSuchAlgorithmException e)
+        else
         {
-            throw new IOException(e);
+            try
+            {
+                byte[] digest = MessageDigest.getInstance("MD5").digest(file.getAbsolutePath().getBytes()); //$NON-NLS-1$
+
+                StringBuilder filename = new StringBuilder();
+                filename.append("prf_"); //$NON-NLS-1$
+                for (int i = 0; i < digest.length; i++)
+                    filename.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
+                filename.append(".txt"); //$NON-NLS-1$
+
+                return new File(PortfolioPlugin.getDefault().getStateLocation().toFile(), filename.toString());
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                throw new IOException(e);
+            }
         }
     }
 

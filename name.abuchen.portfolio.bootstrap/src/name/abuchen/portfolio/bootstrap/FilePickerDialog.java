@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Table;
 public class FilePickerDialog extends Dialog
 {
     public static final int SAVE_ALL = 42;
+    public static final int SAVE_NONE = 43;
 
     private LabelProvider labelProvider;
 
@@ -56,14 +57,15 @@ public class FilePickerDialog extends Dialog
     {
         super.createButtonsForButtonBar(parent);
         createButton(parent, SAVE_ALL, Messages.LabelSaveAll, false);
+        createButton(parent, SAVE_NONE, Messages.LabelSaveNone, false);
     }
 
     @Override
     protected void buttonPressed(int buttonId)
     {
-        if (buttonId == SAVE_ALL)
+        if (buttonId == SAVE_ALL || buttonId == SAVE_NONE)
         {
-            setReturnCode(SAVE_ALL);
+            setReturnCode(buttonId);
             close();
         }
         else

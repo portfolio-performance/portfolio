@@ -181,7 +181,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         String label = getTotalLabel();
         Input total = new Input(editArea, "= " + label); //$NON-NLS-1$
-        total.bindValue(Properties.total.name(), label, Values.Amount, true);
+        total.bindValue(Properties.total.name(), label, Values.Amount,
+                        model().getType() != PortfolioTransaction.Type.DELIVERY_OUTBOUND);
         total.bindCurrency(Properties.transactionCurrencyCode.name());
 
         // note

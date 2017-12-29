@@ -68,6 +68,17 @@ public final class CurrencyUnit implements Comparable<CurrencyUnit>
         return CACHE.get(currencyCode);
     }
 
+    public static boolean isCurrencyCode(String currencyCode)
+    {
+        List<CurrencyUnit> currencies = getAvailableCurrencyUnits();
+        for (CurrencyUnit currency : currencies)
+        {
+            if (currency.currencyCode.equals((String) currencyCode))
+                return true;
+        }
+        return false;
+    }
+
     public String getCurrencyCode()
     {
         return currencyCode;

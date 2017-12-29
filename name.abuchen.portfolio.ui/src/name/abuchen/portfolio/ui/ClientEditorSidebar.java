@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Sidebar.Entry;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 /* package */class ClientEditorSidebar
 {
@@ -118,6 +119,36 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
         });
 
         return scrolledComposite;
+    }
+
+    public void menuAboutToShow(IMenuManager menuManager)
+    {
+        // entries is a flat list of all entries
+
+        MenuManager subMenu = null;
+        for (Entry entry : sidebar.getEntries())
+        {
+            int indent = entry.getIndent();
+            Action action = entry.getAction();
+
+            if (indent == 0)
+            {
+                subMenu = new MenuManager(entry.getLabel());
+                menuManager.add(subMenu);
+            }
+            else
+            {
+                if (subMenu == null || action == null)
+                    continue;
+
+                // cannot use the original action b/c it will not highlight the selected entry
+                // in the sidebar
+                String text = indent > Sidebar.STEP ? "- " + action.getText() : action.getText(); //$NON-NLS-1$
+                SimpleAction menuAction = new SimpleAction(text, a -> sidebar.select(entry));
+                menuAction.setImageDescriptor(action.getImageDescriptor());
+                subMenu.add(menuAction);
+            }
+        }
     }
 
     public void selectDefaultView()

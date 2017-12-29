@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: %Bundle-Name
 Bundle-SymbolicName: name.abuchen.portfolio
-Bundle-Version: 0.26.4.qualifier
+Bundle-Version: 0.28.5.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.datatransfer,
@@ -18,13 +18,15 @@ Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.snapshot.filter,
  name.abuchen.portfolio.snapshot.security,
  name.abuchen.portfolio.util
-Import-Package: com.thoughtworks.xstream;version="1.4.7",
+Import-Package: com.google.common.util.concurrent;version="23.5.0",
+ com.thoughtworks.xstream;version="1.4.7",
  com.thoughtworks.xstream.converters;version="1.4.7",
  com.thoughtworks.xstream.converters.basic;version="1.4.7",
  com.thoughtworks.xstream.converters.reflection;version="1.4.7",
  com.thoughtworks.xstream.io;version="1.4.7",
  com.thoughtworks.xstream.mapper;version="1.4.7",
  org.apache.commons.csv;version="1.0.0.BUILD-20080106",
+ org.apache.commons.lang3;version="3.4.0",
  org.apache.pdfbox.pdmodel;version="1.8.7",
  org.apache.pdfbox.util;version="1.8.7",
  org.eclipse.e4.core.di.annotations,

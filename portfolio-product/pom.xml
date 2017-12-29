@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.26.4-SNAPSHOT</version>
+		<version>0.28.5-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
@@ -94,7 +94,7 @@
 						</property>
 						<property>
 							<name>CFBundleLocalizations</name>
-							<value>[en,de]</value>
+							<value>[en]</value>
 						</property>
 						<property>
 							<name>Eclipse</name>

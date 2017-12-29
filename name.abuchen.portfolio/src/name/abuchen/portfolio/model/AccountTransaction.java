@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Values;
 
 public class AccountTransaction extends Transaction
 {
@@ -119,5 +120,12 @@ public class AccountTransaction extends Transaction
     public Money getGrossValue()
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s %-17s %s %9s %s", Values.Date.format(getDate()), type.name(), getCurrencyCode(), //$NON-NLS-1$
+                        Values.Amount.format(getAmount()), getSecurity() != null ? getSecurity().getName() : ""); //$NON-NLS-1$
     }
 }

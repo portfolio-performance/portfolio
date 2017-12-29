@@ -79,6 +79,10 @@ public class CustomSaveHandler extends PartServiceSaveHandler
         {
             Arrays.fill(answer, Save.YES);
         }
+        else if (returnCode == FilePickerDialog.SAVE_NONE)
+        {
+            Arrays.fill(answer, Save.NO);
+        }
         else if (returnCode == Dialog.CANCEL)
         {
             Arrays.fill(answer, Save.CANCEL);

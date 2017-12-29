@@ -5,7 +5,6 @@ import java.util.function.Supplier;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -42,17 +41,15 @@ public final class InfoToolTip extends ToolTip
     protected Composite createToolTipContentArea(Event event, Composite parent)
     {
         Composite result = new Composite(parent, SWT.NONE);
-        Color background = new Color(result.getDisplay(), Colors.INFO_TOOLTIP_BACKGROUND.swt());
-        result.addDisposeListener(e -> background.dispose());
 
-        result.setBackground(background);
+        result.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
         result.setLayout(new GridLayout());
 
         // create tool tip with a reasonable width
         int width = SWTHelper.stringWidth(result, "ABCDEFGHIJK") * 5; //$NON-NLS-1$
 
         Text text = new Text(result, SWT.WRAP);
-        text.setBackground(background);
+        text.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
         text.setForeground(parent.getDisplay().getSystemColor(SWT.COLOR_BLACK));
         text.setText(message.get());
         GridData gridData = new GridData();

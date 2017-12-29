@@ -37,6 +37,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private int    delayedDividend;
 
     // feed and feedURL are used to update historical prices
     private String feed;
@@ -174,6 +175,16 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setWkn(String wkn)
     {
         this.wkn = wkn;
+    }
+
+    public int getDelayedDividend()
+    {
+        return delayedDividend;
+    }
+
+    public void setDelayedDividend(int delayedDividend)
+    {
+        this.delayedDividend = delayedDividend;
     }
 
     /**
@@ -404,11 +415,13 @@ public final class Security implements Attributable, InvestmentVehicle
         }
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
@@ -434,11 +447,53 @@ public final class Security implements Attributable, InvestmentVehicle
         this.eventFeedURL = eventFeedURL;
     }
 
-    public List<SecurityEvent> getEvents()
+    public List<SecurityEvent> getAllEvents()
     {
         if (this.events == null)
             this.events = new ArrayList<>();
         return events;
+    }
+
+    public List<SecurityEvent> getEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getInvisibleEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (!e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getEvents(SecurityEvent.Type type)
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.getType().equals(type))
+            {
+                list.add(e);
+            }
+        }
+        return list;
     }
 
     public boolean addEvent(SecurityEvent event)
@@ -455,6 +510,12 @@ public final class Security implements Attributable, InvestmentVehicle
             this.events.add(event);
         return add;
     }
+
+    public void removeEvent(SecurityEvent event)
+    {
+        events.remove(event);
+    }
+
 
     public void removeAllEvents()
     {
@@ -485,7 +546,10 @@ public final class Security implements Attributable, InvestmentVehicle
                             .filter(t -> this.equals(t.getSecurity()))
                             .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
                                             || t.getType() == AccountTransaction.Type.DIVIDENDS
-                                            || t.getType() == AccountTransaction.Type.TAX_REFUND)
+                                            || t.getType() == AccountTransaction.Type.TAXES
+                                            || t.getType() == AccountTransaction.Type.TAX_REFUND
+                                            || t.getType() == AccountTransaction.Type.FEES
+                                            || t.getType() == AccountTransaction.Type.FEES_REFUND)
                             .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
                             .forEach(answer::add);
         }
@@ -535,6 +599,7 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
+        answer.delayedDividend = delayedDividend;
 
         answer.feed = feed;
         answer.feedURL = feedURL;

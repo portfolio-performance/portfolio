@@ -10,6 +10,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Before;
+import org.junit.Test;
+
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.checks.QuickFix;
@@ -22,9 +25,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-
-import org.junit.Before;
-import org.junit.Test;
 
 public class CrossEntryCheckTest
 {
@@ -89,6 +89,7 @@ public class CrossEntryCheckTest
         entry.setDate(LocalDate.now());
         entry.setSecurity(security);
         entry.setShares(1);
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(100);
         entry.insert();
 

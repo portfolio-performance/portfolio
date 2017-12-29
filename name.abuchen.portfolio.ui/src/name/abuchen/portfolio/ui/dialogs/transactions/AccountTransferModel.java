@@ -84,6 +84,8 @@ public class AccountTransferModel extends AbstractModel
             }
 
             t = new AccountTransferEntry(sourceAccount, targetAccount);
+            t.getSourceTransaction().setCurrencyCode(sourceAccount.getCurrencyCode());
+            t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
             t.insert();
         }
 
@@ -94,9 +96,6 @@ public class AccountTransferModel extends AbstractModel
         // needs to be stored
 
         AccountTransaction sourceTransaction = t.getSourceTransaction();
-
-        sourceTransaction.setCurrencyCode(sourceAccount.getCurrencyCode());
-        t.getTargetTransaction().setCurrencyCode(targetAccount.getCurrencyCode());
 
         sourceTransaction.clearUnits();
 

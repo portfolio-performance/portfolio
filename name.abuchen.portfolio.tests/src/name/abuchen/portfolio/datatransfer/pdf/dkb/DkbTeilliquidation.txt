@@ -1,0 +1,25 @@
+﻿10919 Berlin
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Auftragsnummer 9861232600
+Herrn Datum 31.05.2016
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Teilliquidation mit Nennwertreduzierung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 2.000,00 6,875 % MS DEUTSCHLAND GMBH DE000A1RE7V0 (A1RE7V)
+INH.-SCHV. V.2012(2017)
+Rückzahlungskurs 100 % Rückzahlungsdatum 13.01.2016
+Rückzahlungswährung EUR Fälligkeitstag 13.01.2016
+Bestandsstichtag 12.01.2016
+Rückzahlungsbetrag 2.000,00+ EUR
+Ausmachender Betrag 2.000,00+ EUR
+Den Betrag buchen wir mit Valuta 13.01.2016 zu Gunsten des Kontos 16765097 (IBAN DE30 1203 0000 0026 6741 97),
+BLZ 12030000 (BIC BYLADEM1001).
+Es wurde keine Steuerbescheinigung erstellt.
+Steuerliche Ausgleichrechnung
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.05312348.0000037FA02

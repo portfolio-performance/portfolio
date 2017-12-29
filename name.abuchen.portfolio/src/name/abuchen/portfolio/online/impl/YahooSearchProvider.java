@@ -32,7 +32,7 @@ import name.abuchen.portfolio.online.impl.YahooSymbolSearch.Result;
 public class YahooSearchProvider implements SecuritySearchProvider
 {
     private static final String SEARCH_URL = "https://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
-    private static final String LOOKUP_URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snl1"; //$NON-NLS-1$
+    private static final String LOOKUP_URL = "https://download.finance.yahoo.com/d/quotes.csv?s=%s&f=snl1"; //$NON-NLS-1$
 
     private static final ThreadLocal<DecimalFormat> FMT_INDEX = new ThreadLocal<DecimalFormat>()
     {

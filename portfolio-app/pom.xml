@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
@@ -9,14 +8,17 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.26.4-SNAPSHOT</version>
+	<version>0.28.5-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>0.26.0</tycho-version>
-		<jarsigner.plugin.version>1.4</jarsigner.plugin.version>
+		<tycho-version>1.0.0</tycho-version>
+		<!-- jarsigner 1.4 does not support the certchain attribute (needed b/c 
+			the hardware token does not contain the whole certificate chain). Using the 
+			1.5-SNAPSHOT build which supports the argument since Aug 2017 -->
+		<jarsigner.plugin.version>1.5-SNAPSHOT</jarsigner.plugin.version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
@@ -29,6 +31,7 @@
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
+		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
 		<module>../portfolio-product</module>
@@ -50,17 +53,17 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20160520211859/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository</url>
 		</repository>
 		<repository>
 			<id>eclipse-luna</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.2-201611241400</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/mars</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/neon</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
@@ -130,12 +133,17 @@
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>1.8.8</version>
+			<version>1.8.13</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
+		</dependency>
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>23.5-jre</version>
 		</dependency>
 	</dependencies>
 
@@ -186,6 +194,13 @@
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.ui.ide</id>
 							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.osgi</id>
+							<restrictTo>
+								<version>3.11.3.v20170209-1843</version>
+							</restrictTo>
 						</filter>
 					</filters>
 				</configuration>
@@ -274,11 +289,14 @@
 						<skip>${jarsigner.skip}</skip>
 						<certs>true</certs>
 						<verbose>true</verbose>
-						<keystore>${keystore}</keystore>
-						<alias>${alias}</alias>
-						<storepass>${storepass}</storepass>
-						<keypass>${keypass}</keypass>
-						<tsa>https://timestamp.geotrust.com/tsa</tsa>
+						<keystore>NONE</keystore>
+						<storetype>PKCS11</storetype>
+						<providerClass>sun.security.pkcs11.SunPKCS11</providerClass>
+						<storepass>${jarsigner.storepass}</storepass>
+						<alias>Open Source Developer, Andreas Buchen</alias>
+						<providerArg>${jarsigner.providerArg}</providerArg>
+						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
+						<tsa>http://time.certum.pl/</tsa>
 					</configuration>
 				</plugin>
 				<plugin>
@@ -320,7 +338,7 @@
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.1</version>
+					<version>1.2</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

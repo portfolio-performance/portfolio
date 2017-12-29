@@ -11,13 +11,19 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -369,5 +375,50 @@ public class CSVAccountTransactionExtractorTest
         assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 10_00)));
+    }
+
+    @Test
+    public void testDetectionOfFeeRefunds()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        // setup custom mapping from string -> type
+
+        Map<String, Column> field2column = buildField2Column(extractor);
+        Column typeColumn = field2column.get(Messages.CSVColumn_Type);
+        @SuppressWarnings("unchecked")
+        EnumField<AccountTransaction.Type> field = (EnumField<AccountTransaction.Type>) typeColumn.getField();
+
+        EnumMapFormat<AccountTransaction.Type> format = field.createFormat();
+        format.map().put(AccountTransaction.Type.FEES_REFUND, "Gebührenerstattung");
+        format.map().put(AccountTransaction.Type.FEES, "Gebühren");
+        typeColumn.setFormat(new FieldFormat(Messages.CSVColumn_Type, format));
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList( //
+                        new String[] { "2017-04-21", "", "", "", "10", "", "Gebührenerstattung", "", "", "", "" },
+                        new String[] { "2017-04-21", "", "", "", "20", "", "Gebühren", "", "", "", "" }),
+                        field2column, errors);
+
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        AccountTransaction t1 = (AccountTransaction) results.stream() //
+                        .filter(i -> i instanceof TransactionItem) //
+                        .filter(i -> ((AccountTransaction) ((TransactionItem) i).getSubject())
+                                        .getType() == AccountTransaction.Type.FEES_REFUND)
+                        .findAny().get().getSubject();
+
+        assertThat(t1.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10))));
+
+        AccountTransaction t2 = (AccountTransaction) results.stream() //
+                        .filter(i -> i instanceof TransactionItem) //
+                        .filter(i -> ((AccountTransaction) ((TransactionItem) i).getSubject())
+                                        .getType() == AccountTransaction.Type.FEES)
+                        .findAny().get().getSubject();
+
+        assertThat(t2.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20))));
     }
 }

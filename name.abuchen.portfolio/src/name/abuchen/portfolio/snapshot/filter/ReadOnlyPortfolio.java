@@ -14,6 +14,7 @@ public class ReadOnlyPortfolio extends Portfolio
     ReadOnlyPortfolio(Portfolio source)
     {
         this.source = Objects.requireNonNull(source);
+        this.setName(source.getName());
     }
 
     public Portfolio getSource()

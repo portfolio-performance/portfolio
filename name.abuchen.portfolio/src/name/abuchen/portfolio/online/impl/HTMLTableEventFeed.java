@@ -34,20 +34,19 @@ public class HTMLTableEventFeed extends EventFeed
     }
 
     @Override
-    public boolean update(List<Security> securities, List<Exception> errors)
+    public boolean updateLatest(Security security, List<Exception> errors)
     {
         return false;
     }
-
     @Override
-    public boolean update(Security security, List<Exception> errors)
+    public boolean updateHistorical(Security security, List<Exception> errors)
     {
         List<SecurityEvent> events = internalGetEvents(security, security.getEventFeedURL(), errors);
 
         boolean isUpdated = false;
         for (SecurityEvent event: events)
         {
-            boolean isAdded = security.addEvent(new SecurityEvent(event.getDate(), event.getType(), event.getDetails()));
+            boolean isAdded = security.addEvent(event);
             isUpdated = isUpdated || isAdded;
         }
 

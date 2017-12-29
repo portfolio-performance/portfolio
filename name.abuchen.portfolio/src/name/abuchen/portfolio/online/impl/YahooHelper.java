@@ -10,7 +10,7 @@ import java.util.Locale;
 
 import name.abuchen.portfolio.money.Values;
 
-/* package */class YahooHelper
+public /* package */class YahooHelper
 {
     static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
@@ -35,7 +35,7 @@ import name.abuchen.portfolio.money.Values;
         if (isNotApplicable(s)) //$NON-NLS-1$
             return -1;
         BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
-        return v.multiply(Values.Quote.getBigDecimalFactor()).longValue();
+        return v.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
     }
 
     static double asDouble(String s) throws ParseException
@@ -43,6 +43,13 @@ import name.abuchen.portfolio.money.Values;
         if (isNotApplicable(s)) //$NON-NLS-1$
             return -1;
         return (double) FMT_PRICE.get().parse(s).doubleValue();
+    }
+
+    static BigDecimal asBigDecimal(String s) throws ParseException
+    {
+        if (isNotApplicable(s)) //$NON-NLS-1$
+            return BigDecimal.ONE.multiply(BigDecimal.valueOf((long) -1));
+        return BigDecimal.valueOf(asDouble(s));
     }
 
     static int asNumber(String s) throws ParseException
@@ -61,7 +68,14 @@ import name.abuchen.portfolio.money.Values;
 
     static String stripQuotes(String s)
     {
-        return s.substring(1, s.length() - 1);
+        int firstIndex = 0;
+        int lastIndex = s.length();
+        if (s.startsWith("\""))
+            firstIndex++;
+        if (s.endsWith("\""))
+            lastIndex--;
+        //System.err.println("YahooHelper.stripQuotes: " + s.toString() + " [" + firstIndex + "," + lastIndex + "]");
+        return s.substring(firstIndex, lastIndex);
     }
 
 }

@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -31,8 +29,6 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
-
-import name.abuchen.portfolio.ui.util.Colors;
 
 public class TimelineChart extends Chart
 {
@@ -60,14 +56,11 @@ public class TimelineChart extends Chart
     private List<MarkerLine> markerLines = new ArrayList<>();
 
     private TimelineChartToolTip toolTip;
-    private final LocalResourceManager resources;
     private ChartContextMenu contextMenu;
 
     public TimelineChart(Composite parent)
     {
         super(parent, SWT.NONE);
-
-        resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
         setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
@@ -84,6 +77,14 @@ public class TimelineChart extends Chart
         yAxis.getTitle().setVisible(false);
         yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
+
+        // 2nd y axis
+        int axisId = getAxisSet().createYAxis();    
+        IAxis y2Axis = getAxisSet().getYAxis(axisId);    
+        y2Axis.getTitle().setVisible(false);    
+        y2Axis.getTick().setVisible(false);    
+        y2Axis.getGrid().setStyle(LineStyle.NONE);    
+        y2Axis.setPosition(Position.Primary); 
 
         ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
         {
@@ -132,19 +133,9 @@ public class TimelineChart extends Chart
         return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Colors color, String label)
-    {
-        return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);
-    }
-
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
     {
         return addDateSeries(dates, values, color, false, label);
-    }
-
-    public void addDateSeries(LocalDate[] dates, double[] values, Colors color, boolean showArea)
-    {
-        addDateSeries(dates, values, resources.createColor(color.swt()), showArea, color.name());
     }
 
     private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)

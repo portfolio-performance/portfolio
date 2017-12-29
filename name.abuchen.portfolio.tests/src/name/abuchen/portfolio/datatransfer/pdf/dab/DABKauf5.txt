@@ -1,0 +1,79 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=2572056006
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Frau
+Kauf  ADRESSZEILE2=Tanja Isabella Mustermann
+Kommissionsgeschäft ADRESSZEILE3=Musterstrasse 10
+Frau ADRESSZEILE4=12345 Glückstadt
+Tanja Isabella Mustermann MDJ Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Herr Werner Mustermann 2572056006
+f 26880356 / 03.03.2017
+ADRESSZEILE6=
+Frau Klara Mustermann BELEGNUMMER=467
+Musterstrasse 10 SEITENNUMMER=1
+12345 Musterstadt STEUERERSTATTUNG=N
+Depotinhaber
+Tanja Isabella Mustermann
+München, 03.03.2017
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+iShsIII-Core EO Corp.Bd U.ETF Registered Shares o.N. IE00B3F81R35
+Nominal Kurs
+STK 0,0499 EUR 129,4490
+Handelstag 01.03.2017 Kurswert EUR 6,46-
+Handelszeit 13:31*
+Börse Lang & Schwarz
+Verwahrart Wertpapierrechnung
+Lagerland Großbritannien
+Wert Konto-Nr. Betrag zu Ihren Lasten
+03.03.2017 2572056006 EUR 6,46
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Zwischengewinn EUR 0,04
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 788,86 788,90
+Quellensteuertopf EUR 1,07 1,07
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+im laufenden Jahr einbehaltene Kirchensteuer EUR 0,00
+Es folgt Seite 2
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKF/GABAUFTL/000467/030317/211619
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+2572056006 26880356 2 DEPOTNUMMER=2572056006
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Frau
+ADRESSZEILE2=Tanja Isabella Mustermann
+Jahressteuerbescheinigung folgt ADRESSZEILE3=Musterstrasse 10
+ADRESSZEILE4=12345 Glückstadt
+ADRESSZEILE5=
+Die Höhe des von der KVG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver- ADRESSZEILE6=
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen. BELEGNUMMER=467
+SEITENNUMMER=2
+Information zu steuerrelevanten Kennzahlen pro Anteil: STEUERERSTATTUNG=N
+- Aktiengewinn vom 01.03.2017: 0,0000% (gilt nur für Betriebsvermögen EStG)
+- Aktiengewinn vom 01.03.2017: 0,0000% (gilt nur für Betriebsvermögen KStG)
+- Zwischengewinn vom 01.03.2017: EUR 0,885
+- Akkumulierter ausschüttungsgleicher Ertrag vom 30.06.2015: EUR 6,5135038
+Aggregierte Order ggf. zum Mischkurs.
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Widerrufsbelehrung für den Erwerb von Anteilen oder Aktien eines offenen Investmentvermögens: Ist der Käufer von Anteilen oder Aktien eines offenen Investmentvermögens
+durch mündliche Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die Anteile oder Aktien verkauft oder den Verkauf vermittelt hat, dazu bestimmt worden,
+eine auf den Kauf gerichtete Willenserklärung abzugeben, so ist er an diese Erklärung nur gebunden, wenn er sie nicht innerhalb einer Frist von zwei Wochen bei der
+Verwaltungsgesellschaft oder einem Repräsentanten im Sinne des § 319 KAGB schriftlich widerruft.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+BNP Paribas S.A. Niederlassung Deutschland > Standort: München > Landsberger Straße 300 > 80687 München > Sitz: Nürnberg HRB Nürnberg 31129 > USt.-Ident-Nr.: DE
+191528929 > Sitz der Hauptniederlassung der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449 > Président du
+Conseil d‘Administration: Jean Lemierre, Directeur Général: Jean-Laurent Bonnafé
+3.19/ABREABHNHANDKF/GABAUFTL/000467/030317/211619

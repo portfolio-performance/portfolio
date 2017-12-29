@@ -105,7 +105,7 @@ public class EventsTableViewer
                     case 1:
                         return e.getType() == SecurityEvent.Type.NONE ? null : e.getType().toString();
                     case 2:
-                        return e.getDetails() == SecurityEvent.NONE ? null : e.getDetails();
+                        return e.getType() == SecurityEvent.Type.NONE ? null : e.getExplaination();
                     default:
                         throw new IllegalArgumentException(String.valueOf(columnIndex));
                 }

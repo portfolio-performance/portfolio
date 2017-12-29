@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 
 public class ClientProgressProvider extends ProgressProvider
@@ -106,7 +107,7 @@ public class ClientProgressProvider extends ProgressProvider
     {
         label = new Label(parent, SWT.LEFT);
         label.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));
-        label.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        label.setBackground(Colors.getColor(249, 250, 250));
         label.setText(""); //$NON-NLS-1$
 
         parent.addDisposeListener(e -> disposed());

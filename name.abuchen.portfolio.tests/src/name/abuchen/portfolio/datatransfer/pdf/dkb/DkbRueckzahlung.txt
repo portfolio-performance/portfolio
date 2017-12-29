@@ -1,0 +1,51 @@
+﻿10919 Berlin Seite 1 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Auftragsnummer 9892578200
+Herrn Datum 30.07.2014
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Gesamtkündigung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 3.000,00 2,309 % RBS CAPITAL TRUST A XS0149161217 (858865)
+EO-FLR TR.PREF.SEC.02(12/UND.)
+Rückzahlungskurs 100 % Rückzahlungsdatum 31.07.2014
+Rückzahlungswährung EUR Fälligkeitstag 31.07.2014
+Bestandsstichtag 30.07.2014
+Rückzahlungsbetrag 3.000,00+ EUR
+Einnahmen Differenzmethode (§ 43a Abs. 2 S.2 EStG) 97,13 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 97,13 EUR
+Kapitalertragsteuer 25 % auf 97,13 EUR 24,28- EUR
+Solidaritätszuschlag 5,5 % auf 24,28 EUR 1,33- EUR
+Ausmachender Betrag 2.974,39+ EUR
+Den Betrag buchen wir mit Valuta 31.07.2014 zu Gunsten des Kontos 16765097 (IBAN DE30 1203 0000 0026 6741 97),
+BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Ein Freistellungsauftrag wurde nicht erteilt bzw. ist ausgeschöpft.
+Es wurde keine Steuerbescheinigung erstellt.
+Steuerliche Ausgleichrechnung
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+0883.07302132.0000012FA02
+Seite 2 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Auftragsnummer 9892578200
+Datum 30.07.2014
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2014 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 896,98
+Einnahmen 0,00 0,00 0,00 0,00 97,13
+Kapitalrückzahlung
+Nachher 0,00 0,00 0,00 0,00 994,11
+Berücksichtigte Anschaffungsgeschäfte (alle Beträge in EUR)
+Geschäftsart Auftragsnr. Ausführungstag Whr./St. Nennwert/Stück Anschaffungskosten ant. Erlös ant. Ergebnis
+/Unit
+Kauf 7810484800 14.03.2014 EUR 3.000,0000 2.902,87 3.000,00 97,13
+Summe Differenzmethode und Ersatzbemessungsgrundlage 97,13
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.07302132.0000013FA02

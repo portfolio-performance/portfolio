@@ -18,8 +18,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
@@ -29,10 +27,10 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
@@ -54,6 +52,7 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Quote;
@@ -68,9 +67,12 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -84,6 +86,7 @@ import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizardDialog;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Dates;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
@@ -181,9 +184,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private LocalResourceManager resources;
-    private Color warningColor;
-
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -210,12 +210,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
 
         return title.toString();
-    }
-
-    @Override
-    protected int[] getDefaultWeights(int numOfChildren)
-    {
-        return new int[] { 50, 50 };
     }
 
     @Override
@@ -369,9 +363,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createTopTable(Composite parent)
     {
-        this.resources = new LocalResourceManager(JFaceResources.getResources(), parent);
-        this.warningColor = resources.createColor(Colors.WARNING.swt());
-
         securities = new SecuritiesTable(parent, this);
         updateTitle(getDefaultTitle());
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
@@ -454,14 +445,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     @Override
     protected void createBottomTable(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+        Composite sash = new Composite(parent, SWT.NONE);
+
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
+        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
@@ -528,7 +521,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
                 int days = Dates.daysBetween(previous.getDate(), current.getDate());
-                return days > 3 ? warningColor : null;
+                return days > 3 ? Colors.WARNING : null;
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
@@ -673,7 +666,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecurityListView.class.getSimpleName() + "@transactions3", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
                         layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -772,6 +765,32 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         });
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnFees_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnTaxes_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);
+
         column = new Column(Messages.ColumnPortfolio, SWT.NONE, 120);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -815,11 +834,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         hookContextMenu(transactions.getControl(), this::transactionMenuAboutToShow);
 
-        hookKeyListener();
+        hookKeyListener2Transactions();
         return container;
     }
 
-    private void hookKeyListener()
+    private void hookKeyListener2Transactions()
     {
         transactions.getControl().addKeyListener(new KeyAdapter()
         {
@@ -931,7 +950,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     // //////////////////////////////////////////////////////////////
-    // tab item: transactions
+    // tab item: events
     // //////////////////////////////////////////////////////////////
 
     protected Composite createEventsTable(Composite parent)
@@ -974,7 +993,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return ((SecurityEvent) element).getDetails();
+                return ((SecurityEvent) element).getExplaination();
             }
         });
         support.addColumn(column);
@@ -986,6 +1005,115 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         events.setContentProvider(ArrayContentProvider.getInstance());
 
+        hookContextMenu(events.getControl(), this::eventMenuAboutToShow);
+
+        hookKeyListener2Events();
+
         return container;
+    }
+
+    private void hookKeyListener2Events()
+    {
+        events.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+//                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+//                {
+//                }
+            }
+        });
+    }
+
+    private void eventMenuAboutToShow(IMenuManager manager) // NOSONAR
+    {
+        Security security = (Security) prices.getData(Security.class.toString());
+        if (security == null)
+            return;
+
+        manager.add(new Separator());
+
+        SecurityEvent event = (SecurityEvent) ((IStructuredSelection) events.getSelection()).getFirstElement();
+        if (event != null)
+        {
+            SecurityEvent.Type eventType = event.getType();
+            if (eventType == SecurityEvent.Type.STOCK_DIVIDEND)
+            {
+                new OpenDialogAction(this, Messages.MenuGenerateTransaction) //
+                .type(AccountTransactionDialog.class, d -> d.setEvent(event)) //
+                .parameters(AccountTransaction.Type.DIVIDENDS) //
+                .with(security) //
+                .addTo(manager);
+            }
+            else if (eventType == SecurityEvent.Type.STOCK_SPLIT)
+            {
+                // More work needed to enable editing of Splits
+                manager.add(new Action(Messages.MenuEditEvent)
+                {
+                    @Override
+                    public void run()
+                    {
+                        StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                        Iterator<?> iter = ((IStructuredSelection) events.getSelection()).iterator();
+                        while (iter.hasNext())
+                        {
+                            SecurityEvent event = (SecurityEvent) iter.next();
+                            if (event == null)
+                                continue;
+                            wizard.setEvent(event);
+                        }
+                        WizardDialog dialog = new WizardDialog(getActiveShell(), wizard);
+                        if (dialog.open() == Dialog.OK)
+                        {
+                            markDirty();
+                            notifyModelUpdated();
+                        }
+                    }
+                });
+                manager.add(new LabelOnly(Messages.MenuTransactionRevertSplit));
+            }
+            else if (eventType == SecurityEvent.Type.STOCK_OTHER)
+            {
+                manager.add(new LabelOnly(Messages.MenuEditEvent));
+            }
+            manager.add(new LabelOnly(Messages.MenuTransactionHide));
+
+            manager.add(new Action(Messages.MenuTransactionDelete)
+            {
+                @Override
+                public void run()
+                {
+                    Security security = (Security) prices.getData(Security.class.toString());
+                    if (security == null)
+                        return;
+
+                    Iterator<?> iter = ((IStructuredSelection) events.getSelection()).iterator();
+                    while (iter.hasNext())
+                    {
+                        SecurityEvent event = (SecurityEvent) iter.next();
+                        if (event == null)
+                            continue;
+
+                        security.removeEvent(event);
+                    }
+
+                    markDirty();
+
+                    prices.setInput(security.getPrices());
+                    latest.setInput(security);
+                    transactions.setInput(security.getTransactions(getClient()));
+                    events.setInput(security.getEvents());
+                    chart.updateChart(security);
+                }
+            });
+        }
+
+        manager.add(new Separator());
+
+        new EventContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+
+        manager.add(new Separator());
+        manager.add(new LabelOnly(Messages.MenuTransactionShowHidden));
     }
 }

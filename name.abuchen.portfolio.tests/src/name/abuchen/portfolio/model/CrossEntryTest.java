@@ -92,6 +92,7 @@ public class CrossEntryTest
 
         AccountTransferEntry entry = new AccountTransferEntry(accountA, accountB);
         entry.setDate(LocalDate.now());
+        entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(1000 * Values.Amount.factor());
         entry.insert();
 

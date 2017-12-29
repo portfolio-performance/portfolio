@@ -74,7 +74,7 @@ public class DataSeriesSet
     private void buildStatementOfAssetsDataSeries()
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
-                        Colors.TOTALS.swt()));
+                        Colors.TOTALS.getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
                         Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
@@ -140,7 +140,7 @@ public class DataSeriesSet
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DELTA_PERCENTAGE,
                         Messages.LabelAggregationDaily,
@@ -150,7 +150,7 @@ public class DataSeriesSet
 
         // consumer price index
         series = new DataSeries(DataSeries.Type.CONSUMER_PRICE_INDEX, ConsumerPriceIndex.class,
-                        Messages.LabelConsumerPriceIndex, Colors.CPI.swt());
+                        Messages.LabelConsumerPriceIndex, Colors.CPI.getRGB());
         series.setBenchmark(true);
         series.setLineStyle(LineStyle.DASHDOTDOT);
         availableSeries.add(series);
@@ -170,7 +170,7 @@ public class DataSeriesSet
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.swt()));
+                        Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         // securities as benchmark
         int index = 0;
@@ -196,12 +196,18 @@ public class DataSeriesSet
                 continue;
 
             availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
-                            wheel.getRGB(index++)));
+                            wheel.getRGB(index++), false));
+            availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName() + " ("+ Messages.LabelPerformanceNormalizedPerYear + ")", //
+                            wheel.getRGB(index++), true));
         }
 
         for (Portfolio portfolio : client.getPortfolios())
+        {
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
-                            wheel.getRGB(index++)));
+                            wheel.getRGB(index++), false));
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName() + " ("+ Messages.LabelPerformanceNormalizedPerYear + ")", //
+                        wheel.getRGB(index++), true));
+        }
 
         // portfolio + reference account
         for (Portfolio portfolio : client.getPortfolios())
@@ -229,8 +235,12 @@ public class DataSeriesSet
         }
 
         for (Account account : client.getAccounts())
+        {
             availableSeries.add(
-                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++)));
+                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++), false));
+            availableSeries.add(
+                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName() + " ("+ Messages.LabelPerformanceNormalizedPerYear + ")", wheel.getRGB(index++), true));
+        }
 
         for (Taxonomy taxonomy : client.getTaxonomies())
         {

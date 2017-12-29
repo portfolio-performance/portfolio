@@ -9,13 +9,12 @@ import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoField;
 import java.util.List;
 import java.util.Locale;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.jsoup.nodes.Element;
 
 import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.money.Monetary;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableEventParser extends HTMLTableParser
@@ -100,17 +99,15 @@ public class HTMLTableEventParser extends HTMLTableParser
             String type = value.text().trim();
             
             if (type.matches("Dividende") || type.matches("Ausschüttung"))
-            {
                 event.setType(SecurityEvent.Type.STOCK_DIVIDEND);
-            }
             else if (type.matches("Split") || type.matches("Reverse Split")) 
-            {
                 event.setType(SecurityEvent.Type.STOCK_SPLIT);                
-            }
+            else if (type.matches("Bezugsrecht"))
+                event.setType(SecurityEvent.Type.STOCK_RIGHT);
             else
             {
                 event.setType(SecurityEvent.Type.STOCK_OTHER);                
-                event.setDetails(type + ": ");
+                event.setTypeStr(type);
             }
         }
     }
@@ -126,12 +123,18 @@ public class HTMLTableEventParser extends HTMLTableParser
         @Override
         public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
-
             SecurityEvent event = (SecurityEvent) obj;
-            if (event.getType() == SecurityEvent.Type.STOCK_SPLIT) 
-                event.setDetails(value.text().trim());
-            else if (event.getType() == SecurityEvent.Type.STOCK_OTHER) 
-                event.setDetails((event.getDetails() + value.text().trim()).trim());
+            if (value.text().matches("^[0-9,.]+:[0-9,.]+$"))
+            {
+                String[] elements = value.text().trim().split(":");
+                if (elements.length > 2)
+                    throw new ParseException(value.toString(), 0);
+                event.setRatio(asDouble(elements[0], languageHint), asDouble(elements[1], languageHint));
+            }
+            else if (value.text().matches("^[0-9,.]+$"))
+                event.setRatio(asDouble(value.text().trim(), languageHint));
+            else
+                event.clearRatio();
         }
     }
 
@@ -147,32 +150,11 @@ public class HTMLTableEventParser extends HTMLTableParser
         public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
             SecurityEvent event = (SecurityEvent) obj;
-            if ((event.getType() == SecurityEvent.Type.STOCK_DIVIDEND) || event.getType() == SecurityEvent.Type.STOCK_OTHER) 
-            {
-                String amount = value.text().trim();
-                String Currency = "";
-                double Amount = 0;
-                Pattern pCurrency = Pattern.compile("[^0-9\\.,\\s]*");
-                Pattern pAmount   = Pattern.compile("[0-9\\.,]*");
-                Matcher mCurrency = pCurrency.matcher(amount);
-                Matcher mAmount   = pAmount.matcher(amount);
-                while (mCurrency.find()) 
-                {
-                    for (int i = 0; i < mCurrency.groupCount() + 1; i++)
-                        if(!mCurrency.group(i).isEmpty()) 
-                            Currency = mCurrency.group(i);
-                }
-                while (mAmount.find()) 
-                {
-                    for (int i = 0; i < mAmount.groupCount() + 1; i++)
-                        if(!mAmount.group(i).isEmpty()) 
-                            Amount = asDouble(value, languageHint);
-                }
-                if (event.getType() == SecurityEvent.Type.STOCK_DIVIDEND) 
-                    event.setDetails(Currency, Amount);
-                else if (event.getType() == SecurityEvent.Type.STOCK_OTHER && !value.text().trim().isEmpty())
-                    event.setDetails(event.getDetails() + " @ " + value.text().trim());                
-            }
+            Monetary money = new Monetary().parse(value.text().trim(), languageHint);
+            if (money.getValue() != null)
+                event.setAmount(money);
+            else
+                event.clearAmount();
         }
     }
 

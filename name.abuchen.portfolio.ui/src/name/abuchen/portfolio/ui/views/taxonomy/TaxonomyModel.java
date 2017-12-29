@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import javax.inject.Inject;
 
@@ -49,10 +50,27 @@ public final class TaxonomyModel
     {
         void onModelEdited();
     }
+    
+    public static final String KEY_FILTER_NON_ZERO = "-filter-non-zero"; //$NON-NLS-1$
+    public static final String KEY_FILTER_NOT_RETIRED = "-filter-not-retired"; //$NON-NLS-1$
+
+    public static final Predicate<TaxonomyNode> FILTER_NON_ZERO = node -> node.isClassification()
+                    || !node.getActual().isZero();
+    public static final Predicate<TaxonomyNode> FILTER_NOT_RETIRED = node -> node.isClassification()
+                    || !node.getAssignment().getInvestmentVehicle().isRetired();
 
     private final Taxonomy taxonomy;
-    private ClientSnapshot snapshot;
+    private final Client client;
     private final CurrencyConverter converter;
+
+    /**
+     * The Client file which was used to create the ClientSnapshot. When
+     * filtering, we cannot replace the original client as the filtered client
+     * may not contain all securities. But we need the filtered to calculate for
+     * example the stacked chart series.
+     */
+    private Client filteredClient;
+    private ClientSnapshot snapshot;
 
     private TaxonomyNode virtualRootNode;
     private TaxonomyNode classificationRootNode;
@@ -64,6 +82,8 @@ public final class TaxonomyModel
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
 
+    private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
+
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
@@ -74,7 +94,10 @@ public final class TaxonomyModel
         Objects.requireNonNull(taxonomy);
 
         this.taxonomy = taxonomy;
+        this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
+
+        this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
@@ -248,6 +271,11 @@ public final class TaxonomyModel
         this.expansionStateRebalancing = expansionStateRebalancing;
     }
 
+    public List<Predicate<TaxonomyNode>> getNodeFilters()
+    {
+        return nodeFilters;
+    }
+
     public Taxonomy getTaxonomy()
     {
         return taxonomy;
@@ -287,12 +315,13 @@ public final class TaxonomyModel
     public TaxonomyNode getChartRenderingRootNode()
     {
         return isUnassignedCategoryInChartsExcluded() || getUnassignedNode().getActual().isZero()
-                        ? getClassificationRootNode() : getVirtualRootNode();
+                        ? getClassificationRootNode()
+                        : getVirtualRootNode();
     }
 
     public Client getClient()
     {
-        return snapshot.getClient();
+        return client;
     }
 
     public CurrencyConverter getCurrencyConverter()
@@ -305,10 +334,16 @@ public final class TaxonomyModel
         return converter.getTermCurrency();
     }
 
-    public void setClientSnapshot(ClientSnapshot newSnapshot)
+    public void setClientSnapshot(Client filteredClient, ClientSnapshot newSnapshot)
     {
+        this.filteredClient = filteredClient;
         this.snapshot = newSnapshot;
         recalculate();
+    }
+
+    public Client getFilteredClient()
+    {
+        return filteredClient;
     }
 
     public ClientSnapshot getClientSnapshot()
@@ -350,7 +385,7 @@ public final class TaxonomyModel
 
     public void markDirty()
     {
-        dirtyListener.forEach(l -> l.onModelEdited());
+        dirtyListener.forEach(DirtyListener::onModelEdited);
     }
 
     public int getWeightByInvestmentVehicle(InvestmentVehicle vehicle)

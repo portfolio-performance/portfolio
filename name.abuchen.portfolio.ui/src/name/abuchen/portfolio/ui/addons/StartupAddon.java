@@ -48,6 +48,8 @@ public class StartupAddon
         private final ExchangeRateProviderFactory factory;
         private final ExchangeRateProvider provider;
 
+        private boolean loadDone = false;
+
         private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProviderFactory factory,
                         ExchangeRateProvider provider)
         {
@@ -59,6 +61,23 @@ public class StartupAddon
 
         @Override
         protected IStatus run(IProgressMonitor monitor)
+        {
+            if (!loadDone)
+            {
+                // load data from file only the first time around
+
+                loadFromFile(monitor);
+                loadDone = true;
+            }
+
+            updateOnline(monitor);
+
+            schedule(1000L * 60 * 60 * 12); // every 12 hours
+
+            return Status.OK_STATUS;
+        }
+
+        private void loadFromFile(IProgressMonitor monitor)
         {
             try
             {
@@ -75,7 +94,10 @@ public class StartupAddon
                 factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
+        }
 
+        private void updateOnline(IProgressMonitor monitor)
+        {
             try
             {
                 provider.update(monitor);
@@ -89,8 +111,6 @@ public class StartupAddon
                 factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
-
-            return Status.OK_STATUS;
         }
     }
 

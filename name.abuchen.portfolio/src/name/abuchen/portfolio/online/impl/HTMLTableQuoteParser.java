@@ -122,10 +122,12 @@ public class HTMLTableQuoteParser extends HTMLTableParser
         public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
             LatestSecurityPrice price = (LatestSecurityPrice) obj;
-            if ("-".equals(value.text().trim())) //$NON-NLS-1$
+            if ("-".equals(value.text().replace("\u00a0", "").trim())) //$NON-NLS-1$
                 price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
             else
+            {
                 price.setHigh(asQuote(value, languageHint));
+            }
         }
     }
 
@@ -141,10 +143,12 @@ public class HTMLTableQuoteParser extends HTMLTableParser
         public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
             LatestSecurityPrice price = (LatestSecurityPrice) obj;
-            if ("-".equals(value.text().trim())) //$NON-NLS-1$
+            if ("-".equals(value.text().replace("\u00a0", "").trim())) //$NON-NLS-1$
                 price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
             else
+            {
                 price.setLow(asQuote(value, languageHint));
+            }
         }
     }
 
@@ -160,7 +164,7 @@ public class HTMLTableQuoteParser extends HTMLTableParser
         public void setValue(Element value, Object obj, String languageHint) throws ParseException
         {
             LatestSecurityPrice price = (LatestSecurityPrice) obj;
-            if ("-".equals(value.text().trim())) //$NON-NLS-1$
+            if ("-".equals(value.text().replace("\u00a0", "").trim())) //$NON-NLS-1$
                 price.setVolume((int) LatestSecurityPrice.NOT_AVAILABLE);
             else
                 price.setVolume(super.asInt(value, languageHint));

@@ -61,11 +61,11 @@ public abstract class EventFeed extends Feed
         {
             writer.print(Values.Date.format(e.getDate()));
             writer.print("\t");
-            writer.println(e.getType().toString());
+            writer.println(e.getTypeStr());
             writer.print("\t");
-            writer.print(Values.Quote.format(e.getValue()));
+            writer.print(e.getAmount().toString());
             writer.print("\t");
-            writer.print(e.getDetails());
+            writer.print(e.getRatio());
         }
     }
     

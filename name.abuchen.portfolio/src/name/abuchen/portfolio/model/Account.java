@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -75,11 +76,13 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.note = note;
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
@@ -94,6 +97,9 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     @Override
     public void addTransaction(AccountTransaction transaction)
     {
+        if (!currencyCode.equals(transaction.getCurrencyCode()))
+            throw new IllegalArgumentException();
+
         this.transactions.add(transaction);
     }
 
@@ -101,6 +107,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
+        client.getPlans().stream().forEach(plan -> plan.removeTransaction(transaction));
     }
 
     public long getCurrentAmount()
