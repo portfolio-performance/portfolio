@@ -57,7 +57,7 @@ public class Factory
             FEEDS.add(feeds.next());
 
         EVENTS = new ArrayList<EventFeed>();
-        Iterator<EventFeed> events = ServiceRegistry.lookupProviders(EventFeed.class);
+        Iterator<EventFeed> events = ServiceLoader.load(EventFeed.class).iterator();
         while (events.hasNext())
             EVENTS.add(events.next());
 

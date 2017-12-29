@@ -206,7 +206,7 @@ public final class UpdateEventsJob extends AbstractClientJob
             // one request is made per host at a given time)
             if (HTMLTableEventFeed.ID.equals(feedId) && s.getEventFeedURL() != null)
             {
-                Job job = createLatestEventJob(dirtyable, feed, Arrays.asList(s));
+                Job job = createLatestEventJob(dirtyable, feed, s);
                 job.setRule(HostSchedulingRule
                                 .createFor(s.getEventFeedURL()));
                 jobs.add(job);
@@ -216,12 +216,9 @@ public final class UpdateEventsJob extends AbstractClientJob
                 feed2securities.computeIfAbsent(feed, key -> new ArrayList<>()).add(s);
             }
         }
-
-        for (Entry<EventFeed, List<Security>> entry : feed2securities.entrySet())
-            jobs.add(createLatestEventJob(dirtyable, entry.getKey(), entry.getValue()));
     }
 
-    private Job createLatestEventJob(Dirtyable dirtyable, EventFeed feed, List<Security> securities)
+    private Job createLatestEventJob(Dirtyable dirtyable, EventFeed feed, Security security)
     {
         return new Job(feed.getName())
         {
@@ -230,7 +227,7 @@ public final class UpdateEventsJob extends AbstractClientJob
             {
                 ArrayList<Exception> exceptions = new ArrayList<>();
 
-                if (feed.update(securities, exceptions))
+                if (feed.updateLatest(security, exceptions))
                     dirtyable.markDirty();
 
                 if (!exceptions.isEmpty())
@@ -260,7 +257,7 @@ public final class UpdateEventsJob extends AbstractClientJob
 
                     ArrayList<Exception> exceptions = new ArrayList<>();
 
-                    if (feed.update(security, exceptions))
+                    if (feed.updateHistorical(security, exceptions))
                         dirtyable.markDirty();
 
                     if (!exceptions.isEmpty())

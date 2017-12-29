@@ -1,13 +1,25 @@
 package name.abuchen.portfolio.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import name.abuchen.portfolio.money.Values;
 
 public class SecurityElement extends Object
 {
+    public static final class ByDate implements Comparator<SecurityElement>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(SecurityElement t1, SecurityElement t2)
+        {
+            return t1.getDate().compareTo(t2.getDate());
+        }
+    }
 
     protected LocalDate date;
     protected long value;

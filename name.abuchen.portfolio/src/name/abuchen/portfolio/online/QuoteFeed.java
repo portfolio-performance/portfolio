@@ -20,29 +20,8 @@ public abstract class QuoteFeed extends Feed
 {
     public static String ID = "QUOTE"; //$NON-NLS-1$
 
-    /**
-     * Update the latest quote of the given securities.
-     * 
-     * @param securities
-     *            the securities to be updated with the latest quote.
-     * @param errors
-     *            any errors that occur during the update of the quotes are
-     *            added to this list.
-     * @return true if at least one quote was updated.
-     */
-    abstract public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors);
+    abstract public boolean updateLatestQuotes(Security security, List<Exception> errors);
 
-    /**
-     * Update the historical quotes of the given security.
-     * 
-     * @param securities
-     *            the security for which the historical quotes are to be
-     *            updated.
-     * @param errors
-     *            any errors that occur during the update of the quotes are
-     *            added to this list.
-     * @return true if at least one quote was updated.
-     */
     abstract public boolean updateHistoricalQuotes(Security security, List<Exception> errors);
 
     abstract public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors);
@@ -51,12 +30,14 @@ public abstract class QuoteFeed extends Feed
 
     abstract public List<Exchange> getExchanges(Security subject, List<Exception> errors);
 
-    public final boolean update(List<Security> securities, List<Exception> errors)
+    @Override
+    public boolean updateLatest(Security security, List<Exception> errors)
     {
-        return updateLatestQuotes(securities, errors);
+        return updateLatestQuotes(security, errors);
     }
 
-    public final boolean update(Security security, List<Exception> errors)
+    @Override
+    public boolean updateHistorical(Security security, List<Exception> errors)
     {
         return updateHistoricalQuotes(security, errors);
     }

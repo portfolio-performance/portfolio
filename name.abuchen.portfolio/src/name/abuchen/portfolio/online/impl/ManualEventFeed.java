@@ -27,13 +27,13 @@ public final class ManualEventFeed extends EventFeed
     }
 
     @Override
-    public boolean update(List<Security> securities, List<Exception> errors)
+    public boolean updateLatest(Security security, List<Exception> errors)
     {
         return false;
     }
 
     @Override
-    public boolean update(Security security, List<Exception> errors)
+    public boolean updateHistorical(Security security, List<Exception> errors)
     {
         return false;
     }

@@ -32,29 +32,19 @@ public abstract class Feed
     abstract public String getName();
 
     /**
-     * Update the latest events of the given securities.
+     * Update the latest data of the given security.
      * 
-     * @param securities
+     * @param security
      *            the securities to be updated with the latest quote.
      * @param errors
      *            any errors that occur during the update of the quotes are
      *            added to this list.
      * @return true if at least one quote was updated.
      */
-    abstract public boolean update(List<Security> securities, List<Exception> errors);
+    abstract public boolean updateLatest(Security security, List<Exception> errors);
 
-    /**
-     * Update the latest events of the given securities.
-     * 
-     * @param securities
-     *            the securities to be updated with the latest quote.
-     * @param errors
-     *            any errors that occur during the update of the quotes are
-     *            added to this list.
-     * @return true if at least one quote was updated.
-     */
-    abstract public boolean update(Security security, List<Exception> errors);
-
+    abstract public boolean updateHistorical(Security security, List<Exception> errors);
+    
     abstract public List<SecurityElement> get(Security security, LocalDate start, List<Exception> errors);
 
     abstract public List<SecurityElement> get(String response, List<Exception> errors);
