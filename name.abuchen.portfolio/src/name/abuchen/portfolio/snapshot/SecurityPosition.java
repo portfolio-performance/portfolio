@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -228,6 +229,23 @@ public class SecurityPosition
     public long getShares()
     {
         return shares;
+    }
+    
+    public long getFilteredShares(Predicate<PortfolioTransaction> filter)
+    {
+        return transactions.stream()
+        .filter(filter)
+        .mapToLong(pt -> {
+            switch (pt.getType())
+            {
+                case SELL:
+                case TRANSFER_OUT:
+                case DELIVERY_OUTBOUND:
+                    return -pt.getShares();
+                default:
+                    return pt.getShares();
+            }
+        }).sum();
     }
 
     public Money calculateValue()
