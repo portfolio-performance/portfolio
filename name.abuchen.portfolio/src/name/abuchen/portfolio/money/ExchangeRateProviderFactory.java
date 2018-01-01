@@ -12,6 +12,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.ServiceLoader;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 import javax.inject.Singleton;
@@ -143,7 +145,7 @@ public class ExchangeRateProviderFactory
     }
 
     private final List<ExchangeRateProvider> providers;
-    private final Map<CurrencyPair, ExchangeRateTimeSeries> cache = new HashMap<>();
+    private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
     public ExchangeRateProviderFactory()
     {
