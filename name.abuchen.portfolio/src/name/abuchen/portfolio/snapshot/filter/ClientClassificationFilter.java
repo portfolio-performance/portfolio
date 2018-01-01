@@ -359,6 +359,26 @@ public class ClientClassificationFilter implements ClientFilter
                     state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
                                     t.getCurrencyCode(), amount, null, t.getType()));
                     break;
+                case LOST:
+                    if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
+                        addSecurityRelatedAccountT(state, account, t);
+                    else if (t.getSecurity() != null)
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    else
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                        t.getCurrencyCode(), amount, null, t.getType()));
+                    break;
+                case LOST_REFUND:
+                    if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
+                        addSecurityRelatedAccountT(state, account, t);
+                    else if (t.getSecurity() != null)
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.DEPOSIT));
+                    else
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                        t.getCurrencyCode(), amount, null, t.getType()));
+                    break;
                 default:
                     throw new UnsupportedOperationException();
             }

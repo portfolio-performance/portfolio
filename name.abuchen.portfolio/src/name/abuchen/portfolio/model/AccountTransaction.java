@@ -19,7 +19,8 @@ public class AccountTransaction extends Transaction
         FEES(true), FEES_REFUND(false), //
         TAXES(true), TAX_REFUND(false), //
         BUY(true), SELL(false), //
-        TRANSFER_IN(false), TRANSFER_OUT(true);
+        TRANSFER_IN(false), TRANSFER_OUT(true),
+        LOST(true), LOST_REFUND(false);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
@@ -43,7 +44,8 @@ public class AccountTransaction extends Transaction
         @Override
         public String toString()
         {
-            return RESOURCES.getString("account." + name()); //$NON-NLS-1$
+            String name = name();
+            return RESOURCES.getString("account." + name); //$NON-NLS-1$
         }
     }
 

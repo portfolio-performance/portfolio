@@ -24,7 +24,7 @@ public abstract class Transaction implements Annotated
     {
         public enum Type
         {
-            GROSS_VALUE, TAX, FEE
+            GROSS_VALUE, TAX, FEE, LOST
         }
 
         /**

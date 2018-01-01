@@ -99,7 +99,7 @@ public class ClientPerformanceSnapshot
 
     public enum CategoryType
     {
-        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, TAXES, CURRENCY_GAINS, TRANSFERS, FINAL_VALUE
+        INITIAL_VALUE, CAPITAL_GAINS, EARNINGS, FEES, LOSTS, TAXES, CURRENCY_GAINS, TRANSFERS, FINAL_VALUE
     }
 
     private final Client client;
@@ -112,6 +112,7 @@ public class ClientPerformanceSnapshot
     private final List<TransactionPair<?>> earnings = new ArrayList<>();
     private final List<TransactionPair<?>> fees = new ArrayList<>();
     private final List<TransactionPair<?>> taxes = new ArrayList<>();
+    private final List<TransactionPair<?>> losts = new ArrayList<>();
     private double irr;
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
@@ -169,6 +170,11 @@ public class ClientPerformanceSnapshot
     {
         return fees;
     }
+    
+    public List<TransactionPair<?>> getLosts()
+    {
+        return losts;
+    }
 
     public List<TransactionPair<?>> getTaxes()
     {
@@ -194,6 +200,7 @@ public class ClientPerformanceSnapshot
                     delta.add(entry.getValue().getValuation());
                     break;
                 case FEES:
+                case LOSTS:
                 case TAXES:
                     delta.subtract(entry.getValue().getValuation());
                     break;
@@ -216,6 +223,7 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.CAPITAL_GAINS, new Category(Messages.ColumnCapitalGains, "+", zero)); //$NON-NLS-1$
         categories.put(CategoryType.EARNINGS, new Category(Messages.ColumnEarnings, "+", zero)); //$NON-NLS-1$
         categories.put(CategoryType.FEES, new Category(Messages.ColumnPaidFees, "-", zero)); //$NON-NLS-1$
+        categories.put(CategoryType.LOSTS, new Category(Messages.ColumnLosts, "-", zero)); //$NON-NLS-1$
         categories.put(CategoryType.TAXES, new Category(Messages.ColumnPaidTaxes, "-", zero)); //$NON-NLS-1$
         categories.put(CategoryType.CURRENCY_GAINS, new Category(Messages.ColumnCurrencyGains, "+", zero)); //$NON-NLS-1$
         categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, "+", zero)); //$NON-NLS-1$
@@ -288,6 +296,7 @@ public class ClientPerformanceSnapshot
         MutableMoney mTaxes = MutableMoney.of(converter.getTermCurrency());
         MutableMoney mDeposits = MutableMoney.of(converter.getTermCurrency());
         MutableMoney mRemovals = MutableMoney.of(converter.getTermCurrency());
+        MutableMoney mLosts = MutableMoney.of(converter.getTermCurrency());
 
         Map<Security, MutableMoney> earningsBySecurity = new HashMap<>();
 
@@ -324,6 +333,14 @@ public class ClientPerformanceSnapshot
                         mFees.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
+                    case LOST:
+                        mLosts.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        losts.add(new TransactionPair<AccountTransaction>(account, t));
+                        break;
+                    case LOST_REFUND:
+                        mLosts.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        losts.add(new TransactionPair<AccountTransaction>(account, t));
+                        break;
                     case TAXES:
                         mTaxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         taxes.add(new TransactionPair<AccountTransaction>(account, t));
@@ -338,6 +355,7 @@ public class ClientPerformanceSnapshot
                     case TRANSFER_OUT:
                         // no operation
                         break;
+                  
                     default:
                         throw new UnsupportedOperationException();
                 }
@@ -356,6 +374,13 @@ public class ClientPerformanceSnapshot
                 {
                     mFees.add(unit);
                     fees.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
+                }
+
+                unit = t.getUnitSum(Unit.Type.LOST, converter);
+                if (!unit.isZero())
+                {
+                    mLosts.add(unit);
+                    losts.add(new TransactionPair<PortfolioTransaction>(portfolio, t));
                 }
 
                 unit = t.getUnitSum(Unit.Type.TAX, converter);
@@ -397,6 +422,7 @@ public class ClientPerformanceSnapshot
             earningsCategory.positions.add(new Position(Messages.LabelInterest, mOtherEarnings.toMoney()));
 
         categories.get(CategoryType.FEES).valuation = mFees.toMoney();
+        categories.get(CategoryType.LOSTS).valuation = mLosts.toMoney();
 
         categories.get(CategoryType.TAXES).valuation = mTaxes.toMoney();
 
@@ -457,6 +483,7 @@ public class ClientPerformanceSnapshot
                     case TAX_REFUND:
                     case SELL:
                     case FEES_REFUND:
+                    case LOST_REFUND:
                         value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case REMOVAL:
@@ -464,6 +491,7 @@ public class ClientPerformanceSnapshot
                     case INTEREST_CHARGE:
                     case TAXES:
                     case BUY:
+                    case LOST:
                         value.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
                     case TRANSFER_IN:

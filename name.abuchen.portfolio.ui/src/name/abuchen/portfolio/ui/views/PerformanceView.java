@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.util.LongSummaryStatistics;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -71,6 +72,7 @@ public class PerformanceView extends AbstractHistoricView
     private TableViewer earningsByAccount;
     private TableViewer taxes;
     private TableViewer fees;
+    private TableViewer losts;
 
     @Override
     protected String getDefaultTitle()
@@ -116,6 +118,7 @@ public class PerformanceView extends AbstractHistoricView
         earningsByAccount.setInput(new GroupEarningsByAccount(snapshot).getItems());
         taxes.setInput(snapshot.getTaxes());
         fees.setInput(snapshot.getFees());
+        losts.setInput(snapshot.getLosts());
     }
 
     @Override
@@ -137,6 +140,7 @@ public class PerformanceView extends AbstractHistoricView
         createEarningsByAccountsItem(folder, Messages.PerformanceTabEarningsByAccount);
         taxes = createTransactionViewer(folder, Messages.PerformanceTabTaxes);
         fees = createTransactionViewer(folder, Messages.PerformanceTabFees);
+        losts = createTransactionViewer(folder, Messages.PerformanceTabLosts);
 
         folder.setSelection(0);
 
@@ -336,6 +340,7 @@ public class PerformanceView extends AbstractHistoricView
 
         addTaxesColumn(support);
         addFeesColumn(support);
+        addLostsColumn(support);
         addSecurityColumn(support);
         addPortfolioColumn(support);
         addAccountColumn(support);
@@ -421,6 +426,39 @@ public class PerformanceView extends AbstractHistoricView
         });
         column.setSorter(ColumnViewerSorter
                         .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.FEE)));
+        support.addColumn(column);
+    }
+    
+    private void addLostsColumn (ShowHideColumnHelper support)
+    {
+        Column column = new Column(Messages.ColumnLosts, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+
+                if (t instanceof AccountTransaction)
+                {
+                    AccountTransaction at = (AccountTransaction) t;
+                    switch (at.getType())
+                    {
+                        case LOST:
+                            return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
+                        case LOST_REFUND:
+                            return Values.Money.format(t.getMonetaryAmount().multiply(-1),
+                                            getClient().getBaseCurrency());
+                        default:
+                            // do nothing --> print unit sum
+                    }
+                }
+
+                return Values.Money.format(t.getUnitSum(Unit.Type.LOST), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter
+                        .create(e -> ((TransactionPair<?>) e).getTransaction().getUnitSum(Unit.Type.LOST)));
         support.addColumn(column);
     }
 
@@ -690,6 +728,8 @@ public class PerformanceView extends AbstractHistoricView
 
             manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabFees),
                             a -> new TableViewerCSVExporter(fees).export(Messages.PerformanceTabFees + fileSuffix)));
+            manager.add(new SimpleAction(MessageFormat.format(Messages.LabelExport, Messages.PerformanceTabLosts),
+                            a -> new TableViewerCSVExporter(losts).export(Messages.PerformanceTabFees + fileSuffix)));
 
         }
     }
