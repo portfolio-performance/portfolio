@@ -433,7 +433,9 @@ public final class Security implements Attributable, InvestmentVehicle
                                             || t.getType() == AccountTransaction.Type.TAXES
                                             || t.getType() == AccountTransaction.Type.TAX_REFUND
                                             || t.getType() == AccountTransaction.Type.FEES
-                                            || t.getType() == AccountTransaction.Type.FEES_REFUND)
+                                            || t.getType() == AccountTransaction.Type.FEES_REFUND
+                                            || t.getType() == AccountTransaction.Type.LOST
+                                            || t.getType() == AccountTransaction.Type.LOST_REFUND)
                             .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
                             .forEach(answer::add);
         }

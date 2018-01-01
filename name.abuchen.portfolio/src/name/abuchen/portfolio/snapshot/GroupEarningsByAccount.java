@@ -69,6 +69,8 @@ public class GroupEarningsByAccount
                         case SELL:
                         case TRANSFER_IN:
                         case TRANSFER_OUT:
+                        case LOST:
+                        case LOST_REFUND:
                             // no operation
                             break;
                         default:

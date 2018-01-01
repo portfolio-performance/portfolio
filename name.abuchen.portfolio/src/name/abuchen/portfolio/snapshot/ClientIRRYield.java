@@ -98,6 +98,8 @@ public class ClientIRRYield
                                     case INTEREST:
                                     case INTEREST_CHARGE:
                                     case TAX_REFUND:
+                                    case LOST:
+                                    case LOST_REFUND:
                                         break;
                                     default:
                                         throw new UnsupportedOperationException();

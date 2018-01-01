@@ -1033,72 +1033,69 @@ public class ClientFactory
     @SuppressWarnings("nls")
     private static XStream xstream()
     {
-        if (xstream == null)
+        synchronized (ClientFactory.class)
         {
-            synchronized (ClientFactory.class)
+            if (xstream == null)
             {
-                if (xstream == null)
-                {
-                    xstream = new XStream();
+                xstream = new XStream();
 
-                    xstream.setClassLoader(ClientFactory.class.getClassLoader());
+                xstream.setClassLoader(ClientFactory.class.getClassLoader());
 
-                    xstream.registerConverter(new XStreamLocalDateConverter());
-                    xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(),
-                                    xstream.getReflectionProvider()));
+                xstream.registerConverter(new XStreamLocalDateConverter());
+                xstream.registerConverter(new PortfolioTransactionConverter(xstream.getMapper(),
+                                xstream.getReflectionProvider()));
 
-                    xstream.useAttributeFor(Money.class, "amount");
-                    xstream.useAttributeFor(Money.class, "currencyCode");
-                    xstream.aliasAttribute(Money.class, "currencyCode", "currency");
+                xstream.useAttributeFor(Money.class, "amount");
+                xstream.useAttributeFor(Money.class, "currencyCode");
+                xstream.aliasAttribute(Money.class, "currencyCode", "currency");
 
-                    xstream.alias("account", Account.class);
-                    xstream.alias("client", Client.class);
-                    xstream.alias("settings", ClientSettings.class);
-                    xstream.alias("bookmark", Bookmark.class);
-                    xstream.alias("portfolio", Portfolio.class);
-                    xstream.alias("unit", Transaction.Unit.class);
-                    xstream.useAttributeFor(Transaction.Unit.class, "type");
-                    xstream.alias("account-transaction", AccountTransaction.class);
-                    xstream.alias("portfolio-transaction", PortfolioTransaction.class);
-                    xstream.alias("security", Security.class);
-                    xstream.alias("latest", LatestSecurityPrice.class);
-                    xstream.alias("category", Category.class);
-                    xstream.alias("watchlist", Watchlist.class);
-                    xstream.alias("investment-plan", InvestmentPlan.class);
-                    xstream.alias("attribute-type", AttributeType.class);
+                xstream.alias("account", Account.class);
+                xstream.alias("client", Client.class);
+                xstream.alias("settings", ClientSettings.class);
+                xstream.alias("bookmark", Bookmark.class);
+                xstream.alias("portfolio", Portfolio.class);
+                xstream.alias("unit", Transaction.Unit.class);
+                xstream.useAttributeFor(Transaction.Unit.class, "type");
+                xstream.alias("account-transaction", AccountTransaction.class);
+                xstream.alias("portfolio-transaction", PortfolioTransaction.class);
+                xstream.alias("security", Security.class);
+                xstream.alias("latest", LatestSecurityPrice.class);
+                xstream.alias("category", Category.class);
+                xstream.alias("watchlist", Watchlist.class);
+                xstream.alias("investment-plan", InvestmentPlan.class);
+                xstream.alias("attribute-type", AttributeType.class);
 
-                    xstream.alias("price", SecurityPrice.class);
-                    xstream.useAttributeFor(SecurityPrice.class, "date");
-                    xstream.aliasField("t", SecurityPrice.class, "date");
-                    xstream.useAttributeFor(SecurityPrice.class, "value");
-                    xstream.aliasField("v", SecurityPrice.class, "value");
+                xstream.alias("price", SecurityPrice.class);
+                xstream.useAttributeFor(SecurityPrice.class, "date");
+                xstream.aliasField("t", SecurityPrice.class, "date");
+                xstream.useAttributeFor(SecurityPrice.class, "value");
+                xstream.aliasField("v", SecurityPrice.class, "value");
 
-                    xstream.alias("cpi", ConsumerPriceIndex.class);
-                    xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
-                    xstream.aliasField("y", ConsumerPriceIndex.class, "year");
-                    xstream.useAttributeFor(ConsumerPriceIndex.class, "month");
-                    xstream.aliasField("m", ConsumerPriceIndex.class, "month");
-                    xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
-                    xstream.aliasField("i", ConsumerPriceIndex.class, "index");
+                xstream.alias("cpi", ConsumerPriceIndex.class);
+                xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
+                xstream.aliasField("y", ConsumerPriceIndex.class, "year");
+                xstream.useAttributeFor(ConsumerPriceIndex.class, "month");
+                xstream.aliasField("m", ConsumerPriceIndex.class, "month");
+                xstream.useAttributeFor(ConsumerPriceIndex.class, "index");
+                xstream.aliasField("i", ConsumerPriceIndex.class, "index");
 
-                    xstream.alias("buysell", BuySellEntry.class);
-                    xstream.alias("account-transfer", AccountTransferEntry.class);
-                    xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
+                xstream.alias("buysell", BuySellEntry.class);
+                xstream.alias("account-transfer", AccountTransferEntry.class);
+                xstream.alias("portfolio-transfer", PortfolioTransferEntry.class);
 
-                    xstream.alias("taxonomy", Taxonomy.class);
-                    xstream.alias("classification", Classification.class);
-                    xstream.alias("assignment", Assignment.class);
+                xstream.alias("taxonomy", Taxonomy.class);
+                xstream.alias("classification", Classification.class);
+                xstream.alias("assignment", Assignment.class);
 
-                    xstream.alias("dashboard", Dashboard.class);
-                    xstream.useAttributeFor(Dashboard.class, "name");
-                    xstream.alias("column", Dashboard.Column.class);
-                    xstream.alias("widget", Dashboard.Widget.class);
-                    xstream.useAttributeFor(Dashboard.Widget.class, "type");
+                xstream.alias("dashboard", Dashboard.class);
+                xstream.useAttributeFor(Dashboard.class, "name");
+                xstream.alias("column", Dashboard.Column.class);
+                xstream.alias("widget", Dashboard.Widget.class);
+                xstream.useAttributeFor(Dashboard.Widget.class, "type");
 
-                    xstream.alias("event", SecurityEvent.class);
-                    xstream.alias("config-set", ConfigurationSet.class);
-                    xstream.alias("config", ConfigurationSet.Configuration.class);
-                }
+                xstream.alias("event", SecurityEvent.class);
+                xstream.alias("config-set", ConfigurationSet.class);
+                xstream.alias("config", ConfigurationSet.Configuration.class);
             }
         }
         return xstream;
