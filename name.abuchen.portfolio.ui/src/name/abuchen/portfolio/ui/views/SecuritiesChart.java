@@ -440,8 +440,13 @@ public class SecuritiesChart
             }
             else
             {
-                index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
-                                new SecurityPrice.ByDate()));
+                index = Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0), new SecurityPrice.ByDate());
+                if (index == -1)
+                {
+                    index = 0;
+                } else {
+                    index = Math.abs(index);
+                }
 
                 if (index >= prices.size())
                 {
