@@ -47,7 +47,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Sammelabrechnung (Wertpapierkauf/-verkauf)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Nr.(\\d*)/(\\d*)  Kauf.*");
+        Block block = new Block("Nr.(\\d*)/(\\d*) *Kauf.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -56,7 +56,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.[0-9A-Za-z]*/(\\d*)  Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -93,7 +93,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> new BuySellEntryItem(t)));
 
-        block = new Block("Nr.(\\d*)/(\\d*)  Verkauf.*");
+        block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -102,7 +102,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -171,7 +171,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.[0-9A-Za-z]*/(\\d*)  Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -487,7 +487,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
@@ -930,7 +930,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     {
 
         // optional: Steuererstattung
-        Block block = new Block("Nr.(\\d*)/(\\d*)  Verkauf.*");
+        Block block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
                         .subject(() -> {
@@ -948,7 +948,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr.(\\d*)/(\\d*)  Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
+                        .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })

@@ -1,0 +1,52 @@
+PDFBox Version: 1.8.13
+-----------------------------------------
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+Telefon:  +49 (0) 7621 1543 960
+Mail: info@whitebox.eu
+Internet: www.whitebox.eu
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        10.01.2018
+0202282000000879758350
+Herr Auftragsdatum     09.01.2018n
+Vorname Nachname Schlusstag        09.01.2018
+E.-Fr.-Gottschalk-Weg 6c Ausführungszeit   15:00 Uhr
+79650 Schopfheim Valuta            11.01.2018
+Auftragsnummer    106258239/1
+Ausf.platz/-art   außerbörslich
+Wertpapierabrechnung Verkauf Fonds/Zertifikate
+Ihre Depotnummer  1234567890
+Depotinhaber      Nachname, Vorname
+Nr.106258239/1 Verkauf           ISHSVII-FTSE 100 LS ACC (IE00B53HP851/A0YEDM)
+Ausgeführt     0,007229 St.            Kurswert       EUR                 0,95
+Kurs           131,420000 EUR          Provision
+Devisenkurs                            Eigene Spesen
+Verwahrart     Wertpapierrechnung      Fremde Spesen
+Lagerstelle    Clearstream Lux.
+Lagerland      Großbritannien
+                                       Bemessungs-
+Gewinn/Verlust 0,06 EUR                grundlage      EUR                 0,00
+                                     **Einbeh. Steuer EUR                 0,00
+                                       Endbetrag      EUR                 0,95
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  EUR                 0,00
+                                 Solidaritätszuschlag EUR                 0,00
+                                 Kirchensteuer        EUR                 0,00
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1344971210.
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1010136626
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem  angegebenen  Valutatag  buchen.  Bitte prüfen Sie  diese  Abrechnung  auf
+Richtigkeit und Vollständigkeit.  Etwaige Einwendungen gegen diese  Abrechnung
+müssen unverzüglich  nach Zugang bei der Bank  erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten  hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese  Mitteilung  ist  maschinell  erstellt  und  wird  nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihren Betreuer.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000879758350 0123202280000101
