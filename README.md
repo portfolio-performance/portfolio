@@ -31,7 +31,7 @@ set MAVEN_OPTS="-Xmx1g"
 Run Maven 3.x.x in the 'portfolio-app' directory:
 
 ```
-mvn clean install
+mvn clean verify -Dtycho.disableP2Mirrors
 ```
 
 ## Developing with Eclipse
@@ -52,7 +52,7 @@ After importing the Portfolio Performance projects in Eclipse, they will not com
 
 Run Maven *once* in the *'portfolio-app' directory* with the following parameter:
 ```
-mvn clean install -Dgenerate-target-platform=true
+mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 ```
 
 ### Set Target Platform

@@ -1,6 +1,6 @@
 sudo: false
 language: java
 install: true
-script: mvn -f ./portfolio-app/pom.xml install
+script: mvn -f ./portfolio-app/pom.xml verify -Dtycho.disableP2Mirrors
 jdk:
   - oraclejdk8
