@@ -5,7 +5,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-//import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -33,8 +32,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addIncomeTransaction();
         addTaxAdjustmentTransaction();
+
+        // documents since Q4 2017 look different
+        addQ42017DividendTransaction();
     }
-    
+
     @Override
     public String getPDFAuthor()
     {
@@ -67,10 +69,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .find("Einheit Umsatz( F\\Dlligkeit)?") //
                         .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                        
+
                         .section("date", "time")
                         .match("KAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+:\\d+).*")
-                        .assign((t,v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency")
                         .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
@@ -153,7 +155,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "time")
                         .match("VERKAUF AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+:\\d+).*.*")
-                        .assign((t,v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency")
                         .match("Wert \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
@@ -281,7 +283,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date") //
-                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+                        .match("WERT (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("currency", "amount").optional() //
                         .match("WERT \\d+.\\d+.\\d{4}+ *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *")
@@ -440,6 +443,114 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
                         
                         .wrap(t -> new TransactionItem(t)));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addQ42017DividendTransaction()
+    {
+        DocumentType type = new DocumentType("Dividendengutschrift");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Dividendengutschrift.*");
+        type.addBlock(block);
+
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
+
+                        .section("name", "wkn", "isin", "currency") //
+                        .find("Wertpapierbezeichnung WKN ISIN") //
+                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .match("Dividende pro Stück ([\\d.]+,\\d+) (?<currency>\\w{3}+).*").assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("amount", "currency") //
+                        .match("Netto zugunsten IBAN (.*) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .section("shares") //
+                        .match("(?<shares>[\\d.]+(,\\d+)?) Stück") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date") //
+                        .match("Valuta (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional() //
+                        .match("Brutto in (\\w{3}+) (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}+)")
+                        .match("Devisenkurs (?<exchangeRate>[\\d.]+,\\d+) (\\w{3}+) / (\\w{3}+)") //
+                        .match("Brutto in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+                            BigDecimal rate = asExchangeRate(v.get("exchangeRate"));
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+
+                            type.getCurrentContext().put("exchangeRate", inverseRate.toPlainString());
+
+                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                            {
+                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                t.addUnit(grossValue);
+                            }
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("abzgl. Quellensteuer .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+
+                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+                            else if (type.getCurrentContext().containsKey("exchangeRate"))
+                            {
+                                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+
+                                Money txTax = Money.of(t.getCurrencyCode(),
+                                                BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
+                                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue());
+
+                                t.addUnit(new Unit(Unit.Type.TAX, txTax));
+
+                                // update gross value if necessary
+                                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                {
+                                    Unit grossValue = t.getUnit(Unit.Type.GROSS_VALUE).get();
+
+                                    t.removeUnit(grossValue);
+
+                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue.getAmount().subtract(txTax),
+                                                    grossValue.getForex().subtract(tax), grossValue.getExchangeRate()));
+                                }
+                            }
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("abzgl. Kapitalertragsteuer .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("abzgl. Solidaritätszuschlag .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                        })
+
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null));
     }
 
     @Override
