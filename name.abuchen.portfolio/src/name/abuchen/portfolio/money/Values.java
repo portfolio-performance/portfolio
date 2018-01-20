@@ -204,7 +204,7 @@ public abstract class Values<E>
         @Override
         public String format(LocalDateTime date)
         {
-            if (!date.toLocalTime().equals(LocalTime.MIDNIGHT))
+            if (date.toLocalTime().equals(LocalTime.MIDNIGHT))
                 return Values.Date.format(date.toLocalDate());
             else
                 return formatter.format(date);

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -17,14 +18,20 @@ import name.abuchen.portfolio.ui.Messages;
 
 public class DateTimeEditingSupport extends PropertyEditingSupport
 {
-    private static final DateTimeFormatter[] formatters = new DateTimeFormatter[] {
+    private static final DateTimeFormatter[] timeFormatters = new DateTimeFormatter[] {
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT), //
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG), //
                     DateTimeFormatter.ofPattern("d.M.yyyy HH:mm"), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss"), //$NON-NLS-1$
                     DateTimeFormatter.ofPattern("d.M.yy HH:mm"), //$NON-NLS-1$
-                    DateTimeFormatter.ofPattern("d.M.yy HH:mm:ss"), //$NON-NLS-1$
+                    DateTimeFormatter.ISO_DATE_TIME };
+
+    private static final DateTimeFormatter[] dateFormatters = new DateTimeFormatter[] {
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM),
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT), //
+                    DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG), //
+                    DateTimeFormatter.ofPattern("d.M.yyyy"), //$NON-NLS-1$
+                    DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
                     DateTimeFormatter.ISO_DATE };
 
     public DateTimeEditingSupport(Class<?> subjectType, String attributeName)
@@ -53,14 +60,14 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
     @Override
     public final void setValue(Object element, Object value) throws Exception
     {
-        Object subject = adapt(element);
+        String inputValue = String.valueOf(value).trim();
         LocalDateTime newValue = null;
 
-        for (DateTimeFormatter formatter : formatters)
+        for (DateTimeFormatter formatter : timeFormatters)
         {
             try
             {
-                newValue = LocalDateTime.parse(String.valueOf(value), formatter);
+                newValue = LocalDateTime.parse(inputValue, formatter);
                 break;
             }
             catch (DateTimeParseException ignore)
@@ -70,7 +77,25 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
         }
 
         if (newValue == null)
+        {
+            for (DateTimeFormatter formatter : dateFormatters)
+            {
+                try
+                {
+                    newValue = LocalDate.parse(inputValue, formatter).atStartOfDay();
+                    break;
+                }
+                catch (DateTimeParseException ignore)
+                {
+                    // continue with next formatter
+                }
+            }
+        }
+
+        if (newValue == null)
             throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
+
+        Object subject = adapt(element);
 
         LocalDateTime oldValue = (LocalDateTime) descriptor().getReadMethod().invoke(subject);
 
