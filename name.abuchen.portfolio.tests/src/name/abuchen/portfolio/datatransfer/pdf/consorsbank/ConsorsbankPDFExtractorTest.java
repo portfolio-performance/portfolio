@@ -303,6 +303,79 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschrift10() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getSecurity().getName(), is("OMNICOM GROUP INC. Registered Shares DL -,15"));
+        assertThat(t.getSecurity().getIsin(), is("US6819191064"));
+        assertThat(t.getSecurity().getWkn(), is("871706"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.USD));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2018-01-09T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(25)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.34))));
+        
+        Unit grossValue = t.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValue.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.66))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(12.75))));
+        
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.54))));
+        
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06 + 1.26 + 1.88))));
+    }
+    
+    @Test
+    public void testErtragsgutschrift10WithExistingSecurityInTransactionCurrency() throws IOException
+    {
+        Client client = new Client();
+        
+        Security security = new Security("Omnicom", CurrencyUnit.EUR);
+        security.setIsin("US6819191064");
+        client.addSecurity(security);
+        
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getSecurity(), is(security));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2018-01-09T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(25)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.34))));
+        
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).isPresent(), is(false));
+               
+        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.54))));
+        
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.06 + 1.26 + 1.88))));
+    }
+    
+    @Test
     public void testBezug1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
