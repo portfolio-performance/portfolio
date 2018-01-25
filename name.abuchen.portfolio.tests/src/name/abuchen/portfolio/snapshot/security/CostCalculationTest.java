@@ -39,7 +39,7 @@ public class CostCalculationTest
         // expected:
         // 3149,20 - round(3149,20 * 15/109) + 1684,92 + 959,30 = 5360,04385
 
-        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 536005L)));
+        assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 536004L)));
     }
 
     @Test

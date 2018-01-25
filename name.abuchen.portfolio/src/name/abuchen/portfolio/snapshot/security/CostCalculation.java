@@ -64,8 +64,8 @@ import name.abuchen.portfolio.money.Money;
 
                     long n = Math.min(sold, entry.shares);
 
-                    entry.grossAmount -= Math.round(n * entry.grossAmount / entry.shares);
-                    entry.netAmount -= Math.round(n * entry.netAmount / entry.shares);
+                    entry.grossAmount -= Math.round(n * entry.grossAmount / (double) entry.shares);
+                    entry.netAmount -= Math.round(n * entry.netAmount / (double) entry.shares);
                     entry.shares -= n;
 
                     sold -= n;
