@@ -265,19 +265,29 @@ public final class Sidebar extends Composite
 
         entry.action.run();
     }
-
-    public Entry selectById(String id)
+    
+    public Entry findById(String id)
     {
         for (Entry entry : entries)
         {
             if (id.equals(entry.getId()))
             {
-                select(entry);
                 return entry;
             }
         }
 
         return null;
+    }
+    
+    public Entry selectById(String id)
+    {
+        Entry entry = findById(id);
+        if (entry != null)
+        {
+            select(entry);
+        }
+
+        return entry;
     }
 
     public List<Entry> getEntries()

@@ -30,6 +30,7 @@ import org.osgi.service.event.Event;
 
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.p2.P2Service;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -114,6 +115,9 @@ public class StartupAddon
         }
     }
 
+    @Inject
+    P2Service p2service;
+
     @PostConstruct
     public void setupProgressMontior(ProgressMonitorFactory factory)
     {
@@ -150,7 +154,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
+                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService, p2service);
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e) // NOSONAR

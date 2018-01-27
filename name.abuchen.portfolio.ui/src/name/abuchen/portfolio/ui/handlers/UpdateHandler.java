@@ -14,6 +14,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.p2.P2Service;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
@@ -22,14 +23,14 @@ public class UpdateHandler
 {
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell, final IWorkbench workbench,
-                    final EPartService partService)
+                    final EPartService partService, final P2Service p2Service)
     {
         try
         {
             new ProgressMonitorDialog(shell).run(true, true, monitor -> {
                 try // NOSONAR
                 {
-                    UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
+                    UpdateHelper updateHelper = new UpdateHelper(workbench, partService, p2Service);
                     updateHelper.runUpdate(monitor, false);
                 }
                 catch (CoreException e)
