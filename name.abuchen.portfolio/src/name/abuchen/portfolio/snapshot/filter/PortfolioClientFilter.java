@@ -27,7 +27,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
-import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
@@ -61,94 +60,31 @@ public class PortfolioClientFilter implements ClientFilter
     @Override
     public Client filter(Client client)
     {
-        ReadOnlyClient pseudoClient = new ReadOnlyClient(client);
-
-        Map<Account, ReadOnlyAccount> account2pseudo = new HashMap<>();
-        Set<Security> usedSecurities = new HashSet<>();
+        FilterContext filterContext = new FilterContext(client);
 
         for (Portfolio portfolio : portfolios)
         {
-            // collect all accounts that are connected to the given portfolio
-            // via transactions
-            Set<ReadOnlyAccount> accountsWithPortfolioTransactions = collectAccountsWithTransactions(portfolio,
-                            pseudoClient, account2pseudo);
-
-            ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(portfolio);
-            pseudoPortfolio.setReferenceAccount(account2pseudo.get(portfolio.getReferenceAccount()));
-            pseudoClient.internalAddPortfolio(pseudoPortfolio);
-
-            adaptPortfolioTransactions(portfolio, pseudoPortfolio, usedSecurities);
+            adaptPortfolioTransactions(portfolio, filterContext.get(portfolio));
 
             // collect security relevant transactions for all connected accounts
-            accountsWithPortfolioTransactions.forEach(acc -> {
+            filterContext.portfolio2Accounts.get(portfolio).forEach(acc -> {
                 if (!accounts.contains(acc.getSource()))
-                    collectSecurityRelevantTx(pseudoClient, portfolio, acc, usedSecurities);
+                    collectSecurityRelevantTx(filterContext, portfolio, acc);
             });
         }
 
         for (Account account : accounts)
         {
-            ReadOnlyAccount pseudoAccount = account2pseudo.computeIfAbsent(account, a -> {
-                ReadOnlyAccount pa = new ReadOnlyAccount(a);
-                pseudoClient.internalAddAccount(pa);
-                return pa;
-            });
-
-            adaptAccountTransactions(account, pseudoAccount, usedSecurities);
+            adaptAccountTransactions(filterContext, account);
         }
 
-        for (Security security : usedSecurities)
-            pseudoClient.internalAddSecurity(security);
-
-        return pseudoClient;
+        return filterContext.getClient();
     }
 
-    private Set<ReadOnlyAccount> collectAccountsWithTransactions(Portfolio portfolio, ReadOnlyClient pseudoClient,
-                    Map<Account, ReadOnlyAccount> account2pseudo)
-    {
-        return portfolio.getTransactions().stream().map(t -> {
-            CrossEntry crossEntry = t.getCrossEntry();
-            Account account = null;
-            if (crossEntry instanceof BuySellEntry)
-            {
-                // if it is a buy-sell entry use the affected account
-                account = ((BuySellEntry) crossEntry).getAccount();
-            }
-            else if (crossEntry instanceof PortfolioTransferEntry)
-            {
-                // if it is a portfolio transfer entry use the owning account or
-                // the reference account of the owning portfolio
-                TransactionOwner<? extends Transaction> transactionOwner = crossEntry
-                                .getCrossOwner(((PortfolioTransferEntry) crossEntry).getTargetTransaction());
-                if (transactionOwner instanceof Portfolio)
-                {
-                    account = ((Portfolio) transactionOwner).getReferenceAccount();
-                }
-                else if (transactionOwner instanceof Account)
-                {
-                    account = (Account) transactionOwner;
-                }
-            }
-            if (account != null)
-            {
-                // if an account was found, return a pseudo account
-                return account2pseudo.computeIfAbsent(account, a -> {
-                    ReadOnlyAccount pa = new ReadOnlyAccount(a);
-                    pseudoClient.internalAddAccount(pa);
-                    return pa;
-                });
-            }
-            return null;
-        }).filter(Objects::nonNull).collect(Collectors.toSet());
-    }
-
-    private void adaptPortfolioTransactions(Portfolio portfolio, ReadOnlyPortfolio pseudoPortfolio,
-                    Set<Security> usedSecurities)
+    private void adaptPortfolioTransactions(Portfolio portfolio, ReadOnlyPortfolio pseudoPortfolio)
     {
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
-            usedSecurities.add(t.getSecurity());
-
             switch (t.getType())
             {
                 case BUY:
@@ -189,7 +125,7 @@ public class PortfolioClientFilter implements ClientFilter
         }
     }
 
-    private double calculatePercentageOfDividendsOfSecurities(ReadOnlyClient pseudoClient,
+    private double calculatePercentageOfDividendsOfSecurities(FilterContext filterContext,
                     ReadOnlyAccount pseudoAccount, Transaction t)
     {
         Security security = t.getSecurity();
@@ -197,37 +133,41 @@ public class PortfolioClientFilter implements ClientFilter
         if (!lastExDay.isPresent())
         {
             // no ex day available, therefor it is not possible to know how many
-            // shares belong to this portfolio 
-            // -> fallback: divide transaction to all portfolios with the given account as reference account
-            return calculatePercentage(pseudoClient, pseudoAccount);
+            // shares belong to this portfolio
+            // -> fallback: divide transaction to all portfolios with the given
+            // account as reference account
+            return calculatePercentage(filterContext, pseudoAccount);
         }
         else if (lastExDay.get().getDate().isBefore(t.getDateTime().toLocalDate().minusMonths(3)))
         {
-            // if the ex day is more than three months before the transaction they cannot belong together
-            // -> divide transaction to all portfolios with the given account as reference account
-            return calculatePercentage(pseudoClient, pseudoAccount);
+            // if the ex day is more than three months before the transaction
+            // they cannot belong together
+            // -> divide transaction to all portfolios with the given account as
+            // reference account
+            return calculatePercentage(filterContext, pseudoAccount);
         }
         LocalDate exDay = lastExDay.get().getDate();
         // The stocks must be hold on the day BEFORE the ex day to be entitled
         // to the dividend
-        return calculatePercentageOfSecurities(pseudoClient, pseudoAccount, t, exDay.atStartOfDay());
+        return calculatePercentageOfSecurities(filterContext, pseudoAccount, t, exDay.atStartOfDay());
     }
 
-    private double calculatePercentage(ReadOnlyClient pseudoClient, ReadOnlyAccount pseudoAccount)
+    private double calculatePercentage(FilterContext filterContext, ReadOnlyAccount pseudoAccount)
     {
-        Client client = pseudoClient.getSource();
-        return 1d * pseudoClient.getPortfolios().stream().filter(p -> p.getReferenceAccount() == pseudoAccount) .count() /
-                client.getPortfolios().stream().filter(p -> p.getReferenceAccount() == pseudoAccount.getSource()) .count();
+        long selectedPortfoliosWithAccount = filterContext.portfolio2Accounts.entrySet().stream()
+                        .filter(e -> e.getValue().contains(pseudoAccount)).count();
+        return 1d / selectedPortfoliosWithAccount;
     }
 
-    private double calculatePercentageOfSecurities(ReadOnlyClient pseudoClient, ReadOnlyAccount pseudoAccount,
+    private double calculatePercentageOfSecurities(FilterContext filterContext, ReadOnlyAccount pseudoAccount,
                     Transaction t, LocalDateTime referenceDate)
     {
+        ReadOnlyClient pseudoClient = filterContext.getClient();
         Client client = pseudoClient.getSource();
         // get the security position at the time of the given date
         SecurityPosition securityPosition = calculateSecurityPosition(pseudoClient.getPortfolios().stream() //
-                                        .map(p -> ((ReadOnlyPortfolio) p).getSource()) //
-                                        .collect(Collectors.toList()) //
+                        .map(p -> ((ReadOnlyPortfolio) p).getSource()) //
+                        .collect(Collectors.toList()) //
                         , pseudoAccount, t.getSecurity(), referenceDate);
         if (securityPosition.getShares() == 0)
         {
@@ -272,7 +212,7 @@ public class PortfolioClientFilter implements ClientFilter
         }).collect(Collectors.toList());
         // only the account of the evaluated transaction is interesting here
         Account referenceAccount = pseudoAccount.getSource();
-        
+
         // for dividends we must use the ex-day to evaluate the stock count
         // relevant for the calculation
         return getSecurityPosition(sourcePortfolios, referenceAccount, security, exDay);
@@ -281,28 +221,24 @@ public class PortfolioClientFilter implements ClientFilter
     private static SecurityPosition getSecurityPosition(Collection<Portfolio> portfolios, Account referenceAccount, Security security, LocalDateTime date)
     {
         List<PortfolioTransaction> transactions = new ArrayList<>();
-        portfolios.forEach(portfolio ->
-        {
-            transactions.addAll(
-                    portfolio.getTransactions() //
-                        .stream() //
-                        .filter(t -> t.getSecurity().equals(security)) //
-                        .filter(t -> t.getDateTime().isBefore(date)) //
-                        .filter(t -> {
-                            CrossEntry crossEntry = t.getCrossEntry();
-                            if (crossEntry instanceof BuySellEntry)
-                            {
-                                return referenceAccount.equals(((BuySellEntry) crossEntry).getAccount());
-                            }
-                            return true;
-                        }) //
-                        .collect(Collectors.toList())
-            );
+        portfolios.forEach(portfolio -> {
+            transactions.addAll(portfolio.getTransactions() //
+                            .stream() //
+                            .filter(t -> t.getSecurity().equals(security)) //
+                            .filter(t -> t.getDateTime().isBefore(date)) //
+                            .filter(t -> {
+                                CrossEntry crossEntry = t.getCrossEntry();
+                                if (crossEntry instanceof BuySellEntry)
+                                    return referenceAccount.equals(((BuySellEntry) crossEntry).getAccount());
+                                return true;
+                            }) //
+                            .collect(Collectors.toList()));
         });
         return new SecurityPosition(security, new CurrencyConverterImpl(null, referenceAccount.getCurrencyCode()), security.getSecurityPrice(date.toLocalDate()), transactions);
     }
 
-    private void collectSecurityRelevantTx(ReadOnlyClient pseudoClient, Portfolio portfolio, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
+    private void collectSecurityRelevantTx(FilterContext filterContext, Portfolio portfolio,
+                    ReadOnlyAccount pseudoAccount)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -313,7 +249,7 @@ public class PortfolioClientFilter implements ClientFilter
             if (t.getSecurity() == null)
                 continue;
 
-            if (!usedSecurities.contains(t.getSecurity()))
+            if (!filterContext.usedSecurities.contains(t.getSecurity()))
                 continue;
 
             switch (t.getType())
@@ -326,19 +262,21 @@ public class PortfolioClientFilter implements ClientFilter
                     // Therefore it is not possible to know if this transaction is really relevant for this portfolio.
                     // As a compromise the transaction is spread between all portfolios, where the current account is also the reference account
                     // Otherwise those transactions would be fully considered for each portfolio. 
-                    double taxRefundPart = calculatePercentage(pseudoClient, pseudoAccount);
+                    double taxRefundPart = calculatePercentage(filterContext, pseudoAccount);
                     addAdjustedSecurityRelevantTransaction(pseudoAccount, t, taxRefundPart,
                                     AccountTransaction.Type.REMOVAL);
                     break;
                 case DIVIDENDS:
-                    double dividendPart = calculatePercentageOfDividendsOfSecurities(pseudoClient, pseudoAccount, t);
+                    double dividendPart = calculatePercentageOfDividendsOfSecurities(filterContext, pseudoAccount, t);
                     addAdjustedSecurityRelevantTransaction(pseudoAccount, t, dividendPart,
-                                    AccountTransaction.Type.REMOVAL);                    break;
+                                    AccountTransaction.Type.REMOVAL);
+                    break;
                 case TAXES:
                 case FEES:
-                    double taxFeePart = calculatePercentage(pseudoClient, pseudoAccount);
+                    double taxFeePart = calculatePercentage(filterContext, pseudoAccount);
                     addAdjustedSecurityRelevantTransaction(pseudoAccount, t, taxFeePart,
-                                    AccountTransaction.Type.DEPOSIT);                    break;
+                                    AccountTransaction.Type.DEPOSIT);
+                    break;
                 case BUY:
                 case TRANSFER_IN:
                 case SELL:
@@ -398,8 +336,9 @@ public class PortfolioClientFilter implements ClientFilter
         }
     }
 
-    private void adaptAccountTransactions(Account account, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
+    private void adaptAccountTransactions(FilterContext filterContext, Account account)
     {
+        ReadOnlyAccount pseudoAccount = filterContext.get(account);
         for (AccountTransaction t : account.getTransactions())
         {
             switch (t.getType())
@@ -431,14 +370,14 @@ public class PortfolioClientFilter implements ClientFilter
                 case DIVIDENDS:
                 case TAX_REFUND:
                 case FEES_REFUND:
-                    if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
+                    if (t.getSecurity() == null || filterContext.usedSecurities.contains(t.getSecurity()))
                         pseudoAccount.internalAddTransaction(t);
                     else
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     break;
                 case TAXES:
                 case FEES:
-                    if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))
+                    if (t.getSecurity() == null || filterContext.usedSecurities.contains(t.getSecurity()))
                         pseudoAccount.internalAddTransaction(t);
                     else
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
@@ -480,5 +419,80 @@ public class PortfolioClientFilter implements ClientFilter
 
         // do *not* copy units as REMOVAL and DEPOSIT have never units
         return clone;
+    }
+
+    private class FilterContext
+    {
+        private ReadOnlyClient pseudoClient;
+        private Map<Account, ReadOnlyAccount> account2Pseudo = new HashMap<>();
+        private Map<Portfolio, ReadOnlyPortfolio> portfolio2Pseudo = new HashMap<>();
+        private Map<Portfolio, Set<ReadOnlyAccount>> portfolio2Accounts = new HashMap<>();
+        private Set<Security> usedSecurities = new HashSet<>();
+
+        public FilterContext(final Client client)
+        {
+            pseudoClient = new ReadOnlyClient(client);
+
+            for (Portfolio portfolio : portfolios)
+            {
+                for (PortfolioTransaction t : portfolio.getTransactions())
+                {
+                    usedSecurities.add(t.getSecurity());
+                }
+                portfolio2Accounts.put(portfolio, collectAccountsWithTransactions(portfolio));
+            }
+
+            usedSecurities.forEach(sec -> pseudoClient.internalAddSecurity(sec));
+        }
+
+        public ReadOnlyClient getClient()
+        {
+            return pseudoClient;
+        }
+
+        private ReadOnlyAccount get(final Account account)
+        {
+            // if an account was found, return a pseudo account
+            return account2Pseudo.computeIfAbsent(account, a -> {
+                ReadOnlyAccount pa = new ReadOnlyAccount(a);
+                pseudoClient.internalAddAccount(pa);
+                return pa;
+            });
+        }
+
+        private ReadOnlyPortfolio get(final Portfolio portfolio)
+        {
+            return portfolio2Pseudo.computeIfAbsent(portfolio, p -> {
+                ReadOnlyPortfolio pp = new ReadOnlyPortfolio(p);
+                pp.setReferenceAccount(get(portfolio.getReferenceAccount()));
+                pseudoClient.internalAddPortfolio(pp);
+                return pp;
+            });
+        }
+
+        private Set<ReadOnlyAccount> collectAccountsWithTransactions(Portfolio portfolio)
+        {
+            return portfolio.getTransactions().stream().map(t -> {
+                CrossEntry crossEntry = t.getCrossEntry();
+                Account account = null;
+                if (crossEntry instanceof BuySellEntry)
+                {
+                    // if it is a buy-sell entry use the affected account
+                    account = ((BuySellEntry) crossEntry).getAccount();
+                }
+                else if (crossEntry instanceof PortfolioTransferEntry)
+                {
+                    // if it is a portfolio transfer entry use the owning
+                    // account or
+                    // the reference account of the owning portfolio
+                }
+                if (account != null)
+                {
+                    // if an account was found, return a pseudo account
+                    return get(account);
+                }
+                return null;
+            }).filter(Objects::nonNull).collect(Collectors.toSet());
+        }
     }
 }
