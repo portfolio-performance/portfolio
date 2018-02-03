@@ -968,6 +968,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                     case "AbgSt. Optimierung":
                                         t.setType(AccountTransaction.Type.TAX_REFUND);
                                         break;
+                                    default:
                                 }
                             }
                         })

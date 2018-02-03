@@ -1,14 +1,10 @@
 package name.abuchen.portfolio.online.impl;
 
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -16,7 +12,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 
-import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Exchange;

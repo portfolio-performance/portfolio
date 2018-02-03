@@ -15,7 +15,6 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.model.SecurityElement;
 import name.abuchen.portfolio.model.SecurityEvent;
-import name.abuchen.portfolio.online.impl.HTMLTableEventParser;
 
 @SuppressWarnings("nls")
 public class HTMLTableEventFeedTest
