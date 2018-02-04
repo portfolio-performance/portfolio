@@ -499,7 +499,7 @@ public class CSVImporter
 
     public CSVExtractor getSecurityPriceExtractor()
     {
-        return extractors.get(3);
+        return extractors.get(4);
     }
 
     public void setDelimiter(char delimiter)
