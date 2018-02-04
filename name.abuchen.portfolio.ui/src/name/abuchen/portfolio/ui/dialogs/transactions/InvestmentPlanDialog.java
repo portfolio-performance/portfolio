@@ -162,15 +162,14 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
                         //
                         .thenBelow(securities.value.getControl()).label(securities.label)
                         .suffix(securities.currency, currencyWidth) //
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label) //
                         .thenBelow(account.value.getControl()).label(account.label)
-                        .suffix(account.currency, currencyWidth) //
-                        .thenBelow(labelAutoGenerate, 10) //
-                        .thenBelow(valueDate.getControl(), 10).label(lblDate) //
+                        .suffix(account.currency, currencyWidth)
+                        .thenBelow(labelAutoGenerate, 10)
+                        .thenBelow(valueDate.getControl(), 10).label(lblDate)
                         .thenBelow(amount.value, 10).width(amountWidth).label(amount.label)
-                        .suffix(amount.currency, currencyWidth) //
+                        .suffix(amount.currency, currencyWidth)
                         .thenBelow(fees.value).width(amountWidth).label(fees.label)
-                        .suffix(fees.currency, currencyWidth); //
+                        .suffix(fees.currency, currencyWidth);
 
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
         
