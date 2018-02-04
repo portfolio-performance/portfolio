@@ -50,7 +50,6 @@ import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.UpdateEventsJob;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
@@ -665,6 +664,9 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         manager.add(new Separator());
+        System.err.println("SecuritiesTable.fillContextMenu selection: " + selection.toString() + "  \n ========== END ===========");
+
+        manager.add(new HideSecurityAction(selection));
         if (watchlist == null)
         {
             manager.add(new DeleteSecurityAction(selection));
@@ -803,6 +805,39 @@ public final class SecuritiesTable implements ModificationListener
 
                 MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
                                 MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, label));
+            }
+
+            if (isDirty)
+            {
+                markDirty();
+                securities.setInput(getClient().getSecurities());
+            }
+
+        }
+    }
+
+    private final class HideSecurityAction extends Action
+    {
+        private IStructuredSelection selection;
+
+        private HideSecurityAction(IStructuredSelection selection)
+        {
+            super(Messages.SecurityMenuHideSecurity);
+
+            this.selection = selection;
+        }
+
+        @Override
+        public void run()
+        {
+            boolean isDirty = false;
+
+            for (Object obj : selection.toArray())
+            {
+                Security security = (Security) obj;
+
+                security.setRetired(!security.isRetired());
+                isDirty = true;
             }
 
             if (isDirty)
