@@ -4,9 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Comparator;
 
-import name.abuchen.portfolio.money.Values;
-
-public class SecurityPrice implements Comparable<SecurityPrice>
+public class SecurityPrice extends SecurityElement implements Comparable<SecurityPrice>
 {
     public static final class ByDate implements Comparator<SecurityPrice>, Serializable
     {
@@ -19,42 +17,42 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         }
     }
 
-    private LocalDate date;
-    private long value;
+    //private LocalDate date;
+    //private long value;
 
     public SecurityPrice()
     {}
 
     public SecurityPrice(LocalDate date, long price)
     {
-        this.value = price;
-        this.date = date;
+        super.setDate(date);
+        super.setValue(price);
     }
 
-    public LocalDate getDate()
-    {
-        return date;
-    }
+//public LocalDate getDate()
+    //{
+    //    return date;
+    //}
 
-    public void setDate(LocalDate date)
-    {
-        this.date = date;
-    }
+    //public void setDate(LocalDate date)
+    //{
+    //    this.date = date;
+    //}
 
-    public long getValue()
-    {
-        return value;
-    }
+    //public long getValue()
+    //{
+    //    return value;
+    //}
 
-    public void setValue(long value)
-    {
-        this.value = value;
-    }
+    //public void setValue(long value)
+    //{
+    //    this.value = value;
+    //}
 
     @Override
     public int compareTo(SecurityPrice o)
     {
-        return this.date.compareTo(o.date);
+        return super.date.compareTo(o.date);
     }
 
     @Override
@@ -62,6 +60,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     {
         final int prime = 31;
         int result = 1;
+        long value = getValue();
         result = prime * result + ((date == null) ? 0 : date.hashCode());
         result = prime * result + (int) (value ^ (value >>> 32));
         return result;
@@ -84,16 +83,16 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         }
         else if (!date.equals(other.date))
             return false;
-        if (value != other.value)
+        if (getValue() != other.getValue())
             return false;
         return true;
     }
 
-    @Override
-    @SuppressWarnings("nls")
-    public String toString()
-    {
-        return String.format("%tF: %,10.2f", date, value / Values.Quote.divider());
-    }
+    //@Override
+    //@SuppressWarnings("nls")
+    //public String toString()
+    //{
+    //    return String.format("%tF: %,10.2f", date, value / Values.Quote.divider());
+    //}
 
 }

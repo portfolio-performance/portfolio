@@ -30,7 +30,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 
-public class AlphavantageQuoteFeed implements QuoteFeed
+public class AlphavantageQuoteFeed extends QuoteFeed
 {
     private enum OutputSize
     {

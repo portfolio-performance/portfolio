@@ -49,6 +49,11 @@ public final class Security implements Attributable, InvestmentVehicle
     private String latestFeed;
     private String latestFeedURL;
     private LatestSecurityPrice latest;
+    private SecurityEvent latestEvent;
+
+    // eventFeed and eventFeedURL are used to update historical events
+    private String eventFeed;
+    private String eventFeedURL;
 
     private Attributes attributes;
 
@@ -391,6 +396,25 @@ public final class Security implements Attributable, InvestmentVehicle
         }
     }
 
+    /**
+     * Sets the latest dividend payment.
+     *
+     * @return true if the latest dividend payment was updated.
+     */
+    public boolean setLatest(SecurityEvent latest)
+    {
+        // only replace if necessary -> UI might keep reference!
+        if ((this.latestEvent != null && !this.latestEvent.equals(latest)) || (this.latestEvent == null && latest != null))
+        {
+            this.latestEvent = latest;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     @Override
     public boolean isRetired()
     {
@@ -403,18 +427,99 @@ public final class Security implements Attributable, InvestmentVehicle
         this.isRetired = isRetired;
     }
 
-    public List<SecurityEvent> getEvents()
+    public String getEventFeed()
+    {
+        return eventFeed;
+    }
+
+    public void setEventFeed(String eventFeed)
+    {
+        this.eventFeed = eventFeed;
+    }
+
+    public String getEventFeedURL()
+    {
+        return eventFeedURL;
+    }
+
+    public void setEventFeedURL(String eventFeedURL)
+    {
+        this.eventFeedURL = eventFeedURL;
+    }
+
+    public List<SecurityEvent> getAllEvents()
     {
         if (this.events == null)
             this.events = new ArrayList<>();
         return events;
     }
 
-    public void addEvent(SecurityEvent event)
+    public List<SecurityEvent> getEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getInvisibleEvents()
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (!e.isVisible())
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public List<SecurityEvent> getEvents(SecurityEvent.Type type)
+    {
+        List<SecurityEvent> allEvents = getAllEvents();
+        List<SecurityEvent> list = new ArrayList<>();
+        for (SecurityEvent e : allEvents)
+        {
+            if (e.getType().equals(type))
+            {
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+    public boolean addEvent(SecurityEvent event)
     {
         if (this.events == null)
             this.events = new ArrayList<>();
-        this.events.add(event);
+        boolean add = true;
+        for (SecurityEvent e : this.events)
+        {
+            if (event.getDate().equals(e.getDate()) && event.getType().equals(e.getType()))
+                add = false;
+        }
+        if (add)
+            this.events.add(event);
+        return add;
+    }
+
+    public void removeEvent(SecurityEvent event)
+    {
+        events.remove(event);
+    }
+
+
+    public void removeAllEvents()
+    {
+        events.clear();
     }
 
     @Override
@@ -504,6 +609,8 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.latestFeedURL = latestFeedURL;
         answer.latest = latest;
 
+        answer.eventFeed = eventFeed;
+        answer.eventFeedURL = eventFeedURL;
         answer.events = new ArrayList<>(getEvents());
 
         answer.isRetired = isRetired;

@@ -10,8 +10,6 @@ public class LatestSecurityPrice extends SecurityPrice
 
     private long previousClose;
     
-    public static final long NOT_AVAILABLE = -1L;
-
     public LatestSecurityPrice()
     {}
 

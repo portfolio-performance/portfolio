@@ -42,10 +42,12 @@ public class SecurityTest
             else if (p.getPropertyType() == int.class)
                 p.getWriteMethod().invoke(source, new Random().nextInt());
             else
+            {
                 skipped++;
+            }
         }
 
-        assertThat(skipped, equalTo(7));
+        assertThat(skipped, equalTo(9));
 
         Security target = source.deepCopy();
 
@@ -72,13 +74,13 @@ public class SecurityTest
     public void testSetLatest()
     {
         Security security = new Security();
-        assertThat(security.setLatest(null), is(false));
+        assertThat(security.setLatest((LatestSecurityPrice) null), is(false));
 
         LatestSecurityPrice latest = new LatestSecurityPrice(LocalDate.now(), 1);
         assertThat(security.setLatest(latest), is(true));
         assertThat(security.setLatest(latest), is(false));
-        assertThat(security.setLatest(null), is(true));
-        assertThat(security.setLatest(null), is(false));
+        assertThat(security.setLatest((LatestSecurityPrice) null), is(true));
+        assertThat(security.setLatest((LatestSecurityPrice) null), is(false));
 
         LatestSecurityPrice second = new LatestSecurityPrice(LocalDate.now(), 2);
         assertThat(security.setLatest(latest), is(true));

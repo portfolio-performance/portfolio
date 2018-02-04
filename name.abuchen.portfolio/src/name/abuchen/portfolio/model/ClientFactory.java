@@ -56,6 +56,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.CurrencyUnit;
+//import name.abuchen.portfolio.money.Monetary;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -545,9 +546,14 @@ public class ClientFactory
             case 33:
                 // added FEES_REFUND transaction type
             case 34:
+                // SecurityEvent has no more details
+                convertSecurityEventDetails(client);
                 // add optional security to FEES, FEES_REFUND, TAXES
             case 35:
                 // added flag to auto-generate tx from investment plan
+            case 36:
+                // SecurityEvent has no more details
+                convertSecurityEventDetails(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1029,6 +1035,36 @@ public class ClientFactory
             index++;
         }
     }
+
+    private static void convertSecurityEventDetails(Client client)
+    {
+        for (Security security : client.getSecurities())
+        {
+            for (SecurityEvent event : security.getAllEvents())
+            {
+                String details = event.getDetails();
+                if (details != null)
+                {
+                    String[] ratio = details.split(":"); 
+                    if (ratio.length == 2)
+                    {
+                        event.setRatio(Double.parseDouble(ratio[0]), Double.parseDouble(ratio[1]));
+                        event.clearDetails();
+                    }
+                    else if (details.matches("^[0-9,.]+$"))
+                    {
+                        event.setRatio(Double.parseDouble(details));
+                        event.clearDetails();
+                    }
+                }
+                event.clearAmount();
+                event.clearTypeStr();
+                event.unhide();
+                System.err.println("ClientFactory.convertSecurityEventDetails() - " + event.toString());
+            }
+        }
+    }
+
 
     @SuppressWarnings("nls")
     private static XStream xstream()

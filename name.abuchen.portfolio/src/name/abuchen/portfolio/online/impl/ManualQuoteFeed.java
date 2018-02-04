@@ -9,12 +9,15 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 
-public final class ManualQuoteFeed implements QuoteFeed
+public final class ManualQuoteFeed extends QuoteFeed
 {
+
+    public static final String ID = MANUAL; //$NON-NLS-1$
+
     @Override
     public String getId()
     {
-        return QuoteFeed.MANUAL;
+        return ID;
     }
 
     @Override
@@ -26,7 +29,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     @Override
     public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
-        return security.setLatest(null);
+        return security.setLatest((LatestSecurityPrice) null);
     }
 
     @Override

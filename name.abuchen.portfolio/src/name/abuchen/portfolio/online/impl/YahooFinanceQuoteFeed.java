@@ -35,7 +35,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 
-public class YahooFinanceQuoteFeed implements QuoteFeed
+public class YahooFinanceQuoteFeed extends QuoteFeed
 {
     /* package */ interface CSVColumn // NOSONAR
     {
@@ -70,7 +70,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         }
     }
 
-    public static final String ID = "YAHOO"; //$NON-NLS-1$
+    public static final String ID = YAHOO; //$NON-NLS-1$
 
     @SuppressWarnings("nls")
     private static final String HISTORICAL_URL = "https://query1.finance.yahoo.com/v7/finance/download/{0}?period1={1}&period2={2}&interval=1d&events=history&crumb={3}";

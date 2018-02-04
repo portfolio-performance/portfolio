@@ -5,6 +5,7 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
@@ -15,6 +16,11 @@ public class StockSplitWizard extends Wizard
     public StockSplitWizard(Client client, Security security)
     {
         this.model = new StockSplitModel(client, security);
+    }
+
+    public StockSplitModel model()
+    {
+        return this.model;
     }
 
     @Override
@@ -31,6 +37,12 @@ public class StockSplitWizard extends Wizard
 
         AbstractWizardPage.attachPageListenerTo(this.getContainer());
     }
+
+    public void setEvent(SecurityEvent event)
+    {
+        model.setEvent(event);
+    }
+
 
     @Override
     public boolean performFinish()

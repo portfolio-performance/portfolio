@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.model.AccountTransaction;
 
-public class DividendTransaction extends Transaction
+public class DividendTransaction extends AccountTransaction
 {
     private Account account;
 
