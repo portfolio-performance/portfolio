@@ -90,53 +90,43 @@ public class SecurityPosition
 
         private void calculatePurchaseValuePrice(CurrencyConverter converter, List<PortfolioTransaction> input)
         {
+            //System.err.println("SecurityPosition.calculatePurchaseValuePrice    ========== START ===========");
             Collections.sort(input, new Transaction.ByDate());
 
+            long grossInvestment = 0;
+            long netInvestment = 0;
+            long sharesBought = 0;
             long sharesSold = 0;
             for (PortfolioTransaction t : input)
             {
+                long grossAmount;
+                long netAmount;
+
+                grossAmount = t.getMonetaryAmount(converter).getAmount();
+                netAmount = t.getGrossValue(converter).getAmount();
+
+                //System.err.println("SecurityPosition.calculatePurchaseValuePrice t: " + t.toString());
                 if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL
                                 || t.getType() == Type.DELIVERY_OUTBOUND)
-                    sharesSold += t.getShares();
-            }
-
-            long sharesBought = 0;
-            long grossInvestment = 0;
-            long netInvestment = 0;
-            for (PortfolioTransaction t : input)
-            {
-                if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
                 {
-                    long bought = t.getShares();
+                    sharesSold += t.getShares();
+                    grossInvestment -= grossAmount;
+                    netInvestment -= netAmount;
 
-                    if (sharesSold > 0)
-                    {
-                        sharesSold -= bought;
-
-                        if (sharesSold < 0)
-                            bought = -sharesSold;
-                        else
-                            bought = 0;
-                    }
-
-                    if (bought > 0)
-                    {
-                        long grossAmount;
-                        long netAmount;
-
-                        grossAmount = t.getMonetaryAmount(converter).getAmount();
-                        netAmount = t.getGrossValue(converter).getAmount();
-
-                        sharesBought += bought;
-                        grossInvestment += grossAmount * bought / (double) t.getShares();
-                        netInvestment += netAmount * bought / (double) t.getShares();
-                    }
                 }
+                else if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
+                {
+                    sharesBought += t.getShares();
+                    grossInvestment += grossAmount;
+                    netInvestment += netAmount;
+                }
+                //System.err.println("SecurityPosition.calculatePurchaseValuePrice sharesBought: " + sharesSold + " grossInvestment: " + grossInvestment + " netInvestment: " + netInvestment);
             }
 
-            this.purchasePrice = Money.of(converter.getTermCurrency(), sharesBought > 0
-                            ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesBought) : 0);
+            this.purchasePrice = Money.of(converter.getTermCurrency(), (sharesBought - sharesSold) > 0
+                            ? Math.round((netInvestment * Values.Share.factor()) / (double) (sharesBought - sharesSold)) : 0);
             this.purchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
+            //System.err.println("SecurityPosition.calculatePurchaseValuePrice purchasePrice: " + this.purchasePrice + " purchaseValue: " + this.purchaseValue + "  \n ========== END ===========");
         }
 
     }
