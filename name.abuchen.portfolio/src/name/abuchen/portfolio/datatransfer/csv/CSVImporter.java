@@ -162,6 +162,7 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
         };
 
@@ -342,7 +343,6 @@ public class CSVImporter
 
             return toAppendTo.append(s);
         }
-
         @Override
         public Object parseObject(String source, ParsePosition pos)
         {
@@ -499,7 +499,7 @@ public class CSVImporter
 
     public CSVExtractor getSecurityPriceExtractor()
     {
-        return extractors.get(3);
+        return extractors.get(4);
     }
 
     public void setDelimiter(char delimiter)
@@ -624,8 +624,7 @@ public class CSVImporter
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(new FieldFormat(null, ((ISINField) field).createFormat(client.getSecurities())));
                     }
                     else if (field instanceof EnumField<?>)
                     {
