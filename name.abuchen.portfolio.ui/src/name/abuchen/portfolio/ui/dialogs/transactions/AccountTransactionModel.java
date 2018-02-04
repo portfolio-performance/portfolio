@@ -266,7 +266,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setEvent(SecurityEvent event)
     {
-        this.date = event.getDate();
+        this.date = event.getDate().plusDays((long) this.security.getDelayedDividend());
         this.dividendAmount = event.getAmount().getValue();
         this.grossAmount = calculateGrossAmount4Total();
     }

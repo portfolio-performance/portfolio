@@ -1041,9 +1041,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             if (eventType == SecurityEvent.Type.STOCK_DIVIDEND)
             {
                 new OpenDialogAction(this, Messages.MenuGenerateTransaction) //
-                .type(AccountTransactionDialog.class, d -> d.setEvent(event)) //
-                .parameters(AccountTransaction.Type.DIVIDENDS) //
                 .with(security) //
+                .type(AccountTransactionDialog.class, d ->
+                {
+                        d.setSecurity(security);
+                        d.setEvent(event);
+                    }) //
+                .parameters(AccountTransaction.Type.DIVIDENDS) //
                 .addTo(manager);
             }
             else if (eventType == SecurityEvent.Type.STOCK_SPLIT)
