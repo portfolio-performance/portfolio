@@ -61,7 +61,7 @@ public class SecurityPositionTest
                         new SecurityPrice(), tx);
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 20_00)));
+        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 15_00))); // 20_00
     }
 
     @Test
@@ -78,7 +78,7 @@ public class SecurityPositionTest
                         new SecurityPrice(), tx);
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 15_00)));
+        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 5_00))); // 15_00
     }
 
     @Test
@@ -112,11 +112,11 @@ public class SecurityPositionTest
     @Test
     public void testThatTransferInCountsIfTransferOutIsMissingPlusBuyTransaction()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2013, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
-        tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2013-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2013-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
@@ -130,13 +130,13 @@ public class SecurityPositionTest
     @Test
     public void testThatTransferInDoesNotCountIfMatchingTransferOutIsIncluded()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2014, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
-        tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2014-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2014-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_OUT, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2014-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
@@ -150,15 +150,15 @@ public class SecurityPositionTest
     @Test
     public void testThatOnlyMatchingTransfersAreRemoved_InRemains()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2015, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
-        tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2015-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2015-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_OUT, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2015-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-02", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2015-02-02", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
@@ -172,41 +172,41 @@ public class SecurityPositionTest
     @Test
     public void testThatOnlyMatchingTransfersAreRemoved_OutRemains()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2016, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
-        tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2016-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2016-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_OUT, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2016-02-01", CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
                         Type.TRANSFER_IN, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-02", CurrencyUnit.EUR, 55000, null, 25 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2016-02-02", CurrencyUnit.EUR, 60000, null, 30 * Values.Share.factor(), // 25 @ 55000
                         Type.TRANSFER_OUT, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
-        assertThat(position.getShares(), is(25L * Values.Share.factor()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
-        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
-        assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
-        assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(position.getShares(), is(20L * Values.Share.factor())); // 25L
+        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, -5_00))); // 10_00
+        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, -100_00))); // 250_00
+        assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 400_00))); // 500_00
+        assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 500_00))); // 250_00
     }
 
     @Test
     public void testPurchasePriceIfSharesArePartiallyTransferredOut()
     {
-        SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2017, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
-        tx.add(new PortfolioTransaction("2012-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2017-01-01", CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
                         Type.BUY, 0, 0));
-        tx.add(new PortfolioTransaction("2012-02-01", CurrencyUnit.EUR, 55000, null, 25 * Values.Share.factor(),
+        tx.add(new PortfolioTransaction("2017-02-01", CurrencyUnit.EUR, 55000, null, 25 * Values.Share.factor(),
                         Type.TRANSFER_OUT, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(25L * Values.Share.factor()));
-        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
-        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, -2_00))); // 10_00
+        assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, -50_00))); //250_00
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
-        assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 550_00))); // 250_00
     }
 
     @Test
