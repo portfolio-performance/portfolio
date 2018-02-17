@@ -59,6 +59,8 @@ public class UpdateHelper
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
+        checkForLetsEncryptRootCertificate(silent);
+
         final NewVersion newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
         {
@@ -87,6 +89,57 @@ public class UpdateHelper
                                                 Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
             }
         }
+    }
+
+    private void checkForLetsEncryptRootCertificate(boolean silent) throws CoreException
+    {
+        // if the java version is too old, the Let's Encrypt certificate is not
+        // trusted. Unfortunately, the exception is only printed to the log and
+        // propagated up. This checks upfront. As PP does not run on 1.7, we do
+        // not check for the 1.7 version with the certificate.
+
+        try
+        {
+            String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
+
+            int p = javaVersion.indexOf('-');
+            if (p >= 0)
+                javaVersion = javaVersion.substring(0, p);
+
+            String[] digits = javaVersion.split("[\\._]"); //$NON-NLS-1$
+            if (digits.length < 4)
+                return;
+
+            int majorVersion = Integer.parseInt(digits[0]);
+            if (majorVersion > 1)
+                return;
+
+            int minorVersion = Integer.parseInt(digits[1]);
+            if (minorVersion > 8)
+                return;
+
+            int patchVersion = Integer.parseInt(digits[2]);
+            if (patchVersion > 0)
+                return;
+
+            int updateNumber = Integer.parseInt(digits[3]);
+            if (updateNumber >= 101)
+                return;
+
+            CoreException exception = new CoreException(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID,
+                            MessageFormat.format(Messages.MsgJavaVersionTooOldForLetsEncrypt, javaVersion)));
+
+            if (silent)
+                PortfolioPlugin.log(exception);
+            else
+                throw exception;
+
+        }
+        catch (NumberFormatException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+
     }
 
     private void promptForRestart()
