@@ -45,7 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Portfolio portfolio;
     protected Security security;
     protected LocalDate date = LocalDate.now();
-    protected LocalTime time = LocalTime.now();
+    protected LocalTime time = LocalTime.MIDNIGHT;
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
