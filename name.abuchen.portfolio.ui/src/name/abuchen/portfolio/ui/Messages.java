@@ -183,6 +183,10 @@ public class Messages extends NLS
     public static String ColumnQuoteChange_Option;
     public static String ColumnQuoteFeedHistoric;
     public static String ColumnQuoteFeedLatest;
+    public static String ColumnQuoteSuggestion_goodwill;
+    public static String ColumnQuoteSuggestion_market;
+    public static String ColumnQuoteSuggestion_none;
+    public static String ColumnQuoteSuggestion_purchase;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnSecurity;
@@ -615,6 +619,7 @@ public class Messages extends NLS
     public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
+    public static String MsgMissingSuggestion;
     public static String MsgNoFileOpen;
     public static String MsgNoFileOpenText;
     public static String MsgNoIssuesFound;

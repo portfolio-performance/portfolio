@@ -6,6 +6,9 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -17,6 +20,10 @@ import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -29,6 +36,7 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.AbstractTransactionDialog.ComboInput;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
@@ -57,7 +65,86 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         }
     }
 
+    public static final class QuoteSuggestionSet
+    {
+        private final List<QuoteSuggestion> suggestionSet = new ArrayList<QuoteSuggestion>();
+
+        public QuoteSuggestionSet()
+        {
+        }
+
+        public void add(PortfolioTransferEntry.Suggestion suggestion, String label, boolean editable)
+        {
+            suggestionSet.add(new QuoteSuggestion (suggestion, label, editable));
+        }
+
+        public void remove(PortfolioTransferEntry.Suggestion suggestion)
+        {
+            suggestionSet.remove(suggestion);
+        }
+
+        public QuoteSuggestion[] get()
+        {
+            return suggestionSet.toArray(new QuoteSuggestion[0]);
+        }
+
+        public QuoteSuggestion get(PortfolioTransferEntry.Suggestion suggestion)
+        {
+            if (!suggestionSet.isEmpty())
+            {
+                for (QuoteSuggestion quoteSuggestion : suggestionSet)
+                {
+                    if (quoteSuggestion.suggestion.equals(suggestion))
+                        return quoteSuggestion;
+                }
+            }
+            return null;
+        }
+
+        public String toString()
+        {
+            return Arrays.toString(this.get());
+        }
+    }
+
+    public static final class QuoteSuggestion
+    {
+        private final PortfolioTransferEntry.Suggestion suggestion;
+        private final String label;
+        private final boolean editable;
+
+        public QuoteSuggestion(PortfolioTransferEntry.Suggestion suggestion, String label, boolean editable)
+        {
+            this.suggestion = suggestion;
+            this.label = label;
+            this.editable = editable;
+        }
+
+        public PortfolioTransferEntry.Suggestion getSuggestion()
+        {
+            return suggestion;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public boolean getEditable()
+        {
+            return editable;
+        }
+
+        @Override
+        public String toString()
+        {
+            return "x " + getLabel();
+        }
+    }
+
+
     private Client client;
+    private QuoteSuggestionSet quoteSuggestionSet = new QuoteSuggestionSet();
 
     @Inject
     public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
@@ -65,6 +152,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         super(parentShell);
         this.client = client;
         setModel(new SecurityTransferModel(client));
+        quoteSuggestionSet.add(PortfolioTransferEntry.Suggestion.goodwill, Messages.ColumnQuoteSuggestion_goodwill, true);
+        quoteSuggestionSet.add(PortfolioTransferEntry.Suggestion.market, Messages.ColumnQuoteSuggestion_market, false);
+        quoteSuggestionSet.add(PortfolioTransferEntry.Suggestion.purchase, Messages.ColumnQuoteSuggestion_purchase, false);
     }
 
     private SecurityTransferModel model()
@@ -94,6 +184,13 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                         Messages.MsgPortfolioFromMissing);
         source.bindCurrency(Properties.sourcePortfolioLabel.name());
 
+        // quote suggestion selection
+
+        ComboInput quoteSuggestion = new ComboInput(editArea, "");
+        quoteSuggestion.value.setInput(quoteSuggestionSet.get());
+        IObservableValue quoteSuggestionObservable = quoteSuggestion.bindValue(Properties.quoteSuggestion.name(), Messages.MsgMissingSuggestion);
+        quoteSuggestion.value.setSelection(new StructuredSelection(quoteSuggestionSet.get(model().getQuoteSuggestion())));
+
         // target portfolio
 
         ComboInput target = new ComboInput(editArea, Messages.ColumnAccountTo);
@@ -121,6 +218,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Input quote = new Input(editArea, "x " + Messages.ColumnQuote); //$NON-NLS-1$
         quote.bindBigDecimal(Properties.quote.name(), Values.Quote.pattern());
         quote.bindCurrency(Properties.securityCurrencyCode.name());
+        quote.setEditable(quoteSuggestionSet.get(model().getQuoteSuggestion()).getEditable());
 
         Input amount = new Input(editArea, "="); //$NON-NLS-1$
         amount.bindValue(Properties.amount.name(), Messages.ColumnAmount, Values.Amount, true);
@@ -146,7 +244,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
                         .thenBelow(valueDate.getControl()).label(lblDate)
                         // shares - quote - amount
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quote.label)
+                        .thenBelow(shares.value).width(amountWidth).label(shares.label).thenRight(quoteSuggestion.value.getControl())
                         .thenRight(quote.value).width(amountWidth).thenRight(quote.currency).width(currencyWidth)
                         .thenRight(amount.label).thenRight(amount.value).width(amountWidth).thenRight(amount.currency)
                         .width(currencyWidth);
@@ -157,6 +255,18 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         int widest = widest(securities.label, source.label, target.label, lblDate, amount.label, lblNote);
         startingWith(securities.label).width(widest);
 
+        quoteSuggestion.value.addSelectionChangedListener(new ISelectionChangedListener()
+        {
+            @Override
+            public void selectionChanged(SelectionChangedEvent event)
+            {
+                QuoteSuggestion selectedSuggestion = (QuoteSuggestion) ((IStructuredSelection) event.getSelection()).getFirstElement();
+                boolean editable = selectedSuggestion.getEditable();
+                quote.setEditable(editable);
+                model().setQuoteSuggestion(selectedSuggestion.getSuggestion());
+            }
+        });
+        model().updateQuote();
         WarningMessages warnings = new WarningMessages(this);
         warnings.add(() -> model().getDate().isAfter(LocalDate.now()) ? Messages.MsgDateIsInTheFuture : null);
         warnings.add(() -> new StockSplitWarning().check(model().getSecurity(), model().getDate()));
