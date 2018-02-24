@@ -26,6 +26,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -112,6 +113,15 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             label.setVisible(visible);
             value.setVisible(visible);
             currency.setVisible(visible);
+        }
+
+        public void setEditable(boolean editable)
+        {
+            value.setEditable(editable);
+            if (editable)
+                value.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+            else
+                value.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_GRAY));
         }
     }
 

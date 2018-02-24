@@ -664,7 +664,6 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         manager.add(new Separator());
-        System.err.println("SecuritiesTable.fillContextMenu selection: " + selection.toString() + "  \n ========== END ===========");
 
         manager.add(new HideSecurityAction(selection));
         if (watchlist == null)

@@ -55,6 +55,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.money.CurrencyUnit;
 //import name.abuchen.portfolio.money.Monetary;
 import name.abuchen.portfolio.money.Money;
@@ -554,6 +555,9 @@ public class ClientFactory
             case 36:
                 // SecurityEvent has no more details
                 convertSecurityEventDetails(client);
+            case 37:
+                // Portfoliotransfer has Quotesuggestion
+                introduceQuoteSuggestion4Transfer(client);
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1060,7 +1064,24 @@ public class ClientFactory
                 event.clearAmount();
                 event.clearTypeStr();
                 event.unhide();
-                System.err.println("ClientFactory.convertSecurityEventDetails() - " + event.toString());
+            }
+        }
+    }
+
+    private static void introduceQuoteSuggestion4Transfer(Client client)
+    {
+        for (Portfolio p : client.getPortfolios())
+        {
+            for (PortfolioTransaction t : p.getTransactions())
+            {
+                if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.TRANSFER_OUT)
+                {
+                    if (t.getCrossEntry() instanceof PortfolioTransferEntry)
+                    {
+                        PortfolioTransferEntry pte = (PortfolioTransferEntry) t.getCrossEntry();
+                        pte.setQuoteSuggestion(PortfolioTransferEntry.Suggestion.goodwill);
+                    }
+                }
             }
         }
     }

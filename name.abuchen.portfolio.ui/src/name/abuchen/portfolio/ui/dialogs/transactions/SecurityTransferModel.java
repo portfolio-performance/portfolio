@@ -14,6 +14,7 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.PortfolioTransferEntry.Suggestion;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.Values;
@@ -26,7 +27,7 @@ public class SecurityTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, targetPortfolio, targetPortfolioLabel, date, shares, quote, amount, note, calculationStatus;
+        security, securityCurrencyCode, sourcePortfolio, sourcePortfolioLabel, quoteSuggestion, targetPortfolio, targetPortfolioLabel, date, shares, quote, amount, note, calculationStatus;
     }
 
     private final Client client;
@@ -42,6 +43,8 @@ public class SecurityTransferModel extends AbstractModel
     private BigDecimal quote = BigDecimal.ONE;
     private long amount;
     private String note;
+
+    private PortfolioTransferEntry.Suggestion quoteSuggestion = PortfolioTransferEntry.Suggestion.goodwill;
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
@@ -65,6 +68,8 @@ public class SecurityTransferModel extends AbstractModel
             throw new UnsupportedOperationException(Messages.MsgPortfolioFromMissing);
         if (targetPortfolio == null)
             throw new UnsupportedOperationException(Messages.MsgPortfolioToMissing);
+        if (quoteSuggestion.equals(PortfolioTransferEntry.Suggestion.none))
+            throw new UnsupportedOperationException(Messages.MsgMissingSuggestion);
 
         PortfolioTransferEntry t;
 
@@ -95,6 +100,7 @@ public class SecurityTransferModel extends AbstractModel
         t.setAmount(amount);
         t.setCurrencyCode(security.getCurrencyCode());
         t.setNote(note);
+        t.setQuoteSuggestion(quoteSuggestion);
     }
 
     @Override
@@ -105,6 +111,7 @@ public class SecurityTransferModel extends AbstractModel
         setShares(0);
         setAmount(0);
         setNote(null);
+        triggerQuoteSuggestion(PortfolioTransferEntry.Suggestion.goodwill);
     }
 
     private IStatus calculateStatus()
@@ -128,39 +135,77 @@ public class SecurityTransferModel extends AbstractModel
 
     private void updateSharesAndQuote()
     {
-        // do not auto-suggest shares and quote when editing an existing
-        // transaction
-        if (source != null)
-            return;
+        updateShares();
+        updateQuote();
+    }
 
-        SecurityPosition position = null;
-
+    private SecurityPosition getPosition4Shares()
+    {
         if (security != null)
         {
             CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                             client.getBaseCurrency());
             PortfolioSnapshot snapshot = sourcePortfolio != null
-                            ? PortfolioSnapshot.create(sourcePortfolio, converter, date)
+                            ? PortfolioSnapshot.create(sourcePortfolio, converter, date.minusDays(1))
                             : ClientSnapshot.create(client, converter, date).getJointPortfolio();
-            position = snapshot.getPositionsBySecurity().get(security);
-        }
-
-        if (position != null)
-        {
-            setShares(position.getShares());
-            // setAmount will also set quote
-            setAmount(position.calculateValue().getAmount());
-        }
-        else if (security != null)
-        {
-            setShares(0);
-            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
+            return snapshot.getPositionsBySecurity().get(security);
         }
         else
-        {
+            return null;
+    }
+
+    private void updateShares()
+    {
+        // do not auto-suggest shares and quote when editing an existing
+        // transaction
+        if (source != null)
+            return;
+
+        SecurityPosition position = getPosition4Shares();
+
+        if (position != null)
+            setShares(position.getShares());
+        else if (security != null)
             setShares(0);
-            setQuote(BigDecimal.ZERO);
+    }
+
+    private SecurityPosition getPosition4Quote()
+    {
+        if (security != null)
+        {
+            CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
+                            client.getBaseCurrency());
+            PortfolioSnapshot snapshot = ClientSnapshot.create(client, converter, date).getJointPortfolio();
+            return snapshot.getPositionsBySecurity().get(security);
         }
+        else
+            return null;
+    }
+
+    public void updateQuote()
+    {
+        BigDecimal newQuote = (source == null ? BigDecimal.ZERO: getQuote());
+        if (!quoteSuggestion.equals(PortfolioTransferEntry.Suggestion.goodwill))
+        {
+            SecurityPosition position = getPosition4Quote();
+
+            if (position != null)
+            {
+                if (quoteSuggestion.equals(PortfolioTransferEntry.Suggestion.purchase))
+                    // purchase
+                    newQuote = new BigDecimal(position.getFIFOPurchasePrice().getAmount() / Values.Amount.divider());
+                else
+                    // market
+                    newQuote = new BigDecimal(position.getPrice().getValue() / Values.Quote.divider());
+            }
+            else if (security != null)
+                newQuote = new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider());
+        }
+        else if (security != null && source == null)
+            // goodwill
+            newQuote = new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider());
+
+        setQuote(newQuote);
     }
 
     public void setSource(PortfolioTransferEntry entry)
@@ -175,6 +220,7 @@ public class SecurityTransferModel extends AbstractModel
         this.quote = entry.getSourceTransaction().getGrossPricePerShare().toBigDecimal();
         this.amount = entry.getTargetTransaction().getAmount();
         this.note = entry.getSourceTransaction().getNote();
+        this.quoteSuggestion = entry.getQuoteSuggestion();
     }
 
     @Override
@@ -318,5 +364,23 @@ public class SecurityTransferModel extends AbstractModel
     public String getSecurityCurrencyCode()
     {
         return security != null ? security.getCurrencyCode() : ""; //$NON-NLS-1$
+    }
+
+    public PortfolioTransferEntry.Suggestion getQuoteSuggestion()
+    {
+        return this.quoteSuggestion;
+    }
+
+    public void setQuoteSuggestion(PortfolioTransferEntry.Suggestion suggestion)
+    {
+        if (this.quoteSuggestion.equals(suggestion))
+            return;
+        this.quoteSuggestion = suggestion;
+        updateQuote();
+    }
+
+    public void triggerQuoteSuggestion(PortfolioTransferEntry.Suggestion suggestion)
+    {
+        firePropertyChange(Properties.quoteSuggestion.name(), this.quoteSuggestion, this.quoteSuggestion = suggestion);
     }
 }
