@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -258,15 +260,17 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accountColumns.addColumn(column);
 
         column = new Column(Messages.ColumnBalance, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnBalance_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return Values.Amount.format(((Account) e).getCurrentAmount());
+                return Values.Amount.format(((Account) e).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)));
             }
         });
-        ColumnViewerSorter.create(Account.class, "currentAmount").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(o -> ((Account) o).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)))
+                        .attachTo(column);
         accountColumns.addColumn(column);
 
         column = new CurrencyColumn();
