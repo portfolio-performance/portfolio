@@ -131,11 +131,26 @@ import name.abuchen.portfolio.money.Money;
                 if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
                     t.setSecurity(security);
                 t.setDate(date);
-                t.setNote(note);
-                if (shares != null && type == Type.DIVIDENDS)
-                    t.setShares(Math.abs(shares));
+                String extNote = getText(Messages.CSVColumn_ISIN, rawValues, field2column);
+                if (extNote != null && security.getIsin() == "")
+                {
+                    if (!note.equals(""))
+                        note += " - ";
+                    note += extNote;
+                }
+                if (type == Type.DIVIDENDS)
+                {
+                    if (shares != null)
+                        t.setShares(Math.abs(shares));
+                    else
+                    {
+                        note = "CHECK: " + note;
+                        System.err.println("CSVAccountTransactionExtratctor:extract shares!");
+                    }
+                }
                 if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
                     t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
+                t.setNote(note);
                 items.add(new TransactionItem(t));
                 break;
             default:

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 
@@ -149,7 +151,17 @@ public final class Security implements Attributable, InvestmentVehicle
 
     public String getIsin()
     {
-        return isin;
+        if (isin != null)
+        {
+            Pattern pattern = Pattern.compile("^[A-Z]{2}[A-Z0-9]{9}\\d$");
+            Matcher matcher = pattern.matcher(isin);
+            if (matcher.find())
+                return isin;
+            else
+                return "";
+        }
+        else
+            return isin; // which is actually null
     }
 
     public void setIsin(String isin)
