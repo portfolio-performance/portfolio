@@ -40,6 +40,7 @@ import name.abuchen.portfolio.model.Client;
             enumMap.put((E) Type.DEPOSIT, "Gutschrift");
             enumMap.put((E) Type.INTEREST, "Abschluss");
             enumMap.put((E) Type.REMOVAL, "Überweisung");
+            enumMap.put((E) Type.INTEREST_CHARGE, "Zinsen");
             return enumMap;
         }
         else
