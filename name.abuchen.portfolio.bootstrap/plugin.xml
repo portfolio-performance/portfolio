@@ -13,6 +13,10 @@
                value="Portfolio Performance">
          </property>
          <property
+               name="applicationCSS"
+               value="platform:/plugin/name.abuchen.portfolio.bootstrap/default.css">
+         </property>
+         <property
                name="lifeCycleURI"
                value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.LifeCycleManager">
          </property>
