@@ -45,6 +45,12 @@ public class AssetCategory
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
+    public Money getMovingAveragePurchaseValue()
+    {
+        return positions.stream().map(AssetPosition::getMovingAveragePurchaseValue)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+    }
+
     public Money getProfitLoss()
     {
         return positions.stream().map(AssetPosition::getProfitLoss)

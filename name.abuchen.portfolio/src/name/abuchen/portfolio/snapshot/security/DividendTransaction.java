@@ -12,6 +12,7 @@ public class DividendTransaction extends Transaction
 
     private long totalShares;
     private Money fifoCost;
+    private Money movingAverageCost;
 
     public Account getAccount()
     {
@@ -40,6 +41,17 @@ public class DividendTransaction extends Transaction
         this.fifoCost = fifoCost;
     }
 
+    public Money getMovingAverageCost()
+    {
+        return movingAverageCost;
+    }
+
+    /* package */
+    void setMovingAverageCost(Money movingAverageCost)
+    {
+        this.movingAverageCost = movingAverageCost;
+    }
+
     /* package */
     void setTotalShares(long totalShares)
     {
@@ -55,6 +67,19 @@ public class DividendTransaction extends Transaction
 
         if (getShares() > 0)
             cost = fifoCost.getAmount() * (getShares() / (double) totalShares);
+
+        return getGrossValueAmount() / cost;
+    }
+
+    public double getPersonalDividendYieldMovingAverage()
+    {
+        if (movingAverageCost.getAmount() <= 0)
+            return 0;
+
+        double cost = movingAverageCost.getAmount();
+
+        if (getShares() > 0)
+            cost = movingAverageCost.getAmount() * (getShares() / (double) totalShares);
 
         return getGrossValueAmount() / cost;
     }
