@@ -208,6 +208,12 @@ public final class GroupByTaxonomy
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 
+    public Money getMovingAveragePurchaseValue()
+    {
+        return categories.stream().map(AssetCategory::getMovingAveragePurchaseValue)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+    }
+
     public Money getProfitLoss()
     {
         return categories.stream().map(AssetCategory::getProfitLoss)

@@ -83,7 +83,8 @@ public class SecuritiesChart
         INVESTMENT(Messages.LabelChartDetailInvestments), //
         DIVIDENDS(Messages.LabelChartDetailDividends), //
         EVENTS(Messages.LabelChartDetailEvents), //
-        FIFOPURCHASE(Messages.LabelChartDetailFIFOpurchase + SEPERATOR), //
+        FIFOPURCHASE(Messages.LabelChartDetailFIFOpurchase), //
+        FLOATINGAVGPURCHASE(Messages.LabelChartDetailMovingAveragePurchase + SEPERATOR), //
         SMA50(Messages.LabelChartDetailSMA50), //
         SMA200(Messages.LabelChartDetailSMA200), //
         BOLLINGERBANDS(Messages.LabelChartDetailBollingerBands);
@@ -109,6 +110,7 @@ public class SecuritiesChart
     private Color colorEventDividend = Colors.getColor(128, 0, 128);
 
     private Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
+    private Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
     private Color colorBollingerBands = Colors.getColor(201, 141, 68);
     private Color colorSMA50 = Colors.getColor(102, 171, 29);
     private Color colorSMA200 = Colors.getColor(96, 104, 110);
@@ -565,6 +567,9 @@ public class SecuritiesChart
         if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
             addFIFOPurchasePrice();
 
+        if (chartConfig.contains(ChartDetails.FLOATINGAVGPURCHASE))
+            addMovingAveragePurchasePrice();
+
         if (chartConfig.contains(ChartDetails.INVESTMENT))
             addInvestmentMarkerLines();
 
@@ -933,6 +938,100 @@ public class SecuritiesChart
                         LineStyle.SOLID, false, seriesCounter == 0);
     }
 
+    private void addMovingAveragePurchasePrice()
+    {
+        // securities w/o currency (e.g. index) cannot be bought and hence have
+        // no purchase price
+        if (security.getCurrencyCode() == null)
+            return;
+
+        // create a list of dates that are relevant for floating avg purchase price
+        // changes (i.e. all purchase and sell events)
+
+        Client filteredClient = new ClientSecurityFilter(security).filter(client);
+        CurrencyConverter securityCurrency = converter.with(security.getCurrencyCode());
+
+        LocalDate today = LocalDate.now();
+
+        List<LocalDate> candidates = client.getPortfolios().stream() //
+                        .flatMap(p -> p.getTransactions().stream()) //
+                        .filter(t -> t.getSecurity().equals(security))
+                        .filter(t -> !(t.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                                        || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT))
+                        .filter(t -> t.getDateTime().toLocalDate().isBefore(today))
+                        .map(t -> (chartPeriod == null || t.getDateTime().toLocalDate().isAfter(chartPeriod))
+                                        ? t.getDateTime().toLocalDate()
+                                        : chartPeriod)
+                        .distinct() //
+                        .sorted() //
+                        .collect(Collectors.toList());
+
+        // calculate floating avg purchase price for each event - separate lineSeries
+        // per holding period
+
+        List<Double> values = new ArrayList<>();
+        List<LocalDate> dates = new ArrayList<>();
+        int seriesCounter = 0;
+
+        for (LocalDate eventDate : candidates)
+        {
+            Optional<Double> purchasePrice = getMovingAveragePurchasePrice(filteredClient, securityCurrency, eventDate);
+
+            if (purchasePrice.isPresent())
+            {
+                dates.add(eventDate);
+                values.add(purchasePrice.get());
+            }
+            else
+            {
+                if (!dates.isEmpty())
+                {
+                    // add previous value if the data series ends here (no more
+                    // future events)
+
+                    dates.add(eventDate);
+                    values.add(values.get(values.size() - 1));
+
+                    createMovingAveragePurchaseLineSeries(values, dates, seriesCounter++);
+
+                    values.clear();
+                    dates.clear();
+                }
+                else if (dates.isEmpty())
+                {
+                    // if no holding period exists, then do not add the event at
+                    // all
+                }
+            }
+        }
+
+        // add today if needed
+
+        getMovingAveragePurchasePrice(filteredClient, securityCurrency, today).ifPresent(price -> {
+            dates.add(today);
+            values.add(price);
+        });
+
+        if (!dates.isEmpty())
+            createMovingAveragePurchaseLineSeries(values, dates, seriesCounter);
+    }
+
+    private void createMovingAveragePurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
+    {
+        String label = seriesCounter == 0 ? Messages.LabelChartDetailMovingAveragePurchase
+                        : MessageFormat.format(Messages.LabelChartDetailMovingAveragePurchaseHoldingPeriod, seriesCounter + 1);
+
+        ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
+
+        series.setSymbolType(PlotSymbolType.NONE);
+        series.setYAxisId(0);
+        series.enableStep(true);
+
+        configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
+                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorMovingAveragePurchasePrice, 2,
+                        LineStyle.SOLID, false, seriesCounter == 0);
+    }
+
     private Optional<Double> getLatestPurchasePrice()
     {
         // securities w/o currency (e.g. index) cannot be bought and hence have
@@ -958,4 +1057,31 @@ public class SecuritiesChart
         else
             return Optional.empty();
     }
+
+    private Optional<Double> getLatestMovingAveragePurchasePrice()
+    {
+        // securities w/o currency (e.g. index) cannot be bought and hence have
+        // no purchase price
+        if (security.getCurrencyCode() == null)
+            return Optional.empty();
+
+        return getMovingAveragePurchasePrice(new ClientSecurityFilter(security).filter(client),
+                        converter.with(security.getCurrencyCode()), LocalDate.now());
+    }
+
+    private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
+                    LocalDate date)
+    {
+        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, currencyConverter, date);
+        AssetPosition position = snapshot.getPositionsByVehicle().get(security);
+        if (position == null)
+            return Optional.empty();
+
+        Money purchasePrice = position.getPosition().getMovingAveragePurchasePrice();
+        if (!purchasePrice.isZero())
+            return Optional.of(purchasePrice.getAmount() / Values.Amount.divider());
+        else
+            return Optional.empty();
+    }
+
 }
