@@ -395,6 +395,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCost")); //$NON-NLS-1$
+        column.setVisible(false);
         recordColumns.addColumn(column);
 
         // cost value per share - fifo
@@ -425,6 +426,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCostPerSharesHeld")); //$NON-NLS-1$
+        column.setVisible(false);
         recordColumns.addColumn(column);
 
         // latest / current quote
