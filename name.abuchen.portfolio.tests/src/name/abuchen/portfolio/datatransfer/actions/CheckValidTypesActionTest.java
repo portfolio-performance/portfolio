@@ -40,6 +40,8 @@ public class CheckValidTypesActionTest
         assertThat(action.process(t, account).getCode(), is(Status.Code.OK));
         t.setType(AccountTransaction.Type.DIVIDENDS);
         assertThat(action.process(t, account).getCode(), is(Status.Code.OK));
+        t.setType(AccountTransaction.Type.DIVIDEND_CHARGE);
+        assertThat(action.process(t, account).getCode(), is(Status.Code.OK));
         t.setType(AccountTransaction.Type.FEES);
         assertThat(action.process(t, account).getCode(), is(Status.Code.OK));
         t.setType(AccountTransaction.Type.FEES_REFUND);

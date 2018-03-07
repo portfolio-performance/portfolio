@@ -558,6 +558,7 @@ public final class Security implements Attributable, InvestmentVehicle
                             .filter(t -> this.equals(t.getSecurity()))
                             .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
                                             || t.getType() == AccountTransaction.Type.DIVIDENDS
+                                            || t.getType() == AccountTransaction.Type.DIVIDEND_CHARGE
                                             || t.getType() == AccountTransaction.Type.TAXES
                                             || t.getType() == AccountTransaction.Type.TAX_REFUND
                                             || t.getType() == AccountTransaction.Type.FEES

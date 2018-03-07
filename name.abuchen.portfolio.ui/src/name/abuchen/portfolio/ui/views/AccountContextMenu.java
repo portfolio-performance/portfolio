@@ -95,6 +95,13 @@ public class AccountContextMenu
                             .with(account) //
                             .with(security) //
                             .addTo(manager);
+
+            new OpenDialogAction(owner, Messages.SecurityMenuDividendCharge + " ...") //$NON-NLS-1$
+            .type(AccountTransactionDialog.class) //
+            .parameters(AccountTransaction.Type.DIVIDEND_CHARGE) //
+            .with(account) //
+            .with(security) //
+            .addTo(manager);
         }
     }
 }

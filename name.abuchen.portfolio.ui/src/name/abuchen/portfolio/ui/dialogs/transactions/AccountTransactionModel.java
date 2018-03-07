@@ -88,6 +88,7 @@ public class AccountTransactionModel extends AbstractModel
             case INTEREST:
             case INTEREST_CHARGE:
             case DIVIDENDS:
+            case DIVIDEND_CHARGE:
                 return;
             case BUY:
             case SELL:
@@ -177,13 +178,21 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsShares()
     {
-        return type == AccountTransaction.Type.DIVIDENDS;
+        switch (type)
+        {
+            case DIVIDEND_CHARGE:
+            case DIVIDENDS:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public boolean supportsSecurity()
     {
         switch (type)
         {
+            case DIVIDEND_CHARGE:
             case DIVIDENDS:
             case TAXES:
             case TAX_REFUND:
@@ -211,7 +220,16 @@ public class AccountTransactionModel extends AbstractModel
 
     public boolean supportsTaxUnits()
     {
-        return type == AccountTransaction.Type.DIVIDENDS || type == AccountTransaction.Type.INTEREST || type == AccountTransaction.Type.INTEREST_CHARGE;
+        switch (type)
+        {
+            case DIVIDEND_CHARGE:
+            case DIVIDENDS:
+            case INTEREST:
+            case INTEREST_CHARGE:
+                return true;
+            default:
+                return false;
+        }
     }
 
     public void setSource(Account account, AccountTransaction transaction)
@@ -573,7 +591,7 @@ public class AccountTransactionModel extends AbstractModel
     protected long calculateGrossAmount4Total()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return total + (type == AccountTransaction.Type.INTEREST_CHARGE ? -1 : 1) * totalTaxes;
+        return total + (type == AccountTransaction.Type.INTEREST_CHARGE ||  type == AccountTransaction.Type.DIVIDEND_CHARGE ? -1 : 1) * totalTaxes;
     }
 
     protected long calculateGrossAmount4Dividend()
@@ -585,7 +603,7 @@ public class AccountTransactionModel extends AbstractModel
     private long calculateTotal()
     {
         long totalTaxes = taxes + Math.round(exchangeRate.doubleValue() * fxTaxes);
-        return Math.max(0, grossAmount + (type == AccountTransaction.Type.INTEREST_CHARGE ? 1 : -1) * totalTaxes);
+        return Math.max(0, grossAmount + (type == AccountTransaction.Type.INTEREST_CHARGE || type == AccountTransaction.Type.DIVIDEND_CHARGE ? 1 : -1) * totalTaxes);
     }
 
     public String getNote()

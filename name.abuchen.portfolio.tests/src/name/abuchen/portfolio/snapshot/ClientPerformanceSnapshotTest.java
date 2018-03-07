@@ -400,6 +400,39 @@ public class ClientPerformanceSnapshotTest
     }
 
     @Test
+    public void testDividendChargeTransaction()
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+
+        AccountTransaction dividendCharge = new AccountTransaction();
+        dividendCharge.setDate(LocalDate.parse("2011-03-11"));
+        dividendCharge.setType(AccountTransaction.Type.DIVIDEND_CHARGE);
+        dividendCharge.setSecurity(security);
+        dividendCharge.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 300_00));
+
+        assertThat(dividendCharge.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 300_00)));
+
+        account.addTransaction(dividendCharge);
+
+        CurrencyConverter converter = new TestCurrencyConverter();
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
+
+        assertThat(snapshot.getValue(CategoryType.EARNINGS), is(Money.of(CurrencyUnit.EUR, -300_00)));
+
+        assertThat(snapshot.getEarnings().size(), is(1));
+        assertThat(snapshot.getCategoryByType(CategoryType.EARNINGS).getPositions().get(0).getValuation(),
+                        is(Money.of(CurrencyUnit.EUR, -300_00)));
+
+        GroupEarningsByAccount.Item item = new GroupEarningsByAccount(snapshot).getItems().get(0);
+        assertThat(item.getSum(), is(Money.of(CurrencyUnit.EUR, -300_00)));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    @Test
     public void testInboundDeliveryWithFees()
     {
         Client client = new Client();

@@ -304,11 +304,9 @@ public class ClientPerformanceSnapshot
                     case INTEREST:
                         addEarningTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
+                    case DIVIDEND_CHARGE:
                     case INTEREST_CHARGE:
-                        Money charged = t.getMonetaryAmount().with(converter.at(t.getDate()));
-                        mEarnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
-                        earnings.add(new TransactionPair<AccountTransaction>(account, t));
-                        mOtherEarnings.subtract(charged);
+                        addExpenseTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
                     case DEPOSIT:
                         mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
@@ -428,6 +426,28 @@ public class ClientPerformanceSnapshot
             mOtherEarnings.add(earned);
     }
 
+    private void addExpenseTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
+                    MutableMoney mOtherEarnings, MutableMoney mTaxes, Map<Security, MutableMoney> earningsBySecurity)
+    {
+        this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
+
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDate()));
+        Money charged = transaction.getMonetaryAmount().with(converter.at(transaction.getDate()));
+
+        mEarnings.subtract(charged);
+        if (!tax.isZero())
+        {
+            mTaxes.add(tax);
+            taxes.add(new TransactionPair<AccountTransaction>(account, transaction));
+        }
+
+        if (transaction.getSecurity() != null)
+            earningsBySecurity.computeIfAbsent(transaction.getSecurity(),
+                            k -> MutableMoney.of(converter.getTermCurrency())).subtract(charged);
+        else
+            mOtherEarnings.subtract(charged);
+    }
+
     private void addCurrencyGains()
     {
         Map<String, MutableMoney> currency2money = new HashMap<>();
@@ -459,6 +479,7 @@ public class ClientPerformanceSnapshot
                     case FEES_REFUND:
                         value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
                         break;
+                    case DIVIDEND_CHARGE:
                     case REMOVAL:
                     case FEES:
                     case INTEREST_CHARGE:

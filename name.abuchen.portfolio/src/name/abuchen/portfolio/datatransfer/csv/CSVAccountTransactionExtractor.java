@@ -110,6 +110,7 @@ import name.abuchen.portfolio.money.Money;
                 items.add(new BuySellEntryItem(buySellEntry));
                 break;
             case DIVIDENDS:
+            case DIVIDEND_CHARGE:
                 if (security == null)
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                                     new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$
@@ -124,11 +125,12 @@ import name.abuchen.portfolio.money.Money;
             case INTEREST:
             case INTEREST_CHARGE:
             case REMOVAL:
+                boolean dividendType = (type == Type.DIVIDENDS || type == Type.DIVIDEND_CHARGE);
                 AccountTransaction t = new AccountTransaction();
                 t.setType(type);
                 t.setAmount(Math.abs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
-                if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
+                if (dividendType || type == Type.TAX_REFUND)
                     t.setSecurity(security);
                 t.setDate(date);
                 String extNote = getText(Messages.CSVColumn_ISIN, rawValues, field2column);
@@ -138,7 +140,7 @@ import name.abuchen.portfolio.money.Money;
                         note += " - ";
                     note += extNote;
                 }
-                if (type == Type.DIVIDENDS)
+                if (dividendType)
                 {
                     if (shares != null)
                         t.setShares(Math.abs(shares));
@@ -148,7 +150,7 @@ import name.abuchen.portfolio.money.Money;
                         System.err.println("CSVAccountTransactionExtratctor:extract shares!");
                     }
                 }
-                if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
+                if (dividendType && taxes != null && taxes.longValue() != 0)
                     t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
                 t.setNote(note);
                 items.add(new TransactionItem(t));

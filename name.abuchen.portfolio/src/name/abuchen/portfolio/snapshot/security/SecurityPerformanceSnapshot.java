@@ -88,13 +88,14 @@ public class SecurityPerformanceSnapshot
             {
                 case DIVIDENDS:
                 case INTEREST:
+                case DIVIDEND_CHARGE:
                     DividendTransaction dt = new DividendTransaction();
                     dt.setType(t.getType());
                     dt.setDate(t.getDate());
                     dt.setSecurity(t.getSecurity());
                     dt.setAccount(account);
                     dt.setCurrencyCode(t.getCurrencyCode());
-                    dt.setAmount(t.getAmount());
+                    dt.setAmount((t.getType().equals(AccountTransaction.Type.DIVIDEND_CHARGE) ? -1 : 1) * t.getAmount());
                     dt.setShares(t.getShares());
                     dt.setNote(t.getNote());
                     dt.addUnits(t.getUnits());
