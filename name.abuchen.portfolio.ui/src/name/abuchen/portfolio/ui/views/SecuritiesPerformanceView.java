@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -61,6 +62,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -175,6 +177,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             return action;
         }
     }
+
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -313,6 +318,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 chart.updateChart(security);
                 latest.setInput(security);
             }
+        });
+
+        records.addSelectionChangedListener(event -> {
+            SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement();
+            if (record != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), record.getSecurity()));
         });
 
         records.addFilter(new ViewerFilter()

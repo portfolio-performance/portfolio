@@ -16,6 +16,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -76,6 +77,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -99,6 +101,9 @@ public class StatementOfAssetsViewer
 {
     @Inject
     private IPreferenceStore preference;
+
+    @Inject
+    private ESelectionService selectionService;
 
     private boolean useIndirectQuotation = false;
 
@@ -172,6 +177,12 @@ public class StatementOfAssetsViewer
         assets = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
+
+        assets.addSelectionChangedListener(event -> {
+            Element element = (Element) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            if (element != null && element.isSecurity())
+                selectionService.setSelection(new SecuritySelection(client, element.getSecurity()));
+        });
 
         support = new ShowHideColumnHelper(StatementOfAssetsViewer.class.getName(), client, preference, assets, layout);
 
