@@ -48,6 +48,7 @@ public class PerformanceIndex
     protected long[] outboundTransferals;
     protected long[] taxes;
     protected long[] dividends;
+    protected long[] dividendCharge;
     protected long[] interest;
     protected long[] interestCharge;
     protected double[] accumulated;
@@ -312,6 +313,11 @@ public class PerformanceIndex
     public long[] getDividends()
     {
         return dividends;
+    }
+
+    public long[] getDividendCharge()
+    {
+        return dividendCharge;
     }
 
     public long[] getInterest()

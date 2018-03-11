@@ -13,6 +13,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
@@ -59,5 +60,33 @@ public class SecurityTestCase
                         / Values.Share.divider() / Values.Quote.dividerToMoney();
 
         assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo((endvalue / delivery.getAmount()) - 1, 0.0001));
+    }
+
+    /**
+     * Issue: For vehicles like a bond an "accrued interest" may be paid when buying
+     * This impacts the performance of the vehicle over all
+     */
+    @Test
+    public void testSecurityPerformanceWithDividendCharge() throws IOException
+    {
+        Client client = ClientFactory.load(SecurityTestCase.class
+                        .getResourceAsStream("security_performance_with_dividend_charge.xml"));
+
+        Security security = client.getSecurities().get(0);
+
+        assertThat(client.getAccounts().get(0).getTransactions().size(), is(4));
+
+        assertThat(client.getAccounts().get(0).getTransactions().get(2).getType(), is(AccountTransaction.Type.DIVIDENDS));
+        AccountTransaction dividendCharge = client.getAccounts().get(0).getTransactions().get(0);
+        assertThat(dividendCharge.getType(), is(AccountTransaction.Type.DIVIDEND_CHARGE));
+
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2015-12-31"));
+        TestCurrencyConverter converter = new TestCurrencyConverter();
+        SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
+        SecurityPerformanceRecord record = snapshot.getRecords().get(0);
+
+        assertThat(record.getSecurity().getName(), is("Anleihe"));
+        assertThat(record.getTrueTimeWeightedRateOfReturn(), closeTo(-0.0291, 0.0001));
+        assertThat(record.getIrr(), closeTo(-0.05725, 0.0001));
     }
 }

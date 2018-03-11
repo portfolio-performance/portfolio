@@ -481,7 +481,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 {
                     return ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction().getShares();
                 }
-                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                else if ((t.getType() == Type.DIVIDENDS || t.getType() == Type.DIVIDEND_CHARGE) && t.getShares() != 0)
                 {
                     return t.getShares();
                 }
@@ -521,7 +521,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
                     return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
-                else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
+                else if ((t.getType() == Type.DIVIDENDS || t.getType() == Type.DIVIDEND_CHARGE) && t.getShares() != 0)
                 {
                     long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider()
                                     * Values.Quote.factorToMoney() / t.getShares());
@@ -735,6 +735,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 case REMOVAL:
                 case FEES:
                 case INTEREST_CHARGE:
+                case DIVIDEND_CHARGE:
                 case TAXES:
                 case BUY:
                 case TRANSFER_OUT:

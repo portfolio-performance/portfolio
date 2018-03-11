@@ -99,16 +99,21 @@ public class ClientSecurityFilter implements ClientFilter
     {
         AccountTransaction t = pair.getTransaction();
 
+        long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
+        long amount = t.getAmount();
         switch (pair.getTransaction().getType())
         {
             case DIVIDENDS:
-                long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
-                long amount = t.getAmount();
-
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
                                 t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
                                 t.getCurrencyCode(), amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                break;
+            case DIVIDEND_CHARGE:
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), amount - taxes, t.getSecurity(), t.getType()));
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                t.getCurrencyCode(), amount - taxes, t.getSecurity(), AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);

@@ -56,6 +56,7 @@ public class GroupEarningsByAccount
                         case INTEREST:
                             sum.add(t.getGrossValue());
                             break;
+                        case DIVIDEND_CHARGE:
                         case INTEREST_CHARGE:
                             sum.subtract(t.getMonetaryAmount());
                             break;

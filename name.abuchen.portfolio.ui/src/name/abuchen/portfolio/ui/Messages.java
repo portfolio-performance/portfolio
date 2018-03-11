@@ -465,6 +465,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
+    public static String LabelDividendCharge;
     public static String LabelDividendPerShare;    
     public static String LabelDividends;
     public static String LabelDividendsByMonthAndVehicle;
@@ -710,6 +711,7 @@ public class Messages extends NLS
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;
+    public static String SecurityMenuDividendCharge;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuExportCSV;

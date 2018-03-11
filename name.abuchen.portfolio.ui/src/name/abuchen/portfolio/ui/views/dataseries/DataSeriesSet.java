@@ -114,6 +114,11 @@ public class DataSeriesSet
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_MAGENTA).getRGB());
         availableSeries.add(series);
 
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.DIVIDEND_CHARGE, Messages.LabelDividendCharge,
+                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED).getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
         series.setLineChart(false);

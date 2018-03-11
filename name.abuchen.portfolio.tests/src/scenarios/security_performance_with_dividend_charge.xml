@@ -1,0 +1,676 @@
+<client>
+  <version>38</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>c394c3d6-e726-4203-a850-40b808283970</uuid>
+      <name>Anleihe</name>
+      <currencyCode>EUR</currencyCode>
+      <isin>DE0123456781</isin>
+      <delayedDividend>0</delayedDividend>
+      <feed>MANUAL</feed>
+      <prices>
+        <price date="2015-03-11" value="1000000"/>
+      </prices>
+      <attributes>
+        <map/>
+      </attributes>
+      <events>
+        <event date="2016-12-31" value="0">
+          <type>STOCK_DIVIDEND</type>
+          <amount>
+            <currencyCode>EUR</currencyCode>
+            <value>9.0</value>
+          </amount>
+          <isVisible>true</isVisible>
+          <value>0</value>
+        </event>
+        <event date="2017-12-31" value="0">
+          <type>STOCK_DIVIDEND</type>
+          <amount>
+            <currencyCode>EUR</currencyCode>
+            <value>8.0</value>
+          </amount>
+          <isVisible>true</isVisible>
+          <value>0</value>
+        </event>
+        <event date="2015-12-31" value="0">
+          <type>STOCK_DIVIDEND</type>
+          <amount>
+            <currencyCode>EUR</currencyCode>
+            <value>7.0</value>
+          </amount>
+          <isVisible>true</isVisible>
+          <value>0</value>
+        </event>
+        <event date="2016-02-15" value="0">
+          <type>STOCK_DIVIDEND</type>
+          <amount>
+            <currencyCode>EUR</currencyCode>
+            <value>12.0</value>
+          </amount>
+          <isVisible>true</isVisible>
+          <value>0</value>
+        </event>
+        <event date="2017-02-15" value="0">
+          <type>STOCK_DIVIDEND</type>
+          <amount>
+            <currencyCode>EUR</currencyCode>
+            <value>10.0</value>
+          </amount>
+          <isVisible>true</isVisible>
+          <value>0</value>
+        </event>
+      </events>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces>
+    <cpi y="1994" m="1" i="7809"/>
+    <cpi y="1994" m="2" i="7870"/>
+    <cpi y="1994" m="3" i="7880"/>
+    <cpi y="1994" m="4" i="7890"/>
+    <cpi y="1994" m="5" i="7909"/>
+    <cpi y="1994" m="6" i="7920"/>
+    <cpi y="1994" m="7" i="7940"/>
+    <cpi y="1994" m="8" i="7959"/>
+    <cpi y="1994" m="9" i="7940"/>
+    <cpi y="1994" m="10" i="7930"/>
+    <cpi y="1994" m="11" i="7940"/>
+    <cpi y="1994" m="12" i="7959"/>
+    <cpi y="1995" m="1" i="7990"/>
+    <cpi y="1995" m="2" i="8030"/>
+    <cpi y="1995" m="3" i="8030"/>
+    <cpi y="1995" m="4" i="8040"/>
+    <cpi y="1995" m="5" i="8040"/>
+    <cpi y="1995" m="6" i="8050"/>
+    <cpi y="1995" m="7" i="8070"/>
+    <cpi y="1995" m="8" i="8070"/>
+    <cpi y="1995" m="9" i="8070"/>
+    <cpi y="1995" m="10" i="8050"/>
+    <cpi y="1995" m="11" i="8050"/>
+    <cpi y="1995" m="12" i="8080"/>
+    <cpi y="1996" m="1" i="8100"/>
+    <cpi y="1996" m="2" i="8150"/>
+    <cpi y="1996" m="3" i="8150"/>
+    <cpi y="1996" m="4" i="8150"/>
+    <cpi y="1996" m="5" i="8159"/>
+    <cpi y="1996" m="6" i="8170"/>
+    <cpi y="1996" m="7" i="8180"/>
+    <cpi y="1996" m="8" i="8180"/>
+    <cpi y="1996" m="9" i="8180"/>
+    <cpi y="1996" m="10" i="8180"/>
+    <cpi y="1996" m="11" i="8170"/>
+    <cpi y="1996" m="12" i="8200"/>
+    <cpi y="1997" m="1" i="8270"/>
+    <cpi y="1997" m="2" i="8280"/>
+    <cpi y="1997" m="3" i="8280"/>
+    <cpi y="1997" m="4" i="8270"/>
+    <cpi y="1997" m="5" i="8290"/>
+    <cpi y="1997" m="6" i="8300"/>
+    <cpi y="1997" m="7" i="8370"/>
+    <cpi y="1997" m="8" i="8380"/>
+    <cpi y="1997" m="9" i="8360"/>
+    <cpi y="1997" m="10" i="8350"/>
+    <cpi y="1997" m="11" i="8350"/>
+    <cpi y="1997" m="12" i="8370"/>
+    <cpi y="1998" m="1" i="8370"/>
+    <cpi y="1998" m="2" i="8390"/>
+    <cpi y="1998" m="3" i="8380"/>
+    <cpi y="1998" m="4" i="8390"/>
+    <cpi y="1998" m="5" i="8400"/>
+    <cpi y="1998" m="6" i="8410"/>
+    <cpi y="1998" m="7" i="8440"/>
+    <cpi y="1998" m="8" i="8420"/>
+    <cpi y="1998" m="9" i="8400"/>
+    <cpi y="1998" m="10" i="8390"/>
+    <cpi y="1998" m="11" i="8390"/>
+    <cpi y="1998" m="12" i="8400"/>
+    <cpi y="1999" m="1" i="8390"/>
+    <cpi y="1999" m="2" i="8400"/>
+    <cpi y="1999" m="3" i="8400"/>
+    <cpi y="1999" m="4" i="8440"/>
+    <cpi y="1999" m="5" i="8440"/>
+    <cpi y="1999" m="6" i="8450"/>
+    <cpi y="1999" m="7" i="8490"/>
+    <cpi y="1999" m="8" i="8480"/>
+    <cpi y="1999" m="9" i="8460"/>
+    <cpi y="1999" m="10" i="8450"/>
+    <cpi y="1999" m="11" i="8470"/>
+    <cpi y="1999" m="12" i="8500"/>
+    <cpi y="2000" m="1" i="8520"/>
+    <cpi y="2000" m="2" i="8530"/>
+    <cpi y="2000" m="3" i="8530"/>
+    <cpi y="2000" m="4" i="8530"/>
+    <cpi y="2000" m="5" i="8520"/>
+    <cpi y="2000" m="6" i="8560"/>
+    <cpi y="2000" m="7" i="8600"/>
+    <cpi y="2000" m="8" i="8580"/>
+    <cpi y="2000" m="9" i="8600"/>
+    <cpi y="2000" m="10" i="8590"/>
+    <cpi y="2000" m="11" i="8600"/>
+    <cpi y="2000" m="12" i="8670"/>
+    <cpi y="2001" m="1" i="8640"/>
+    <cpi y="2001" m="2" i="8690"/>
+    <cpi y="2001" m="3" i="8690"/>
+    <cpi y="2001" m="4" i="8730"/>
+    <cpi y="2001" m="5" i="8760"/>
+    <cpi y="2001" m="6" i="8770"/>
+    <cpi y="2001" m="7" i="8780"/>
+    <cpi y="2001" m="8" i="8760"/>
+    <cpi y="2001" m="9" i="8760"/>
+    <cpi y="2001" m="10" i="8750"/>
+    <cpi y="2001" m="11" i="8730"/>
+    <cpi y="2001" m="12" i="8810"/>
+    <cpi y="2002" m="1" i="8820"/>
+    <cpi y="2002" m="2" i="8850"/>
+    <cpi y="2002" m="3" i="8870"/>
+    <cpi y="2002" m="4" i="8860"/>
+    <cpi y="2002" m="5" i="8870"/>
+    <cpi y="2002" m="6" i="8870"/>
+    <cpi y="2002" m="7" i="8880"/>
+    <cpi y="2002" m="8" i="8870"/>
+    <cpi y="2002" m="9" i="8870"/>
+    <cpi y="2002" m="10" i="8860"/>
+    <cpi y="2002" m="11" i="8830"/>
+    <cpi y="2002" m="12" i="8910"/>
+    <cpi y="2003" m="1" i="8910"/>
+    <cpi y="2003" m="2" i="8960"/>
+    <cpi y="2003" m="3" i="8970"/>
+    <cpi y="2003" m="4" i="8940"/>
+    <cpi y="2003" m="5" i="8920"/>
+    <cpi y="2003" m="6" i="8950"/>
+    <cpi y="2003" m="7" i="8970"/>
+    <cpi y="2003" m="8" i="8970"/>
+    <cpi y="2003" m="9" i="8960"/>
+    <cpi y="2003" m="10" i="8960"/>
+    <cpi y="2003" m="11" i="8940"/>
+    <cpi y="2003" m="12" i="9010"/>
+    <cpi y="2004" m="1" i="9010"/>
+    <cpi y="2004" m="2" i="9030"/>
+    <cpi y="2004" m="3" i="9060"/>
+    <cpi y="2004" m="4" i="9090"/>
+    <cpi y="2004" m="5" i="9110"/>
+    <cpi y="2004" m="6" i="9110"/>
+    <cpi y="2004" m="7" i="9130"/>
+    <cpi y="2004" m="8" i="9140"/>
+    <cpi y="2004" m="9" i="9120"/>
+    <cpi y="2004" m="10" i="9130"/>
+    <cpi y="2004" m="11" i="9110"/>
+    <cpi y="2004" m="12" i="9210"/>
+    <cpi y="2005" m="1" i="9140"/>
+    <cpi y="2005" m="2" i="9180"/>
+    <cpi y="2005" m="3" i="9220"/>
+    <cpi y="2005" m="4" i="9200"/>
+    <cpi y="2005" m="5" i="9220"/>
+    <cpi y="2005" m="6" i="9230"/>
+    <cpi y="2005" m="7" i="9270"/>
+    <cpi y="2005" m="8" i="9280"/>
+    <cpi y="2005" m="9" i="9290"/>
+    <cpi y="2005" m="10" i="9300"/>
+    <cpi y="2005" m="11" i="9270"/>
+    <cpi y="2005" m="12" i="9340"/>
+    <cpi y="2006" m="1" i="9310"/>
+    <cpi y="2006" m="2" i="9350"/>
+    <cpi y="2006" m="3" i="9350"/>
+    <cpi y="2006" m="4" i="9380"/>
+    <cpi y="2006" m="5" i="9380"/>
+    <cpi y="2006" m="6" i="9400"/>
+    <cpi y="2006" m="7" i="9440"/>
+    <cpi y="2006" m="8" i="9420"/>
+    <cpi y="2006" m="9" i="9390"/>
+    <cpi y="2006" m="10" i="9400"/>
+    <cpi y="2006" m="11" i="9400"/>
+    <cpi y="2006" m="12" i="9470"/>
+    <cpi y="2007" m="1" i="9470"/>
+    <cpi y="2007" m="2" i="9510"/>
+    <cpi y="2007" m="3" i="9530"/>
+    <cpi y="2007" m="4" i="9580"/>
+    <cpi y="2007" m="5" i="9580"/>
+    <cpi y="2007" m="6" i="9580"/>
+    <cpi y="2007" m="7" i="9630"/>
+    <cpi y="2007" m="8" i="9620"/>
+    <cpi y="2007" m="9" i="9640"/>
+    <cpi y="2007" m="10" i="9660"/>
+    <cpi y="2007" m="11" i="9710"/>
+    <cpi y="2007" m="12" i="9770"/>
+    <cpi y="2008" m="1" i="9740"/>
+    <cpi y="2008" m="2" i="9780"/>
+    <cpi y="2008" m="3" i="9830"/>
+    <cpi y="2008" m="4" i="9810"/>
+    <cpi y="2008" m="5" i="9870"/>
+    <cpi y="2008" m="6" i="9890"/>
+    <cpi y="2008" m="7" i="9950"/>
+    <cpi y="2008" m="8" i="9920"/>
+    <cpi y="2008" m="9" i="9910"/>
+    <cpi y="2008" m="10" i="9890"/>
+    <cpi y="2008" m="11" i="9840"/>
+    <cpi y="2008" m="12" i="9880"/>
+    <cpi y="2009" m="1" i="9830"/>
+    <cpi y="2009" m="2" i="9890"/>
+    <cpi y="2009" m="3" i="9870"/>
+    <cpi y="2009" m="4" i="9880"/>
+    <cpi y="2009" m="5" i="9870"/>
+    <cpi y="2009" m="6" i="9900"/>
+    <cpi y="2009" m="7" i="9900"/>
+    <cpi y="2009" m="8" i="9920"/>
+    <cpi y="2009" m="9" i="9890"/>
+    <cpi y="2009" m="10" i="9890"/>
+    <cpi y="2009" m="11" i="9880"/>
+    <cpi y="2009" m="12" i="9960"/>
+    <cpi y="2010" m="1" i="9900"/>
+    <cpi y="2010" m="2" i="9940"/>
+    <cpi y="2010" m="3" i="9990"/>
+    <cpi y="2010" m="4" i="10000"/>
+    <cpi y="2010" m="5" i="9990"/>
+    <cpi y="2010" m="6" i="9990"/>
+    <cpi y="2010" m="7" i="10010"/>
+    <cpi y="2010" m="8" i="10020"/>
+    <cpi y="2010" m="9" i="10010"/>
+    <cpi y="2010" m="10" i="10020"/>
+    <cpi y="2010" m="11" i="10030"/>
+    <cpi y="2010" m="12" i="10090"/>
+    <cpi y="2011" m="1" i="10070"/>
+    <cpi y="2011" m="2" i="10130"/>
+    <cpi y="2011" m="3" i="10190"/>
+    <cpi y="2011" m="4" i="10190"/>
+    <cpi y="2011" m="5" i="10190"/>
+    <cpi y="2011" m="6" i="10200"/>
+    <cpi y="2011" m="7" i="10220"/>
+    <cpi y="2011" m="8" i="10230"/>
+    <cpi y="2011" m="9" i="10250"/>
+    <cpi y="2011" m="10" i="10250"/>
+    <cpi y="2011" m="11" i="10270"/>
+    <cpi y="2011" m="12" i="10290"/>
+    <cpi y="2012" m="1" i="10280"/>
+    <cpi y="2012" m="2" i="10350"/>
+    <cpi y="2012" m="3" i="10410"/>
+    <cpi y="2012" m="4" i="10390"/>
+    <cpi y="2012" m="5" i="10390"/>
+    <cpi y="2012" m="6" i="10370"/>
+    <cpi y="2012" m="7" i="10410"/>
+    <cpi y="2012" m="8" i="10450"/>
+    <cpi y="2012" m="9" i="10460"/>
+    <cpi y="2012" m="10" i="10460"/>
+    <cpi y="2012" m="11" i="10470"/>
+    <cpi y="2012" m="12" i="10500"/>
+    <cpi y="2013" m="1" i="10450"/>
+    <cpi y="2013" m="2" i="10510"/>
+    <cpi y="2013" m="3" i="10560"/>
+    <cpi y="2013" m="4" i="10510"/>
+    <cpi y="2013" m="5" i="10550"/>
+    <cpi y="2013" m="6" i="10560"/>
+    <cpi y="2013" m="7" i="10610"/>
+    <cpi y="2013" m="8" i="10610"/>
+    <cpi y="2013" m="9" i="10610"/>
+    <cpi y="2013" m="10" i="10590"/>
+    <cpi y="2013" m="11" i="10610"/>
+    <cpi y="2013" m="12" i="10650"/>
+    <cpi y="2014" m="1" i="10590"/>
+    <cpi y="2014" m="2" i="10640"/>
+    <cpi y="2014" m="3" i="10670"/>
+    <cpi y="2014" m="4" i="10650"/>
+    <cpi y="2014" m="5" i="10640"/>
+    <cpi y="2014" m="6" i="10670"/>
+    <cpi y="2014" m="7" i="10700"/>
+    <cpi y="2014" m="8" i="10700"/>
+    <cpi y="2014" m="9" i="10700"/>
+    <cpi y="2014" m="10" i="10670"/>
+    <cpi y="2014" m="11" i="10670"/>
+    <cpi y="2014" m="12" i="10670"/>
+    <cpi y="2015" m="1" i="10560"/>
+    <cpi y="2015" m="2" i="10650"/>
+    <cpi y="2015" m="3" i="10700"/>
+    <cpi y="2015" m="4" i="10700"/>
+    <cpi y="2015" m="5" i="10710"/>
+    <cpi y="2015" m="6" i="10700"/>
+    <cpi y="2015" m="7" i="10720"/>
+    <cpi y="2015" m="8" i="10720"/>
+    <cpi y="2015" m="9" i="10700"/>
+    <cpi y="2015" m="10" i="10700"/>
+    <cpi y="2015" m="11" i="10710"/>
+    <cpi y="2015" m="12" i="10700"/>
+    <cpi y="2016" m="1" i="10610"/>
+    <cpi y="2016" m="2" i="10650"/>
+    <cpi y="2016" m="3" i="10730"/>
+    <cpi y="2016" m="4" i="10690"/>
+    <cpi y="2016" m="5" i="10720"/>
+    <cpi y="2016" m="6" i="10730"/>
+    <cpi y="2016" m="7" i="10760"/>
+    <cpi y="2016" m="8" i="10760"/>
+    <cpi y="2016" m="9" i="10770"/>
+    <cpi y="2016" m="10" i="10790"/>
+    <cpi y="2016" m="11" i="10800"/>
+    <cpi y="2016" m="12" i="10880"/>
+    <cpi y="2017" m="1" i="10810"/>
+    <cpi y="2017" m="2" i="10880"/>
+    <cpi y="2017" m="3" i="10900"/>
+    <cpi y="2017" m="4" i="10900"/>
+    <cpi y="2017" m="5" i="10880"/>
+    <cpi y="2017" m="6" i="10900"/>
+    <cpi y="2017" m="7" i="10940"/>
+    <cpi y="2017" m="8" i="10950"/>
+    <cpi y="2017" m="9" i="10960"/>
+    <cpi y="2017" m="10" i="10960"/>
+    <cpi y="2017" m="11" i="10990"/>
+    <cpi y="2017" m="12" i="11060"/>
+    <cpi y="2018" m="1" i="10980"/>
+  </consumerPriceIndeces>
+  <accounts>
+    <account>
+      <uuid>a6450879-c445-4f78-aefa-3cb2cf4f5789</uuid>
+      <name>TEST_R</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2015-07-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>30000</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>100000000</shares>
+          <type>DIVIDEND_CHARGE</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2015-07-01</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>1000000</amount>
+          <security reference="../../../../../securities/security"/>
+          <crossEntry class="buysell">
+            <portfolio>
+              <uuid>15f917a6-d738-48d9-a9bb-859aa3fcd09a</uuid>
+              <name>TEST_S</name>
+              <isRetired>false</isRetired>
+              <referenceAccount reference="../../../../.."/>
+              <transactions>
+                <portfolio-transaction>
+                  <date reference="../../../../../date"/>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>1000000</amount>
+                  <security reference="../../../../../../../../../securities/security"/>
+                  <crossEntry class="buysell" reference="../../../.."/>
+                  <shares>100000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+              </transactions>
+            </portfolio>
+            <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
+            <account reference="../../../.."/>
+            <accountTransaction reference="../.."/>
+          </crossEntry>
+          <shares>0</shares>
+          <type>BUY</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2016-02-15</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>120000</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>100000000</shares>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+        <account-transaction>
+          <date>2017-02-15</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>100000</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>100000000</shares>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio"/>
+  </portfolios>
+  <plans/>
+  <taxonomies/>
+  <dashboards>
+    <dashboard name="Dashboard">
+      <configuration>
+        <entry>
+          <string>REPORTING_PERIOD</string>
+          <string>L1Y0</string>
+        </entry>
+      </configuration>
+      <columns>
+        <column>
+          <widgets>
+            <widget type="HEADING">
+              <label>Key Indicators</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration/>
+            </widget>
+            <widget type="IRR">
+              <label>Internal Rate of Return (IRR)</label>
+              <configuration/>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Change</label>
+              <configuration/>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta (since first transaction)</label>
+              <configuration/>
+            </widget>
+            <widget type="HEADING">
+              <label>Last Day</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="ABSOLUTE_CHANGE">
+              <label>Absolute Change</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>T1</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <widgets>
+            <widget type="HEADING">
+              <label>Risk Indicators</label>
+            </widget>
+            <widget type="MAXDRAWDOWN">
+              <label>Maximum Drawdown</label>
+              <configuration/>
+            </widget>
+            <widget type="MAXDRAWDOWNDURATION">
+              <label>Max Drawdown Duration</label>
+              <configuration/>
+            </widget>
+            <widget type="VOLATILITY">
+              <label>Volatility</label>
+              <configuration/>
+            </widget>
+            <widget type="SEMIVOLATILITY">
+              <label>Semi-Volatility</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+        <column>
+          <widgets>
+            <widget type="HEADING">
+              <label>Calculation</label>
+            </widget>
+            <widget type="CALCULATION">
+              <label>Performance Calculation</label>
+              <configuration/>
+            </widget>
+          </widgets>
+        </column>
+      </columns>
+    </dashboard>
+  </dashboards>
+  <properties>
+    <entry>
+      <string>security-chart-details</string>
+      <string>SHOW_DATA_LABELS,CLOSING,PURCHASEPRICE,INVESTMENT,DIVIDENDS,EVENTS,FIFOPURCHASE</string>
+    </entry>
+  </properties>
+  <settings>
+    <bookmarks>
+      <bookmark>
+        <label>Yahoo Finance</label>
+        <pattern>http://de.finance.yahoo.com/q?s={tickerSymbol}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>OnVista</label>
+        <pattern>http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&amp;SELECTED_TOOL=ALL_TOOLS</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Finanzen.net</label>
+        <pattern>http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Ariva.de Fundamentaldaten</label>
+        <pattern>http://www.ariva.de/{isin}/bilanz-guv</pattern>
+      </bookmark>
+      <bookmark>
+        <label>justETF</label>
+        <pattern>https://www.justetf.com/de/etf-profile.html?isin={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>fondsweb.de</label>
+        <pattern>http://www.fondsweb.de/{isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>Morningstar.de</label>
+        <pattern>http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&amp;search={isin}</pattern>
+      </bookmark>
+      <bookmark>
+        <label>maxblue Kauforder</label>
+        <pattern>https://meine.deutsche-bank.de/trxm/db/init.do?style=mb&amp;style=mb&amp;login=br24order&amp;action=PurchaseSecurity2And3Steps&amp;wknOrIsin={isin}</pattern>
+      </bookmark>
+    </bookmarks>
+    <attributeTypes>
+      <attribute-type>
+        <id>ter</id>
+        <name>Total Expense Ratio (TER)</name>
+        <columnLabel>TER</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>aum</id>
+        <name>Assets under Management</name>
+        <columnLabel>AUM</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Long</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$AmountPlainConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>vendor</id>
+        <name>Vendor</name>
+        <columnLabel>Vendor</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.String</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$StringConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>acquisitionFee</id>
+        <name>Acquisition Fee (percentaged)</name>
+        <columnLabel>Acquisition Fee</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+      <attribute-type>
+        <id>managementFee</id>
+        <name>Management Fee (percentaged)</name>
+        <columnLabel>Management Fee</columnLabel>
+        <target>name.abuchen.portfolio.model.Security</target>
+        <type>java.lang.Double</type>
+        <converterClass>name.abuchen.portfolio.model.AttributeType$PercentConverter</converterClass>
+      </attribute-type>
+    </attributeTypes>
+    <configurationSets>
+      <entry>
+        <string>StatementOfAssetsHistoryView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>eaca3178-eb8c-49da-b008-7ba2dc11b919</uuid>
+              <name>Standard</name>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>ReturnsVolatilityChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>81947aa7-bff1-4e6c-a42c-bbc8d4777c4e</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,[n]Securityc394c3d6-e726-4203-a850-40b808283970;#ca79e2;DOT;false,Securityc394c3d6-e726-4203-a850-40b808283970;#b579e2;SOLID;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesPerformanceView</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>bd462f5d-90ae-42ea-9455-46c54111f09c</uuid>
+              <name>Standard</name>
+              <data>shares=80;name=300;pv=75;pp=75;quote=75;mv=75;sumdiv=80;twror=80;izf=80;delta=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>PerformanceChartView-PICKER</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>70165c32-60a6-462e-9008-cc637bfb8095</uuid>
+              <name>Standard</name>
+              <data>Client-totals;#000000;SOLID;false,[b]ConsumerPriceIndex;#787878;DASHDOTDOT;false,Client-delta_percentage;#808080;SOLID;false,[n]Portfolio15f917a6-d738-48d9-a9bb-859aa3fcd09a;#e279d0;DOT;false</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>ef9a309d-39ec-49d3-86bb-7acd4441bb54</uuid>
+              <name>Standard</name>
+              <data>0=1024$400;note=22;1=100;2=80;4=60;5=60;9=80;10=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>7ff7f51d-0f78-46eb-94c1-e6d895bab16f</uuid>
+              <name>Standard</name>
+              <data>0=80;1=300;2=60;4=60;5=80;6=80;note=22;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

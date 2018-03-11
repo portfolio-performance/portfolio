@@ -117,6 +117,53 @@ public class CSVAccountTransactionExtractorTest
     }
 
     @Test
+    public void testDividendChargeTransaction()
+    {
+        Client client = new Client();
+        Security security = new Security();
+        security.setIsin("DE0123456781");
+        client.addSecurity(security);
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] {"2015-03-11", "DE0123456781", "Anleihe", "", "-200", "EUR", "DIVIDEND_CHARGE", "", "100", "Notiz"}),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findAny()
+                        .get().getSubject();
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDEND_CHARGE));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 200_00)));
+        assertThat(t.getNote(), is("Notiz"));
+        assertThat(t.getDate(), is(LocalDate.parse("2015-03-11")));
+        assertThat(t.getShares(), is(Values.Share.factorize(100)));
+        assertThat(t.getSecurity(), is(security));
+    }
+
+    @Test
+    public void testDividendChargeTransaction_whenSecurityIsMissing()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVAccountTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(0, Arrays.<String[]>asList(
+                        new String[] { "2013-02-01", "", "", "", "100", "EUR", "DIVIDEND_CHARGE", "", "10", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        System.err.println("testDividendChargeTransaction_whenSecurityIsMissing errors: " +  errors.toString());
+
+        assertThat(errors.size(), is(1));
+        assertThat(results, empty());
+    }
+
+    @Test
     public void testIfMultipleSecuritiesWithSameISINExist()
     {
         Client client = new Client();

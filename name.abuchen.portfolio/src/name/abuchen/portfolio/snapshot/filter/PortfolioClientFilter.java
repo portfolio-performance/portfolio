@@ -156,6 +156,7 @@ public class PortfolioClientFilter implements ClientFilter
                     break;
                 case TAXES:
                 case FEES:
+                case DIVIDEND_CHARGE:
                     pseudoAccount.internalAddTransaction(t);
                     pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
@@ -214,6 +215,7 @@ public class PortfolioClientFilter implements ClientFilter
                     else
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     break;
+                case DIVIDEND_CHARGE:
                 case TAXES:
                 case FEES:
                     if (t.getSecurity() == null || usedSecurities.contains(t.getSecurity()))

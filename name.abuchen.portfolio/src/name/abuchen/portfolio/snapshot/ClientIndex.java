@@ -62,6 +62,7 @@ import name.abuchen.portfolio.util.Interval;
         outboundTransferals = new long[size];
         taxes = new long[size];
         dividends = new long[size];
+        dividendCharge = new long[size];
         interest = new long[size];
         interestCharge = new long[size];
 
@@ -162,6 +163,13 @@ import name.abuchen.portfolio.util.Interval;
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
                                                         interval, t.getDate());
                                         addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        break;
+                                    case DIVIDEND_CHARGE:
+                                        addValue(taxes, t.getCurrencyCode(), -t.getUnitSum(Unit.Type.TAX).getAmount(),
+                                                        interval, t.getDate());
+                                        addValue(dividendCharge, t.getCurrencyCode(), t.getAmount(), interval,
+                                                        t.getDate());
+                                        addValue(dividends, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
                                         break;
                                     case INTEREST:
                                         addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());

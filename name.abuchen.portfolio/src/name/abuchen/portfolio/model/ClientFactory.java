@@ -558,10 +558,14 @@ public class ClientFactory
             case 37:
                 // Portfoliotransfer has Quotesuggestion
                 introduceQuoteSuggestion4Transfer(client);
+            case 38:
+                // added DIVIDEND_CHARGE transaction type
+                // ...
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
+                // 
                 break;
             default:
                 break;

@@ -123,6 +123,7 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
                 case FEES_REFUND:
                     return t.getAmount();
                 case FEES:
+                case DIVIDEND_CHARGE:
                 case INTEREST_CHARGE:
                 case TAXES:
                 case REMOVAL:

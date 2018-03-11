@@ -298,6 +298,14 @@ public class ClientClassificationFilter implements ClientFilter
                         addSecurityRelatedAccountT(state, account, t);
                     break;
 
+                case DIVIDEND_CHARGE:
+                    if (!state.isCategorized(t.getSecurity()))
+                        state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDate(),
+                                        t.getCurrencyCode(), amount, null, AccountTransaction.Type.REMOVAL));
+                    else
+                        addSecurityRelatedAccountT(state, account, t);
+                    break;
+
                 case FEES_REFUND:
                     if (t.getSecurity() != null && state.isCategorized(t.getSecurity()))
                         addSecurityRelatedAccountT(state, account, t);
@@ -464,29 +472,34 @@ public class ClientClassificationFilter implements ClientFilter
                 continue;
 
             int weight = state.getWeight(t.getSecurity());
+            long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
+            long amount = value(t.getAmount(), weight);
 
             switch (t.getType())
             {
                 case DIVIDENDS:
-                    long taxes = value(t.getUnitSum(Unit.Type.TAX).getAmount(), weight);
-                    long amount = value(t.getAmount(), weight);
-
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     amount + taxes, t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
                                     amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                     break;
+                case DIVIDEND_CHARGE:
+                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    amount + taxes, t.getSecurity(), t.getType()));
+                    readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
+                                    amount + taxes, t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                    break;
                 case FEES:
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), t.getType()));
+                                    amount, t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                                    amount, t.getSecurity(), AccountTransaction.Type.DEPOSIT));
                     break;
                 case FEES_REFUND:
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), t.getType()));
+                                    amount, t.getSecurity(), t.getType()));
                     readOnlyAccount.internalAddTransaction(new AccountTransaction(t.getDate(), t.getCurrencyCode(),
-                                    value(t.getAmount(), weight), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                                    amount, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                     break;
                 case TAXES:
                 case TAX_REFUND:
