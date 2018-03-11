@@ -381,7 +381,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("8", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
+        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -402,7 +402,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("9", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("8", Messages.ColumnPurchaseValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValue_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -425,7 +425,7 @@ public class StatementOfAssetsViewer
                         .wrap(ElementComparator::new));
         support.addColumn(column);
 
-        column = new Column("10", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -448,7 +448,7 @@ public class StatementOfAssetsViewer
                         .wrap(ElementComparator::new));
         support.addColumn(column);
 
-        column = new Column("11", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("9", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
@@ -637,7 +637,7 @@ public class StatementOfAssetsViewer
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new Column("d%", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getTotalRateOfReturnDivMovingAverage, null,
                         false);
         column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnDividendMovingAverageTotalRateOfReturn + " {0}", options)); //$NON-NLS-1$
