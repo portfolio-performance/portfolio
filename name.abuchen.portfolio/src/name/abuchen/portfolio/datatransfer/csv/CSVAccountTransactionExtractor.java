@@ -160,7 +160,7 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private Type inferType(String[] rawValues, Map<String, Column> field2column, Security security, Money amount)
+    protected Type inferType(String[] rawValues, Map<String, Column> field2column, Security security, Money amount)
                     throws ParseException
     {
         Type type = getEnum(Messages.CSVColumn_Type, Type.class, rawValues, field2column);
