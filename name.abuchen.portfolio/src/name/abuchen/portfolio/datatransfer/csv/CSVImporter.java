@@ -281,7 +281,33 @@ public class CSVImporter
             if (pos == null)
                 throw new NullPointerException();
 
-            // first: try exact matches (example: "Fees" vs. "Fees Refund")
+            // first: try pattern matching (enables multiple matches for one type)
+
+            for (Map.Entry<M, String> entry : enumMap.entrySet())
+            {
+                Pattern pattern = Pattern.compile("\\b(" + entry.getValue() + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+                Matcher matcher = pattern.matcher(source);
+                if (matcher.find())
+                {
+                    pos.setIndex(source.length());
+                    return entry.getKey();
+                }
+            }
+
+            // second: try pattern matching (enables multiple matches for one type)
+
+            for (Map.Entry<M, String> entry : enumMap.entrySet())
+            {
+                Pattern pattern = Pattern.compile("\\b.*(" + entry.getValue() + ").*\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+                Matcher matcher = pattern.matcher(source);
+                if (matcher.find())
+                {
+                    pos.setIndex(source.length());
+                    return entry.getKey();
+                }
+            }
+
+            // third: try exact matches (example: "Fees" vs. "Fees Refund")
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
             {
@@ -292,7 +318,7 @@ public class CSVImporter
                 }
             }
 
-            // second: try partial matches
+            // fourth: try partial matches
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
             {
@@ -303,7 +329,6 @@ public class CSVImporter
                     return entry.getKey();
                 }
             }
-
             return null;
         }
     }
@@ -465,7 +490,7 @@ public class CSVImporter
         this.inputFile = file;
 
         this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
-                        new CSVPortfolioTransactionExtractor(client), new CSVDibaAccountTransactionExtractor(client), new CSVSecurityExtractor(client),
+                        new CSVPortfolioTransactionExtractor(client), new CSVConsorsAccountTransactionExtractor(client), new CSVConsorsAccountBookingExtractor(client), new CSVDibaAccountTransactionExtractor(client), new CSVSecurityExtractor(client),
                         new CSVSecurityPriceExtractor(client)));
         this.setExtractor(extractors.get(0));
     }
@@ -499,7 +524,7 @@ public class CSVImporter
 
     public CSVExtractor getSecurityPriceExtractor()
     {
-        return extractors.get(4);
+        return extractors.get(6);
     }
 
     public void setDelimiter(char delimiter)
