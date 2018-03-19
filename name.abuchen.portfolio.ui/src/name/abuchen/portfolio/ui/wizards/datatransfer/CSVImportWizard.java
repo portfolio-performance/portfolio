@@ -71,7 +71,7 @@ public class CSVImportWizard extends Wizard
         this.client = client;
         this.preferences = preferences;
         this.importer = new CSVImporter(client, inputFile);
-        setWindowTitle(Messages.CSVImportWizardTitle);
+        setWindowTitle(Messages.CSVImportWizardTitle + " - " + inputFile.toString());
     }
 
     public void setTarget(Security target)

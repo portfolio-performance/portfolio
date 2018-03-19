@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -12,6 +13,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
@@ -63,7 +65,7 @@ public abstract class CSVExtractor implements Extractor
     {
         return null;
     }
-    
+
     protected String getText(String name, String[] rawValues, Map<String, Column> field2column)
     {
         Column column = field2column.get(name);
@@ -120,8 +122,20 @@ public abstract class CSVExtractor implements Extractor
         String value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
-
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        Number num;
+        try
+        {
+            num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        }
+        catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
+        {
+            if (e instanceof ParseException)
+            {
+                throw new ParseException(e.getMessage() + ": " + MessageFormat.format(Messages.CSVImportGenericColumnLabel, field2column.get(name).getColumnIndex()), new Exception().getStackTrace()[0].getLineNumber());
+            }
+            else
+                throw e;
+        }
         return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
     }
 
@@ -130,7 +144,18 @@ public abstract class CSVExtractor implements Extractor
         String value = getText(name, rawValues, field2column);
         if (value == null)
             return null;
-        Date date = (Date) field2column.get(name).getFormat().getFormat().parseObject(value);
+        Date date;
+        try
+        {
+            date = (Date) field2column.get(name).getFormat().getFormat().parseObject(value);
+        }
+        catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
+        {
+            if (e instanceof ParseException)
+                throw new ParseException(e.getMessage() + ": " + MessageFormat.format(Messages.CSVImportGenericColumnLabel, field2column.get(name).getColumnIndex()), new Exception().getStackTrace()[0].getLineNumber());
+            else
+                throw e;
+        }
         return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
     }
 
@@ -141,7 +166,18 @@ public abstract class CSVExtractor implements Extractor
         if (value == null)
             return null;
 
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        Number num;
+        try
+        {
+            num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        }
+        catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
+        {
+            if (e instanceof ParseException)
+                throw new ParseException(e.getMessage() + ": " + MessageFormat.format(Messages.CSVImportGenericColumnLabel, field2column.get(name).getColumnIndex()), new Exception().getStackTrace()[0].getLineNumber());
+            else
+                throw e;
+        }
         return BigDecimal.valueOf(num.doubleValue());
     }
 
@@ -152,7 +188,18 @@ public abstract class CSVExtractor implements Extractor
         if (value == null)
             return null;
 
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        Number num;
+        try
+        {
+            num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+        }
+        catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
+        {
+            if (e instanceof ParseException)
+                throw new ParseException(e.getMessage() + ": " + MessageFormat.format(Messages.CSVImportGenericColumnLabel, field2column.get(name).getColumnIndex()), new Exception().getStackTrace()[0].getLineNumber());
+            else
+                throw e;
+        }
         return Math.round(Math.abs(num.doubleValue()) * Values.Share.factor());
     }
 
@@ -166,7 +213,21 @@ public abstract class CSVExtractor implements Extractor
         FieldFormat ff = field2column.get(name).getFormat();
 
         if (ff != null && ff.getFormat() != null)
-            return (E) ff.getFormat().parseObject(value);
+        {
+            E parsedEnum;
+            try
+            {
+                parsedEnum = (E) ff.getFormat().parseObject(value);
+            }
+            catch (ParseException | UnsupportedOperationException | IllegalArgumentException e)
+            {
+                if (e instanceof ParseException)
+                    throw new ParseException(e.getMessage() + ": " + MessageFormat.format(Messages.CSVImportGenericColumnLabel, field2column.get(name).getColumnIndex()), new Exception().getStackTrace()[0].getLineNumber());
+                else
+                    throw e;
+            }
+            return parsedEnum;
+        }
         else
             return Enum.valueOf(type, value);
     }
