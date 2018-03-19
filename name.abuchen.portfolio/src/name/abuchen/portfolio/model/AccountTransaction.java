@@ -45,6 +45,35 @@ public class AccountTransaction extends Transaction
         {
             return RESOURCES.getString("account." + name()); //$NON-NLS-1$
         }
+
+        public Type getSibling()
+        {
+            switch (this)
+            {
+                case DEPOSIT:
+                    return REMOVAL;
+                case REMOVAL:
+                    return DEPOSIT;
+                case INTEREST:
+                    return INTEREST_CHARGE;
+                case INTEREST_CHARGE:
+                    return INTEREST;
+                case DIVIDEND_CHARGE:
+                    return DIVIDENDS;
+                case DIVIDENDS:
+                    return DIVIDEND_CHARGE;
+                case FEES:
+                    return FEES_REFUND;
+                case FEES_REFUND:
+                    return FEES;
+                case TAXES:
+                    return TAX_REFUND;
+                case TAX_REFUND:
+                    return TAXES;
+                default:
+                    return this;
+            }
+        }
     }
 
     /**
