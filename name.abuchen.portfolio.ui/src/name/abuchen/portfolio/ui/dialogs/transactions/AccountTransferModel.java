@@ -228,6 +228,11 @@ public class AccountTransferModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // do not auto-suggest exchange rate when editing an existing
+        // transaction
+        if (source != null)
+            return;
+
         if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
         {
             setExchangeRate(BigDecimal.ONE);
@@ -248,13 +253,13 @@ public class AccountTransferModel extends AbstractModel
     {
         return date;
     }
-    
+
     public void setDate(LocalDate date)
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateExchangeRate();
     }
-    
+
     public long getFxAmount()
     {
         return fxAmount;

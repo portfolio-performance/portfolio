@@ -337,6 +337,11 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // do not auto-suggest exchange rates when editing an existing
+        // transaction
+        if (sourceTransaction != null)
+            return;
+
         if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
         {
             setExchangeRate(BigDecimal.ONE);
@@ -381,7 +386,7 @@ public class AccountTransactionModel extends AbstractModel
         updateShares();
         updateExchangeRate();
     }
-    
+
     public long getShares()
     {
         return shares;
