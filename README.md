@@ -39,7 +39,7 @@ mvn clean verify -Dtycho.disableP2Mirrors
 
 ### Setup
 
-To develop, use [Eclipse IDE for Java Developers] (http://eclipse.org/downloads/) plus [Eclipse for RCP and RAP Developers].
+To develop, use [Eclipse IDE for Java Developers](http://eclipse.org/downloads/) plus [Eclipse for RCP and RAP Developers].
 
 Clone the git repository.
 
