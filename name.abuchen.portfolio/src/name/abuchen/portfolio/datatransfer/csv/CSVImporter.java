@@ -167,6 +167,7 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatDDMMYY1, new SimpleDateFormat("dd/MM/yy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatMMDDYY, new SimpleDateFormat("MM-dd-yy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatMMDDYYYY, new SimpleDateFormat("MM-dd-yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")), //$NON-NLS-1$
         };
 
         /* package */ DateField(String name)

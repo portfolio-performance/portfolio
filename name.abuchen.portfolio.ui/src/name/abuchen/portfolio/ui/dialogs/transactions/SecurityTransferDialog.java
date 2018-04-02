@@ -161,7 +161,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         startingWith(shares.value).thenBelow(valueNote).left(securities.value.getControl()).right(amount.value)
                         .label(lblNote);
 
-        int widest = widest(securities.label, source.label, target.label, lblDate, amount.label, lblNote);
+        int widest = widest(securities.label, source.label, target.label, lblDate, shares.label, lblNote);
         startingWith(securities.label).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);

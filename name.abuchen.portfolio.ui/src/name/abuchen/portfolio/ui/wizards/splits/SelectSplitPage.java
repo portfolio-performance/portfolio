@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.splits;
 
+import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
+
 import java.text.MessageFormat;
 import java.util.List;
 
@@ -16,8 +19,6 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -108,42 +109,14 @@ public class SelectSplitPage extends AbstractWizardPage
 
         // form layout data
 
-        FormData data = new FormData();
-        data.top = new FormAttachment(comboSecurity.getControl(), 0, SWT.CENTER);
-        labelSecurity.setLayoutData(data);
+        int labelWidth = widest(labelSecurity, labelExDate, labelSplit);
 
-        data = new FormData();
-        data.left = new FormAttachment(labelSecurity, 5);
-        data.right = new FormAttachment(100);
-        comboSecurity.getControl().setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(boxExDate.getControl(), 0, SWT.CENTER);
-        labelExDate.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(comboSecurity.getControl(), 5);
-        data.left = new FormAttachment(comboSecurity.getControl(), 2, SWT.LEFT);
-        boxExDate.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(spinnerNewShares, 0, SWT.CENTER);
-        labelSplit.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(boxExDate.getControl(), 5);
-        data.left = new FormAttachment(boxExDate.getControl(), 0, SWT.LEFT);
-        spinnerNewShares.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(spinnerNewShares, 0, SWT.CENTER);
-        data.left = new FormAttachment(spinnerNewShares, 5);
-        labelColon.setLayoutData(data);
-
-        data = new FormData();
-        data.top = new FormAttachment(boxExDate.getControl(), 5);
-        data.left = new FormAttachment(labelColon, 5);
-        spinnerOldShares.setLayoutData(data);
+        startingWith(comboSecurity.getControl(), labelSecurity) //
+                        .thenBelow(boxExDate.getControl()).label(labelExDate) //
+                        .thenBelow(spinnerNewShares).label(labelSplit).thenRight(labelColon)
+                        .thenRight(spinnerOldShares);
+        
+        startingWith(labelSecurity).width(labelWidth);
 
         // model binding
 

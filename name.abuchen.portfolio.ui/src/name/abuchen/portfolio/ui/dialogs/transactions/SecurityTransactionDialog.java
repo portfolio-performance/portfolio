@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
+import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -204,11 +205,14 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         int width = amountWidth(grossValue.value);
         int currencyWidth = currencyWidth(grossValue.currency);
+        int labelWidth = widest(securities.label, portfolio.label, lblDate, shares.label, lblNote);
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         .suffix(comboInput.value.getControl()) //
                         .thenBelow(valueDate.getControl()).label(lblDate).thenRight(valueTime);
+
+        startingWith(securities.label).width(labelWidth);
 
         // shares - quote - gross value
         startingWith(valueDate.getControl()).thenBelow(shares.value).width(width).label(shares.label)
