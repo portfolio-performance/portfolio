@@ -10,7 +10,8 @@ See http://www.portfolio-performance.info for more details.
 
 * [Java 8](http://www.java.com)
 * [Maven](http://maven.apache.org)
-* [Eclipse](http://www.eclipse.org)
+* [Eclipse Oxygen](http://eclipse.org/downloads/)
+* [Eclipse for RCP and RAP Developers](http://eclipse.org/downloads/)
 
 ## Building with Maven
 
@@ -38,7 +39,7 @@ mvn clean verify -Dtycho.disableP2Mirrors
 
 ### Setup
 
-To develop, use [Eclipse IDE](http://eclipse.org/downloads/) plus the **Plug-in Development Environment (PDE)**.
+To develop, use [Eclipse IDE for Java Developers](http://eclipse.org/downloads/) plus [Eclipse for RCP and RAP Developers].
 
 Clone the git repository.
 
