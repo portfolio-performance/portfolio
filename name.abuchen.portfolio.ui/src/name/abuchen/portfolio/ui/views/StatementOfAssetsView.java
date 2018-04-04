@@ -123,8 +123,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
                             manager.add(action);
 
                             manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
-                                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell(),
-                                                date -> !date.isAfter(LocalDate.now()));
+                                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
                                 dialog.setSelection(snapshotDate);
                                 if (dialog.open() != DateSelectionDialog.OK)
                                     return;
