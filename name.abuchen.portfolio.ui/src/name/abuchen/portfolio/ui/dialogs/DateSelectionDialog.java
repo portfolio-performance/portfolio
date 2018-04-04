@@ -21,6 +21,14 @@ public class DateSelectionDialog extends Dialog
     private LocalDate selection = LocalDate.now();
     private Predicate<LocalDate> validator;
 
+    public DateSelectionDialog(Shell parentShell)
+    {
+        // allow all dates
+        this(parentShell, (LocalDate date) -> {
+            return true;
+        });
+    }
+
     public DateSelectionDialog(Shell parentShell, Predicate<LocalDate> validator)
     {
         super(parentShell);
