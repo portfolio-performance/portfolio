@@ -50,6 +50,11 @@ public class AssetPosition
         return position.getFIFOPurchaseValue(converter.getTermCurrency());
     }
 
+    public Money getMovingAveragePurchaseValue()
+    {
+        return position.getMovingAveragePurchaseValue(converter.getTermCurrency());
+    }
+
     public Money getProfitLoss()
     {
         // calculate profit/loss on the converted values to avoid rounding
