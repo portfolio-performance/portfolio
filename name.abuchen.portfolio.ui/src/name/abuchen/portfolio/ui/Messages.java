@@ -89,9 +89,11 @@ public class Messages extends NLS
     public static String ColumnCapitalGainsPercent_Option;
     public static String ColumnCapitalGainsMovingAverage;
     public static String ColumnCapitalGainsMovingAverage_Description;
+    public static String ColumnCapitalGainsMovingAverage_MenuLabel;
     public static String ColumnCapitalGainsMovingAverage_Option;
     public static String ColumnCapitalGainsMovingAveragePercent;
     public static String ColumnCapitalGainsMovingAveragePercent_Description;
+    public static String ColumnCapitalGainsMovingAveragePercent_MenuLabel;
     public static String ColumnCapitalGainsMovingAveragePercent_Option;
     public static String ColumnChangeOnPrevious;
     public static String ColumnChangeOnPrevious_MenuLabel;
@@ -135,6 +137,7 @@ public class Messages extends NLS
     public static String ColumnDividendTotalRateOfReturn_Description;
     public static String ColumnDividendMovingAverageTotalRateOfReturn;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_Description;
+    public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
     public static String ColumnEntity;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
@@ -193,8 +196,10 @@ public class Messages extends NLS
     public static String ColumnPurchaseValueBaseCurrency;
     public static String ColumnPurchasePriceMovingAverage;
     public static String ColumnPurchasePriceMovingAverage_Description;
+    public static String ColumnPurchasePriceMovingAverage_MenuLabel;
     public static String ColumnPurchaseValueMovingAverage;
     public static String ColumnPurchaseValueMovingAverage_Description;
+    public static String ColumnPurchaseValueMovingAverage_MenuLabel;
     public static String ColumnQuote;
     public static String ColumnQuote_DescriptionEndOfReportingPeriod;
     public static String ColumnQuoteChange;

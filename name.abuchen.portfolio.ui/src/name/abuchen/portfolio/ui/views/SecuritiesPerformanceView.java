@@ -384,6 +384,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // cost value - moving average
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -415,6 +416,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // cost value per share - moving average
         column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -549,6 +551,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnCapitalGainsMovingAverage_MenuLabel);
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsMovingAverage(),
@@ -559,6 +562,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnCapitalGainsMovingAveragePercent_MenuLabel);
         column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
                         r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsMovingAveragePercent()));
@@ -625,6 +629,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // Rendite insgesamt, nach gleitendem Durchschnitt
         column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setMenuLabel(Messages.ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel);
         column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
         column.setVisible(false);
         column.setLabelProvider(new ColumnLabelProvider()
