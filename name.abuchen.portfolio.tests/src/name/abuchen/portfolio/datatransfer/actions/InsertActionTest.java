@@ -31,6 +31,8 @@ public class InsertActionTest
 {
     private Client client;
     private BuySellEntry entry;
+    
+    private LocalDateTime transactionDate = LocalDateTime.now().withSecond(0).withNano(0);
 
     @Before
     public void prepare()
@@ -47,7 +49,7 @@ public class InsertActionTest
         entry.setType(Type.BUY);
         entry.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 9_99));
         entry.setShares(99);
-        entry.setDate(LocalDateTime.now());
+        entry.setDate(transactionDate);
         entry.setSecurity(security);
         entry.setNote("note");
         entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_99)));
@@ -93,7 +95,7 @@ public class InsertActionTest
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
         assertThat(t.getNote(), is("note"));
-        assertThat(t.getDateTime().withNano(0), is(LocalDateTime.now().withNano(0)));
+        assertThat(t.getDateTime(), is(transactionDate));
         assertThat(t.getShares(), is(99L));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
