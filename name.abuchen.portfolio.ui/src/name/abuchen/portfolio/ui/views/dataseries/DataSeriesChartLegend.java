@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
+import java.util.Collections;
 import java.util.ResourceBundle;
 
 import org.eclipse.jface.action.Action;
@@ -62,7 +63,7 @@ public class DataSeriesChartLegend extends Composite
         for (DataSeries series : configurator.getSelectedDataSeries())
             new PaintItem(this, series);
 
-        this.configurator.addListener(() -> onUpdate());
+        this.configurator.addListener(this::onUpdate);
     }
 
     private void onUpdate()
@@ -81,7 +82,7 @@ public class DataSeriesChartLegend extends Composite
     {
         private static final ResourceBundle LABELS = ResourceBundle.getBundle("name.abuchen.portfolio.ui.views.labels"); //$NON-NLS-1$
 
-        final DataSeries series;
+        private final DataSeries series;
 
         private PaintItem(Composite parent, DataSeries series)
         {
@@ -160,6 +161,8 @@ public class DataSeriesChartLegend extends Composite
 
         private void seriesMenuAboutToShow(IMenuManager manager) // NOSONAR
         {
+            DataSeriesConfigurator configurator = ((DataSeriesChartLegend) getParent()).configurator;
+
             manager.add(new Action(Messages.ChartSeriesPickerColor)
             {
                 @Override
@@ -171,7 +174,7 @@ public class DataSeriesChartLegend extends Composite
                     if (newColor != null)
                     {
                         series.setColor(newColor);
-                        ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
+                        configurator.fireUpdate();
                     }
                 }
             });
@@ -186,7 +189,7 @@ public class DataSeriesChartLegend extends Composite
 
                     Action action = new SimpleAction(LABELS.getString("lineStyle." + style.name()), a -> { //$NON-NLS-1$
                         series.setLineStyle(style);
-                        ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
+                        configurator.fireUpdate();
                     });
                     action.setChecked(style == series.getLineStyle());
                     lineStyle.add(action);
@@ -195,15 +198,67 @@ public class DataSeriesChartLegend extends Composite
 
                 Action actionShowArea = new SimpleAction(Messages.ChartSeriesPickerShowArea, a -> {
                     series.setShowArea(!series.isShowArea());
-                    ((DataSeriesChartLegend) getParent()).configurator.fireUpdate();
+                    configurator.fireUpdate();
                 });
                 actionShowArea.setChecked(series.isShowArea());
                 manager.add(actionShowArea);
             }
 
+            if (configurator.getSelectedDataSeries().size() > 1)
+            {
+                manager.add(new Separator());
+
+                MenuManager position = new MenuManager(Messages.ChartMenuPosition);
+                manager.add(position);
+
+                int index = configurator.getSelectedDataSeries().indexOf(series);
+
+                if (index > 0)
+                {
+                    position.add(new SimpleAction(Messages.ChartSendBackwards, a -> {
+                        Collections.swap(configurator.getSelectedDataSeries(), index, index - 1);
+                        configurator.fireUpdate();
+                    }));
+
+                    position.add(new SimpleAction(Messages.ChartSendToBack, a -> {
+                        Collections.swap(configurator.getSelectedDataSeries(), index, 0);
+                        configurator.fireUpdate();
+                    }));
+
+                }
+
+                if (index < configurator.getSelectedDataSeries().size() - 1)
+                {
+                    position.add(new SimpleAction(Messages.ChartBringForward, a -> {
+                        Collections.swap(configurator.getSelectedDataSeries(), index, index + 1);
+                        configurator.fireUpdate();
+                    }));
+
+                    position.add(new SimpleAction(Messages.ChartBringToFront, a -> {
+                        Collections.swap(configurator.getSelectedDataSeries(), index,
+                                        configurator.getSelectedDataSeries().size() - 1);
+                        configurator.fireUpdate();
+                    }));
+
+                }
+
+                MenuManager sorting = new MenuManager(Messages.ChartMenuSorting);
+                manager.add(sorting);
+
+                sorting.add(new SimpleAction(Messages.ChartSortAZ, a -> {
+                    Collections.sort(configurator.getSelectedDataSeries(),
+                                    (r, l) -> r.getLabel().compareTo(l.getLabel()));
+                    configurator.fireUpdate();
+                }));
+                sorting.add(new SimpleAction(Messages.ChartSortZA, a -> {
+                    Collections.sort(configurator.getSelectedDataSeries(),
+                                    (r, l) -> l.getLabel().compareTo(r.getLabel()));
+                    configurator.fireUpdate();
+                }));
+            }
+
             manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove,
-                            a -> ((DataSeriesChartLegend) getParent()).configurator.doDeleteSeries(series)));
+            manager.add(new SimpleAction(Messages.ChartSeriesPickerRemove, a -> configurator.doDeleteSeries(series)));
         }
     }
 }

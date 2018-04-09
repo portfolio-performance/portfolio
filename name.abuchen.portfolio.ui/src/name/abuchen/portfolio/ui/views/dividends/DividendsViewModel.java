@@ -95,6 +95,11 @@ public class DividendsViewModel
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 
+    /* package */Client getClient()
+    {
+        return client;
+    }
+
     public ClientFilterMenu getClientFilterMenu()
     {
         return clientFilter;

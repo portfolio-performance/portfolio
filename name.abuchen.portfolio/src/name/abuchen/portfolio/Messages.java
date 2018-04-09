@@ -50,10 +50,14 @@ public class Messages extends NLS
     public static String CSVDefPortfolioTransactions;
     public static String CSVDefSecurities;
     public static String CSVFormatApostrophe;
+    public static String CSVFormatDDMMMYYYY;
     public static String CSVFormatDDMMYY;
+    public static String CSVFormatDDMMYY1;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatISO;
+    public static String CSVFormatMMDDYY;
+    public static String CSVFormatMMDDYYYY;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;

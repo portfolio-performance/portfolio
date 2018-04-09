@@ -160,10 +160,14 @@ public class CSVImporter
     {
         public static final FieldFormat[] FORMATS = new FieldFormat[] {
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYY1, new SimpleDateFormat("dd/MM/yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYY, new SimpleDateFormat("MM-dd-yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYYYY, new SimpleDateFormat("MM-dd-yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")), //$NON-NLS-1$
         };
 
         /* package */ DateField(String name)

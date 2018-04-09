@@ -40,6 +40,12 @@ public class Messages extends NLS
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
     public static String CellEditor_NotANumber;
+    public static String ChartBringForward;
+    public static String ChartBringToFront;
+    public static String ChartMenuPosition;
+    public static String ChartMenuSorting;
+    public static String ChartSendBackwards;
+    public static String ChartSendToBack;
     public static String ChartSeriesBenchmarkSuffix;
     public static String ChartSeriesCopySeriesFromOtherChart;
     public static String ChartSeriesPickerAddBenchmark;
@@ -51,6 +57,8 @@ public class Messages extends NLS
     public static String ChartSeriesPickerShowArea;
     public static String ChartSeriesPickerTitle;
     public static String ChartSeriesReplaceSeriesByOtherChart;
+    public static String ChartSortAZ;
+    public static String ChartSortZA;
     public static String ClientEditorLabelChart;
     public static String ClientEditorLabelClientMasterData;
     public static String ClientEditorLabelGeneralData;
@@ -71,6 +79,7 @@ public class Messages extends NLS
     public static String ColumnActualValueBaseCurrency;
     public static String ColumnAmount;
     public static String ColumnBalance;
+    public static String ColumnBalance_Description;
     public static String ColumnBaseCurrency;
     public static String ColumnCapitalGains;
     public static String ColumnCapitalGains_Description;
@@ -78,6 +87,14 @@ public class Messages extends NLS
     public static String ColumnCapitalGainsPercent;
     public static String ColumnCapitalGainsPercent_Description;
     public static String ColumnCapitalGainsPercent_Option;
+    public static String ColumnCapitalGainsMovingAverage;
+    public static String ColumnCapitalGainsMovingAverage_Description;
+    public static String ColumnCapitalGainsMovingAverage_MenuLabel;
+    public static String ColumnCapitalGainsMovingAverage_Option;
+    public static String ColumnCapitalGainsMovingAveragePercent;
+    public static String ColumnCapitalGainsMovingAveragePercent_Description;
+    public static String ColumnCapitalGainsMovingAveragePercent_MenuLabel;
+    public static String ColumnCapitalGainsMovingAveragePercent_Option;
     public static String ColumnChangeOnPrevious;
     public static String ColumnChangeOnPrevious_MenuLabel;
     public static String ColumnColor;
@@ -118,6 +135,9 @@ public class Messages extends NLS
     public static String ColumnDividendSum_MenuLabel;
     public static String ColumnDividendTotalRateOfReturn;
     public static String ColumnDividendTotalRateOfReturn_Description;
+    public static String ColumnDividendMovingAverageTotalRateOfReturn;
+    public static String ColumnDividendMovingAverageTotalRateOfReturn_Description;
+    public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
     public static String ColumnEntity;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
@@ -163,6 +183,8 @@ public class Messages extends NLS
     public static String ColumnPerShare_Description;
     public static String ColumnPersonalDividendYield;
     public static String ColumnPersonalDividendYield_Description;
+    public static String ColumnPersonalDividendYieldMovingAverage;
+    public static String ColumnPersonalDividendYieldMovingAverage_Description;
     public static String ColumnPortfolio;
     public static String ColumnPreviousClose;
     public static String ColumnProfitLoss;
@@ -172,6 +194,12 @@ public class Messages extends NLS
     public static String ColumnPurchaseValue;
     public static String ColumnPurchaseValue_Description;
     public static String ColumnPurchaseValueBaseCurrency;
+    public static String ColumnPurchasePriceMovingAverage;
+    public static String ColumnPurchasePriceMovingAverage_Description;
+    public static String ColumnPurchasePriceMovingAverage_MenuLabel;
+    public static String ColumnPurchaseValueMovingAverage;
+    public static String ColumnPurchaseValueMovingAverage_Description;
+    public static String ColumnPurchaseValueMovingAverage_MenuLabel;
     public static String ColumnQuote;
     public static String ColumnQuote_DescriptionEndOfReportingPeriod;
     public static String ColumnQuoteChange;
@@ -361,6 +389,8 @@ public class Messages extends NLS
     public static String LabelChartDetailBollingerBandsUpper;
     public static String LabelChartDetailFIFOpurchase;
     public static String LabelChartDetailFIFOpurchaseHoldingPeriod;
+    public static String LabelChartDetailMovingAveragePurchase;
+    public static String LabelChartDetailMovingAveragePurchaseHoldingPeriod;
     public static String LabelChartDetailPurchaseIndicator;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;

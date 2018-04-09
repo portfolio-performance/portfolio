@@ -10,6 +10,7 @@ import java.util.regex.Pattern;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -64,6 +65,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -179,8 +181,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     }
 
     @Inject
+    private ESelectionService selectionService;
+
+    @Inject
     private ExchangeRateProviderFactory factory;
-    
+
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
@@ -366,6 +371,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         securities.addSelectionChangedListener(event -> onSecurityChanged(
                         (Security) ((IStructuredSelection) event.getSelection()).getFirstElement()));
+
+        securities.addSelectionChangedListener(event -> {
+            Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            if (security != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), security));
+        });
 
         securities.addFilter(new ViewerFilter()
         {

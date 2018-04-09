@@ -15,6 +15,7 @@ import java.util.function.Predicate;
 import javax.inject.Inject;
 
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -55,6 +56,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -259,10 +261,13 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                 return false;
         }
     }
-    
+
     protected static final String MENU_GROUP_DEFAULT_ACTIONS = "defaultActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
+
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     private PortfolioPart part;
@@ -273,7 +278,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
     private ShowHideColumnHelper support;
 
     private boolean isFirstView = true;
-    
+
     public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
@@ -321,7 +326,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         onModified(element, newValue, oldValue);
     }
-    
+
     @Override
     public void configMenuAboutToShow(IMenuManager manager)
     {
@@ -370,15 +375,21 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public boolean select(Viewer viewer, Object parentElement, Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-            
+
                 for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
                     if (!predicate.test(node))
                         return false;
-                
+
                 return true;
             }
         });
-        
+
+        nodeViewer.addSelectionChangedListener(event -> {
+            TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            if (node != null && node.getBackingSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+        });
+
         nodeViewer.setInput(getModel());
 
         new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();

@@ -62,7 +62,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // name
 
-        Label lblName = new Label(editArea, SWT.LEFT);
+        Label lblName = new Label(editArea, SWT.RIGHT);
         lblName.setText(Messages.ColumnName);
         Text valueName = new Text(editArea, SWT.BORDER);
         IValidator validator = value -> {

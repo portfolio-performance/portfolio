@@ -24,19 +24,34 @@ public class SecurityPosition
 {
     private static class Record
     {
-        private Money purchasePrice;
-        private Money purchaseValue;
+        private Money purchasePrice; // by FIFO calculation
+        private Money purchaseValue; // by FIFO calculation
+        private Money movingAveragePurchasePrice; // by moving avg calculation
+        private Money movingAveragePurchaseValue; // by moving avg calculation
 
         public static Record calculate(CurrencyConverter converter, SecurityPosition position)
         {
             Record answer = new Record();
-            answer.calculatePurchaseValuePrice(converter, answer.filter(position.transactions));
+            List<PortfolioTransaction> tx = answer.filter(position.transactions);
+            Collections.sort(tx, new Transaction.ByDate());
+            answer.calculatePurchaseValuePriceFIFO(converter, tx);
+            answer.calculatePurchaseValuePriceMvgAvg(converter, tx);
             return answer;
         }
 
         public Money getPurchasePrice()
         {
             return purchasePrice;
+        }
+
+        public Money getMovingAveragePurchasePrice()
+        {
+            return movingAveragePurchasePrice;
+        }
+
+        public Money getMovingAveragePurchaseValue()
+        {
+            return movingAveragePurchaseValue;
         }
 
         public Money getPurchaseValue()
@@ -88,10 +103,8 @@ public class SecurityPosition
             return output;
         }
 
-        private void calculatePurchaseValuePrice(CurrencyConverter converter, List<PortfolioTransaction> input)
+        private void calculatePurchaseValuePriceFIFO(CurrencyConverter converter, List<PortfolioTransaction> input)
         {
-            Collections.sort(input, new Transaction.ByDate());
-
             long sharesSold = 0;
             for (PortfolioTransaction t : input)
             {
@@ -135,10 +148,57 @@ public class SecurityPosition
             }
 
             this.purchasePrice = Money.of(converter.getTermCurrency(), sharesBought > 0
-                            ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesBought) : 0);
+                            ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesBought)
+                            : 0);
             this.purchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
         }
 
+        private void calculatePurchaseValuePriceMvgAvg(CurrencyConverter converter, List<PortfolioTransaction> input)
+        {
+            long sharesHeld = 0;
+            long grossInvestment = 0;
+            long netInvestment = 0;
+            
+            for (PortfolioTransaction t : input)
+            {
+                long numShares = t.getShares();
+                long grossAmount = t.getMonetaryAmount(converter).getAmount();
+                long netAmount = t.getGrossValue(converter).getAmount();
+                
+                if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
+                {
+                    // this is a buy
+                    sharesHeld += numShares;
+                    netInvestment += netAmount;
+                    grossInvestment += grossAmount;
+                }
+                
+                if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL
+                                || t.getType() == Type.DELIVERY_OUTBOUND)
+                {
+                    // this is a sell
+                    long remainingShares = sharesHeld - numShares;
+                    
+                    if (remainingShares <= 0 || sharesHeld == 0)
+                    {
+                        netInvestment = 0;
+                        grossInvestment = 0;
+                        sharesHeld = 0;
+                    }
+                    else
+                    {
+                        netInvestment = Math.round(netInvestment * remainingShares / (double) sharesHeld);
+                        grossInvestment = Math.round(grossInvestment * remainingShares / (double) sharesHeld);
+                        sharesHeld = remainingShares;
+                    }
+                }
+            }
+            
+            this.movingAveragePurchasePrice = Money.of(converter.getTermCurrency(),
+                            sharesHeld > 0 ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesHeld)
+                                            : 0);
+            this.movingAveragePurchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
+        }
     }
 
     private final InvestmentVehicle investment;
@@ -147,7 +207,7 @@ public class SecurityPosition
     private final long shares;
     private final List<PortfolioTransaction> transactions;
 
-    private transient Map<String, Record> currency2record = new HashMap<String, Record>()
+    private transient Map<String, Record> currency2record = new HashMap<String, Record>() // NOSONAR
     {
         private static final long serialVersionUID = 1L;
 
@@ -252,6 +312,21 @@ public class SecurityPosition
     public Money getFIFOPurchaseValue(String currencyCode)
     {
         return currency2record.get(currencyCode).getPurchaseValue();
+    }
+
+    public Money getMovingAveragePurchasePrice()
+    {
+        return currency2record.get(investment.getCurrencyCode()).getMovingAveragePurchasePrice();
+    }
+
+    public Money getMovingAveragePurchaseValue()
+    {
+        return currency2record.get(investment.getCurrencyCode()).getMovingAveragePurchaseValue();
+    }
+
+    public Money getMovingAveragePurchaseValue(String currencyCode)
+    {
+        return currency2record.get(currencyCode).getMovingAveragePurchaseValue();
     }
 
     public Money getProfitLoss()

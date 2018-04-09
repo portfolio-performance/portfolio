@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -61,6 +62,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -175,6 +177,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             return action;
         }
     }
+
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -315,6 +320,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
 
+        records.addSelectionChangedListener(event -> {
+            SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement();
+            if (record != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), record.getSecurity()));
+        });
+
         records.addFilter(new ViewerFilter()
         {
             @Override
@@ -370,6 +382,23 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
+        // cost value - moving average
+        column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Money.format(((SecurityPerformanceRecord) r).getMovingAverageCost(),
+                                getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCost")); //$NON-NLS-1$
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
         // cost value per share - fifo
         column = new Column("pp", Messages.ColumnPurchasePrice, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setDescription(Messages.ColumnPurchasePrice_Description);
@@ -383,6 +412,23 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // cost value per share - moving average
+        column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Quote.format(((SecurityPerformanceRecord) r).getMovingAverageCostPerSharesHeld(),
+                                getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "movingAverageCostPerSharesHeld")); //$NON-NLS-1$
+        column.setVisible(false);
         recordColumns.addColumn(column);
 
         // latest / current quote
@@ -503,6 +549,27 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsPercent")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
+        column = new Column("capitalgainsmvavg", Messages.ColumnCapitalGainsMovingAverage, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnCapitalGainsMovingAverage_MenuLabel);
+        column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsMovingAverage(),
+                        getClient().getBaseCurrency()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsMovingAverage")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        column = new Column("capitalgainsmvavg%", Messages.ColumnCapitalGainsMovingAveragePercent, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelPerformance);
+        column.setMenuLabel(Messages.ColumnCapitalGainsMovingAveragePercent_MenuLabel);
+        column.setDescription(Messages.ColumnCapitalGainsMovingAveragePercent_Description);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2,
+                        r -> ((SecurityPerformanceRecord) r).getCapitalGainsOnHoldingsMovingAveragePercent()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldingsMovingAveragePercent")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
         // delta
         column = new Column("delta", Messages.ColumnAbsolutePerformance, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setDescription(Messages.ColumnAbsolutePerformance_Description);
@@ -557,6 +624,23 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "totalRateOfReturnDiv")); //$NON-NLS-1$
+        recordColumns.addColumn(column);
+
+        // Rendite insgesamt, nach gleitendem Durchschnitt
+        column = new Column("d%mvavg", Messages.ColumnDividendMovingAverageTotalRateOfReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDividends);
+        column.setMenuLabel(Messages.ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel);
+        column.setDescription(Messages.ColumnDividendMovingAverageTotalRateOfReturn_Description);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object r)
+            {
+                return Values.Percent2.formatNonZero(((SecurityPerformanceRecord) r).getTotalRateOfReturnDivMovingAverage());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "totalRateOfReturnDivMovingAverage")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 
         // Anzahl der Dividendenereignisse
@@ -823,6 +907,22 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 if (t instanceof DividendTransaction)
                     return Values.Percent2.formatNonZero(((DividendTransaction) t).getPersonalDividendYield());
+                else
+                    return null;
+            }
+        });
+        support.addColumn(column);
+
+        // dividend per share (moving average)
+        column = new Column(Messages.ColumnPersonalDividendYieldMovingAverage, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnPersonalDividendYieldMovingAverage_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object t)
+            {
+                if (t instanceof DividendTransaction)
+                    return Values.Percent2.formatNonZero(((DividendTransaction) t).getPersonalDividendYieldMovingAverage());
                 else
                     return null;
             }

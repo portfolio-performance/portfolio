@@ -39,7 +39,7 @@ public class SecurityTransferModel extends AbstractModel
     private Portfolio sourcePortfolio;
     private Portfolio targetPortfolio;
     private LocalDate date = LocalDate.now();
-    private LocalTime time = LocalTime.now();
+    private LocalTime time = LocalTime.MIDNIGHT;
 
     private long shares;
     private BigDecimal quote = BigDecimal.ONE;

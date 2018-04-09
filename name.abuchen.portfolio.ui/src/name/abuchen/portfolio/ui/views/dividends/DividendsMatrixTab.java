@@ -7,6 +7,7 @@ import java.time.format.DateTimeFormatter;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -17,6 +18,7 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
@@ -28,9 +30,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
 import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -39,6 +43,9 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class DividendsMatrixTab implements DividendsTab
 {
+    @Inject
+    private ESelectionService selectionService;
+
     @Inject
     protected DividendsViewModel model;
 
@@ -79,7 +86,7 @@ public class DividendsMatrixTab implements DividendsTab
         action.setChecked(showOnlyOneYear);
         manager.add(action);
     }
-    
+
     @Override
     public Control createControl(Composite parent)
     {
@@ -100,6 +107,13 @@ public class DividendsMatrixTab implements DividendsTab
         tableViewer.getTable().setLinesVisible(true);
 
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
+
+        tableViewer.addSelectionChangedListener(event -> {
+            InvestmentVehicle vehicle = ((DividendsViewModel.Line) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement()).getVehicle();
+            if (vehicle != null && vehicle instanceof Security)
+                selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
+        });
 
         tableViewer.setInput(model.getAllLines());
 

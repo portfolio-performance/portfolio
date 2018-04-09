@@ -198,7 +198,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         //
 
         int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        fxGrossAmount.label, lblNote);
+                        taxes.label, total.label, lblNote);
 
         FormDataFactory forms;
         if (securities != null)

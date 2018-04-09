@@ -140,7 +140,7 @@ public class DividendsView extends AbstractFinanceView
         createTab(folder, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
-        if (tab <= 0 || tab >= 4)
+        if (tab <= 0 || tab >= 6)
             tab = 0;
         folder.setSelection(tab);
         folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));

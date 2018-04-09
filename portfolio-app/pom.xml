@@ -63,7 +63,7 @@
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/neon</url>
+			<url>http://archive.eclipse.org/technology/babel/update-site/R0.15.1/neon</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>

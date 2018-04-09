@@ -125,7 +125,7 @@ public class PerformanceChartView extends AbstractHistoricView
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
-        picker.addListener(() -> updateChart());
+        picker.addListener(this::updateChart);
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
 
@@ -151,8 +151,7 @@ public class PerformanceChartView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        seriesBuilder.getCache().clear();
-        updateChart();
+        notifyModelUpdated();
     }
 
     @Override

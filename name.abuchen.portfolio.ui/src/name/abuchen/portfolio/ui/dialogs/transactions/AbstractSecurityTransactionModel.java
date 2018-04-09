@@ -45,7 +45,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected Portfolio portfolio;
     protected Security security;
     protected LocalDate date = LocalDate.now();
-    protected LocalTime time = LocalTime.now();
+    protected LocalTime time = LocalTime.MIDNIGHT;
     protected long shares;
     protected BigDecimal quote = BigDecimal.ONE;
     protected long grossValue;
@@ -308,6 +308,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected void updateExchangeRate()
     {
+        // do not auto-suggest exchange rate when editing an existing transaction
+        if (hasSource())
+            return;
+
         if (getTransactionCurrencyCode().equals(getSecurityCurrencyCode()))
         {
             setExchangeRate(BigDecimal.ONE);

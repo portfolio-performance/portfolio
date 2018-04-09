@@ -46,6 +46,7 @@ public class SecurityPositionTest
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
     }
 
     @Test
@@ -63,8 +64,11 @@ public class SecurityPositionTest
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 20_00)));
+        
+        // expected: (250 + 1500) * (50/100) / 50 (shares held) 
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 17_50)));
     }
-
+    
     @Test
     public void testPurchasePriceWithMultipleBuyTransactionsMiddlePrice()
     {
@@ -80,6 +84,9 @@ public class SecurityPositionTest
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 15_00)));
+        
+        // expected: (750 + 500) * (50/100) / 50 (shares held)
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 12_50)));
     }
 
     @Test
@@ -92,6 +99,7 @@ public class SecurityPositionTest
 
         assertThat(position.getShares(), is(-50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 0)));
     }
 
     @Test
@@ -106,6 +114,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 500_00)));
     }
@@ -124,6 +134,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(100L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_50)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_50)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 2000_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 950_00)));
     }
@@ -144,6 +156,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 1000_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 500_00)));
     }
@@ -166,6 +180,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(100L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_50)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_50)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 1050_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 2000_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 950_00)));
     }
@@ -188,6 +204,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(25L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 250_00)));
     }
@@ -206,6 +224,8 @@ public class SecurityPositionTest
         assertThat(position.getShares(), is(25L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 10_00)));
+        assertThat(position.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, 250_00)));
         assertThat(position.calculateValue(), is(Money.of(CurrencyUnit.EUR, 500_00)));
         assertThat(position.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, 250_00)));
     }
@@ -238,6 +258,7 @@ public class SecurityPositionTest
 
         // 10287.13 / 13 = 791.32
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(791.32))));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(791.32))));
 
         // 9659.24 EUR x ( 1 / 0.937470704040499) = 10303,51
         assertThat(position.getFIFOPurchaseValue(),
@@ -294,6 +315,22 @@ public class SecurityPositionTest
         assertThat(third.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4923.39))));
         assertThat(third.getFIFOPurchaseValue(),
                         is(Money.of(CurrencyUnit.EUR, Math.round(position.getFIFOPurchaseValue().getAmount() * 0.2))));
+        
+        assertThat(third.getMovingAveragePurchaseValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4923.39))));
+
+    }
+    
+    @Test
+    public void testFIFOPurchasePriceWithOnlySell()
+    {
+        List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
+        tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
+                        Type.SELL, 0, 0));
+        SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
+                        new SecurityPrice(), tx);
+
+        assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 0)));
+        assertThat(position.getMovingAveragePurchasePrice(), is(Money.of(CurrencyUnit.EUR, 0)));
     }
 
 }

@@ -27,6 +27,10 @@ import name.abuchen.portfolio.money.Money;
 
     private List<LineItem> fifo = new ArrayList<>();
 
+    private long movingRelativeCost = 0;
+    private long movingRelativeNetCost = 0;
+    private long heldShares = 0;
+
     private long fees;
     private long taxes;
 
@@ -35,13 +39,18 @@ import name.abuchen.portfolio.money.Money;
     {
         long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
         fifo.add(new LineItem(t.getPosition().getShares(), amount, amount));
+        movingRelativeCost += amount;
+        movingRelativeNetCost += amount;
+        heldShares += t.getPosition().getShares();
     }
 
     @Override
     public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {
-        fees += t.getUnitSum(Unit.Type.FEE, converter).getAmount();
-        taxes += t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+        long fee = t.getUnitSum(Unit.Type.FEE, converter).getAmount();
+        long tax = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+        fees += fee;
+        taxes += tax;
 
         switch (t.getType())
         {
@@ -50,10 +59,28 @@ import name.abuchen.portfolio.money.Money;
                 long grossAmount = t.getMonetaryAmount(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
                 fifo.add(new LineItem(t.getShares(), grossAmount, netAmount));
+                movingRelativeCost += grossAmount;
+                movingRelativeNetCost += netAmount;
+                heldShares += t.getShares();
                 break;
             case SELL:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
+
+                long remaining = heldShares - sold;
+                if (remaining <= 0)
+                {
+                    movingRelativeCost = 0;
+                    movingRelativeNetCost = 0;
+                    heldShares = 0;
+                }
+                else
+                {
+                    movingRelativeCost = Math.round(movingRelativeCost * remaining / (double) heldShares);
+                    movingRelativeNetCost = Math.round(movingRelativeNetCost * remaining / (double) heldShares);
+                    heldShares = remaining;
+                }
+
                 for (LineItem entry : fifo)
                 {
                     if (entry.shares == 0)
@@ -113,6 +140,7 @@ import name.abuchen.portfolio.money.Money;
         taxes += t.getUnitSum(Unit.Type.TAX, converter).getAmount();
 
         t.setFifoCost(getFifoCost());
+        t.setMovingAverageCost(getMovingAverageCost());
         t.setTotalShares(getSharesHeld());
     }
 
@@ -136,6 +164,22 @@ import name.abuchen.portfolio.money.Money;
         for (LineItem entry : fifo)
             cost += entry.netAmount;
         return Money.of(getTermCurrency(), cost);
+    }
+
+    /**
+     * gross investment
+     */
+    public Money getMovingAverageCost()
+    {
+        return Money.of(getTermCurrency(), movingRelativeCost);
+    }
+
+    /**
+     * net investment, i.e. without fees and taxes
+     */
+    public Money getNetMovingAverageCost()
+    {
+        return Money.of(getTermCurrency(), movingRelativeNetCost);
     }
 
     public long getSharesHeld()

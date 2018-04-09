@@ -5,6 +5,7 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -60,8 +62,11 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 public class PerformanceView extends AbstractHistoricView
 {
     @Inject
+    private ESelectionService selectionService;
+
+    @Inject
     private ExchangeRateProviderFactory factory;
-    
+
     private ClientFilterDropDown clientFilter;
 
     private TreeViewer calculation;
@@ -164,6 +169,14 @@ public class PerformanceView extends AbstractHistoricView
         container.setLayout(layout);
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
+
+        calculation.addSelectionChangedListener(event -> {
+            Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
+            if (selection != null && selection instanceof ClientPerformanceSnapshot.Position
+                            && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getClient(),
+                                ((ClientPerformanceSnapshot.Position) selection).getSecurity()));
+        });
 
         final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
 
@@ -288,6 +301,13 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
 
+        transactionViewer.addSelectionChangedListener(event -> {
+            TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement());
+            if (tx != null && tx.getTransaction().getSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), tx.getTransaction().getSecurity()));
+        });
+
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@2" + title, //$NON-NLS-1$
                         getPreferenceStore(), transactionViewer, layout);
 
@@ -300,7 +320,8 @@ public class PerformanceView extends AbstractHistoricView
                 return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
+                        SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);
