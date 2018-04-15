@@ -11,6 +11,12 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 {
     private String termCurrency;
 
+    /**
+     * Finish up all calculations.
+     */
+    public void finish()
+    {}
+    
     public String getTermCurrency()
     {
         return termCurrency;
@@ -63,6 +69,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             T thing = type.newInstance();
             thing.setTermCurrency(converter.getTermCurrency());
             thing.visitAll(converter, transactions);
+            thing.finish();
             return thing;
         }
         catch (Exception e)

@@ -28,7 +28,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 {
     public enum Periodicity
     {
-        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, IRREGULAR;
+        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, MONTHLY, IRREGULAR;
 
         private static final ResourceBundle RESOURCES = ResourceBundle
                         .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
