@@ -408,24 +408,26 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match(".* Bruttodividende *: *(?<amountGrossFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
                         .assign((t, v) -> {
                             
-                                // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
                                 Map<String, String> context = type.getCurrentContext();
-                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
-                                BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
-                                
                                 // set currency of transaction (should be in EUR)
                                 String currencyCode = asCurrencyCode(context.get("currency"));
                                 t.setCurrencyCode(currencyCode);
-                                
+                            
                                 // get foreign currency (should be in Fx)
                                 String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                                
-                                // get gross amount and calculate equivalent in EUR
-                                Money mAmountGrossFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountGrossFx")))); 
-                                BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
-                                Money mAmountGrossFxInEUR = Money.of(currencyCode, Math.round(amountGrossFxInEUR.longValue()));
-                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx, inverseRate));
-
+                                if(!"EUR".equalsIgnoreCase(currencyCodeFx)) {
+                                    // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
+                                    BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                    BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                   
+                                    // get gross amount and calculate equivalent in EUR
+                                    Money mAmountGrossFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountGrossFx")))); 
+                                    BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                    Money mAmountGrossFxInEUR = Money.of(currencyCode, Math.round(amountGrossFxInEUR.longValue()));
+                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx, inverseRate));
+                                } else { //but if not in Fx but Euro already...
+                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountGrossFx"))))));
+                                }
                         })
                         
                         // Quellenst.-satz :       30,00 %        Gez. Quellenst. :         7,88 USD
@@ -433,20 +435,23 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match(".* Gez. Quellenst. *: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
                         .assign((t, v) -> {
                             
-                                // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
                                 Map<String, String> context = type.getCurrentContext();
-                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
-                                BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
-                        
                                 // get foreign currency (should be in Fx) and transaction currency (should be in EUR)
                                 String currencyCode   = asCurrencyCode(context.get("currency"));
                                 String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                                
-                                // get foreign taxes and calculate equivalent in EUR
-                                Money mTaxesFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountFx"))));
-                                BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
-                                Money mTaxesFxInEUR = Money.of(currencyCode, Math.round(taxesFxInEUR.longValue()));
-                                t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
+                                if(!"EUR".equalsIgnoreCase(currencyCodeFx)) {
+                                    // get exchange rate (in Fx/EUR) and calculate inverse exchange rate (in EUR/Fx)
+                                   BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                    BigDecimal inverseRate  = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                    
+                                    // get foreign taxes and calculate equivalent in EUR
+                                    Money mTaxesFx = Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountFx"))));
+                                    BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                    Money mTaxesFxInEUR = Money.of(currencyCode, Math.round(taxesFxInEUR.longValue()));
+                                    t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
+                                } else { //but if not in Fx but Euro already...
+                                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCodeFx, Math.round(asAmount(v.get("amountFx"))))));
+                                }
                             
                         })                
 
