@@ -36,7 +36,7 @@ var thePieChart = {
             .startAngle(Math.PI / 2)
             .endAngle(2.5 * Math.PI)
             .value(function(d) { return d.value; })
-            .sort(function(a, b) { return d3.descending(a.value, b.value) });
+            .sort(null);
 
         this.arc = d3.svg.arc()
             .innerRadius(this.radius / 2)

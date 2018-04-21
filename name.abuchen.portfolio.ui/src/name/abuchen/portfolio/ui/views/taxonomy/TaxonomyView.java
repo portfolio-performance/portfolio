@@ -229,8 +229,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewTaxonomyDefinition, Images.VIEW_TABLE, 0);
         addView(toolBar, Messages.LabelViewReBalancing, Images.VIEW_REBALANCING, 1);
         addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
-        addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 3);
-        addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 4);
+        addView(toolBar, Messages.LabelViewDonutChart, Images.VIEW_DONUT, 3);
+        addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 4);
+        addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 5);
 
         new ToolItem(toolBar, SWT.SEPARATOR);
 
@@ -289,6 +290,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         Page[] pages = new Page[] { make(DefinitionViewer.class, model, renderer), //
                         make(ReBalancingViewer.class, model, renderer), //
                         make(PieChartViewer.class, model, renderer), //
+                        make(DonutViewer.class, model, renderer), //
                         make(TreeMapViewer.class, model, renderer), //
                         make(StackedChartViewer.class, model, renderer) };
 

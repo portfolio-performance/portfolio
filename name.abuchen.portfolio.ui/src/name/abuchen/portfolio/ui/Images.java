@@ -44,6 +44,7 @@ public enum Images
     VIEW_TABLE("view_table.png"), //$NON-NLS-1$
     VIEW_TREEMAP("view_treemap.png"), //$NON-NLS-1$
     VIEW_PIECHART("view_piechart.png"), //$NON-NLS-1$
+    VIEW_DONUT("view_donut.png"), //$NON-NLS-1$
     VIEW_REBALANCING("view_rebalancing.png"), //$NON-NLS-1$
     VIEW_STACKEDCHART("view_stackedchart.png"), //$NON-NLS-1$
 

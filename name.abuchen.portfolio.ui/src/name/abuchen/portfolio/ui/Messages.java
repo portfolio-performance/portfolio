@@ -511,6 +511,7 @@ public class Messages extends NLS
     public static String LabelUsingDashboardDefaultReportingPeriod;
     public static String LabelValueInboundDelivery;
     public static String LabelValueOutboundDelivery;
+    public static String LabelViewDonutChart;
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
     public static String LabelViewStackedChart;
