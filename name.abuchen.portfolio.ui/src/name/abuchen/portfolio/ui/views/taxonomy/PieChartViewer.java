@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +17,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -24,6 +27,19 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
     public PieChartViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
+    }
+
+    @Override
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        super.configMenuAboutToShow(manager);
+
+        Action action = new SimpleAction(Messages.LabelIncludeSecuritiesInPieChart, a -> {
+            getModel().setExcludeSecuritiesInPieChart(!getModel().isSecuritiesInPieChartExcluded());
+            onConfigChanged();
+        });
+        action.setChecked(!getModel().isSecuritiesInPieChartExcluded());
+        manager.add(action);
     }
 
     @Override
@@ -102,6 +118,9 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             for (TaxonomyNode child : node.getChildren())
             {
                 if (child.getActual().isZero())
+                    continue;
+
+                if (child.isAssignment() && getModel().isSecuritiesInPieChartExcluded())
                     continue;
 
                 if (isFirst)

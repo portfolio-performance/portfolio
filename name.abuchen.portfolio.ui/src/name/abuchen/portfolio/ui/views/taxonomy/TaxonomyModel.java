@@ -78,6 +78,7 @@ public final class TaxonomyModel
     private Map<InvestmentVehicle, Assignment> investmentVehicle2weight = new HashMap<>();
 
     private boolean excludeUnassignedCategoryInCharts = false;
+    private boolean excludeSecuritiesInPieChart = false;
     private boolean orderByTaxonomyInStackChart = false;
     private String expansionStateDefinition;
     private String expansionStateRebalancing;
@@ -239,6 +240,16 @@ public final class TaxonomyModel
     public void setExcludeUnassignedCategoryInCharts(boolean excludeUnassignedCategoryInCharts)
     {
         this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
+    }
+    
+    public boolean isSecuritiesInPieChartExcluded()
+    {
+        return excludeSecuritiesInPieChart;
+    }
+
+    public void setExcludeSecuritiesInPieChart(boolean excludeSecuritiesInPieChart)
+    {
+        this.excludeSecuritiesInPieChart = excludeSecuritiesInPieChart;
     }
 
     public boolean isOrderByTaxonomyInStackChart()
