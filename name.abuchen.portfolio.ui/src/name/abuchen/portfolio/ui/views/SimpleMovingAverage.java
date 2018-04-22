@@ -4,8 +4,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.ArrayUtils;
+
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
@@ -19,7 +20,6 @@ public class SimpleMovingAverage
     private Security security;
     private LocalDate startDate;
     private ChartLineSeriesAxes SMA;
-    private List<SecurityPrice> prices;
     private List<LocalDate> datesSMA;
     private List<Double> valuesSMA;
 
@@ -60,55 +60,39 @@ public class SimpleMovingAverage
         if (security == null)
             return;
 
-        this.prices = security.getPricesIncludingLatest();
-        int index;
-
-        SecurityPrice startPrice = null;
-
-        if (prices == null || prices.size() < rangeSMA + 3)
+        List<SecurityPrice> prices = security.getPricesIncludingLatest();
+        if (prices == null || prices.size() < rangeSMA)
             return;
 
-        if (startDate == null)
+        int index = 0;
+
+        if (startDate != null)
         {
-            index = 0;
-        }
-        else
-        {
-            index = Math.abs(
-                            Collections.binarySearch(prices, new SecurityPrice(startDate, 0), new SecurityPrice.ByDate()));
-            if (index == -1)
-            {
-                index = 0;
-            } else {
-                index = Math.abs(index);
-            }
+            index = Collections.binarySearch(prices, new SecurityPrice(startDate, 0), new SecurityPrice.ByDate());
+
+            if (index < 0)
+                index = -index - 1;
+
             if (index >= prices.size())
                 return;
         }
 
         for (; index < prices.size(); index++)
         {
-            if (index < rangeSMA) continue; 
-            LocalDate nextDate = prices.get(index).getDate();
-            LocalDate isBefore = nextDate.plusDays(1);
-            LocalDate isAfter = prices.get(index - rangeSMA + 2).getDate();
-            List<SecurityPrice> filteredPrices = this.getFilteredList(isBefore, isAfter);
-
-            double sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
+            if (index < rangeSMA - 1)
+                continue;
+            
+            List<SecurityPrice> filteredPrices = prices.subList(index - rangeSMA + 1, index + 1);
+            long sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
 
             valuesSMA.add(sum / Values.Quote.divider() / filteredPrices.size());
             datesSMA.add(prices.get(index).getDate());
         }
+        
         LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[0]);
         Double[] tmpPrices = valuesSMA.toArray(new Double[0]);
 
         this.SMA.setDates(TimelineChart.toJavaUtilDate(tmpDates));
         this.SMA.setValues(ArrayUtils.toPrimitive(tmpPrices));
-    }
-
-    private List<SecurityPrice> getFilteredList(LocalDate isBefore, LocalDate isAfter)
-    {
-        return prices.stream().filter(p -> p.getDate().isAfter(isAfter) && p.getDate().isBefore(isBefore))
-                        .collect(Collectors.toList());
     }
 }
