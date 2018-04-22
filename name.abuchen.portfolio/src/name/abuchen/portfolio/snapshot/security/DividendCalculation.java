@@ -74,6 +74,13 @@ import name.abuchen.portfolio.util.Dates;
         int significantCount = 0;
         int insignificantYears = 0;
 
+        // first calc total sum
+        for (DividendPayment p : payments)
+        {
+            // add total sum
+            sum.add(p.amount);
+        }
+
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
