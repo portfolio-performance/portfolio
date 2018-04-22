@@ -41,4 +41,6 @@ Import-Package: com.google.common.util.concurrent;version="23.5.0",
  org.jsoup.select;version="1.7.2"
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
-Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0"
+Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
+ org.apache.httpcomponents.httpclient;bundle-version="4.3.6",
+ org.apache.httpcomponents.httpcore;bundle-version="4.3.3"

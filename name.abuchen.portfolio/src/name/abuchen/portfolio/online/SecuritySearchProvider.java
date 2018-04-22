@@ -11,8 +11,6 @@ public interface SecuritySearchProvider
     {
         private String symbol;
         private String name;
-        private String isin;
-        private long lastTrade;
         private String type;
         private String exchange;
 
@@ -34,26 +32,6 @@ public interface SecuritySearchProvider
         public void setName(String name)
         {
             this.name = name;
-        }
-
-        public String getIsin()
-        {
-            return isin;
-        }
-
-        public void setIsin(String isin)
-        {
-            this.isin = isin;
-        }
-
-        public long getLastTrade()
-        {
-            return lastTrade;
-        }
-
-        public void setLastTrade(long lastTrade)
-        {
-            this.lastTrade = lastTrade;
         }
 
         public String getType()
@@ -80,7 +58,6 @@ public interface SecuritySearchProvider
         {
             security.setTickerSymbol(getSymbol());
             security.setName(getName());
-            security.setIsin(getIsin());
         }
     }
 

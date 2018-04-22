@@ -43,7 +43,6 @@ public class SearchYahooWizard extends Wizard
         Security security = new Security();
         security.setName(item.getName());
         security.setTickerSymbol(item.getSymbol());
-        security.setIsin(item.getIsin());
         security.setFeed(YahooFinanceQuoteFeed.ID);
 
         return security;

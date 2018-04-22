@@ -31,7 +31,6 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
@@ -73,15 +72,7 @@ public class SearchSecurityWizardPage extends WizardPage
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnName);
-        column.setWidth(140);
-
-        column = new TableColumn(resultTable.getTable(), SWT.NONE);
-        column.setText(Messages.ColumnISIN);
-        column.setWidth(100);
-
-        column = new TableColumn(resultTable.getTable(), SWT.RIGHT);
-        column.setText(Messages.ColumnLastTrade);
-        column.setWidth(60);
+        column.setWidth(250);
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityType);
@@ -89,12 +80,12 @@ public class SearchSecurityWizardPage extends WizardPage
 
         column = new TableColumn(resultTable.getTable(), SWT.NONE);
         column.setText(Messages.ColumnSecurityExchange);
-        column.setWidth(60);
+        column.setWidth(80);
 
         resultTable.getTable().setHeaderVisible(true);
         resultTable.getTable().setLinesVisible(true);
 
-        final Set<String> existingSymbols = new HashSet<String>();
+        final Set<String> existingSymbols = new HashSet<>();
         for (Security s : client.getSecurities())
             existingSymbols.add(s.getTickerSymbol());
 
@@ -190,15 +181,8 @@ public class SearchSecurityWizardPage extends WizardPage
                 case 1:
                     return item.getName();
                 case 2:
-                    return item.getIsin();
-                case 3:
-                    if (item.getLastTrade() != 0)
-                        return Values.Quote.format(item.getLastTrade());
-                    else
-                        return null;
-                case 4:
                     return item.getType();
-                case 5:
+                case 3:
                     return item.getExchange();
                 default:
                     throw new IllegalArgumentException(String.valueOf(columnIndex));
