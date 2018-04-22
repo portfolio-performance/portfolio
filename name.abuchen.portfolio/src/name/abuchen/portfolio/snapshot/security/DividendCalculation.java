@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -17,10 +16,8 @@ import name.abuchen.portfolio.util.Dates;
 {
     /**
      * A dividend payment.
-     *
-     * @author SB
      */
-    private static class DividendPayment implements Comparable<DividendPayment>
+    private static class DividendPayment
     {
         /**
          * Amount of the payment.
@@ -50,17 +47,9 @@ import name.abuchen.portfolio.util.Dates;
             this.year = time.getYear();
             this.date = time.toLocalDate();
         }
-
-        @Override
-        public int compareTo(DividendPayment o)
-        {
-            return this.date.compareTo(o.date);
-        }
     }
 
-    private LocalDate firstPayment;
-    private LocalDate lastPayment;
-    private final List<DividendPayment> payments = new ArrayList<DividendPayment>();
+    private final List<DividendPayment> payments = new ArrayList<>();
     private Periodicity periodicity;
     private MutableMoney sum;
 
@@ -68,104 +57,98 @@ import name.abuchen.portfolio.util.Dates;
     public void finish()
     {
         // first sort
-        Collections.sort(payments);
+        Collections.sort(payments, (r, l) -> r.date.compareTo(l.date));
         // default is unknown periodicity
         this.periodicity = Periodicity.UNKNOWN;
-        // check payments?
-        if (!payments.isEmpty())
-        {
-            // get first and last payment
-            firstPayment = payments.get(0).date;
-            lastPayment = payments.get(payments.size() - 1).date;
 
-            HashMap<Integer, MutableMoney> hmSumPerYear = new HashMap<Integer, MutableMoney>();
-            // sum up dividends
+        if (payments.isEmpty())
+        {
+            this.periodicity = Periodicity.NONE;
+            return;
+        }
+
+        // get first and last payment
+        LocalDate firstPayment = payments.get(0).date;
+        LocalDate lastPayment = payments.get(payments.size() - 1).date;
+
+        int significantCount = 0;
+        int insignificantYears = 0;
+
+        // now walk through individual years
+        for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
+        {
+            int countPerYear = 0;
+            long sumPerYear = 0;
+
+            // first calc sum for year
             for (DividendPayment p : payments)
             {
-                // add total sum
-                sum.add(p.amount);
-                // add sum per year
-                MutableMoney m = hmSumPerYear.get(p.year);
-                if (m == null)
+                if (p.year == year)
                 {
-                    // construct if missing
-                    m = MutableMoney.of(sum.getCurrencyCode());
-                    hmSumPerYear.put(p.year, m);
+                    countPerYear++;
+                    sumPerYear += p.amount.getAmount();
                 }
-                m.add(p.amount);
             }
 
-            int significantCount = 0;
-            // now walk through individual years
-            for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
+            // skip years with no dividend payments
+            if (countPerYear == 0)
             {
-                int count = 0;
-                // first calc sum for year
-                MutableMoney m = MutableMoney.of(sum.getCurrencyCode());
-                for (DividendPayment p : payments)
-                {
-                    if (p.year == year)
-                    {
-                        m.add(p.amount);
-                        count++;
-                    }
-                }
-                double sum = m.getAmount();
-                // expected amount
-                double expectedAmount = sum / count;
-                // then calc significance
-                for (DividendPayment p : payments)
-                {
-                    if (p.year == year)
-                    {
-                        // check if dividend contributes the expected amount (if
-                        // it is not a very small extraordinary payment)
-                        double significance = (p.amount.getAmount()) / expectedAmount;
-                        if (significance > 0.3)
-                        {
-                            significantCount++;
-                        }
-                    }
-                }
+                insignificantYears++;
+                continue;
             }
-            // determine periodicity?
-            if (significantCount > 0)
+
+            // expected amount
+            double expectedAmount = sumPerYear / (double) countPerYear;
+
+            // then calc significance
+            for (DividendPayment p : payments)
             {
-                // days in current time range
-                int days = Dates.daysBetween(firstPayment, lastPayment);
-                long daysBetweenPayments = Math.round(days / (double) (significantCount - 1));
-                // just check payments inbetween one year
-                if (daysBetweenPayments < 430)
+                if (p.year == year)
                 {
-                    if (daysBetweenPayments > 270)
+                    // check if dividend contributes the expected amount (if
+                    // it is not a very small extraordinary payment)
+                    double significance = p.amount.getAmount() / expectedAmount;
+                    if (significance > 0.3)
                     {
-                        this.periodicity = Periodicity.ANNUAL;
-                    }
-                    else if (daysBetweenPayments > 130)
-                    {
-                        this.periodicity = Periodicity.SEMIANNUAL;
-                    }
-                    else if (daysBetweenPayments > 60)
-                    {
-                        this.periodicity = Periodicity.QUARTERLY;
-                    }
-                    else if (daysBetweenPayments > 20)
-                    {
-                        this.periodicity = Periodicity.MONTHLY;
+                        significantCount++;
                     }
                 }
             }
         }
-        else
+
+        if (significantCount == 0)
+            return;
+
+        // determine periodicity?
+        // days in current time range
+        int days = Dates.daysBetween(firstPayment, lastPayment) - (insignificantYears * 365);
+        long daysBetweenPayments = Math.round(days / (double) (significantCount - 1));
+
+        // just check payments inbetween one year
+        if (daysBetweenPayments < 430)
         {
-            // no payments
-            this.periodicity = Periodicity.NONE;
+            if (daysBetweenPayments > 270)
+            {
+                this.periodicity = Periodicity.ANNUAL;
+            }
+            else if (daysBetweenPayments > 130)
+            {
+                this.periodicity = Periodicity.SEMIANNUAL;
+            }
+            else if (daysBetweenPayments > 60)
+            {
+                this.periodicity = Periodicity.QUARTERLY;
+            }
+            else if (daysBetweenPayments > 20)
+            {
+                this.periodicity = Periodicity.MONTHLY;
+            }
         }
     }
 
     public LocalDate getLastDividendPayment()
     {
-        return lastPayment;
+        return payments.isEmpty() ? null : payments.get(payments.size() - 1).date;
     }
 
     public int getNumOfEvents()
