@@ -4,7 +4,7 @@ install: true
 
 addons:
   sonarcloud:
-    organization: "sonarsource"
+    organization: "buchen-github"
     token:
       secure: "dt+zJiG0qtD/4Fkka+HjxyFiOzccObpopgQXCf73X7OIk9pqwzFurkYBVUf2G8NuK5q9fib5R101wREFf0TSa8pF3dWBMGIC8iwNNrbuODXpMqxzjaZcpog62C+dPxJOtK4W6OGCLUWf+Lg5gtNWDnckW7IRiM6G0N4a9Fhn2ic="
 
