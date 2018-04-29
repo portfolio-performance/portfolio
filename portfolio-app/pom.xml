@@ -51,6 +51,11 @@
 			<url>http://buchen.github.io/maven-repo</url>
 		</repository>
 		<repository>
+			<id>portfolio-oracle-jre</id>
+			<layout>p2</layout>
+			<url>http://buchen.github.io/bundled-jre/1.8.172</url>
+		</repository>
+		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository</url>

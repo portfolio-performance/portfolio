@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
@@ -39,13 +40,6 @@
 							<goal>materialize-products</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>archive-products</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>archive-products</goal>
-						</goals>
-					</execution>
 				</executions>
 				<configuration>
 					<formats>
@@ -71,13 +65,15 @@
 					<execution>
 						<id>fix-info-plist</id>
 						<phase>package</phase>
+						<configuration>
+							<productId>name.abuchen.portfolio.product</productId>
+						</configuration>
 						<goals>
 							<goal>fix-info-plist</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<productId>name.abuchen.portfolio.product</productId>
 					<appName>PortfolioPerformance.app</appName>
 					<properties>
 						<property>
@@ -108,15 +104,74 @@
 
 	<profiles>
 		<profile>
+			<id>package-distro</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>dmg-distro</name>
-					<value>true</value>
-				</property>
 			</activation>
 			<build>
 				<plugins>
+					<plugin>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-director-plugin</artifactId>
+						<version>${tycho-version}</version>
+						<executions>
+							<execution>
+								<id>archive-products</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>archive-products</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<products>
+								<product>
+									<id>name.abuchen.portfolio.product</id>
+									<attachId>name.abuchen.portfolio.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+								<product>
+									<id>name.abuchen.portfolio.distro.product</id>
+									<attachId>name.abuchen.portfolio.disto.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-distro-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+							</products>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>name.abuchen</groupId>
+						<artifactId>fix-info-plist-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>fix-info-plist</id>
+								<phase>package</phase>
+								<configuration>
+									<productId>name.abuchen.portfolio.product</productId>
+								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>fix-info-plist-distro</id>
+								<phase>package</phase>
+								<configuration>
+									<productId>name.abuchen.portfolio.distro.product</productId>
+								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
 					<plugin>
 						<artifactId>exec-maven-plugin</artifactId>
 						<groupId>org.codehaus.mojo</groupId>
@@ -132,7 +187,7 @@
 									<arguments>
 										<argument>create</argument>
 										<argument>-srcfolder</argument>
-										<argument>target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64</argument>
+										<argument>target/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64</argument>
 										<argument>-ov</argument>
 										<argument>-format</argument>
 										<argument>UDZO</argument>
