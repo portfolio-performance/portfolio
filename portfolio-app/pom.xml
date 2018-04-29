@@ -22,8 +22,10 @@
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
+		<sonar.organization>buchen-github</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.reportPaths>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPaths>
 		<argLine>-ea</argLine>
 	</properties>
 
@@ -220,13 +222,13 @@
 							<goal>prepare-agent</goal>
 						</goals>
 						<configuration>
-							<destFile>${sonar.jacoco.reportPath}</destFile>
+							<destFile>${sonar.jacoco.reportPaths}</destFile>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
@@ -336,9 +338,9 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
+					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.4.0.905</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>

@@ -13,6 +13,10 @@
 	<artifactId>name.abuchen.portfolio.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>

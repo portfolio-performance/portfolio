@@ -12,6 +12,10 @@
 
 	<artifactId>name.abuchen.portfolio.ui</artifactId>
 	<packaging>eclipse-plugin</packaging>
+	
+	<properties>
+		<sonar.exclusions>**/Messages.java,**/kommer.xml,**/dax.xml</sonar.exclusions>
+	</properties>
 
 	<build>
 		<plugins>

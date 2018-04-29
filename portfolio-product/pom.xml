@@ -14,6 +14,10 @@
 	<artifactId>portfolio.product</artifactId>
 	<packaging>eclipse-repository</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>

@@ -13,6 +13,10 @@
 	<artifactId>name.abuchen.portfolio.ui.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
