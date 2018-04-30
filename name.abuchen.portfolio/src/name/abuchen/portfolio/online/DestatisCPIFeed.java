@@ -2,8 +2,6 @@ package name.abuchen.portfolio.online;
 
 import java.io.IOException;
 import java.net.URL;
-import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
@@ -11,11 +9,6 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 
 import org.htmlparser.Node;
 import org.htmlparser.Tag;
@@ -33,8 +26,6 @@ public class DestatisCPIFeed implements CPIFeed
     {
         try
         {
-            disableCertificateValidation();
-
             URL url = new URL(
                             "https://www.destatis.de/DE/ZahlenFakten/GesamtwirtschaftUmwelt/Preise/Verbraucherpreisindizes/Tabellen_/VerbraucherpreiseKategorien.html"); //$NON-NLS-1$
             Lexer lexer = new Lexer(url.openConnection());
@@ -65,11 +56,6 @@ public class DestatisCPIFeed implements CPIFeed
         private boolean hasRowspan = false;
         private int columnIndex = -1;
 
-        public boolean tag(Tag tag) throws IOException
-        {
-            return true;
-        }
-
         public boolean table(Tag tag) throws IOException
         {
             if (!insideTable)
@@ -85,10 +71,10 @@ public class DestatisCPIFeed implements CPIFeed
             throw new IOException("Unexpected table tag " + tag); //$NON-NLS-1$
         }
 
-        public boolean tbody(Tag tag) throws IOException
+        public void tbody(Tag tag)
         {
             if (!insideTable)
-                return true;
+                return;
 
             if (!tag.isEndTag())
             {
@@ -98,14 +84,12 @@ public class DestatisCPIFeed implements CPIFeed
             {
                 insideTBody = false;
             }
-
-            return true;
         }
 
-        public boolean tr(Tag tag) throws IOException
+        public void tr(Tag tag)
         {
             if (!insideTBody)
-                return true;
+                return;
 
             if (!tag.isEndTag())
             {
@@ -121,13 +105,12 @@ public class DestatisCPIFeed implements CPIFeed
                     prices.add(price);
                 price = null;
             }
-            return true;
         }
 
-        public boolean td(Tag tag) throws IOException
+        public void td(Tag tag)
         {
             if (!insideRow)
-                return true;
+                return;
 
             insideColumn = !tag.isEndTag();
             if (insideColumn)
@@ -137,17 +120,14 @@ public class DestatisCPIFeed implements CPIFeed
                 if (columnIndex == 0)
                     this.hasRowspan = tag.getAttribute("ROWSPAN") != null; //$NON-NLS-1$
             }
-
-            return true;
         }
 
-        public boolean abbr(Tag tag) throws IOException
+        public void abbr(Tag tag)
         {
             if (!insideColumn)
-                return true;
+                return;
 
             insideAbbr = !tag.isEndTag();
-            return true;
         }
 
         public boolean text(Text text) throws IOException
@@ -171,7 +151,7 @@ public class DestatisCPIFeed implements CPIFeed
                     price.setIndex(parseIndex(text.getText()));
                     break;
                 default:
-                    // ignore other columns (containing sub-indices);
+                    // ignore other columns (containing sub-indices)
                     break;
             }
 
@@ -225,7 +205,7 @@ public class DestatisCPIFeed implements CPIFeed
 
         public List<ConsumerPriceIndex> visit(Lexer lexer) throws ParserException, IOException
         {
-            this.prices = new ArrayList<ConsumerPriceIndex>();
+            this.prices = new ArrayList<>();
 
             boolean doContinue = true;
 
@@ -236,21 +216,19 @@ public class DestatisCPIFeed implements CPIFeed
                 {
                     Tag tag = (Tag) node;
                     String tagName = tag.getTagName();
-
+                    
                     if ("TABLE".equals(tagName)) //$NON-NLS-1$
                         doContinue = table(tag);
                     else if ("TBODY".equals(tagName)) //$NON-NLS-1$
-                        doContinue = tbody(tag);
+                        tbody(tag);
                     else if ("TR".equals(tagName)) //$NON-NLS-1$
-                        doContinue = tr(tag);
+                        tr(tag);
                     else if ("TH".equals(tagName)) //$NON-NLS-1$
-                        doContinue = td(tag);
+                        td(tag);
                     else if ("TD".equals(tagName)) //$NON-NLS-1$
-                        doContinue = td(tag);
+                        td(tag);
                     else if ("ABBR".equals(tagName)) //$NON-NLS-1$
-                        doContinue = abbr(tag);
-                    else
-                        doContinue = tag(tag);
+                        abbr(tag);
                 }
                 else if (node instanceof Text)
                 {
@@ -261,42 +239,5 @@ public class DestatisCPIFeed implements CPIFeed
 
             return this.prices;
         }
-    }
-
-    private static boolean certificateValidationDisabled = false;
-
-    private static void disableCertificateValidation()
-    {
-        if (certificateValidationDisabled)
-            return;
-
-        // http://stackoverflow.com/questions/875467/java-client-certificates-over-https-ssl/876785#876785
-
-        // Create a trust manager that does not validate certificate chains
-        TrustManager[] trustAllCerts = new TrustManager[] { new X509TrustManager()
-        {
-            public X509Certificate[] getAcceptedIssuers()
-            {
-                return new X509Certificate[0];
-            }
-
-            public void checkClientTrusted(X509Certificate[] certs, String authType)
-            {}
-
-            public void checkServerTrusted(X509Certificate[] certs, String authType)
-            {}
-        } };
-
-        // Install the all-trusting trust manager
-        try
-        {
-            SSLContext sc = SSLContext.getInstance("SSL"); //$NON-NLS-1$
-            sc.init(null, trustAllCerts, new SecureRandom());
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-        }
-        catch (Exception ignore)
-        {}
-
-        certificateValidationDisabled = true;
     }
 }

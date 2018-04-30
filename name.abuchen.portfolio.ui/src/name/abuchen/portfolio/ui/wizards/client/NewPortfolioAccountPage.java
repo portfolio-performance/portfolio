@@ -42,7 +42,8 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
 
     class Pair
     {
-        public String portfolio, account;
+        private final String portfolio;
+        private final String account;
 
         public Pair(String p, String a)
         {
@@ -72,7 +73,7 @@ public class NewPortfolioAccountPage extends AbstractWizardPage
         final Text accountName = new Text(container, SWT.BORDER | SWT.SINGLE);
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.CENTER).applyTo(accountName);
 
-        final List<Pair> data = new ArrayList<Pair>();
+        final List<Pair> data = new ArrayList<>();
         Button button = new Button(container, SWT.PUSH);
         button.setText(Messages.NewFileWizardButtonAdd);
         GridDataFactory.fillDefaults().applyTo(button);

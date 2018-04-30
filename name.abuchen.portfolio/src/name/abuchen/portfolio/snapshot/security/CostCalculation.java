@@ -13,9 +13,9 @@ import name.abuchen.portfolio.money.Money;
 {
     private static class LineItem
     {
-        public long shares;
-        public long grossAmount;
-        public long netAmount;
+        private long shares;
+        private long grossAmount;
+        private long netAmount;
 
         public LineItem(long shares, long grossAmount, long netAmount)
         {

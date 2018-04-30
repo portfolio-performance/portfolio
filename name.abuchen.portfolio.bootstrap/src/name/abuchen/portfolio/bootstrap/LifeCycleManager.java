@@ -26,7 +26,6 @@ import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
@@ -105,7 +104,7 @@ public class LifeCycleManager
         {
             logger.info(MessageFormat.format(
                             "Detected model change from version {0} to version {1}; clearing persisted state", //$NON-NLS-1$
-                            modelVersion.toString(), programVersion.toString()));
+                            modelVersion, programVersion));
             System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
         }
     }
@@ -162,7 +161,7 @@ public class LifeCycleManager
                 }
                 else
                 {
-                    exception.printStackTrace();
+                    exception.printStackTrace(); // NOSONAR
                 }
             }
 
@@ -178,7 +177,7 @@ public class LifeCycleManager
                 if (!"org.eclipse.swt.widgets.Control".equals(stackTrace[0].getClassName())) //$NON-NLS-1$
                     return false;
 
-                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$
+                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$ NOSONAR
                     return false;
 
                 return true;
@@ -202,10 +201,10 @@ public class LifeCycleManager
     }
 
     @PreSave
-    public void doPreSave(MApplication app, EPartService partService, EModelService modelService)
+    public void doPreSave(MApplication app, EModelService modelService)
     {
         saveModelVersion();
-        removePortfolioPartsWithoutPersistedFile(app, partService, modelService);
+        removePortfolioPartsWithoutPersistedFile(app, modelService);
     }
 
     private void saveModelVersion()
@@ -227,8 +226,7 @@ public class LifeCycleManager
         }
     }
 
-    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
-                    EModelService modelService)
+    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EModelService modelService)
     {
         List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE,
                         new Selector()

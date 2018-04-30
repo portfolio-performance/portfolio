@@ -158,7 +158,7 @@ public class CSVImporter
 
     public static class DateField extends CSVImporter.Field
     {
-        public static final FieldFormat[] FORMATS = new FieldFormat[] {
+        public static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
@@ -167,8 +167,8 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatDDMMYY1, new SimpleDateFormat("dd/MM/yy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatMMDDYY, new SimpleDateFormat("MM-dd-yy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatMMDDYYYY, new SimpleDateFormat("MM-dd-yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")), //$NON-NLS-1$
-        };
+                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")) //$NON-NLS-1$
+        ));
 
         /* package */ DateField(String name)
         {
@@ -195,24 +195,26 @@ public class CSVImporter
                         return f;
                     }
                     catch (ParseException e)
-                    {}
+                    {
+                        // ignore, try next date format
+                    }
                 }
             }
             // fallback
-            return FORMATS[0];
+            return FORMATS.get(0);
         }
     }
 
     public static class AmountField extends CSVImporter.Field
     {
-        public static final FieldFormat[] FORMATS = new FieldFormat[] {
+        public static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
                         new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
                         new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)),
                         new FieldFormat(Messages.CSVFormatApostrophe, () -> {
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');
                             return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-                        }) };
+                        })));
 
         /* package */ AmountField(String name)
         {
@@ -254,7 +256,7 @@ public class CSVImporter
                 enumMap.put(element, element.toString());
         }
 
-        public EnumMap<M, String> map()
+        public EnumMap<M, String> map() // NOSONAR
         {
             return enumMap;
         }
@@ -519,7 +521,7 @@ public class CSVImporter
                     }
                     else if (field instanceof AmountField)
                     {
-                        column.setFormat(AmountField.FORMATS[0]);
+                        column.setFormat(AmountField.FORMATS.get(0));
                     }
                     else if (field instanceof ISINField)
                     {

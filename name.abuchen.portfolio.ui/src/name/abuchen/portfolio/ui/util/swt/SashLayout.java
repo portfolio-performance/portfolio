@@ -52,17 +52,9 @@ public class SashLayout extends Layout
             }
             else
             {
-                try
-                {
-                    isLayoutUpdateInProgress = true;
-                    adjustSize(e.x, e.y);
-                    host.layout();
-                    host.update();
-                }
-                finally
-                {
-                    isLayoutUpdateInProgress = false;
-                }
+                adjustSize(e.x, e.y);
+                host.layout();
+                host.update();
             }
         }
 
@@ -119,8 +111,7 @@ public class SashLayout extends Layout
     private Label divider;
     private Rectangle sash = new Rectangle(0, 0, 1, 1);
 
-    boolean isDragging = false;
-    public boolean isLayoutUpdateInProgress = false;
+    private boolean isDragging = false;
 
     public SashLayout(final Composite host, int style)
     {

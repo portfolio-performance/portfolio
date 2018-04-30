@@ -28,9 +28,9 @@ final class CSVExtractorTestUtil
             column.setField(f);
 
             if (f instanceof DateField)
-                column.setFormat(DateField.FORMATS[0]);
+                column.setFormat(DateField.FORMATS.get(0));
             else if (f instanceof AmountField)
-                column.setFormat(AmountField.FORMATS[0]);
+                column.setFormat(AmountField.FORMATS.get(0));
 
             field2column.put(f.getName(), column);
         }
