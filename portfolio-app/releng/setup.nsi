@@ -46,22 +46,22 @@ Name "${PACKAGE_NAME}"
 #
 # MUI SYMBOL DEFINITIONS
 #
-!define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\nsis3-install-alt.ico"
-!define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\nsis3-uninstall.ico"
+!define MUI_ICON ".\NSIS\install.ico"
+!define MUI_UNICON ".\NSIS\uninstall.ico"
 
 #
 # MUI SETTINGS / HEADER
 #
 !define MUI_HEADERIMAGE
 !define MUI_HEADERIMAGE_RIGHT
-!define MUI_HEADERIMAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Header\nsis3-metro-right.bmp"
-!define MUI_HEADERIMAGE_UNBITMAP "${NSISDIR}\Contrib\Graphics\Header\orange-uninstall-r.bmp"
+!define MUI_HEADERIMAGE_BITMAP ".\NSIS\header.bmp"
+!define MUI_HEADERIMAGE_UNBITMAP ".\NSIS\header.bmp"
 
 #
 # MUI SETTINGS / WIZARD
 #
-!define MUI_WELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\nsis3-metro.bmp"
-!define MUI_UNWELCOMEFINISHPAGE_BITMAP "${NSISDIR}\Contrib\Graphics\Wizard\orange-uninstall.bmp"
+!define MUI_WELCOMEFINISHPAGE_BITMAP ".\NSIS\wizard.bmp"
+!define MUI_UNWELCOMEFINISHPAGE_BITMAP ".\NSIS\wizard.bmp"
 !define MUI_STARTMENUPAGE_REGISTRY_KEY ${REGKEY}
 !define MUI_STARTMENUPAGE_REGISTRY_VALUENAME StartMenuGroup
 !define MUI_STARTMENUPAGE_DEFAULTFOLDER "${PACKAGE_NAME}"
