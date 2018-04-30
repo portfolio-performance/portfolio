@@ -89,14 +89,14 @@ public class DividendTransaction extends Transaction
         if (shares == 0)
             return 0;
 
-        return Math.round((amount * (Values.AmountFraction.factor() / Values.Amount.factor()) * Values.Share.divider())
+        return Math.round((amount * (Values.AmountFraction.factor() / (double)Values.Amount.factor()) * Values.Share.divider())
                         / (double) shares);
     }
 
     public long getGrossValueAmount()
     {
         long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount)).getAmount();
 
         return getAmount() + taxes;
     }

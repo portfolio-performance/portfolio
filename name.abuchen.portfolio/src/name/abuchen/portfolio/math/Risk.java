@@ -20,10 +20,10 @@ public final class Risk
         {
             if (values.length != dates.length)
                 throw new IllegalArgumentException();
-                
+
             if (startAt >= values.length)
                 throw new IllegalArgumentException();
-            
+
             double peak = values[startAt] + 1;
             double bottom = values[startAt] + 1;
             LocalDate lastPeakDate = dates[startAt];
@@ -120,7 +120,7 @@ public final class Risk
             int count = 0;
 
             double averageLogReturn = logAverage(returns, filter);
-            
+
             for (int ii = 0; ii < returns.length; ii++)
             {
                 if (!filter.test(ii))
@@ -135,9 +135,17 @@ public final class Risk
                 if (logReturn < averageLogReturn)
                     tempSemi = tempSemi + add;
             }
-            
-            stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
-            semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);            
+
+            if (count <= 1)
+            {
+                stdDeviation = 0d;
+                semiDeviation = 0d;
+            }
+            else
+            {
+                stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
+                semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);
+            }
         }
 
         private double logAverage(double[] returns, Predicate<Integer> filter)
@@ -153,6 +161,9 @@ public final class Risk
                 sum += Math.log(1 + returns[ii]);
                 count++;
             }
+
+            if (count == 0)
+                return 0;
 
             return sum / count;
         }

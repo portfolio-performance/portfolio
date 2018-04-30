@@ -114,7 +114,7 @@ public class SecurityTransferModel extends AbstractModel
     {
         if (shares == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnShares));
-        
+
         // check whether gross value is in range
         long lower = Math.round(shares * quote.add(BigDecimal.valueOf(-0.01)).doubleValue() * Values.Amount.factor()
                         / Values.Share.divider());
@@ -157,7 +157,7 @@ public class SecurityTransferModel extends AbstractModel
         else if (security != null)
         {
             setShares(0);
-            setQuote(new BigDecimal(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
+            setQuote(BigDecimal.valueOf(security.getSecurityPrice(date).getValue() / Values.Quote.divider()));
         }
         else
         {
@@ -242,7 +242,7 @@ public class SecurityTransferModel extends AbstractModel
     {
         return date;
     }
-    
+
     public LocalTime getTime()
     {
         return time;
@@ -253,7 +253,7 @@ public class SecurityTransferModel extends AbstractModel
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateSharesAndQuote();
     }
-    
+
     public void setTime(LocalTime time)
     {
         firePropertyChange(Properties.time.name(), this.time, this.time = time);
@@ -275,7 +275,7 @@ public class SecurityTransferModel extends AbstractModel
         }
         else if (amount != 0 && shares != 0)
         {
-            setQuote(new BigDecimal(amount * Values.Share.factor() / (shares * Values.Amount.divider())));
+            setQuote(BigDecimal.valueOf(amount * Values.Share.factor() / (shares * Values.Amount.divider())));
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -308,7 +308,8 @@ public class SecurityTransferModel extends AbstractModel
 
         if (shares != 0)
         {
-            BigDecimal newQuote = new BigDecimal(amount * Values.Share.factor() / (shares * Values.Amount.divider()));
+            BigDecimal newQuote = BigDecimal
+                            .valueOf(amount * Values.Share.factor() / (shares * Values.Amount.divider()));
             firePropertyChange(Properties.quote.name(), this.quote, this.quote = newQuote);
         }
 

@@ -72,7 +72,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
 
         public String next()
         {
-            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / SIZE)));
+            float brightness = Math.min(1.0f, BRIGHTNESS + (0.05f * (nextSlice / (float) SIZE)));
             return ColorConversion.toHex((HUE + (STEP * nextSlice++)) % 360f, SATURATION, brightness);
         }
     }

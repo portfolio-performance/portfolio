@@ -380,7 +380,7 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal fxRateToBase;
                 if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
                 {
-                    fxRateToBase = new BigDecimal(Double.parseDouble(fxRateToBaseString));
+                    fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
                 }
                 else
                 {
@@ -414,7 +414,7 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal fxRateToBase;
                 if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
                 {
-                    fxRateToBase = new BigDecimal(Double.parseDouble(fxRateToBaseString));
+                    fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
                 }
                 else
                 {

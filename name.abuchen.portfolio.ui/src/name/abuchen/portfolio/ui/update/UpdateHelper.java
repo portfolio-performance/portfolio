@@ -43,7 +43,13 @@ public class UpdateHelper
     {
         this.workbench = workbench;
         this.partService = partService;
+        
         this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        if (agent == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
 
         IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
 

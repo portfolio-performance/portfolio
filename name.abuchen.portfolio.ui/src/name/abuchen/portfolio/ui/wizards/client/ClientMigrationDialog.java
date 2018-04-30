@@ -53,7 +53,7 @@ public class ClientMigrationDialog extends WizardDialog
         {
             CurrencyUnit currency = currencySelectionPage.getSelectedCurrency();
 
-            if (!CurrencyUnit.EUR.equals(currency))
+            if (!CurrencyUnit.EUR.equals(currency.getCurrencyCode()))
                 ClientFactory.setAllCurrencies(client, currency.getCurrencyCode());
 
             markSecuritiesPage.getSelectedSecurities().forEach(s -> s.setCurrencyCode(null));

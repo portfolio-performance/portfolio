@@ -46,7 +46,8 @@ public abstract class WidgetDelegate
 
     protected <C extends WidgetConfig> C get(Class<C> type)
     {
-        return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny().get());
+        return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
     }
 
     public Stream<WidgetConfig> getWidgetConfigs()

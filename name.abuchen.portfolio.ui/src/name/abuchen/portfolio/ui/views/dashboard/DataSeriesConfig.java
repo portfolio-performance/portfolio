@@ -33,7 +33,8 @@ public class DataSeriesConfig implements WidgetConfig
             dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
         if (dataSeries == null)
             dataSeries = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
-                            .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny().get();
+                            .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny()
+                            .orElseThrow(IllegalArgumentException::new);
     }
 
     public DataSeries getDataSeries()
@@ -86,7 +87,6 @@ public class DataSeriesConfig implements WidgetConfig
 
         delegate.getClient().markDirty();
     }
-
 
     @Override
     public String getLabel()

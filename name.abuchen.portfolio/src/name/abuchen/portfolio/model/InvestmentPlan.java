@@ -246,7 +246,8 @@ public class InvestmentPlan implements Named, Adaptable
 
     public LocalDate getDateOfNextTransactionToBeGenerated()
     {
-        return transactions.isEmpty() ? start.toLocalDate() : next(getLastDate());
+        LocalDate lastDate = getLastDate();
+        return lastDate != null ? next(lastDate) : start.toLocalDate();
     }
 
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)
