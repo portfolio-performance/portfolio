@@ -60,22 +60,22 @@
 		<repository>
 			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180330011457/repository</url>
 		</repository>
 		<repository>
-			<id>eclipse-luna</id>
+			<id>eclipse-oxygen</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.7/R-4.7.3a-201803300640/</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.15.1/neon</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/nebula/Q22016/release</url>
+			<url>http://download.eclipse.org/nebula/releases/2.0.1</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
@@ -204,10 +204,13 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.osgi</id>
-							<restrictTo>
-								<version>3.11.3.v20170209-1843</version>
-							</restrictTo>
+							<id>org.eclipse.pde.ds.lib.nl_de</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_de</id>
+							<removeAll />
 						</filter>
 					</filters>
 				</configuration>
