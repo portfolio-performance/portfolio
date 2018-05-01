@@ -19,7 +19,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -31,9 +30,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
-import name.abuchen.portfolio.ui.util.DatePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
@@ -107,19 +103,12 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         MultiValidator validator = new PortfoliosMustBeDifferentValidator(sourceObservable, targetObservable);
         context.addValidationStatusProvider(validator);
 
-        // date
+        // date + time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DatePicker valueDate = new DatePicker(editArea);
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()), dateObservable);
-
-        DateTime valueTime = new DateTime(editArea, SWT.TIME | SWT.SHORT | SWT.DROP_DOWN | SWT.BORDER);
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> timeObservable = BeanProperties.value(Properties.time.name()).observe(model);
-        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime), timeObservable);
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // amount
 
@@ -153,10 +142,11 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(source.value.getControl()).label(source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
-                        .thenBelow(valueDate.getControl()).label(lblDate).thenRight(valueTime);
+                        .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
 
         // shares - quote - amount
-        startingWith(valueDate.getControl()).thenBelow(shares.value).width(amountWidth).label(shares.label)
+        startingWith(dateTime.date.getControl()).thenBelow(shares.value).width(amountWidth).label(shares.label)
                         .thenRight(quote.label).thenRight(quote.value).width(amountWidth).thenRight(quote.currency)
                         .width(currencyWidth).thenRight(amount.label).thenRight(amount.value).width(amountWidth)
                         .thenRight(amount.currency).width(currencyWidth);
@@ -164,7 +154,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         startingWith(shares.value).thenBelow(valueNote).left(securities.value.getControl()).right(amount.value)
                         .label(lblNote);
 
-        int widest = widest(securities.label, source.label, target.label, lblDate, shares.label, lblNote);
+        int widest = widest(securities.label, source.label, target.label, dateTime.label, shares.label, lblNote);
         startingWith(securities.label).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);

@@ -43,12 +43,12 @@ public final class FormDataFactory
         data.left = new FormAttachment(reference, 0, SWT.LEFT);
         return new FormDataFactory(control);
     }
-    
+
     public FormDataFactory thenUp(Control control)
     {
         return thenUp(control, 5);
     }
-    
+
     public FormDataFactory thenUp(Control control, int offset)
     {
         FormData data = from(control);
@@ -59,9 +59,14 @@ public final class FormDataFactory
 
     public FormDataFactory thenRight(Control control)
     {
+        return thenRight(control, 5);
+    }
+
+    public FormDataFactory thenRight(Control control, int offset)
+    {
         FormData data = from(control);
         data.top = new FormAttachment(reference, 0, SWT.CENTER);
-        data.left = new FormAttachment(reference, 5);
+        data.left = new FormAttachment(reference, offset);
         return new FormDataFactory(control);
     }
 

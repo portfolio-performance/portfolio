@@ -15,6 +15,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
 
+import name.abuchen.portfolio.ui.Images;
+
 /**
  * Simple wrapper around either DateTime or CDateTime. On Linux, DateTime does
  * not work very well because of the missing support for localization. On Mac OS
@@ -34,6 +36,7 @@ public class DatePicker
         {
             CDateTime boxDate = new CDateTime(parent, CDT.BORDER | CDT.DROP_DOWN);
             boxDate.setFormat(CDT.DATE_MEDIUM);
+            boxDate.setButtonImage(Images.CALENDAR_OFF.image());
 
             CDateTimeBuilder builder = CDateTimeBuilder.getStandard();
             builder.setFooter(Footer.Today());
@@ -71,7 +74,17 @@ public class DatePicker
         if (control instanceof CDateTime)
         {
             Date d = ((CDateTime) control).getSelection();
-            return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).toLocalDate();
+
+            if (d == null)
+            {
+                Date now = Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant());
+                ((CDateTime) control).setSelection(now);
+                return LocalDate.now();
+            }
+            else
+            {
+                return LocalDateTime.ofInstant(d.toInstant(), ZoneId.systemDefault()).toLocalDate();
+            }
         }
         else
         {

@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.text.MessageFormat;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
@@ -20,6 +23,8 @@ import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
+import org.eclipse.nebula.widgets.cdatetime.CDT;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
@@ -29,6 +34,9 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.ui.forms.events.HyperlinkAdapter;
+import org.eclipse.ui.forms.events.HyperlinkEvent;
+import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import com.ibm.icu.text.DecimalFormat;
 import com.ibm.icu.text.NumberFormat;
@@ -40,7 +48,10 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.IValidatingConverter;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public abstract class AbstractTransactionDialog extends TitleAreaDialog
@@ -158,6 +169,68 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
             @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value(property).observe(model);
             context.bindValue(WidgetProperties.text().observe(currency), observable);
+        }
+    }
+
+    public class DateTimeInput
+    {
+        public final Label label;
+        public final DatePicker date;
+        public final CDateTime time;
+        public final ImageHyperlink button;
+
+        public DateTimeInput(Composite editArea, String text)
+        {
+            label = new Label(editArea, SWT.RIGHT);
+            label.setText(text);
+
+            date = new DatePicker(editArea);
+
+            time = new CDateTime(editArea, CDT.BORDER | CDT.CLOCK_24_HOUR) // NOSONAR
+            {
+                @Override
+                public void setOpen(boolean open)
+                {
+                    // do nothing -> avoid NPE if user presses Strg-Space but no
+                    // drop down is available
+                }
+            };
+            time.setFormat(CDT.TIME_SHORT);
+            time.setButtonImage(Images.CLOCK.image());
+
+            button = new ImageHyperlink(editArea, SWT.NONE);
+            button.setImage(Images.CLOCK.image());
+        }
+
+        public void bindDate(String property)
+        {
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> dateObservable = BeanProperties.value(property).observe(model);
+            context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(date.getControl()), dateObservable);
+        }
+
+        public void bindTime(String property)
+        {
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> timeObservable = BeanProperties.value(property).observe(model);
+            context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(time), timeObservable);
+        }
+
+        public void bindButton(Supplier<LocalTime> supplier, Consumer<LocalTime> consumer)
+        {
+            button.addHyperlinkListener(new HyperlinkAdapter()
+            {
+                @Override
+                public void linkActivated(HyperlinkEvent e)
+                {
+                    LocalTime time = supplier.get();
+
+                    if (LocalTime.MIDNIGHT.equals(time))
+                        consumer.accept(LocalTime.now());
+                    else
+                        consumer.accept(LocalTime.MIDNIGHT);
+                }
+            });
         }
     }
 

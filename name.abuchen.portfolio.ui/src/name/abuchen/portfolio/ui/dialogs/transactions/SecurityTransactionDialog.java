@@ -20,7 +20,6 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
@@ -37,9 +36,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DatePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeTimeSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -116,19 +112,12 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             comboInput.bindValue(Properties.transactionCurrency.name(), Messages.MsgMissingAccount);
         }
 
-        // date
+        // date + time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DatePicker valueDate = new DatePicker(editArea);
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()), dateObservable);
-
-        DateTime valueTime = new DateTime(editArea, SWT.TIME | SWT.SHORT | SWT.DROP_DOWN | SWT.BORDER);
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> timeObservable = BeanProperties.value(Properties.time.name()).observe(model);
-        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime), timeObservable);
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // other input fields
 
@@ -209,17 +198,18 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         int width = amountWidth(grossValue.value);
         int currencyWidth = currencyWidth(grossValue.currency);
-        int labelWidth = widest(securities.label, portfolio.label, lblDate, shares.label, lblNote);
+        int labelWidth = widest(securities.label, portfolio.label, dateTime.label, shares.label, lblNote);
 
         startingWith(securities.value.getControl(), securities.label).suffix(securities.currency)
                         .thenBelow(portfolio.value.getControl()).label(portfolio.label)
                         .suffix(comboInput.value.getControl()) //
-                        .thenBelow(valueDate.getControl()).label(lblDate).thenRight(valueTime);
+                        .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
 
         startingWith(securities.label).width(labelWidth);
 
         // shares - quote - gross value
-        startingWith(valueDate.getControl()).thenBelow(shares.value).width(width).label(shares.label)
+        startingWith(dateTime.date.getControl()).thenBelow(shares.value).width(width).label(shares.label)
                         .thenRight(quote.label).thenRight(quote.value).width(width).thenRight(quote.currency)
                         .width(width).thenRight(grossValue.label).thenRight(grossValue.value).width(width)
                         .thenRight(grossValue.currency);

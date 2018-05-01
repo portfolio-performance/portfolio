@@ -7,8 +7,7 @@ import java.util.function.Predicate;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.DateTime;
@@ -60,16 +59,11 @@ public class DateSelectionDialog extends Dialog
 
         DateTime dateTime = new DateTime(container, SWT.CALENDAR | SWT.BORDER);
         dateTime.setDate(selection.getYear(), selection.getMonthValue() - 1, selection.getDayOfMonth());
-        dateTime.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                // DateTime widget has zero-based months
-                selection = LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
-                DateSelectionDialog.this.getButton(OK).setEnabled(validator.test(selection));
-            }
-        });
+        dateTime.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            // DateTime widget has zero-based months
+            selection = LocalDate.of(dateTime.getYear(), dateTime.getMonth() + 1, dateTime.getDay());
+            DateSelectionDialog.this.getButton(OK).setEnabled(validator.test(selection));
+        }));
         GridDataFactory.fillDefaults().grab(true, true).align(SWT.CENTER, SWT.FILL).applyTo(dateTime);
 
         return container;

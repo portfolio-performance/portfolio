@@ -1,10 +1,14 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalTime;
+import java.util.Date;
 
 import org.eclipse.jface.databinding.swt.WidgetValueProperty;
+import org.eclipse.nebula.widgets.cdatetime.CDateTime;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.DateTime;
+
+import com.ibm.icu.util.Calendar;
 
 public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
 {
@@ -28,6 +32,24 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
             // DateTime widget has zero-based months
             return LocalTime.of(dateTime.getHours(), dateTime.getMinutes(), dateTime.getSeconds());
         }
+        else if (source instanceof CDateTime)
+        {
+            CDateTime dateTime = (CDateTime) source;
+
+            Date date = dateTime.getSelection();
+            
+            if (date == null)
+            {
+                doSetValue(source, LocalTime.MIDNIGHT);
+                return LocalTime.MIDNIGHT;
+            }
+            else
+            {
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(date);
+                return LocalTime.of(calendar.get(Calendar.HOUR_OF_DAY), calendar.get(Calendar.MINUTE));
+            }
+        }
         else
         {
             throw new UnsupportedOperationException();
@@ -37,11 +59,22 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
     @Override
     protected void doSetValue(Object source, Object value)
     {
+        LocalTime date = (LocalTime) value;
+
         if (source instanceof DateTime)
         {
-            LocalTime date = (LocalTime) value;
             DateTime dateTime = (DateTime) source;
             dateTime.setTime(date.getHour(), date.getMinute(), date.getSecond());
+        }
+        else if (source instanceof CDateTime)
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, date.getHour());
+            calendar.set(Calendar.MINUTE, date.getMinute());
+            calendar.set(Calendar.SECOND, 0);
+            
+            CDateTime dateTime = (CDateTime) source;
+            dateTime.setSelection(calendar.getTime());
         }
         else
         {

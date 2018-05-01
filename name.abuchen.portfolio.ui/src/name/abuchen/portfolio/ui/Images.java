@@ -40,6 +40,7 @@ public enum Images
     FILTER_OFF("filter_off.png"), //$NON-NLS-1$
     CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
     CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
+    CLOCK("clock.png"), //$NON-NLS-1$
 
     VIEW_TABLE("view_table.png"), //$NON-NLS-1$
     VIEW_TREEMAP("view_treemap.png"), //$NON-NLS-1$

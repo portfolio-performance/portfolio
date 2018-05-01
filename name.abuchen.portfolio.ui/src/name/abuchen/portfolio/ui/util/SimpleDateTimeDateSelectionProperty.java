@@ -35,8 +35,21 @@ public class SimpleDateTimeDateSelectionProperty extends WidgetValueProperty
         else if (source instanceof CDateTime)
         {
             Date date = ((CDateTime) source).getSelection();
-            return date == null ? null
-                            : LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
+
+            // CDateTime supports "deleting" the date. The 'delete' button
+            // cannot be removed. PP always needs a date, however. Therefore the
+            // date is set to today if missing.
+
+            LocalDate now = LocalDate.now();
+            if (date == null)
+            {
+                doSetValue(source, now);
+                return now;
+            }
+            else
+            {
+                return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()).toLocalDate();
+            }
         }
         else
         {
