@@ -96,13 +96,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         {
             String text = format.format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
-
-            Rectangle tableItem = getBounds(event.item, event.index);
-
-            int width = Math.min(size.width, tableItem.width);
-
-            event.setBounds(new Rectangle(event.x + tableItem.width - width, event.y, //
-                            width, event.height));
+            event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
     }
 
