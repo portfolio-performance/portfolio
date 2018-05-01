@@ -75,7 +75,7 @@ public final class Sidebar extends Composite
         {
             return id;
         }
-        
+
         public void setAction(Action action)
         {
             this.action = action;
@@ -83,7 +83,7 @@ public final class Sidebar extends Composite
             if (action.getImageDescriptor() != null)
                 item.setImage(action.getImageDescriptor().createImage(true));
         }
-        
+
         public Action getAction()
         {
             return action;
@@ -143,8 +143,8 @@ public final class Sidebar extends Composite
         }
 
         /**
-         * Finds either the neighbor above (SWT.ARROW_DOWN) or below (SWT.ARROW_UP) the
-         * current entry.
+         * Finds either the neighbor above (SWT.ARROW_DOWN) or below
+         * (SWT.ARROW_UP) the current entry.
          */
         public Entry findNeighbor(int direction)
         {
@@ -168,12 +168,12 @@ public final class Sidebar extends Composite
             item.text = label;
             item.redraw();
         }
-        
+
         public String getLabel()
         {
             return item.text;
         }
-        
+
         public int getIndent()
         {
             return item.indent;
@@ -284,7 +284,7 @@ public final class Sidebar extends Composite
     {
         return entries;
     }
-    
+
     //
     // listener implementations
     //
@@ -293,18 +293,7 @@ public final class Sidebar extends Composite
     {
         addDisposeListener(e -> Sidebar.this.widgetDisposed());
 
-        addKeyListener(new KeyListener()
-        {
-            @Override
-            public void keyReleased(KeyEvent e)
-            {}
-
-            @Override
-            public void keyPressed(KeyEvent e)
-            {
-                Sidebar.this.keyPressed(e);
-            }
-        });
+        addKeyListener(KeyListener.keyPressedAdapter(Sidebar.this::keyPressed));
 
         addTraverseListener(Sidebar.this::keyTraversed);
     }
@@ -426,21 +415,12 @@ public final class Sidebar extends Composite
 
             addPaintListener(Item.this::paintControl);
 
-            addKeyListener(new KeyListener()
-            {
-                @Override
-                public void keyReleased(KeyEvent e)
-                {}
-
-                @Override
-                public void keyPressed(KeyEvent e)
-                {
-                    if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
-                        Sidebar.this.keyPressed(e);
-                    else
-                        e.doit = false;
-                }
-            });
+            addKeyListener(KeyListener.keyPressedAdapter(e -> {
+                if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
+                    Sidebar.this.keyPressed(e);
+                else
+                    e.doit = false;
+            }));
 
             addMouseListener(new MouseAdapter()
             {

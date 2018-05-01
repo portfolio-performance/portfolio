@@ -1058,17 +1058,6 @@ public class SecuritiesChart
             return Optional.empty();
     }
 
-    private Optional<Double> getLatestMovingAveragePurchasePrice()
-    {
-        // securities w/o currency (e.g. index) cannot be bought and hence have
-        // no purchase price
-        if (security.getCurrencyCode() == null)
-            return Optional.empty();
-
-        return getMovingAveragePurchasePrice(new ClientSecurityFilter(security).filter(client),
-                        converter.with(security.getCurrencyCode()), LocalDate.now());
-    }
-
     private Optional<Double> getMovingAveragePurchasePrice(Client filteredClient, CurrencyConverter currencyConverter,
                     LocalDate date)
     {

@@ -23,7 +23,6 @@ import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -80,16 +79,8 @@ public class OpenBookmarksHandler
                 }
             });
 
-            tableViewer.getTable().addSelectionListener(new SelectionListener()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {}
-
-                public void widgetDefaultSelected(SelectionEvent e)
-                {
-                    handleSelection(tableViewer.getStructuredSelection());
-                }
-            });
+            tableViewer.getTable().addSelectionListener(SelectionListener
+                            .widgetDefaultSelectedAdapter(e -> handleSelection(tableViewer.getStructuredSelection())));
 
             tableViewer.setInput(items);
             tableViewer.setSelection(new StructuredSelection(items.get(0)));

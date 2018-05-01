@@ -61,7 +61,7 @@ public class UpdateHelper
         }
     }
 
-    public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, CoreException
+    public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
@@ -176,7 +176,7 @@ public class UpdateHelper
         });
     }
 
-    private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
+    private NewVersion checkForUpdates(IProgressMonitor monitor) throws CoreException
     {
         ProvisioningSession session = new ProvisioningSession(agent);
         operation = new UpdateOperation(session);
@@ -226,8 +226,8 @@ public class UpdateHelper
                             .getString(UIConstants.Preferences.UPDATE_SITE);
             URI uri = new URI(updateSite);
 
-            operation.getProvisioningContext().setArtifactRepositories(new URI[] { uri });
-            operation.getProvisioningContext().setMetadataRepositories(new URI[] { uri });
+            operation.getProvisioningContext().setArtifactRepositories(uri);
+            operation.getProvisioningContext().setMetadataRepositories(uri);
 
         }
         catch (final URISyntaxException e)
@@ -236,7 +236,7 @@ public class UpdateHelper
         }
     }
 
-    private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, CoreException
+    private void runUpdateOperation(IProgressMonitor monitor) throws CoreException
     {
         if (operation == null)
             checkForUpdates(monitor);

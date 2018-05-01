@@ -24,7 +24,6 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -392,7 +391,7 @@ public class DashboardView extends AbstractHistoricView
         DragSourceAdapter dragAdapter = new WidgetDragSourceAdapter(transfer, control);
 
         DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
-        dragSource.setTransfer(new Transfer[] { transfer });
+        dragSource.setTransfer(transfer);
         dragSource.addDragListener(dragAdapter);
     }
 
@@ -403,7 +402,7 @@ public class DashboardView extends AbstractHistoricView
         DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
-        dropTarget.setTransfer(new Transfer[] { transfer });
+        dropTarget.setTransfer(transfer);
         dropTarget.addDropListener(dragAdapter);
     }
 
