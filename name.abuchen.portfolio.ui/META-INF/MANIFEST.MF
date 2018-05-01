@@ -93,3 +93,4 @@ Import-Package: de.engehausen.treemap,
 Require-Bundle: org.eclipse.core.expressions,
  com.ibm.icu;bundle-version="52.1.0",
  name.abuchen.portfolio;bundle-version="0.30.2"
+Automatic-Module-Name: name.abuchen.portfolio.ui
