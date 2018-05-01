@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
@@ -354,7 +355,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
             
             ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
-            bindings.getBindingContext().bindValue(observeText, BeanProperties.value("tickerSymbol").observe(model)); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
+            bindings.getBindingContext().bindValue(observeText, observable);
             
             model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }

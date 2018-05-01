@@ -9,6 +9,7 @@ import java.util.List;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -115,31 +116,35 @@ public class SelectSplitPage extends AbstractWizardPage
                         .thenBelow(boxExDate.getControl()).label(labelExDate) //
                         .thenBelow(spinnerNewShares).label(labelSplit).thenRight(labelColon)
                         .thenRight(spinnerOldShares);
-        
+
         startingWith(labelSecurity).width(labelWidth);
 
         // model binding
 
         DataBindingContext context = bindings.getBindingContext();
-        context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity),
-                        BeanProperties.value("security").observe(model), null, null); //$NON-NLS-1$
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> securityObservable = BeanProperties.value("security").observe(model); //$NON-NLS-1$
+        context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity), securityObservable, null, null);
 
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxExDate.getControl()), //
-                        BeanProperties.value("exDate").observe(model), //$NON-NLS-1$
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> dateObservable = BeanProperties.value("exDate").observe(model); //$NON-NLS-1$
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxExDate.getControl()), dateObservable,
                         new UpdateValueStrategy() //
-                                        .setAfterConvertValidator(value -> {
-                                            return value != null ? ValidationStatus.ok()
-                                                            : ValidationStatus.error(MessageFormat.format(
-                                                                            Messages.MsgDialogInputRequired,
-                                                                            Messages.ColumnExDate));
-                                        }),
+                                        .setAfterConvertValidator(value -> value != null ? ValidationStatus.ok()
+                                                        : ValidationStatus.error(MessageFormat.format(
+                                                                        Messages.MsgDialogInputRequired,
+                                                                        Messages.ColumnExDate))),
                         null);
 
-        final ISWTObservableValue observeNewShares = WidgetProperties.selection().observe(spinnerNewShares);
-        context.bindValue(observeNewShares, BeanProperties.value("newShares").observe(model)); //$NON-NLS-1$
+        final ISWTObservableValue newSharesTargetObservable = WidgetProperties.selection().observe(spinnerNewShares);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> newSharesModelObservable = BeanProperties.value("newShares").observe(model); //$NON-NLS-1$
+        context.bindValue(newSharesTargetObservable, newSharesModelObservable);
 
-        final ISWTObservableValue observeOldShares = WidgetProperties.selection().observe(spinnerOldShares);
-        context.bindValue(observeOldShares, BeanProperties.value("oldShares").observe(model)); //$NON-NLS-1$
+        final ISWTObservableValue oldSharesTargetObservable = WidgetProperties.selection().observe(spinnerOldShares);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> oldSharesModelObservable = BeanProperties.value("oldShares").observe(model); //$NON-NLS-1$
+        context.bindValue(oldSharesTargetObservable, oldSharesModelObservable);
 
         MultiValidator validator = new MultiValidator()
         {
@@ -147,8 +152,8 @@ public class SelectSplitPage extends AbstractWizardPage
             @Override
             protected IStatus validate()
             {
-                Object newShares = observeNewShares.getValue();
-                Object oldShares = observeOldShares.getValue();
+                Object newShares = newSharesTargetObservable.getValue();
+                Object oldShares = oldSharesTargetObservable.getValue();
 
                 return newShares.equals(oldShares)
                                 ? ValidationStatus.error(Messages.SplitWizardErrorNewAndOldMustNotBeEqual)

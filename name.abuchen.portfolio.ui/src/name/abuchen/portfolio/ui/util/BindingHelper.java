@@ -115,7 +115,7 @@ public class BindingHelper
         {
             propertyChangeSupport.removePropertyChangeListener(listener);
         }
-        
+
         public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
         {
             propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
@@ -187,12 +187,16 @@ public class BindingHelper
         this.model = model;
         this.context = new DataBindingContext();
 
-        context.bindValue(PojoProperties.value("status").observe(listener), //$NON-NLS-1$
-                        new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = PojoProperties.value("status").observe(listener); //$NON-NLS-1$
+        context.bindValue(observable, new AggregateValidationStatus(context, AggregateValidationStatus.MAX_SEVERITY));
     }
 
     public void onValidationStatusChanged(IStatus status)
-    {}
+    {
+        // can be overridden by sub-classes to change the UI on validation
+        // changes
+    }
 
     public DataBindingContext getBindingContext()
     {
@@ -222,7 +226,9 @@ public class BindingHelper
     public final void bindLabel(Composite editArea, String property)
     {
         Label label = new Label(editArea, SWT.NONE);
-        context.bindValue(WidgetProperties.text().observe(label), BeanProperties.value(property).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(WidgetProperties.text().observe(label), observable);
         GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(label);
     }
 
@@ -238,7 +244,9 @@ public class BindingHelper
         spinner.setIncrement(increment);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
                         .hint(5 * getAverageCharWidth(spinner), SWT.DEFAULT).applyTo(spinner);
-        context.bindValue(WidgetProperties.selection().observe(spinner), BeanProperties.value(property).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(WidgetProperties.selection().observe(spinner), observable);
     }
 
     public final ComboViewer bindComboViewer(Composite editArea, String label, String property,
@@ -262,8 +270,9 @@ public class BindingHelper
         if (validator != null)
             strategy.setAfterConvertValidator(validator);
 
-        context.bindValue(ViewersObservables.observeSingleSelection(combo), //
-                        BeanProperties.value(property).observe(model), strategy, null);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, strategy, null);
         return combo;
     }
 
@@ -287,8 +296,9 @@ public class BindingHelper
         UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
         modelToTarget.setConverter(new StringToCurrencyUnitConverter());
 
-        context.bindValue(ViewersObservables.observeSingleSelection(combo), //
-                        BeanProperties.value(property).observe(model), targetToModel, modelToTarget);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
         return combo;
     }
 
@@ -300,13 +310,13 @@ public class BindingHelper
         DatePicker boxDate = new DatePicker(editArea);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate.getControl());
 
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxDate.getControl()),
-                        BeanProperties.value(property).observe(model), new UpdateValueStrategy() //
-                                        .setAfterConvertValidator(value -> {
-                                            return value != null ? ValidationStatus.ok()
-                                                            : ValidationStatus.error(MessageFormat.format(
-                                                                            Messages.MsgDialogInputRequired, label));
-                                        }),
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxDate.getControl()), observable,
+                        new UpdateValueStrategy().setAfterConvertValidator(value -> value != null
+                                        ? ValidationStatus.ok()
+                                        : ValidationStatus.error(
+                                                        MessageFormat.format(Messages.MsgDialogInputRequired, label))),
                         null);
     }
 
@@ -331,9 +341,9 @@ public class BindingHelper
                                                             .format(Messages.MsgDialogInputRequired, label));
                         });
 
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
-                        BeanProperties.value(property).observe(model), //
-                        input2model, // ,
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), observable, input2model,
                         new UpdateValueStrategy().setConverter(new CurrencyToStringConverter(type)));
     }
 
@@ -371,35 +381,33 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label);
 
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
-                        BeanProperties.value(property).observe(model), //
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                Long v = (Long) value;
-                                return v != null && v.longValue() > 0 ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat
-                                                                .format(Messages.MsgDialogInputRequired, label));
-                            }
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), observable,
+                        new UpdateValueStrategy().setAfterConvertValidator(value -> {
+                            Long v = (Long) value;
+                            return v != null && v.longValue() > 0 ? ValidationStatus.ok()
+                                            : ValidationStatus.error(MessageFormat
+                                                            .format(Messages.MsgDialogInputRequired, label));
                         }), //
                         null);
         return txtValue;
     }
 
-    public final IObservableValue bindStringInput(Composite editArea, final String label, String property)
+    public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property)
     {
         return bindStringInput(editArea, label, property, SWT.NONE, SWT.DEFAULT);
     }
 
-    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style)
+    public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property,
+                    int style)
     {
         return bindStringInput(editArea, label, property, style, SWT.DEFAULT);
     }
 
-    public final IObservableValue bindStringInput(Composite editArea, final String label, String property, int style,
-                    int lenghtInCharacters)
+    @SuppressWarnings("unchecked")
+    public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property,
+                    int style, int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
 
@@ -413,18 +421,15 @@ public class BindingHelper
     {
         Text txtValue = createTextInput(editArea, label);
 
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
         context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
-                        BeanProperties.value(property).observe(model), //
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                String v = (String) value;
-                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat
-                                                                .format(Messages.MsgDialogInputRequired, label));
-                            }
+                        observable, //
+                        new UpdateValueStrategy().setAfterConvertValidator(value -> {
+                            String v = (String) value;
+                            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                            : ValidationStatus.error(MessageFormat
+                                                            .format(Messages.MsgDialogInputRequired, label));
                         }), //
                         null);
         return txtValue;
@@ -435,18 +440,15 @@ public class BindingHelper
         Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
         txtValue.setTextLimit(12);
 
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
         context.bindValue(WidgetProperties.text(SWT.Modify).observe(txtValue), //
-                        BeanProperties.value(property).observe(model), //
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                String v = (String) value;
-                                return v == null || v.trim().length() == 0 || Isin.isValid(v) ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat
-                                                                .format(Messages.MsgDialogNotAValidISIN, label));
-                            }
+                        observable, //
+                        new UpdateValueStrategy().setAfterConvertValidator(value -> {
+                            String v = (String) value;
+                            return v == null || v.trim().length() == 0 || Isin.isValid(v) ? ValidationStatus.ok()
+                                            : ValidationStatus.error(MessageFormat
+                                                            .format(Messages.MsgDialogNotAValidISIN, label));
                         }), //
                         null);
         return txtValue;
@@ -460,8 +462,9 @@ public class BindingHelper
         final Button btnCheckbox = new Button(editArea, SWT.CHECK);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(btnCheckbox);
 
-        context.bindValue(WidgetProperties.selection().observe(btnCheckbox), //
-                        BeanProperties.value(property).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(WidgetProperties.selection().observe(btnCheckbox), observable);
         return btnCheckbox;
     }
 

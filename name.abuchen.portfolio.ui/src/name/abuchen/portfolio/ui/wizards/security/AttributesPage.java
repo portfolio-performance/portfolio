@@ -7,6 +7,7 @@ import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -153,9 +154,10 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         // model binding
         ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
         final Binding binding = bindings.getBindingContext().bindValue( //
-                        WidgetProperties.text(SWT.Modify).observe(value), //
-                        BeanProperties.value("value").observe(attribute), //$NON-NLS-1$
+                        WidgetProperties.text(SWT.Modify).observe(value), observable,
                         new UpdateValueStrategy().setAfterGetValidator(input2model).setConverter(input2model),
                         new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 
@@ -196,7 +198,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
     {
         manager.add(new LabelOnly(Messages.LabelAvailableAttributes));
 
-        Set<AttributeType> existing = new HashSet<AttributeType>();
+        Set<AttributeType> existing = new HashSet<>();
         for (AttributeDesignation d : model.getAttributes())
             existing.add(d.getType());
 

@@ -52,9 +52,9 @@ public class SecurityTaxonomyPage extends AbstractPage
 
     private static final class ClassificationNotTwiceValidator extends MultiValidator
     {
-        private final List<IObservableValue> observables;
+        private final List<IObservableValue<?>> observables;
 
-        private ClassificationNotTwiceValidator(List<IObservableValue> observables)
+        private ClassificationNotTwiceValidator(List<IObservableValue<?>> observables)
         {
             this.observables = observables;
         }
@@ -65,9 +65,9 @@ public class SecurityTaxonomyPage extends AbstractPage
             if (observables.isEmpty())
                 return ValidationStatus.ok();
 
-            Set<Classification> selected = new HashSet<Classification>();
+            Set<Classification> selected = new HashSet<>();
 
-            for (IObservableValue value : observables)
+            for (IObservableValue<?> value : observables)
             {
                 Classification classification = (Classification) value.getValue();
                 if (!selected.add(classification))
@@ -82,10 +82,10 @@ public class SecurityTaxonomyPage extends AbstractPage
     {
         private final Label label;
         private final Taxonomy taxonomy;
-        private final List<IObservableValue> observables;
+        private final List<IObservableValue<?>> observables;
 
         private WeightsAreGreaterThan100Validator(Label label, Taxonomy taxonomy,
-                        List<IObservableValue> weightObservables)
+                        List<IObservableValue<?>> weightObservables)
         {
             this.label = label;
             this.taxonomy = taxonomy;
@@ -100,7 +100,7 @@ public class SecurityTaxonomyPage extends AbstractPage
 
             int weights = 0;
 
-            for (IObservableValue value : observables)
+            for (IObservableValue<?> value : observables)
                 weights += (Integer) value.getValue();
 
             if (label != null)
@@ -140,7 +140,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     private final BindingHelper bindings;
     private ScrolledComposite scrolledComposite;
     private Font boldFont;
-    private List<ValidationStatusProvider> validators = new ArrayList<ValidationStatusProvider>();
+    private List<ValidationStatusProvider> validators = new ArrayList<>();
 
     public SecurityTaxonomyPage(EditSecurityModel model, BindingHelper bindings)
     {
@@ -169,6 +169,7 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         scrolledComposite.addControlListener(new ControlAdapter()
         {
+            @Override
             public void controlResized(ControlEvent e)
             {
                 scrolledComposite.setMinSize(container.computeSize(SWT.DEFAULT, SWT.DEFAULT));
@@ -213,8 +214,8 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void addBlock(final Composite taxonomyPicker, final TaxonomyDesignation designation)
     {
         Label sumOfWeights = null;
-        final List<IObservableValue> weightObservables = new ArrayList<IObservableValue>();
-        final List<IObservableValue> classificationObservables = new ArrayList<IObservableValue>();
+        final List<IObservableValue<?>> weightObservables = new ArrayList<>();
+        final List<IObservableValue<?>> classificationObservables = new ArrayList<>();
 
         if (designation.getLinks().size() == 1
                         && designation.getLinks().get(0).getWeight() == Classification.ONE_HUNDRED_PERCENT)
@@ -238,7 +239,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     }
 
     private void addSimpleBlock(Composite picker, TaxonomyDesignation designation, final ClassificationLink link,
-                    List<IObservableValue> classificationObservables)
+                    List<IObservableValue<?>> classificationObservables)
     {
         Composite block = new Composite(picker, SWT.NONE);
         block.setBackground(picker.getBackground());
@@ -251,7 +252,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     }
 
     private void addFullBlock(Composite picker, TaxonomyDesignation designation, final ClassificationLink link,
-                    List<IObservableValue> weightObservables, List<IObservableValue> classificationObservables)
+                    List<IObservableValue<?>> weightObservables, List<IObservableValue<?>> classificationObservables)
     {
         Composite block = new Composite(picker, SWT.NONE);
         block.setData(link);
@@ -283,7 +284,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     }
 
     private void setupWeightMultiValidator(Label sumOfWeights, TaxonomyDesignation designation,
-                    final List<IObservableValue> weightObservables)
+                    final List<IObservableValue<?>> weightObservables)
     {
         MultiValidator multiValidator = new WeightsAreGreaterThan100Validator(sumOfWeights, designation.getTaxonomy(),
                         weightObservables);
@@ -293,19 +294,21 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         for (int ii = 0; ii < weightObservables.size(); ii++)
         {
-            IObservableValue observable = weightObservables.get(ii);
+            IObservableValue<?> observable = weightObservables.get(ii);
             ClassificationLink link = designation.getLinks().get(ii);
 
             UpdateValueStrategy strategy = new UpdateValueStrategy();
             strategy.setAfterConvertValidator(new GreaterThanZeroValidator());
 
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> weightObservable = BeanProperties.value("weight").observe(link); //$NON-NLS-1$
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
-                            BeanProperties.value("weight").observe(link), strategy, null)); //$NON-NLS-1$
+                            weightObservable, strategy, null));
         }
     }
 
     private void setupClassificationMultiValidator(TaxonomyDesignation designation,
-                    final List<IObservableValue> classificationObservables)
+                    final List<IObservableValue<?>> classificationObservables)
     {
         MultiValidator multiValidator = new ClassificationNotTwiceValidator(classificationObservables);
 
@@ -314,19 +317,21 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         for (int ii = 0; ii < classificationObservables.size(); ii++)
         {
-            IObservableValue observable = classificationObservables.get(ii);
+            IObservableValue<?> observable = classificationObservables.get(ii);
             ClassificationLink link = designation.getLinks().get(ii);
 
             UpdateValueStrategy strategy = new UpdateValueStrategy();
             strategy.setAfterConvertValidator(new NotNullValidator());
 
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> classificationObservable = BeanProperties.value("classification").observe(link); //$NON-NLS-1$
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
-                            BeanProperties.value("classification").observe(link), strategy, null)); //$NON-NLS-1$
+                            classificationObservable, strategy, null));
         }
     }
 
     private void addDropDown(Composite block, TaxonomyDesignation designation,
-                    List<IObservableValue> classificationObservables)
+                    List<IObservableValue<?>> classificationObservables)
     {
         final ComboViewer combo = new ComboViewer(block, SWT.READ_ONLY);
         combo.setContentProvider(ArrayContentProvider.getInstance());
@@ -360,7 +365,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         });
     }
 
-    private void addSpinner(Composite block, ClassificationLink link, List<IObservableValue> observables)
+    private void addSpinner(Composite block, ClassificationLink link, List<IObservableValue<?>> observables)
     {
         final Spinner spinner = new Spinner(block, SWT.BORDER);
         spinner.setDigits(2);

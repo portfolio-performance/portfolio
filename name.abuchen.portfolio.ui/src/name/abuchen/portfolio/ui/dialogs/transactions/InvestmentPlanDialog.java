@@ -15,6 +15,7 @@ import javax.inject.Named;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -71,8 +72,9 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
                             : ValidationStatus.error(
                                             MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
         };
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName),
-                        BeanProperties.value(Properties.name.name()).observe(model),
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> nameObservable = BeanProperties.value(Properties.name.name()).observe(model);
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName), nameObservable,
                         new UpdateValueStrategy().setAfterConvertValidator(validator), null);
 
         // security
@@ -103,16 +105,18 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         labelAutoGenerate.setText(Messages.MsgCreateTransactionsAutomaticallyUponOpening);
 
         Button buttonAutoGenerate = new Button(editArea, SWT.CHECK);
-        context.bindValue(WidgetProperties.selection().observe(buttonAutoGenerate), //
-                        BeanProperties.value(Properties.autoGenerate.name()).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> generateObservable = BeanProperties.value(Properties.autoGenerate.name()).observe(model);
+        context.bindValue(WidgetProperties.selection().observe(buttonAutoGenerate), generateObservable);
 
         // date
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
         DatePicker valueDate = new DatePicker(editArea);
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.start.name()).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> dateObservable = BeanProperties.value(Properties.start.name()).observe(model);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()), dateObservable);
 
         // interval
 
@@ -168,7 +172,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
                         .suffix(fees.currency, currencyWidth); //
 
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
-        
+
         startingWith(valueDate.getControl()).thenRight(interval.label).thenRight(interval.value.getControl());
 
         int widest = widest(lblName, securities.label, portfolio.label, account.label, lblDate, interval.label,

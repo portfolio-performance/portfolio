@@ -39,10 +39,10 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 {
     private final class PortfoliosMustBeDifferentValidator extends MultiValidator
     {
-        IObservableValue source;
-        IObservableValue target;
+        IObservableValue<?> source;
+        IObservableValue<?> target;
 
-        public PortfoliosMustBeDifferentValidator(IObservableValue source, IObservableValue target)
+        public PortfoliosMustBeDifferentValidator(IObservableValue<?> source, IObservableValue<?> target)
         {
             this.source = source;
             this.target = target;
@@ -92,7 +92,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         ComboInput source = new ComboInput(editArea, Messages.ColumnAccountFrom);
         source.value.setInput(including(client.getActivePortfolios(), model().getSourcePortfolio()));
-        IObservableValue sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
+        IObservableValue<?> sourceObservable = source.bindValue(Properties.sourcePortfolio.name(),
                         Messages.MsgPortfolioFromMissing);
         source.bindCurrency(Properties.sourcePortfolioLabel.name());
 
@@ -100,7 +100,7 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         ComboInput target = new ComboInput(editArea, Messages.ColumnAccountTo);
         target.value.setInput(including(client.getActivePortfolios(), model().getTargetPortfolio()));
-        IObservableValue targetObservable = target.bindValue(Properties.targetPortfolio.name(),
+        IObservableValue<?> targetObservable = target.bindValue(Properties.targetPortfolio.name(),
                         Messages.MsgPortfolioToMissing);
         target.bindCurrency(Properties.targetPortfolioLabel.name());
 
@@ -112,12 +112,14 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
         DatePicker valueDate = new DatePicker(editArea);
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.date.name()).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
+        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()), dateObservable);
 
         DateTime valueTime = new DateTime(editArea, SWT.TIME | SWT.SHORT | SWT.DROP_DOWN | SWT.BORDER);
-        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime),
-                        BeanProperties.value(Properties.time.name()).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> timeObservable = BeanProperties.value(Properties.time.name()).observe(model);
+        context.bindValue(new SimpleDateTimeTimeSelectionProperty().observe(valueTime), timeObservable);
 
         // amount
 
@@ -137,8 +139,9 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
-                        BeanProperties.value(Properties.note.name()).observe(model));
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote), noteObservable);
 
         //
         // form layout

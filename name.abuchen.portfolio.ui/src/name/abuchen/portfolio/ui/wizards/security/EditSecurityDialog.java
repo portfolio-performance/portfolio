@@ -5,7 +5,7 @@ import java.util.Objects;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
-import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
@@ -153,18 +153,14 @@ public class EditSecurityDialog extends Dialog
 
         // bind to model
 
-        bindings.getBindingContext().bindValue(WidgetProperties.text(SWT.Modify).observe(name), //
-                        BeanProperties.value("name").observe(model), //$NON-NLS-1$
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                String v = (String) value;
-                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                                                : ValidationStatus.error(MessageFormat.format(
-                                                                Messages.MsgDialogInputRequired, Messages.ColumnName));
-                            }
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        bindings.getBindingContext().bindValue(WidgetProperties.text(SWT.Modify).observe(name), observable,
+                        new UpdateValueStrategy().setAfterConvertValidator(value -> {
+                            String v = (String) value;
+                            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                            : ValidationStatus.error(MessageFormat.format(
+                                                            Messages.MsgDialogInputRequired, Messages.ColumnName));
                         }), //
                         null);
     }
@@ -179,6 +175,7 @@ public class EditSecurityDialog extends Dialog
         {
             private AbstractPage current = null;
 
+            @Override
             public void widgetSelected(SelectionEvent e)
             {
                 if (current != null)

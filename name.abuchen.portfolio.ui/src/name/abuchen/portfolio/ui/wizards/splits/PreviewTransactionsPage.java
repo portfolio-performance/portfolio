@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -155,8 +156,9 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        context.bindValue(WidgetProperties.selection().observe(checkbox), //
-                        BeanProperties.value("changeTransactions").observe(model)); //$NON-NLS-1$
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value("changeTransactions").observe(model); //$NON-NLS-1$
+        context.bindValue(WidgetProperties.selection().observe(checkbox), observable);
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {
