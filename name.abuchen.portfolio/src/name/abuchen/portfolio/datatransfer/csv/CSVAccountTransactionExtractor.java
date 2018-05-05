@@ -98,7 +98,8 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setNote(note);
                 items.add(new BuySellEntryItem(buySellEntry));
                 break;
-            case DIVIDENDS:
+            case DIVIDENDS: // NOSONAR
+                // dividends must have a security
                 if (security == null)
                     throw new ParseException(MessageFormat.format(Messages.CSVImportMissingSecurity,
                                     new StringJoiner(", ").add(Messages.CSVColumn_ISIN) //$NON-NLS-1$

@@ -6,14 +6,14 @@ import org.eclipse.swt.widgets.Control;
 
 public class PageBook extends Composite
 {
-    private StackLayout layout;
+    private StackLayout stackLayout;
 
     public PageBook(Composite parent, int style)
     {
         super(parent, style);
 
-        this.layout = new StackLayout();
-        setLayout(layout);
+        this.stackLayout = new StackLayout();
+        setLayout(stackLayout);
     }
 
     public void showPage(Control page)
@@ -21,7 +21,7 @@ public class PageBook extends Composite
         if (page.isDisposed() || page.getParent() != this)
             return;
 
-        layout.topControl = page;
+        stackLayout.topControl = page;
         layout(true);
     }
 }

@@ -223,9 +223,7 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
                 @Override
                 public void linkActivated(HyperlinkEvent e)
                 {
-                    LocalTime time = supplier.get();
-
-                    if (LocalTime.MIDNIGHT.equals(time))
+                    if (LocalTime.MIDNIGHT.equals(supplier.get()))
                         consumer.accept(LocalTime.now());
                     else
                         consumer.accept(LocalTime.MIDNIGHT);

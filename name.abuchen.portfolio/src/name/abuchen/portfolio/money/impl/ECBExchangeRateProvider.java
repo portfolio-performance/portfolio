@@ -145,175 +145,62 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
 
     /**
      * Make sure we have at least one exchange rate available. The program might
-     * not have a connection to the internet (run behind a proxy) and is unable
+     * not have a connection to the Internet (run behind a proxy) and is unable
      * to load current exchange rate series from ECB.
      */
     @SuppressWarnings("nls")
     private void fillInDefaultData(ECBData summary)
     {
-        ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, "CHF");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.0768)));
-        summary.addSeries(s);
+        String date20151218 = "2015-12-18";
 
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "HRK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(7.6495)));
-        summary.addSeries(s);
+        summary.addSeries(createDefault("CHF", date20151218, BigDecimal.valueOf(1.0768)));
+        summary.addSeries(createDefault("HRK", date20151218, BigDecimal.valueOf(7.6495)));
+        summary.addSeries(createDefault("MXN", date20151218, BigDecimal.valueOf(18.4429)));
+        summary.addSeries(createDefault("LVL", "2013-12-31", BigDecimal.valueOf(0.702804)));
+        summary.addSeries(createDefault("MTL", "2007-12-31", BigDecimal.valueOf(0.4293)));
+        summary.addSeries(createDefault("LTL", "2014-12-31", BigDecimal.valueOf(3.4528)));
+        summary.addSeries(createDefault("ZAR", date20151218, BigDecimal.valueOf(16.2998)));
+        summary.addSeries(createDefault("INR", date20151218, BigDecimal.valueOf(71.955)));
+        summary.addSeries(createDefault("CNY", date20151218, BigDecimal.valueOf(7.0274)));
+        summary.addSeries(createDefault("THB", date20151218, BigDecimal.valueOf(39.175)));
+        summary.addSeries(createDefault("TRL", "2004-12-31", BigDecimal.valueOf(1836200)));
+        summary.addSeries(createDefault("AUD", date20151218, BigDecimal.valueOf(1.5206)));
+        summary.addSeries(createDefault("ILS", date20151218, BigDecimal.valueOf(4.221)));
+        summary.addSeries(createDefault("KRW", date20151218, BigDecimal.valueOf(1280.16)));
+        summary.addSeries(createDefault("JPY", date20151218, BigDecimal.valueOf(131.6)));
+        summary.addSeries(createDefault("PLN", date20151218, BigDecimal.valueOf(4.2806)));
+        summary.addSeries(createDefault("GBP", date20151218, BigDecimal.valueOf(0.72666)));
+        summary.addSeries(createDefault("IDR", date20151218, BigDecimal.valueOf(15096.1)));
+        summary.addSeries(createDefault("HUF", date20151218, BigDecimal.valueOf(314.25)));
+        summary.addSeries(createDefault("PHP", date20151218, BigDecimal.valueOf(51.253)));
+        summary.addSeries(createDefault("TRY", date20151218, BigDecimal.valueOf(3.1581)));
+        summary.addSeries(createDefault("CYP", "2007-12-31", BigDecimal.valueOf(0.585274)));
+        summary.addSeries(createDefault("RUB", date20151218, BigDecimal.valueOf(77.1005)));
+        summary.addSeries(createDefault("HKD", date20151218, BigDecimal.valueOf(8.4005)));
+        summary.addSeries(createDefault("ISK", "2008-12-09", BigDecimal.valueOf(290)));
+        summary.addSeries(createDefault("DKK", date20151218, BigDecimal.valueOf(7.4613)));
+        summary.addSeries(createDefault("USD", date20151218, BigDecimal.valueOf(1.0836)));
+        summary.addSeries(createDefault("CAD", date20151218, BigDecimal.valueOf(1.5123)));
+        summary.addSeries(createDefault("MYR", date20151218, BigDecimal.valueOf(4.644)));
+        summary.addSeries(createDefault("BGN", date20151218, BigDecimal.valueOf(1.9558)));
+        summary.addSeries(createDefault("EEK", "2010-12-31", BigDecimal.valueOf(15.6466)));
+        summary.addSeries(createDefault("NOK", date20151218, BigDecimal.valueOf(9.5)));
+        summary.addSeries(createDefault("ROL", "2005-06-30", BigDecimal.valueOf(36030)));
+        summary.addSeries(createDefault("RON", date20151218, BigDecimal.valueOf(4.516)));
+        summary.addSeries(createDefault("SGD", date20151218, BigDecimal.valueOf(1.53)));
+        summary.addSeries(createDefault("SKK", "2008-12-31", BigDecimal.valueOf(30.126)));
+        summary.addSeries(createDefault("CZK", date20151218, BigDecimal.valueOf(27.03)));
+        summary.addSeries(createDefault("SEK", date20151218, BigDecimal.valueOf(9.266)));
+        summary.addSeries(createDefault("NZD", date20151218, BigDecimal.valueOf(1.616)));
+        summary.addSeries(createDefault("BRL", date20151218, BigDecimal.valueOf(4.2265)));
+        summary.addSeries(createDefault("SIT", "2006-12-29", BigDecimal.valueOf(239.64)));
+    }
 
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "MXN");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(18.4429)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "LVL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2013-12-31"), BigDecimal.valueOf(0.702804)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "MTL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2007-12-31"), BigDecimal.valueOf(0.4293)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "LTL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2014-12-31"), BigDecimal.valueOf(3.4528)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "ZAR");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(16.2998)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "INR");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(71.955)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "CNY");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(7.0274)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "THB");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(39.175)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "TRL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2004-12-31"), BigDecimal.valueOf(1836200)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "AUD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.5206)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "ILS");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(4.221)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "KRW");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1280.16)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "JPY");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(131.6)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "PLN");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(4.2806)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "GBP");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(0.72666)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "IDR");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(15096.1)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "HUF");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(314.25)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "PHP");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(51.253)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "TRY");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(3.1581)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "CYP");
-        s.addRate(new ExchangeRate(LocalDate.parse("2007-12-31"), BigDecimal.valueOf(0.585274)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "RUB");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(77.1005)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "HKD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(8.4005)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "ISK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2008-12-09"), BigDecimal.valueOf(290)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "DKK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(7.4613)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "USD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.0836)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "CAD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.5123)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "MYR");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(4.644)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "BGN");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.9558)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "EEK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2010-12-31"), BigDecimal.valueOf(15.6466)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "NOK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(9.5)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "ROL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2005-06-30"), BigDecimal.valueOf(36030)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "RON");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(4.516)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "SGD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.53)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "SKK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2008-12-31"), BigDecimal.valueOf(30.126)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "CZK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(27.03)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "SEK");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(9.266)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "NZD");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(1.616)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "BRL");
-        s.addRate(new ExchangeRate(LocalDate.parse("2015-12-18"), BigDecimal.valueOf(4.2265)));
-        summary.addSeries(s);
-
-        s = new ExchangeRateTimeSeriesImpl(this, EUR, "SIT");
-        s.addRate(new ExchangeRate(LocalDate.parse("2006-12-29"), BigDecimal.valueOf(239.64)));
-        summary.addSeries(s);
+    private ExchangeRateTimeSeriesImpl createDefault(String cur, String date, BigDecimal value)
+    {
+        ExchangeRateTimeSeriesImpl s = new ExchangeRateTimeSeriesImpl(this, EUR, cur);
+        s.addRate(new ExchangeRate(LocalDate.parse(date), value));
+        return s;
     }
 
     @SuppressWarnings("nls")

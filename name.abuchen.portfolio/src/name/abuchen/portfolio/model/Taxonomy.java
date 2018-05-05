@@ -14,13 +14,17 @@ public class Taxonomy
     public static class Visitor
     {
         public void visit(Classification classification)
-        {}
+        {
+            // to be sub-classed
+        }
 
         public void visit(Classification classification, Assignment assignment)
-        {}
+        {
+            // to be sub-classed
+        }
     }
 
-    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this); // NOSONAR
 
     private String id;
     private String name;
@@ -89,7 +93,7 @@ public class Taxonomy
         if (id == null)
             return null;
 
-        LinkedList<Classification> stack = new LinkedList<Classification>();
+        LinkedList<Classification> stack = new LinkedList<>();
         stack.addAll(getRoot().getChildren());
 
         while (!stack.isEmpty())
@@ -105,7 +109,7 @@ public class Taxonomy
 
     public List<Classification> getClassifications(final InvestmentVehicle vehicle)
     {
-        final List<Classification> answer = new ArrayList<Classification>();
+        final List<Classification> answer = new ArrayList<>();
 
         foreach(new Visitor()
         {
@@ -122,7 +126,7 @@ public class Taxonomy
 
     public List<Classification> getAllClassifications()
     {
-        List<Classification> answer = new ArrayList<Classification>();
+        List<Classification> answer = new ArrayList<>();
 
         foreach(new Visitor()
         {
