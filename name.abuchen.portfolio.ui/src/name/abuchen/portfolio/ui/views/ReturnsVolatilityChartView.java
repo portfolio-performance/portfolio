@@ -116,7 +116,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         });
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
-        configurator.addListener(() -> updateChart());
+        configurator.addListener(this::updateChart);
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 
@@ -149,8 +149,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     @Override
     public void notifyModelUpdated()
     {
-        cache.clear();
-        updateChart();
+        reportingPeriodUpdated();
     }
 
     private void updateChart()

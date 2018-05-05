@@ -15,6 +15,7 @@ import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ScatterChartToolTip extends AbstractChartToolTip
 {
@@ -83,7 +84,7 @@ public class ScatterChartToolTip extends AbstractChartToolTip
         left = new Label(container, SWT.NONE);
         left.setBackground(closest.getSymbolColor());
         left.setForeground(Colors.getTextColor(closest.getSymbolColor()));
-        left.setText(closest.getId());
+        left.setText(TextUtil.tooltip(closest.getId()));
 
         middle = new Label(container, SWT.RIGHT);
         middle.setForeground(foregroundColor);
