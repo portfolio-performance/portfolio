@@ -31,7 +31,7 @@ public class PortfolioSnapshot
                         .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
-                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date),
+                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date, false),
                                         e.getValue())) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());

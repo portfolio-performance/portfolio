@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -247,7 +248,6 @@ public class SecurityPosition
     {
         Objects.requireNonNull(security);
         Objects.requireNonNull(converter);
-        Objects.requireNonNull(price);
 
         this.investment = security;
         this.converter = converter.with(investment.getCurrencyCode());
@@ -292,11 +292,33 @@ public class SecurityPosition
 
     public Money calculateValue()
     {
-        if (price == null)
-            return Money.of(investment.getCurrencyCode(), 0);
+        String currency;
+        double priceValue;
 
-        double marketValue = shares * price.getValue() / Values.Share.divider() / Values.Quote.dividerToMoney();
-        return Money.of(investment.getCurrencyCode(), Math.round(marketValue));
+        if (price == null) {
+            if (transactions.isEmpty())
+                return Money.of(investment.getCurrencyCode(), 0);
+
+            Transaction lastTransaction = transactions.get(transactions.size() - 1);
+            Optional<Unit> grossValue = lastTransaction.getUnit(Unit.Type.GROSS_VALUE);
+
+            if (!grossValue.isPresent())
+                return Money.of(investment.getCurrencyCode(), 0);
+
+            Money amount = grossValue.get().getForex();
+
+            if (amount == null)
+                amount = grossValue.get().getAmount();
+
+            currency = amount.getCurrencyCode();
+            priceValue = amount.getAmount() * Values.Share.factor() / lastTransaction.getShares();
+        } else {
+            currency = investment.getCurrencyCode();
+            priceValue = price.getValue() / Values.Quote.dividerToMoney();
+        }
+
+        double marketValue = shares * priceValue / Values.Share.divider();
+        return Money.of(currency, Math.round(marketValue));
     }
 
     public Money getFIFOPurchasePrice()

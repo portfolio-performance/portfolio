@@ -299,6 +299,11 @@ public final class Security implements Attributable, InvestmentVehicle
 
     public SecurityPrice getSecurityPrice(LocalDate requestedDate)
     {
+        return getSecurityPrice(requestedDate, true);
+    }
+
+    public SecurityPrice getSecurityPrice(LocalDate requestedDate, boolean fallBackToZero)
+    {
         // assumption: prefer historic quote over latest if there are more
         // up-to-date historic quotes
 
@@ -319,7 +324,7 @@ public final class Security implements Attributable, InvestmentVehicle
             return latest;
 
         if (lastHistoric == null)
-            return new SecurityPrice(requestedDate, 0);
+            return fallBackToZero ? new SecurityPrice(requestedDate, 0) : null;
 
         // avoid binary search if last historic quote <= requested date
         if (!lastHistoric.getDate().isAfter(requestedDate))
