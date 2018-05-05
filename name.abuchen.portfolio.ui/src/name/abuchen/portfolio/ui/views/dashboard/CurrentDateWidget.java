@@ -41,13 +41,13 @@ public class CurrentDateWidget extends WidgetDelegate
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    void update()
+    public void update()
     {
         this.title.setText(getWidget().getLabel() + ' ' + formatter.format(LocalDate.now()));
     }

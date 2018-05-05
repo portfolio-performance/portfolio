@@ -24,27 +24,27 @@ public abstract class WidgetDelegate
         addConfig(new LabelConfig(this));
     }
 
-    protected final void addConfig(WidgetConfig config)
+    public final void addConfig(WidgetConfig config)
     {
         this.config.add(config);
     }
 
-    protected Client getClient()
+    public Client getClient()
     {
         return data.getClient();
     }
 
-    protected Dashboard.Widget getWidget()
+    public Dashboard.Widget getWidget()
     {
         return widget;
     }
 
-    protected DashboardData getDashboardData()
+    public DashboardData getDashboardData()
     {
         return data;
     }
 
-    protected <C extends WidgetConfig> C get(Class<C> type)
+    public <C extends WidgetConfig> C get(Class<C> type)
     {
         return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny()
                         .orElseThrow(IllegalArgumentException::new));
@@ -55,13 +55,13 @@ public abstract class WidgetDelegate
         return config.stream();
     }
 
-    abstract Composite createControl(Composite parent, DashboardResources resources);
+    public abstract Composite createControl(Composite parent, DashboardResources resources);
 
-    abstract void update();
+    public abstract void update();
 
     /**
      * Returns the title control to which context menu and default tooltip are
      * attached.
      */
-    abstract Control getTitleControl();
+    public abstract Control getTitleControl();
 }

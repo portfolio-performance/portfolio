@@ -434,6 +434,7 @@ public class Messages extends NLS
     public static String LabelNewTaxonomy;
     public static String LabelNoName;
     public static String LabelNotAvailable;
+    public static String LabelNumberDataSeries;
     public static String LabelOneOfX;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
@@ -521,6 +522,7 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelXDays;
     public static String LabelYear;
+    public static String LabelYearlyHeatmap;
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
@@ -773,6 +775,7 @@ public class Messages extends NLS
     public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
+    public static String YearlyPerformanceHeatmapToolTip;
     static
     {
         // initialize resource bundle

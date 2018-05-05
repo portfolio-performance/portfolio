@@ -42,13 +42,13 @@ public abstract class AbstractIndicatorWidget extends WidgetDelegate
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    void update()
+    public void update()
     {
         this.title.setText(getWidget().getLabel());
     }

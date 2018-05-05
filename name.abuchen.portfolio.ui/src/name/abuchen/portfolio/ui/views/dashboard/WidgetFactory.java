@@ -13,13 +13,15 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
 public enum WidgetFactory
 {
     HEADING(Messages.LabelHeading, HeadingWidget::new),
 
-    TTWROR(Messages.LabelTTWROR,
+    TTWROR(Messages.LabelTTWROR, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
@@ -27,7 +29,7 @@ public enum WidgetFactory
                                         return index.getFinalAccumulatedPercentage();
                                     }).build()),
 
-    IRR(Messages.LabelIRR,
+    IRR(Messages.LabelIRR, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
@@ -38,7 +40,7 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    TOTAL_SUM(Messages.LabelTotalSum,
+    TOTAL_SUM(Messages.LabelTotalSum, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
@@ -49,7 +51,7 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange,
+    ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
@@ -92,10 +94,9 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
-    MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration,
-                    (widget, data) -> new MaxDrawdownDurationWidget(widget, data)),
+    MAXDRAWDOWNDURATION(Messages.LabelMaxDrawdownDuration, MaxDrawdownDurationWidget::new),
 
-    VOLATILITY(Messages.LabelVolatility,
+    VOLATILITY(Messages.LabelVolatility, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
@@ -106,7 +107,7 @@ public enum WidgetFactory
                                     .withColoredValues(false) //
                                     .build()),
 
-    SEMIVOLATILITY(Messages.LabelSemiVolatility,
+    SEMIVOLATILITY(Messages.LabelSemiVolatility, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
                                     .with((ds, period) -> {
@@ -134,6 +135,8 @@ public enum WidgetFactory
                     (widget, data) -> new ChartWidget(widget, data, DataSeries.UseCase.STATEMENT_OF_ASSETS)),
 
     HEATMAP(Messages.LabelHeatmap, PerformanceHeatmapWidget::new),
+
+    HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, YearlyPerformanceHeatmapWidget::new),
 
     CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new),
 

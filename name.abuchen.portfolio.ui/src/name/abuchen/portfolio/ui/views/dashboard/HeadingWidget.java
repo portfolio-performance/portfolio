@@ -37,7 +37,7 @@ public class HeadingWidget extends WidgetDelegate
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }

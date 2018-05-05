@@ -203,7 +203,7 @@ public class ChartWidget extends WidgetDelegate
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
