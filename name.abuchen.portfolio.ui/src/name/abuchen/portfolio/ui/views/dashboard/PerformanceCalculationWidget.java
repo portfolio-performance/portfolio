@@ -2,7 +2,9 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -32,12 +34,14 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     public Composite createControl(Composite parent, DashboardResources resources)
     {
         container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).spacing(3, 3).applyTo(container);
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
         title.setText(getWidget().getLabel());
-        GridDataFactory.fillDefaults().span(3, 1).grab(true, false).applyTo(title);
+        GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, title.getFont().getFontData()[0].getHeight() + 10).grab(true, false).applyTo(title);
+
+        Font boldFont = resources.getResourceManager().createFont(FontDescriptor.createFrom(container.getFont()).setStyle(SWT.BOLD));
 
         labels = new Label[ClientPerformanceSnapshot.CategoryType.values().length];
         signs = new Label[labels.length];
@@ -49,6 +53,19 @@ public class PerformanceCalculationWidget extends WidgetDelegate
             labels[ii] = new Label(container, SWT.NONE);
             values[ii] = new Label(container, SWT.RIGHT);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
+            
+            if (ii == 0 || ii == labels.length - 1)
+            {
+                signs[ii].setFont(boldFont);
+                labels[ii].setFont(boldFont);
+                values[ii].setFont(boldFont);
+            }
+            
+            if (ii == 0 || ii == labels.length - 2)
+            {
+                Label separator = new Label(container, SWT.SEPARATOR | SWT.HORIZONTAL);
+                GridDataFactory.fillDefaults().span(3, 1).grab(true, false).align(SWT.FILL, SWT.BEGINNING).applyTo(separator);
+            }
         }
 
         return container;

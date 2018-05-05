@@ -23,6 +23,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Values;
 
 public class ClientPerformanceSnapshot
 {
@@ -208,7 +209,8 @@ public class ClientPerformanceSnapshot
     private void calculate()
     {
         categories.put(CategoryType.INITIAL_VALUE,
-                        new Category(String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), "", //$NON-NLS-1$
+                        new Category(String.format(Messages.ColumnInitialValue,
+                                        Values.Date.format(snapshotStart.getTime())), "", //$NON-NLS-1$
                                         snapshotStart.getMonetaryAssets()));
 
         Money zero = Money.of(converter.getTermCurrency(), 0);
@@ -221,7 +223,8 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, "+", zero)); //$NON-NLS-1$
 
         categories.put(CategoryType.FINAL_VALUE,
-                        new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), "=", //$NON-NLS-1$
+                        new Category(String.format(Messages.ColumnFinalValue,
+                                        Values.Date.format(snapshotEnd.getTime())), "=", //$NON-NLS-1$
                                         snapshotEnd.getMonetaryAssets()));
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
