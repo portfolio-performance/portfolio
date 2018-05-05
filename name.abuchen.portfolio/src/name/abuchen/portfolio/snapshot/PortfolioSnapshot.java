@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
@@ -11,7 +12,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -31,8 +34,29 @@ public class PortfolioSnapshot
                         .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
-                        .map(e -> new SecurityPosition(e.getKey(), converter, e.getKey().getSecurityPrice(date),
-                                        e.getValue())) //
+                        .map(e -> {
+                            SecurityPrice price = e.getKey().getSecurityPrice(date);
+
+                            if (price.getValue() == 0L)
+                            {
+                                // try to fallback to the price of the last
+                                // transaction
+                                List<PortfolioTransaction> tx = e.getValue();
+
+                                Optional<PortfolioTransaction> last = tx.stream()
+                                                .sorted(new Transaction.ByDate().reversed()).findFirst();
+
+                                if (last.isPresent())
+                                {
+                                    PortfolioTransaction t = last.get();
+                                    price = new SecurityPrice(t.getDateTime().toLocalDate(),
+                                                    t.getGrossPricePerShare(
+                                                                    converter.with(e.getKey().getCurrencyCode()))
+                                                                    .getAmount());
+                                }
+                            }
+                            return new SecurityPosition(e.getKey(), converter, price, e.getValue()); //
+                        }) //
                         .filter(p -> p.getShares() != 0) //
                         .collect(Collectors.toList());
 

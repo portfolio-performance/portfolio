@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
@@ -47,13 +46,6 @@ public class BuySellEntry implements CrossEntry, Annotated
     public Account getAccount()
     {
         return this.account;
-    }
-
-    @Deprecated
-    public void setDate(LocalDate date)
-    {
-        this.portfolioTransaction.setDateTime(date.atStartOfDay());
-        this.accountTransaction.setDateTime(date.atStartOfDay());
     }
     
     public void setDate(LocalDateTime date)
