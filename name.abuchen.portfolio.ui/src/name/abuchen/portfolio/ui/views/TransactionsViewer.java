@@ -188,6 +188,34 @@ public final class TransactionsViewer implements ModificationListener
         owner.notifyModelUpdated();
     }
 
+    /**
+     * Returns the owner of the transaction. Because an investment plan can be
+     * updated, older transactions do not necessarily belong to the account that
+     * is currently configured for by the plan.
+     */
+    private Account lookupOwner(AccountTransaction t)
+    {
+        if (account != null && account.getTransactions().contains(t))
+            return account;
+
+        return owner.getClient().getAccounts().stream().filter(a -> a.getTransactions().contains(t)).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
+    /**
+     * Returns the owner of the transaction. Because an investment plan can be
+     * updated, older transactions do not necessarily belong to the portfolio
+     * that is currently configured for the plan.
+     */
+    private Portfolio lookupOwner(PortfolioTransaction t)
+    {
+        if (portfolio != null && portfolio.getTransactions().contains(t))
+            return portfolio;
+
+        return owner.getClient().getPortfolios().stream().filter(a -> a.getTransactions().contains(t)).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
     private void addColumns()
     {
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -389,8 +417,8 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public void run()
             {
-                for (Object transaction : selection.toArray())
-                    account.deleteTransaction((AccountTransaction) transaction, owner.getClient());
+                for (Object tx : selection.toArray())
+                    lookupOwner((AccountTransaction) tx).deleteTransaction((AccountTransaction) tx, owner.getClient());
 
                 owner.markDirty();
                 owner.notifyModelUpdated();
@@ -413,7 +441,7 @@ public final class TransactionsViewer implements ModificationListener
                             || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
             {
                 manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(),
-                                new TransactionPair<>(portfolio, firstTransaction)));
+                                new TransactionPair<>(lookupOwner(firstTransaction), firstTransaction)));
                 manager.add(new Separator());
             }
 
@@ -421,7 +449,7 @@ public final class TransactionsViewer implements ModificationListener
                             || firstTransaction.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND))
             {
                 manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(),
-                                new TransactionPair<>(portfolio, firstTransaction)));
+                                new TransactionPair<>(lookupOwner(firstTransaction), firstTransaction)));
                 manager.add(new Separator());
             }
 
@@ -437,9 +465,9 @@ public final class TransactionsViewer implements ModificationListener
             @Override
             public void run()
             {
-                Object[] transactions = selection.toArray();
-                for (Object transaction : transactions)
-                    portfolio.deleteTransaction((PortfolioTransaction) transaction, owner.getClient());
+                for (Object tx : selection.toArray())
+                    lookupOwner((PortfolioTransaction) tx).deleteTransaction((PortfolioTransaction) tx,
+                                    owner.getClient());
 
                 owner.markDirty();
                 owner.notifyModelUpdated();
@@ -466,7 +494,8 @@ public final class TransactionsViewer implements ModificationListener
         else
         {
             return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
-                            .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
+                            .type(AccountTransactionDialog.class,
+                                            d -> d.setTransaction(lookupOwner(transaction), transaction)) //
                             .parameters(transaction.getType());
         }
     }
@@ -489,7 +518,7 @@ public final class TransactionsViewer implements ModificationListener
         }
         else
         {
-            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(portfolio, transaction);
+            TransactionPair<PortfolioTransaction> pair = new TransactionPair<>(lookupOwner(transaction), transaction);
             return new OpenDialogAction(this.owner, Messages.MenuEditTransaction) //
                             .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
                             .parameters(transaction.getType());
