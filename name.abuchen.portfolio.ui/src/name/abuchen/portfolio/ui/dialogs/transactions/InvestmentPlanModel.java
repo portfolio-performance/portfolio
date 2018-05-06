@@ -8,10 +8,12 @@ import org.eclipse.core.runtime.IStatus;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.ui.Messages;
 
 public class InvestmentPlanModel extends AbstractModel
@@ -22,7 +24,7 @@ public class InvestmentPlanModel extends AbstractModel
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
-    public static final Portfolio DEPOSIT = new Portfolio(Messages.InvestmentPlanOptionDeposit);
+    private static final Portfolio DEPOSIT = new Portfolio(Messages.InvestmentPlanOptionDeposit);
 
     private final Client client;
 
@@ -30,7 +32,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     private String name;
     private Security security;
-    private Portfolio portfolio = DEPOSIT;
+    private Portfolio portfolio;
     private Account account;
 
     private boolean autoGenerate;
@@ -43,9 +45,12 @@ public class InvestmentPlanModel extends AbstractModel
 
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public InvestmentPlanModel(Client client)
+    public InvestmentPlanModel(Client client, Class<? extends Transaction> planType)
     {
         this.client = client;
+        
+        if (planType == AccountTransaction.class)
+            portfolio = DEPOSIT;
     }
 
     @Override
@@ -170,7 +175,7 @@ public class InvestmentPlanModel extends AbstractModel
     public void setPortfolio(Portfolio portfolio)
     {
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        if (portfolio.equals(InvestmentPlanModel.DEPOSIT))
+        if (DEPOSIT.equals(portfolio))
             firePropertyChange(Properties.security.name(), this.security, this.security = null); // NOSONAR
         firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio); // NOSONAR
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,

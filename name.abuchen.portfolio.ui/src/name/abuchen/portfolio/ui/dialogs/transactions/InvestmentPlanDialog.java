@@ -55,7 +55,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         this.client = client;
         this.planType = planType;
 
-        setModel(new InvestmentPlanModel(client));
+        setModel(new InvestmentPlanModel(client, planType));
     }
 
     private InvestmentPlanModel model()
@@ -92,15 +92,15 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         ComboInput portfolio = null;
         if (planType == PortfolioTransaction.class)
         {
-            securities = new ComboInput(editArea, Messages.ColumnSecurity);
-            securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
-            securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
-            securities.bindCurrency(Properties.securityCurrencyCode.name());
-
             portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
             List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
             portfolio.value.setInput(portfolios);
             portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
+
+            securities = new ComboInput(editArea, Messages.ColumnSecurity);
+            securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+            securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
+            securities.bindCurrency(Properties.securityCurrencyCode.name());
         }
 
         // account
