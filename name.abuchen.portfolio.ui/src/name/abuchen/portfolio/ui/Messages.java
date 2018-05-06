@@ -375,6 +375,7 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailCompactView;
     public static String LabelChartDetailDividends;
     public static String LabelChartDetailShowDataLabel;
@@ -426,6 +427,9 @@ public class Messages extends NLS
     public static String LabelIRR;
     public static String LabelLanguage;
     public static String LabelLanguageAutomatic;
+    public static String LabelLayout;
+    public static String LabelLayoutFull;
+    public static String LabelLayoutReduced;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNamePlusCopy;
