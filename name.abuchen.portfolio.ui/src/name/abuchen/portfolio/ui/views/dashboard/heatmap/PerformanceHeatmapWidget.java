@@ -11,8 +11,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
@@ -24,50 +22,20 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
-import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
-public class PerformanceHeatmapWidget extends WidgetDelegate
+public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
 {
-    private Composite table;
-    private Label title;
-    private DashboardResources resources;
-
     public PerformanceHeatmapWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
-        addConfig(new ReportingPeriodConfig(this));
         addConfig(new DataSeriesConfig(this, true));
-        addConfig(new ColorSchemaConfig(this));
     }
 
     @Override
-    public Composite createControl(Composite parent, DashboardResources resources)
-    {
-        this.resources = resources;
-
-        Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
-        container.setBackground(parent.getBackground());
-
-        title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        table = new Composite(container, SWT.NONE);
-        // 13 columns, one for the legend and 12 for the months
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(table);
-        GridLayoutFactory.fillDefaults().numColumns(13).equalWidth(true).spacing(1, 1).applyTo(table);
-        table.setBackground(container.getBackground());
-
-        fillTable();
-
-        return container;
-    }
-
-    private void fillTable()
+    protected void fillTable(Composite table, DashboardResources resources)
     {
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period
@@ -75,10 +43,13 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         // the median
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval();
 
-        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getColorSchema()
+        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
                         .buildColorFunction(resources.getResourceManager());
 
-        addHeaderRow();
+        // 13 columns, one for the legend and 12 for the months
+        GridLayoutFactory.fillDefaults().numColumns(13).equalWidth(true).spacing(1, 1).applyTo(table);
+
+        addHeaderRow(table);
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
 
@@ -108,7 +79,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             {
                 if (actualInterval.contains(month))
                 {
-                    cell = createCell(performanceIndex, month, coloring);
+                    cell = createCell(table, resources, performanceIndex, month, coloring);
                     InfoToolTip.attach(cell, Messages.PerformanceHeatmapToolTip);
                 }
                 else
@@ -121,7 +92,8 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
         table.layout(true);
     }
 
-    private Cell createCell(PerformanceIndex index, LocalDate month, DoubleFunction<Color> coloring)
+    private Cell createCell(Composite table, DashboardResources resources, PerformanceIndex index, LocalDate month,
+                    DoubleFunction<Color> coloring)
     {
         int start = Arrays.binarySearch(index.getDates(), month.minusDays(1));
         // should not happen, but let's be defensive this time
@@ -144,7 +116,7 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
                         Values.PercentShort.format(performance)));
     }
 
-    private void addHeaderRow()
+    private void addHeaderRow(Composite table)
     {
         // Top Left is empty
         new Cell(table, new CellDataProvider("")); //$NON-NLS-1$
@@ -167,25 +139,4 @@ public class PerformanceHeatmapWidget extends WidgetDelegate
             GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
         }
     }
-
-    @Override
-    public void update()
-    {
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
-
-        for (Control child : table.getChildren())
-            child.dispose();
-
-        fillTable();
-
-        table.getParent().layout(true);
-        table.getParent().getParent().layout(true);
-    }
-
-    @Override
-    public Control getTitleControl()
-    {
-        return title;
-    }
-
 }

@@ -8,7 +8,7 @@ import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
-class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
+public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
 {
     private final WidgetDelegate delegate;
     private final Dashboard.Config configurationKey;

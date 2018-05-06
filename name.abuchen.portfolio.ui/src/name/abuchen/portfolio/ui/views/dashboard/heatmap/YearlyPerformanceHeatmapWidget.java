@@ -8,8 +8,6 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
@@ -21,49 +19,20 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.MultiDataSeriesConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
-import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
-public class YearlyPerformanceHeatmapWidget extends WidgetDelegate
+public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
 {
-    private Composite table;
-    private Label title;
-    private DashboardResources resources;
-
     public YearlyPerformanceHeatmapWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
-        addConfig(new ReportingPeriodConfig(this));
         addConfig(new MultiDataSeriesConfig(this));
-        addConfig(new ColorSchemaConfig(this));
     }
 
     @Override
-    public Composite createControl(Composite parent, DashboardResources resources)
-    {
-        this.resources = resources;
-
-        Composite container = new Composite(parent, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
-        container.setBackground(parent.getBackground());
-
-        title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        table = new Composite(container, SWT.NONE);
-        // 13 columns, one for the legend and 12 for the months
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(table);
-        table.setBackground(container.getBackground());
-
-        fillTable();
-
-        return container;
-    }
-
-    private void fillTable()
+    protected void fillTable(Composite table, DashboardResources resources)
     {
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period
@@ -73,7 +42,7 @@ public class YearlyPerformanceHeatmapWidget extends WidgetDelegate
 
         List<DataSeries> dataSeries = get(MultiDataSeriesConfig.class).getDataSeries();
 
-        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getColorSchema()
+        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
                         .buildColorFunction(resources.getResourceManager());
 
         // adapt interval to include the first and last year fully
@@ -86,7 +55,7 @@ public class YearlyPerformanceHeatmapWidget extends WidgetDelegate
         GridLayoutFactory.fillDefaults().numColumns(dataSeries.size() + 1).equalWidth(true).spacing(1, 1)
                         .applyTo(table);
 
-        addHeaderRow(dataSeries);
+        addHeaderRow(table, dataSeries);
 
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
 
@@ -115,7 +84,7 @@ public class YearlyPerformanceHeatmapWidget extends WidgetDelegate
         table.layout(true);
     }
 
-    private void addHeaderRow(List<DataSeries> series)
+    private void addHeaderRow(Composite table, List<DataSeries> series)
     {
         // top left cell
         new Cell(table, new CellDataProvider("")); //$NON-NLS-1$
@@ -126,25 +95,5 @@ public class YearlyPerformanceHeatmapWidget extends WidgetDelegate
             InfoToolTip.attach(cell, s.getLabel());
             GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
         }
-    }
-
-    @Override
-    public void update()
-    {
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
-
-        for (Control child : table.getChildren())
-            child.dispose();
-
-        fillTable();
-
-        table.getParent().layout(true);
-        table.getParent().getParent().layout(true);
-    }
-
-    @Override
-    public Control getTitleControl()
-    {
-        return title;
     }
 }
