@@ -13,7 +13,7 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
 
     private Account referenceAccount;
 
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
+    private List<PortfolioTransaction> transactions = new ArrayList<>();
 
     public Portfolio()
     {

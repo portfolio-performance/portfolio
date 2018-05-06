@@ -18,7 +18,7 @@ public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate;
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate; // NOSONAR
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
@@ -30,17 +30,17 @@ public class InvestmentPlanModel extends AbstractModel
 
     private String name;
     private Security security;
-    private Portfolio portfolio;
+    private Portfolio portfolio = DEPOSIT;
     private Account account;
 
     private boolean autoGenerate;
-    
+
     private LocalDate start = LocalDate.now();
 
     private int interval = 1;
     private long amount;
     private long fees;
-    
+
     private IStatus calculationStatus = ValidationStatus.ok();
 
     public InvestmentPlanModel(Client client)
@@ -57,7 +57,7 @@ public class InvestmentPlanModel extends AbstractModel
     @Override
     public void applyChanges()
     {
-        if (security == null && !portfolio.equals(DEPOSIT))
+        if (security == null && !DEPOSIT.equals(portfolio))
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
         if (portfolio == null)
             throw new UnsupportedOperationException(Messages.MsgMissingPortfolio);
@@ -114,7 +114,7 @@ public class InvestmentPlanModel extends AbstractModel
     {
         return calculationStatus;
     }
-    
+
     private IStatus calculateStatus()
     {
         if (account != null && account.equals(DELIVERY) && portfolio != null && portfolio.equals(DEPOSIT))
@@ -122,16 +122,17 @@ public class InvestmentPlanModel extends AbstractModel
 
         if (name == null || name.trim().length() == 0)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
-        
+
         if (security == null && portfolio != null && !portfolio.equals(DEPOSIT))
-            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.MsgMissingSecurity));
+            return ValidationStatus
+                            .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.MsgMissingSecurity));
 
         if (amount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
-        
+
         return ValidationStatus.ok();
     }
-    
+
     public String getName()
     {
         return name;
@@ -139,9 +140,9 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setName(String name)
     {
-        firePropertyChange(Properties.name.name(), this.name, this.name = name);
+        firePropertyChange(Properties.name.name(), this.name, this.name = name); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Security getSecurity()
@@ -153,12 +154,12 @@ public class InvestmentPlanModel extends AbstractModel
     {
         String oldSecurityCurrency = getSecurityCurrencyCode();
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        firePropertyChange(Properties.security.name(), this.security, this.security = security);
+        firePropertyChange(Properties.security.name(), this.security, this.security = security); // NOSONAR
         firePropertyChange(Properties.securityCurrencyCode.name(), oldSecurityCurrency, getSecurityCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Portfolio getPortfolio()
@@ -170,13 +171,12 @@ public class InvestmentPlanModel extends AbstractModel
     {
         String oldTransactionCurrency = getTransactionCurrencyCode();
         if (portfolio.equals(InvestmentPlanModel.DEPOSIT))
-            this.security = null;
-        firePropertyChange(Properties.security.name(), this.security, this.security = security);
-        firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio);
+            firePropertyChange(Properties.security.name(), this.security, this.security = null); // NOSONAR
+        firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio); // NOSONAR
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Account getAccount()
@@ -188,14 +188,14 @@ public class InvestmentPlanModel extends AbstractModel
     {
         String oldAccountCurrency = getAccountCurrencyCode();
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.account.name(), this.account, this.account = account); // NOSONAR
         firePropertyChange(Properties.accountCurrencyCode.name(), oldAccountCurrency, getAccountCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
-    
+
     public boolean isAutoGenerate()
     {
         return autoGenerate;
@@ -203,7 +203,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setAutoGenerate(boolean autoGenerate)
     {
-        firePropertyChange(Properties.autoGenerate.name(), this.autoGenerate, this.autoGenerate = autoGenerate);
+        firePropertyChange(Properties.autoGenerate.name(), this.autoGenerate, this.autoGenerate = autoGenerate); // NOSONAR
     }
 
     public LocalDate getStart()
@@ -213,7 +213,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setStart(LocalDate start)
     {
-        firePropertyChange(Properties.start.name(), this.start, this.start = start);
+        firePropertyChange(Properties.start.name(), this.start, this.start = start); // NOSONAR
     }
 
     public int getInterval()
@@ -223,7 +223,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setInterval(int interval)
     {
-        firePropertyChange(Properties.interval.name(), this.interval, this.interval = interval);
+        firePropertyChange(Properties.interval.name(), this.interval, this.interval = interval); // NOSONAR
     }
 
     public long getAmount()
@@ -233,9 +233,9 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setAmount(long amount)
     {
-        firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+        firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getFees()
@@ -245,7 +245,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setFees(long fees)
     {
-        firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees);
+        firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
     }
 
     public String getSecurityCurrencyCode()

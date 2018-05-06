@@ -153,14 +153,8 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
 
         public IObservableValue<Object> bindValue(String property, String missingValueMessage)
         {
-            return this.bindValue(property, missingValueMessage, true);
-        }
-
-        public IObservableValue bindValue(String property, String missingValueMessage, boolean isMandatory)
-        {
             UpdateValueStrategy strategy = new UpdateValueStrategy();
-            if (isMandatory)
-                strategy.setAfterConvertValidator(
+            strategy.setAfterConvertValidator(
                             v -> v != null ? ValidationStatus.ok() : ValidationStatus.error(missingValueMessage));
             @SuppressWarnings("unchecked")
             IObservableValue<Object> targetObservable = ViewersObservables.observeSingleSelection(value);

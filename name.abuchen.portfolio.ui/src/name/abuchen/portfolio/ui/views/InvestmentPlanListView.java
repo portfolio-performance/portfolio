@@ -8,7 +8,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -66,7 +65,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     {
         return Messages.LabelInvestmentPlans;
     }
-    
+
     @Override
     protected int getSashStyle()
     {
@@ -98,15 +97,25 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void addNewInvestmentPlanButton(ToolBar toolBar)
     {
-        Action action = new OpenDialogAction(this, Messages.InvestmentPlanMenuCreate) //
-                        .type(InvestmentPlanDialog.class).onSuccess(d -> {
-                            markDirty();
-                            plans.setInput(getClient().getPlans());
-                        });
-        action.setImageDescriptor(Images.PLUS.descriptor());
-        action.setToolTipText(Messages.InvestmentPlanMenuCreate);
+        AbstractDropDown.create(toolBar, Messages.InvestmentPlanMenuCreate, Images.PLUS.image(), SWT.NONE,
+                        (dd, manager) -> {
 
-        new ActionContributionItem(action).fill(toolBar, -1);
+                            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
+                                            .type(InvestmentPlanDialog.class) //
+                                            .parameters(PortfolioTransaction.class) //
+                                            .onSuccess(d -> {
+                                                markDirty();
+                                                plans.setInput(getClient().getPlans());
+                                            }));
+
+                            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
+                                            .type(InvestmentPlanDialog.class) //
+                                            .parameters(AccountTransaction.class) //
+                                            .onSuccess(d -> {
+                                                markDirty();
+                                                plans.setInput(getClient().getPlans());
+                                            }));
+                        });
     }
 
     private void addConfigButton(final ToolBar toolBar)
@@ -199,7 +208,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public String getText(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getPortfolio() != null ? plan.getPortfolio().getName() : Messages.InvestmentPlanOptionDeposit;
+                return plan.getPortfolio() != null ? plan.getPortfolio().getName()
+                                : Messages.InvestmentPlanOptionDeposit;
             }
 
             @Override
@@ -354,7 +364,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         new OpenDialogAction(this, Messages.MenuEditInvestmentPlan) //
                         .type(InvestmentPlanDialog.class, d -> d.setPlan(plan)) //
-                        .onSuccess(d -> {
+                        .parameters(plan.getPlanType()).onSuccess(d -> {
                             markDirty();
                             plans.setInput(getClient().getPlans());
                         }).addTo(manager);

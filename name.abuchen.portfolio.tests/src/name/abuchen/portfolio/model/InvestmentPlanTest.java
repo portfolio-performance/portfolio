@@ -1,12 +1,11 @@
 package name.abuchen.portfolio.model;
 
-import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDateTime;
 import java.time.Month;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -125,14 +124,10 @@ public class InvestmentPlanTest
     public void testGenerationOfDepositTransaction()
     {
         Client client = new Client();
-        Security security = new SecurityBuilder().addTo(client);
         Account account = new AccountBuilder().addTo(client);
-        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
 
         InvestmentPlan investmentPlan = new InvestmentPlan();
-        investmentPlan.setAccount(account); // set portfolio only
-        // investmentPlan.setPortfolio(portfolio); // causes deposit to be made
-        investmentPlan.setSecurity(security);
+        investmentPlan.setAccount(account);
         investmentPlan.setAmount(Values.Amount.factorize(100));
         investmentPlan.setInterval(1);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
