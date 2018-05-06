@@ -155,7 +155,7 @@ public final class TransactionsViewer implements ModificationListener
         marked.addAll(transactions);
     }
 
-    public void setInput(Account account, Portfolio portfolio, List<Transaction> transactions)
+    public void setInput(Account account, Portfolio portfolio, List<? extends Transaction> transactions)
     {
         this.account = account;
         this.portfolio = portfolio;
@@ -363,10 +363,9 @@ public final class TransactionsViewer implements ModificationListener
     {
         IStructuredSelection selection = tableViewer.getStructuredSelection();
 
-        if (selection.isEmpty())
-            return;
-
-        if (selection.getFirstElement() instanceof AccountTransaction)
+        if (selection.isEmpty() && fullContextMenu)
+            new SecurityContextMenu(owner).menuAboutToShow(manager, null, portfolio);
+        else if (selection.getFirstElement() instanceof AccountTransaction)
             fillContextMenuAccountTx(manager, selection);
         else if (selection.getFirstElement() instanceof PortfolioTransaction)
             fillContextMenuPortfolioTx(manager, selection);
@@ -381,10 +380,10 @@ public final class TransactionsViewer implements ModificationListener
             Action action = createEditAction(firstTransaction);
             action.setAccelerator(SWT.MOD1 | 'E');
             manager.add(action);
-            
+
             manager.add(new Separator());
         }
-        
+
         manager.add(new Action(Messages.AccountMenuDeleteTransaction)
         {
             @Override

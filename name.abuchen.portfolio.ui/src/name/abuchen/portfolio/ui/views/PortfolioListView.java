@@ -53,7 +53,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
     private TableViewer portfolios;
     private StatementOfAssetsViewer statementOfAssets;
-    private PortfolioTransactionsViewer transactions;
+    private TransactionsViewer transactions;
 
     private ShowHideColumnHelper portfolioColumns;
 
@@ -239,7 +239,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
             if (portfolio != null)
             {
-                transactions.setInput(portfolio, portfolio.getTransactions());
+                transactions.setInput(null, portfolio, portfolio.getTransactions());
                 transactions.refresh();
                 CurrencyConverter converter = new CurrencyConverterImpl(factory,
                                 portfolio.getReferenceAccount().getCurrencyCode());
@@ -247,7 +247,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             }
             else
             {
-                transactions.setInput(null, null);
+                transactions.setInput(null, null, null);
                 transactions.refresh();
                 statementOfAssets.setInput((PortfolioSnapshot) null);
             }
@@ -310,7 +310,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.TabTransactions);
-        transactions = new PortfolioTransactionsViewer(folder, this);
+        transactions = new TransactionsViewer(folder, this);
         item.setControl(transactions.getControl());
 
         folder.setSelection(0);
