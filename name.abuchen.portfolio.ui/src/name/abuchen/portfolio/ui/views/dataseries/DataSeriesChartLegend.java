@@ -221,7 +221,8 @@ public class DataSeriesChartLegend extends Composite
                     }));
 
                     position.add(new SimpleAction(Messages.ChartSendToBack, a -> {
-                        Collections.swap(configurator.getSelectedDataSeries(), index, 0);
+                        DataSeries s = configurator.getSelectedDataSeries().remove(index);
+                        configurator.getSelectedDataSeries().add(0, s);
                         configurator.fireUpdate();
                     }));
 
@@ -235,8 +236,8 @@ public class DataSeriesChartLegend extends Composite
                     }));
 
                     position.add(new SimpleAction(Messages.ChartBringToFront, a -> {
-                        Collections.swap(configurator.getSelectedDataSeries(), index,
-                                        configurator.getSelectedDataSeries().size() - 1);
+                        DataSeries s = configurator.getSelectedDataSeries().remove(index);
+                        configurator.getSelectedDataSeries().add(s);
                         configurator.fireUpdate();
                     }));
 
