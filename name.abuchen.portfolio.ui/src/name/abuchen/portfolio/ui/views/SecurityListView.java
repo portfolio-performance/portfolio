@@ -473,7 +473,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setControl(chartComposite);
 
         chart = new SecuritiesChart(chartComposite, getClient(),
-                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
+                        new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency()));
 
         // tab 2: historical quotes
         item = new CTabItem(folder, SWT.NONE);

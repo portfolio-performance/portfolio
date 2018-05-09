@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
@@ -44,6 +45,10 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
         return answer;
     }
 
+    @Override
+    public void setClient(Client client)
+    {}
+    
     private static class USDAED implements ExchangeRateTimeSeries
     {
         private ExchangeRateProvider provider;

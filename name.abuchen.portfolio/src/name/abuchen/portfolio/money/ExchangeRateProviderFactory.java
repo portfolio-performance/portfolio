@@ -20,6 +20,7 @@ import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 
@@ -144,6 +145,7 @@ public class ExchangeRateProviderFactory
 
     }
 
+    private Client client;
     private final List<ExchangeRateProvider> providers;
     private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
@@ -163,11 +165,18 @@ public class ExchangeRateProviderFactory
         return Collections.unmodifiableList(providers);
     }
 
+    /**
+     * Returns the available exchange rates provided by this provider.
+     * 
+     * @return available time series
+     */
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         List<ExchangeRateTimeSeries> series = new ArrayList<>();
         for (ExchangeRateProvider p : providers)
+        {
             series.addAll(p.getAvailableTimeSeries());
+        }
         return series;
     }
 
@@ -194,4 +203,24 @@ public class ExchangeRateProviderFactory
         else
             return new ChainedExchangeRateTimeSeries(answer.toArray(new ExchangeRateTimeSeries[0]));
     }
+    
+    /**
+     * Sets the associated client.
+     * 
+     * @param client
+     *            {@link Client}
+     */
+    public void setClient(Client client)
+    {
+        // notify providers only if client changes
+        if (!Objects.equals(this.client, client))
+        {
+            this.client = client;
+            for (ExchangeRateProvider p : providers)
+            {
+                p.setClient(client);
+            }
+        }
+    }
+
 }

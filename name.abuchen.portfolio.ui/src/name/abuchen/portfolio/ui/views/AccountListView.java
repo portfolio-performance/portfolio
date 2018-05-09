@@ -767,7 +767,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             if (tx.isEmpty())
                 return;
 
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
+            CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient(), account.getCurrencyCode());
             Collections.sort(tx, new Transaction.ByDate());
 
             LocalDate now = LocalDate.now();

@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import name.abuchen.portfolio.model.Client;
+
 /**
  * Provides a number of time series of exchange rates.
  */
@@ -31,7 +33,17 @@ public interface ExchangeRateProvider
     void save(IProgressMonitor monitor) throws IOException;
 
     /**
+     * Sets the associated client.
+     * 
+     * @param client
+     *            {@link Client}
+     */
+    public void setClient(Client client);
+    
+    /**
      * Returns the available exchange rates provided by this provider.
+     * 
+     * @return available time series
      */
     List<ExchangeRateTimeSeries> getAvailableTimeSeries();
 }

@@ -98,7 +98,7 @@ public class PerformanceView extends AbstractHistoricView
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = getReportingPeriod();
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 

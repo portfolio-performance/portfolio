@@ -184,6 +184,7 @@ public class Messages extends NLS
     public static String PDFMsgFileNotSupported;
     public static String PDFMsgMissingShares;
     public static String QuoteFeedManual;
+    public static String SecurityBasedExchangeRateProvider;
     static
     {
         // initialize resource bundle

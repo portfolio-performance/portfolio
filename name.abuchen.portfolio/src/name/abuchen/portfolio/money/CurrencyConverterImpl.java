@@ -6,15 +6,19 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 
 public class CurrencyConverterImpl implements CurrencyConverter
 {
+    private final Client client;
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
 
-    public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency)
+    public CurrencyConverterImpl(ExchangeRateProviderFactory factory, Client client, String termCurrency)
     {
+        this.client = client;
         this.factory = factory;
+        this.factory.setClient(client);
         this.termCurrency = termCurrency;
     }
 
@@ -70,6 +74,6 @@ public class CurrencyConverterImpl implements CurrencyConverter
         if (currencyCode.equals(termCurrency))
             return this;
 
-        return new CurrencyConverterImpl(factory, currencyCode);
+        return new CurrencyConverterImpl(factory, client, currencyCode);
     }
 }

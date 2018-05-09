@@ -9,6 +9,7 @@ import java.util.Optional;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
@@ -93,4 +94,9 @@ public class GBXExchangeRateProvider implements ExchangeRateProvider
             return 1;
         }
     }
+
+    @Override
+    public void setClient(Client client)
+    {}
+
 }

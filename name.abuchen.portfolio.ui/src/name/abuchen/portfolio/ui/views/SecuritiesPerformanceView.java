@@ -791,7 +791,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         item.setControl(chartComposite);
 
         chart = new SecuritiesChart(chartComposite, getClient(),
-                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
+                        new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency()));
 
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
         latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
@@ -1036,7 +1036,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     public void reportingPeriodUpdated()
     {
         ReportingPeriod period = dropDown.getPeriods().getFirst();
-        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+        CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency());
         Client filteredClient = clientFilter.filter(getClient());
         records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());
         records.refresh();

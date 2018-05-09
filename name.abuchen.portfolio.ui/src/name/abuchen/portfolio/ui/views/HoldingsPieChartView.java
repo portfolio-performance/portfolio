@@ -96,7 +96,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         {
             try
             {
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency());
                 Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
                 ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
 
