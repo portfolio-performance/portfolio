@@ -84,11 +84,9 @@ public class YahooSearchProvider implements SecuritySearchProvider
         try (CloseableHttpClient client = HttpClients.createDefault())
         {
             String templateURL = "https://de.finance.yahoo.com/_finance_doubledown/api/resource/searchassist;" //$NON-NLS-1$
-                            + "gossipConfig=%7B%22queryKey%22%3A%22query%22%2C%22resultAccessor%22%3A%22ResultSet.Result%22%2C%22suggestionTitleAccessor%22%3A%22symbol%22%2C%22suggestionMeta%22%3A%5B%22symbol%22%5D%2C%22url%22%3A%7B%22query%22%3A%7B%22region%22%3A%22DE%22%2C%22lang%22%3A%22de-DE%22%7D%7D%7D" //$NON-NLS-1$
-                            + ";searchTerm={0}" //$NON-NLS-1$
-                            + "?bkt=finance-DE-de-DE-def&device=desktop" //$NON-NLS-1$
-                            + "&feature=canvassOffnet%2CenablePromoImage%2CnewContentAttribution%2CrelatedVideoFeature%2CvideoNativePlaylist%2CenableCrypto%2CenableESG%2CenablePrivacyUpdate%2CenableSingleRail" //$NON-NLS-1$
-                            + "&intl=de&lang=de-DE&partner=none&prid=4nnbiulddo8jv&region=DE&site=finance&tz=Europe%2FBerlin&ver=0.102.1268&returnMeta=true"; //$NON-NLS-1$
+                            + "searchTerm={0}?bkt=finance-DE-de-DE-def&device=desktop&feature=canvassOffnet%2CccOnMute%2CenablePromoImage%2CnewContentAttribution" //$NON-NLS-1$
+                            + "%2CrelatedVideoFeature%2CvideoNativePlaylist%2CenableCrypto%2CenableESG%2CenablePrivacyUpdate%2CenableGuceJs%2CenableGuceJsOverlay" //$NON-NLS-1$
+                            + "%2CenableCMP%2CenableSingleRail&intl=de&lang=de-DE&partner=none&prid=92ms5apdf6jc3&region=DE&site=finance&tz=Europe%2FBerlin&ver=0.102.1312&returnMeta=true"; //$NON-NLS-1$
 
             String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
 
