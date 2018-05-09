@@ -223,6 +223,8 @@ public class Messages extends NLS
     public static String ColumnSubTotal;
     public static String ColumnSum;
     public static String ColumnSymbol;
+    public static String ColumnTargetCurrency;
+    public static String ColumnTargetCurrencyToolTip;
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
     public static String ColumnTaxes_Description;

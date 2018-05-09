@@ -45,17 +45,14 @@ public class StartupAddon
     private static final class UpdateExchangeRatesJob extends Job
     {
         private final IEventBroker broker;
-        private final ExchangeRateProviderFactory factory;
         private final ExchangeRateProvider provider;
 
         private boolean loadDone = false;
 
-        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProviderFactory factory,
-                        ExchangeRateProvider provider)
+        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProvider provider)
         {
             super(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()));
             this.broker = broker;
-            this.factory = factory;
             this.provider = provider;
         }
 
@@ -91,7 +88,6 @@ public class StartupAddon
             }
             finally
             {
-                factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
         }
@@ -108,7 +104,6 @@ public class StartupAddon
             }
             finally
             {
-                factory.clearCache();
                 broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
             }
         }
@@ -167,19 +162,19 @@ public class StartupAddon
     }
 
     @PostConstruct
-    public void updateExchangeRates(IEventBroker broker, ExchangeRateProviderFactory factory)
+    public void updateExchangeRates(IEventBroker broker)
     {
-        for (final ExchangeRateProvider provider : factory.getProviders())
+        for (final ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
-            Job job = new UpdateExchangeRatesJob(broker, factory, provider);
+            Job job = new UpdateExchangeRatesJob(broker, provider);
             job.schedule();
         }
     }
 
     @PreDestroy
-    public void storeExchangeRates(ExchangeRateProviderFactory factory)
+    public void storeExchangeRates()
     {
-        for (ExchangeRateProvider provider : factory.getProviders())
+        for (ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
             try
             {

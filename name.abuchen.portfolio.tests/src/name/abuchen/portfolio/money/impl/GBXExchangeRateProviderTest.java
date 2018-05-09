@@ -18,7 +18,7 @@ public class GBXExchangeRateProviderTest
     @Test
     public void testIt()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory();
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(null);
 
         // default value EUR -> GBP is 0.72666
         ExchangeRateTimeSeries eur_gbx = factory.getTimeSeries("EUR", "GBX");

@@ -53,7 +53,9 @@ public class SecurityMasterDataPage extends AbstractPage
             l.setText(Messages.MsgInfoChangingCurrencyNotPossible);
 
         }
-
+        ComboViewer targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency, "targetCurrencyCode"); //$NON-NLS-1$
+        targetCurrencyCode.getCombo().setToolTipText(Messages.ColumnTargetCurrencyToolTip);
+        
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
