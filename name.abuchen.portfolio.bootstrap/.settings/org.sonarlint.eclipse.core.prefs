@@ -1,7 +1,7 @@
-autoEnabled=false
+autoEnabled=true
 eclipse.preferences.version=1
 extraProperties=
 fileExclusions=
-moduleKey=name.abuchen.portfolio\:portfolio-app
+moduleKey=name.abuchen.portfolio\:name.abuchen.portfolio.bootstrap
 projectKey=name.abuchen.portfolio\:portfolio-app
 serverId=SonarCloud/buchen-github
