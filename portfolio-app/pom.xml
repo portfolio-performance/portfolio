@@ -63,9 +63,9 @@
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180330011457/repository</url>
 		</repository>
 		<repository>
-			<id>eclipse-oxygen</id>
+			<id>eclipse-photon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.7/R-4.7.3a-201803300640/</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M7-201805092000/</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
