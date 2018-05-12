@@ -50,7 +50,7 @@
       <feature id="org.eclipse.nebula.cwt.feature"/>
       <feature id="org.eclipse.nebula.widgets.cdatetime.feature"/>
       
-      <feature id="name.abuchen.com.oracle.jre.feature"/>
+      <feature id="name.abuchen.zulu.jre.feature"/>
    </features>
 
    <configurations>
