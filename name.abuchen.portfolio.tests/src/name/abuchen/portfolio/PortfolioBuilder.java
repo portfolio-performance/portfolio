@@ -53,36 +53,59 @@ public class PortfolioBuilder
 
     public PortfolioBuilder buy(Security security, String date, long shares, long amount)
     {
-        return buysell(Type.BUY, security, date, shares, amount, 0);
+        return buysell(Type.BUY, security, date, shares, amount, 0, 0);
+    }
+    
+    public PortfolioBuilder buy(Security security, String date, long shares, long amount, long fees, long taxes)
+    {
+        return buysell(Type.BUY, security, date, shares, amount, fees, taxes);
+    }
+    
+    public PortfolioBuilder buy(Security security, String date, long shares, long amount, long fees, long taxes, Account account)
+    {
+        return buysell(Type.BUY, security, date, shares, amount, fees, taxes, account);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, long amount)
     {
-        return buysell(Type.SELL, security, date, shares, amount, 0);
+        return buysell(Type.SELL, security, date, shares, amount, 0, 0);
     }
 
-    public PortfolioBuilder sell(Security security, String date, long shares, long amount, int fees)
+    public PortfolioBuilder sell(Security security, String date, long shares, long amount, long fees)
     {
-        return buysell(Type.SELL, security, date, shares, amount, fees);
+        return buysell(Type.SELL, security, date, shares, amount, fees, 0);
     }
 
-    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, int fees)
+    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, long fees, long taxes)
     {
         if (portfolio.getReferenceAccount() == null)
         {
             account = new Account(UUID.randomUUID().toString());
             portfolio.setReferenceAccount(account);
         }
-
-        BuySellEntry entry = new BuySellEntry(portfolio, portfolio.getReferenceAccount());
+        return buysell(type, security, date, shares, amount, fees, taxes, account == null ? portfolio.getReferenceAccount() : account);
+    }
+    
+    private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, long fees, long taxes, Account account)
+    {
+        BuySellEntry entry = new BuySellEntry(portfolio, account);
         entry.setType(type);
         entry.setDate(AccountBuilder.asDateTime(date));
         entry.setSecurity(security);
         entry.setShares(shares);
         entry.setCurrencyCode(CurrencyUnit.EUR);
         entry.setAmount(amount);
-        entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, fees)));
-
+        
+        if (fees != 0)
+        {
+            entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money.of(CurrencyUnit.EUR, fees)));
+        }
+        
+        if (taxes != 0)
+        {
+            entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, taxes)));
+        }
+        
         entry.insert();
 
         return this;

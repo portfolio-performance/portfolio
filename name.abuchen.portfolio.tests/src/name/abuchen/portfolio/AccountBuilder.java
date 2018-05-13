@@ -12,7 +12,9 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class AccountBuilder
 {
@@ -56,19 +58,44 @@ public class AccountBuilder
         return transaction(Type.INTEREST, date, amount);
     }
     
+    public AccountBuilder interest(String date, long amount, Security security)
+    {
+        return transaction(Type.INTEREST, date, amount, security);
+    }
+    
+    public AccountBuilder interest(String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(Type.INTEREST, date, amount, affectedShares, security);
+    }
+    
     public AccountBuilder interest_charge(String date, long amount)
     {
         return transaction(Type.INTEREST_CHARGE, date, amount);
     }
 
-    public AccountBuilder interest_charge(LocalDateTime date, long amount)
+    public AccountBuilder interest_charge(String date, long amount, Security security)
     {
-        return transaction(Type.INTEREST_CHARGE, date, amount);
+        return transaction(Type.INTEREST_CHARGE, date, amount, security);
+    }
+    
+    public AccountBuilder interest_charge(String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(Type.INTEREST_CHARGE, date, amount, affectedShares, security);
     }
 
     public AccountBuilder fees____(String date, long amount)
     {
         return transaction(Type.FEES, date, amount);
+    }
+    
+    public AccountBuilder fees____(String date, long amount, Security security)
+    {
+        return transaction(Type.FEES, date, amount, security);
+    }
+    
+    public AccountBuilder fees____(String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(Type.FEES, date, amount, affectedShares, security);
     }
 
     public AccountBuilder fees____(LocalDateTime date, long amount)
@@ -79,6 +106,16 @@ public class AccountBuilder
     public AccountBuilder fees_refund(String date, long amount)
     {
         return transaction(Type.FEES_REFUND, date, amount);
+    }
+    
+    public AccountBuilder fees_refund(String date, long amount, Security security)
+    {
+        return transaction(Type.FEES_REFUND, date, amount, security);
+    }
+    
+    public AccountBuilder fees_refund(String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(Type.FEES_REFUND, date, amount, affectedShares, security);
     }
 
     public AccountBuilder withdraw(String date, long amount)
@@ -93,20 +130,55 @@ public class AccountBuilder
 
     public AccountBuilder dividend(String date, long amount, Security security)
     {
-        AccountTransaction t = new AccountTransaction(asDateTime(date), account.getCurrencyCode(), amount,
-                        security, Type.DIVIDENDS);
-        account.addTransaction(t);
-        return this;
+        return transaction(Type.DIVIDENDS, date, amount, security);
+    }
+    
+    public AccountBuilder dividend(String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(Type.DIVIDENDS, date, amount, affectedShares, security);
+    }
+    
+    public AccountBuilder dividend(String date, long amount, long fees, long taxes, Security security)
+    {
+        return transaction(Type.DIVIDENDS, date, amount, 0, fees, taxes, security);
+    }
+    
+    public AccountBuilder dividend(String date, long amount, long affectedShares, long fees, long taxes, Security security)
+    {
+        return transaction(Type.DIVIDENDS, date, amount, affectedShares, fees, taxes, security);
     }
 
     private AccountBuilder transaction(Type type, String date, long amount)
     {
         return transaction(type, asDateTime(date), amount);
     }
+    
+    private AccountBuilder transaction(Type type, String date, long amount, Security security)
+    {
+        return transaction(type, date, amount, 0, security);
+    }
+
+    private AccountBuilder transaction(Type type, String date, long amount, long affectedShares, Security security)
+    {
+        return transaction(type, date, amount, affectedShares, 0, 0, security);
+    }
 
     private AccountBuilder transaction(Type type, LocalDateTime date, long amount)
     {
-        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, null, type);
+        return transaction(type, date, amount, 0, 0, 0, null);
+    }
+    
+    private AccountBuilder transaction(Type type, String date, long amount, long affectedShares, long fees, long taxes, Security security)
+    {
+        return transaction(type, asDateTime(date), amount, affectedShares, fees, taxes, security);
+    }
+    
+    private AccountBuilder transaction(Type type, LocalDateTime date, long amount, long affectedShares, long fees, long taxes, Security security)
+    {
+        AccountTransaction t = new AccountTransaction(date, account.getCurrencyCode(), amount, security, type);
+        t.setShares(affectedShares);
+        t.addUnit(new Unit(Unit.Type.FEE, Money.of(account.getCurrencyCode(), fees)));
+        t.addUnit(new Unit(Unit.Type.TAX, Money.of(account.getCurrencyCode(), taxes)));
         account.addTransaction(t);
         return this;
     }
