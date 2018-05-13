@@ -71,7 +71,7 @@ public class DataSeriesCache
     public DataSeriesCache(Client client, ExchangeRateProviderFactory factory)
     {
         this.client = client;
-        this.converter = new CurrencyConverterImpl(factory, client, client.getBaseCurrency());
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
     }
 
     public void clear()

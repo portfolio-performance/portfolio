@@ -82,7 +82,7 @@ public class DashboardData
         this.client = client;
         this.preferences = preferences;
         this.factory = factory;
-        this.converter = new CurrencyConverterImpl(factory, client, client.getBaseCurrency());
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.dataSeriesSet = new DataSeriesSet(client, preferences, DataSeries.UseCase.RETURN_VOLATILITY);
         this.dataSeriesCache = new DataSeriesCache(client, factory);

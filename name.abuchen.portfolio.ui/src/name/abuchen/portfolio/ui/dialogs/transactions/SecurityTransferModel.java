@@ -140,7 +140,7 @@ public class SecurityTransferModel extends AbstractModel
 
         if (security != null)
         {
-            CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(), client,
+            CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                             client.getBaseCurrency());
             PortfolioSnapshot snapshot = sourcePortfolio != null
                             ? PortfolioSnapshot.create(sourcePortfolio, converter, date)

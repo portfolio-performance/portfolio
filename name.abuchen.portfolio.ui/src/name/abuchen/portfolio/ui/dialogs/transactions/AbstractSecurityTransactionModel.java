@@ -283,7 +283,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                 // since the security position has always the currency of the
                 // investment vehicle, actually no conversion is needed. Hence
                 // we can use an arbitrary converter.
-                CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(), client,
+                CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                                 CurrencyUnit.EUR);
                 PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, date);
                 SecurityPosition position = snapshot.getPositionsBySecurity().get(security);

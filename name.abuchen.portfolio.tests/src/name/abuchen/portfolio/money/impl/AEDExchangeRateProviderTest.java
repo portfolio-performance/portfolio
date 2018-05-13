@@ -18,7 +18,7 @@ public class AEDExchangeRateProviderTest
     @Test
     public void testIt()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory();
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(null);
 
         ExchangeRateTimeSeries usd_aed = factory.getTimeSeries("USD", "AED");
         assertThat(usd_aed.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("3.6725")));

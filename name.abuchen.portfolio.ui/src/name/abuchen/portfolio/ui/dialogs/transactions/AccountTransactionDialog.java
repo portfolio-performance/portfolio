@@ -335,7 +335,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
     {
         manager.add(new LabelOnly(Messages.DividendsDialogTitleShares));
 
-        CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(), client,
+        CurrencyConverter converter = new CurrencyConverterImpl(model.getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, model().getDate());
 

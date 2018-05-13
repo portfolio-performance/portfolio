@@ -33,17 +33,9 @@ public interface ExchangeRateProvider
     void save(IProgressMonitor monitor) throws IOException;
 
     /**
-     * Sets the associated client.
-     * 
-     * @param client
-     *            {@link Client}
-     */
-    public void setClient(Client client);
-    
-    /**
      * Returns the available exchange rates provided by this provider.
      * 
      * @return available time series
      */
-    List<ExchangeRateTimeSeries> getAvailableTimeSeries();
+    List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client);
 }

@@ -39,7 +39,7 @@ public class GBXExchangeRateProvider implements ExchangeRateProvider
     {}
 
     @Override
-    public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
+    public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         List<ExchangeRateTimeSeries> answer = new ArrayList<>();
         answer.add(new GBXGBP(this));
@@ -94,9 +94,5 @@ public class GBXExchangeRateProvider implements ExchangeRateProvider
             return 1;
         }
     }
-
-    @Override
-    public void setClient(Client client)
-    {}
 
 }

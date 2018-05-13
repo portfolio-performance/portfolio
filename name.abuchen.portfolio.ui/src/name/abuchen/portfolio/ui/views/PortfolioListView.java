@@ -241,7 +241,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             {
                 transactions.setInput(null, portfolio, portfolio.getTransactions());
                 transactions.refresh();
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient(),
+                CurrencyConverter converter = new CurrencyConverterImpl(factory,
                                 portfolio.getReferenceAccount().getCurrencyCode());
                 statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
             }

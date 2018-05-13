@@ -96,7 +96,7 @@ public final class TaxonomyModel
 
         this.taxonomy = taxonomy;
         this.client = client;
-        this.converter = new CurrencyConverterImpl(factory, client, client.getBaseCurrency());
+        this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());

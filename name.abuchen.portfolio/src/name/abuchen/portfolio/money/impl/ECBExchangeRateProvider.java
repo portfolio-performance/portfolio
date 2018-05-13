@@ -125,7 +125,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     }
 
     @Override
-    public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
+    public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         return new ArrayList<>(data.getSeries());
     }
@@ -234,8 +234,4 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         return xstream;
     }
     
-    @Override
-    public void setClient(Client client)
-    {}
-
 }

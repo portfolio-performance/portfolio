@@ -24,8 +24,6 @@ import name.abuchen.portfolio.money.Values;
  */
 public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
 {
-    private Client client;
-
     private class SecurityBasedExchangeRate implements ExchangeRateTimeSeries
     {
         private final Security security;
@@ -97,7 +95,7 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
     }
 
     @Override
-    public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
+    public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         // collect all securities that are exchange rates
         List<ExchangeRateTimeSeries> answer = new ArrayList<>();
@@ -127,12 +125,6 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
     @Override
     public void save(IProgressMonitor monitor) throws IOException
     {}
-    
-    @Override
-    public void setClient(Client client)
-    {
-        this.client = client;
-    }
 
     @Override
     public void update(IProgressMonitor monitor) throws IOException

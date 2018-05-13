@@ -368,7 +368,7 @@ public class AccountTransactionModel extends AbstractModel
         if (!supportsShares() || security == null)
             return;
 
-        CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(), client,
+        CurrencyConverter converter = new CurrencyConverterImpl(getExchangeRateProviderFactory(),
                         client.getBaseCurrency());
         ClientSnapshot snapshot = ClientSnapshot.create(client, converter, date);
         SecurityPosition p = snapshot.getJointPortfolio().getPositionsBySecurity().get(security);

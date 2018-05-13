@@ -47,7 +47,7 @@ public class DividendsView extends AbstractFinanceView
     @PostConstruct
     public void setupModel()
     {
-        CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client, client.getBaseCurrency());
+        CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
         model = new DividendsViewModel(preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);

@@ -325,7 +325,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public void run()
             {
-                CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient(), getClient().getBaseCurrency());
+                CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
                 List<Transaction> latest = plan.generateTransactions(converter);
 
                 if (latest.isEmpty())

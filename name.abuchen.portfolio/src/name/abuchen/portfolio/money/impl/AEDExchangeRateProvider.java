@@ -38,17 +38,13 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
     {}
 
     @Override
-    public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
+    public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         List<ExchangeRateTimeSeries> answer = new ArrayList<>();
         answer.add(new USDAED(this));
         return answer;
     }
 
-    @Override
-    public void setClient(Client client)
-    {}
-    
     private static class USDAED implements ExchangeRateTimeSeries
     {
         private ExchangeRateProvider provider;
