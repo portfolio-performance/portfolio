@@ -542,7 +542,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         Function<Stream<Object>, Object> sum = elements -> elements.map(e -> (Money) e)
-                        .collect(MoneyCollectors.sum(client.getBaseCurrency()));
+                        .collect(MoneyCollectors.sum(getCurrencyConverter().getTermCurrency()));
 
         column = new Column("capitalgains", Messages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getCapitalGainsOnHoldings, sum,
@@ -614,7 +614,7 @@ public class StatementOfAssetsViewer
         Column column = new Column("sumdiv", Messages.ColumnDividendSum, SWT.RIGHT, 80); //$NON-NLS-1$
 
         Function<Stream<Object>, Object> collector = elements -> elements.map(e -> (Money) e)
-                        .collect(MoneyCollectors.sum(client.getBaseCurrency()));
+                        .collect(MoneyCollectors.sum(getCurrencyConverter().getTermCurrency()));
 
         labelProvider = new ReportingPeriodLabelProvider(SecurityPerformanceRecord::getSumOfDividends, collector,
                         false);
