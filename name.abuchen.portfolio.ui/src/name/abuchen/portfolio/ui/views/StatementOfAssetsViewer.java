@@ -996,6 +996,11 @@ public class StatementOfAssetsViewer
             return performance.get(period);
         }
 
+        public boolean isPerformanceCalculated(ReportingPeriod period)
+        {
+            return performance.containsKey(period);
+        }
+
         public boolean isGroupByTaxonomy()
         {
             return groupByTaxonomy != null;
@@ -1361,7 +1366,7 @@ public class StatementOfAssetsViewer
         private void calculatePerformance(Element element, ReportingPeriod period)
         {
             // already calculated?
-            if (element.getPerformance(period) != null)
+            if (element.isPerformanceCalculated(period))
                 return;
 
             if (clientSnapshot == null && portfolioSnapshot == null)
