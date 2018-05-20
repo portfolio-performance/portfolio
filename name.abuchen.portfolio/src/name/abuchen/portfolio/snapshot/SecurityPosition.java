@@ -3,10 +3,11 @@ package name.abuchen.portfolio.snapshot;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.InvestmentVehicle;
@@ -64,34 +65,35 @@ public class SecurityPosition
          */
         private List<PortfolioTransaction> filter(List<PortfolioTransaction> input)
         {
-            List<PortfolioTransaction> inbound = new ArrayList<>();
-            for (PortfolioTransaction t : input)
-                if (t.getType() == Type.TRANSFER_IN)
-                    inbound.add(t);
+            List<PortfolioTransaction> inbound = input.stream().filter(t -> t.getType() == Type.TRANSFER_IN)
+                            .collect(Collectors.toCollection(ArrayList<PortfolioTransaction>::new));
 
             if (inbound.isEmpty())
                 return input;
 
             List<PortfolioTransaction> output = new ArrayList<>(input.size());
-            TransactionLoop: for (PortfolioTransaction t : input)
+            for (PortfolioTransaction t : input)
             {
                 if (t.getType() == Type.TRANSFER_IN)
                 {
-                    continue;
+                    // do nothing - will either be matched, or added with the
+                    // remaining inbound transactions later
                 }
                 else if (t.getType() == Type.TRANSFER_OUT)
                 {
-                    Iterator<PortfolioTransaction> iter = inbound.iterator();
-                    while (iter.hasNext())
+                    Optional<PortfolioTransaction> match = inbound.stream() //
+                                    .filter(tx -> tx.getDateTime().equals(t.getDateTime())
+                                                    && tx.getShares() == t.getShares())
+                                    .findAny();
+
+                    if (match.isPresent())
                     {
-                        PortfolioTransaction t_inbound = iter.next();
-                        if (t_inbound.getDateTime().equals(t.getDateTime()) && t_inbound.getShares() == t.getShares())
-                        {
-                            iter.remove();
-                            continue TransactionLoop;
-                        }
+                        inbound.remove(match.get());
                     }
-                    output.add(t);
+                    else
+                    {
+                        output.add(t);
+                    }
                 }
                 else
                 {
@@ -105,50 +107,42 @@ public class SecurityPosition
 
         private void calculatePurchaseValuePriceFIFO(CurrencyConverter converter, List<PortfolioTransaction> input)
         {
-            long sharesSold = 0;
-            for (PortfolioTransaction t : input)
-            {
-                if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL
-                                || t.getType() == Type.DELIVERY_OUTBOUND)
-                    sharesSold += t.getShares();
-            }
+            long sharesSold = input.stream().filter(t -> t.getType().isLiquidation())
+                            .mapToLong(PortfolioTransaction::getShares).sum();
 
             long sharesBought = 0;
             long grossInvestment = 0;
             long netInvestment = 0;
+
             for (PortfolioTransaction t : input)
             {
-                if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
+                if (t.getType().isLiquidation())
+                    continue;
+
+                long bought = t.getShares();
+
+                if (sharesSold > 0)
                 {
-                    long bought = t.getShares();
+                    sharesSold -= bought;
 
-                    if (sharesSold > 0)
-                    {
-                        sharesSold -= bought;
+                    if (sharesSold < 0)
+                        bought = -sharesSold;
+                    else
+                        bought = 0;
+                }
 
-                        if (sharesSold < 0)
-                            bought = -sharesSold;
-                        else
-                            bought = 0;
-                    }
-
-                    if (bought > 0)
-                    {
-                        long grossAmount;
-                        long netAmount;
-
-                        grossAmount = t.getMonetaryAmount(converter).getAmount();
-                        netAmount = t.getGrossValue(converter).getAmount();
-
-                        sharesBought += bought;
-                        grossInvestment += grossAmount * bought / (double) t.getShares();
-                        netInvestment += netAmount * bought / (double) t.getShares();
-                    }
+                if (bought > 0)
+                {
+                    sharesBought += bought;
+                    grossInvestment += Math.round(
+                                    t.getMonetaryAmount(converter).getAmount() / (double) t.getShares() * bought);
+                    netInvestment += Math
+                                    .round(t.getGrossValue(converter).getAmount() / (double) t.getShares() * bought);
                 }
             }
 
             this.purchasePrice = Money.of(converter.getTermCurrency(), sharesBought > 0
-                            ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesBought)
+                            ? Math.round((netInvestment / (double) sharesBought * Values.Share.factor()))
                             : 0);
             this.purchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
         }
@@ -158,27 +152,25 @@ public class SecurityPosition
             long sharesHeld = 0;
             long grossInvestment = 0;
             long netInvestment = 0;
-            
+
             for (PortfolioTransaction t : input)
             {
                 long numShares = t.getShares();
                 long grossAmount = t.getMonetaryAmount(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
-                
-                if (t.getType() == Type.TRANSFER_IN || t.getType() == Type.BUY || t.getType() == Type.DELIVERY_INBOUND)
+
+                if (t.getType().isPurchase())
                 {
                     // this is a buy
                     sharesHeld += numShares;
                     netInvestment += netAmount;
                     grossInvestment += grossAmount;
                 }
-                
-                if (t.getType() == Type.TRANSFER_OUT || t.getType() == Type.SELL
-                                || t.getType() == Type.DELIVERY_OUTBOUND)
+                else
                 {
                     // this is a sell
                     long remainingShares = sharesHeld - numShares;
-                    
+
                     if (remainingShares <= 0 || sharesHeld == 0)
                     {
                         netInvestment = 0;
@@ -187,15 +179,15 @@ public class SecurityPosition
                     }
                     else
                     {
-                        netInvestment = Math.round(netInvestment * remainingShares / (double) sharesHeld);
-                        grossInvestment = Math.round(grossInvestment * remainingShares / (double) sharesHeld);
+                        netInvestment = Math.round(netInvestment / (double) sharesHeld * remainingShares);
+                        grossInvestment = Math.round(grossInvestment / (double) sharesHeld * remainingShares);
                         sharesHeld = remainingShares;
                     }
                 }
             }
-            
+
             this.movingAveragePurchasePrice = Money.of(converter.getTermCurrency(),
-                            sharesHeld > 0 ? Math.round((netInvestment * Values.Share.factor()) / (double) sharesHeld)
+                            sharesHeld > 0 ? Math.round((netInvestment / (double) sharesHeld * Values.Share.factor()))
                                             : 0);
             this.movingAveragePurchaseValue = Money.of(converter.getTermCurrency(), grossInvestment);
         }

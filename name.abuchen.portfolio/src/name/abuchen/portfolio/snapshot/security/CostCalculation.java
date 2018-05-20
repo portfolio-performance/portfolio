@@ -76,8 +76,8 @@ import name.abuchen.portfolio.money.Money;
                 }
                 else
                 {
-                    movingRelativeCost = Math.round(movingRelativeCost * remaining / (double) heldShares);
-                    movingRelativeNetCost = Math.round(movingRelativeNetCost * remaining / (double) heldShares);
+                    movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining );
+                    movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining );
                     heldShares = remaining;
                 }
 
@@ -91,8 +91,8 @@ import name.abuchen.portfolio.money.Money;
 
                     long n = Math.min(sold, entry.shares);
 
-                    entry.grossAmount -= Math.round(n * entry.grossAmount / (double) entry.shares);
-                    entry.netAmount -= Math.round(n * entry.netAmount / (double) entry.shares);
+                    entry.grossAmount -= Math.round(n / (double) entry.shares * entry.grossAmount);
+                    entry.netAmount -= Math.round(n / (double) entry.shares * entry.netAmount);
                     entry.shares -= n;
 
                     sold -= n;
