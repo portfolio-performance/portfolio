@@ -129,7 +129,7 @@
     <bindings xmi:id="_CoeVILEFEeefXq-wtldCQQ" elementId="" keySequence="M1+U V" command="_LwwoUBiQEeOR1rNFCzC82A"/>
     <bindings xmi:id="_w7HC4LEBEeefXq-wtldCQQ" elementId="" keySequence="M1+I P" command="_pgC00EYREeSRXYVe298mXg"/>
     <bindings xmi:id="_jcQwwLEEEeefXq-wtldCQQ" elementId="" keySequence="M1+I C" command="_GgTyQBhXEeOR1rNFCzC82A"/>
-    <bindings xmi:id="_XmmMsLYaEeeT6Pb7tGT2uw" elementId="" keySequence="M1+X" command="_aegN8LYaEeeT6Pb7tGT2uw"/>
+    <bindings xmi:id="_XmmMsLYaEeeT6Pb7tGT2uw" elementId="" keySequence="M1+L" command="_aegN8LYaEeeT6Pb7tGT2uw"/>
     <bindings xmi:id="_HdGacBk_EeiQOJdQgYCbNA" elementId="" keySequence="M1+B" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
   </bindingTables>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
