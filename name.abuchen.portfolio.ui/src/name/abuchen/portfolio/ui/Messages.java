@@ -583,6 +583,7 @@ public class Messages extends NLS
     public static String MenuSelectBenchmarkDataSeries;
     public static String MenuSelectDataSeries;
     public static String MenuSettingsNew;
+    public static String MenuShow;
     public static String MenuShowHideColumns;
     public static String MenuTaxonomyAssignmentRemove;
     public static String MenuTaxonomyClassificationCreate;

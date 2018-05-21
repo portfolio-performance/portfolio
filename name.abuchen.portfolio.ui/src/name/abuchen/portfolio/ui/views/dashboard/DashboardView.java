@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -24,13 +25,17 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Images;
@@ -180,6 +185,7 @@ public class DashboardView extends AbstractHistoricView
 
     private DashboardResources resources;
     private Composite container;
+    private ToolBar toolBar;
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
@@ -207,25 +213,80 @@ public class DashboardView extends AbstractHistoricView
     @Override
     protected void addButtons(ToolBar toolBar)
     {
+        this.toolBar = toolBar;
+
+        createDashboardToolItems();
+
+        ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
+        item.setWidth(20);
+
         super.addButtons(toolBar);
 
-        AbstractDropDown.create(toolBar, Messages.MenuConfigureDashboards, Images.SAVE.image(), SWT.NONE, manager -> {
-            getClient().getDashboards().forEach(d -> {
-                Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
-                action.setChecked(d.equals(dashboard));
-                manager.add(action);
-            });
-
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null)));
-            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(dashboard)));
-            manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(dashboard)));
-            manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
-        });
+        Action newAction = new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null));
+        newAction.setImageDescriptor(Images.PLUS.descriptor());
+        new ActionContributionItem(newAction).fill(toolBar, -1);
 
         AbstractDropDown.create(toolBar, Messages.MenuConfigureCurrentDashboard, Images.CONFIG.image(), SWT.NONE,
                         manager -> manager.add(
                                         new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn())));
+    }
+
+    private void createDashboardToolItems()
+    {
+        int[] index = new int[] { 0 };
+
+        getClient().getDashboards().forEach(board -> {
+            ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN, index[0]++);
+            item.setImage(board.equals(dashboard) ? Images.DASHBOARD_SELECTED.image() : Images.DASHBOARD.image());
+            item.setText(board.getName());
+            item.setData(board);
+
+            item.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+                if (event.detail == SWT.ARROW)
+                {
+                    Rectangle rect = item.getBounds();
+                    Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+
+                    MenuManager manager = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+
+                    if (!board.equals(dashboard))
+                    {
+                        manager.add(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
+                        manager.add(new Separator());
+                    }
+
+                    manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
+                    manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
+                    manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(board)));
+
+                    Menu menu = manager.createContextMenu(toolBar);
+                    menu.setLocation(pt.x, pt.y + rect.height);
+                    menu.setVisible(true);
+
+                    item.addDisposeListener(e -> menu.dispose());
+                }
+                else
+                {
+                    selectDashboard(board);
+                    item.setImage(Images.DASHBOARD_SELECTED.image());
+                }
+            }));
+        });
+    }
+
+    private void recreateDashboardToolItems()
+    {
+        if (toolBar.isDisposed())
+            return;
+
+        for (ToolItem child : toolBar.getItems())
+        {
+            if (child.getData() instanceof Dashboard)
+                child.dispose();
+        }
+
+        createDashboardToolItems();
+        toolBar.getParent().layout(true);
     }
 
     @Override
@@ -245,6 +306,7 @@ public class DashboardView extends AbstractHistoricView
                             Dashboard newDashboard = createDefaultDashboard();
                             getClient().addDashboard(newDashboard);
                             markDirty();
+                            createDashboardToolItems();
                             return newDashboard;
                         });
 
@@ -301,7 +363,8 @@ public class DashboardView extends AbstractHistoricView
                 subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
             manager.add(subMenu);
             manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft, a -> createNewColumn(column, columnControl)));
+            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft,
+                            a -> createNewColumn(column, columnControl)));
             manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
         }).hook();
 
@@ -425,6 +488,13 @@ public class DashboardView extends AbstractHistoricView
         this.dashboard = board;
         updateTitle(board.getName());
 
+        for (ToolItem item : toolBar.getItems())
+        {
+            if (item.getData() instanceof Dashboard)
+                item.setImage(board.equals(item.getData()) ? Images.DASHBOARD_SELECTED.image()
+                                : Images.DASHBOARD.image());
+        }
+
         for (Control column : container.getChildren())
             column.dispose();
 
@@ -442,7 +512,7 @@ public class DashboardView extends AbstractHistoricView
     {
         Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
 
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ConfigurationNew,
                         Messages.ColumnName, newDashboard.getName(), null);
 
         if (dialog.open() != InputDialog.OK)
@@ -452,6 +522,9 @@ public class DashboardView extends AbstractHistoricView
 
         getClient().addDashboard(newDashboard);
         markDirty();
+
+        recreateDashboardToolItems();
+
         selectDashboard(newDashboard);
     }
 
@@ -466,6 +539,8 @@ public class DashboardView extends AbstractHistoricView
         board.setName(dialog.getValue());
         markDirty();
         updateTitle(board.getName());
+
+        recreateDashboardToolItems();
     }
 
     private void deleteDashboard(Dashboard board)
@@ -473,10 +548,13 @@ public class DashboardView extends AbstractHistoricView
         getClient().removeDashboard(board);
         markDirty();
 
+        recreateDashboardToolItems();
+
         selectDashboard(getClient().getDashboards().findFirst().orElseGet(() -> {
             Dashboard newDashboard = createDefaultDashboard();
             getClient().addDashboard(newDashboard);
             markDirty();
+            recreateDashboardToolItems();
             return newDashboard;
         }));
     }
@@ -512,12 +590,12 @@ public class DashboardView extends AbstractHistoricView
     private void createNewColumn(Dashboard.Column beforeColumn, Composite beforeColumnControl)
     {
         int index = dashboard.getColumns().indexOf(beforeColumn);
-        
+
         Dashboard.Column newColumn = new Dashboard.Column();
         dashboard.getColumns().add(index, newColumn);
-        
+
         buildColumn(container, newColumn).moveAbove(beforeColumnControl);
-        
+
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
