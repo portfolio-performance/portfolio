@@ -151,6 +151,7 @@ public class Messages extends NLS
     public static String ColumnForeignCurrencies;
     public static String ColumnGrossDividend;
     public static String ColumnGrossValue;
+    public static String ColumnHeight;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnIRR;
@@ -520,6 +521,7 @@ public class Messages extends NLS
     public static String LabelUsingDashboardDefaultReportingPeriod;
     public static String LabelValueInboundDelivery;
     public static String LabelValueOutboundDelivery;
+    public static String LabelVerticalSpacer;
     public static String LabelViewDonutChart;
     public static String LabelViewPieChart;
     public static String LabelViewReBalancing;
@@ -535,6 +537,7 @@ public class Messages extends NLS
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
     public static String MenuAddNewDashboardColumnLeft;
+    public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;
     public static String MenuChartYScrollUp;
@@ -617,6 +620,7 @@ public class Messages extends NLS
     public static String MsgErrorConvertedAmount;
     public static String MsgErrorDividendsYearBetween1900AndNow;
     public static String MsgErrorExchangeMissing;
+    public static String MsgErrorMinimumHeightRequired;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;

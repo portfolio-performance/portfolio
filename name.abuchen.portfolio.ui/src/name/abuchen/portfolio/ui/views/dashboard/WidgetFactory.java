@@ -140,7 +140,9 @@ public enum WidgetFactory
 
     CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new),
 
-    EXCHANGE_RATE(Messages.LabelExchangeRate, ExchangeRateWidget::new);
+    EXCHANGE_RATE(Messages.LabelExchangeRate, ExchangeRateWidget::new),
+
+    VERTICAL_SPACEER(Messages.LabelVerticalSpacer, VerticalSpacerWidget::new);
 
     private String label;
     private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;
