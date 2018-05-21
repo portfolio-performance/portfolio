@@ -51,11 +51,15 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
     @Override
     public void beforePage()
-    {}
+    {
+        // nothing to do
+    }
 
     @Override
     public void afterPage()
-    {}
+    {
+        // nothing to do
+    }
 
     @Override
     public void nodeChange(TaxonomyNode node)
@@ -84,7 +88,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 TaxonomyNode root = getModel().getChartRenderingRootNode();
 
                 StringBuilder buffer = new StringBuilder();
-                printNode(buffer, root, root.getActual());
+                printNode(buffer, root, root.getActual(), getModel().isSecuritiesInPieChartExcluded());
                 return buffer.toString();
             }
             catch (Throwable e) // NOSONAR
@@ -95,7 +99,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         }
 
         @SuppressWarnings("nls")
-        private void printNode(StringBuilder buffer, TaxonomyNode node, Money total)
+        private void printNode(StringBuilder buffer, TaxonomyNode node, Money total, boolean excludeSecurities)
         {
             String name = StringEscapeUtils.escapeJson(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
@@ -106,13 +110,41 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 totalPercentage = "; " + MessageFormat.format(Messages.LabelTotalValuePercent,
                                 Values.Percent2.format(actual / (double) total.getAmount()));
 
-            buffer.append("{\"name\":\"").append(name);
-            buffer.append("\",\"caption\":\"");
-            buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
-                            .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
-                            .append(")\",");
-            buffer.append("\"value\":").append(node.getActual().getAmount());
-            buffer.append(",\"color\":\"").append(node.getColor()).append("\"");
+            if (excludeSecurities && node.isAssignment())
+            {
+                buffer.append("{\"name\":\"\",\"caption\":\"\",");
+                buffer.append("\"value\":").append(node.getActual().getAmount());
+                buffer.append(",\"color\":\"#FFFFFF\"");
+            }
+            else
+            {
+                buffer.append("{\"name\":\"").append(name);
+                buffer.append("\",\"caption\":\"");
+                buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
+                                .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
+                                .append(")\",");
+                buffer.append("\"value\":").append(node.getActual().getAmount());
+                buffer.append(",\"color\":\"").append(node.getColor()).append("\"");
+            }
+
+            addChildren(buffer, node, total, excludeSecurities);
+
+            buffer.append("}");
+        }
+
+        private void addChildren(StringBuilder buffer, TaxonomyNode node, Money total, boolean excludeSecurities)
+        {
+            // iterate over children if
+            // a) all are shown anyway or
+            // b) if the children contain at least one classification (which
+            // means if securities are not show we do not go over the children
+            // as there are only securities)
+
+            boolean iterateChildren = !excludeSecurities
+                            || node.getChildren().stream().anyMatch(n -> !n.isAssignment());
+
+            if (!iterateChildren)
+                return;
 
             boolean isFirst = true;
             for (TaxonomyNode child : node.getChildren())
@@ -120,22 +152,17 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 if (child.getActual().isZero())
                     continue;
 
-                if (child.isAssignment() && getModel().isSecuritiesInPieChartExcluded())
-                    continue;
-
                 if (isFirst)
-                    buffer.append(",\"children\": [");
+                    buffer.append(",\"children\": ["); //$NON-NLS-1$
                 else
-                    buffer.append(",");
+                    buffer.append(","); //$NON-NLS-1$
 
-                printNode(buffer, child, total);
+                printNode(buffer, child, total, excludeSecurities);
                 isFirst = false;
             }
 
             if (!isFirst)
-                buffer.append("]");
-
-            buffer.append("}");
+                buffer.append("]"); //$NON-NLS-1$
         }
 
     }

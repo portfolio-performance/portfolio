@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -17,7 +18,7 @@ import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
-    private static final Pattern PATTERN = Pattern.compile("^([\\d.]*)(,(\\d*))?$"); //$NON-NLS-1$
+    private static final Pattern PATTERN = Pattern.compile("^([\\d.,]*)$"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -45,13 +46,16 @@ public class AttributeType
 
     private static class LongConverter implements Converter
     {
-        private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
+        private final DecimalFormat full;
 
         private Values<Long> values;
 
         public LongConverter(Values<Long> values)
         {
             this.values = values;
+
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
         }
 
         @Override
@@ -72,24 +76,9 @@ public class AttributeType
                 if (!m.matches())
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
 
-                String strBefore = m.group(1);
-                Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
+                BigDecimal v = (BigDecimal) full.parse(value);
 
-                String strAfter = m.group(3);
-                int after = 0;
-                if (strAfter != null && strAfter.length() > 0)
-                {
-                    after = Integer.parseInt(strAfter);
-
-                    int length = (int) Math.log10(values.factor());
-                    for (int ii = strAfter.length(); ii > length; ii--)
-                        after /= 10;
-                    for (int ii = strAfter.length(); ii < length; ii++)
-                        after *= 10;
-                }
-
-                long resultValue = before.longValue() * values.factor() + after;
-                return Long.valueOf(resultValue);
+                return v.multiply(BigDecimal.valueOf(values.factor())).longValue();
             }
             catch (ParseException e)
             {
@@ -168,39 +157,18 @@ public class AttributeType
         }
     }
 
-    public static class PercentConverter implements Converter
+    public static class PercentConverter extends DoubleConverter
     {
-        private final NumberFormat format = NumberFormat.getPercentInstance();
-
         public PercentConverter()
         {
-            format.setMinimumFractionDigits(2);
-        }
-
-        @Override
-        public String toString(Object object)
-        {
-            return object != null ? format.format((double) object) : ""; //$NON-NLS-1$
+            super(Values.Percent2);
         }
 
         @Override
         public Object fromString(String value)
         {
-            try
-            {
-                String inputValue = value.trim();
-                if (inputValue.length() == 0)
-                    return null;
-                // ensure there is a percent sign at the end
-                if (!inputValue.endsWith("%")) //$NON-NLS-1$
-                    inputValue += "%"; //$NON-NLS-1$
-
-                return format.parse(inputValue).doubleValue();
-            }
-            catch (ParseException e)
-            {
-                throw new IllegalArgumentException(e);
-            }
+            Double v = (Double) super.fromString(value.replace("%", "")); //$NON-NLS-1$ //$NON-NLS-2$
+            return BigDecimal.valueOf(v).divide(BigDecimal.valueOf(100)).doubleValue();
         }
     }
 
@@ -345,30 +313,25 @@ public class AttributeType
         return Number.class.isAssignableFrom(type);
     }
 
+    @SuppressWarnings("unchecked")
     public Comparator<Object> getComparator()
     {
-        return new Comparator<Object>()
-        {
-            @SuppressWarnings("unchecked")
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                if (o1 == null && o2 == null)
-                    return 0;
-                else if (o1 == null)
-                    return -1;
-                else if (o2 == null)
-                    return 1;
+        return (o1, o2) -> {
+            if (o1 == null && o2 == null)
+                return 0;
+            else if (o1 == null)
+                return -1;
+            else if (o2 == null)
+                return 1;
 
-                if (type == Long.class)
-                    return ((Long) o1).compareTo((Long) o2);
-                else if (type == Double.class)
-                    return ((Double) o1).compareTo((Double) o2);
-                else if (type == String.class)
-                    return ((String) o1).compareToIgnoreCase((String) o2);
-                else
-                    return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
-            }
+            if (type == Long.class)
+                return ((Long) o1).compareTo((Long) o2);
+            else if (type == Double.class)
+                return ((Double) o1).compareTo((Double) o2);
+            else if (type == String.class)
+                return ((String) o1).compareToIgnoreCase((String) o2);
+            else
+                return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
         };
     }
 }

@@ -57,6 +57,9 @@ public enum Images
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$
 
+    DASHBOARD("dashboard.png"), //$NON-NLS-1$
+    DASHBOARD_SELECTED("dashboard_selected.png"), //$NON-NLS-1$
+    
     TEXT("text.png"), //$NON-NLS-1$
 
     ERROR("error.png"), //$NON-NLS-1$

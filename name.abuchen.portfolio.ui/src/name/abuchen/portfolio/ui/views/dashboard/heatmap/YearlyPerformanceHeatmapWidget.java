@@ -81,6 +81,22 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
                 GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
             }
         }
+
+        Cell cell = new Cell(table, new CellDataProvider("\u03A3")); //$NON-NLS-1$
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(cell);
+        for (DataSeries series : dataSeries)
+        {
+            PerformanceIndex performanceIndex = getDashboardData().calculate(series, new ReportingPeriod.FromXtoY(calcInterval));
+
+            cell = new Cell(table,
+                            new CellDataProvider(coloring.apply(performanceIndex.getFinalAccumulatedPercentage()),
+                                            resources.getSmallFont(),
+                                            Values.Percent.format(performanceIndex.getFinalAccumulatedPercentage())));
+
+            InfoToolTip.attach(cell, Messages.YearlyPerformanceHeatmapToolTip);
+            GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
+        }
+
         table.layout(true);
     }
 
