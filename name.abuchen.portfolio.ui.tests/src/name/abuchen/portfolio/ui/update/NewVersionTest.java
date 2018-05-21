@@ -80,4 +80,43 @@ public class NewVersionTest
         assertThat(message.isApplicable(), is(false));
     }
 
+    @Test
+    public void testMultipleConditionalMessage()
+    {
+        String history = "-- 0.30.1\n" //$NON-NLS-1$
+                        + "~~ ($bundle.list=name.abuchen.portfolio.*&something=true)\n" //$NON-NLS-1$
+                        + "~~ hello world\n" //$NON-NLS-1$
+                        + "~~ ($bundle.list=name.abuchen.portfolio.*&something=false)\n" //$NON-NLS-1$
+                        + "~~ another day\n" //$NON-NLS-1$
+                        + "* text\n"; //$NON-NLS-1$
+
+        NewVersion newVersion = new NewVersion("0.30.1"); //$NON-NLS-1$
+        newVersion.setVersionHistory(history);
+
+        assertThat(newVersion.getVersion(), is("0.30.1")); //$NON-NLS-1$
+        assertThat(newVersion.getReleases(), hasSize(1));
+
+        Release release = newVersion.getReleases().get(0);
+        assertThat(release.getVersion(), is(new Version("0.30.1"))); //$NON-NLS-1$
+        assertThat(release.getLines(), is(Arrays.asList(new String[] { "* text" }))); //$NON-NLS-1$
+        assertThat(release.getMessages(), hasSize(2));
+
+        ConditionalMessage message1 = release.getMessages().get(0);
+        assertThat(message1.getLines(), is(Arrays.asList(new String[] { "hello world" }))); //$NON-NLS-1$
+
+        ConditionalMessage message2 = release.getMessages().get(1);
+        assertThat(message2.getLines(), is(Arrays.asList(new String[] { "another day" }))); //$NON-NLS-1$
+
+        System.clearProperty("something"); //$NON-NLS-1$
+        assertThat(message1.isApplicable(), is(false));
+        assertThat(message2.isApplicable(), is(false));
+        
+        System.setProperty("something", Boolean.FALSE.toString()); //$NON-NLS-1$
+        assertThat(message1.isApplicable(), is(false));
+        assertThat(message2.isApplicable(), is(true));
+
+        System.setProperty("something", Boolean.TRUE.toString()); //$NON-NLS-1$
+        assertThat(message1.isApplicable(), is(true));
+        assertThat(message2.isApplicable(), is(false));
+    }
 }
