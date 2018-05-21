@@ -46,8 +46,8 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
         DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
                         .buildColorFunction(resources.getResourceManager());
 
-        // 13 columns, one for the legend and 12 for the months
-        GridLayoutFactory.fillDefaults().numColumns(13).equalWidth(true).spacing(1, 1).applyTo(table);
+        // 14 columns: 1 for the legend and 12 for the months and 1 for the sum
+        GridLayoutFactory.fillDefaults().numColumns(14).equalWidth(true).spacing(1, 1).applyTo(table);
 
         addHeaderRow(table);
 
@@ -66,6 +66,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
         Interval actualInterval = performanceIndex.getActualInterval();
 
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
+        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
 
         for (Integer year : actualInterval.iterYears())
         {
@@ -86,8 +87,13 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
                 {
                     cell = new Cell(table, new CellDataProvider("")); //$NON-NLS-1$
                 }
-                GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
+                gridData.applyTo(cell);
             }
+
+            // sum
+
+            cell = createSumCell(table, resources, performanceIndex, LocalDate.of(year, 1, 1), coloring);
+            gridData.applyTo(cell);
         }
         table.layout(true);
     }
@@ -116,6 +122,24 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
                         Values.PercentShort.format(performance)));
     }
 
+    private Cell createSumCell(Composite table, DashboardResources resources, PerformanceIndex index, LocalDate year,
+                    DoubleFunction<Color> coloring)
+    {
+        int start = Arrays.binarySearch(index.getDates(), year.minusDays(1));
+        if (start < 0)
+            start = 0;
+
+        int end = Arrays.binarySearch(index.getDates(), year.withDayOfYear(year.lengthOfYear()));
+        if (end < 0)
+            end = index.getDates().length - 1;
+
+        double performance = ((index.getAccumulatedPercentage()[end] + 1)
+                        / (index.getAccumulatedPercentage()[start] + 1)) - 1;
+
+        return new Cell(table, new CellDataProvider(coloring.apply(performance), resources.getSmallFont(),
+                        Values.PercentShort.format(performance)));
+    }
+
     private void addHeaderRow(Composite table)
     {
         // Top Left is empty
@@ -130,13 +154,18 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
         else
             textStyle = TextStyle.NARROW;
 
+        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
+
         // then the legend of the months
         // no harm in hardcoding the year as each year has the same months
         for (LocalDate m = LocalDate.of(2016, 1, 1); m.getYear() == 2016; m = m.plusMonths(1))
         {
             Cell cell = new Cell(table,
                             new CellDataProvider(m.getMonth().getDisplayName(textStyle, Locale.getDefault())));
-            GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL).applyTo(cell);
+            gridData.applyTo(cell);
         }
+
+        Cell cell = new Cell(table, new CellDataProvider("\u03A3")); //$NON-NLS-1$
+        gridData.applyTo(cell);
     }
 }
