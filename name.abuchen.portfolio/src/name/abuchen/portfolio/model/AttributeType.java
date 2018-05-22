@@ -18,7 +18,7 @@ import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
-    private static final Pattern PATTERN = Pattern.compile("^([\\d.,]*)$"); //$NON-NLS-1$
+    private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
 
     public interface Converter
     {
