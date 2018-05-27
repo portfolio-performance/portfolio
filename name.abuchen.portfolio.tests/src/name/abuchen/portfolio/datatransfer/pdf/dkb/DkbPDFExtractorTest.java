@@ -112,7 +112,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE0007100000"));
         assertThat(security.getWkn(), is("710000"));
-        assertThat(security.getName(), is("DAIMLER AG"));
+        assertThat(security.getName(), is("DAIMLER AG NAMENS-AKTIEN O.N."));
 
         return security;
     }
@@ -124,7 +124,7 @@ public class DkbPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("US0378331005"));
         assertThat(security.getWkn(), is("865985"));
-        assertThat(security.getName(), is("APPLE INC."));
+        assertThat(security.getName(), is("APPLE INC. REGISTERED SHARES O.N."));
 
         return security;
     }
@@ -287,6 +287,42 @@ public class DkbPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschriftDividende_2017_12() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschriftDividende_2017_12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00B3XNN521"));
+        assertThat(security.getWkn(), is("A1JJAG"));
+        assertThat(security.getName(), is("DIM.FDS-GLOBAL SMALL COMPANIES REGISTERED SHARES EUR DIS.O.N."));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-12-07T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(32.93)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(216)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.68))));
+    }
+
+    @Test
     public void testInvestmentertraege() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
@@ -428,8 +464,10 @@ public class DkbPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKaufFonds2() throws IOException // Fonds, only 3 decimal places for amount of shares
-    {       
+    public void testWertpapierKaufFonds2() throws IOException
+    {
+        // Fonds, only 3 decimal places for amount of shares
+        
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();

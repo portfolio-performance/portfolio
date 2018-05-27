@@ -109,10 +109,10 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             }
         }
 
-       public String getMustInclude()
-       {
-           return mustInclude;
-       }
+        public String getMustInclude()
+        {
+            return mustInclude;
+        }
     }
 
     /* package */static class Block
@@ -183,14 +183,14 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             for (Section<T> section : sections)
             {
-                if(section.isGroup)
+                if (section.isGroup)
                 {
                     try
                     {
                         section.parse(filename, lines, lineNoStart, lineNoEnd, target);
                         result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), true));
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), false));
                     }
@@ -200,15 +200,15 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     section.parse(filename, lines, lineNoStart, lineNoEnd, target);
                 }
             }
-            
-            result.stream()
-                .collect(Collectors.groupingBy(Entry::getKey, Collectors.toList()))
-                .forEach((k,v) -> 
-                {
-                    if(!v.stream().anyMatch(Entry::getValue))
-                        throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoSectionOfGroupMatched, k));                 
-                });            
-            
+
+            result.stream() //
+                            .collect(Collectors.groupingBy(Entry::getKey, Collectors.toList())) //
+                            .forEach((k, v) -> {
+                                if (v.stream().noneMatch(Entry::getValue))
+                                    throw new IllegalArgumentException(
+                                                    MessageFormat.format(Messages.MsgErrorNoSectionOfGroupMatched, k));
+                            });
+
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
