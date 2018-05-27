@@ -6,11 +6,14 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.AbstractMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -176,10 +179,36 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
         {
             T target = supplier.get();
+            List<Entry<Integer, Boolean>> result = new ArrayList<>();
 
             for (Section<T> section : sections)
-                section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
-
+            {
+                if(section.isGroup)
+                {
+                    try
+                    {
+                        section.parse(filename, lines, lineNoStart, lineNoEnd, target);
+                        result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), true));
+                    }
+                    catch(Exception ex)
+                    {
+                        result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), false));
+                    }
+                }
+                else
+                {
+                    section.parse(filename, lines, lineNoStart, lineNoEnd, target);
+                }
+            }
+            
+            result.stream()
+                .collect(Collectors.groupingBy(Entry::getKey, Collectors.toList()))
+                .forEach((k,v) -> 
+                {
+                    if(!v.stream().anyMatch(Entry::getValue))
+                        throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoSectionOfGroupMatched, k));                 
+                });            
+            
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
 
@@ -192,6 +221,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
+        private boolean isGroup = false;
+        private int groupID;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
@@ -207,6 +238,23 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         {
             this.isOptional = true;
             return this;
+        }
+
+        public Section<T> grouping(int groupID)
+        {
+            this.isGroup = true;
+            this.groupID = groupID;
+            return this;
+        }
+
+        public boolean isGroup()
+        {
+            return this.isGroup;
+        }
+
+        public int getGroupID()
+        {
+            return this.groupID;
         }
 
         public Section<T> find(String string)
@@ -227,7 +275,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo, int lineNoEnd, T target)
+        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
         {
             Map<String, String> values = new HashMap<>();
 
