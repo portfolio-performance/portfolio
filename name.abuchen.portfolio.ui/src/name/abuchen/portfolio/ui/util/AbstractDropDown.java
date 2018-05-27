@@ -23,14 +23,19 @@ public abstract class AbstractDropDown implements IMenuListener
 
     public AbstractDropDown(ToolBar toolBar, String label)
     {
-        this(toolBar, label, null, SWT.DROP_DOWN);
+        this(toolBar, label, null, SWT.DROP_DOWN, toolBar.getItemCount());
     }
 
     public AbstractDropDown(ToolBar toolBar, String label, Image image, int style)
     {
+        this(toolBar, label, image, style, toolBar.getItemCount());
+    }
+
+    public AbstractDropDown(ToolBar toolBar, String label, Image image, int style, int index)
+    {
         this.toolBar = toolBar;
 
-        dropdown = new ToolItem(toolBar, style);
+        dropdown = new ToolItem(toolBar, style, index);
 
         if (image != null)
         {
@@ -59,7 +64,13 @@ public abstract class AbstractDropDown implements IMenuListener
     public static final AbstractDropDown create(ToolBar toolBar, String label, Image image, int style,
                     IMenuListener listener)
     {
-        return new AbstractDropDown(toolBar, label, image, style)
+        return create(toolBar, label, image, style, toolBar.getItemCount(), listener);
+    }
+
+    public static final AbstractDropDown create(ToolBar toolBar, String label, Image image, int style, int index,
+                    IMenuListener listener)
+    {
+        return new AbstractDropDown(toolBar, label, image, style, index)
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)
@@ -72,7 +83,7 @@ public abstract class AbstractDropDown implements IMenuListener
     public static final AbstractDropDown create(ToolBar toolBar, String label, Image image, int style,
                     BiConsumer<AbstractDropDown, IMenuManager> listener)
     {
-        return new AbstractDropDown(toolBar, label, image, style)
+        return new AbstractDropDown(toolBar, label, image, style, toolBar.getItemCount())
         {
             @Override
             public void menuAboutToShow(IMenuManager manager)

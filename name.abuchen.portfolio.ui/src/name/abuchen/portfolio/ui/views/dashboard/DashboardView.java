@@ -233,45 +233,75 @@ public class DashboardView extends AbstractHistoricView
 
     private void createDashboardToolItems()
     {
-        int[] index = new int[] { 0 };
+        int index = 0;
 
-        getClient().getDashboards().forEach(board -> {
-            ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN, index[0]++);
-            item.setImage(board.equals(dashboard) ? Images.DASHBOARD_SELECTED.image() : Images.DASHBOARD.image());
-            item.setText(board.getName());
-            item.setData(board);
+        boolean includesSelected = false;
 
-            item.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
-                if (event.detail == SWT.ARROW)
+        Dashboard[] dashboards = getClient().getDashboards().toArray(Dashboard[]::new);
+        for (Dashboard board : dashboards)
+        {
+            if (index >= 4) // # of dashboards shown by default
+                break;
+
+            includesSelected = includesSelected || board.equals(dashboard);
+
+            createToolItem(index++, board);
+        }
+
+        if (!includesSelected && dashboard != null)
+            createToolItem(index++, dashboard);
+
+        if (index < dashboards.length)
+        {
+            AbstractDropDown dropdown = AbstractDropDown.create(toolBar, Messages.MenuConfigureDashboards,
+                            Images.SAVE.image(), SWT.NONE, index, manager -> getClient().getDashboards().forEach(d -> {
+                                Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
+                                action.setChecked(d.equals(dashboard));
+                                manager.add(action);
+                            }));
+            
+            // attach one dashboard to the tool item so that the tool item is
+            // removed before re-creation
+            dropdown.getToolItem().setData(dashboards[0]);
+        }
+    }
+
+    private void createToolItem(int index, Dashboard board)
+    {
+        ToolItem item = new ToolItem(toolBar, SWT.DROP_DOWN, index);
+        item.setImage(board.equals(dashboard) ? Images.DASHBOARD_SELECTED.image() : Images.DASHBOARD.image());
+        item.setText(board.getName());
+        item.setData(board);
+
+        item.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+            if (event.detail == SWT.ARROW)
+            {
+                Rectangle rect = item.getBounds();
+                Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
+
+                MenuManager manager = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+
+                if (!board.equals(dashboard))
                 {
-                    Rectangle rect = item.getBounds();
-                    Point pt = item.getParent().toDisplay(new Point(rect.x, rect.y));
-
-                    MenuManager manager = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-
-                    if (!board.equals(dashboard))
-                    {
-                        manager.add(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
-                        manager.add(new Separator());
-                    }
-
-                    manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
-                    manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
-                    manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(board)));
-
-                    Menu menu = manager.createContextMenu(toolBar);
-                    menu.setLocation(pt.x, pt.y + rect.height);
-                    menu.setVisible(true);
-
-                    item.addDisposeListener(e -> menu.dispose());
+                    manager.add(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
+                    manager.add(new Separator());
                 }
-                else
-                {
-                    selectDashboard(board);
-                    item.setImage(Images.DASHBOARD_SELECTED.image());
-                }
-            }));
-        });
+
+                manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
+                manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
+                manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(board)));
+
+                Menu menu = manager.createContextMenu(toolBar);
+                menu.setLocation(pt.x, pt.y + rect.height);
+                menu.setVisible(true);
+
+                item.addDisposeListener(e -> menu.dispose());
+            }
+            else
+            {
+                selectDashboard(board);
+            }
+        }));
     }
 
     private void recreateDashboardToolItems()
@@ -488,12 +518,7 @@ public class DashboardView extends AbstractHistoricView
         this.dashboard = board;
         updateTitle(board.getName());
 
-        for (ToolItem item : toolBar.getItems())
-        {
-            if (item.getData() instanceof Dashboard)
-                item.setImage(board.equals(item.getData()) ? Images.DASHBOARD_SELECTED.image()
-                                : Images.DASHBOARD.image());
-        }
+        recreateDashboardToolItems();
 
         for (Control column : container.getChildren())
             column.dispose();
@@ -522,8 +547,6 @@ public class DashboardView extends AbstractHistoricView
 
         getClient().addDashboard(newDashboard);
         markDirty();
-
-        recreateDashboardToolItems();
 
         selectDashboard(newDashboard);
     }
@@ -554,7 +577,6 @@ public class DashboardView extends AbstractHistoricView
             Dashboard newDashboard = createDefaultDashboard();
             getClient().addDashboard(newDashboard);
             markDirty();
-            recreateDashboardToolItems();
             return newDashboard;
         }));
     }
