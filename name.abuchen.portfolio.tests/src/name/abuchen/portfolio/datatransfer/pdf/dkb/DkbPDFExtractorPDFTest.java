@@ -53,7 +53,7 @@ public class DkbPDFExtractorPDFTest
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getWkn(), is("A0DJ58"));
         assertThat(security.getIsin(), is("GB00B02J6398"));
-        assertThat(security.getName(), is("ADMIRAL GROUP PLC"));
+        assertThat(security.getName(), is("ADMIRAL GROUP PLC REGISTERED SHARES LS -,001"));
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();

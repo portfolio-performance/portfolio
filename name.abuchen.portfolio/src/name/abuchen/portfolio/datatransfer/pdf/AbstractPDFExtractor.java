@@ -165,6 +165,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (name != null)
             name = name.trim();
 
+        String nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
+        if (nameRowTwo != null)
+            name = name + " " + nameRowTwo.trim();        
+
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
