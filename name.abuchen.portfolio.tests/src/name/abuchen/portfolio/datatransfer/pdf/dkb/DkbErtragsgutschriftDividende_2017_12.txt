@@ -1,0 +1,50 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 123456789
+Kundennummer 1234123412
+Max Mustermann
+Abrechnungsnr. 84033925310
+Herrn Datum 06.12.2017
+Max Mustermann
+Gutschrift von Investmenterträgen
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 216 DIM.FDS-GLOBAL SMALL COMPANIES IE00B3XNN521 (A1JJAG)
+REGISTERED SHARES EUR DIS.O.N.
+Zahlbarkeitstag 07.12.2017 Ertrag pro St. 0,211140000 EUR
+Bestandsstichtag 29.11.2017 Zinsanteil pro St. 0,211140000 EUR
+Ex-Tag 30.11.2017 Herkunftsland Irland
+Geschäftsjahr 01.12.2016 - 30.11.2017
+Ausschüttung 45,61+ EUR
+Kapitalertragsteuerpflichtiger Zinsanteil gesamt 45,61 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 45,61 EUR
+Kapitalertragsteuer 24,51 % auf 45,61 EUR 11,18- EUR
+Solidaritätszuschlag 5,5 % auf 11,18 EUR 0,61- EUR
+Kirchensteuer 8 % auf 11,18 EUR 0,89- EUR
+Ausmachender Betrag 32,93+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 07.12.2017 zu Gunsten des Kontos 123456789 (IBAN xxxx), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bis zum Zahlbarkeitstag wurden noch nicht alle steuerlich relevanten Daten vom Emittenten geliefert. Daher wird
+voraussichtlich zu einem späteren Zeitpunkt eine Korrektur dieser Ertragszahlung durch eine Storno- und eine
+Neuabrechnung erfolgen.
+Bitte ggf. Rückseite beachten.
+0883.12070100.0005675ER03
+
+Seite 2
+Depotnummer 123456789
+Kundennummer 1234123412
+Abrechnungsnr. 84033925310
+Datum 06.12.2017
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2017 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 524,00
+Ertrag 0,00 0,00 0,00 0,00 45,61
+Nachher 0,00 0,00 0,00 0,00 569,61
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.12070100.0005675ER03
+

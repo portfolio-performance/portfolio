@@ -25,8 +25,10 @@ import name.abuchen.portfolio.money.Values;
 public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", Locale.GERMANY); //$NON-NLS-1$
-    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
+                    Locale.GERMANY);
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
+                    Locale.GERMANY);
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
@@ -165,6 +167,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (name != null)
             name = name.trim();
 
+        String nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
+        if (nameRowTwo != null)
+            name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
+
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
@@ -227,7 +233,7 @@ public abstract class AbstractPDFExtractor implements Extractor
     {
         return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
     }
-    
+
     /* protected */LocalDateTime asDate(String date, String time)
     {
         try
