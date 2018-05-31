@@ -6,14 +6,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.AbstractMap;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
@@ -170,6 +167,47 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return section;
         }
 
+        @SafeVarargs
+        public final Transaction<T> oneOf(Function<Section<T>, Transaction<T>>... alternatives)
+        {
+            List<Section<T>> subSections = new ArrayList<>();
+            for (Function<Section<T>, Transaction<T>> function : alternatives)
+            {
+                Section<T> s = new Section<>(this, null);
+                function.apply(s);
+                subSections.add(s);
+            }
+
+            sections.add(new Section<T>(this, null)
+            {
+                @Override
+                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
+                {
+                    List<String> errors = new ArrayList<>();
+
+                    for (Section<T> section : subSections)
+                    {
+                        try
+                        {
+                            section.parse(filename, lines, lineNo, lineNoEnd, target);
+
+                            // if parsing was successful, then return
+                            return;
+                        }
+                        catch (IllegalArgumentException ignore)
+                        {
+                            // try next sub-section
+                            errors.add(ignore.getMessage());
+                        }
+                    }
+
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoneOfSubSectionsMatched,
+                                    String.valueOf(subSections.size()), String.join("; ", errors))); //$NON-NLS-1$
+                }
+            });
+            return this;
+        }
+
         public Transaction<T> wrap(Function<T, Item> wrapper)
         {
             this.wrapper = wrapper;
@@ -179,35 +217,9 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         public void parse(String filename, List<Item> items, String[] lines, int lineNoStart, int lineNoEnd)
         {
             T target = supplier.get();
-            List<Entry<Integer, Boolean>> result = new ArrayList<>();
 
             for (Section<T> section : sections)
-            {
-                if (section.isGroup)
-                {
-                    try
-                    {
-                        section.parse(filename, lines, lineNoStart, lineNoEnd, target);
-                        result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), true));
-                    }
-                    catch (Exception ex)
-                    {
-                        result.add(new AbstractMap.SimpleEntry<>(section.getGroupID(), false));
-                    }
-                }
-                else
-                {
-                    section.parse(filename, lines, lineNoStart, lineNoEnd, target);
-                }
-            }
-
-            result.stream() //
-                            .collect(Collectors.groupingBy(Entry::getKey, Collectors.toList())) //
-                            .forEach((k, v) -> {
-                                if (v.stream().noneMatch(Entry::getValue))
-                                    throw new IllegalArgumentException(
-                                                    MessageFormat.format(Messages.MsgErrorNoSectionOfGroupMatched, k));
-                            });
+                section.parse(filename, lines, lineNoStart, lineNoEnd, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -221,8 +233,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
-        private boolean isGroup = false;
-        private int groupID;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
@@ -234,27 +244,16 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             this.attributes = attributes;
         }
 
+        public Section<T> attributes(String... attributes)
+        {
+            this.attributes = attributes;
+            return this;
+        }
+
         public Section<T> optional()
         {
             this.isOptional = true;
             return this;
-        }
-
-        public Section<T> grouping(int groupID)
-        {
-            this.isGroup = true;
-            this.groupID = groupID;
-            return this;
-        }
-
-        public boolean isGroup()
-        {
-            return this.isGroup;
-        }
-
-        public int getGroupID()
-        {
-            return this.groupID;
         }
 
         public Section<T> find(String string)

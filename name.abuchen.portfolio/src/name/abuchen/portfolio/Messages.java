@@ -151,8 +151,8 @@ public class Messages extends NLS
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorMissingValueMatches;
     public static String MsgErrorNoCrumbFound;
+    public static String MsgErrorNoneOfSubSectionsMatched;
     public static String MsgErrorNotAllPatternMatched;
-    public static String MsgErrorNoSectionOfGroupMatched;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorsConvertingValue;
     public static String MsgErrorUnexpectedStatusCode;
