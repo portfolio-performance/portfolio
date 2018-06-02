@@ -16,7 +16,7 @@ public class ECBExchangeRateProviderTest
     @Test
     public void testLookup()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory();
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(null);
 
         assertThat(factory.getTimeSeries("EUR", "CHF"), instanceOf(ExchangeRateTimeSeriesImpl.class));
         assertThat(factory.getTimeSeries("CHF", "EUR"), instanceOf(InverseExchangeRateTimeSeries.class));
