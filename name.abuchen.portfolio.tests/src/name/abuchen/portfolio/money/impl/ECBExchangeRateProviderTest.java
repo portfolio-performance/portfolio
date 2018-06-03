@@ -25,6 +25,7 @@ public class ECBExchangeRateProviderTest
         assertThat(factory.getTimeSeries("GBP", "XXX"), is(nullValue()));
         assertThat(factory.getTimeSeries("XXX", "GBP"), is(nullValue()));
         assertThat(factory.getTimeSeries("XZY", "XXX"), is(nullValue()));
+        assertThat(factory.getTimeSeries("VND", "EUR"), is(nullValue()));
 
         ExchangeRateTimeSeries timeSeries = factory.getTimeSeries("CHF", "USD");
         assertThat(timeSeries, instanceOf(ChainedExchangeRateTimeSeries.class));

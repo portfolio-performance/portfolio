@@ -26,7 +26,7 @@ import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
  */
 public class ExchangeRateProviderFactory
 {
-    private class Dijkstra
+    private static class Dijkstra
     {
         private List<ExchangeRateTimeSeries> timeSeries = new ArrayList<>();
 
@@ -55,6 +55,9 @@ public class ExchangeRateProviderFactory
                 String node = getNodeWithMinimumDistance(unvisited);
                 unvisited.remove(node);
                 visited.add(node);
+
+                if (getDistance(node) == Integer.MAX_VALUE)
+                    continue;
 
                 for (ExchangeRateTimeSeries neighbor : getNeighbors(node))
                 {
