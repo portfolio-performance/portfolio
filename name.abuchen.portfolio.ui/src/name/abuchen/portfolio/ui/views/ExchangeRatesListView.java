@@ -7,6 +7,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -21,6 +23,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -32,6 +35,7 @@ public class ExchangeRatesListView extends AbstractListView
     @Inject
     private ExchangeRateProviderFactory providerFactory;
 
+    private TableViewer indeces;
     private TimelineChart chart;
 
     @Override
@@ -47,6 +51,14 @@ public class ExchangeRatesListView extends AbstractListView
         super.setFocus();
     }
 
+    @Inject
+    @Optional
+    public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
+    {
+        indeces.setInput(providerFactory.getAvailableTimeSeries());
+        indeces.refresh();
+    }
+
     @Override
     protected void createTopTable(Composite parent)
     {
@@ -54,7 +66,7 @@ public class ExchangeRatesListView extends AbstractListView
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        TableViewer indeces = new TableViewer(container, SWT.FULL_SELECTION);
+        indeces = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), indeces, layout);

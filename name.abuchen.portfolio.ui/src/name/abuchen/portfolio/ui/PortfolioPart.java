@@ -494,6 +494,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     @Optional
     public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
     {
+        if (exchangeRateProviderFacory != null)
+            exchangeRateProviderFacory.clearCache();
+        
         // update view w/o marking the model dirty
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.notifyModelUpdated();

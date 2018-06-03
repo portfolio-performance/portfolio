@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.money;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.impl.EmptyExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 
 /**
@@ -146,15 +146,21 @@ public class ExchangeRateProviderFactory
 
     }
 
+    private static final List<ExchangeRateProvider> PROVIDERS = new ArrayList<>();
+
+    static {
+        // load all available providers
+        Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
+        while (registeredProvider.hasNext())
+            PROVIDERS.add(registeredProvider.next());
+    }
+
     private final Client client;
-    private final List<ExchangeRateProvider> providers = new ArrayList<>();
     private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
     public ExchangeRateProviderFactory(Client client)
     {
         this.client = client;
-        // load all available providers
-        loadAllProviders(providers);
     }
 
     /**
@@ -164,27 +170,7 @@ public class ExchangeRateProviderFactory
      */
     public static List<ExchangeRateProvider> getProviders()
     {
-        List<ExchangeRateProvider> l = new ArrayList<>();
-        loadAllProviders(l);
-        return l;
-    }
-
-    /**
-     * Loads all {@link ExchangeRateProvider}s and adds them to the given
-     * {@link Collection}.
-     * 
-     * @param col
-     *            {@link Collection}
-     */
-    private static void loadAllProviders(Collection<ExchangeRateProvider> col)
-    {
-        // load all available providers
-        Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
-        while (registeredProvider.hasNext())
-        {
-            ExchangeRateProvider provider = registeredProvider.next();
-            col.add(provider);
-        }
+        return new ArrayList<>(PROVIDERS);
     }
 
     /**
@@ -195,10 +181,9 @@ public class ExchangeRateProviderFactory
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         List<ExchangeRateTimeSeries> series = new ArrayList<>();
-        for (ExchangeRateProvider p : providers)
-        {
+        for (ExchangeRateProvider p : PROVIDERS)
             series.addAll(p.getAvailableTimeSeries(client));
-        }
+
         return series;
     }
 
@@ -219,7 +204,7 @@ public class ExchangeRateProviderFactory
         List<ExchangeRateTimeSeries> answer = dijkstra.findShortestPath(termCurrency);
 
         if (answer.isEmpty())
-            return null;
+            return new EmptyExchangeRateTimeSeries(baseCurrency, termCurrency);
         else if (answer.size() == 1)
             return answer.get(0);
         else
