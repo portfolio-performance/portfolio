@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
@@ -34,6 +36,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.variableurl.Factory;
+import name.abuchen.portfolio.online.impl.variableurl.VariableURL;
 import name.abuchen.portfolio.util.Strings;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
@@ -308,16 +312,35 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         }
 
-        List<LatestSecurityPrice> answer = cache.lookup(feedURL);
-        if (answer != null)
-            return answer;
+        VariableURL variableURL = Factory.fromString(feedURL);
+        variableURL.setSecurity(security);
 
-        answer = parseFromURL(feedURL, errors);
+        SortedSet<LatestSecurityPrice> newPricesByDate = new TreeSet<>(new SecurityPrice.ByDate());
+        long failedAttempts = 0;
+        long maxFailedAttempts = variableURL.getMaxFailedAttempts();
 
-        if (!answer.isEmpty())
-            cache.put(feedURL, answer);
+        for (String url : variableURL)
+        {
+            List<LatestSecurityPrice> answer = cache.lookup(url);
 
-        return answer;
+            if (answer == null)
+            {
+                answer = parseFromURL(url, errors);
+
+                if (!answer.isEmpty())
+                    cache.put(url, answer);
+            }
+
+            int sizeBefore = newPricesByDate.size();
+            newPricesByDate.addAll(answer);
+
+            if (newPricesByDate.size() > sizeBefore)
+                failedAttempts = 0;
+            else if (++failedAttempts > maxFailedAttempts)
+                break;
+        }
+
+        return new ArrayList<>(newPricesByDate);
     }
 
     @Override
