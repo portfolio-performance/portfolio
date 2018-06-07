@@ -26,7 +26,9 @@ public class Messages extends NLS
     public static String CSVColumn_Date;
     public static String CSVColumn_Fees;
     public static String CSVColumn_InboundTransferals;
+    public static String CSVColumn_IBAN;
     public static String CSVColumn_ISIN;
+    public static String CSVColumn_PartnerName;
     public static String CSVColumn_Quote;
     public static String CSVColumn_SecurityName;
     public static String CSVColumn_Shares;
@@ -101,6 +103,7 @@ public class Messages extends NLS
     public static String IssueMissingReferenceAccount;
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssuePortfolioTransactionWithoutSecurity;
+    public static String LabelAnyPeer;
     public static String LabelAssetAllocation;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
@@ -115,6 +118,7 @@ public class Messages extends NLS
     public static String LabelNoCurrencyDescription;
     public static String LabelNoRatio;
     public static String LabelRemovals;
+    public static String LabelPeer;
     public static String LabelPotentialDuplicate;
     public static String LabelReportingPeriodFromXtoY;
     public static String LabelReportingPeriodLastXDays;
@@ -147,6 +151,7 @@ public class Messages extends NLS
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
+    public static String MsgErrorDuplicateIBAN;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;

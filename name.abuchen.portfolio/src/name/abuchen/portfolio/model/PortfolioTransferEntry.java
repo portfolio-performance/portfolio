@@ -2,8 +2,6 @@ package name.abuchen.portfolio.model;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.money.Values;
-
 public class PortfolioTransferEntry implements CrossEntry, Annotated
 {
     private Portfolio portfolioFrom;

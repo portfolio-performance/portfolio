@@ -39,7 +39,9 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.util.Isin;
+import name.abuchen.portfolio.util.Iban;
 
 public class CSVImporter
 {
@@ -330,6 +332,71 @@ public class CSVImporter
                 }
             }
             return null;
+        }
+    }
+
+    public static class IBANField extends CSVImporter.Field
+    {
+
+        /* package */ IBANField(String name)
+        {
+            super(name);
+        }
+
+        public IBANFormat createFormat(List<Account> accountList)
+        {
+            return new IBANFormat(accountList);
+        }
+    }
+
+    public static class IBANFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+
+        private Set<String> existingIBANs;
+
+        public IBANFormat(List<Account> accountList)
+        {
+            existingIBANs = accountList.stream().map(Account::getIban)
+                            .filter(iban -> iban != null && !iban.trim().isEmpty()).collect(Collectors.toSet());
+        }
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            String s = (String) obj;
+            if (s == null)
+                throw new IllegalArgumentException();
+
+            return toAppendTo.append(s);
+        }
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            Objects.requireNonNull(pos);
+
+            String iban = source.trim().toUpperCase();
+
+            // check for a partial match (IBAN maybe only part of the field:
+
+            Pattern pattern = Pattern.compile("\\b(" + Iban.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+            Matcher matcher = pattern.matcher(iban);
+            if (matcher.find())
+                iban = matcher.group(1);
+
+            // return IBAN as valid if a) it is a valid ISIN number, and b) it
+            // is one of the existing IBAN
+            System.err.println(">>>> CSVImporter::IBANFormat::parseObject iban: " + iban + " existing: " + existingIBANs.toArray().toString()); // TODO: still needed for debug?
+
+            if (Iban.isValid(iban) && existingIBANs.contains(iban))
+            {
+                pos.setIndex(source.length());
+                return iban;
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 

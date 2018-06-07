@@ -9,6 +9,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Peer;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -17,6 +18,12 @@ import name.abuchen.portfolio.model.Transaction;
 
 public class DetectDuplicatesAction implements ImportAction
 {
+
+    @Override
+    public Status process(Peer peer)
+    {
+        return Status.OK_STATUS;
+    }
 
     @Override
     public Status process(Security security)

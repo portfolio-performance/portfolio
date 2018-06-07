@@ -20,6 +20,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Header;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Iban;
 import name.abuchen.portfolio.util.Isin;
 
 public abstract class CSVExtractor implements Extractor
@@ -81,7 +82,7 @@ public abstract class CSVExtractor implements Extractor
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
+    protected String getPattern(String name, String[] rawValues, Map<String, Column> field2column, String pattern)
     {
         Column column = field2column.get(name);
         if (column == null)
@@ -95,15 +96,25 @@ public abstract class CSVExtractor implements Extractor
         String value = rawValues[columnIndex];
         if (value == null)
             return null;
-        
+
         value = value.trim().toUpperCase();
 
-        Pattern pattern = Pattern.compile("\\b(" + Isin.PATTERN + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
-        Matcher matcher = pattern.matcher(value);
-        if (matcher.find())
-            value = matcher.group(1);
+        Pattern Ipattern = Pattern.compile("\\b(" + pattern + ")\\b"); //$NON-NLS-1$ //$NON-NLS-2$
+        Matcher Imatcher = Ipattern.matcher(value);
+        if (Imatcher.find())
+            value = Imatcher.group(1);
 
         return value.length() == 0 ? null : value;
+    }
+
+    protected String getIBAN(String name, String[] rawValues, Map<String, Column> field2column)
+    {
+        return getPattern(name, rawValues, field2column, Iban.PATTERN);
+    }
+
+    protected String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
+    {
+        return getPattern(name, rawValues, field2column, Isin.PATTERN);
     }
 
     protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException

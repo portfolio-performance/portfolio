@@ -21,6 +21,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Peer;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -34,7 +35,7 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount")
+        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount", "peer")
                         .before((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
                                         is(Code.WARNING)))
                         .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
@@ -157,6 +158,10 @@ public class DetectDuplicatesActionTest
             {
                 return LocalDate.of(1999, 1, 1);
             }
+            else if (propertyType == Peer.class)
+            {
+                return new Peer();
+            }
             else if (propertyType == Security.class)
             {
                 return new Security();
@@ -190,6 +195,10 @@ public class DetectDuplicatesActionTest
             else if (propertyType == LocalDate.class)
             {
                 return LocalDate.of(2000 + random.nextInt(30), 1, 1);
+            }
+            else if (propertyType == Peer.class)
+            {
+                return new Peer();
             }
             else if (propertyType == Security.class)
             {

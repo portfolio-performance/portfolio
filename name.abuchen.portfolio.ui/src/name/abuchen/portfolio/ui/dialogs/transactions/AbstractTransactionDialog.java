@@ -18,6 +18,11 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.TitleAreaDialog;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
+import org.eclipse.jface.fieldassist.IContentProposalListener;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
@@ -167,6 +172,71 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         {
             context.bindValue(WidgetProperties.text().observe(currency), BeanProperties.value(property).observe(model));
         }
+    }
+
+    //based on http://javawiki.sowas.com/doku.php?id=swt-jface:autocompletefield
+    public class AutoCompleteInput
+    {
+
+        public final Label label;
+        public final Text value;
+
+        private IContentProposalProvider contentProposalProvider;
+        private ContentProposalAdapter  contentProposalAdapter;
+
+        public AutoCompleteInput(Composite editArea, String text, IContentProposalProvider contentProposalProvider, IContentProposalListener contentProposalListener)
+        {
+            if (text != null)
+            {
+                label = new Label(editArea, SWT.RIGHT);
+                label.setText(text);
+            }
+            else
+            {
+                label = null;
+            }
+            value = new Text(editArea, SWT.SINGLE | SWT.BORDER);
+            AutoCompletion(value, new TextContentAdapter(), contentProposalProvider, contentProposalListener); //str, str2
+        }
+
+        public void AutoCompletion(final Control control,
+                                       final IControlContentAdapter controlContentAdapter,
+                                       final IContentProposalProvider contentProposalProvider,
+                                       final IContentProposalListener contentProposalListener)
+        {
+           this.contentProposalProvider = contentProposalProvider;
+           contentProposalAdapter = new ContentProposalAdapter(control, controlContentAdapter, contentProposalProvider, null, null);
+           contentProposalAdapter.setPropagateKeys(true);
+           contentProposalAdapter.setProposalAcceptanceStyle(ContentProposalAdapter.PROPOSAL_REPLACE);
+           contentProposalAdapter.addContentProposalListener(contentProposalListener);
+        }
+
+        public IContentProposalProvider getContentProposalProvider()
+        {
+           return (IContentProposalProvider) contentProposalProvider;
+        }
+
+        public ContentProposalAdapter getContentProposalAdapter()
+        {
+            return contentProposalAdapter;
+        }
+
+        public void setVisible(boolean visible)
+        {
+            label.setVisible(visible);
+            value.setVisible(visible);
+        }
+
+        public void bindValue(String property, String missingValueMessage)
+        {
+            this.bindValue(property, missingValueMessage, true);
+        }
+
+        public void bindValue(String property, String missingValueMessage, boolean isMandatory)
+        {
+            context.bindValue(WidgetProperties.text().observe(value), BeanProperties.value(property).observe(model));
+        }
+
     }
 
     class ModelStatusListener

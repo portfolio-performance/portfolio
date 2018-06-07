@@ -194,6 +194,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                         Images.SECURITY.descriptor()));
         allSecurities.setContextMenu(setAsStartPage);
 
+        new Entry(section, new ActivateViewAction(Messages.LabelPeers, "PeerList", //$NON-NLS-1$
+                        Images.PEER.descriptor())).setContextMenu(setAsStartPage);
+
         for (Watchlist watchlist : editor.getClient().getWatchlists())
             createWatchlistEntry(section, watchlist);
     }

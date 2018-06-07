@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Peer;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -15,6 +16,7 @@ public class InsertAction implements ImportAction
 {
     private final Client client;
     private boolean convertBuySellToDelivery = false;
+    private boolean convertDepositRemovalToTransfer = true;
 
     public InsertAction(Client client)
     {
@@ -24,6 +26,21 @@ public class InsertAction implements ImportAction
     public void setConvertBuySellToDelivery(boolean flag)
     {
         this.convertBuySellToDelivery = flag;
+    }
+
+    public void setConvertDepositRemovalToTransfer(boolean flag)
+    {
+        this.convertDepositRemovalToTransfer = flag;
+    }
+
+
+    @Override
+    public Status process(Peer peer)
+    {
+        // might have been added via a transaction
+        if (!client.getPeers().contains(peer))
+            client.addPeer(peer);
+        return Status.OK_STATUS;
     }
 
     @Override
@@ -94,7 +111,10 @@ public class InsertAction implements ImportAction
     {
         entry.setSourceAccount(source);
         entry.setTargetAccount(target);
+        entry.getSourceTransaction().voidPeer();
+        entry.getTargetTransaction().voidPeer();
         entry.insert();
+        System.err.println(">>>> insertAction::process(AccountTransferEntry..)" + entry.toString()); // TODO: still needed for debug?
         return Status.OK_STATUS;
     }
 

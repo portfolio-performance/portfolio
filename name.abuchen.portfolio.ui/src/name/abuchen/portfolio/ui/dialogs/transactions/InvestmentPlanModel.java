@@ -118,7 +118,7 @@ public class InvestmentPlanModel extends AbstractModel
     private IStatus calculateStatus()
     {
         if (account != null && account.equals(DELIVERY) && portfolio != null && portfolio.equals(DEPOSIT))
-            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnPeer));
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.MsgMissingAccountOrPortfolio));
 
         if (name == null || name.trim().length() == 0)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));

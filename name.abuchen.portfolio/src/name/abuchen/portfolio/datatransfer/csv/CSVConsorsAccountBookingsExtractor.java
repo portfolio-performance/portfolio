@@ -1,11 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
-import java.util.EnumMap;
-
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Header;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
 
 /* package */ class CSVConsorsAccountBookingExtractor extends CSVConsorsAccountTransactionExtractor

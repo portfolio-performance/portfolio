@@ -55,9 +55,7 @@ import com.thoughtworks.xstream.mapper.Mapper;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.money.CurrencyUnit;
-//import name.abuchen.portfolio.money.Monetary;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
@@ -560,6 +558,9 @@ public class ClientFactory
                 introduceQuoteSuggestion4Transfer(client);
             case 38:
                 // added DIVIDEND_CHARGE transaction type
+            case 39:
+                // Introducing Peers
+                introducePeers(client);
                 // ...
 
                 client.setVersion(Client.CURRENT_VERSION);
@@ -1090,6 +1091,13 @@ public class ClientFactory
         }
     }
 
+    private static void introducePeers(Client client)
+    {
+        for (Account a : client.getAccounts())
+        {
+            a.setPeer();
+        }
+    }
 
     @SuppressWarnings("nls")
     private static XStream xstream()
@@ -1127,6 +1135,10 @@ public class ClientFactory
                     xstream.alias("watchlist", Watchlist.class);
                     xstream.alias("investment-plan", InvestmentPlan.class);
                     xstream.alias("attribute-type", AttributeType.class);
+
+                    xstream.alias("peer", Peer.class);
+                    xstream.useAttributeFor(Peer.class, "name");
+                    xstream.useAttributeFor(Peer.class, "IBAN");
 
                     xstream.alias("price", SecurityPrice.class);
                     xstream.useAttributeFor(SecurityPrice.class, "date");

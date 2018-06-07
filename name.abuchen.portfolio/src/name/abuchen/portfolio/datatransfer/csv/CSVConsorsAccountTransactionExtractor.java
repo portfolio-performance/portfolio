@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -47,18 +46,16 @@ import name.abuchen.portfolio.money.Money;
             //System.err.println(">>>> CSVDibaAccountTransactionExtratctor:getDefaultEnum enumType IF " + enumType.toString());
             final EnumMap<E, String> enumMap = new EnumMap<>(enumType);
             enumMap.put((E) Type.BUY, "Wertpapierkauf");
-            enumMap.put((E) Type.SELL, "Wertpapiergutschrift");
+            enumMap.put((E) Type.SELL, "Wertpapiergutschrift|Wertpapierverkauf");
             enumMap.put((E) Type.DEPOSIT, "Gutschrift|Gehalt/Rente|Überweisung");
             enumMap.put((E) Type.INTEREST, "Abschluss");
             enumMap.put((E) Type.REMOVAL, "Lastschrift|Dauerauftrag");
             enumMap.put((E) Type.INTEREST_CHARGE, "Zinsen");
+            enumMap.put((E) Type.FEES, "Gebühren");
             return enumMap;
         }
         else
-        {
-            //System.err.println(">>>> CSVDibaAccountTransactionExtratctor:getDefaultEnum enumType ELSE " + enumType.toString());
             return null;
-        }
     }
 
     @Override
@@ -73,8 +70,8 @@ import name.abuchen.portfolio.money.Money;
     {
         String[] defaultHeader = {  "",  //0
                                     Messages.CSVColumn_Date, //1
-                                    Messages.CSVColumn_SecurityName, //2
-                                    Messages.CSVColumn_ISIN, //3
+                                    Messages.CSVColumn_PartnerName, //2
+                                    Messages.CSVColumn_IBAN, //3
                                     "", //4
                                     Messages.CSVColumn_Type, //5
                                     Messages.CSVColumn_Note, //6
@@ -84,8 +81,7 @@ import name.abuchen.portfolio.money.Money;
                                     Messages.CSVColumn_Value, //10
                                     "", //11
                                     "" //12
-                                                                        };
-        //System.err.println(">>>> CSVDibaAccountTransactionExtratctor:DefaultHeader: " + Arrays.toString(defaultHeader));
+                                };
         return defaultHeader;
     }
 

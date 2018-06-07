@@ -105,6 +105,8 @@ public class AccountTransaction extends Transaction
 
     private Type type;
 
+    private Peer peer;
+
     public AccountTransaction()
     {
         // needed for xstream de-serialization
@@ -114,6 +116,22 @@ public class AccountTransaction extends Transaction
     {
         super(date, currencyCode, amount, security, 0, null);
         this.type = type;
+        voidPeer();
+    }
+
+    public Peer getPeer()
+    {
+        return peer;
+    }
+
+    public void setPeer(Peer peer)
+    {
+        this.peer = peer;
+    }
+
+    public void voidPeer()
+    {
+        this.peer = null;
     }
 
     public Type getType()
@@ -154,7 +172,14 @@ public class AccountTransaction extends Transaction
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s", Values.Date.format(getDate()), type.name(), getCurrencyCode(), //$NON-NLS-1$
-                        Values.Amount.format(getAmount()), getSecurity() != null ? getSecurity().getName() : ""); //$NON-NLS-1$
+        return String.format("%s %-17s %s %9s %s %s %s"
+                        , Values.Date.format(getDate())
+                        , type.name()
+                        , getCurrencyCode() //$NON-NLS-1$
+                        , Values.Amount.format(getAmount())
+                        , getSecurity() != null ? getSecurity().getName() : "<no Security>"
+                        , peer != null ? peer.getName() : "<no Peer>"
+                        , getCrossEntry() != null && getCrossEntry().getCrossOwner(this) != null? getCrossEntry().getCrossOwner(this).toString() : "<no XEntry>"
+                            ); //$NON-NLS-1$
     }
 }

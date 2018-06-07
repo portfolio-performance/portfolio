@@ -11,6 +11,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.IBANField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
@@ -19,6 +20,7 @@ import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Peer;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -52,6 +54,8 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField(Messages.CSVColumn_Shares).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
         fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
+        fields.add(new IBANField(Messages.CSVColumn_IBAN).setOptional(true));
+        fields.add(new Field(Messages.CSVColumn_PartnerName).setOptional(true));
         return fields;
     }
 
@@ -76,6 +80,15 @@ import name.abuchen.portfolio.money.Money;
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
 
+        Peer peer = getPeer(rawValues, field2column, p -> {});
+        if (peer != null && peer.isAccount())
+        {
+            if (type == Type.DEPOSIT)
+                type = Type.TRANSFER_IN;
+            else if (type == Type.REMOVAL)
+                type = Type.TRANSFER_OUT;
+        }
+
         switch (type)
         {
             case TRANSFER_IN:
@@ -85,6 +98,13 @@ import name.abuchen.portfolio.money.Money;
                 entry.setCurrencyCode(amount.getCurrencyCode());
                 entry.setDate(date);
                 entry.setNote(note);
+                if (peer != null)
+                {
+                    if (type == Type.TRANSFER_OUT)
+                        entry.getSourceTransaction().setPeer(peer);
+                    else if (type == Type.TRANSFER_IN)
+                        entry.getTargetTransaction().setPeer(peer);
+                }
                 items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
                 break;
             case BUY:
@@ -153,6 +173,8 @@ import name.abuchen.portfolio.money.Money;
                 if (dividendType && taxes != null && taxes.longValue() != 0)
                     t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
                 t.setNote(note);
+                if ((type == Type.DEPOSIT || type == Type.REMOVAL) && peer != null)
+                    t.setPeer(peer);
                 items.add(new TransactionItem(t));
                 break;
             default:

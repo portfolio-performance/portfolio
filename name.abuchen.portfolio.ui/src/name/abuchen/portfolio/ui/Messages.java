@@ -136,6 +136,7 @@ public class Messages extends NLS
     public static String ColumnGrossValue;
     public static String ColumnIndex;
     public static String ColumnInterval;
+    public static String ColumnIBAN;
     public static String ColumnIRR;
     public static String ColumnIRR_MenuLabel;
     public static String ColumnIRRPerformance;
@@ -162,6 +163,7 @@ public class Messages extends NLS
     public static String ColumnName;
     public static String ColumnNote;
     public static String ColumnOffsetAccount;
+    public static String ColumnPartner;
     public static String ColumnPeer;
     public static String ColumnPerShare;
     public static String ColumnPerShare_Description;
@@ -425,12 +427,14 @@ public class Messages extends NLS
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
+    public static String LabelNoAccount;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelOneOfX;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
+    public static String LabelPeers;
     public static String LabelPeformanceTTWROR;
     public static String LabelPerformanceCalculation;
     public static String LabelPerformanceChart;
@@ -553,6 +557,8 @@ public class Messages extends NLS
     public static String MenuNewReportingPeriod;
     public static String MenuNewWidget;
     public static String MenuOpenSecurityOnSite;
+    public static String MenuPeerAdd;
+    public static String MenuPeerDelete;
     public static String MenuPickOtherDate;
     public static String MenuRemoveAll;
     public static String MenuRenameDashboard;
@@ -601,6 +607,7 @@ public class Messages extends NLS
     public static String MsgDeletionNotPossible;
     public static String MsgDeletionNotPossibleDetail;
     public static String MsgDialogInputRequired;
+    public static String MsgDialogNotAValidIBAN;
     public static String MsgDialogNotAValidISIN;
     public static String MsgEmbeddedBrowserError;
     public static String MsgErrorConvertedAmount;
@@ -617,6 +624,9 @@ public class Messages extends NLS
     public static String MsgInfoRetiredSecurities;
     public static String MsgLoadingFile;
     public static String MsgMissingAccount;
+    public static String MsgMissingAccountOrPortfolio;
+    public static String MsgMissingPartner;
+    public static String MsgMissingPeer;
     public static String MsgMissingPortfolio;
     public static String MsgMissingReferenceAccount;
     public static String MsgMissingSecurity;
@@ -658,6 +668,7 @@ public class Messages extends NLS
     public static String PDFImportWizardExtractor;
     public static String PDFImportDebugAuthor;
     public static String PDFImportErrorParsingDocument;  
+    public static String PeerFilterAccounts;
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;

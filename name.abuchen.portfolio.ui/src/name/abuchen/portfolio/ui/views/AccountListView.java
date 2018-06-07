@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +77,7 @@ import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSup
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.IbanColumn;
 
 public class AccountListView extends AbstractListView implements ModificationListener
 {
@@ -201,13 +203,16 @@ public class AccountListView extends AbstractListView implements ModificationLis
     @Override
     public void notifyModelUpdated()
     {
-        resetInput();
-
-        Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
-        if (getClient().getAccounts().contains(account))
-            accounts.setSelection(new StructuredSelection(account));
-        else
-            accounts.setSelection(StructuredSelection.EMPTY);
+        new Exception().printStackTrace(System.err);
+        return;
+// TODO: really no impact, that this is aborted?
+//        resetInput();
+//
+//        Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
+//        if (getClient().getAccounts().contains(account))
+//            accounts.setSelection(new StructuredSelection(account));
+//        else
+//            accounts.setSelection(StructuredSelection.EMPTY);
     }
 
     @Override
@@ -278,6 +283,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return ((Account) element).getTransactions().isEmpty();
             }
         });
+        accountColumns.addColumn(column);
+
+        column = new IbanColumn();
+        column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
         column = new NoteColumn();
@@ -542,14 +551,19 @@ public class AccountListView extends AbstractListView implements ModificationLis
         });
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column = new Column(Messages.ColumnOffsetAccount + "/" + Messages.ColumnPeer, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
-                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
+                if (t.getCrossEntry() != null)
+                    return "[" + t.getCrossEntry().getCrossOwner(t).toString() + "]";
+                else if (t.getPeer() != null)
+                    return t.getPeer().getName();
+                else
+                    return null;
             }
 
             @Override

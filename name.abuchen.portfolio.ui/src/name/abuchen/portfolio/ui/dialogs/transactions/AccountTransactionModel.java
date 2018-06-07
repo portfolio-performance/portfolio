@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
@@ -13,6 +12,7 @@ import com.ibm.icu.text.MessageFormat;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Peer;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.Transaction;
@@ -30,7 +30,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, peer, partner, iban, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -45,6 +45,10 @@ public class AccountTransactionModel extends AbstractModel
 
     private Security security;
     private Account account;
+    private Peer peer;
+    private String partner;
+    private String iban;
+
     private LocalDate date = LocalDate.now();
     private long shares;
 
@@ -135,6 +139,11 @@ public class AccountTransactionModel extends AbstractModel
         t.setType(type);
         t.setNote(note);
 
+        System.err.println(">> AccountTransactionModel::applyChanges: peer " + peer.toString());
+        // TODO: may need to map Peer to existing one
+        // TODO: Change Type DEPOSIT/REMOVAL <> TRANSFER
+        t.setPeer(peer);
+
         t.clearUnits();
 
         if (taxes != 0)
@@ -174,6 +183,7 @@ public class AccountTransactionModel extends AbstractModel
         setTaxes(0);
         setFxTaxes(0);
         setNote(null);
+        setPeer(new Peer());
     }
 
     public boolean supportsShares()
@@ -242,9 +252,12 @@ public class AccountTransactionModel extends AbstractModel
             this.security = EMPTY_SECURITY;
 
         this.account = account;
-        this.date = transaction.getDate();
-        this.shares = transaction.getShares();
-        this.total = transaction.getAmount();
+        this.date    = transaction.getDate();
+        this.shares  = transaction.getShares();
+        this.total   = transaction.getAmount();
+        this.peer    = transaction.getPeer();
+        this.partner = this.peer.getName();
+        this.iban    = this.peer.getIban();
 
         // both will be overwritten if forex data exists
         this.exchangeRate = BigDecimal.ONE;
@@ -321,6 +334,7 @@ public class AccountTransactionModel extends AbstractModel
 
     public void setAccount(Account account)
     {
+        System.err.println(">>>> AccountTransactionModel::setAccount account: " + account.toString()); // TODO: still needed for debug?
         String oldCurrencyCode = getAccountCurrencyCode();
         String oldFxCurrencyCode = getFxCurrencyCode();
         String oldExchangeRateCurrencies = getExchangeRateCurrencies();
@@ -412,6 +426,65 @@ public class AccountTransactionModel extends AbstractModel
         updateShares();
         updateExchangeRate();
     }
+
+    /// ==== CONSTRUCTION AREA ===== START ====
+
+    public String getPartner()
+    {
+        System.err.println(">>>> AccountTransactionModel::getPartner() partner   : " + peer.toString() + " > " + peer.getName()); // TODO: still needed for debug?
+        return peer.getName();
+    }
+
+    public void setPartner(String partner)
+    {
+        System.err.println(">>>> AccountTransactionModel::setPartner() partner   : " + partner ); // TODO: still needed for debug?
+        new Exception().printStackTrace(System.err);
+        firePropertyChange(Properties.partner.name(), this.partner, this.partner = partner); //this.peer.setName(peerStr)
+    }
+
+    public String getIban()
+    {
+        System.err.println(">>>> AccountTransactionModel::getIban() peer : " + peer.toString() + ">" + peer.getIban()); // TODO: still needed for debug?
+        return peer.getIban();
+    }
+
+    public void setIban(String iban)
+    {
+        System.err.println(">>>> AccountTransactionModel::setIban() iban   : " + iban); // TODO: still needed for debug?
+        new Exception().printStackTrace(System.err);
+        firePropertyChange(Properties.iban.name(), this.iban, this.iban = iban); // this.peer.setIban(iban)
+        //firePropertyChange(Properties.partner.name(), this.partner,this.partner = foreignCurrencyAmount);
+    }
+
+    public Peer getPeer()
+    {
+        System.err.println(">>>> AccountTransactionModel::getPeer() peer : " + peer.toString()); // TODO: still needed for debug?
+        return peer;
+    }
+
+    public void setPeer(String partner, String iban)
+    {
+        System.err.println(">>>> AccountTransactionModel::setPeer() partner : " + partner + " IBAN: " + iban);
+        new Exception().printStackTrace(System.err);
+    }
+
+    public void setPeer(Peer peer)
+    {
+        System.err.println(">>>> AccountTransactionModel::setPeer() peer : " + peer.toString());
+        new Exception().printStackTrace(System.err);
+        this.peer = peer;
+        if (partner != null)
+            System.err.println(">PRE AccountTransactionModel::setPeer() partner : " + partner.toString() + " => " + peer.getName());
+        if (iban != null)
+            System.err.println(">PRE AccountTransactionModel::setPeer() iban : " + iban.toString() + " => " + peer.getIban());
+        firePropertyChange(Properties.partner.name(), this.partner, this.partner = peer.getName()); //this.peer.setName(peerStr)
+        firePropertyChange(Properties.iban.name(), this.iban, this.iban = peer.getIban()); // this.peer.setIban(iban)
+        firePropertyChange(Properties.note.name(), this.partner, this.partner = peer.getName()); //this.peer.setName(peerStr)
+        System.err.println("POST AccountTransactionModel::setPeer() partner : " + partner.toString());
+        System.err.println("POST AccountTransactionModel::setPeer() iban : " + iban.toString());
+    }
+
+    /// ==== CONSTRUCTION AREA ====== END =====
 
     public long getShares()
     {
