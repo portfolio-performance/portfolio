@@ -193,4 +193,10 @@ public class Taxonomy
     {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+
+    @Override
+    public String toString()
+    {
+        return name;
+    }
 }

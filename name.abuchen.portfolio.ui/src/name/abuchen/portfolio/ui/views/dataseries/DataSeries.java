@@ -68,6 +68,7 @@ public final class DataSeries
     }
 
     private Type type;
+    private Object group;
     private Object instance;
     private String label;
     private boolean isLineChart = true;
@@ -80,7 +81,13 @@ public final class DataSeries
 
     /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
+        this(type, null, instance, label, color);
+    }
+
+    /* package */ DataSeries(Type type, Object group, Object instance, String label, RGB color)
+    {
         this.type = type;
+        this.group = group;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -89,6 +96,11 @@ public final class DataSeries
     public Type getType()
     {
         return type;
+    }
+
+    public Object getGroup()
+    {
+        return group;
     }
 
     public Object getInstance()
@@ -115,7 +127,9 @@ public final class DataSeries
         if (instance instanceof Classification)
         {
             Classification parent = ((Classification) instance).getParent();
-            buf.append(" (").append(parent.getPathName(true)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            if (parent.getParent() != null)
+                buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         if (isBenchmark())

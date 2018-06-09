@@ -242,7 +242,7 @@ public class DataSeriesSet
                     if (classification.getParent() == null)
                         return;
 
-                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, classification,
+                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
                                     classification.getName(), Colors.toRGB(classification.getColor())));
                 }
             });
