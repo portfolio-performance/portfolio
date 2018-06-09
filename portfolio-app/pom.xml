@@ -65,7 +65,7 @@
 		<repository>
 			<id>eclipse-photon</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8M7-201805092000/</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.8milestones/S-4.8RC4-201806071630/</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
