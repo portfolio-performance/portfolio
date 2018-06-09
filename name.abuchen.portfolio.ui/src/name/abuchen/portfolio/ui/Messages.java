@@ -380,6 +380,7 @@ public class Messages extends NLS
     public static String LabelAllSecurities;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelBenchmarks;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailCompactView;
     public static String LabelChartDetailDividends;
@@ -404,6 +405,7 @@ public class Messages extends NLS
     public static String LabelClientFilterNew;
     public static String LabelColorSchema;
     public static String LabelColumns;
+    public static String LabelCommon;
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
@@ -493,6 +495,7 @@ public class Messages extends NLS
     public static String LabelGreenYellowRed;
     public static String LabelHeading;
     public static String LabelHeatmap;
+    public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
@@ -788,6 +791,8 @@ public class Messages extends NLS
     public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
+    public static String HeatmapOrnamentGeometricMean;
+    public static String HeatmapOrnamentSum;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {

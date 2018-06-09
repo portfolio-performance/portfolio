@@ -19,6 +19,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     public DeutscheBankPDFExtractor(Client client) throws IOException
     {
         super(client);
+        
+        addBankIdentifier("Deutsche Bank"); //$NON-NLS-1$
+        addBankIdentifier("DB Privat- und Firmenkundenbank AG"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();

@@ -10,11 +10,10 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
-import name.abuchen.portfolio.ui.views.dataseries.DataSeriesLabelProvider;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSelectionDialog;
 
 public class DataSeriesConfig implements WidgetConfig
 {
@@ -63,21 +62,18 @@ public class DataSeriesConfig implements WidgetConfig
         List<DataSeries> list = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
                         .filter(ds -> ds.isBenchmark() == showOnlyBenchmark).collect(Collectors.toList());
 
-        ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(),
-                        new DataSeriesLabelProvider());
-        dialog.setTitle(Messages.ChartSeriesPickerTitle);
-        dialog.setMessage(Messages.ChartSeriesPickerTitle);
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
         dialog.setElements(list);
         dialog.setMultiSelection(false);
 
-        if (dialog.open() != ListSelectionDialog.OK)
+        if (dialog.open() != DataSeriesSelectionDialog.OK)
             return;
 
-        Object[] result = dialog.getResult();
-        if (result == null || result.length == 0)
+        List<DataSeries> result = dialog.getResult();
+        if (result.isEmpty())
             return;
 
-        dataSeries = (DataSeries) result[0];
+        dataSeries = result.get(0);
         delegate.getWidget().getConfiguration().put(Dashboard.Config.DATA_SERIES.name(), dataSeries.getUUID());
 
         // construct label to indicate the data series (user can manually change

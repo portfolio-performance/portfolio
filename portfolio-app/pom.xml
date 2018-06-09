@@ -8,7 +8,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.31.1</version>
+	<version>0.32.0</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -55,7 +55,7 @@
 		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>http://buchen.github.io/bundled-jre/8.30.0.1</url>
+			<url>http://buchen.github.io/bundled-jre/8.30.0.1-patch1</url>
 		</repository>
 		<repository>
 			<id>eclipse-orbit</id>

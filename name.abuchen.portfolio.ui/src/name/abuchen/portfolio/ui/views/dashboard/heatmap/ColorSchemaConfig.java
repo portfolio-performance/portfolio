@@ -9,6 +9,6 @@ class ColorSchemaConfig extends EnumBasedConfig<ColorSchema>
 {
     public ColorSchemaConfig(WidgetDelegate delegate)
     {
-        super(delegate, Messages.LabelColorSchema, ColorSchema.class, Dashboard.Config.COLOR_SCHEMA);
+        super(delegate, Messages.LabelColorSchema, ColorSchema.class, Dashboard.Config.COLOR_SCHEMA, Policy.EXACTLY_ONE);
     }
 }

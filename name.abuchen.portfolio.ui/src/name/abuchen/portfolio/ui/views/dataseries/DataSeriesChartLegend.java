@@ -215,12 +215,12 @@ public class DataSeriesChartLegend extends Composite
 
                 if (index > 0)
                 {
-                    position.add(new SimpleAction(Messages.ChartSendBackwards, a -> {
+                    position.add(new SimpleAction(Messages.ChartBringForward, a -> {
                         Collections.swap(configurator.getSelectedDataSeries(), index, index - 1);
                         configurator.fireUpdate();
                     }));
 
-                    position.add(new SimpleAction(Messages.ChartSendToBack, a -> {
+                    position.add(new SimpleAction(Messages.ChartBringToFront, a -> {
                         DataSeries s = configurator.getSelectedDataSeries().remove(index);
                         configurator.getSelectedDataSeries().add(0, s);
                         configurator.fireUpdate();
@@ -230,12 +230,12 @@ public class DataSeriesChartLegend extends Composite
 
                 if (index < configurator.getSelectedDataSeries().size() - 1)
                 {
-                    position.add(new SimpleAction(Messages.ChartBringForward, a -> {
+                    position.add(new SimpleAction(Messages.ChartSendBackwards, a -> {
                         Collections.swap(configurator.getSelectedDataSeries(), index, index + 1);
                         configurator.fireUpdate();
                     }));
 
-                    position.add(new SimpleAction(Messages.ChartBringToFront, a -> {
+                    position.add(new SimpleAction(Messages.ChartSendToBack, a -> {
                         DataSeries s = configurator.getSelectedDataSeries().remove(index);
                         configurator.getSelectedDataSeries().add(s);
                         configurator.fireUpdate();

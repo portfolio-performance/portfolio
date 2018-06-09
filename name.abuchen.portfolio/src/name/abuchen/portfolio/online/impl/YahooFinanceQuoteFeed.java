@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -15,67 +14,40 @@ import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.jsoup.Connection.Response;
-import org.jsoup.Jsoup;
+import org.apache.http.HttpStatus;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.util.Dates;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
-    /* package */ interface CSVColumn // NOSONAR
-    {
-        int Date = 0;
-        int Open = 1;
-        int High = 2;
-        int Low = 3;
-        int Close = 4;
-        int AdjClose = 5;
-        int Volume = 6;
-    }
-
-    private static class Crumb
-    {
-        private final String id;
-        private final Map<String, String> cookies;
-
-        public Crumb(String id, Map<String, String> cookies)
-        {
-            this.id = id;
-            this.cookies = cookies;
-        }
-
-        public String getId()
-        {
-            return id;
-        }
-
-        public Map<String, String> getCookies()
-        {
-            return cookies;
-        }
-    }
-
     public static final String ID = "YAHOO"; //$NON-NLS-1$
 
-    @SuppressWarnings("nls")
-    private static final String HISTORICAL_URL = "https://query1.finance.yahoo.com/v7/finance/download/{0}?period1={1}&period2={2}&interval=1d&events=history&crumb={3}";
+    private static final String LATEST_URL = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols={0}"; //$NON-NLS-1$
 
-    private Crumb crumb;
+    private static final String HISTORICAL_URL = "https://query1.finance.yahoo.com/v7/finance/spark?symbols={0}&range={1}&interval=1d"; //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -92,62 +64,61 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     @Override
     public final boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
-        String wknUrl = MessageFormat.format("https://de.finance.yahoo.com/quote/{0}?ltr=1", //$NON-NLS-1$
-                        security.getTickerSymbol());
 
-        try
+        try (CloseableHttpClient client = HttpClients.createDefault())
         {
-            Response response = Jsoup.connect(wknUrl) //
-                            .userAgent(OnlineHelper.getUserAgent()) //
-                            .timeout(30000).execute();
+            String wknUrl = MessageFormat.format(LATEST_URL,
+                            URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()));
 
-            String body = response.body();
-
-            // some quick and dirty extraction. This scraping code will anyway
-            // not last long.
-
-            int startIndex = body.indexOf("QuoteSummaryStore"); //$NON-NLS-1$
-            if (startIndex < 0)
-                return false;
-
-            LatestSecurityPrice price = new LatestSecurityPrice();
-
-            Optional<String> time = extract(body, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (time.isPresent())
+            try (CloseableHttpResponse response = client.execute(new HttpGet(wknUrl)))
             {
-                long epoch = Long.parseLong(time.get());
-                price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+                    throw new IOException(wknUrl + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
+
+                String body = EntityUtils.toString(response.getEntity());
+
+                int startIndex = body.indexOf("quoteResponse"); //$NON-NLS-1$
+                if (startIndex < 0)
+                    return false;
+
+                LatestSecurityPrice price = new LatestSecurityPrice();
+
+                Optional<String> time = extract(body, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (time.isPresent())
+                {
+                    long epoch = Long.parseLong(time.get());
+                    price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
+                }
+
+                Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (value.isPresent())
+                    price.setValue(asPrice(value.get()));
+
+                Optional<String> previousClose = extract(body, startIndex, "\"regularMarketPreviousClose\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (previousClose.isPresent())
+                    price.setPreviousClose(asPrice(previousClose.get()));
+
+                Optional<String> high = extract(body, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (high.isPresent())
+                    price.setHigh(asPrice(high.get()));
+
+                Optional<String> low = extract(body, startIndex, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (low.isPresent())
+                    price.setLow(asPrice(low.get()));
+
+                Optional<String> volume = extract(body, startIndex, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+                if (volume.isPresent())
+                    price.setVolume(asNumber(volume.get()));
+
+                if (price.getDate() == null || price.getValue() <= 0)
+                {
+                    errors.add(new IOException(body));
+                    return false;
+                }
+
+                security.setLatest(price);
+                return true;
             }
-
-            Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (value.isPresent())
-                price.setValue(asPrice(value.get()));
-
-            Optional<String> previousClose = extract(body, startIndex, "\"regularMarketPreviousClose\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (previousClose.isPresent())
-                price.setPreviousClose(asPrice(previousClose.get()));
-
-            Optional<String> high = extract(body, startIndex, "\"regularMarketDayHigh\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (high.isPresent())
-                price.setHigh(asPrice(high.get()));
-
-            Optional<String> low = extract(body, startIndex, "\"regularMarketDayLow\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (low.isPresent())
-                price.setLow(asPrice(low.get()));
-
-            Optional<String> volume = extract(body, startIndex, "\"regularMarketVolume\":{\"raw\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-            if (volume.isPresent())
-                price.setVolume(asNumber(volume.get()));
-            
-            if (price.getDate() == null || price.getValue() <= 0)
-            {
-                errors.add(new IOException(body));
-                return false;
-            }
-
-            security.setLatest(price);
-            return true;
-
         }
         catch (IOException | ParseException e)
         {
@@ -227,147 +198,112 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         }
 
-        int attempt = 0;
-
-        Crumb thisCrump = crumb;
-
-        while (attempt < 2)
+        try
         {
-            attempt++;
-
-            try
-            {
-                if (thisCrump == null)
-                    thisCrump = crumb = loadCrump(security.getTickerSymbol());
-
-                String responseBody = requestData(security, startDate, thisCrump);
-
-                return extractQuotes(klass, responseBody, errors);
-            }
-            catch (IOException e)
-            {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorDownloadYahoo, attempt,
-                                security.getTickerSymbol(), e.getMessage()), e));
-
-                thisCrump = crumb = null;
-            }
+            String responseBody = requestData(security, startDate);
+            return extractQuotes(klass, responseBody, errors);
+        }
+        catch (IOException e)
+        {
+            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1,
+                            security.getTickerSymbol(), e.getMessage()), e));
         }
 
         return Collections.emptyList();
     }
 
-    private Crumb loadCrump(String tickerSymbol) throws IOException
+    private String requestData(Security security, LocalDate startDate) throws IOException
     {
-        String url = MessageFormat.format("https://de.finance.yahoo.com/quote/{0}/history?p={0}", tickerSymbol); //$NON-NLS-1$
+        int days = Dates.daysBetween(startDate, LocalDate.now());
 
-        Response response = Jsoup.connect(url).userAgent(OnlineHelper.getUserAgent()) //
-                        .header("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8") //$NON-NLS-1$ //$NON-NLS-2$
-                        .header("Accept-Language", "en-US,en;q=0.5") // //$NON-NLS-1$ //$NON-NLS-2$
-                        .timeout(30000)//
-                        .execute();
+        // "max" only returns a sample of quotes
+        String range = "10y"; //$NON-NLS-1$
 
-        String KEY = "\"CrumbStore\":{\"crumb\":\""; //$NON-NLS-1$
+        if (days < 25)
+            range = "1mo"; //$NON-NLS-1$
+        else if (days < 75)
+            range = "3mo"; //$NON-NLS-1$
+        else if (days < 150)
+            range = "6mo"; //$NON-NLS-1$
+        else if (days < 300)
+            range = "1y"; //$NON-NLS-1$
+        else if (days < 600)
+            range = "2y"; //$NON-NLS-1$
+        else if (days < 1500)
+            range = "5y"; //$NON-NLS-1$
 
-        String body = response.body();
+        try (CloseableHttpClient client = HttpClients.createDefault())
+        {
+            String wknUrl = MessageFormat.format(HISTORICAL_URL, //
+                            URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()), //
+                            range);
 
-        int startIndex = body.indexOf(KEY);
-        if (startIndex < 0)
-            throw new IOException(Messages.MsgErrorNoCrumbFound);
+            try (CloseableHttpResponse response = client.execute(new HttpGet(wknUrl)))
+            {
+                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+                    throw new IOException(wknUrl + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
 
-        int endIndex = body.indexOf('"', startIndex + KEY.length());
-        if (endIndex < 0)
-            throw new IOException(Messages.MsgErrorNoCrumbFound);
-
-        String crumb = body.substring(startIndex + KEY.length(), endIndex);
-        crumb = StringEscapeUtils.unescapeJava(crumb);
-
-        return new Crumb(crumb, response.cookies());
-    }
-
-    private String requestData(Security security, LocalDate startDate, Crumb requestCrumb) throws IOException
-    {
-        LocalDate stopDate = LocalDate.now();
-
-        String wknUrl = MessageFormat.format(HISTORICAL_URL, //
-                        security.getTickerSymbol(), //
-                        String.valueOf(startDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()), //
-                        String.valueOf(stopDate.atStartOfDay(ZoneId.systemDefault()).toEpochSecond()),
-                        URLEncoder.encode(requestCrumb.getId(), StandardCharsets.UTF_8.name()));
-
-        Response response = Jsoup.connect(wknUrl) //
-                        .userAgent(OnlineHelper.getUserAgent()) //
-                        .cookies(requestCrumb.getCookies()) //
-                        .timeout(30000).execute();
-
-        if (response.statusCode() != HttpURLConnection.HTTP_OK)
-            throw new IOException(MessageFormat.format(Messages.MsgErrorUnexpectedStatusCode,
-                            security.getTickerSymbol(), response.statusCode(), wknUrl));
-
-        return response.body();
+                return EntityUtils.toString(response.getEntity());
+            }
+        }
     }
 
     private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)
     {
-        String[] lines = responseBody.split("\\r?\\n"); //$NON-NLS-1$
-        if (lines.length < 1)
-            return Collections.emptyList();
-
-        // poor man's check
-        if (!"Date,Open,High,Low,Close,Adj Close,Volume".equals(lines[0])) //$NON-NLS-1$
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, lines[0])));
-            return Collections.emptyList();
-        }
-
-        DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
-
         List<T> answer = new ArrayList<>();
-
-        String line = null;
 
         try
         {
-            for (int index = 1; index < lines.length; index++)
+            JSONObject responseData = (JSONObject) JSONValue.parse(responseBody);
+            if (responseData == null)
+                throw new IOException("responseBody"); //$NON-NLS-1$
+
+            JSONObject resultSet = (JSONObject) responseData.get("spark"); //$NON-NLS-1$
+            if (resultSet == null)
+                throw new IOException("spark"); //$NON-NLS-1$
+
+            JSONArray result = (JSONArray) resultSet.get("result"); //$NON-NLS-1$
+            if (result == null || result.isEmpty())
+                throw new IOException("result"); //$NON-NLS-1$
+
+            JSONObject result0 = (JSONObject) result.get(0);
+            if (result0 == null)
+                throw new IOException("result[0]"); //$NON-NLS-1$
+
+            JSONArray response = (JSONArray) result0.get("response"); //$NON-NLS-1$
+            if (response == null || response.isEmpty())
+                throw new IOException("response"); //$NON-NLS-1$
+
+            JSONObject response0 = (JSONObject) response.get(0);
+            if (response0 == null)
+                throw new IOException("response[0]"); //$NON-NLS-1$
+
+            JSONArray timestamp = (JSONArray) response0.get("timestamp"); //$NON-NLS-1$
+
+            JSONObject indicators = (JSONObject) response0.get("indicators"); //$NON-NLS-1$
+            if (indicators == null)
+                throw new IOException("indicators"); //$NON-NLS-1$
+
+            JSONArray quotes = extractQuotesArray(indicators);
+
+            int size = quotes.size();
+
+            for (int index = 0; index < size; index++)
             {
-                line = lines[index];
+                Long ts = (Long) timestamp.get(index);
+                Double q = (Double) quotes.get(index);
 
-                String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
-
-                // first check if all values except the date are not "null"
-                if (!"null".equals(values[0])) //$NON-NLS-1$
-                {
-                    boolean hasValue = false;
-                    for (int i = 1; i < values.length; i++)
-                    {
-                        if (!"null".equals(values[i])) //$NON-NLS-1$
-                        {
-                            hasValue = true;
-                            break;
-                        }
-                    }
-                    // skip this line if there are no values
-                    if (!hasValue)
-                    {
-                        continue;
-                    }
-                }
-
-                try
+                if (ts != null && q != null)
                 {
                     T price = klass.newInstance();
-                    fillValues(values, price, dateFormat);
+                    price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
+                    price.setValue(Values.Quote.factorize(q));
                     answer.add(price);
                 }
-                catch (NumberFormatException | ParseException | DateTimeParseException e)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
-                }
-
             }
         }
-        catch (InstantiationException | IllegalAccessException | IOException e)
+        catch (IOException | InstantiationException | IllegalAccessException | NumberFormatException
+                        | IndexOutOfBoundsException e)
         {
             errors.add(e);
         }
@@ -375,24 +311,21 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return answer;
     }
 
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DateTimeFormatter dateFormat)
-                    throws ParseException, DateTimeParseException
+    protected JSONArray extractQuotesArray(JSONObject indicators) throws IOException
     {
-        LocalDate date = LocalDate.parse(values[CSVColumn.Date], dateFormat);
+        JSONArray quotes = (JSONArray) indicators.get("quote"); //$NON-NLS-1$
+        if (quotes == null || quotes.isEmpty())
+            throw new IOException("quote"); //$NON-NLS-1$
 
-        long v = asPrice(values[CSVColumn.Close]);
+        JSONObject quote = (JSONObject) quotes.get(0);
+        if (quote == null)
+            throw new IOException();
 
-        price.setDate(date);
-        price.setValue(v);
+        JSONArray close = (JSONArray) quote.get("close"); //$NON-NLS-1$
+        if (close == null || close.isEmpty())
+            throw new IOException("close"); //$NON-NLS-1$
 
-        if (price instanceof LatestSecurityPrice)
-        {
-            LatestSecurityPrice latest = (LatestSecurityPrice) price;
-
-            latest.setVolume(asNumber(values[CSVColumn.Volume]));
-            latest.setHigh(asPrice(values[CSVColumn.High]));
-            latest.setLow(asPrice(values[CSVColumn.Low]));
-        }
+        return close;
     }
 
     @Override

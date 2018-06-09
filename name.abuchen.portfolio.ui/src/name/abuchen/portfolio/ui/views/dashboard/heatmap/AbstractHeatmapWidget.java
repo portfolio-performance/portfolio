@@ -1,13 +1,19 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
+import java.util.List;
+import java.util.function.DoubleFunction;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
@@ -25,6 +31,7 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
 
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ColorSchemaConfig(this));
+        addConfig(new HeatmapOrnamentConfig(this));
     }
 
     @Override
@@ -50,7 +57,52 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
         return container;
     }
 
-    protected abstract void fillTable(Composite table, DashboardResources resources);
+    protected abstract HeatmapModel build();
+
+    private void fillTable(Composite table, DashboardResources resources)
+    {
+        HeatmapModel model = build();
+
+        GridLayoutFactory.fillDefaults().numColumns(model.getHeaderSize() + 1).equalWidth(true).spacing(1, 1)
+                        .applyTo(table);
+
+        addHeaderRow(table, model);
+
+        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
+                        .buildColorFunction(resources.getResourceManager());
+
+        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
+
+        model.getRows().forEach(row -> {
+            Cell cell = new Cell(table, new CellDataProvider(row.getLabel()));
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(cell);
+
+            row.getData().forEach(data -> {
+                Cell dataCell = data == null ? new Cell(table, new CellDataProvider("")) //$NON-NLS-1$
+                                : new Cell(table, new CellDataProvider(coloring.apply(data), resources.getSmallFont(),
+                                                Values.PercentShort.format(data)));
+                gridData.applyTo(dataCell);
+
+                if (model.getCellToolTip() != null)
+                    InfoToolTip.attach(dataCell, model.getCellToolTip());
+            });
+        });
+
+        table.layout(true);
+    }
+
+    private void addHeaderRow(Composite table, HeatmapModel model)
+    {
+        // Top Left is empty
+        new Cell(table, new CellDataProvider("")); //$NON-NLS-1$
+
+        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
+        model.getHeader().forEach(label -> {
+            Cell cell = new Cell(table, new CellDataProvider(label));
+            gridData.applyTo(cell);
+            InfoToolTip.attach(cell, label);
+        });
+    }
 
     @Override
     public void update()
@@ -70,5 +122,20 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
     public Control getTitleControl()
     {
         return title;
+    }
+
+    protected Double geometricMean(List<Double> values)
+    {
+        if (values.isEmpty())
+            return null;
+
+        if (values.size() == 1)
+            return values.get(0);
+
+        double sum = 1;
+        for (Double v : values)
+            sum *= (1 + v);
+
+        return Math.pow(sum, 1 / (double) values.size()) - 1;
     }
 }

@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Display;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.UseCase;
 
@@ -119,21 +118,17 @@ public class BasicDataSeriesConfigurator
         for (DataSeries s : selectedSeries)
             list.remove(s);
     
-        ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(),
-                        new DataSeriesLabelProvider());
-        dialog.setTitle(Messages.ChartSeriesPickerTitle);
-        dialog.setMessage(Messages.ChartSeriesPickerTitle);
+        DataSeriesSelectionDialog dialog = new DataSeriesSelectionDialog(Display.getDefault().getActiveShell());
         dialog.setElements(list);
     
-        if (dialog.open() != ListSelectionDialog.OK)
+        if (dialog.open() != DataSeriesSelectionDialog.OK)
             return;
     
-        Object[] result = dialog.getResult();
-        if (result == null || result.length == 0)
+        List<DataSeries> result = dialog.getResult();
+        if (result.isEmpty())
             return;
     
-        for (Object object : result)
-            selectedSeries.add((DataSeries) object);
+        result.forEach(series -> selectedSeries.add(series));
     
         fireUpdate();
     }

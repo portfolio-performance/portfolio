@@ -4,7 +4,6 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -30,7 +29,8 @@ public class NewClientWizard extends Wizard
     public boolean performFinish()
     {
         CurrencyUnit currency = page.getSelectedCurrency();
-        ClientFactory.setAllCurrencies(client, currency.getCurrencyCode());
+        client.setBaseCurrency(currency.getCurrencyCode());
+        client.getAccounts().stream().forEach(a -> a.setCurrencyCode(currency.getCurrencyCode()));
 
         return true;
     }

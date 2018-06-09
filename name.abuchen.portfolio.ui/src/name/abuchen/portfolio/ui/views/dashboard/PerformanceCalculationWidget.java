@@ -17,8 +17,8 @@ import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
-import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
+import name.abuchen.portfolio.ui.Messages;
 
 public class PerformanceCalculationWidget extends WidgetDelegate
 {
@@ -44,7 +44,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     {
         public LayoutConfig(WidgetDelegate delegate)
         {
-            super(delegate, Messages.LabelLayout, TableLayout.class, Dashboard.Config.LAYOUT);
+            super(delegate, Messages.LabelLayout, TableLayout.class, Dashboard.Config.LAYOUT, Policy.EXACTLY_ONE);
         }
     }
 
