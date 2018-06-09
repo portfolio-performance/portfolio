@@ -176,33 +176,6 @@
 							</execution>
 						</executions>
 					</plugin>
-					<plugin>
-						<artifactId>exec-maven-plugin</artifactId>
-						<groupId>org.codehaus.mojo</groupId>
-						<executions>
-							<execution>
-								<id>dmg-distro</id>
-								<phase>package</phase>
-								<goals>
-									<goal>exec</goal>
-								</goals>
-								<configuration>
-									<executable>/usr/bin/hdiutil</executable>
-									<arguments>
-										<argument>create</argument>
-										<argument>-srcfolder</argument>
-										<argument>target/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64</argument>
-										<argument>-ov</argument>
-										<argument>-format</argument>
-										<argument>UDZO</argument>
-										<argument>-volname</argument>
-										<argument>PortfolioPerformance-${project.version}</argument>
-										<argument>target/products/PortfolioPerformance-${project.version}.dmg</argument>
-									</arguments>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
 				</plugins>
 			</build>
 		</profile>
