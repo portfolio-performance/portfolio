@@ -19,6 +19,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
+import com.google.common.collect.Lists;
+
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
@@ -120,6 +122,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getTitle().setVisible(false);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
         chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
         seriesBuilder = new PerformanceChartSeriesBuilder(chart, cache);
@@ -188,7 +191,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        picker.getSelectedDataSeries()
+        Lists.reverse(picker.getSelectedDataSeries())
                         .forEach(series -> seriesBuilder.build(series, getReportingPeriod(), aggregationPeriod));
     }
 

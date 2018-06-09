@@ -26,6 +26,8 @@ import org.swtchart.ILineSeries;
 import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 
+import com.google.common.collect.Lists;
+
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
@@ -87,7 +89,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         chart = new ScatterChart(composite);
         chart.getTitle().setVisible(false);
-
+ 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setText(Messages.LabelVolatility);
         xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
@@ -177,7 +179,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
-        configurator.getSelectedDataSeries().forEach(series -> {
+        Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
             PerformanceIndex index = cache.lookup(series, getReportingPeriod());
             Volatility volatility = index.getVolatility();
 
