@@ -5,10 +5,10 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 
-class ColorSchemaConfig extends EnumBasedConfig<ColorSchema>
+class HeatmapOrnamentConfig extends EnumBasedConfig<HeatmapOrnament>
 {
-    public ColorSchemaConfig(WidgetDelegate delegate)
+    public HeatmapOrnamentConfig(WidgetDelegate delegate)
     {
-        super(delegate, Messages.LabelColorSchema, ColorSchema.class, Dashboard.Config.COLOR_SCHEMA, Policy.EXACTLY_ONE);
+        super(delegate, Messages.LabelHeatmapOrnament, HeatmapOrnament.class, Dashboard.Config.LAYOUT, Policy.MULTIPLE);
     }
 }

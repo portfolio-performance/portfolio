@@ -28,7 +28,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
     protected HeatmapModel build()
     {
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
-        
+
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period
         // calculate the color interpolated between red and green with yellow as
@@ -49,23 +49,13 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
 
         Interval actualInterval = performanceIndex.getActualInterval();
 
+        boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
+
         HeatmapModel model = new HeatmapModel();
         model.setCellToolTip(Messages.PerformanceHeatmapToolTip);
 
         // add header
-
-        TextStyle textStyle;
-        if (numDashboardColumns == 1)
-            textStyle = TextStyle.FULL;
-        else if (numDashboardColumns == 2)
-            textStyle = TextStyle.SHORT;
-        else
-            textStyle = TextStyle.NARROW;
-
-        // no harm in hardcoding the year as each year has the same months
-        for (LocalDate m = LocalDate.of(2016, 1, 1); m.getYear() == 2016; m = m.plusMonths(1))
-            model.addHeader(m.getMonth().getDisplayName(textStyle, Locale.getDefault()));
-        model.addHeader("\u03A3"); //$NON-NLS-1$
+        addHeader(model, numDashboardColumns, showSum);
 
         for (Integer year : actualInterval.iterYears())
         {
@@ -82,20 +72,40 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget
             }
 
             // sum
-            row.addData(getSumPerformance(performanceIndex, LocalDate.of(year, 1, 1)));
+            if (showSum)
+                row.addData(getSumPerformance(performanceIndex, LocalDate.of(year, 1, 1)));
+ 
             model.addRow(row);
         }
 
         // create geometric mean
 
-        HeatmapModel.Row geometricMean = new HeatmapModel.Row("x\u0304 geom"); //$NON-NLS-1$
-
-        for (int index = 0; index < model.getHeaderSize(); index++)
-            geometricMean.addData(geometricMean(model.getColumnValues(index)));
-        
-        model.addRow(geometricMean);
+        if (get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.GEOMETRIC_MEAN))
+        {
+            HeatmapModel.Row geometricMean = new HeatmapModel.Row("x\u0304 geom"); //$NON-NLS-1$
+            for (int index = 0; index < model.getHeaderSize(); index++)
+                geometricMean.addData(geometricMean(model.getColumnValues(index)));
+            model.addRow(geometricMean);
+        }
 
         return model;
+    }
+
+    private void addHeader(HeatmapModel model, int numDashboardColumns, boolean showSum)
+    {
+        TextStyle textStyle;
+        if (numDashboardColumns == 1)
+            textStyle = TextStyle.FULL;
+        else if (numDashboardColumns == 2)
+            textStyle = TextStyle.SHORT;
+        else
+            textStyle = TextStyle.NARROW;
+
+        // no harm in hardcoding the year as each year has the same months
+        for (LocalDate m = LocalDate.of(2016, 1, 1); m.getYear() == 2016; m = m.plusMonths(1))
+            model.addHeader(m.getMonth().getDisplayName(textStyle, Locale.getDefault()));
+        if (showSum)
+            model.addHeader("\u03A3"); //$NON-NLS-1$
     }
 
     private Double getPerformanceFor(PerformanceIndex index, LocalDate month)

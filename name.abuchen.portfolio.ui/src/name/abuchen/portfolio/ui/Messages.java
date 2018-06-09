@@ -493,6 +493,7 @@ public class Messages extends NLS
     public static String LabelGreenYellowRed;
     public static String LabelHeading;
     public static String LabelHeatmap;
+    public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
@@ -788,6 +789,8 @@ public class Messages extends NLS
     public static String FilterValuationNonZero;
     public static String ForceClearPersistedStateDialogTitle;
     public static String ForceClearPersistedStateMessage;
+    public static String HeatmapOrnamentGeometricMean;
+    public static String HeatmapOrnamentSum;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {

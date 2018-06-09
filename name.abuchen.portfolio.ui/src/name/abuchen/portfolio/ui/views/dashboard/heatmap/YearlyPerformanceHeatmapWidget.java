@@ -67,20 +67,25 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
         }
 
         // add sum
-        HeatmapModel.Row row = new HeatmapModel.Row("\u03A3"); //$NON-NLS-1$
-        for (DataSeries series : dataSeries)
+        if (get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM))
         {
-            PerformanceIndex performanceIndex = getDashboardData().calculate(series,
-                            new ReportingPeriod.FromXtoY(calcInterval));
-            row.addData(performanceIndex.getFinalAccumulatedPercentage());
+            HeatmapModel.Row row = new HeatmapModel.Row("\u03A3"); //$NON-NLS-1$
+            for (DataSeries series : dataSeries)
+            {
+                PerformanceIndex performanceIndex = getDashboardData().calculate(series,
+                                new ReportingPeriod.FromXtoY(calcInterval));
+                row.addData(performanceIndex.getFinalAccumulatedPercentage());
+            }
+            model.addRow(row);
         }
-        model.addRow(row);
 
         // add geometric mean
-        model.addHeader("x\u0304 geom"); //$NON-NLS-1$
-
-        model.getRows().forEach(r -> r
-                        .addData(geometricMean(r.getData().filter(Objects::nonNull).collect(Collectors.toList()))));
+        if (get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.GEOMETRIC_MEAN))
+        {
+            model.addHeader("x\u0304 geom"); //$NON-NLS-1$
+            model.getRows().forEach(r -> r
+                            .addData(geometricMean(r.getData().filter(Objects::nonNull).collect(Collectors.toList()))));
+        }
 
         return model;
     }

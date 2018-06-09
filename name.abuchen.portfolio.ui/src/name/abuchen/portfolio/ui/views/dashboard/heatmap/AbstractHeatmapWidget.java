@@ -31,6 +31,7 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
 
         addConfig(new ReportingPeriodConfig(this));
         addConfig(new ColorSchemaConfig(this));
+        addConfig(new HeatmapOrnamentConfig(this));
     }
 
     @Override
