@@ -18,6 +18,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.thoughtworks.xstream.XStream;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -124,7 +125,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     }
 
     @Override
-    public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
+    public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         return new ArrayList<>(data.getSeries());
     }
@@ -232,4 +233,5 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
         }
         return xstream;
     }
+    
 }

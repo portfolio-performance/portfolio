@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 
 public class CurrencyConverterImpl implements CurrencyConverter
 {

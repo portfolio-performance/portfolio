@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.money;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,15 +17,13 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-import javax.inject.Singleton;
-
-import org.eclipse.e4.core.di.annotations.Creatable;
-
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 
-@Singleton
-@Creatable
+/**
+ * A factory for {@link ExchangeRateProvider}s linked to a client.
+ */
 public class ExchangeRateProviderFactory
 {
     private class Dijkstra
@@ -144,30 +143,59 @@ public class ExchangeRateProviderFactory
 
     }
 
-    private final List<ExchangeRateProvider> providers;
+    private final Client client;
+    private final List<ExchangeRateProvider> providers = new ArrayList<>();
     private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
-    public ExchangeRateProviderFactory()
+    public ExchangeRateProviderFactory(Client client)
     {
-        providers = new ArrayList<>();
+        this.client = client;
+        // load all available providers
+        loadAllProviders(providers);
+    }
+
+    /**
+     * Gets all available {@link ExchangeRateProvider}s.
+     * 
+     * @return {@link ExchangeRateProvider}s
+     */
+    public static List<ExchangeRateProvider> getProviders()
+    {
+        List<ExchangeRateProvider> l = new ArrayList<>();
+        loadAllProviders(l);
+        return l;
+    }
+
+    /**
+     * Loads all {@link ExchangeRateProvider}s and adds them to the given
+     * {@link Collection}.
+     * 
+     * @param col
+     *            {@link Collection}
+     */
+    private static void loadAllProviders(Collection<ExchangeRateProvider> col)
+    {
+        // load all available providers
         Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
         while (registeredProvider.hasNext())
         {
             ExchangeRateProvider provider = registeredProvider.next();
-            providers.add(provider);
+            col.add(provider);
         }
     }
 
-    public List<ExchangeRateProvider> getProviders()
-    {
-        return Collections.unmodifiableList(providers);
-    }
-
+    /**
+     * Returns the available exchange rates provided by this provider.
+     * 
+     * @return available time series
+     */
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         List<ExchangeRateTimeSeries> series = new ArrayList<>();
         for (ExchangeRateProvider p : providers)
-            series.addAll(p.getAvailableTimeSeries());
+        {
+            series.addAll(p.getAvailableTimeSeries(client));
+        }
         return series;
     }
 
@@ -194,4 +222,5 @@ public class ExchangeRateProviderFactory
         else
             return new ChainedExchangeRateTimeSeries(answer.toArray(new ExchangeRateTimeSeries[0]));
     }
+
 }
