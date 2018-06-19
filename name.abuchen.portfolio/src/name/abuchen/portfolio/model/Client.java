@@ -14,8 +14,14 @@ import java.util.stream.Stream;
 
 import javax.crypto.SecretKey;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
+import org.osgi.framework.FrameworkUtil;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
@@ -25,6 +31,11 @@ public class Client
     public static final int CURRENT_VERSION = 37;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
+    /**
+     * Plugin ID for logging.
+     */
+    private static final String PLUGIN_ID = "name.abuchen.portfolio"; //$NON-NLS-1$
+    
     private transient PropertyChangeSupport propertyChangeSupport;
 
     /**
@@ -557,4 +568,48 @@ public class Client
         return answer.toString();
     }
 
+    /**
+     * Logs the given status to the application log.
+     * 
+     * @param status
+     *            {@link IStatus}
+     */
+    public static void log(IStatus status)
+    {
+        Platform.getLog(FrameworkUtil.getBundle(Client.class)).log(status);
+    }
+
+    /**
+     * Logs the given error status to the application log.
+     * 
+     * @param t
+     *            {@link Throwable}
+     */
+    public static void logError(Throwable t)
+    {
+        log(new Status(IStatus.ERROR, PLUGIN_ID, t.getMessage(), t));
+    }
+
+    /**
+     * Logs the given error status to the application log.
+     * 
+     * @param message
+     *            error message
+     */
+    public static void logError(String message)
+    {
+        log(new Status(IStatus.ERROR, PLUGIN_ID, message));
+    }
+
+    /**
+     * Logs the given warning status to the application log.
+     * 
+     * @param message
+     *            warning message
+     */
+    public static void logWarning(String message)
+    {
+        log(new Status(IStatus.WARNING, PLUGIN_ID, message));
+    }
+  
 }
