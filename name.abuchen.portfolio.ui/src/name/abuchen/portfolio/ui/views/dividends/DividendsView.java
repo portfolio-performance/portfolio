@@ -133,14 +133,16 @@ public class DividendsView extends AbstractFinanceView
         folder = new CTabFolder(parent, SWT.BORDER);
 
         createTab(folder, DividendsMatrixTab.class);
+        createTab(folder, DividendsQuarterMatrixTab.class);
         createTab(folder, DividendsYearMatrixTab.class);
         createTab(folder, DividendsChartTab.class);
+        createTab(folder, DividendsPerQuarterChartTab.class);
         createTab(folder, DividendsPerYearChartTab.class);
         createTab(folder, AccumulatedDividendsChartTab.class);
         createTab(folder, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
-        if (tab <= 0 || tab >= 6)
+        if (tab < 0 || tab > 7)
             tab = 0;
         folder.setSelection(tab);
         folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));
