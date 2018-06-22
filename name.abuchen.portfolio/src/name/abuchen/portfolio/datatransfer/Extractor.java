@@ -50,6 +50,8 @@ public interface Extractor
 
         public abstract LocalDateTime getDate();
 
+        public abstract String getNote();
+
         public Money getAmount()
         {
             return null;
@@ -95,6 +97,11 @@ public interface Extractor
             return transaction;
         }
 
+        public Transaction getTransaction()
+        {
+            return transaction;
+        }
+
         @Override
         public String getTypeInformation()
         {
@@ -128,6 +135,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return transaction.getSecurity();
+        }
+
+        @Override
+        public String getNote()
+        {
+            return transaction.getNote();
         }
 
         @Override
@@ -188,6 +201,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getAccountTransaction().getNote();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(entry, context.getAccount(), context.getPortfolio());
@@ -234,6 +253,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return null;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
         }
 
         @Override
@@ -292,6 +317,12 @@ public interface Extractor
         }
 
         @Override
+        public String getNote()
+        {
+            return entry.getSourceTransaction().getNote();
+        }
+
+        @Override
         public Status apply(ImportAction action, Context context)
         {
             return action.process(entry, context.getPortfolio(), context.getSecondaryPortfolio());
@@ -329,6 +360,12 @@ public interface Extractor
         public Security getSecurity()
         {
             return security;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return security.getNote();
         }
 
         @Override

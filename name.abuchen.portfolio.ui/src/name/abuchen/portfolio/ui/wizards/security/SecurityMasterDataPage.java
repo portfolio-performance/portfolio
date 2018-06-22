@@ -57,6 +57,7 @@ public class SecurityMasterDataPage extends AbstractPage
         bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
+        bindings.bindSpinner(container, Messages.ColumnDelayedDividend, "delayedDividend", 0, 90, SWT.NONE, 2);
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
         Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
