@@ -1,13 +1,10 @@
 package name.abuchen.portfolio.money.impl;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import org.eclipse.core.runtime.IProgressMonitor;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -24,18 +21,6 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
     {
         return CurrencyUnit.getInstance(AED).getDisplayName();
     }
-
-    @Override
-    public void load(IProgressMonitor monitor) throws IOException
-    {}
-
-    @Override
-    public void update(IProgressMonitor monitor) throws IOException
-    {}
-
-    @Override
-    public void save(IProgressMonitor monitor) throws IOException
-    {}
 
     @Override
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
@@ -68,9 +53,9 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
         }
 
         @Override
-        public ExchangeRateProvider getProvider()
+        public Optional<ExchangeRateProvider> getProvider()
         {
-            return provider;
+            return Optional.of(provider);
         }
 
         @Override

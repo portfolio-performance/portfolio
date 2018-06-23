@@ -1,15 +1,16 @@
-package name.abuchen.portfolio.ui.views;
+package name.abuchen.portfolio.ui.views.currency;
 
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -19,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Values;
@@ -26,33 +28,32 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
-public class ExchangeRatesListView extends AbstractListView
+public class ExchangeRatesListTab implements AbstractTabbedView.Tab
 {
     @Inject
     private ExchangeRateProviderFactory providerFactory;
+
+    @Inject
+    private IPreferenceStore preferences;
 
     private TableViewer indeces;
     private TimelineChart chart;
 
     @Override
-    protected String getDefaultTitle()
+    public String getTitle()
     {
-        return Messages.LabelCurrencies;
-    }
-
-    @Override
-    public void setFocus()
-    {
-        chart.getAxisSet().adjustRange();
-        super.setFocus();
+        return Messages.LabelExchangeRates;
     }
 
     @Inject
-    @Optional
+    @org.eclipse.e4.core.di.annotations.Optional
     public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
     {
         indeces.setInput(providerFactory.getAvailableTimeSeries());
@@ -60,6 +61,21 @@ public class ExchangeRatesListView extends AbstractListView
     }
 
     @Override
+    public Composite createTab(Composite parent)
+    {
+        Composite sash = new Composite(parent, SWT.NONE);
+
+        SashLayout sashLayout = new SashLayout(sash, SWT.VERTICAL | SWT.END);
+        sash.setLayout(sashLayout);
+
+        createTopTable(sash);
+        createBottomTable(sash);
+
+        chart.setLayoutData(new SashLayoutData(200));
+
+        return sash;
+    }
+
     protected void createTopTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
@@ -68,8 +84,8 @@ public class ExchangeRatesListView extends AbstractListView
 
         indeces = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
-                        getPreferenceStore(), indeces, layout);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(ExchangeRatesListTab.class.getSimpleName() + "@top2", //$NON-NLS-1$
+                        preferences, indeces, layout);
 
         Column column = new Column(Messages.ColumnBaseCurrency, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -103,7 +119,8 @@ public class ExchangeRatesListView extends AbstractListView
             @Override
             public String getText(Object element)
             {
-                return ((ExchangeRateTimeSeries) element).getProvider().getName();
+                Optional<ExchangeRateProvider> provider = ((ExchangeRateTimeSeries) element).getProvider();
+                return provider.isPresent() ? provider.get().getName() : ""; //$NON-NLS-1$
             }
         });
         ColumnViewerSorter.create(ExchangeRateTimeSeries.class, "provider").attachTo(column); //$NON-NLS-1$
@@ -141,7 +158,6 @@ public class ExchangeRatesListView extends AbstractListView
                         (ExchangeRateTimeSeries) ((IStructuredSelection) event.getSelection()).getFirstElement()));
     }
 
-    @Override
     protected void createBottomTable(Composite parent)
     {
         chart = new TimelineChart(parent);
@@ -176,8 +192,11 @@ public class ExchangeRatesListView extends AbstractListView
                 ii++;
             }
 
+            Optional<ExchangeRateProvider> provider = series.getProvider();
+
             String title = MessageFormat.format("{0}/{1} ({2})", //$NON-NLS-1$
-                            series.getBaseCurrency(), series.getTermCurrency(), series.getProvider().getName());
+                            series.getBaseCurrency(), series.getTermCurrency(),
+                            provider.isPresent() ? provider.get().getName() : "-"); //$NON-NLS-1$
 
             chart.getTitle().setText(title);
             chart.addDateSeries(dates, values, Colors.TOTALS, title);

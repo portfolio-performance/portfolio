@@ -1,14 +1,12 @@
 package name.abuchen.portfolio.money.impl;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -38,9 +36,9 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
         }
 
         @Override
-        public ExchangeRateProvider getProvider()
+        public Optional<ExchangeRateProvider> getProvider()
         {
-            return SecurityBasedExchangeRateProvider.this;
+            return Optional.of(SecurityBasedExchangeRateProvider.this);
         }
 
         @Override
@@ -113,18 +111,6 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
     @Override
     public String getName()
     {
-        return name.abuchen.portfolio.Messages.SecurityBasedExchangeRateProvider;
+        return Messages.SecurityBasedExchangeRateProvider;
     }
-
-    @Override
-    public void load(IProgressMonitor monitor) throws IOException
-    {}
-
-    @Override
-    public void save(IProgressMonitor monitor) throws IOException
-    {}
-
-    @Override
-    public void update(IProgressMonitor monitor) throws IOException
-    {}
 }

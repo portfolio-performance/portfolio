@@ -35,9 +35,9 @@ public class EmptyExchangeRateTimeSeries implements ExchangeRateTimeSeries
     }
 
     @Override
-    public ExchangeRateProvider getProvider()
+    public Optional<ExchangeRateProvider> getProvider()
     {
-        return null;
+        return Optional.empty();
     }
 
     @Override

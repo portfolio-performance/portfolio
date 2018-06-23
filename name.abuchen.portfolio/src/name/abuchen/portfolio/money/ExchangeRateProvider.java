@@ -20,17 +20,20 @@ public interface ExchangeRateProvider
     /**
      * Loads the stored exchange rates from local storage.
      */
-    void load(IProgressMonitor monitor) throws IOException;
+    default void load(IProgressMonitor monitor) throws IOException
+    {}
 
     /**
      * Performs an (online) update of the exchange rates.
      */
-    void update(IProgressMonitor monitor) throws IOException;
+    default void update(IProgressMonitor monitor) throws IOException
+    {}
 
     /**
      * Saves the exchange rates in local storage.
      */
-    void save(IProgressMonitor monitor) throws IOException;
+    default void save(IProgressMonitor monitor) throws IOException
+    {}
 
     /**
      * Returns the available exchange rates provided by this provider.

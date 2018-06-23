@@ -3,12 +3,14 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.ui.Messages;
@@ -70,7 +72,8 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return series.getLabel() + ' ' + series.getProvider().getName();
+        Optional<ExchangeRateProvider> provider = series.getProvider();
+        return provider.isPresent() ? series.getLabel() + ' ' + provider.get().getName() : series.getLabel();
     }
 
     public ExchangeRateTimeSeries getSeries()

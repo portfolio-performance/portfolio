@@ -52,9 +52,9 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
     }
 
     @Override
-    public ExchangeRateProvider getProvider()
+    public Optional<ExchangeRateProvider> getProvider()
     {
-        return provider;
+        return Optional.of(provider);
     }
 
     @Override
