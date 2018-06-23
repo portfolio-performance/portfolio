@@ -136,6 +136,7 @@ public class DividendsView extends AbstractFinanceView
         createTab(folder, DividendsQuarterMatrixTab.class);
         createTab(folder, DividendsYearMatrixTab.class);
         createTab(folder, DividendsChartTab.class);
+        createTab(folder, DividendsPerQuarterChartTab.class);
         createTab(folder, DividendsPerYearChartTab.class);
         createTab(folder, AccumulatedDividendsChartTab.class);
         createTab(folder, TransactionsTab.class);
