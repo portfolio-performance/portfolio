@@ -33,6 +33,13 @@ public class SashLayout extends Layout
         public void mouseExit(MouseEvent e)
         {
             host.setCursor(null);
+            divider.setVisible(false);
+        }
+
+        @Override
+        public void mouseEnter(MouseEvent e)
+        {
+            divider.setVisible(true);
         }
     }
 
@@ -90,6 +97,8 @@ public class SashLayout extends Layout
 
             host.layout();
             host.update();
+            
+            divider.setVisible(false);
         }
     }
 
@@ -123,6 +132,7 @@ public class SashLayout extends Layout
 
         this.divider = new Label(host, SWT.NONE);
         this.divider.setImage(isHorizontal ? Images.HANDLE_NS.image() : Images.HANDLE_WE.image());
+        this.divider.setVisible(false);
 
         MouseTrackAdapter mouseTrackListener = new SashMouseTrackListener();
         host.addMouseTrackListener(mouseTrackListener);
