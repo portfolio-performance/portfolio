@@ -75,7 +75,7 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
         @Override
         public int getWeight()
         {
-            return 1;
+            return 2;
         }
     }
 }

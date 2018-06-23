@@ -80,7 +80,7 @@ public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
     @Override
     public int getWeight()
     {
-        return 1 + source.getWeight();
+        return 2 + source.getWeight();
     }
 
     @Override
