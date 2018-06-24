@@ -1,11 +1,14 @@
 package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -43,12 +46,16 @@ public class EmptyExchangeRateTimeSeries implements ExchangeRateTimeSeries
     @Override
     public List<ExchangeRate> getRates()
     {
+        // notify the user about fallback
+        Client.logWarning(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion, baseCurrency, termCurrency));
         return Arrays.asList(exchangeRate);
     }
 
     @Override
     public Optional<ExchangeRate> lookupRate(LocalDate requestedTime)
     {
+        // notify the user about fallback
+        Client.logWarning(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion, baseCurrency, termCurrency));
         return Optional.of(exchangeRate);
     }
 

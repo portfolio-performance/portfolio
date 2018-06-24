@@ -3,8 +3,10 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 
 public class CurrencyConverterImpl implements CurrencyConverter
 {
@@ -46,7 +48,16 @@ public class CurrencyConverterImpl implements CurrencyConverter
             return new ExchangeRate(date, BigDecimal.ONE);
 
         ExchangeRateTimeSeries series = lookupSeries(currencyCode);
-        return series.lookupRate(date).orElse(FALLBACK_EXCHANGE_RATE);
+
+        // try to get exchange rate
+        Optional<ExchangeRate> rate = series.lookupRate(date);
+        if (rate.isPresent())
+        {
+            return rate.get();
+        }
+        // use a fallback and notify the user
+        Client.logWarning(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion, termCurrency, currencyCode));
+        return FALLBACK_EXCHANGE_RATE;
     }
 
     private ExchangeRateTimeSeries lookupSeries(String currencyCode) // NOSONAR
