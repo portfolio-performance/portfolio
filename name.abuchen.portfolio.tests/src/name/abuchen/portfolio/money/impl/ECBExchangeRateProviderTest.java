@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
@@ -15,7 +16,7 @@ public class ECBExchangeRateProviderTest
     @Test
     public void testLookup()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(null);
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(new Client());
 
         assertThat(factory.getTimeSeries("EUR", "CHF"), instanceOf(ExchangeRateTimeSeriesImpl.class));
         assertThat(factory.getTimeSeries("CHF", "EUR"), instanceOf(InverseExchangeRateTimeSeries.class));
