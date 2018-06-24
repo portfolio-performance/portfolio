@@ -722,6 +722,8 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldGreaterZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterHideInactive;
+    public static String SecurityListFilterOnlyExchangeRates;
+    public static String SecurityListFilterOnlySecurities;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
@@ -737,6 +739,7 @@ public class Messages extends NLS
     public static String SecurityMenuExportCSV;
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
+    public static String SecurityMenuNewExchangeRate;
     public static String SecurityMenuNewSecurity;
     public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
