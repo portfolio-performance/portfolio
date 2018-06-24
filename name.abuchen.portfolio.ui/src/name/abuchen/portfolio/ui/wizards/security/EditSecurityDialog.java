@@ -190,9 +190,7 @@ public class EditSecurityDialog extends Dialog
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
         addPage(new HistoricalQuoteProviderPage(model, bindings), null);
-
-        if (!model.getSecurity().isExchangeRate())
-            addPage(new LatestQuoteProviderPage(model, bindings), null);
+        addPage(new LatestQuoteProviderPage(model, bindings), null);
 
         tabFolder.setSelection(showQuoteConfigurationInitially ? 3 : 0);
 
