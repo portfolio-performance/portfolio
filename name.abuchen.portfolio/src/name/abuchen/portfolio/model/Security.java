@@ -31,6 +31,7 @@ public final class Security implements Attributable, InvestmentVehicle
 
     private String name;
     private String currencyCode = CurrencyUnit.EUR;
+    private String targetCurrencyCode;
 
     private String note;
 
@@ -129,6 +130,29 @@ public final class Security implements Attributable, InvestmentVehicle
         this.currencyCode = currencyCode;
     }
 
+    /**
+     * Gets the target currency for exchange rates (the currency of the exchange
+     * rate).
+     * 
+     * @return target currency for exchange rates, else null
+     */
+    public String getTargetCurrencyCode()
+    {
+        return this.targetCurrencyCode;
+    }
+
+    /**
+     * Sets the target currency for exchange rates (defines the currency of the
+     * exchange rate).
+     * 
+     * @param targetCurrencyCode
+     *            target currency for exchange rates, else null
+     */
+    public void setTargetCurrencyCode(String targetCurrencyCode)
+    {
+        this.targetCurrencyCode = targetCurrencyCode;
+    }
+
     @Override
     public String getNote()
     {
@@ -171,6 +195,16 @@ public final class Security implements Attributable, InvestmentVehicle
         this.wkn = wkn;
     }
 
+    /**
+     * Is this an exchange rate symbol?
+     * 
+     * @return true for exchange rates, else false
+     */
+    public boolean isExchangeRate()
+    {
+        return this.targetCurrencyCode != null;
+    }
+    
     /**
      * Returns ISIN, Ticker or WKN - whatever is available.
      */
@@ -478,6 +512,7 @@ public final class Security implements Attributable, InvestmentVehicle
 
         answer.name = name;
         answer.currencyCode = currencyCode;
+        answer.targetCurrencyCode = targetCurrencyCode;
 
         answer.note = note;
         answer.isin = isin;

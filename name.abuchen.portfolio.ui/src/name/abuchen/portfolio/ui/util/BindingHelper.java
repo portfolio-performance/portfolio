@@ -278,6 +278,12 @@ public class BindingHelper
 
     public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property)
     {
+        return bindCurrencyCodeCombo(editArea, label, property, true);
+    }
+
+    public final ComboViewer bindCurrencyCodeCombo(Composite editArea, String label, String property,
+                    boolean includeEmpty)
+    {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
         ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
@@ -285,7 +291,8 @@ public class BindingHelper
         combo.setLabelProvider(new LabelProvider());
 
         List<CurrencyUnit> currencies = new ArrayList<>();
-        currencies.add(CurrencyUnit.EMPTY);
+        if (includeEmpty)
+            currencies.add(CurrencyUnit.EMPTY);
         currencies.addAll(CurrencyUnit.getAvailableCurrencyUnits().stream().sorted().collect(Collectors.toList()));
         combo.setInput(currencies);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
@@ -302,13 +309,13 @@ public class BindingHelper
         return combo;
     }
 
-    public final void bindDatePicker(Composite editArea, String label, String property)
+    public final Control bindDatePicker(Composite editArea, String label, String property)
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
 
         DatePicker boxDate = new DatePicker(editArea);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(boxDate.getControl());
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.CENTER).applyTo(boxDate.getControl());
 
         @SuppressWarnings("unchecked")
         IObservableValue<?> observable = BeanProperties.value(property).observe(model);
@@ -318,6 +325,15 @@ public class BindingHelper
                                         : ValidationStatus.error(
                                                         MessageFormat.format(Messages.MsgDialogInputRequired, label))),
                         null);
+        
+        return boxDate.getControl();
+    }
+
+    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property, int style, int lenghtInCharacters)
+    {
+        Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
+        bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
+        return txtValue;
     }
 
     public final Control bindMandatoryQuoteInput(Composite editArea, final String label, String property)

@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
@@ -18,7 +19,7 @@ public class AEDExchangeRateProviderTest
     @Test
     public void testIt()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory();
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(new Client());
 
         ExchangeRateTimeSeries usd_aed = factory.getTimeSeries("USD", "AED");
         assertThat(usd_aed.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("3.6725")));

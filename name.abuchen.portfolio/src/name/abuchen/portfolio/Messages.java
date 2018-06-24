@@ -107,6 +107,7 @@ public class Messages extends NLS
     public static String LabelEuropeanCentralBank;
     public static String LabelHTMLTable;
     public static String LabelInterest;
+    public static String LabelInverseExchangeRate;
     public static String LabelJointPortfolio;
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
@@ -167,6 +168,7 @@ public class Messages extends NLS
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResultsAvailable;
     public static String MsgNoExchangeRateAvailableForConversion;
+    public static String MsgNoExchangeRatesAvailableForCustomSeries;
     public static String MsgNoExchangeRateTimeSeriesFound;
     public static String MsgNoQuotesFoundInHTML;
     public static String MsgNoResults;
@@ -185,6 +187,7 @@ public class Messages extends NLS
     public static String PDFMsgFileNotSupported;
     public static String PDFMsgMissingShares;
     public static String QuoteFeedManual;
+    public static String SecurityBasedExchangeRateProvider;
     static
     {
         // initialize resource bundle

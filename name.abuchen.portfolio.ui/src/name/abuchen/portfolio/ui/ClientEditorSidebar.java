@@ -562,7 +562,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
         new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.LabelCurrencies, "ExchangeRatesList")) //$NON-NLS-1$
+        new Entry(section, new ActivateViewAction(Messages.LabelCurrencies, "currency.Currency")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);
         new Entry(section, new ActivateViewAction(Messages.LabelSettings, "settings.Settings")) //$NON-NLS-1$
                         .setContextMenu(setAsStartPage);

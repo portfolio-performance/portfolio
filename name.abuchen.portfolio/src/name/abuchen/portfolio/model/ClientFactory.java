@@ -559,6 +559,8 @@ public class ClientFactory
                 // add optional security to FEES, FEES_REFUND, TAXES
             case 35:
                 // added flag to auto-generate tx from investment plan
+            case 36:
+                // converted from LocalDate to LocalDateTime
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
