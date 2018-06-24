@@ -711,28 +711,24 @@ public final class SecuritiesTable implements ModificationListener
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.SELL) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
@@ -760,27 +756,15 @@ public final class SecuritiesTable implements ModificationListener
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         manager.add(new Separator());
-    }
-
-    private void performFinish(Security security)
-    {
-        markDirty();
-        if (!securities.getControl().isDisposed())
-        {
-            securities.refresh(security, true);
-            securities.setSelection(securities.getSelection());
-        }
     }
 
     private final class DeleteSecurityAction extends Action
