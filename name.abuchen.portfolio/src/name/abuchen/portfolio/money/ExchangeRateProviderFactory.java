@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.EmptyExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
@@ -165,6 +166,14 @@ public class ExchangeRateProviderFactory
     public ExchangeRateProviderFactory(Client client)
     {
         this.client = client;
+
+        // clear cache if exchange rates are added or removed in the list of
+        // securities
+        this.client.addPropertyChangeListener("securities", event -> { //$NON-NLS-1$
+            if ((event.getOldValue() != null && ((Security) event.getOldValue()).isExchangeRate())
+                            || (event.getNewValue() != null && ((Security) event.getNewValue()).isExchangeRate()))
+                clearCache();
+        });
     }
 
     /**
