@@ -1,12 +1,14 @@
 package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -23,6 +25,7 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
     private class SecurityBasedExchangeRate implements ExchangeRateTimeSeries
     {
         private final Security security;
+        private boolean hasWarningLogged = false;
 
         public SecurityBasedExchangeRate(Security security)
         {
@@ -69,10 +72,22 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
         public Optional<ExchangeRate> lookupRate(LocalDate requestedTime)
         {
             SecurityPrice price = security.getSecurityPrice(requestedTime);
-            if (price != null)
-            { 
-                return Optional.of(toExchangeRate(price)); 
+
+            // if neither latest nor historic prices exist, then
+            // #getSecurityPrice returns a price with the value of zero
+            if (price != null && price.getValue() != 0)
+                return Optional.of(toExchangeRate(price));
+
+            // log warning about missing exchange rates. This message will be
+            // printed only if there are no rates at all. To avoid overflow the
+            // log, this message is logged only once.
+            if (!hasWarningLogged)
+            {
+                PortfolioLog.warning(MessageFormat.format(Messages.MsgNoExchangeRatesAvailableForCustomSeries,
+                                security.getName(), security.getCurrencyCode(), security.getTargetCurrencyCode()));
+                hasWarningLogged = true;
             }
+
             return Optional.empty();
         }
 

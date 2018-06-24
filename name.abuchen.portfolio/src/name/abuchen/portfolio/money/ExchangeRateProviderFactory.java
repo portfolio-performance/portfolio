@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,6 +17,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.EmptyExchangeRateTimeSeries;
@@ -148,7 +151,8 @@ public class ExchangeRateProviderFactory
 
     private static final List<ExchangeRateProvider> PROVIDERS = new ArrayList<>();
 
-    static {
+    static
+    {
         // load all available providers
         Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
         while (registeredProvider.hasNext())
@@ -204,11 +208,23 @@ public class ExchangeRateProviderFactory
         List<ExchangeRateTimeSeries> answer = dijkstra.findShortestPath(termCurrency);
 
         if (answer.isEmpty())
+        {
+            // log warning when creating an "empty" exchange rate time series so
+            // that the user can create an exchange rate for this currency pair
+
+            PortfolioLog.warning(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion, baseCurrency,
+                            termCurrency));
+
             return new EmptyExchangeRateTimeSeries(baseCurrency, termCurrency);
+        }
         else if (answer.size() == 1)
+        {
             return answer.get(0);
+        }
         else
+        {
             return new ChainedExchangeRateTimeSeries(answer.toArray(new ExchangeRateTimeSeries[0]));
+        }
     }
 
 }
