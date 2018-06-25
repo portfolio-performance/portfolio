@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.math.Risk;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -40,6 +43,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         }
     }
 
+    private final Client client;
     private final Security security;
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -167,8 +171,9 @@ public final class SecurityPerformanceRecord implements Adaptable
      */
     private double capitalGainsOnHoldingsMovingAveragePercent;
 
-    /* package */ SecurityPerformanceRecord(Security security)
+    /* package */ SecurityPerformanceRecord(Client client, Security security)
     {
+        this.client = client;
         this.security = security;
     }
 
@@ -373,6 +378,7 @@ public final class SecurityPerformanceRecord implements Adaptable
             calculateDelta(converter);
             calculateFifoAndMovingAverageCosts(converter);
             calculateDividends(converter);
+            calculatePeriodicity(converter);
         }
     }
 
@@ -447,6 +453,22 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
-        this.periodicity = dividends.getPeriodicity();
+    }
+
+    private void calculatePeriodicity(CurrencyConverter converter)
+    {
+        // periodicity is calculated by looking at all dividend transactions, so
+        // collect them
+        List<Transaction> allTransactions = security.getTransactions(client).stream()
+                        .filter(t -> t.getTransaction() instanceof AccountTransaction) //
+                        .filter(t -> {
+                            AccountTransaction.Type type = ((AccountTransaction) t.getTransaction()).getType();
+                            return type == Type.DIVIDENDS || type == Type.INTEREST;
+                        }) //
+                        .map(t -> DividendTransaction.from((AccountTransaction) t.getTransaction()))
+                        .collect(Collectors.toList());
+
+        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, allTransactions);
+        this.periodicity = allDividends.getPeriodicity();
     }
 }

@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -13,6 +15,29 @@ public class DividendTransaction extends Transaction
     private long totalShares;
     private Money fifoCost;
     private Money movingAverageCost;
+
+    /**
+     * Converts a {@link AccountTransaction} of type DIVIDENDS into a
+     * DividendTransaction.
+     * 
+     * @exception IllegalArgumentException
+     *                when transaction is not of type DIVIDENDS
+     */
+    public static DividendTransaction from(AccountTransaction t)
+    {
+        if (t.getType() != Type.DIVIDENDS && t.getType() != Type.INTEREST)
+            throw new IllegalArgumentException();
+
+        DividendTransaction dt = new DividendTransaction();
+        dt.setDateTime(t.getDateTime());
+        dt.setSecurity(t.getSecurity());
+        dt.setCurrencyCode(t.getCurrencyCode());
+        dt.setAmount(t.getAmount());
+        dt.setShares(t.getShares());
+        dt.setNote(t.getNote());
+        dt.addUnits(t.getUnits());
+        return dt;
+    }
 
     public Account getAccount()
     {
@@ -89,8 +114,8 @@ public class DividendTransaction extends Transaction
         if (shares == 0)
             return 0;
 
-        return Math.round((amount * (Values.AmountFraction.factor() / (double)Values.Amount.factor()) * Values.Share.divider())
-                        / (double) shares);
+        return Math.round((amount * (Values.AmountFraction.factor() / (double) Values.Amount.factor())
+                        * Values.Share.divider()) / (double) shares);
     }
 
     public long getGrossValueAmount()
