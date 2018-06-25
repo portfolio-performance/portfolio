@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.security.DividendTransaction;
 
 public class AccountTransaction extends Transaction
 {
@@ -120,6 +121,29 @@ public class AccountTransaction extends Transaction
     public Money getGrossValue()
     {
         return Money.of(getCurrencyCode(), getGrossValueAmount());
+    }
+    
+    /**
+     * Gets a {@link DividendTransaction} if this {@link AccountTransaction} is
+     * one.
+     * 
+     * @return {@link DividendTransaction} on success, else null
+     */
+    public DividendTransaction getDividendTransaction()
+    {
+        if (getType() == Type.DIVIDENDS)
+        {
+            DividendTransaction dt = new DividendTransaction();
+            dt.setDateTime(getDateTime());
+            dt.setSecurity(getSecurity());
+            dt.setCurrencyCode(getCurrencyCode());
+            dt.setAmount(getAmount());
+            dt.setShares(getShares());
+            dt.setNote(getNote());
+            dt.addUnits(getUnits());
+            return dt;
+        }
+        return null;
     }
 
     @Override
