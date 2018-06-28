@@ -38,9 +38,17 @@ mvn clean verify -Dtycho.disableP2Mirrors
 
 ## Developing with Eclipse
 
-### Setup
+### Eclipse Setup
 
-To develop, use [Eclipse IDE](http://eclipse.org/downloads/) plus the **Plug-in Development Environment (PDE)**.
+To develop, use the [Eclipse IDE](http://eclipse.org/downloads/) **Photon** release plus **Plug-in Development Environment (PDE)**
+
+Optionally, install via the Eclipse Marketplace
+* infinitest
+* ResourceBundle Editor
+* SonarLint
+* Eclipse Checkstyle Plug-in
+
+### Setup
 
 Clone the git repository.
 
@@ -65,13 +73,7 @@ mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 
 ### Run Program
 
-* Open the portfolio-product project
-* Open the name.abuchen.portfolio.product file
-* In the resulting editor, click on the "Launch an Eclipse application" link
-
-To run the unit tests
-* Right click on the name.abuchen.portfolio.tests project
-* Choose "Run As..." -> "JUnit Plug-in Test".
+Run the application and the tests with the launch configurations stored in ~/portfolio-app/eclipse folder (right-click "Run As").
 
 ## License
  
