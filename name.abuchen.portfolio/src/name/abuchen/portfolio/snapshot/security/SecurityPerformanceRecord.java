@@ -94,7 +94,8 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Money fifoCost;
 
     /**
-     * moving average cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * moving average cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money movingAverageCost;
 
@@ -145,7 +146,8 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Periodicity periodicity = Periodicity.UNKNOWN;
 
     /**
-     * market value - fifo cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * market value - fifo cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money capitalGainsOnHoldings;
 
@@ -155,7 +157,8 @@ public final class SecurityPerformanceRecord implements Adaptable
     private double capitalGainsOnHoldingsPercent;
 
     /**
-     * market value - moving average cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
+     * market value - moving average cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money capitalGainsOnHoldingsMovingAverage;
 
@@ -291,7 +294,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     public Quote getMovingAverageCostPerSharesHeld()
     {
-	return movingAverageCostPerSharesHeld;
+        return movingAverageCostPerSharesHeld;
     }
 
     public Money getSumOfDividends()
@@ -416,8 +419,9 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.fifoCostPerSharesHeld = Quote.of(netFifoCost.getCurrencyCode(), Math.round(netFifoCost.getAmount()
                         * Values.Share.factor() * Values.Quote.factorToMoney() / (double) sharesHeld));
         Money netMovingAverageCost = cost.getNetMovingAverageCost();
-        this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(), Math.round(netMovingAverageCost.getAmount()
-                        * Values.Share.factor() * Values.Quote.factorToMoney() / (double) sharesHeld));
+        this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(),
+                        Math.round(netMovingAverageCost.getAmount() * Values.Share.factor()
+                                        * Values.Quote.factorToMoney() / (double) sharesHeld));
 
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();
@@ -433,7 +437,8 @@ public final class SecurityPerformanceRecord implements Adaptable
         if (marketValue.getAmount() == 0L && movingAverageCost.getAmount() == 0L)
             this.capitalGainsOnHoldingsMovingAveragePercent = 0d;
         else
-            this.capitalGainsOnHoldingsMovingAveragePercent = ((double) marketValue.getAmount() / (double) movingAverageCost.getAmount()) - 1;
+            this.capitalGainsOnHoldingsMovingAveragePercent = ((double) marketValue.getAmount()
+                            / (double) movingAverageCost.getAmount()) - 1;
     }
 
     private void calculateDividends(CurrencyConverter converter)

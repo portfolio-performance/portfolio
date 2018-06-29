@@ -38,9 +38,7 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
 
         String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.EXCHANGE_RATE_SERIES.name());
         int slash = code != null ? code.indexOf('/') : -1;
-        @SuppressWarnings("null")
         String base = slash > 0 ? code.substring(0, slash) : null; // NOSONAR
-        @SuppressWarnings("null")
         String term = slash > 0 ? code.substring(slash + 1) : null; // NOSONAR
 
         this.series = available.stream().filter(t -> t.getBaseCurrency().equals(base))
