@@ -360,6 +360,11 @@ public class Client
         this.dashboards.add(dashboard);
     }
 
+    public void addDashboard(int index, Dashboard dashboard)
+    {
+        this.dashboards.add(index, dashboard);
+    }
+
     public void removeDashboard(Dashboard dashboard)
     {
         this.dashboards.remove(dashboard);
