@@ -3,8 +3,6 @@ package name.abuchen.portfolio.ui.util.viewers;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerEditor;
@@ -17,6 +15,8 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+
+import name.abuchen.portfolio.ui.AbstractFinanceView;
 
 public abstract class ColumnEditingSupport
 {
@@ -66,7 +66,7 @@ public abstract class ColumnEditingSupport
     public final ColumnEditingSupport addListener(ModificationListener listener)
     {
         if (listeners == null)
-            listeners = new ArrayList<ModificationListener>();
+            listeners = new ArrayList<>();
         listeners.add(listener);
         return this;
     }
@@ -89,6 +89,7 @@ public abstract class ColumnEditingSupport
     {
         ColumnViewerEditorActivationStrategy activationStrategy = new ColumnViewerEditorActivationStrategy(viewer)
         {
+            @Override
             protected boolean isEditorActivationEvent(ColumnViewerEditorActivationEvent event)
             {
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL

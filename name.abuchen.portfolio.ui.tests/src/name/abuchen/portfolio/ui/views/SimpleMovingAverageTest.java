@@ -15,8 +15,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.views.ChartLineSeriesAxes;
-import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
 @SuppressWarnings("nls")
 public class SimpleMovingAverageTest

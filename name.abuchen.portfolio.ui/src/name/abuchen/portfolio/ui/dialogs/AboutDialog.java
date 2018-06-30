@@ -201,17 +201,13 @@ public class AboutDialog extends Dialog
 
     private void openBrowser(Event event)
     {
-        try
-        {
-            int offset = aboutTextBox.getOffsetAtLocation(new Point(event.x, event.y));
-            StyleRange style = aboutTextBox.getStyleRangeAtOffset(offset);
-            if (style != null && style.data != null)
-                DesktopAPI.browse(String.valueOf(style.data));
-        }
-        catch (IllegalArgumentException ignore)
-        {
-            // no character at position
-        }
+        int offset = aboutTextBox.getOffsetAtPoint(new Point(event.x, event.y));
+        if (offset == -1)
+            return;
+
+        StyleRange style = aboutTextBox.getStyleRangeAtOffset(offset);
+        if (style != null && style.data != null)
+            DesktopAPI.browse(String.valueOf(style.data));
     }
 
     @SuppressWarnings("nls")

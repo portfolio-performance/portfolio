@@ -15,6 +15,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
         setTitle(Messages.PrefTitleGeneral);
     }
 
+    @Override
     public void createFieldEditors()
     {
         addField(new BooleanFieldEditor(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, //

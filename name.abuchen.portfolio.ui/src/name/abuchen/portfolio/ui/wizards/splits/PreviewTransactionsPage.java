@@ -38,6 +38,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 {
     private class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
     {
+        @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
             if (columnIndex == 1)
@@ -52,6 +53,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
             return null;
         }
 
+        @Override
         public String getColumnText(Object element, int columnIndex)
         {
             TransactionPair<?> pair = (TransactionPair<?>) element;

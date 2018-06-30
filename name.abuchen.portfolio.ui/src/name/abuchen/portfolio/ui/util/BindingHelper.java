@@ -180,7 +180,7 @@ public class BindingHelper
     private DataBindingContext context;
 
     /** average char width needed to resize input fields on length */
-    private int averageCharWidth = -1;
+    private double averageCharWidth = -1;
 
     public BindingHelper(Model model)
     {
@@ -243,7 +243,7 @@ public class BindingHelper
         spinner.setSelection(selection);
         spinner.setIncrement(increment);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
-                        .hint(5 * getAverageCharWidth(spinner), SWT.DEFAULT).applyTo(spinner);
+                        .hint((int) Math.round(5 * getAverageCharWidth(spinner)), SWT.DEFAULT).applyTo(spinner);
         @SuppressWarnings("unchecked")
         IObservableValue<?> observable = BeanProperties.value(property).observe(model);
         context.bindValue(WidgetProperties.selection().observe(spinner), observable);
@@ -325,11 +325,12 @@ public class BindingHelper
                                         : ValidationStatus.error(
                                                         MessageFormat.format(Messages.MsgDialogInputRequired, label))),
                         null);
-        
+
         return boxDate.getControl();
     }
 
-    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property, int style, int lenghtInCharacters)
+    public final Control bindMandatoryAmountInput(Composite editArea, final String label, String property, int style,
+                    int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
         bindMandatoryDecimalInput(label, property, txtValue, Values.Amount);
@@ -387,7 +388,8 @@ public class BindingHelper
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(txtValue);
         else
             GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
-                            .hint((lenghtInCharacters + 5) * getAverageCharWidth(txtValue), SWT.DEFAULT)
+                            .hint((int) Math.round((lenghtInCharacters + 5) * getAverageCharWidth(txtValue)),
+                                            SWT.DEFAULT)
                             .applyTo(txtValue);
 
         return txtValue;
@@ -484,14 +486,14 @@ public class BindingHelper
         return btnCheckbox;
     }
 
-    private int getAverageCharWidth(Control control)
+    private double getAverageCharWidth(Control control)
     {
         if (averageCharWidth > 0)
             return averageCharWidth;
 
         GC gc = new GC(control);
         FontMetrics fm = gc.getFontMetrics();
-        this.averageCharWidth = fm.getAverageCharWidth();
+        this.averageCharWidth = fm.getAverageCharacterWidth();
         gc.dispose();
 
         return averageCharWidth;

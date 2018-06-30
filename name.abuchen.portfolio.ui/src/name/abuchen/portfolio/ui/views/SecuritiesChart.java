@@ -446,7 +446,9 @@ public class SecuritiesChart
                 if (index == -1)
                 {
                     index = 0;
-                } else {
+                }
+                else
+                {
                     index = Math.abs(index);
                 }
 

@@ -35,6 +35,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         this(in, (int) Math.min(in.available() / 20L, Integer.MAX_VALUE), monitor);
     }
 
+    @Override
     public void close() throws IOException
     {
         try
@@ -47,6 +48,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public int read() throws IOException
     {
         int b = in.read();
@@ -58,6 +60,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         return b;
     }
 
+    @Override
     public int read(byte[] buffer, int offset, int length) throws IOException
     {
         try
@@ -78,6 +81,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public long skip(long amount) throws IOException
     {
         try
@@ -95,6 +99,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         }
     }
 
+    @Override
     public boolean markSupported()
     {
         return false;

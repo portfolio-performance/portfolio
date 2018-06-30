@@ -291,6 +291,12 @@ public class DashboardView extends AbstractHistoricView
                 manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
                 manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(board)));
 
+                if (index > 0)
+                {
+                    manager.add(new Separator());
+                    manager.add(new SimpleAction(Messages.ChartBringToFront, a -> bringToFrontDashboard(board)));
+                }
+
                 Menu menu = manager.createContextMenu(toolBar);
                 menu.setLocation(pt.x, pt.y + rect.height);
                 menu.setVisible(true);
@@ -579,6 +585,15 @@ public class DashboardView extends AbstractHistoricView
             markDirty();
             return newDashboard;
         }));
+    }
+
+    private void bringToFrontDashboard(Dashboard board)
+    {
+        getClient().removeDashboard(board);
+        getClient().addDashboard(0, board);
+        markDirty();
+
+        recreateDashboardToolItems();
     }
 
     private void addNewWidget(Composite columnControl, WidgetFactory widgetType)

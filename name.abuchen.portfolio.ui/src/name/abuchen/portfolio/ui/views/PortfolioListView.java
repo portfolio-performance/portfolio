@@ -181,6 +181,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     // top table: accounts
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createTopTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);

@@ -10,7 +10,6 @@ import java.util.Locale;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -49,13 +48,14 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     {
         return Messages.LabelConsumerPriceIndex;
     }
-    
+
     @Override
     protected int getSashStyle()
     {
         return SWT.VERTICAL | SWT.BEGINNING;
     }
 
+    @Override
     protected void addButtons(ToolBar toolBar)
     {
         super.addButtons(toolBar);
@@ -72,16 +72,8 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             public void run()
             {
                 if (menu == null)
-                {
-                    menu = createContextMenu(getActiveShell(), new IMenuListener()
-                    {
-                        @Override
-                        public void menuAboutToShow(IMenuManager manager)
-                        {
-                            exportMenuAboutToShow(manager);
-                        }
-                    });
-                }
+                    menu = createContextMenu(getActiveShell(), ConsumerPriceIndexListView.this::exportMenuAboutToShow);
+
                 menu.setVisible(true);
             }
         };
@@ -191,14 +183,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         indices.setInput(getClient().getConsumerPriceIndices());
         indices.refresh();
 
-        hookContextMenu(indices.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillContextMenu(manager);
-            }
-
-        });
+        hookContextMenu(indices.getTable(), this::fillContextMenu);
     }
 
     private void fillContextMenu(IMenuManager manager)
@@ -262,14 +247,14 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
             if (getClient().getConsumerPriceIndices() == null || getClient().getConsumerPriceIndices().isEmpty())
                 return;
 
-            List<ConsumerPriceIndex> indices = new ArrayList<ConsumerPriceIndex>(getClient().getConsumerPriceIndices());
-            Collections.sort(indices, new ConsumerPriceIndex.ByDate());
+            List<ConsumerPriceIndex> data = new ArrayList<>(getClient().getConsumerPriceIndices());
+            Collections.sort(data, new ConsumerPriceIndex.ByDate());
 
-            LocalDate[] dates = new LocalDate[indices.size()];
-            double[] cpis = new double[indices.size()];
+            LocalDate[] dates = new LocalDate[data.size()];
+            double[] cpis = new double[data.size()];
 
             int ii = 0;
-            for (ConsumerPriceIndex index : indices)
+            for (ConsumerPriceIndex index : data)
             {
                 dates[ii] = LocalDate.of(index.getYear(), index.getMonth(), 1);
                 cpis[ii] = (double) index.getIndex() / Values.Index.divider();
