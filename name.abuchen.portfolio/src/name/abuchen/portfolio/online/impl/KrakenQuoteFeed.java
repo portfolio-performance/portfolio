@@ -44,7 +44,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public String getName()
     {
-        return "Kraken Bitcoin Exchange";
+        return Messages.LabelKraken;
     }
 
     @Override
