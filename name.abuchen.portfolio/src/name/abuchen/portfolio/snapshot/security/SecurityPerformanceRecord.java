@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.math.Risk;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -16,6 +17,7 @@ import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
@@ -40,6 +42,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         }
     }
 
+    private final Client client;
     private final Security security;
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -167,8 +170,9 @@ public final class SecurityPerformanceRecord implements Adaptable
      */
     private double capitalGainsOnHoldingsMovingAveragePercent;
 
-    /* package */ SecurityPerformanceRecord(Security security)
+    /* package */ SecurityPerformanceRecord(Client client, Security security)
     {
+        this.client = client;
         this.security = security;
     }
 
@@ -447,6 +451,23 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
-        this.periodicity = dividends.getPeriodicity();
+        // periodicity is calculated by looking at all transactions, so collect
+        // them
+        List<Transaction> allTransactions = new ArrayList<Transaction>();
+        for (TransactionPair<?> p : security.getTransactions(client))
+        {
+            Transaction t = p.getTransaction();
+            if (t instanceof AccountTransaction)
+            {
+                DividendTransaction dt = ((AccountTransaction) t).getDividendTransaction();
+                if (dt != null)
+                {
+                    allTransactions.add(dt);
+                }
+            }
+        }
+        // create another instance of calculation over all transactions
+        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, allTransactions);
+        this.periodicity = allDividends.getPeriodicity();
     }
 }
