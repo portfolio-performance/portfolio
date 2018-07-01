@@ -38,16 +38,8 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
         createSecurityColumn(records, layout, true);
-
-        
         
         createQuarterColumns(records,  layout);
-        
-//        for (int index = 0; index < model.getNoOfMonths(); index += 12)
-//        {
-//            createYearColumn(records, layout, date, index);
-//            date = date.plusYears(1);
-//        }
 
         createSumColumn(records, layout);
        
@@ -64,7 +56,7 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
         /*
          * The number of month in a quarter.
          * 
-         * While most people will know this, I prefer named variables over the occurence of magic
+         * While most people will know this, I prefer named variables over the occurrence of magic
          * numbers in the code.
          */
         int monthInQuarter = 3;
