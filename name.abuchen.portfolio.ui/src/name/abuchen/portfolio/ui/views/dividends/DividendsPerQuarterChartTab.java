@@ -43,23 +43,16 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
         @Override
         protected void createComposite(Composite parent)
         {
-            final int year = (Integer) getFocusedObject();
+            final int hoveredQuarterIndex = (Integer) getFocusedObject();
+            LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
+            date = date.plusYears(hoveredQuarterIndex/4);
+            int quarterWithinYear = (hoveredQuarterIndex % 4) +1;
+            
             int totalNoOfMonths = model.getNoOfMonths();
 
             IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().getSeries()[0];
 
-            List<Line> lines = model.getLines().stream() //
-                            .filter(line -> {
-                                for (int index = year * 12; index < (year + 1) * 12
-                                                && index < totalNoOfMonths; index += 1)
-                                    if (line.getValue(index) != 0L)
-                                        return true;
-                                return false;
-                            })
-                            .sorted((l1, l2) -> l1.getVehicle().getName()
-                                            .compareToIgnoreCase(l2.getVehicle().getName()))
-                            .collect(Collectors.toList());
-
+            
             final Composite container = new Composite(parent, SWT.NONE);
             container.setBackgroundMode(SWT.INHERIT_FORCE);
             GridLayoutFactory.swtDefaults().numColumns(2).applyTo(container);
@@ -72,20 +65,44 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
             topLeft.setForeground(foregroundColor);
             topLeft.setText(Messages.ColumnSecurity);
 
+            
             Label label = new Label(container, SWT.CENTER);
             label.setBackground(barSeries.getBarColor());
             label.setForeground(Colors.getTextColor(barSeries.getBarColor()));
-            label.setText(String.valueOf(model.getStartYear() + year));
+            String labelString = String.format("Q%d %s", quarterWithinYear, formatter.format(date) );
+            label.setText(labelString);
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
+            
+            final int quarterBeginIndex = 3 * hoveredQuarterIndex;
+            final int quarterEndIndex = Math.min(3 * (hoveredQuarterIndex +1),totalNoOfMonths);
+            
+            // first: filter out 
+            List<Line> lines = model.getLines().stream() //
+                            .filter(line -> {
+                                for (int index = quarterBeginIndex; index < quarterEndIndex; index += 1) 
+                                {
+                                    if (line.getValue(index) != 0L)
+                                    {
+                                        return true;
+                                    }
+                                }
+                                return false;
+                            })
+                            .sorted((l1, l2) -> l1.getVehicle().getName() // sort alphabetically
+                                            .compareToIgnoreCase(l2.getVehicle().getName()))
+                            .collect(Collectors.toList());
 
+
+               
             lines.forEach(line -> {
                 Label l = new Label(container, SWT.NONE);
                 l.setForeground(foregroundColor);
                 l.setText(TextUtil.tooltip(line.getVehicle().getName()));
 
                 long value = 0;
-                for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
-                    value += line.getValue(m);
+                for (int index = quarterBeginIndex; index < quarterEndIndex; index += 1) {
+                    value += line.getValue(index);
+                }
 
                 l = new Label(container, SWT.RIGHT);
                 l.setForeground(foregroundColor);
@@ -97,10 +114,13 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
             l.setForeground(foregroundColor);
             l.setText(Messages.ColumnSum);
 
+            
+            // compute total sum of dividends in quarter
             long value = 0;
-            for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
-                value += model.getSum().getValue(m);
-
+            for (int index = quarterBeginIndex; index < quarterEndIndex; index += 1)
+            {
+                value += model.getSum().getValue(index);
+            }
             l = new Label(container, SWT.RIGHT);
             l.setBackground(barSeries.getBarColor());
             l.setForeground(Colors.getTextColor(barSeries.getBarColor()));
@@ -201,33 +221,11 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
             
             series[quarter] = quarterDividends / Values.Amount.divider();
             
-            System.out.println(Values.Amount.divider());
-            
             // Starting from here, we make sure to step into the next quarter
             quarterBeginIndex = Math.min(quarterBeginIndex+monthInQuarter,nMonths);
             quarterEndIndex = Math.min(quarterEndIndex+monthInQuarter, nMonths);
                            
         }
-
-//        int startYear = model.getStartYear();
-//        int nYears = LocalDate.now().getYear() - startYear + 1;
-//        int nQuarters = nYears * 4;
-//        
-//        double[] series = new double[nQuarters];
-//        
-//
-//        for (int index = 0; index < model.getNoOfMonths(); index += 12)
-//        {
-//            int year = (index / 12);
-//
-//            long total = 0;
-//
-//            int months = Math.min(12, model.getNoOfMonths() - index);
-//            for (int ii = 0; ii < months; ii++)
-//                total += model.getSum().getValue(index + ii);
-//
-//            series[year] = total / Values.Amount.divider();
-//        }
 
         IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
         barSeries.setYSeries(series);
