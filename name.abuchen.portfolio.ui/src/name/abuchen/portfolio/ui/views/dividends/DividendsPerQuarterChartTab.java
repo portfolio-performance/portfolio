@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views.dividends;
 
 import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,6 +26,9 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class DividendsPerQuarterChartTab extends AbstractChartTab
 {
+    
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
+
     private class DividendPerQuarterToolTip extends TimelineChartToolTip
     {
         private DividendsViewModel model;
@@ -116,35 +121,113 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
         toolTip.enableCategory(true);
     }
 
-    private void updateCategorySeries()
+    private void setCategorySeriesLabels()
     {
-        int startYear = model.getStartYear();
-        String[] labels = new String[LocalDate.now().getYear() - startYear + 1];
-        for (int ii = 0; ii < labels.length; ii++)
-            labels[ii] = String.valueOf(startYear + ii);
+        
+        LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
+        
+        int nMonths = model.getNoOfMonths();
+        
+        /*
+         * The number of month in a quarter.
+         * 
+         * While most people will know this, I prefer named variables over the occurrence of magic
+         * numbers in the code.
+         */
+        int monthInQuarter = 3;
+        
+        // How many quarters we are about to display. We show every started quarter, hence the Math.ceil
+        int nQuarters = (int) Math.ceil((double)nMonths / (double)monthInQuarter);
+
+        String[] labels = new String[nQuarters];
+        
+        for (int quarter = 0; quarter < nQuarters; quarter++) 
+        {
+            // the fifth total quarter is the first quarter in the corresponding year
+            int quarterWithinYear = (quarter % 4) + 1;
+            
+            // The caption looks like "Q<quarter within the year> <year>"
+            String label = String.format("Q%d %s", quarterWithinYear, formatter.format(date));
+            labels[quarter] = label;
+            
+            // every four quarters we need to switch to the next year
+            if (quarterWithinYear == 4) 
+            {
+                date = date.plusYears(1);                
+            }            
+            
+        }
+        
         getChart().getAxisSet().getXAxis(0).setCategorySeries(labels);
     }
 
     @Override
     protected void createSeries()
     {
-        updateCategorySeries();
-
-        int startYear = model.getStartYear();
-        double[] series = new double[LocalDate.now().getYear() - startYear + 1];
-
-        for (int index = 0; index < model.getNoOfMonths(); index += 12)
+        setCategorySeriesLabels();
+        
+        
+        
+        
+        int nMonths = model.getNoOfMonths();
+        
+        /*
+         * The number of month in a quarter.
+         * 
+         * While most people will know this, I prefer named variables over the occurrence of magic
+         * numbers in the code.
+         */
+        int monthInQuarter = 3;
+        
+        // How many quarters we are about to display. We show every started quarter, hence the Math.ceil
+        int nQuarters = (int) Math.ceil((double)nMonths / (double)monthInQuarter);
+        
+        double[] series = new double[nQuarters];
+        
+        int quarterBeginIndex = 0;
+        int quarterEndIndex = Math.min(monthInQuarter, nMonths);
+        
+        for (int quarter = 0; quarter < nQuarters; quarter++) 
         {
-            int year = (index / 12);
 
-            long total = 0;
-
-            int months = Math.min(12, model.getNoOfMonths() - index);
-            for (int ii = 0; ii < months; ii++)
-                total += model.getSum().getValue(index + ii);
-
-            series[year] = total / Values.Amount.divider();
+            
+            double quarterDividends = 0;
+            
+            for (int i=quarterBeginIndex; i < quarterEndIndex; i++) 
+            {
+                 
+                quarterDividends += model.getSum().getValue(i);
+            }
+            
+            series[quarter] = quarterDividends / Values.Amount.divider();
+            
+            System.out.println(Values.Amount.divider());
+            
+            // Starting from here, we make sure to step into the next quarter
+            quarterBeginIndex = Math.min(quarterBeginIndex+monthInQuarter,nMonths);
+            quarterEndIndex = Math.min(quarterEndIndex+monthInQuarter, nMonths);
+                           
         }
+
+//        int startYear = model.getStartYear();
+//        int nYears = LocalDate.now().getYear() - startYear + 1;
+//        int nQuarters = nYears * 4;
+//        
+//        double[] series = new double[nQuarters];
+//        
+//
+//        for (int index = 0; index < model.getNoOfMonths(); index += 12)
+//        {
+//            int year = (index / 12);
+//
+//            long total = 0;
+//
+//            int months = Math.min(12, model.getNoOfMonths() - index);
+//            for (int ii = 0; ii < months; ii++)
+//                total += model.getSum().getValue(index + ii);
+//
+//            series[year] = total / Values.Amount.divider();
+//        }
 
         IBarSeries barSeries = (IBarSeries) getChart().getSeriesSet().createSeries(SeriesType.BAR, getLabel());
         barSeries.setYSeries(series);
