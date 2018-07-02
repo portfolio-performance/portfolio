@@ -69,7 +69,6 @@ import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
@@ -82,7 +81,6 @@ public final class SecuritiesTable implements ModificationListener
 
     private Watchlist watchlist;
 
-    private Menu contextMenu;
     private TableViewer securities;
 
     private ShowHideColumnHelper support;
@@ -190,11 +188,35 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "wkn").addListener(this).attachTo(column); //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "wkn").setCanEditCheck(e -> !((Security) e).isExchangeRate()) //$NON-NLS-1$
+                        .addListener(this).attachTo(column);
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new CurrencyColumn();
+        column = new Column("currency", Messages.ColumnCurrency, SWT.LEFT, 60); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Security) element).getCurrencyCode();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getCurrencyCode()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("targetCurrency", Messages.ColumnTargetCurrency, SWT.LEFT, 60); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnTargetCurrencyToolTip);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Security) element).getTargetCurrencyCode();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getTargetCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -249,9 +271,7 @@ public final class SecuritiesTable implements ModificationListener
             if (p2 == null)
                 return 1;
 
-            long v1 = p1.getValue();
-            long v2 = p2.getValue();
-            return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
+            return Long.compare(p1.getValue(), p2.getValue());
         }));
         support.addColumn(column);
     }
@@ -412,7 +432,7 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getDate().isAfter(option.getStartDate()))
                 return null;
 
-            return new Double((latest.getValue() - previous.getValue()) / (double) previous.getValue());
+            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
         };
 
         Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
@@ -630,7 +650,7 @@ public final class SecuritiesTable implements ModificationListener
         menuMgr.setRemoveAllWhenShown(true);
         menuMgr.addMenuListener(this::fillContextMenu);
 
-        contextMenu = menuMgr.createContextMenu(securities.getTable());
+        Menu contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
 
         securities.getTable().addDisposeListener(e -> {
@@ -691,28 +711,24 @@ public final class SecuritiesTable implements ModificationListener
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.SELL) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //
                         .with(security) //
-                        .onSuccess(d -> performFinish(security)) //
                         .addTo(manager);
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
@@ -737,30 +753,18 @@ public final class SecuritiesTable implements ModificationListener
         manager.add(new Separator());
 
         new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
-            .type(SecurityTransactionDialog.class) //
-            .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
-            .with(security) //
-            .onSuccess(d -> performFinish(security)) //
-            .addTo(manager);
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .with(security) //
+                        .addTo(manager);
 
         new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
-            .type(SecurityTransactionDialog.class) //
-            .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
-            .with(security) //
-            .onSuccess(d -> performFinish(security)) //
-            .addTo(manager);
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
+                        .with(security) //
+                        .addTo(manager);
 
         manager.add(new Separator());
-    }
-
-    private void performFinish(Security security)
-    {
-        markDirty();
-        if (!securities.getControl().isDisposed())
-        {
-            securities.refresh(security, true);
-            securities.setSelection(securities.getSelection());
-        }
     }
 
     private final class DeleteSecurityAction extends Action
@@ -798,7 +802,7 @@ public final class SecuritiesTable implements ModificationListener
             if (!withTransactions.isEmpty())
             {
                 String label = String.join(", ", //$NON-NLS-1$
-                                withTransactions.stream().map(s -> s.getName()).collect(Collectors.toList()));
+                                withTransactions.stream().map(Security::getName).collect(Collectors.toList()));
 
                 MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
                                 MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, label));

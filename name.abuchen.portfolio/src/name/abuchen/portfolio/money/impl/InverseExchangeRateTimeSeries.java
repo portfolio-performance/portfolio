@@ -2,9 +2,13 @@ package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
@@ -31,9 +35,24 @@ public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
     }
 
     @Override
-    public ExchangeRateProvider getProvider()
+    public Optional<ExchangeRateProvider> getProvider()
     {
-        return source.getProvider();
+        return Optional.of(new ExchangeRateProvider()
+        {
+            @Override
+            public String getName()
+            {
+                Optional<ExchangeRateProvider> provider = source.getProvider();
+                return provider.isPresent() ? Messages.LabelInverseExchangeRate + ": " + provider.get().getName() //$NON-NLS-1$
+                                : Messages.LabelInverseExchangeRate;
+            }
+
+            @Override
+            public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
+            {
+                return Collections.emptyList();
+            }
+        });
     }
 
     @Override
@@ -61,7 +80,12 @@ public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
     @Override
     public int getWeight()
     {
-        return 1 + source.getWeight();
+        return 2 + source.getWeight();
     }
 
+    @Override
+    public List<ExchangeRateTimeSeries> getComposition()
+    {
+        return Arrays.asList(source);
+    }
 }

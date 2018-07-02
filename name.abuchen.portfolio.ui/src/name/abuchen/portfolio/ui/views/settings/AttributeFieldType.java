@@ -53,6 +53,7 @@ public enum AttributeFieldType
                         && type.isAssignableFrom(attribute.getType());
     }
 
+    @Override
     public String toString()
     {
         return RESOURCES.getString(name() + ".name"); //$NON-NLS-1$

@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -100,6 +101,7 @@ public class PortfolioPart implements LoadClientThread.Callback
 
     private File clientFile;
     private Client client;
+    private ExchangeRateProviderFactory exchangeRateProviderFacory;
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private List<Job> regularJobs = new ArrayList<>();
@@ -325,6 +327,10 @@ public class PortfolioPart implements LoadClientThread.Callback
             });
         }
 
+        // build factory for exchange rates
+        this.exchangeRateProviderFacory = new ExchangeRateProviderFactory(client);
+        this.context.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
+        
         new ConsistencyChecksJob(client, false).schedule(100);
         scheduleOnlineUpdateJobs();
     }
@@ -488,6 +494,9 @@ public class PortfolioPart implements LoadClientThread.Callback
     @Optional
     public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
     {
+        if (exchangeRateProviderFacory != null)
+            exchangeRateProviderFacory.clearCache();
+        
         // update view w/o marking the model dirty
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.notifyModelUpdated();
@@ -532,6 +541,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         viewContext.set(IPreferenceStore.class, this.preferenceStore);
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ESelectionService.class, selectionService);
+        viewContext.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
 
         view = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, view);

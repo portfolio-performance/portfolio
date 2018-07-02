@@ -18,7 +18,7 @@ import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
     {
         return SWT.VERTICAL | SWT.END;
     }
-    
+
     @Override
     protected final Control createBody(Composite parent)
     {

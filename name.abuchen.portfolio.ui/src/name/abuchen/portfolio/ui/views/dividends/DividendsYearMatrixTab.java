@@ -35,6 +35,7 @@ public class DividendsYearMatrixTab extends DividendsMatrixTab
         // do not add config option from divident / month tab
     }
 
+    @Override
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
         createSecurityColumn(records, layout, true);

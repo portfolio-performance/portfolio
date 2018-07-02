@@ -23,6 +23,7 @@ public class APIKeysPreferencePage extends FieldEditorPreferencePage
         setDescription(Messages.PrefDescriptionAlphaVantage);
     }
 
+    @Override
     public void createFieldEditors()
     {
         Link link = new Link(getFieldEditorParent(), SWT.NONE);

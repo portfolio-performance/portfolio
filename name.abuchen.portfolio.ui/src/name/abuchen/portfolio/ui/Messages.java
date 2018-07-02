@@ -100,6 +100,7 @@ public class Messages extends NLS
     public static String ColumnColor;
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
+    public static String ColumnConvertedAmount;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -223,6 +224,8 @@ public class Messages extends NLS
     public static String ColumnSubTotal;
     public static String ColumnSum;
     public static String ColumnSymbol;
+    public static String ColumnTargetCurrency;
+    public static String ColumnTargetCurrencyToolTip;
     public static String ColumnTargetValue;
     public static String ColumnTaxes;
     public static String ColumnTaxes_Description;
@@ -410,6 +413,7 @@ public class Messages extends NLS
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
     public static String LabelCurrencies;
+    public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
     public static String LabelDashboard;
     public static String LabelDataSeries;
@@ -420,6 +424,7 @@ public class Messages extends NLS
     public static String LabelError;
     public static String LabelExchange;
     public static String LabelExchangeRate;
+    public static String LabelExchangeRates;
     public static String LabelExport;
     public static String LabelFullClassification;
     public static String LabelIncludeSecuritiesInPieChart;
@@ -722,6 +727,8 @@ public class Messages extends NLS
     public static String SecurityFilterSharesHeldGreaterZero;
     public static String SecurityListFilter;
     public static String SecurityListFilterHideInactive;
+    public static String SecurityListFilterOnlyExchangeRates;
+    public static String SecurityListFilterOnlySecurities;
     public static String SecurityMenuAddNewSecurity;
     public static String SecurityMenuAddNewSecurityDescription;
     public static String SecurityMenuAddPrice;
@@ -737,6 +744,7 @@ public class Messages extends NLS
     public static String SecurityMenuExportCSV;
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
+    public static String SecurityMenuNewExchangeRate;
     public static String SecurityMenuNewSecurity;
     public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;

@@ -259,6 +259,14 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     protected DataBindingContext context = new DataBindingContext();
     protected ModelStatusListener status = new ModelStatusListener();
 
+    /**
+     * Because users can create multiple transactions within one dialog (using
+     * the 'Save & New' button), the return code of the dialog itself is of
+     * little use. This boolean property tracks if at least one successful edit
+     * happened (which would require the view to refresh / mark content dirty).
+     */
+    private boolean hasAtLeastOneSuccessfulEdit = false;
+
     public AbstractTransactionDialog(Shell parentShell)
     {
         super(parentShell);
@@ -268,6 +276,11 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     protected void setModel(AbstractModel model)
     {
         this.model = model;
+    }
+
+    public boolean hasAtLeastOneSuccessfulEdit()
+    {
+        return hasAtLeastOneSuccessfulEdit;
     }
 
     @Override
@@ -334,16 +347,21 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     protected void okPressed()
     {
         model.applyChanges();
+
+        hasAtLeastOneSuccessfulEdit = true;
+
         super.okPressed();
     }
 
     @Override
-    protected void buttonPressed(int buttonId)
+    protected final void buttonPressed(int buttonId)
     {
         if (buttonId == SAVE_AND_NEW_ID)
         {
             model.applyChanges();
             model.resetToNewTransaction();
+
+            hasAtLeastOneSuccessfulEdit = true;
 
             // clear error message because users will confuse it with the
             // previously (successfully created) transaction

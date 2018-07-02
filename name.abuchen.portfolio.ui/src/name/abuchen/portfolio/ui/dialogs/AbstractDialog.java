@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Shell;
         };
     }
 
+    @Override
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);
@@ -71,6 +72,7 @@ import org.eclipse.swt.widgets.Shell;
         return answer;
     }
 
+    @Override
     protected final Control createDialogArea(Composite parent)
     {
         Composite composite = (Composite) super.createDialogArea(parent);
