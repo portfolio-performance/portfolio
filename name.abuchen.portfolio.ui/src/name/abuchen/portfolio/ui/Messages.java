@@ -489,7 +489,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
-    public static String LabelDividendPerShare;
+    public static String LabelDividendPerShare;    
     public static String LabelDividends;
     public static String LabelDividendsByMonthAndVehicle;
     public static String LabelDividendsByYearAndVehicle;
@@ -681,7 +681,7 @@ public class Messages extends NLS
     public static String PDFImportWizardAssistant;
     public static String PDFImportWizardExtractor;
     public static String PDFImportDebugAuthor;
-    public static String PDFImportErrorParsingDocument;
+    public static String PDFImportErrorParsingDocument;  
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;
@@ -699,14 +699,10 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PrefAlphaVantageAPIKey;
-    public static String PrefKrakenAPIKey;
-    public static String PrefKrakenPrivateKey;
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionAlphaVantage;
-    public static String PrefDescriptionKraken;
     public static String PrefDescriptionProxy;
-    public static String PrefLabelKrakenAutoImport;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
@@ -721,7 +717,6 @@ public class Messages extends NLS
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
     public static String PrefTitleGeneral;
-    public static String PrefTitleKraken;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
