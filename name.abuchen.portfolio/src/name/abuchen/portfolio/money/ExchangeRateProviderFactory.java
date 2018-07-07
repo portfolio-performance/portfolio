@@ -17,8 +17,15 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventTopic;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityChangeEvent;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
@@ -28,6 +35,7 @@ import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 /**
  * A factory for {@link ExchangeRateProvider}s linked to a client.
  */
+@SuppressWarnings("restriction")
 public class ExchangeRateProviderFactory
 {
     private static class Dijkstra
@@ -163,6 +171,7 @@ public class ExchangeRateProviderFactory
     private final Client client;
     private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
 
+    @Inject
     public ExchangeRateProviderFactory(Client client)
     {
         this.client = client;
@@ -174,6 +183,16 @@ public class ExchangeRateProviderFactory
                             || (event.getNewValue() != null && ((Security) event.getNewValue()).isExchangeRate()))
                 clearCache();
         });
+    }
+
+    @Inject
+    @Optional
+    public void onSecurityEdited(@EventTopic(ChangeEventConstants.Security.EDITED) SecurityChangeEvent event)
+    {
+        // if the currency pair - base or term currency - is edited, we must
+        // clear the cache of resolved time series
+        if (event.appliesTo(client) && event.getSecurity().isExchangeRate())
+            clearCache();
     }
 
     /**

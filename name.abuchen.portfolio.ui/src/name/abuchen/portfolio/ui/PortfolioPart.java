@@ -328,7 +328,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
 
         // build factory for exchange rates
-        this.exchangeRateProviderFacory = new ExchangeRateProviderFactory(client);
+        this.exchangeRateProviderFacory = make(ExchangeRateProviderFactory.class);
         this.context.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
         
         new ConsistencyChecksJob(client, false).schedule(100);

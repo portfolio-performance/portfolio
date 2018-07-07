@@ -125,7 +125,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         private void openEditDialog(Security newSecurity)
         {
-            Dialog dialog = new EditSecurityDialog(getToolBar().getShell(), getClient(), newSecurity);
+            Dialog dialog = make(EditSecurityDialog.class, newSecurity);
 
             if (dialog.open() == Dialog.OK)
             {

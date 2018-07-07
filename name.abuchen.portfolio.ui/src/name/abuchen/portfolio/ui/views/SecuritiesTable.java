@@ -876,7 +876,7 @@ public final class SecuritiesTable implements ModificationListener
         @Override
         Dialog createDialog(Security security)
         {
-            return new EditSecurityDialog(getShell(), getClient(), security);
+            return view.make(EditSecurityDialog.class, security);
         }
 
         @Override
