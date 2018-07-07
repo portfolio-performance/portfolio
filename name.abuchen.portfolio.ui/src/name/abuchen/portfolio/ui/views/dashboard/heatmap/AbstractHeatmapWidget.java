@@ -6,6 +6,7 @@ import java.util.function.DoubleFunction;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -13,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
@@ -48,11 +50,8 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         table = new Composite(container, SWT.NONE);
-        // 13 columns, one for the legend and 12 for the months
         GridDataFactory.fillDefaults().grab(true, false).applyTo(table);
         table.setBackground(container.getBackground());
-
-        fillTable(table, resources);
 
         return container;
     }
@@ -74,33 +73,42 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
         GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
 
         model.getRows().forEach(row -> {
-            Cell cell = new Cell(table, new CellDataProvider(row.getLabel()));
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(cell);
+
+            Label label = new Label(table, SWT.CENTER);
+            label.setText(row.getLabel());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
 
             row.getData().forEach(data -> {
-                Cell dataCell = data == null ? new Cell(table, new CellDataProvider("")) //$NON-NLS-1$
-                                : new Cell(table, new CellDataProvider(coloring.apply(data), resources.getSmallFont(),
-                                                Values.PercentShort.format(data)));
-                gridData.applyTo(dataCell);
+                CLabel dataLabel = new CLabel(table, SWT.CENTER);
+
+                if (data != null)
+                {
+                    dataLabel.setText(Values.PercentShort.format(data));
+                    dataLabel.setBackground(coloring.apply(data));
+                    dataLabel.setFont(resources.getSmallFont());
+                }
+
+                gridData.applyTo(dataLabel);
 
                 if (model.getCellToolTip() != null)
-                    InfoToolTip.attach(dataCell, model.getCellToolTip());
+                    InfoToolTip.attach(dataLabel, model.getCellToolTip());
             });
         });
-
-        table.layout(true);
     }
 
     private void addHeaderRow(Composite table, HeatmapModel model)
     {
         // Top Left is empty
-        new Cell(table, new CellDataProvider("")); //$NON-NLS-1$
+        new Label(table, SWT.NONE);
 
         GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
         model.getHeader().forEach(label -> {
-            Cell cell = new Cell(table, new CellDataProvider(label));
-            gridData.applyTo(cell);
-            InfoToolTip.attach(cell, label);
+            CLabel l = new CLabel(table, SWT.CENTER);
+            l.setText(label);
+            l.setBackground(Colors.WHITE);
+
+            gridData.applyTo(l);
+            InfoToolTip.attach(l, label);
         });
     }
 
