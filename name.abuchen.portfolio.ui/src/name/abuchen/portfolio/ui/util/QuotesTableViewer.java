@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -8,6 +9,7 @@ import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -18,6 +20,7 @@ import org.eclipse.swt.widgets.Widget;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 
 public class QuotesTableViewer
 {
@@ -33,11 +36,16 @@ public class QuotesTableViewer
         table.setHeaderVisible(true);
         table.setLinesVisible(true);
 
-        TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
-        column.setText(Messages.ColumnDate);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
+        TableViewerColumn viewerColumn = new TableViewerColumn(tableViewer, SWT.NONE);
+        viewerColumn.getColumn().setText(Messages.ColumnDate);
+        layout.setColumnData(viewerColumn.getColumn(), new ColumnPixelData(80, true));
 
-        column = new TableColumn(tableViewer.getTable(), SWT.None);
+        // for sorting purposes: if the element is a string (i.e. an error
+        // message) then use the current date
+        ColumnViewerSorter.create(element -> element instanceof String ? LocalDate.now()
+                        : ((LatestSecurityPrice) element).getDate()).attachTo(tableViewer, viewerColumn, SWT.UP);
+
+        TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDaysHigh);
         column.setAlignment(SWT.RIGHT);
         layout.setColumnData(column, new ColumnPixelData(80, true));
@@ -115,7 +123,8 @@ public class QuotesTableViewer
                     case 0:
                         return Values.Date.format(p.getDate());
                     case 1:
-                        return p.getHigh() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getHigh());
+                        return p.getHigh() == LatestSecurityPrice.NOT_AVAILABLE ? null
+                                        : Values.Quote.format(p.getHigh());
                     case 2:
                         return p.getLow() == LatestSecurityPrice.NOT_AVAILABLE ? null : Values.Quote.format(p.getLow());
                     case 3:
