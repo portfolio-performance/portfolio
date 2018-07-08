@@ -10,6 +10,7 @@ import org.eclipse.jface.preference.PreferenceNode;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.preferences.APIKeysPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
@@ -31,7 +32,15 @@ public class OpenPreferenceDialogHandler
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".general", new GeneralPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".apikeys", new APIKeysPreferencePage())); //$NON-NLS-1$
 
-        PreferenceDialog dialog = new PreferenceDialog(shell, pm);
+        PreferenceDialog dialog = new PreferenceDialog(shell, pm)
+        {
+            @Override
+            protected void configureShell(Shell newShell)
+            {
+                super.configureShell(newShell);
+                newShell.setText(Messages.LabelSettings);
+            }
+        };
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
         dialog.create();
         dialog.getTreeViewer().setComparator(new ViewerComparator());
