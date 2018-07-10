@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.ToolItem;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -143,9 +144,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private class FilterDropDown extends AbstractDropDown
     {
-        private Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
-        private Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
-        private Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
+        private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
+        private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
+        private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
+        private final Predicate<Security> sharesGreaterZero = record -> getSharesHeld(getClient(), record) > 0;
+        private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
+        private Action aOnlySecurities;
+        private Action aOnlyExchangeRates;
+        private Action aSharesGreaterZero;
+        private Action aSharesEqualZero;
 
         public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
         {
@@ -161,13 +168,49 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                             e -> preferenceStore.setValue(this.getClass().getSimpleName() + "-hideInactiveSecurities", //$NON-NLS-1$
                                             filter.contains(securityIsNotInactive)));
         }
+        
+        /**
+         * Collects all shares held for the given security.
+         * 
+         * @param client
+         *            {@link Client}
+         * @param security
+         *            {@link Security}
+         * @return shares held on success, else 0
+         */
+        private long getSharesHeld(Client client, Security security)
+        {
+            // collect all shares and return a value greater 0
+            return Math.max(security.getTransactions(client).stream()
+                            .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
+                            .map(t -> (PortfolioTransaction) t.getTransaction()).map(t -> {
+                                switch (t.getType())
+                                {
+                                    case BUY:
+                                    case DELIVERY_INBOUND:
+                                        return t.getShares();
+                                    case SELL:
+                                    case DELIVERY_OUTBOUND:
+                                        return -t.getShares();
+                                    default:
+                                        return 0L;
+                                }
+                            }).mapToLong(Long::longValue).sum(), 0);
+        }
 
+        
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
-            manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
-            manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
+            aOnlySecurities=createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities);
+            manager.add(aOnlySecurities);
+            aOnlyExchangeRates=createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates);
+            manager.add(aOnlyExchangeRates);
+            aSharesGreaterZero=createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero);
+            manager.add(aSharesGreaterZero);
+            aSharesEqualZero=createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero);
+            manager.add(aSharesEqualZero);
         }
 
         private Action createAction(String label, Predicate<Security> predicate)
@@ -177,20 +220,48 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 @Override
                 public void run()
                 {
-                    boolean isChecked = filter.contains(predicate);
-
-                    if (isChecked)
-                        filter.remove(predicate);
-                    else
-                        filter.add(predicate);
-
-                    setChecked(!isChecked);
-                    getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+                    boolean checkAction = !filter.contains(predicate);
+                    // first check the action
+                    enableAction(this, predicate, checkAction);
+                    // then check for mutually exclusive actions
+                    if (checkAction)
+                    {
+                        if (this == aOnlySecurities)
+                        {
+                            enableAction(aOnlyExchangeRates, onlyExchangeRates, false);
+                        }
+                        else if (this == aOnlyExchangeRates)
+                        {
+                            enableAction(aOnlySecurities, onlySecurities, false);
+                        }
+                        else if (this == aSharesGreaterZero)
+                        {
+                            enableAction(aSharesEqualZero, sharesEqualZero, false);
+                        }
+                        else if (this == aSharesEqualZero)
+                        {
+                            enableAction(aSharesGreaterZero, sharesGreaterZero, false);
+                        }
+                    }
                     securities.refresh();
                 }
             };
             action.setChecked(filter.contains(predicate));
             return action;
+        }
+        
+        private void enableAction(Action action, Predicate<Security> predicate, boolean enable)
+        {
+            boolean isChecked = filter.contains(predicate);
+            if (isChecked != enable)
+            {
+                if (isChecked)
+                    filter.remove(predicate);
+                else
+                    filter.add(predicate);
+                action.setChecked(!isChecked);
+                getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+            }
         }
     }
 
