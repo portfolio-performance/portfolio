@@ -82,7 +82,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
         private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
                         + "\"color\":\"%s\"," //$NON-NLS-1$
-                        + "\"caption\":\"%s  %s  (%s)\"," //$NON-NLS-1$
+                        + "\"caption\":\"<b>%s</b> (%s)<br>%s x %s = %s\"," //$NON-NLS-1$
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
@@ -113,8 +113,10 @@ public class HoldingsPieChartView extends AbstractFinanceView
                                     joiner.add(String.format(ENTRY, name, //
                                                     p.getValuation().getAmount(), //
                                                     colors.next(), //
-                                                    name, Values.Money.format(p.getValuation()), percentage, //
-                                                    percentage));
+                                                    name, percentage, Values.Share.format(p.getPosition().getShares()), //
+                                                    Values.Money.format(p.getValuation().divide(
+                                                                    (long) (p.getPosition().getShares() / Values.Share.divider()))), //
+                                                    Values.Money.format(p.getValuation()), percentage));
                                 });
 
                 return joiner.toString();
