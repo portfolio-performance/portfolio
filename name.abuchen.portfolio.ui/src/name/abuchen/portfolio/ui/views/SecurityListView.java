@@ -203,13 +203,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
-            aOnlySecurities=createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities);
+            aOnlySecurities = createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities);
             manager.add(aOnlySecurities);
-            aOnlyExchangeRates=createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates);
+            aOnlyExchangeRates = createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates);
             manager.add(aOnlyExchangeRates);
-            aSharesGreaterZero=createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero);
+            aSharesGreaterZero = createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero);
             manager.add(aSharesGreaterZero);
-            aSharesEqualZero=createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero);
+            aSharesEqualZero = createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero);
             manager.add(aSharesEqualZero);
         }
 

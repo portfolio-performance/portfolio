@@ -90,8 +90,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 {
     private class FilterDropDown extends AbstractDropDown
     {
-        private Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
-        private Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
+        private final Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
+        private final Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
+        private Action aSharesGreaterZero;
+        private Action aSharesEqualZero;
 
         private ClientFilterMenu clientFilterMenu;
 
@@ -144,8 +146,10 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
-            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
-            manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+            aSharesGreaterZero = createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero);
+            manager.add(aSharesGreaterZero);
+            aSharesEqualZero = createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero);
+            manager.add(aSharesEqualZero);
 
             manager.add(new Separator());
             manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
@@ -159,22 +163,40 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 @Override
                 public void run()
                 {
-                    boolean isChecked = recordFilter.contains(predicate);
-
-                    if (isChecked)
-                        recordFilter.remove(predicate);
-                    else
-                        recordFilter.add(predicate);
-
-                    setChecked(!isChecked);
-                    getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
-                                    ? Images.FILTER_OFF.image()
-                                    : Images.FILTER_ON.image());
+                    boolean checkAction = !recordFilter.contains(predicate);
+                    // first check the action
+                    enableAction(this, predicate, checkAction);
+                    // then check for mutually exclusive actions
+                    if (checkAction)
+                    {
+                        if (this == aSharesGreaterZero)
+                        {
+                            enableAction(aSharesEqualZero, sharesEqualZero, false);
+                        }
+                        else if (this == aSharesEqualZero)
+                        {
+                            enableAction(aSharesGreaterZero, sharesGreaterZero, false);
+                        }
+                    }
                     records.refresh();
                 }
             };
             action.setChecked(recordFilter.contains(predicate));
             return action;
+        }
+        
+        private void enableAction(Action action, Predicate<SecurityPerformanceRecord> predicate, boolean enable)
+        {
+            boolean isChecked = recordFilter.contains(predicate);
+            if (isChecked != enable)
+            {
+                if (isChecked)
+                    recordFilter.remove(predicate);
+                else
+                    recordFilter.add(predicate);
+                action.setChecked(!isChecked);
+                getToolItem().setImage(recordFilter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
+            }
         }
     }
 
