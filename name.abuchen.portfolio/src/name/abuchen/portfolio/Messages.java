@@ -1,6 +1,10 @@
 package name.abuchen.portfolio;
 
+import java.text.SimpleDateFormat;
+
 import org.eclipse.osgi.util.NLS;
+
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 
 public class Messages extends NLS
 {
@@ -57,7 +61,9 @@ public class Messages extends NLS
     public static String CSVFormatDDMMYYYY1;
     public static String CSVFormatISO;
     public static String CSVFormatMMDDYY;
+    public static String CSVFormatMMDDYY1;
     public static String CSVFormatMMDDYYYY;
+    public static String CSVFormatMMDDYYYY1;
     public static String CSVFormatNumberGermany;
     public static String CSVFormatNumberUS;
     public static String CSVFormatYYYYMMDD;
