@@ -117,6 +117,15 @@ public abstract class CSVExtractor implements Extractor
         return BigDecimal.valueOf(num.doubleValue());
     }
 
+    protected final Long getLong(String name, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
+    {
+        String value = getText(name, rawValues, field2column);
+        if (value == null)
+            return null;
+        return Long.parseLong(value);
+    }
+
     protected final Long getShares(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
