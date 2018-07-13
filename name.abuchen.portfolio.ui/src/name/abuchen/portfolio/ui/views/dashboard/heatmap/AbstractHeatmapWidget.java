@@ -61,21 +61,15 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
 
     private void fillTable(HeatmapModel model, Composite table, DashboardResources resources)
     {
-        GridLayoutFactory.fillDefaults().numColumns(model.getHeaderSize() + 1).equalWidth(true).spacing(1, 1)
-                        .applyTo(table);
-
         addHeaderRow(table, model);
 
         DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
                         .buildColorFunction(resources.getResourceManager());
 
-        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
-
         model.getRows().forEach(row -> {
 
             Label label = new Label(table, SWT.CENTER);
             label.setText(row.getLabel());
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
 
             row.getData().forEach(data -> {
                 CLabel dataLabel = new CLabel(table, SWT.CENTER);
@@ -87,13 +81,17 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
                     dataLabel.setFont(resources.getSmallFont());
                 }
 
-                gridData.applyTo(dataLabel);
-
                 if (model.getCellToolTip() != null)
                     InfoToolTip.attach(dataLabel, model.getCellToolTip());
             });
         });
 
+        SimpleGridLayout layout = new SimpleGridLayout();
+        layout.setNumColumns(model.getHeaderSize() + 1);
+        layout.setNumRows((int) model.getRows().count() + 1);
+        layout.setRowHeight(table.getFont().getFontData()[0].getHeight() + 8);
+
+        table.setLayout(layout);
         table.layout(true);
     }
 
@@ -102,13 +100,11 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
         // Top Left is empty
         new Label(table, SWT.NONE);
 
-        GridDataFactory gridData = GridDataFactory.fillDefaults().grab(true, false).align(SWT.FILL, SWT.FILL);
         model.getHeader().forEach(label -> {
             CLabel l = new CLabel(table, SWT.CENTER);
             l.setText(label);
             l.setBackground(Colors.WHITE);
 
-            gridData.applyTo(l);
             InfoToolTip.attach(l, label);
         });
     }
