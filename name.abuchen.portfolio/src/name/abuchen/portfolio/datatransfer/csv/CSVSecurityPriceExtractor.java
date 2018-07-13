@@ -13,6 +13,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -25,6 +26,10 @@ import name.abuchen.portfolio.model.SecurityPrice;
         fields = new ArrayList<>();
         fields.add(new DateField(Messages.CSVColumn_Date));
         fields.add(new AmountField(Messages.CSVColumn_Quote));
+        // optional columns
+        fields.add(new AmountField(Messages.CSVColumn_High, true));
+        fields.add(new AmountField(Messages.CSVColumn_Low, true));
+        fields.add(new Field(Messages.CSVColumn_Volume, true));
     }
 
     @Override
@@ -74,6 +79,16 @@ import name.abuchen.portfolio.model.SecurityPrice;
         Long amount = getQuote(Messages.CSVColumn_Quote, rawValues, field2column);
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
+        
+        // collect optional columns
+        Long volume = getLong(Messages.CSVColumn_Volume, rawValues, field2column);
+        Long high = getQuote(Messages.CSVColumn_High, rawValues, field2column);
+        Long low = getQuote(Messages.CSVColumn_Low, rawValues, field2column);
+        
+        if ((volume != null) && (high != null) && (low != null))
+        {
+            return new LatestSecurityPrice(date.toLocalDate(), Math.abs(amount), high, low, volume);
+        }
 
         return new SecurityPrice(date.toLocalDate(), Math.abs(amount));
     }

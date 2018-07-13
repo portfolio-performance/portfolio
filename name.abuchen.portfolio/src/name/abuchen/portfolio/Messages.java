@@ -29,8 +29,10 @@ public class Messages extends NLS
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
     public static String CSVColumn_Fees;
+    public static String CSVColumn_High;
     public static String CSVColumn_InboundTransferals;
     public static String CSVColumn_ISIN;
+    public static String CSVColumn_Low;
     public static String CSVColumn_Quote;
     public static String CSVColumn_SecurityName;
     public static String CSVColumn_Shares;
@@ -38,6 +40,7 @@ public class Messages extends NLS
     public static String CSVColumn_TickerSymbol;
     public static String CSVColumn_Type;
     public static String CSVColumn_Value;
+    public static String CSVColumn_Volume;
     public static String CSVColumn_WKN;
     public static String CSVColumn_CumulatedPerformanceInPercent;
     public static String CSVColumn_Currency;

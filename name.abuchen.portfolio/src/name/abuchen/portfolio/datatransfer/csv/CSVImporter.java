@@ -128,6 +128,13 @@ public class CSVImporter
             this.normalizedName = normalizeColumnName(name);
         }
 
+        public Field(String name, boolean isOptional)
+        {
+            this.name = name;
+            this.normalizedName = normalizeColumnName(name);
+            this.isOptional = isOptional;
+        }
+
         public String getName()
         {
             return name;
@@ -221,6 +228,11 @@ public class CSVImporter
         /* package */ AmountField(String name)
         {
             super(name);
+        }
+
+        /* package */ AmountField(String name, boolean isOptional)
+        {
+            super(name, isOptional);
         }
     }
 
@@ -604,7 +616,9 @@ public class CSVImporter
                     sb.append("SS"); //$NON-NLS-1$
                     break;
                 case ' ':
-                    // strip whitespace
+                case '<':
+                case '>':
+                    // strip whitespace and brackets
                     break;
                 default:
                     sb.append(c);
