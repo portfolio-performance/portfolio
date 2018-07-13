@@ -17,12 +17,12 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSelectionDialog;
 
 public class DataSeriesConfig implements WidgetConfig
 {
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
     private final boolean supportsBenchmarks;
 
     private DataSeries dataSeries;
 
-    public DataSeriesConfig(WidgetDelegate delegate, boolean supportsBenchmarks)
+    public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
         this.delegate = delegate;
         this.supportsBenchmarks = supportsBenchmarks;
@@ -81,7 +81,8 @@ public class DataSeriesConfig implements WidgetConfig
         String label = WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " + dataSeries.getLabel(); //$NON-NLS-1$
         delegate.getWidget().setLabel(label);
 
-        delegate.getClient().markDirty();
+        delegate.update();
+        delegate.markDirty();
     }
 
     @Override

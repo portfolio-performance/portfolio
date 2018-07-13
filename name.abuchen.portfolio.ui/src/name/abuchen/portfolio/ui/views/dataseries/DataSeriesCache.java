@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -65,7 +66,7 @@ public class DataSeriesCache
     private final Client client;
     private final CurrencyConverter converter;
 
-    private final Map<CacheKey, PerformanceIndex> cache = new HashMap<>();
+    private final Map<CacheKey, PerformanceIndex> cache = Collections.synchronizedMap(new HashMap<>());
 
     @Inject
     public DataSeriesCache(Client client, ExchangeRateProviderFactory factory)
@@ -89,7 +90,7 @@ public class DataSeriesCache
         CacheKey key = new CacheKey(uuid, reportingPeriod);
 
         // #computeIfAbsent leads to a ConcurrentMapModificdation b/c #calculate
-        // might call #lookup to calculcate other cache entries
+        // might call #lookup to calculate other cache entries
         PerformanceIndex result = cache.get(key);
         if (result != null)
             return result;

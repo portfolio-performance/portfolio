@@ -19,11 +19,11 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class ExchangeRateSeriesConfig implements WidgetConfig
 {
-    private WidgetDelegate delegate;
+    private WidgetDelegate<?> delegate;
     private List<ExchangeRateTimeSeries> available;
     private ExchangeRateTimeSeries series;
 
-    public ExchangeRateSeriesConfig(WidgetDelegate delegate)
+    public ExchangeRateSeriesConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
 
@@ -58,7 +58,9 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
                 series = ts;
                 String code = ts.getBaseCurrency() + '/' + ts.getTermCurrency();
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.EXCHANGE_RATE_SERIES.name(), code);
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.markDirty();
             });
             action.setChecked(series.equals(ts));
             subMenu.add(action);

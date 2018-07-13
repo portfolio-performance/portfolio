@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -20,7 +21,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 
-public class PerformanceCalculationWidget extends WidgetDelegate
+public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerformanceSnapshot>
 {
     enum TableLayout
     {
@@ -42,7 +43,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate
 
     static class LayoutConfig extends EnumBasedConfig<TableLayout>
     {
-        public LayoutConfig(WidgetDelegate delegate)
+        public LayoutConfig(WidgetDelegate<?> delegate)
         {
             super(delegate, Messages.LabelLayout, TableLayout.class, Dashboard.Config.LAYOUT, Policy.EXACTLY_ONE);
         }
@@ -143,7 +144,17 @@ public class PerformanceCalculationWidget extends WidgetDelegate
     }
 
     @Override
-    public void update()
+    public Supplier<ClientPerformanceSnapshot> getUpdateTask()
+    {
+        return () -> {
+            PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
+                            get(ReportingPeriodConfig.class).getReportingPeriod());
+            return index.getClientPerformanceSnapshot();
+        };
+    }
+
+    @Override
+    public void update(ClientPerformanceSnapshot snapshot)
     {
         TableLayout layout = get(LayoutConfig.class).getValue();
 
@@ -160,10 +171,6 @@ public class PerformanceCalculationWidget extends WidgetDelegate
         }
 
         title.setText(getWidget().getLabel());
-
-        PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
-                        get(ReportingPeriodConfig.class).getReportingPeriod());
-        ClientPerformanceSnapshot snapshot = index.getClientPerformanceSnapshot();
 
         switch (layout)
         {

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.util.List;
 import java.util.function.DoubleFunction;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -21,7 +22,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 
-public abstract class AbstractHeatmapWidget extends WidgetDelegate
+public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
 {
     private Composite table;
     private Label title;
@@ -58,10 +59,8 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
 
     protected abstract HeatmapModel build();
 
-    private void fillTable(Composite table, DashboardResources resources)
+    private void fillTable(HeatmapModel model, Composite table, DashboardResources resources)
     {
-        HeatmapModel model = build();
-
         GridLayoutFactory.fillDefaults().numColumns(model.getHeaderSize() + 1).equalWidth(true).spacing(1, 1)
                         .applyTo(table);
 
@@ -94,6 +93,8 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
                     InfoToolTip.attach(dataLabel, model.getCellToolTip());
             });
         });
+
+        table.layout(true);
     }
 
     private void addHeaderRow(Composite table, HeatmapModel model)
@@ -113,16 +114,21 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate
     }
 
     @Override
-    public void update()
+    public Supplier<HeatmapModel> getUpdateTask()
+    {
+        return this::build;
+    }
+
+    @Override
+    public void update(HeatmapModel model)
     {
         title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
 
         for (Control child : table.getChildren())
             child.dispose();
 
-        fillTable(table, resources);
+        fillTable(model, table, resources);
 
-        table.getParent().layout(true);
         table.getParent().getParent().layout(true);
     }
 

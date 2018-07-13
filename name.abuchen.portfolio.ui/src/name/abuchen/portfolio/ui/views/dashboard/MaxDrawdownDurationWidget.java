@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.function.Supplier;
 
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -12,7 +13,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.util.Interval;
 
-public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
+public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<PerformanceIndex>
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());
@@ -23,13 +24,17 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget
     }
 
     @Override
-    public void update()
+    public Supplier<PerformanceIndex> getUpdateTask()
     {
-        super.update();
+        return () -> getDashboardData().getDataSeriesCache() //
+                        .lookup(get(DataSeriesConfig.class).getDataSeries(),
+                                        get(ReportingPeriodConfig.class).getReportingPeriod());
+    }
 
-        PerformanceIndex index = getDashboardData().getDataSeriesCache().lookup(
-                        get(DataSeriesConfig.class).getDataSeries(),
-                        get(ReportingPeriodConfig.class).getReportingPeriod());
+    @Override
+    public void update(PerformanceIndex index)
+    {
+        super.update(index);
 
         Drawdown drawdown = index.getDrawdown();
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();

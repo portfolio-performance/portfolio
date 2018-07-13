@@ -660,6 +660,7 @@ public class Messages extends NLS
     public static String MsgRestartRequired;
     public static String MsgUpdateNewInVersionX;
     public static String MsgUpdateRequiresLatestJavaVersion;
+    public static String MsgUpdatingDashboardData;
     public static String MsgUpdatingExchangeRates;
     public static String NewFileWizardAccountDescription;
     public static String NewFileWizardAccountTitle;

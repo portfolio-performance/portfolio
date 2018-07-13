@@ -65,8 +65,7 @@ public class ExchangeRate implements Comparable<ExchangeRate>
 
     public ExchangeRate inverse()
     {
-        BigDecimal inverse = BigDecimal.ONE.divide(value, 10, BigDecimal.ROUND_HALF_DOWN);
-        return new ExchangeRate(time, inverse);
+        return new ExchangeRate(time, inverse(value));
     }
 
     @Override

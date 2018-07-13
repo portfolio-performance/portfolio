@@ -1,11 +1,18 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
@@ -38,8 +45,11 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.ui.AbstractClientJob;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
@@ -183,6 +193,9 @@ public class DashboardView extends AbstractHistoricView
     @Inject
     private IPreferenceStore preferences;
 
+    @Inject
+    private UISynchronize sync;
+
     private DashboardResources resources;
     private Composite container;
     private ToolBar toolBar;
@@ -206,7 +219,8 @@ public class DashboardView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        this.dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        this.dashboardData.clearResultCache();
         updateWidgets();
     }
 
@@ -259,7 +273,7 @@ public class DashboardView extends AbstractHistoricView
                                 action.setChecked(d.equals(dashboard));
                                 manager.add(action);
                             }));
-            
+
             // attach one dashboard to the tool item so that the tool item is
             // removed before re-creation
             dropdown.getToolItem().setData(dashboards[0]);
@@ -407,9 +421,9 @@ public class DashboardView extends AbstractHistoricView
         return columnControl;
     }
 
-    private WidgetDelegate buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
     {
-        WidgetDelegate delegate = widgetType.create(widget, dashboardData);
+        WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
 
         Composite element = delegate.createControl(columnControl, resources);
         element.setData(widget);
@@ -431,14 +445,14 @@ public class DashboardView extends AbstractHistoricView
         return delegate;
     }
 
-    private String buildToolTip(WidgetDelegate delegate)
+    private String buildToolTip(WidgetDelegate<?> delegate)
     {
         StringJoiner text = new StringJoiner("\n"); //$NON-NLS-1$
         delegate.getWidgetConfigs().forEach(c -> text.add(c.getLabel()));
         return text.toString();
     }
 
-    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
+    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate<?> delegate)
     {
         manager.add(new Separator(INFO_MENU_GROUP_NAME));
         manager.add(new Separator("edit")); //$NON-NLS-1$
@@ -463,7 +477,7 @@ public class DashboardView extends AbstractHistoricView
         }));
     }
 
-    private Composite findCompositeFor(WidgetDelegate delegate)
+    private Composite findCompositeFor(WidgetDelegate<?> delegate)
     {
         for (Control column : container.getChildren())
         {
@@ -507,14 +521,67 @@ public class DashboardView extends AbstractHistoricView
 
     private void updateWidgets()
     {
+        // use currentCache for updating the existing results of the tasks and
+        // calculating new ones
+        Map<Widget, Object> currentCache = this.dashboardData.getResultCache();
+
+        Map<WidgetDelegate<Object>, Supplier<Object>> tasks = new HashMap<>();
         for (Control column : container.getChildren())
         {
             for (Control child : ((Composite) column).getChildren())
             {
-                WidgetDelegate delegate = (WidgetDelegate) child.getData(DELEGATE_KEY);
+                @SuppressWarnings("unchecked")
+                WidgetDelegate<Object> delegate = (WidgetDelegate<Object>) child.getData(DELEGATE_KEY);
                 if (delegate != null)
-                    delegate.update();
+                {
+                    Object data = currentCache.get(delegate.getWidget());
+
+                    if (DashboardData.EMPTY_RESULT.equals(data))
+                        delegate.update(null);
+                    else if (data != null)
+                        delegate.update(data);
+                    else
+                        tasks.put(delegate, delegate.getUpdateTask());
+                }
             }
+        }
+
+        if (!tasks.isEmpty())
+        {
+            new AbstractClientJob(getClient(), Messages.MsgUpdatingDashboardData)
+            {
+                @Override
+                protected IStatus run(IProgressMonitor monitor)
+                {
+                    Map<WidgetDelegate<Object>, Object> data = new HashMap<>();
+
+                    for (Map.Entry<WidgetDelegate<Object>, Supplier<Object>> task : tasks.entrySet())
+                    {
+                        try
+                        {
+                            data.put(task.getKey(), task.getValue().get());
+                        }
+                        catch (Exception e)
+                        {
+                            // continue calculating the dashboard data
+                            PortfolioPlugin.log(e);
+                        }
+                    }
+
+                    sync.asyncExec(() -> data.entrySet().stream()
+                                    .filter(entry -> !entry.getKey().getTitleControl().isDisposed()).forEach(entry -> {
+                                        entry.getKey().update(entry.getValue());
+
+                                        if (entry.getValue() == null)
+                                            currentCache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
+                                        else
+                                            currentCache.put(entry.getKey().getWidget(), entry.getValue());
+                                    }));
+
+                    return Status.OK_STATUS;
+                }
+
+            }.schedule();
         }
     }
 
@@ -605,7 +672,7 @@ public class DashboardView extends AbstractHistoricView
         widget.setType(widgetType.name());
         column.getWidgets().add(widget);
 
-        WidgetDelegate delegate = buildDelegate(columnControl, widgetType, widget);
+        WidgetDelegate<?> delegate = buildDelegate(columnControl, widgetType, widget);
 
         markDirty();
         delegate.update();

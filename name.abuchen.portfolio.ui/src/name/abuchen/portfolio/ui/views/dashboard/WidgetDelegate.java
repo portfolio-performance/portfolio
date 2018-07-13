@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.swt.widgets.Composite;
@@ -10,7 +11,11 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 
-public abstract class WidgetDelegate
+/**
+ * Base UI class for a widget. <D> represents the data object which is
+ * calculated in the background and passed back into the {@link #update} method.
+ */
+public abstract class WidgetDelegate<D>
 {
     private final Dashboard.Widget widget;
     private final DashboardData data;
@@ -57,7 +62,31 @@ public abstract class WidgetDelegate
 
     public abstract Composite createControl(Composite parent, DashboardResources resources);
 
-    public abstract void update();
+    /**
+     * Marks the file as dirty <b>without</b> triggering an update.
+     */
+    public final void markDirty()
+    {
+        getDashboardData().markDirty();
+    }
+
+    /**
+     * Immediately updates the widget with the data of the update task. Calls
+     * first {@link #getUpdateTask} and then {@link #update(D)}. Updates the
+     * result cache.
+     */
+    public final void update()
+    {
+        D result = getUpdateTask().get();
+
+        data.getResultCache().put(widget, result != null ? result : DashboardData.EMPTY_RESULT);
+
+        update(result);
+    }
+
+    public abstract Supplier<D> getUpdateTask();
+
+    public abstract void update(D data);
 
     /**
      * Returns the title control to which context menu and default tooltip are

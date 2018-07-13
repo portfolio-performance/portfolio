@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -13,7 +14,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 
-public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
+public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N>
 {
     public static class Builder<N extends Number>
     {
@@ -123,12 +124,17 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
     }
 
     @Override
-    public void update()
+    public Supplier<N> getUpdateTask()
     {
-        super.update();
-
-        N value = provider.apply(get(DataSeriesConfig.class).getDataSeries(),
+        return () -> provider.apply(get(DataSeriesConfig.class).getDataSeries(),
                         get(ReportingPeriodConfig.class).getReportingPeriod());
+    }
+
+    @Override
+    public void update(N value)
+    {
+        super.update(value);
+
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
