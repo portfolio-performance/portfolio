@@ -106,7 +106,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     {
         final Long secondsPerDay = 24L * 60 * 60;
         final Long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
-        try (CloseableHttpClient client = HttpClients.createDefault())
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
             String olhcUrl = MessageFormat.format(QUOTE_URL,
                             URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()),
