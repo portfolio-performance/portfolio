@@ -252,6 +252,6 @@ public class WelcomePart
         Composite parent = recentFilesComposite.getParent();
         recentFilesComposite.dispose();
         createRecentFilesComposite(parent);
-        recentFilesComposite.getParent().getParent().layout(true);
+        recentFilesComposite.getParent().layout(true);
     }
 }
