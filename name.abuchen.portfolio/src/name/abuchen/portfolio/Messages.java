@@ -1,10 +1,6 @@
 package name.abuchen.portfolio;
 
-import java.text.SimpleDateFormat;
-
 import org.eclipse.osgi.util.NLS;
-
-import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 
 public class Messages extends NLS
 {
