@@ -16,3 +16,4 @@ Require-Bundle: org.junit;bundle-version="4.11.0",
  org.apache.servicemix.bundles.xpp3;bundle-version="1.1.4",
  org.apache.commons.logging;bundle-version="1.1.1"
 Automatic-Module-Name: name.abuchen.portfolio.ui.tests
+Import-Package: name.abuchen.portfolio

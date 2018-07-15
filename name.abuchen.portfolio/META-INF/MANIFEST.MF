@@ -47,3 +47,4 @@ Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.apache.httpcomponents.httpclient;bundle-version="4.3.6",
  org.apache.httpcomponents.httpcore;bundle-version="4.3.3"
 Automatic-Module-Name: name.abuchen.portfolio
+Eclipse-ExtensibleAPI: true
