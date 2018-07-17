@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.update;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.Locale;
 
 import org.eclipse.core.runtime.CoreException;
@@ -14,12 +15,16 @@ import org.eclipse.core.runtime.SubMonitor;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.repository.IRepositoryManager;
+import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
+import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -180,7 +185,8 @@ public class UpdateHelper
     {
         ProvisioningSession session = new ProvisioningSession(agent);
         operation = new UpdateOperation(session);
-        configureUpdateOperation(operation);
+
+        configureRepositories(monitor);
 
         IStatus status = operation.resolveModal(monitor);
 
@@ -218,7 +224,7 @@ public class UpdateHelper
         }
     }
 
-    private void configureUpdateOperation(UpdateOperation operation)
+    private void configureRepositories(IProgressMonitor monitor) throws OperationCanceledException
     {
         try
         {
@@ -226,11 +232,26 @@ public class UpdateHelper
                             .getString(UIConstants.Preferences.UPDATE_SITE);
             URI uri = new URI(updateSite);
 
-            operation.getProvisioningContext().setArtifactRepositories(uri);
-            operation.getProvisioningContext().setMetadataRepositories(uri);
+            IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
+            IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
 
+            // remove all repos, this is important if the update site in preferences has been changed
+            final URI[] metaReposToClean = manager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
+            Arrays.stream(metaReposToClean).forEach(uriToMetaRepo -> manager.removeRepository(uriToMetaRepo));
+            final URI[] artifactReposToClean = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
+            Arrays.stream(artifactReposToClean).forEach(uriToArtifactRepo -> artifactManager.removeRepository(uriToArtifactRepo));
+
+            manager.addRepository(uri);
+            artifactManager.addRepository(uri);
+
+            // Working around bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=520461
+            // by forcing a refresh of the repositories.
+            // p2 never tries to reconnect if a connection timeout happened like described in 
+            // https://github.com/buchen/portfolio/issues/578#issuecomment-251653225
+            manager.refreshRepository(uri, monitor);
+            artifactManager.refreshRepository(uri, monitor);
         }
-        catch (final URISyntaxException e)
+        catch (final URISyntaxException | ProvisionException e)
         {
             PortfolioPlugin.log(e);
         }
