@@ -114,8 +114,9 @@ public class HoldingsPieChartView extends AbstractFinanceView
                                                     p.getValuation().getAmount(), //
                                                     colors.next(), //
                                                     name, percentage, Values.Share.format(p.getPosition().getShares()), //
-                                                    Values.Money.format(p.getValuation().divide(
-                                                                    (long) (p.getPosition().getShares() / Values.Share.divider()))), //
+                                                    Values.Money.format(p.getValuation()
+                                                                    .multiply((long) Values.Share.divider())
+                                                                    .divide((long) (p.getPosition().getShares()))), //
                                                     Values.Money.format(p.getValuation()), percentage));
                                 });
 
