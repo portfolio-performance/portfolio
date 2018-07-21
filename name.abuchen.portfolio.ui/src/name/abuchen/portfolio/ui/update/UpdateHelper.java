@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.update;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
@@ -12,6 +13,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
@@ -26,7 +28,9 @@ import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -35,35 +39,29 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
-public class UpdateHelper
+public final class UpdateHelper
 {
+    private interface Task
+    {
+        public void run(IProgressMonitor monitor) throws CoreException;
+    }
+
     private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
 
     private final IWorkbench workbench;
     private final EPartService partService;
-    private final IProvisioningAgent agent;
+    private IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper(IWorkbench workbench, EPartService partService) throws CoreException
+    public UpdateHelper(IWorkbench workbench, EPartService partService)
     {
         this.workbench = workbench;
         this.partService = partService;
-        
-        this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
-        if (agent == null)
-        {
-            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
-            throw new CoreException(status);
-        }
+    }
 
-        IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-
-        IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
-        if (profile == null)
-        {
-            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
-            throw new CoreException(status);
-        }
+    public void runUpdateWithUIMonitor()
+    {
+        runWithUIMonitor(monitor -> runUpdate(monitor, false));
     }
 
     public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
@@ -71,6 +69,8 @@ public class UpdateHelper
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
 
         checkForLetsEncryptRootCertificate(silent);
+
+        configureProvisioningAgent();
 
         final NewVersion newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
@@ -87,8 +87,22 @@ public class UpdateHelper
 
             if (doUpdate[0])
             {
-                runUpdateOperation(sub.newChild(100));
-                promptForRestart();
+                if (silent)
+                {
+                    // if the update check was started silently in the
+                    // background, but the user has chosen to update, show a
+                    // meaningful progress monitor
+
+                    runWithUIMonitor(m -> {
+                        runUpdateOperation(m);
+                        promptForRestart();
+                    });
+                }
+                else
+                {
+                    runUpdateOperation(sub.newChild(100));
+                    promptForRestart();
+                }
             }
         }
         else
@@ -155,30 +169,44 @@ public class UpdateHelper
 
     private void promptForRestart()
     {
-        Display.getDefault().asyncExec(() -> {
-            MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo, null,
-                            Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
-                            new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+        // start a new job before prompting to restart the application to allow
+        // the UI progress monitor to complete. Otherwise the open dialog will
+        // prevent the automatic restart.
 
-            int returnCode = dialog.open();
-
-            if (returnCode == 0)
+        new Job(Messages.JobMsgCheckingForUpdates)
+        {
+            @Override
+            protected IStatus run(IProgressMonitor monitor)
             {
-                try
-                {
-                    boolean successful = partService.saveAll(true);
+                Display.getDefault().asyncExec(() -> {
+                    MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
+                                    null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
+                                    new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
 
-                    if (successful)
-                        workbench.restart();
-                }
-                catch (IllegalStateException e)
-                {
-                    PortfolioPlugin.log(e);
-                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                                    Messages.MsgCannotRestartBecauseOfOpenDialog);
-                }
+                    int returnCode = dialog.open();
+
+                    if (returnCode == 0)
+                    {
+                        try
+                        {
+                            boolean successful = partService.saveAll(true);
+
+                            if (successful)
+                                workbench.restart();
+                        }
+                        catch (IllegalStateException e)
+                        {
+                            PortfolioPlugin.log(e);
+                            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                            Messages.MsgCannotRestartBecauseOfOpenDialog);
+                        }
+                    }
+                });
+
+                return Status.OK_STATUS;
             }
-        });
+
+        }.schedule(500);
     }
 
     private NewVersion checkForUpdates(IProgressMonitor monitor) throws CoreException
@@ -224,7 +252,26 @@ public class UpdateHelper
         }
     }
 
-    private void configureRepositories(IProgressMonitor monitor) throws OperationCanceledException
+    private void configureProvisioningAgent() throws CoreException
+    {
+        this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        if (agent == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
+
+        IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
+
+        IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
+        if (profile == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
+    }
+
+    private void configureRepositories(IProgressMonitor monitor)
     {
         try
         {
@@ -237,9 +284,9 @@ public class UpdateHelper
 
             // remove all repos, this is important if the update site in preferences has been changed
             final URI[] metaReposToClean = manager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
-            Arrays.stream(metaReposToClean).forEach(uriToMetaRepo -> manager.removeRepository(uriToMetaRepo));
+            Arrays.stream(metaReposToClean).forEach(manager::removeRepository);
             final URI[] artifactReposToClean = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
-            Arrays.stream(artifactReposToClean).forEach(uriToArtifactRepo -> artifactManager.removeRepository(uriToArtifactRepo));
+            Arrays.stream(artifactReposToClean).forEach(artifactManager::removeRepository);
 
             manager.addRepository(uri);
             artifactManager.addRepository(uri);
@@ -280,5 +327,36 @@ public class UpdateHelper
         Object result = context.getService(reference);
         context.ungetService(reference);
         return type.cast(result);
+    }
+
+    private void runWithUIMonitor(Task task)
+    {
+        Display.getDefault().syncExec(() -> {
+            try
+            {
+                new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, m -> {
+                    try
+                    {
+                        task.run(m);
+                    }
+                    catch (CoreException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        Display.getDefault()
+                                        .asyncExec(() -> ErrorDialog.openError(Display.getDefault().getActiveShell(),
+                                                        Messages.LabelError, Messages.MsgErrorUpdating, e.getStatus()));
+                    }
+                });
+            }
+            catch (InvocationTargetException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+            catch (InterruptedException e)
+            {
+                PortfolioPlugin.log(e);
+                Thread.currentThread().interrupt();
+            }
+        });
     }
 }
