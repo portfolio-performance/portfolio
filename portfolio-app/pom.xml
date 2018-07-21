@@ -14,7 +14,7 @@
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>1.1.0</tycho-version>
+		<tycho-version>1.2.0</tycho-version>
 		<!-- jarsigner 1.4 does not support the certchain attribute (needed b/c 
 			the hardware token does not contain the whole certificate chain). Using the 
 			1.5-SNAPSHOT build which supports the argument since Aug 2017 -->
