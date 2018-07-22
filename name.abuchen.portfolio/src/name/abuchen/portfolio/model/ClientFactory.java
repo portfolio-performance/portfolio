@@ -59,6 +59,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
+import name.abuchen.portfolio.util.OnlineStateConverter;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.XStreamLocalDateConverter;
 import name.abuchen.portfolio.util.XStreamLocalDateTimeConverter;
@@ -561,6 +562,8 @@ public class ClientFactory
                 // added flag to auto-generate tx from investment plan
             case 36:
                 // converted from LocalDate to LocalDateTime
+            case 37:
+                // added online uuid
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1056,6 +1059,8 @@ public class ClientFactory
             xstream.registerConverter(new XStreamLocalDateTimeConverter());
             xstream.registerConverter(
                             new PortfolioTransactionConverter(xstream.getMapper(), xstream.getReflectionProvider()));
+
+            xstream.registerConverter(new OnlineStateConverter());
 
             xstream.useAttributeFor(Money.class, "amount");
             xstream.useAttributeFor(Money.class, "currencyCode");

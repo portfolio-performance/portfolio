@@ -59,6 +59,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_szYKIBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatequotes" label="%command.updateQuotes.name" tooltip="%command.updateQuotes.tooltip" command="_tukxoBiQEeOR1rNFCzC82A"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_zGsiUBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatehistoricquotes" label="%command.updateHistoricQuotes.name" tooltip="%command.updateHistoricQuotes.tooltip" command="_HOmZcLEKEeefXq-wtldCQQ"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_2MwUUBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatecpi" label="%command.updateCPI.name" tooltip="%command.updateCPI.tooltip" command="_LwwoUBiQEeOR1rNFCzC82A"/>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_ulmvQCf1Eee8KN8BYdqnew" elementId="name.abuchen.portfolio.bootstrap.menuseparator.4"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_vYu1UCf1Eee8KN8BYdqnew" elementId="name.abuchen.portfolio.ui.menu.online.syncmasterdata" label="%command.syncmasterdata.name" command="_HGPMcCf2Eee8KN8BYdqnew"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
@@ -117,6 +119,7 @@
   <handlers xmi:id="_1vwOoGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.handler.closeFileHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CloseFileHandler" command="_nzlOsGzxEeapdeFYfst3DA"/>
   <handlers xmi:id="_STacIHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.handler.forceClearPersistedStateHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ForceClearPersistedStateHandler" command="_aOrCgHJzEeaMJYqdyBIeUw"/>
   <handlers xmi:id="_9nve4Bk-EeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.ui.handler.openBookmarksMenu" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenBookmarksHandler" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
+  <handlers xmi:id="_eRFicCf2Eee8KN8BYdqnew" elementId="name.abuchen.portfolio.ui.handler.syncMasterDataHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SyncMasterDataHandler" command="_HGPMcCf2Eee8KN8BYdqnew"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -182,6 +185,7 @@
   <commands xmi:id="_nzlOsGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.command.closeFile" commandName="closeFileCommand"/>
   <commands xmi:id="_aOrCgHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.command.forceClearPersistedState" commandName="forceClearPersistedStateCommand"/>
   <commands xmi:id="_3ylCUBk-EeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.ui.command.openBookmarksMenu" commandName="openBookmarksMenu"/>
+  <commands xmi:id="_HGPMcCf2Eee8KN8BYdqnew" elementId="name.abuchen.portfolio.ui.command.syncMasterData" commandName="syncMasterData"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

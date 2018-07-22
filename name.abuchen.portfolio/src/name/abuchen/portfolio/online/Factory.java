@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ServiceLoader;
 
-public class Factory
+public final class Factory
 {
     private static final List<QuoteFeed> FEEDS;
     private static final List<SecuritySearchProvider> SEARCH;
