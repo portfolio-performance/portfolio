@@ -69,16 +69,32 @@ public class StatementOfAssetsView extends AbstractFinanceView
             @Override
             public void menuAboutToShow(IMenuManager manager)
             {
+                // put list of favorite units on top
+                List<CurrencyUnit> allUnits = getClient().getUsedCurrencies();
+                // add a separator marker
+                allUnits.add(null);
+                // then all available units
                 List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
                 Collections.sort(available);
-                for (final CurrencyUnit unit : available)
+                allUnits.addAll(available);
+                // now show the list
+                for (final CurrencyUnit unit : allUnits)
                 {
-                    Action action = new SimpleAction(unit.getLabel(), a -> {
-                        setLabel(unit.getCurrencyCode());
-                        getClient().setBaseCurrency(unit.getCurrencyCode());
-                    });
-                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
-                    manager.add(action);
+                    // is this a unit or a separator?
+                    if (unit != null)
+                    {
+                        Action action = new SimpleAction(unit.getLabel(), a -> {
+                            setLabel(unit.getCurrencyCode());
+                            getClient().setBaseCurrency(unit.getCurrencyCode());
+                        });
+                        action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+                        manager.add(action);
+                    }
+                    else
+                    {
+                        // add a separator
+                        manager.add(new Separator());
+                    }
                 }
             }
         };
