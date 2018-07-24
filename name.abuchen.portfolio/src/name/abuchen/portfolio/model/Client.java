@@ -203,10 +203,6 @@ public class Client
         for (Account account : accounts)
         {
             hsUsedCodes.add(account.getCurrencyCode());
-            for (AccountTransaction t : account.getTransactions())
-            {
-                hsUsedCodes.add(t.getCurrencyCode());
-            }
         }
         // then portfolios
         for (Portfolio portfolio : portfolios)
