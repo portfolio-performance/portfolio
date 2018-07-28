@@ -25,4 +25,9 @@ public abstract class BaseURL implements VariableURL
     {
         this.security = security;
     }
+
+    public Security getSecurity()
+    {
+        return security;
+    }
 }

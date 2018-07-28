@@ -77,7 +77,7 @@ public class DateIterator implements Iterator<String>
             }
             else
             {
-                result.append(macro.resolve());
+                result.append(macro.resolve(url.getSecurity()));
             }
         }
 

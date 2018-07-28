@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.online.impl.variableurl;
 
 import name.abuchen.portfolio.online.impl.variableurl.macros.ConstString;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Currency;
 import name.abuchen.portfolio.online.impl.variableurl.macros.FormattedDate;
+import name.abuchen.portfolio.online.impl.variableurl.macros.ISIN;
 import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 import name.abuchen.portfolio.online.impl.variableurl.macros.PageNumber;
+import name.abuchen.portfolio.online.impl.variableurl.macros.TickerSymbol;
+import name.abuchen.portfolio.online.impl.variableurl.macros.WKN;
 import name.abuchen.portfolio.online.impl.variableurl.urls.ConstURL;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 
@@ -23,7 +27,14 @@ public class Factory
     }
 
     private static final Pattern URL_MACRO_ABSTRACT = Pattern.compile("\\{(.*?)}"); //$NON-NLS-1$
-    private static final Collection<MacroParser> MACRO_PARSERS = Arrays.asList(FormattedDate::new, PageNumber::new);
+    private static final Collection<MacroParser> MACRO_PARSERS = Arrays.asList(
+        FormattedDate::new,
+        PageNumber::new,
+        ISIN::new,
+        WKN::new,
+        TickerSymbol::new,
+        Currency::new
+    );
 
     private Factory()
     {}

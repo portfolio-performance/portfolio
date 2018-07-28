@@ -3,19 +3,18 @@ package name.abuchen.portfolio.online.impl.variableurl.macros;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.variableurl.VariableURLConstructor;
 
-public class ConstString implements Macro
+public class ISIN implements Macro
 {
-    private CharSequence string;
-
-    public ConstString(CharSequence string)
+    public ISIN(CharSequence input)
     {
-        this.string = string;
+        if (!"ISIN".equals(input))
+            throw new IllegalArgumentException("Bad ISIN macro: " + input);
     }
 
     @Override
     public CharSequence resolve(Security security)
     {
-        return string;
+        return security.getIsin();
     }
 
     @Override

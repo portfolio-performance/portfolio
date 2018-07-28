@@ -29,13 +29,23 @@ public class ConstStringTest
         List<String> variations = new LinkedList<>();
         Iterators.limit(getURL().iterator(), 2).forEachRemaining(variations::add);
 
-        assertThat(variations, equalTo(Collections.singletonList("https://192.0.2.1/quotes.php")));
+        assertThat(variations, equalTo(Collections.singletonList(
+            "https://192.0.2.1/quotes.php?isin=DE0007100000&wkn=710000&ticker=DAI.DE&currency=EUR"
+        )));
     }
 
     private VariableURL getURL()
     {
-        VariableURL variableURL = Factory.fromString("https://192.0.2.1/quotes.php");
-        variableURL.setSecurity(new Security());
+        Security security = new Security();
+        security.setIsin("DE0007100000");
+        security.setWkn("710000");
+        security.setTickerSymbol("DAI.DE");
+        security.setCurrencyCode("EUR");
+
+        VariableURL variableURL = Factory.fromString(
+            "https://192.0.2.1/quotes.php?isin={ISIN}&wkn={WKN}&ticker={TICKER}&currency={CURRENCY}"
+        );
+        variableURL.setSecurity(security);
         return variableURL;
     }
 }

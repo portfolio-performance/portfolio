@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.online.impl.variableurl.macros;
 
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.variableurl.VariableURLConstructor;
 import name.abuchen.portfolio.online.impl.variableurl.urls.DateURL;
 
@@ -32,7 +33,7 @@ public class FormattedDate implements Macro
     }
 
     @Override
-    public CharSequence resolve() throws UnsupportedOperationException
+    public CharSequence resolve(Security security) throws UnsupportedOperationException
     {
         throw new UnsupportedOperationException();
     }

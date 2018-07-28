@@ -26,7 +26,7 @@ public class ConstURL extends BaseURL
 
         for (Macro macro : macros)
         {
-            result.append(macro.resolve());
+            result.append(macro.resolve(security));
         }
 
         return Collections.singletonList(result.toString()).iterator();
