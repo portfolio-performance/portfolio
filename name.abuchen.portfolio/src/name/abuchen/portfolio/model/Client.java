@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -186,6 +187,49 @@ public class Client
         securities.remove(security);
 
         propertyChangeSupport.firePropertyChange("securities", security, null); //$NON-NLS-1$
+    }
+    
+    /**
+     * Gets a list of used {@link CurrencyUnit}s.
+     * 
+     * @return list
+     */
+    public List<CurrencyUnit> getUsedCurrencies()
+    {
+        // collect all used currency codes
+        HashSet<String> hsUsedCodes = new HashSet<String>();
+        // first client and all accounts
+        hsUsedCodes.add(baseCurrency);
+        for (Account account : accounts)
+        {
+            hsUsedCodes.add(account.getCurrencyCode());
+        }
+        // then portfolios
+        for (Portfolio portfolio : portfolios)
+        {
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                hsUsedCodes.add(t.getCurrencyCode());
+            }
+        }
+        // then from all securities
+        for (Security security : securities)
+        {
+            hsUsedCodes.add(security.getCurrencyCode());
+        }
+        // now get the currency units
+        List<CurrencyUnit> lUnits = new ArrayList<CurrencyUnit>();
+        for (String code : hsUsedCodes)
+        {
+            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            if (unit != null)
+            {
+                lUnits.add(unit);
+            }
+        }
+        // sort list to allow using it as a favorite list
+        Collections.sort(lUnits);
+        return lUnits;
     }
 
     public List<Watchlist> getWatchlists()
