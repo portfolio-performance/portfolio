@@ -40,7 +40,7 @@ mvn clean verify -Dtycho.disableP2Mirrors
 
 ### Eclipse Setup
 
-To develop, use the [Eclipse IDE](http://eclipse.org/downloads/) **Photon** release plus **Plug-in Development Environment (PDE)**
+To develop, use the [Eclipse IDE](http://eclipse.org/downloads/) **Photon** release plus **Plug-in Development Environment (PDE)**. PDE homepage is http://www.eclipse.org/pde/ and it can be installed via Help/Install new Software. The link for the update site is mentioned in the docs.
 
 Optionally, install via the Eclipse Marketplace
 * infinitest
@@ -54,7 +54,7 @@ Clone the git repository.
 
 Import projects by
 * selecting "Import Projects..." on the Git repository in the Git perspective
-* choosing "File" > "Import..." > "Existing Projects into Workspace" from the menu 
+* choosing "File" > "Import..." > "Existing Projects into Workspace" from the menu
 
 After importing the Portfolio Performance projects in Eclipse, they will not compile due to missing dependencies: the target platform is missing.
 
@@ -68,7 +68,8 @@ mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 ### Set Target Platform
 
 * Open the portfolio-app project
-* Open the ide-target-platform/portfolio-ide.target file (this may take a while as it requires Internet access)
+* Press F5 to refresh the view, otherwise you might not find the ide-target-platform
+* Open the ide-target-platform/portfolio-ide.target file with the Target Editor (this may take a while as it requires Internet access). If you just get an XML file, use right click and chose Open With
 * In the resulting editor, click on the "Set as Target Platform" link at the top right (this may also take a while)
 
 ### Run Program
@@ -76,7 +77,6 @@ mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 Run the application and the tests with the launch configurations stored in ~/portfolio-app/eclipse folder (right-click "Run As").
 
 ## License
- 
+
 Eclipse Public License
 http://www.eclipse.org/legal/epl-v10.html
- 
