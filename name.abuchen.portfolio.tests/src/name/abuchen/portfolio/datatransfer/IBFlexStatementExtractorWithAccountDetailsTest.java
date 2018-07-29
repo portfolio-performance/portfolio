@@ -89,9 +89,10 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of("EUR", 4185_05L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 1_67L)));
+        // 100 shares at 50 USD minus 2USD transaction cost is 49.98 USD per share  times 0.83701 is 41.8338
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
-                        is(Quote.of("EUR", Values.Quote.factorize(41.8505))));
+                        is(Quote.of("EUR", Values.Quote.factorize(41.8338))));
 
     }
 

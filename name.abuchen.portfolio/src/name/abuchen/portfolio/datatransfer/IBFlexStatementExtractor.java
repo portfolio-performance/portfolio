@@ -380,15 +380,15 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal fxRateToBase;
                 if (fxRateToBaseString != null && !fxRateToBaseString.isEmpty())
                 {
-                    fxRateToBase = BigDecimal.valueOf(Double.parseDouble(fxRateToBaseString));
+                    fxRateToBase = new BigDecimal(String.format("%.4f", Double.parseDouble(fxRateToBaseString)));
                 }
                 else
                 {
-                    fxRateToBase = new BigDecimal(1);
+                    fxRateToBase = new BigDecimal("1.0000");
                 }
                 BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, BigDecimal.ROUND_HALF_DOWN);
 
-                BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue()).divide(inverseRate,
+                BigDecimal baseCurrencyMoney = new BigDecimal(String.format("%.5f", amount.doubleValue())).divide(inverseRate,
                                 RoundingMode.HALF_DOWN);
 
                 unit = new Unit(unitType,
