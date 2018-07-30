@@ -4,6 +4,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -45,6 +46,8 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
+
+        assertTrue(errors.isEmpty());
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
