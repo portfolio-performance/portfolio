@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
@@ -25,7 +26,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 {
     enum TableLayout
     {
-        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced);
+        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced), NONNEUTRAL(Messages.LabelLayoutNonNeutral);
 
         private String label;
 
@@ -99,6 +100,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 break;
             case REDUCED:
                 createTable(5);
+                break;
+            case NONNEUTRAL:
+                createTable(7);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -180,6 +184,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             case REDUCED:
                 fillInReducedValues(snapshot);
                 break;
+            case NONNEUTRAL:
+                fillInNonNeutralValues(snapshot);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
@@ -187,10 +194,62 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         container.layout();
     }
 
+    private void fillInNonNeutralValues(final ClientPerformanceSnapshot snapshot)
+    {
+        
+        List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
+        
+        // header
+        labels[0].setText(categories.get(0).getLabel());
+        
+        
+        for (int i = 1; i < 6; i++) {
+            ClientPerformanceSnapshot.Category category = categories.get(i);
+            signs[i].setText(category.getSign());
+            labels[i].setText(category.getLabel());
+            values[i].setText(Values.Money.format(category.getValuation(), getClient().getBaseCurrency()));
+        }
+        
+        
+        // footer
+        MutableMoney totalNonNeutralTransactions = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
+        signs[6].setText(categories.get(7).getSign());
+        labels[6].setText(categories.get(7).getLabel());
+        values[6].setText(Values.Money.format(totalNonNeutralTransactions.toMoney(), getClient().getBaseCurrency()));
+    }
+    
+    /**
+     * @brief Sums up the total currency for the supplied categories
+     * @param currencyCode The currency code of the currency that is summed up
+     * @param categories The categories for which the total value is computed
+     * @return
+     */
+    private MutableMoney sumCategoryValuates(String currencyCode, List<ClientPerformanceSnapshot.Category> categories) {
+        
+        MutableMoney totalMoney = MutableMoney.of(currencyCode);
+        
+        for (ClientPerformanceSnapshot.Category category: categories) {
+            switch (category.getSign())
+            {
+                case "+": //$NON-NLS-1$
+                    totalMoney.add(category.getValuation());
+                    break;
+                case "-": //$NON-NLS-1$
+                    totalMoney.subtract(category.getValuation());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+        
+        return totalMoney;
+        
+    }
+
     private void filInValues(int startIndex, List<ClientPerformanceSnapshot.Category> categories)
     {
         int ii = startIndex;
-        for (ClientPerformanceSnapshot.Category category : categories)
+        for (ClientPerformanceSnapshot.Category category :  categories)
         {
             signs[ii].setText(category.getSign());
             labels[ii].setText(category.getLabel());
@@ -207,22 +266,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
 
-        for (int ii = 2; ii < categories.size() - 2; ii++)
-        {
-            ClientPerformanceSnapshot.Category category = categories.get(ii);
-
-            switch (category.getSign())
-            {
-                case "+": //$NON-NLS-1$
-                    misc.add(category.getValuation());
-                    break;
-                case "-": //$NON-NLS-1$
-                    misc.subtract(category.getValuation());
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
+        
+        misc = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
 
         filInValues(0, categories.subList(0, 2));
 
