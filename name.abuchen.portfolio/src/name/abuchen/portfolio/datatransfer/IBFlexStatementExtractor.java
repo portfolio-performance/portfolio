@@ -75,7 +75,7 @@ public class IBFlexStatementExtractor implements Extractor
             return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd")).atStartOfDay();
         }
     }
-    
+
     private LocalDateTime convertDate(String date, String time) throws DateTimeParseException
     {
         return LocalDateTime.parse(String.format("%s %s", date, time), DateTimeFormatter.ofPattern("yyyyMMdd HHmmss"))
@@ -208,7 +208,7 @@ public class IBFlexStatementExtractor implements Extractor
                 if (element.getAttribute("symbol").length() > 0)
                     transaction.setSecurity(this.getOrCreateSecurity(element, true));
 
-                if(amount <= 0)
+                if (amount <= 0)
                 {
                     transaction.setType(AccountTransaction.Type.TAXES);
                 }
@@ -257,10 +257,10 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
-            
-            if (! Arrays.asList("STK","OPT").contains(assetCategory))
+
+            if (!Arrays.asList("STK", "OPT").contains(assetCategory))
                 return null;
-            
+
             // Unused Information from Flexstatement Trades, to be used in the
             // future: tradeTime, transactionID, ibOrderID
             BuySellEntry transaction = new BuySellEntry();
@@ -291,7 +291,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Share Quantity
             Double qty = Math.abs(Double.parseDouble(element.getAttribute("quantity")));
-            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor()));
+            Double multiplier = Double.parseDouble(Optional.ofNullable(element.getAttribute("multiplier")).orElse("1"));
+            transaction.setShares(Math.round(qty.doubleValue() * Values.Share.factor() * multiplier.doubleValue()));
 
             // fees
             double fees = Math.abs(Double.parseDouble(element.getAttribute("ibCommission")));
@@ -393,7 +394,7 @@ public class IBFlexStatementExtractor implements Extractor
                 BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue())
-                                .setScale(5, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
+                                .setScale(2, RoundingMode.HALF_DOWN).divide(inverseRate, RoundingMode.HALF_DOWN);
 
                 unit = new Unit(unitType,
                                 Money.of(ibAccountCurrency,
@@ -469,6 +470,7 @@ public class IBFlexStatementExtractor implements Extractor
                     }
                     catch (Exception e)
                     {
+
                         errors.add(e);
                     }
                 }
@@ -511,9 +513,9 @@ public class IBFlexStatementExtractor implements Extractor
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
             String quoteFeed = QuoteFeed.MANUAL;
-            
+
             // yahoo uses '-' instead of ' '
-            Optional<String> yahooSymbol = tickerSymbol.map( t -> t.replaceAll(" ", "-"));
+            Optional<String> yahooSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
             String exchange = element.getAttribute("exchange");
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
@@ -527,13 +529,14 @@ public class IBFlexStatementExtractor implements Extractor
 
             if (tickerSymbol.isPresent() && exchanges.containsKey(exchange))
             {
-                yahooSymbol = tickerSymbol.map( t -> t + '.' + exchanges.get(exchange));
+                yahooSymbol = tickerSymbol.map(t -> t + '.' + exchanges.get(exchange));
             }
-            
-            if ("OPT".equals(element.getAttribute("assetCategory")) ) {
-                yahooSymbol = tickerSymbol.map( t -> t.replaceAll("\\s+", ""));
-                // ORCL  171117C00050000
-                if (yahooSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent()) 
+
+            if ("OPT".equals(element.getAttribute("assetCategory")))
+            {
+                yahooSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+", ""));
+                // e.g a put option for oracle: ORCL 171117C00050000
+                if (yahooSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
@@ -544,7 +547,7 @@ public class IBFlexStatementExtractor implements Extractor
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
                     return s;
-                if (yahooSymbol.isPresent()  && yahooSymbol.get().equals(s.getTickerSymbol()))
+                if (yahooSymbol.isPresent() && yahooSymbol.get().equals(s.getTickerSymbol()))
                     return s;
             }
 
