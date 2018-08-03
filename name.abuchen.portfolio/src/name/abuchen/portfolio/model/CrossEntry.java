@@ -9,4 +9,14 @@ public interface CrossEntry
     Transaction getCrossTransaction(Transaction t);
 
     TransactionOwner<? extends Transaction> getCrossOwner(Transaction t);
+
+    void insert();
+
+    void setPrimaryTransactionOwner(TransactionOwner<Transaction> transactionOwner);
+
+    TransactionOwner<Transaction> getPrimaryTransactionOwner();
+
+    void setSecondaryTransactionOwner(TransactionOwner<Transaction> transactionOwner);
+
+    TransactionOwner<Transaction> getSecondaryTransactionOwner();
 }
