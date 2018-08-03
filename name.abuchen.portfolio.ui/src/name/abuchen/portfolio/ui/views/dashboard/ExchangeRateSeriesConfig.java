@@ -3,12 +3,14 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.ui.Messages;
@@ -17,11 +19,11 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class ExchangeRateSeriesConfig implements WidgetConfig
 {
-    private WidgetDelegate delegate;
+    private WidgetDelegate<?> delegate;
     private List<ExchangeRateTimeSeries> available;
     private ExchangeRateTimeSeries series;
 
-    public ExchangeRateSeriesConfig(WidgetDelegate delegate)
+    public ExchangeRateSeriesConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
 
@@ -36,9 +38,7 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
 
         String code = delegate.getWidget().getConfiguration().get(Dashboard.Config.EXCHANGE_RATE_SERIES.name());
         int slash = code != null ? code.indexOf('/') : -1;
-        @SuppressWarnings("null")
         String base = slash > 0 ? code.substring(0, slash) : null; // NOSONAR
-        @SuppressWarnings("null")
         String term = slash > 0 ? code.substring(slash + 1) : null; // NOSONAR
 
         this.series = available.stream().filter(t -> t.getBaseCurrency().equals(base))
@@ -58,7 +58,9 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
                 series = ts;
                 String code = ts.getBaseCurrency() + '/' + ts.getTermCurrency();
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.EXCHANGE_RATE_SERIES.name(), code);
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.markDirty();
             });
             action.setChecked(series.equals(ts));
             subMenu.add(action);
@@ -70,7 +72,8 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return series.getLabel() + ' ' + series.getProvider().getName();
+        Optional<ExchangeRateProvider> provider = series.getProvider();
+        return provider.isPresent() ? series.getLabel() + ' ' + provider.get().getName() : series.getLabel();
     }
 
     public ExchangeRateTimeSeries getSeries()

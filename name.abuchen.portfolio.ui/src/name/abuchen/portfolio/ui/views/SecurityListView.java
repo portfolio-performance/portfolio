@@ -43,6 +43,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.CrossEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -108,6 +109,16 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 openEditDialog(newSecurity);
             }));
 
+            manager.add(new SimpleAction(Messages.SecurityMenuNewExchangeRate, a -> {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setCurrencyCode(getClient().getBaseCurrency());
+                newSecurity.setTargetCurrencyCode(getClient().getBaseCurrency());
+                openEditDialog(newSecurity);
+            }));
+
+            manager.add(new Separator());
+
             manager.add(new SimpleAction(Messages.SecurityMenuSearchYahoo, a -> {
                 SearchYahooWizardDialog dialog = new SearchYahooWizardDialog(getToolBar().getShell(), getClient());
                 if (dialog.open() == Dialog.OK)
@@ -117,7 +128,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         private void openEditDialog(Security newSecurity)
         {
-            Dialog dialog = new EditSecurityDialog(getToolBar().getShell(), getClient(), newSecurity);
+            Dialog dialog = make(EditSecurityDialog.class, newSecurity);
 
             if (dialog.open() == Dialog.OK)
             {
@@ -135,7 +146,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
     private class FilterDropDown extends AbstractDropDown
     {
-        private Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
+        private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
+        private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
+        private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
+        private final Predicate<Security> sharesGreaterZero = record -> getSharesHeld(getClient(), record) > 0;
+        private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
 
         public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
         {
@@ -152,10 +167,44 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                                             filter.contains(securityIsNotInactive)));
         }
 
+        /**
+         * Collects all shares held for the given security.
+         * 
+         * @param client
+         *            {@link Client}
+         * @param security
+         *            {@link Security}
+         * @return shares held on success, else 0
+         */
+        private long getSharesHeld(Client client, Security security)
+        {
+            // collect all shares and return a value greater 0
+            return Math.max(security.getTransactions(client).stream()
+                            .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
+                            .map(t -> (PortfolioTransaction) t.getTransaction()) //
+                            .mapToLong(t -> {
+                                switch (t.getType())
+                                {
+                                    case BUY:
+                                    case DELIVERY_INBOUND:
+                                        return t.getShares();
+                                    case SELL:
+                                    case DELIVERY_OUTBOUND:
+                                        return -t.getShares();
+                                    default:
+                                        return 0L;
+                                }
+                            }).sum(), 0);
+        }
+
         @Override
         public void menuAboutToShow(IMenuManager manager)
         {
             manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
+            manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
+            manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
         }
 
         private Action createAction(String label, Predicate<Security> predicate)
@@ -172,7 +221,19 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     else
                         filter.add(predicate);
 
-                    setChecked(!isChecked);
+                    // uncheck mutually exclusive actions if new filter is added
+                    if (!isChecked)
+                    {
+                        if (predicate == onlySecurities)
+                            filter.remove(onlyExchangeRates);
+                        else if (predicate == onlyExchangeRates)
+                            filter.remove(onlySecurities);
+                        else if (predicate == sharesEqualZero)
+                            filter.remove(sharesGreaterZero);
+                        else if (predicate == sharesGreaterZero)
+                            filter.remove(sharesEqualZero);
+                    }
+
                     getToolItem().setImage(filter.isEmpty() ? Images.FILTER_OFF.image() : Images.FILTER_ON.image());
                     securities.refresh();
                 }
@@ -298,15 +359,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         toolItem.setControl(search);
 
         search.addModifyListener(e -> {
-            String filter = search.getText().trim();
-            if (filter.length() == 0)
+            String filterText = search.getText().trim();
+            if (filterText.length() == 0)
             {
                 filterPattern = null;
                 securities.refresh();
             }
             else
             {
-                filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                filterPattern = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
                 securities.refresh();
             }
         });
@@ -710,7 +771,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
-        column.setLabelProvider(new SharesLabelProvider()
+        column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
             public Long getValue(Object element)
@@ -743,7 +804,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
             long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
             long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
-            return a1 > a2 ? 1 : a1 < a2 ? -1 : 0;
+            return Long.compare(a1, a2);
         }));
         support.addColumn(column);
 

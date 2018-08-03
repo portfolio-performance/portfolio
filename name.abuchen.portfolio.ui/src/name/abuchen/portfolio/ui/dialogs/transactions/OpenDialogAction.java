@@ -17,7 +17,6 @@ public class OpenDialogAction extends Action
 
     private Class<? extends AbstractTransactionDialog> type;
     private Consumer<? extends AbstractTransactionDialog> prepare;
-    private Consumer<AbstractTransactionDialog> onSuccess;
 
     private Object[] parameters;
     private Account account;
@@ -41,12 +40,6 @@ public class OpenDialogAction extends Action
     {
         this.type = type;
         this.prepare = prepare;
-        return this;
-    }
-
-    public OpenDialogAction onSuccess(Consumer<AbstractTransactionDialog> onSuccess)
-    {
-        this.onSuccess = onSuccess;
         return this;
     }
 
@@ -97,17 +90,12 @@ public class OpenDialogAction extends Action
         if (security != null)
             dialog.setSecurity(security);
 
-        if (dialog.open() == AbstractTransactionDialog.OK)
+        dialog.open();
+
+        if (dialog.hasAtLeastOneSuccessfulEdit())
         {
-            if (onSuccess != null)
-            {
-                onSuccess.accept(dialog);
-            }
-            else
-            {
-                owner.markDirty();
-                owner.notifyModelUpdated();
-            }
+            owner.markDirty();
+            owner.notifyModelUpdated();
         }
     }
 }

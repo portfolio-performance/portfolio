@@ -142,12 +142,13 @@ public enum WidgetFactory
 
     EXCHANGE_RATE(Messages.LabelExchangeRate, ExchangeRateWidget::new),
 
+    // typo is API now!!
     VERTICAL_SPACEER(Messages.LabelVerticalSpacer, VerticalSpacerWidget::new);
 
     private String label;
-    private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction;
+    private BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction;
 
-    private WidgetFactory(String label, BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate> createFunction)
+    private WidgetFactory(String label, BiFunction<Dashboard.Widget, DashboardData, WidgetDelegate<?>> createFunction)
     {
         this.label = label;
         this.createFunction = createFunction;
@@ -158,7 +159,7 @@ public enum WidgetFactory
         return label;
     }
 
-    public WidgetDelegate create(Dashboard.Widget widget, DashboardData data)
+    public WidgetDelegate<?> create(Dashboard.Widget widget, DashboardData data)
     {
         return this.createFunction.apply(widget, data);
     }

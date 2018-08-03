@@ -20,14 +20,14 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
     }
 
     private final Policy policy;
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
     private final Dashboard.Config configurationKey;
     private final String label;
     private final Class<E> type;
 
     private EnumSet<E> values;
 
-    public EnumBasedConfig(WidgetDelegate delegate, String label, Class<E> type, Dashboard.Config configurationKey,
+    public EnumBasedConfig(WidgetDelegate<?> delegate, String label, Class<E> type, Dashboard.Config configurationKey,
                     Policy policy)
     {
         this.delegate = delegate;
@@ -91,7 +91,9 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
 
             delegate.getWidget().getConfiguration().put(configurationKey.name(),
                             String.join(",", values.stream().map(E::name).collect(Collectors.toList()))); //$NON-NLS-1$
-            delegate.getClient().markDirty();
+
+            delegate.update();
+            delegate.markDirty();
         });
         action.setChecked(this.values.contains(value));
         return action;

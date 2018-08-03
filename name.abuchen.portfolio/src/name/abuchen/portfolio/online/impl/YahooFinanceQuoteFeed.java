@@ -65,7 +65,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public final boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
 
-        try (CloseableHttpClient client = HttpClients.createDefault())
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
             String wknUrl = MessageFormat.format(LATEST_URL,
                             URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()));
@@ -232,7 +232,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
 
-        try (CloseableHttpClient client = HttpClients.createDefault())
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
             String wknUrl = MessageFormat.format(HISTORICAL_URL, //
                             URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()), //

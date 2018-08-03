@@ -90,8 +90,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 {
     private class FilterDropDown extends AbstractDropDown
     {
-        private Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
-        private Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
+        private final Predicate<SecurityPerformanceRecord> sharesGreaterZero = record -> record.getSharesHeld() > 0;
+        private final Predicate<SecurityPerformanceRecord> sharesEqualZero = record -> record.getSharesHeld() == 0;
 
         private ClientFilterMenu clientFilterMenu;
 
@@ -166,10 +166,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                     else
                         recordFilter.add(predicate);
 
-                    setChecked(!isChecked);
+                    // uncheck mutually exclusive actions if new filter is added
+                    if (!isChecked)
+                    {
+                        if (predicate == sharesGreaterZero)
+                            recordFilter.remove(sharesEqualZero);
+                        else if (predicate == sharesEqualZero)
+                            recordFilter.remove(sharesGreaterZero);
+                    }
+
                     getToolItem().setImage(recordFilter.isEmpty() && !clientFilterMenu.hasActiveFilter()
                                     ? Images.FILTER_OFF.image()
                                     : Images.FILTER_ON.image());
+
                     records.refresh();
                 }
             };

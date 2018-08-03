@@ -10,9 +10,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class LabelConfig implements WidgetConfig
 {
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
 
-    public LabelConfig(WidgetDelegate delegate)
+    public LabelConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
     }
@@ -30,7 +30,9 @@ public class LabelConfig implements WidgetConfig
                 return;
 
             delegate.getWidget().setLabel(dialog.getValue());
-            delegate.getClient().markDirty();
+
+            delegate.update();
+            delegate.markDirty();
         }));
     }
 

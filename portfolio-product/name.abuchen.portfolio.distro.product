@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.32.1.qualifier" useFeatures="true" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.distro.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.33.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgsLin>--launcher.GTK_version 2
-      </programArgsLin>
       <vmArgs>-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Xmx768m
       </vmArgs>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
@@ -20,7 +18,6 @@
    <launcher name="PortfolioPerformance">
       <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/pp.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="icons/pp.ico"/>
          <bmp/>

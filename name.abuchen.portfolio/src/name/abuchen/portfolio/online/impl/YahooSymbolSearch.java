@@ -70,7 +70,7 @@ import org.json.simple.JSONValue;
     {
         List<Result> answer = new ArrayList<>();
         
-        try (CloseableHttpClient client = HttpClients.createDefault())
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
             // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
             String searchUrl = MessageFormat.format(SEARCH_URL,

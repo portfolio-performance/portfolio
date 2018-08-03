@@ -9,7 +9,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 
-public abstract class AbstractIndicatorWidget extends WidgetDelegate
+public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
 {
     protected Label title;
     protected Label indicator;
@@ -48,7 +48,7 @@ public abstract class AbstractIndicatorWidget extends WidgetDelegate
     }
 
     @Override
-    public void update()
+    public void update(D data)
     {
         this.title.setText(getWidget().getLabel());
     }

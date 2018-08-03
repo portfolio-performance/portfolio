@@ -9,22 +9,22 @@ import org.eclipse.swt.widgets.Table;
 
 public class OptionLabelProvider<O> extends CellLabelProvider
 {
-    public String getText(Object element, O option)
+    public String getText(Object element, O option) // NOSONAR
     {
         return null;
     }
 
-    public Color getForeground(Object element, O option)
+    public Color getForeground(Object element, O option) // NOSONAR
     {
         return null;
     }
 
-    public Image getImage(Object element, O option)
+    public Image getImage(Object element, O option) // NOSONAR
     {
         return null;
     }
     
-    public Font getFont(Object element, O option)
+    public Font getFont(Object element, O option) // NOSONAR
     {
         return null;
     }

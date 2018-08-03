@@ -81,7 +81,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     private void addSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        try (CloseableHttpClient client = HttpClients.createDefault())
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
             String templateURL = "https://de.finance.yahoo.com/_finance_doubledown/api/resource/searchassist;" //$NON-NLS-1$
                             + "searchTerm={0}?bkt=finance-DE-de-DE-def&device=desktop&feature=canvassOffnet%2CccOnMute%2CenablePromoImage%2CnewContentAttribution" //$NON-NLS-1$

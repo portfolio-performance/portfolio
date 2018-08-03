@@ -8,8 +8,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -24,7 +22,6 @@ import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.graphics.Image;
@@ -102,7 +99,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             setTitleImage(Images.BANNER.image());
 
             this.client = client;
-            this.issues = new ArrayList<ReportedIssue>();
+            this.issues = new ArrayList<>();
             for (Issue issue : issues)
                 this.issues.add(new ReportedIssue(issue));
         }
@@ -114,6 +111,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             setBlockOnOpen(false);
         }
 
+        @Override
         protected void createButtonsForButtonBar(Composite parent)
         {
             createButton(parent, IDialogConstants.OK_ID, IDialogConstants.OK_LABEL, true);
@@ -134,7 +132,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
         {
             Composite composite = (Composite) super.createDialogArea(parent);
 
-            composite.addDisposeListener(e -> SelectQuickFixDialog.this.widgetDisposed(e));
+            composite.addDisposeListener(e -> SelectQuickFixDialog.this.widgetDisposed());
 
             Composite tableArea = new Composite(composite, SWT.NONE);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(tableArea);
@@ -212,6 +210,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             col.getColumn().setText(Messages.ColumnIssue);
             col.setLabelProvider(new OwnerDrawLabelProvider()
             {
+                @Override
                 protected void measure(Event event, Object element)
                 {
                     ReportedIssue line = (ReportedIssue) element;
@@ -221,6 +220,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                     event.height = size.y;
                 }
 
+                @Override
                 protected void paint(Event event, Object element)
                 {
                     ReportedIssue entry = (ReportedIssue) element;
@@ -252,6 +252,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
 
             table.addMouseListener(new MouseAdapter()
             {
+                @Override
                 public void mouseDown(MouseEvent e)
                 {
                     Point point = new Point(e.x, e.y);
@@ -271,7 +272,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
             return composite;
         }
 
-        protected void widgetDisposed(DisposeEvent e)
+        protected void widgetDisposed()
         {
             if (contextMenu != null)
                 contextMenu.dispose();
@@ -284,32 +285,27 @@ public class ConsistencyChecksJob extends AbstractClientJob
             {
                 MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
                 menuMgr.setRemoveAllWhenShown(true);
-                menuMgr.addMenuListener(new IMenuListener()
-                {
-                    @Override
-                    public void menuAboutToShow(IMenuManager manager)
+                menuMgr.addMenuListener(manager -> {
+                    for (final QuickFix fix : currentIssue.getAvailableFixes())
                     {
-                        for (final QuickFix fix : currentIssue.getAvailableFixes())
+                        if (fix == QuickFix.SEPARATOR)
                         {
-                            if (fix == QuickFix.SEPARATOR)
+                            manager.add(new Separator());
+                        }
+                        else
+                        {
+                            manager.add(new Action(fix.getLabel())
                             {
-                                manager.add(new Separator());
-                            }
-                            else
-                            {
-                                manager.add(new Action(fix.getLabel())
+                                @Override
+                                public void run()
                                 {
-                                    @Override
-                                    public void run()
-                                    {
-                                        fix.execute();
-                                        currentIssue.setFixedMessage(fix.getDoneLabel());
-                                        if (client != null)
-                                            client.markDirty();
-                                        tableViewer.refresh(currentIssue);
-                                    }
-                                });
-                            }
+                                    fix.execute();
+                                    currentIssue.setFixedMessage(fix.getDoneLabel());
+                                    if (client != null)
+                                        client.markDirty();
+                                    tableViewer.refresh(currentIssue);
+                                }
+                            });
                         }
                     }
                 });

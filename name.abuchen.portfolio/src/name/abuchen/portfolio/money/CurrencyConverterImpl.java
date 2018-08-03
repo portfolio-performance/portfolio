@@ -3,12 +3,13 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 
 public class CurrencyConverterImpl implements CurrencyConverter
 {
+    private static final ExchangeRate FALLBACK_EXCHANGE_RATE = new ExchangeRate(LocalDate.now(), BigDecimal.ONE);
+    
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
 
@@ -45,18 +46,15 @@ public class CurrencyConverterImpl implements CurrencyConverter
             return new ExchangeRate(date, BigDecimal.ONE);
 
         ExchangeRateTimeSeries series = lookupSeries(currencyCode);
-
-        Optional<ExchangeRate> rate = series.lookupRate(date);
-        if (!rate.isPresent())
-            throw new MonetaryException(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion,
-                            currencyCode, termCurrency));
-
-        return rate.get();
+        return series.lookupRate(date).orElse(FALLBACK_EXCHANGE_RATE);
     }
 
     private ExchangeRateTimeSeries lookupSeries(String currencyCode) // NOSONAR
     {
         ExchangeRateTimeSeries series = factory.getTimeSeries(currencyCode, termCurrency);
+
+        // should not happen b/c an empty time series is created if no
+        // time series exists
         if (series == null)
             throw new MonetaryException(MessageFormat.format(Messages.MsgNoExchangeRateTimeSeriesFound, currencyCode,
                             termCurrency));

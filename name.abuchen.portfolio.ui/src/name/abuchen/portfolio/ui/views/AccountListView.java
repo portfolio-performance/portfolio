@@ -528,10 +528,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    long dividendPerShare = Math.round(t.getAmount() * Values.Share.divider()
+                    long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
                                     * Values.Quote.factorToMoney() / t.getShares());
-                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), dividendPerShare),
-                                    getClient().getBaseCurrency());
+                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare), getClient().getBaseCurrency());
                 }
                 else
                 {
@@ -609,7 +608,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private Color colorFor(AccountTransaction t)
     {
-        return Display.getCurrent().getSystemColor(t.getType().isDebit() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);  
+        return t.getType().isDebit() ? Colors.DARK_RED : Colors.DARK_GREEN;
     }
 
     private void hookKeyListener()

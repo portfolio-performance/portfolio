@@ -132,15 +132,17 @@ public class DividendsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, DividendsMatrixTab.class);
-        createTab(folder, DividendsYearMatrixTab.class);
-        createTab(folder, DividendsChartTab.class);
-        createTab(folder, DividendsPerYearChartTab.class);
-        createTab(folder, AccumulatedDividendsChartTab.class);
-        createTab(folder, TransactionsTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsPerQuarterChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsPerYearChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, AccumulatedDividendsChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
-        if (tab <= 0 || tab >= 6)
+        if (tab < 0 || tab > 7)
             tab = 0;
         folder.setSelection(tab);
         folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));
@@ -148,7 +150,7 @@ public class DividendsView extends AbstractFinanceView
         return folder;
     }
 
-    private void createTab(CTabFolder folder, Class<? extends DividendsTab> tabClass)
+    private void createTab(CTabFolder folder, Images image, Class<? extends DividendsTab> tabClass)
     {
         DividendsTab tab = this.make(tabClass, model);
         Control control = tab.createControl(folder);
@@ -156,5 +158,6 @@ public class DividendsView extends AbstractFinanceView
         item.setText(tab.getLabel());
         item.setControl(control);
         item.setData(tab);
+        item.setImage(image.image());
     }
 }

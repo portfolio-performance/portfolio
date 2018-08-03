@@ -17,7 +17,7 @@ public class MultiDataSeriesConfig implements WidgetConfig
 {
     private final BasicDataSeriesConfigurator configurator;
 
-    public MultiDataSeriesConfig(WidgetDelegate delegate)
+    public MultiDataSeriesConfig(WidgetDelegate<?> delegate)
     {
         this.configurator = new BasicDataSeriesConfigurator(delegate.getClient(),
                         delegate.getDashboardData().getDataSeriesSet());
@@ -30,7 +30,8 @@ public class MultiDataSeriesConfig implements WidgetConfig
             delegate.getWidget().getConfiguration().put(Dashboard.Config.DATA_SERIES.name(),
                             new DataSeriesSerializer().toString(configurator.getSelectedDataSeries()));
 
-            delegate.getClient().markDirty();
+            delegate.update();
+            delegate.markDirty();
         });
     }
 

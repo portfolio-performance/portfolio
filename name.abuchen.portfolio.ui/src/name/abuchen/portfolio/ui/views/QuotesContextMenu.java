@@ -60,8 +60,7 @@ public class QuotesContextMenu
             @Override
             public void run()
             {
-                EditSecurityDialog dialog = new EditSecurityDialog(Display.getDefault().getActiveShell(), owner
-                                .getClient(), security);
+                EditSecurityDialog dialog = owner.make(EditSecurityDialog.class, security);
                 dialog.setShowQuoteConfigurationInitially(true);
 
                 if (dialog.open() != Dialog.OK)

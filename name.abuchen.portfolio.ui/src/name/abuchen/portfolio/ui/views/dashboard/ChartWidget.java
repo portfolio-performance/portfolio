@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -30,21 +31,22 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
 
-public class ChartWidget extends WidgetDelegate
+public class ChartWidget extends WidgetDelegate<Object>
 {
     private class ChartConfig implements WidgetConfig
     {
-        private WidgetDelegate delegate;
+        private WidgetDelegate<?> delegate;
         private ConfigurationSet configSet;
         private ConfigurationSet.Configuration config;
 
-        public ChartConfig(WidgetDelegate delegate, DataSeries.UseCase useCase)
+        public ChartConfig(WidgetDelegate<?> delegate, DataSeries.UseCase useCase)
         {
             this.delegate = delegate;
 
@@ -68,7 +70,9 @@ public class ChartWidget extends WidgetDelegate
                 SimpleAction action = new SimpleAction(c.getName(), a -> {
                     config = c;
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
-                    delegate.getClient().markDirty();
+
+                    delegate.update();
+                    delegate.markDirty();
                 });
                 action.setChecked(c.equals(config));
                 subMenu.add(action);
@@ -92,10 +96,10 @@ public class ChartWidget extends WidgetDelegate
 
     private class AggregationConfig implements WidgetConfig
     {
-        private WidgetDelegate delegate;
+        private WidgetDelegate<?> delegate;
         private Aggregation.Period aggregation;
 
-        public AggregationConfig(WidgetDelegate delegate)
+        public AggregationConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
 
@@ -122,7 +126,9 @@ public class ChartWidget extends WidgetDelegate
             Action action = new SimpleAction(Messages.LabelAggregationDaily, a -> {
                 aggregation = null;
                 delegate.getWidget().getConfiguration().remove(Dashboard.Config.AGGREGATION.name());
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.markDirty();
             });
             action.setChecked(aggregation == null);
             subMenu.add(action);
@@ -131,7 +137,9 @@ public class ChartWidget extends WidgetDelegate
                 Action menu = new SimpleAction(a.toString(), x -> {
                     aggregation = a;
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.AGGREGATION.name(), a.name());
-                    delegate.getClient().markDirty();
+
+                    delegate.update();
+                    delegate.markDirty();
                 });
                 menu.setChecked(aggregation == a);
                 subMenu.add(menu);
@@ -209,7 +217,25 @@ public class ChartWidget extends WidgetDelegate
     }
 
     @Override
-    public void update()
+    public Supplier<Object> getUpdateTask()
+    {
+        // just fill the cache - the chart series builder will look it up and
+        // pass it directly to the chart
+
+        DataSeriesCache cache = getDashboardData().getDataSeriesCache();
+
+        List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
+                        get(ChartConfig.class).getData());
+
+        ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
+
+        series.forEach(s -> cache.lookup(s, reportingPeriod));
+
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object object)
     {
         title.setText(getWidget().getLabel());
 

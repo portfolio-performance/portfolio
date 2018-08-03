@@ -35,7 +35,10 @@ public class SecurityMasterDataPage extends AbstractPage
         setControl(container);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(container);
 
-        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode"); //$NON-NLS-1$
+        boolean isExchangeRate = model.getSecurity().isExchangeRate();
+
+        ComboViewer currencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnCurrency, "currencyCode", //$NON-NLS-1$
+                        !isExchangeRate);
         if (model.getSecurity().hasTransactions(model.getClient()))
         {
             currencyCode.getCombo().setEnabled(false);
@@ -54,9 +57,18 @@ public class SecurityMasterDataPage extends AbstractPage
 
         }
 
-        bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
+        if (isExchangeRate)
+        {
+            ComboViewer targetCurrencyCode = bindings.bindCurrencyCodeCombo(container, Messages.ColumnTargetCurrency,
+                            "targetCurrencyCode", false); //$NON-NLS-1$
+            targetCurrencyCode.getCombo().setToolTipText(Messages.ColumnTargetCurrencyToolTip);
+        }
+
+        if (!isExchangeRate)
+            bindings.bindISINInput(container, Messages.ColumnISIN, "isin"); //$NON-NLS-1$
         bindings.bindStringInput(container, Messages.ColumnTicker, "tickerSymbol", SWT.NONE, 12); //$NON-NLS-1$
-        bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
+        if (!isExchangeRate)
+            bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
         Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)

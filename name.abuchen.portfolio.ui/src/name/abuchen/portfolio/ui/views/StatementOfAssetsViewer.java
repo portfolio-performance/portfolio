@@ -1150,7 +1150,7 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private static class StatementOfAssetsContentProvider implements IStructuredContentProvider
+    /* testing */ static class StatementOfAssetsContentProvider implements IStructuredContentProvider
     {
         private Element[] elements;
 
@@ -1215,38 +1215,51 @@ public class StatementOfAssetsViewer
         }
     }
 
-    private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
-                    implements Comparator<Object>
+    /* testing */ static class ElementValueProvider
     {
-        private boolean showColorAndArrows;
         private Function<SecurityPerformanceRecord, Object> valueProvider;
         private Function<Stream<Object>, Object> collector;
 
-        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
-        {
-            this(valueProvider, null, true);
-        }
-
-        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
-                        Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
+        public ElementValueProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
+                        Function<Stream<Object>, Object> collector)
         {
             this.valueProvider = valueProvider;
             this.collector = collector;
-            this.showColorAndArrows = showUpAndDownArrows;
         }
 
-        private Object getValue(Object e, ReportingPeriod option)
+        public Object getValue(Element element, ReportingPeriod option)
         {
-            Element element = (Element) e;
             if (element.isSecurity())
             {
-
-                calculatePerformance(element, option);
+                // assumption: performance record has been calculated before!
                 SecurityPerformanceRecord record = element.getPerformance(option);
 
                 // record is null if there are no transactions for the security
                 // in the given period
-                return record != null ? valueProvider.apply(record) : null;
+                if (record == null)
+                    return null;
+
+                Object value = valueProvider.apply(record);
+
+                // if not a monetary value, no splitting is supported
+                if (!(value instanceof Money))
+                    return value;
+
+                // check if asset has been split across multiple categories
+
+                long positionShares = element.getPosition().getPosition().getShares();
+                long recordShares = record.getSharesHeld();
+
+                if (positionShares != recordShares)
+                {
+                    Money moneyValue = (Money) value;
+                    return Money.of(moneyValue.getCurrencyCode(),
+                                    Math.round(moneyValue.getAmount() * positionShares / (double) recordShares));
+                }
+                else
+                {
+                    return value;
+                }
             }
             else if (element.isCategory())
             {
@@ -1262,18 +1275,51 @@ public class StatementOfAssetsViewer
 
                 return collectValue(element.getChildren().flatMap(Element::getChildren), option);
             }
-
-            return null;
+            else
+            {
+                return null;
+            }
         }
-        
-        public Object collectValue(Stream<Element> elements, ReportingPeriod option)
+
+        private Object collectValue(Stream<Element> elements, ReportingPeriod option)
         {
             return collector.apply(elements.filter(Element::isSecurity) //
-                            .map(child -> {
-                                calculatePerformance(child, option);
-                                SecurityPerformanceRecord record = child.getPerformance(option);
-                                return record != null ? valueProvider.apply(record) : null;
-                            }).filter(Objects::nonNull));
+                            .map(child -> getValue(child, option)) //
+                            .filter(Objects::nonNull));
+        }
+    }
+
+    private final class ReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+                    implements Comparator<Object>
+    {
+        private boolean showColorAndArrows;
+        private ElementValueProvider valueProvider;
+
+        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider)
+        {
+            this(new ElementValueProvider(valueProvider, null), true);
+        }
+
+        public ReportingPeriodLabelProvider(Function<SecurityPerformanceRecord, Object> valueProvider,
+                        Function<Stream<Object>, Object> collector, boolean showUpAndDownArrows)
+        {
+            this(new ElementValueProvider(valueProvider, collector), showUpAndDownArrows);
+        }
+
+        public ReportingPeriodLabelProvider(ElementValueProvider valueProvider, boolean showUpAndDownArrows)
+        {
+            this.valueProvider = valueProvider;
+            this.showColorAndArrows = showUpAndDownArrows;
+        }
+
+        private Object getValue(Object e, ReportingPeriod option)
+        {
+            Element element = (Element) e;
+
+            if (element.isSecurity())
+                calculatePerformance(element, option);
+
+            return valueProvider.getValue(element, option);
         }
 
         @Override

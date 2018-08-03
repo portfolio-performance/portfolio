@@ -19,12 +19,12 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class ReportingPeriodConfig implements WidgetConfig
 {
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
 
     private ReportingPeriod reportingPeriod;
 
-    public ReportingPeriodConfig(WidgetDelegate delegate)
+    public ReportingPeriodConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
 
@@ -60,7 +60,9 @@ public class ReportingPeriodConfig implements WidgetConfig
         subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> {
             reportingPeriod = null;
             delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
-            delegate.getClient().markDirty();
+
+            delegate.update();
+            delegate.markDirty();
         }));
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
@@ -68,7 +70,9 @@ public class ReportingPeriodConfig implements WidgetConfig
                             reportingPeriod = p;
                             delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
                                             p.getCode());
-                            delegate.getClient().markDirty();
+
+                            delegate.update();
+                            delegate.markDirty();
                         })));
         subMenu.add(new Separator());
 
@@ -84,7 +88,9 @@ public class ReportingPeriodConfig implements WidgetConfig
 
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
                                 reportingPeriod.getCode());
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.markDirty();
             }
         }));
 

@@ -73,6 +73,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     @Override
     public void notifyModelUpdated()
     {
+        plans.setInput(getClient().getPlans());
         plans.setSelection(plans.getSelection());
     }
 
@@ -96,19 +97,11 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
                             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
                                             .type(InvestmentPlanDialog.class) //
-                                            .parameters(PortfolioTransaction.class) //
-                                            .onSuccess(d -> {
-                                                markDirty();
-                                                plans.setInput(getClient().getPlans());
-                                            }));
+                                            .parameters(PortfolioTransaction.class));
 
                             manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
                                             .type(InvestmentPlanDialog.class) //
-                                            .parameters(AccountTransaction.class) //
-                                            .onSuccess(d -> {
-                                                markDirty();
-                                                plans.setInput(getClient().getPlans());
-                                            }));
+                                            .parameters(AccountTransaction.class));
                         });
     }
 
@@ -348,10 +341,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         new OpenDialogAction(this, Messages.MenuEditInvestmentPlan) //
                         .type(InvestmentPlanDialog.class, d -> d.setPlan(plan)) //
-                        .parameters(plan.getPlanType()).onSuccess(d -> {
-                            markDirty();
-                            plans.setInput(getClient().getPlans());
-                        }).addTo(manager);
+                        .parameters(plan.getPlanType()).addTo(manager);
 
         manager.add(new Action(Messages.InvestmentPlanMenuDelete)
         {

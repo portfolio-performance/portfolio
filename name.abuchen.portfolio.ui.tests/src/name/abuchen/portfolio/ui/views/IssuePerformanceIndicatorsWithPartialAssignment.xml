@@ -1,0 +1,196 @@
+<client>
+  <version>37</version>
+  <baseCurrency>EUR</baseCurrency>
+  <securities>
+    <security>
+      <uuid>e65944d0-01f7-4426-98b9-6ac8ad090629</uuid>
+      <name>ComStage MSCI World ETF</name>
+      <currencyCode>EUR</currencyCode>
+      <tickerSymbol>X010.DE</tickerSymbol>
+      <feed>YAHOO</feed>
+      <prices>
+        <price t="2018-02-01" v="496010"/>
+        <price t="2018-02-02" v="491300"/>
+        <price t="2018-02-05" v="484080"/>
+        <price t="2018-02-06" v="468030"/>
+        <price t="2018-07-13" v="518100"/>
+      </prices>
+      <latest t="2018-07-13" v="518100">
+        <high>519820</high>
+        <low>517480</low>
+        <volume>14490</volume>
+        <previousClose>515070</previousClose>
+      </latest>
+      <attributes>
+        <map/>
+      </attributes>
+      <events/>
+      <isRetired>false</isRetired>
+    </security>
+  </securities>
+  <watchlists/>
+  <consumerPriceIndeces/>
+  <accounts>
+    <account>
+      <uuid>d3d915c8-a836-45fd-b1e5-8f7bec653ade</uuid>
+      <name>Mein Konto</name>
+      <currencyCode>EUR</currencyCode>
+      <isRetired>false</isRetired>
+      <transactions>
+        <account-transaction>
+          <date>2018-07-01T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>9300</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>93000000</shares>
+          <type>DIVIDENDS</type>
+        </account-transaction>
+      </transactions>
+    </account>
+  </accounts>
+  <portfolios>
+    <portfolio>
+      <uuid>c997bc1e-1f3c-42be-bd05-98be948d322b</uuid>
+      <name>Mein Depot</name>
+      <isRetired>false</isRetired>
+      <referenceAccount reference="../../../accounts/account"/>
+      <transactions>
+        <portfolio-transaction>
+          <date>2018-01-02T00:00</date>
+          <currencyCode>EUR</currencyCode>
+          <amount>455607</amount>
+          <security reference="../../../../../securities/security"/>
+          <shares>93000000</shares>
+          <type>DELIVERY_INBOUND</type>
+        </portfolio-transaction>
+      </transactions>
+    </portfolio>
+  </portfolios>
+  <plans/>
+  <taxonomies>
+    <taxonomy>
+      <id>21baca92-db77-41f2-96d4-64e31ff4b4f5</id>
+      <name>Everything</name>
+      <root>
+        <id>06f985b5-8519-4c42-bca5-b75f28b0bf5e</id>
+        <name>Everything</name>
+        <color>#8dc2de</color>
+        <children>
+          <classification>
+            <id>8af1bceb-1d36-4b0b-9f08-f8ceaac98bf5</id>
+            <name>Welt</name>
+            <color>#b9faf4</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>10000</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+    <taxonomy>
+      <id>f8ffb083-774d-499e-a983-5c214eff7297</id>
+      <name>Regionen</name>
+      <root>
+        <id>2993b2de-dcc0-491b-8da4-13ba604177b0</id>
+        <name>Regionen</name>
+        <color>#ec9ada</color>
+        <children>
+          <classification>
+            <id>f202e501-8f28-4284-a4d4-40deac0b1cd4</id>
+            <name>Europa</name>
+            <color>#83ebf5</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>2400</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>10000</weight>
+            <rank>0</rank>
+          </classification>
+          <classification>
+            <id>f75c2e9c-1bff-4e3f-9285-a7281fffb5eb</id>
+            <name>Amerika</name>
+            <color>#98cade</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>6200</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>0</weight>
+            <rank>1</rank>
+          </classification>
+          <classification>
+            <id>7eeb0ce3-09c4-4b74-b220-773a8dc59681</id>
+            <name>Asien/Pazifik</name>
+            <color>#d2c2ac</color>
+            <parent reference="../../.."/>
+            <children/>
+            <assignments>
+              <assignment>
+                <investmentVehicle class="security" reference="../../../../../../../../securities/security"/>
+                <weight>1400</weight>
+                <rank>0</rank>
+              </assignment>
+            </assignments>
+            <weight>0</weight>
+            <rank>2</rank>
+          </classification>
+        </children>
+        <assignments/>
+        <weight>10000</weight>
+        <rank>0</rank>
+      </root>
+    </taxonomy>
+  </taxonomies>
+  <dashboards/>
+  <properties/>
+  <settings>
+    <bookmarks/>
+    <attributeTypes/>
+    <configurationSets>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>09e8fa7b-aab0-432b-bef7-642196a65b9b</uuid>
+              <name>Standard</name>
+              <data>0=1024$400;note=22;1=100;2=80;4=60;5=60;9=80;10=80;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
+        <string>name.abuchen.portfolio.ui.views.StatementOfAssetsViewer</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>acb77c05-9825-442c-b0de-194e4ec533f6</uuid>
+              <name>Standard</name>
+              <data>0=80;1=201;2=60;4=60;5=80;6=80;note=22;9=100;capitalgains=L1Y0|148;delta=L1Y0|97;capitalgains%=L1Y0|165;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+    </configurationSets>
+  </settings>
+</client>

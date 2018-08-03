@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.money;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -16,18 +17,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
-import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.e4.core.di.extensions.EventTopic;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityChangeEvent;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.impl.ChainedExchangeRateTimeSeries;
+import name.abuchen.portfolio.money.impl.EmptyExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 
-@Singleton
-@Creatable
+/**
+ * A factory for {@link ExchangeRateProvider}s linked to a client.
+ */
+@SuppressWarnings("restriction")
 public class ExchangeRateProviderFactory
 {
-    private class Dijkstra
+    private static class Dijkstra
     {
         private List<ExchangeRateTimeSeries> timeSeries = new ArrayList<>();
 
@@ -56,6 +67,9 @@ public class ExchangeRateProviderFactory
                 String node = getNodeWithMinimumDistance(unvisited);
                 unvisited.remove(node);
                 visited.add(node);
+
+                if (getDistance(node) == Integer.MAX_VALUE)
+                    continue;
 
                 for (ExchangeRateTimeSeries neighbor : getNeighbors(node))
                 {
@@ -144,30 +158,64 @@ public class ExchangeRateProviderFactory
 
     }
 
-    private final List<ExchangeRateProvider> providers;
-    private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
+    private static final List<ExchangeRateProvider> PROVIDERS = new ArrayList<>();
 
-    public ExchangeRateProviderFactory()
+    static
     {
-        providers = new ArrayList<>();
+        // load all available providers
         Iterator<ExchangeRateProvider> registeredProvider = ServiceLoader.load(ExchangeRateProvider.class).iterator();
         while (registeredProvider.hasNext())
-        {
-            ExchangeRateProvider provider = registeredProvider.next();
-            providers.add(provider);
-        }
+            PROVIDERS.add(registeredProvider.next());
     }
 
-    public List<ExchangeRateProvider> getProviders()
+    private final Client client;
+    private final ConcurrentMap<CurrencyPair, ExchangeRateTimeSeries> cache = new ConcurrentHashMap<>();
+
+    @Inject
+    public ExchangeRateProviderFactory(Client client)
     {
-        return Collections.unmodifiableList(providers);
+        this.client = client;
+
+        // clear cache if exchange rates are added or removed in the list of
+        // securities
+        this.client.addPropertyChangeListener("securities", event -> { //$NON-NLS-1$
+            if ((event.getOldValue() != null && ((Security) event.getOldValue()).isExchangeRate())
+                            || (event.getNewValue() != null && ((Security) event.getNewValue()).isExchangeRate()))
+                clearCache();
+        });
     }
 
+    @Inject
+    @Optional
+    public void onSecurityEdited(@EventTopic(ChangeEventConstants.Security.EDITED) SecurityChangeEvent event)
+    {
+        // if the currency pair - base or term currency - is edited, we must
+        // clear the cache of resolved time series
+        if (event.appliesTo(client) && event.getSecurity().isExchangeRate())
+            clearCache();
+    }
+
+    /**
+     * Gets all available {@link ExchangeRateProvider}s.
+     * 
+     * @return {@link ExchangeRateProvider}s
+     */
+    public static List<ExchangeRateProvider> getProviders()
+    {
+        return new ArrayList<>(PROVIDERS);
+    }
+
+    /**
+     * Returns the available exchange rates provided by this provider.
+     * 
+     * @return available time series
+     */
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries()
     {
         List<ExchangeRateTimeSeries> series = new ArrayList<>();
-        for (ExchangeRateProvider p : providers)
-            series.addAll(p.getAvailableTimeSeries());
+        for (ExchangeRateProvider p : PROVIDERS)
+            series.addAll(p.getAvailableTimeSeries(client));
+
         return series;
     }
 
@@ -188,10 +236,23 @@ public class ExchangeRateProviderFactory
         List<ExchangeRateTimeSeries> answer = dijkstra.findShortestPath(termCurrency);
 
         if (answer.isEmpty())
-            return null;
+        {
+            // log warning when creating an "empty" exchange rate time series so
+            // that the user can create an exchange rate for this currency pair
+
+            PortfolioLog.warning(MessageFormat.format(Messages.MsgNoExchangeRateAvailableForConversion, baseCurrency,
+                            termCurrency));
+
+            return new EmptyExchangeRateTimeSeries(baseCurrency, termCurrency);
+        }
         else if (answer.size() == 1)
+        {
             return answer.get(0);
+        }
         else
+        {
             return new ChainedExchangeRateTimeSeries(answer.toArray(new ExchangeRateTimeSeries[0]));
+        }
     }
+
 }

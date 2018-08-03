@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.util.function.Supplier;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
@@ -9,7 +11,7 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.util.Colors;
 
-public class HeadingWidget extends WidgetDelegate
+public class HeadingWidget extends WidgetDelegate<Object>
 {
     private Label title;
 
@@ -42,8 +44,15 @@ public class HeadingWidget extends WidgetDelegate
         return title;
     }
 
+
     @Override
-    public void update()
+    public Supplier<Object> getUpdateTask()
+    {
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object data)
     {
         title.setText(getWidget().getLabel());
     }

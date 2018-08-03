@@ -21,7 +21,7 @@ public class IsinColumn extends Column
         public boolean canEdit(Object element)
         {
             Security s = Adaptor.adapt(Security.class, element);
-            return s != null;
+            return s != null && !s.isExchangeRate();
         }
 
         @Override

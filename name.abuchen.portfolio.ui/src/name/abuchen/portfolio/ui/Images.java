@@ -48,6 +48,8 @@ public enum Images
     VIEW_DONUT("view_donut.png"), //$NON-NLS-1$
     VIEW_REBALANCING("view_rebalancing.png"), //$NON-NLS-1$
     VIEW_STACKEDCHART("view_stackedchart.png"), //$NON-NLS-1$
+    VIEW_BARCHART("view_barchart.png"), //$NON-NLS-1$
+    VIEW_LINECHART("view_linechart.png"), //$NON-NLS-1$
 
     CHECK("check.png"), //$NON-NLS-1$
     QUICKFIX("quickfix.png"), //$NON-NLS-1$

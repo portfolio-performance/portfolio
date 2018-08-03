@@ -132,6 +132,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         
     }
     
+    @Override
     LocalDateTime asDate(String value)
     {
         return LocalDateTime.parse(value, DATE_FORMAT);

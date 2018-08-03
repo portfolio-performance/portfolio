@@ -284,7 +284,7 @@ public class SecurityPosition
 
     public Money calculateValue()
     {
-        double marketValue = shares * price.getValue() / Values.Share.divider() / Values.Quote.dividerToMoney();
+        double marketValue = shares / Values.Share.divider() * price.getValue() / Values.Quote.dividerToMoney();
         return Money.of(investment.getCurrencyCode(), Math.round(marketValue));
     }
 

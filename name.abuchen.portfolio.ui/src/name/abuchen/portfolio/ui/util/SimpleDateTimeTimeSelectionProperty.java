@@ -17,6 +17,7 @@ public class SimpleDateTimeTimeSelectionProperty extends WidgetValueProperty
         super(SWT.Selection);
     }
 
+    @Override
     public Object getValueType()
     {
         return LocalTime.class;

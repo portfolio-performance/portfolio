@@ -30,10 +30,7 @@ public class ExchangeRate implements Comparable<ExchangeRate>
 
     public ExchangeRate(LocalDateTime time, BigDecimal value)
     {
-        Objects.requireNonNull(time);
-        Objects.requireNonNull(value);
-        this.time = time.toLocalDate();
-        this.value = value;
+        this(Objects.requireNonNull(time).toLocalDate(), value);
     }
     
     public ExchangeRate(LocalDate time, BigDecimal value)
@@ -68,8 +65,7 @@ public class ExchangeRate implements Comparable<ExchangeRate>
 
     public ExchangeRate inverse()
     {
-        BigDecimal inverse = BigDecimal.ONE.divide(value, 10, BigDecimal.ROUND_HALF_DOWN);
-        return new ExchangeRate(time, inverse);
+        return new ExchangeRate(time, inverse(value));
     }
 
     @Override

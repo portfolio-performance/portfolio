@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -23,17 +24,17 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
-public class VerticalSpacerWidget extends WidgetDelegate
+public class VerticalSpacerWidget extends WidgetDelegate<Object>
 {
     public static class SpacerConfig implements WidgetConfig
     {
         private static final int MINIMUM_HEIGHT = 5;
 
-        private final WidgetDelegate delegate;
+        private final WidgetDelegate<?> delegate;
 
         private int height = 20;
 
-        public SpacerConfig(WidgetDelegate delegate)
+        public SpacerConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
 
@@ -83,7 +84,9 @@ public class VerticalSpacerWidget extends WidgetDelegate
                 this.height = Integer.parseInt(dialog.getValue());
 
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.HEIGHT.name(), String.valueOf(height));
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.markDirty();
             }));
         }
 
@@ -147,14 +150,26 @@ public class VerticalSpacerWidget extends WidgetDelegate
     }
 
     @Override
-    public void update()
+    public Supplier<Object> getUpdateTask()
+    {
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object d)
     {
         GridData data = (GridData) title.getLayoutData();
-        data.heightHint = get(SpacerConfig.class).getHeight();
 
+        int oldHeight = data.heightHint;
+        int newHeight = get(SpacerConfig.class).getHeight();
+
+        data.heightHint = newHeight;
         title.setText(getWidget().getLabel());
 
-        title.getParent().layout(true);
-        title.getParent().getParent().layout(true);
+        if (oldHeight != newHeight)
+        {
+            title.getParent().layout(true);
+            title.getParent().getParent().layout(true);
+        }
     }
 }
