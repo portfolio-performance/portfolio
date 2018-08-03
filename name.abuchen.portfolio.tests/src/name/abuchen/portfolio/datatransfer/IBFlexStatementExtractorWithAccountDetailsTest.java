@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.pdfbox.io.IOUtils;
 import org.junit.Test;
@@ -22,6 +23,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -31,6 +33,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorWithAccountDetailsTest
@@ -51,13 +54,32 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
+        
+        List<Extractor.Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem ).collect(Collectors.toList());
 
-        assertThat(results.size(), is(6));
+        assertThat(securityItems.size(), is(3));
+        
+        assertOptionSecurity((SecurityItem) securityItems.get(2));
+ 
+        List<Extractor.Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem ).collect(Collectors.toList());
+
+        assertThat(buySellTransactions.size(), is(4));
+        
+        List<Extractor.Item> accountTransactions = results.stream().filter( i -> i instanceof TransactionItem ).collect(Collectors.toList());
+        
+        assertThat(accountTransactions.size(), is(4));
+        
+        assertThat(results.size(), is(11));
 
         assertSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
     }
 
+    
+    private void assertOptionSecurity(SecurityItem item) {
+        assertThat(item.getSecurity().getFeed(), is(YahooFinanceQuoteFeed.ID));
+        
+    }
 //    private void assertInterestCharge(Optional<Item> item)
 //    {
 //        assertThat(item.isPresent(), is(true));
