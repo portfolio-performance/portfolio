@@ -38,7 +38,7 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorWithAccountDetailsTest
 {
-    @Test
+    @Test 
     public void testIBAcitvityStatement() throws IOException
     {
         InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatementWithAccountDetails.xml");
@@ -57,19 +57,20 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         
         List<Extractor.Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem ).collect(Collectors.toList());
 
-        assertThat(securityItems.size(), is(3));
+        assertThat(securityItems.size(), is(4));
         
         assertOptionSecurity((SecurityItem) securityItems.get(2));
  
         List<Extractor.Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem ).collect(Collectors.toList());
 
-        assertThat(buySellTransactions.size(), is(4));
+        assertThat(buySellTransactions.size(), is(5));
+        assertOptionBuySellTransaction((BuySellEntryItem) buySellTransactions.get(2));
         
         List<Extractor.Item> accountTransactions = results.stream().filter( i -> i instanceof TransactionItem ).collect(Collectors.toList());
         
         assertThat(accountTransactions.size(), is(4));
         
-        assertThat(results.size(), is(11));
+        assertThat(results.size(), is(13));
 
         assertSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
@@ -78,7 +79,12 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
     
     private void assertOptionSecurity(SecurityItem item) {
         assertThat(item.getSecurity().getFeed(), is(YahooFinanceQuoteFeed.ID));
+        assertThat(item.getSecurity().getTickerSymbol(), is("ORCL171117C00050000"));
         
+    }
+    
+    private void assertOptionBuySellTransaction(BuySellEntryItem item) {
+        assertThat(item.getShares(),is((long) 100 * Values.Share.factor()));
     }
 //    private void assertInterestCharge(Optional<Item> item)
 //    {
