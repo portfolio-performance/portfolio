@@ -22,16 +22,30 @@ public class ListEditingSupport extends PropertyEditingSupport
     {
         super(subjectType, attributeName);
 
-        for (Object option : options)
-            if (option == null)
-                throw new IllegalArgumentException();
+        if (options.size() > 0)
+        {
+            for (Object option : options)
+                if (option == null)
+                    throw new IllegalArgumentException();
 
-        this.comboBoxItems = new ArrayList<Object>(options);
+            this.comboBoxItems = new ArrayList<Object>(options);
+
+        }
     }
 
     public boolean canBeNull(Object element)
     {
         return false;
+    }
+
+    public void setComboBoxItems (List<Object> comboBoxItems)
+    {
+        this.comboBoxItems = comboBoxItems;
+    }
+
+    public List<Object> getComboBoxItems ()
+    {
+        return comboBoxItems;
     }
 
     @Override
@@ -67,7 +81,7 @@ public class ListEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public final Object getValue(Object element) throws Exception
+    public Object getValue(Object element) throws Exception
     {
         Object property = descriptor().getReadMethod().invoke(adapt(element));
 
@@ -84,7 +98,7 @@ public class ListEditingSupport extends PropertyEditingSupport
     }
 
     @Override
-    public final void setValue(Object element, Object value) throws Exception
+    public void setValue(Object element, Object value) throws Exception
     {
         Object subject = adapt(element);
 

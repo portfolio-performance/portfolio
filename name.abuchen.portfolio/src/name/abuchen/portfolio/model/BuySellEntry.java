@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.money.Money;
 
-public class BuySellEntry implements CrossEntry, Annotated
+public class BuySellEntry extends CrossEntry implements Annotated
 {
     private Portfolio portfolio;
     private PortfolioTransaction portfolioTransaction;
@@ -47,7 +47,37 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         return this.account;
     }
-    
+
+    public void setTransactionOwner(TransactionOwner<Transaction> owner)
+    {
+        Object subject = (Object) owner;
+        if (subject instanceof Account && !this.account.equals((Account) subject))
+            this.account = (Account) subject;
+        else if (subject instanceof Portfolio && !this.portfolio.equals((Portfolio) subject))
+            this.portfolio = (Portfolio) subject;
+    }
+
+    public void setOtherTransactionOwner(TransactionOwner<Transaction> owner)
+    {
+        Object subject = (Object) owner;
+        if (subject instanceof Account && !this.account.equals((Account) subject))
+            this.account = (Account) subject;
+        else if (subject instanceof Portfolio && !this.portfolio.equals((Portfolio) subject))
+            this.portfolio = (Portfolio) subject;
+    }
+
+    public TransactionOwner<Transaction> getTransactionOwner()
+    {
+        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(portfolioTransaction);
+        return owner;
+    }
+
+    public TransactionOwner<Transaction> getOtherTransactionOwner()
+    {
+        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(accountTransaction);
+        return owner;
+    }
+
     public void setDate(LocalDateTime date)
     {
         this.portfolioTransaction.setDateTime(date);
