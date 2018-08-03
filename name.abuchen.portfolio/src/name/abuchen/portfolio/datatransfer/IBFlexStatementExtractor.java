@@ -10,9 +10,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,6 +41,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractor implements Extractor
@@ -254,9 +257,10 @@ public class IBFlexStatementExtractor implements Extractor
          */
         private Function<Element, Item> buildPortfolioTransaction = element -> {
             String assetCategory = element.getAttribute("assetCategory");
-            if (!"STK".equals(assetCategory))
+            
+            if (! Arrays.asList("STK","OPT").contains(assetCategory))
                 return null;
-
+            
             // Unused Information from Flexstatement Trades, to be used in the
             // future: tradeTime, transactionID, ibOrderID
             BuySellEntry transaction = new BuySellEntry();
@@ -505,9 +509,11 @@ public class IBFlexStatementExtractor implements Extractor
         private Security getOrCreateSecurity(Element element, boolean doCreate)
         {
             // Lookup the Exchange Suffix for Yahoo
-            String tickerSymbol = element.getAttribute("symbol");
+            Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
+            String quoteFeed = QuoteFeed.MANUAL;
+            
             // yahoo uses '-' instead of ' '
-            String yahooSymbol = tickerSymbol == null ? tickerSymbol : tickerSymbol.replaceAll(" ", "-");
+            Optional<String> yahooSymbol = tickerSymbol.map( t -> t.replaceAll(" ", "-"));
             String exchange = element.getAttribute("exchange");
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
@@ -519,11 +525,16 @@ public class IBFlexStatementExtractor implements Extractor
             String conID = element.getAttribute("conid");
             String description = element.getAttribute("description");
 
-            if (tickerSymbol != null)
+            if (tickerSymbol.isPresent() && exchanges.containsKey(exchange))
             {
-                String exch = exchanges.get(exchange);
-                if (exch != null && exch.length() > 0)
-                    yahooSymbol = tickerSymbol + '.' + exch;
+                yahooSymbol = tickerSymbol.map( t -> t + '.' + exchanges.get(exchange));
+            }
+            
+            if ("OPT".equals(element.getAttribute("assetCategory")) ) {
+                yahooSymbol = tickerSymbol.map( t -> t.replaceAll("\\s+", ""));
+                // ORCL  171117C00050000
+                if (yahooSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent()) 
+                    quoteFeed = YahooFinanceQuoteFeed.ID;
             }
 
             for (Security s : allSecurities)
@@ -533,14 +544,14 @@ public class IBFlexStatementExtractor implements Extractor
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
                     return s;
-                if (yahooSymbol != null && yahooSymbol.length() > 0 && yahooSymbol.equals(s.getTickerSymbol()))
+                if (yahooSymbol.isPresent()  && yahooSymbol.get().equals(s.getTickerSymbol()))
                     return s;
             }
 
             if (!doCreate)
                 return null;
 
-            Security security = new Security(description, isin, yahooSymbol, QuoteFeed.MANUAL);
+            Security security = new Security(description, isin, yahooSymbol.orElse(null), quoteFeed);
             // We use the Wkn to store the IB conID as a unique identifier
             security.setWkn(conID);
             security.setCurrencyCode(currency);
