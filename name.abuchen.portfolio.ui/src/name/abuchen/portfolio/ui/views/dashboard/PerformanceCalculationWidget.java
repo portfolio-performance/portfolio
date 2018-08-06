@@ -262,12 +262,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
     private void fillInReducedValues(ClientPerformanceSnapshot snapshot)
     {
-        MutableMoney misc = MutableMoney.of(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode());
-
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
-
         
-        misc = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
+        MutableMoney misc = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
 
         filInValues(0, categories.subList(0, 2));
 
