@@ -212,7 +212,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         
         
         // footer
-        MutableMoney totalNonNeutralTransactions = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
+        MutableMoney totalNonNeutralTransactions = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
         signs[6].setText(categories.get(7).getSign());
         labels[6].setText(categories.get(7).getLabel());
         values[6].setText(Values.Money.format(totalNonNeutralTransactions.toMoney(), getClient().getBaseCurrency()));
