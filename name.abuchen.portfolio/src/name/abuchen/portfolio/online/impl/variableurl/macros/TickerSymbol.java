@@ -7,8 +7,8 @@ public class TickerSymbol implements Macro
 {
     public TickerSymbol(CharSequence input)
     {
-        if (!"TICKER".equals(input))
-            throw new IllegalArgumentException("Bad ticker symbol macro: " + input);
+        if (!"TICKER".equals(input)) //$NON-NLS-1$
+            throw new IllegalArgumentException();
     }
 
     @Override

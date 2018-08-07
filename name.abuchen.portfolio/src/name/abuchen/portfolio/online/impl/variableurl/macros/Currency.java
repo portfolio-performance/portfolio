@@ -7,8 +7,8 @@ public class Currency implements Macro
 {
     public Currency(CharSequence input)
     {
-        if (!"CURRENCY".equals(input))
-            throw new IllegalArgumentException("Bad currency macro: " + input);
+        if (!"CURRENCY".equals(input)) //$NON-NLS-1$
+            throw new IllegalArgumentException();
     }
 
     @Override

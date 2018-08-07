@@ -7,8 +7,8 @@ public class ISIN implements Macro
 {
     public ISIN(CharSequence input)
     {
-        if (!"ISIN".equals(input))
-            throw new IllegalArgumentException("Bad ISIN macro: " + input);
+        if (!"ISIN".equals(input)) //$NON-NLS-1$
+            throw new IllegalArgumentException();
     }
 
     @Override

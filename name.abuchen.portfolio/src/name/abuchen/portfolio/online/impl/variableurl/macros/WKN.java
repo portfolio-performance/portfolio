@@ -7,8 +7,8 @@ public class WKN implements Macro
 {
     public WKN(CharSequence input)
     {
-        if (!"WKN".equals(input))
-            throw new IllegalArgumentException("Bad WKN macro: " + input);
+        if (!"WKN".equals(input)) //$NON-NLS-1$
+            throw new IllegalArgumentException();
     }
 
     @Override
