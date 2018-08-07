@@ -29,6 +29,16 @@ public class AccountTransferEntry extends CrossEntry implements Annotated
         this.accountTo = accountTo;
     }
 
+    public void setSourceTransaction(AccountTransaction transaction)
+    {
+        this.transactionFrom = transaction;
+    }
+
+    public void setTargetTransaction(AccountTransaction transaction)
+    {
+        this.transactionTo = transaction;
+    }
+
     public AccountTransaction getSourceTransaction()
     {
         return this.transactionFrom;

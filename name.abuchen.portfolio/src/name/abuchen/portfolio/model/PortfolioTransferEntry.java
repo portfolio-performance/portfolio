@@ -27,6 +27,16 @@ public class PortfolioTransferEntry extends CrossEntry implements Annotated
         this.portfolioTo = portfolioTo;
     }
 
+    public void setSourceTransaction(PortfolioTransaction transaction)
+    {
+        this.transactionFrom = transaction;
+    }
+
+    public void setTargetTransaction(PortfolioTransaction transaction)
+    {
+        this.transactionTo = transaction;
+    }
+
     public PortfolioTransaction getSourceTransaction()
     {
         return this.transactionFrom;
@@ -45,6 +55,16 @@ public class PortfolioTransferEntry extends CrossEntry implements Annotated
     public void setTargetPortfolio(Portfolio portfolio)
     {
         this.portfolioTo = portfolio;
+    }
+
+    public Portfolio getSourcePortfolio()
+    {
+        return this.portfolioFrom;
+    }
+
+    public Portfolio getTargetPortfolio()
+    {
+        return this.portfolioTo;
     }
 
     public void setTransactionOwner(TransactionOwner<Transaction> owner)
