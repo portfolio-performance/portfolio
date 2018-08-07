@@ -15,6 +15,7 @@ import com.google.common.collect.Iterators;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 
 @SuppressWarnings("nls")
 public class FormattedDateTest

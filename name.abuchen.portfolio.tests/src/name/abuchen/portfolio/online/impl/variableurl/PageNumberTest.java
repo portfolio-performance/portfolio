@@ -8,6 +8,7 @@ import com.google.common.collect.Iterators;
 import org.junit.Test;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 
 import java.util.Arrays;
 import java.util.LinkedList;
