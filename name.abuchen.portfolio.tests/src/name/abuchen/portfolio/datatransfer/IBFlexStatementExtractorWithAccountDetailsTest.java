@@ -33,47 +33,76 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorWithAccountDetailsTest
 {
-    @Test 
-    public void testIBAcitvityStatement() throws IOException
+    
+    private  List<Item> runExtractor(List<Exception> errors) throws IOException
     {
         InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatementWithAccountDetails.xml");
         Client client = new Client();
-        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
-
         Extractor.InputFile tempFile = createTempFile(activityStatement);
-
+        IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
+        
+        return extractor.extract(Collections.singletonList(tempFile), errors);
+    }
+    
+    @Test 
+    public void testIBAcitvityStatement() throws IOException
+    {
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
-
+        List<Item> results = runExtractor(errors);
         assertTrue(errors.isEmpty());
+        int numSecurity = 8;
+        int numBuySell = 9;
+        int numTransactions = 4;
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
         
         List<Extractor.Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem ).collect(Collectors.toList());
 
-        assertThat(securityItems.size(), is(4));
+        assertThat(securityItems.size(), is(numSecurity));
         
         assertOptionSecurity((SecurityItem) securityItems.get(2));
  
         List<Extractor.Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem ).collect(Collectors.toList());
 
-        assertThat(buySellTransactions.size(), is(5));
+        assertThat(buySellTransactions.size(), is(numBuySell));
         assertOptionBuySellTransaction((BuySellEntryItem) buySellTransactions.get(2));
         
         List<Extractor.Item> accountTransactions = results.stream().filter( i -> i instanceof TransactionItem ).collect(Collectors.toList());
         
-        assertThat(accountTransactions.size(), is(4));
+        assertThat(accountTransactions.size(), is(numTransactions));
         
-        assertThat(results.size(), is(13));
+        assertThat(results.size(), is(numSecurity + numBuySell + numTransactions));
 
         assertSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
+    }
+    
+    @Test 
+    public void testSymbolTranslation() throws IOException 
+    {
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = runExtractor(errors);
+        List<Extractor.Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem ).collect(Collectors.toList());
+        
+        assertThat(securityItems.get(0).getSecurity().getTickerSymbol(), is("ORCL") );
+        assertThat(securityItems.get(0).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID) );
+        assertThat(securityItems.get(3).getSecurity().getTickerSymbol(), is("PAYC181116C00120000"));
+        assertThat(securityItems.get(3).getSecurity().getFeed(), is(YahooFinanceQuoteFeed.ID));
+        assertThat(securityItems.get(4).getSecurity().getTickerSymbol(), is("BMW.DE"));
+        assertThat(securityItems.get(5).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID) );
+        assertThat(securityItems.get(5).getSecurity().getTickerSymbol(), is("DBK.DE"));
+        assertThat(securityItems.get(6).getSecurity().getTickerSymbol(), is("H5E.DE"));
+        assertThat(securityItems.get(6).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID) );
+        assertThat(securityItems.get(7).getSecurity().getTickerSymbol(), is("BAS"));
+        assertThat(securityItems.get(7).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID) );
+
     }
 
     

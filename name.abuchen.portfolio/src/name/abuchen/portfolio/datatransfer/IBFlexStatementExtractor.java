@@ -41,6 +41,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
@@ -49,7 +50,7 @@ public class IBFlexStatementExtractor implements Extractor
     private List<Security> allSecurities;
 
     private Map<String, String> exchanges;
-
+    
     public IBFlexStatementExtractor(Client client)
     {
         allSecurities = new ArrayList<>(client.getSecurities());
@@ -62,6 +63,10 @@ public class IBFlexStatementExtractor implements Extractor
         this.exchanges.put("SWX", "SW");
         this.exchanges.put("TSE", "TO");
         this.exchanges.put("VENTURE", "V");
+        this.exchanges.put("IBIS",  "DE");
+        this.exchanges.put("TGATE",  "DE");
+        this.exchanges.put("SWB", "SG");
+        this.exchanges.put("FWB", "F");
     }
 
     private LocalDateTime convertDate(String date) throws DateTimeParseException
@@ -81,7 +86,7 @@ public class IBFlexStatementExtractor implements Extractor
         return LocalDateTime.parse(String.format("%s %s", date, time), DateTimeFormatter.ofPattern("yyyyMMdd HHmmss"))
                         .withSecond(0).withNano(0);
     }
-
+    
     /**
      * Import an Interactive Broker ActivityStatement from an XML file. It
      * currently only imports Trades, Corporate Transactions and Cash
@@ -512,34 +517,51 @@ public class IBFlexStatementExtractor implements Extractor
         {
             // Lookup the Exchange Suffix for Yahoo
             Optional<String> tickerSymbol = Optional.ofNullable(element.getAttribute("symbol"));
+            String assetCategory = element.getAttribute("assetCategory");
+            String exchange = element.getAttribute("exchange");
             String quoteFeed = QuoteFeed.MANUAL;
 
             // yahoo uses '-' instead of ' '
-            Optional<String> yahooSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
-            String exchange = element.getAttribute("exchange");
             String currency = asCurrencyUnit(element.getAttribute("currency"));
             String isin = element.getAttribute("isin");
             String cusip = element.getAttribute("cusip");
+            Optional<String> computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll(" ", "-"));
+            
             // Store cusip in isin if isin is not available
             if (isin.length() == 0 && cusip.length() > 0)
                 isin = cusip;
 
             String conID = element.getAttribute("conid");
-            String description = element.getAttribute("description");
+            String description = element.getAttribute("description"); 
 
-            if (tickerSymbol.isPresent() && exchanges.containsKey(exchange))
+            if ("OPT".equals(assetCategory))
             {
-                yahooSymbol = tickerSymbol.map(t -> t + '.' + exchanges.get(exchange));
-            }
-
-            if ("OPT".equals(element.getAttribute("assetCategory")))
-            {
-                yahooSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+", ""));
+                computedTickerSymbol = tickerSymbol.map(t -> t.replaceAll("\\s+", ""));
                 // e.g a put option for oracle: ORCL 171117C00050000
-                if (yahooSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
+                if (computedTickerSymbol.filter(p -> p.matches(".*\\d{6}[CP]\\d{8}")).isPresent())
                     quoteFeed = YahooFinanceQuoteFeed.ID;
             }
+            
+            if ("STK".equals(assetCategory)) {
+                computedTickerSymbol = tickerSymbol;
+                if (! "USD".equals(currency)) {
+                    // some symbols in IB included the exchange as lower key without "." at the end, e.g. BMWd for BMW trading at d (Xetra, DE), so we'll get rid of this
+                    computedTickerSymbol = computedTickerSymbol.map( t -> t.replaceAll("[a-z]*$", ""));
+                    
+                    // another curiosity, sometimes the ticker symbol has EUR appended, e.g. Deutsche Bank is DBKEUR, BMW is BMWEUR. Also notices this during cash transactions (dividend payments)
+                    if ("EUR".equals(currency)) 
+                        computedTickerSymbol = computedTickerSymbol.map( t -> t.replaceAll("EUR$", ""));
+                    
+                    // at last, lets add the exchange to the ticker symbol. Since all european stock have ISIN set, this should not produce duplicate security (later on)
+                    if (tickerSymbol.isPresent() && exchanges.containsKey(exchange))
+                        computedTickerSymbol = computedTickerSymbol.map(t -> t + '.' + exchanges.get(exchange));
+                    
+                }
+                // For Stock, lets use Alphavante quote feed by default 
+                quoteFeed = AlphavantageQuoteFeed.ID;
+            }
 
+  
             for (Security s : allSecurities)
             {
                 // Find security with same conID or isin or yahooSymbol
@@ -547,14 +569,14 @@ public class IBFlexStatementExtractor implements Extractor
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
                     return s;
-                if (yahooSymbol.isPresent() && yahooSymbol.get().equals(s.getTickerSymbol()))
+                if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(s.getTickerSymbol()))
                     return s;
             }
 
             if (!doCreate)
                 return null;
 
-            Security security = new Security(description, isin, yahooSymbol.orElse(null), quoteFeed);
+            Security security = new Security(description, isin, computedTickerSymbol.orElse(null), quoteFeed);
             // We use the Wkn to store the IB conID as a unique identifier
             security.setWkn(conID);
             security.setCurrencyCode(currency);
@@ -568,7 +590,8 @@ public class IBFlexStatementExtractor implements Extractor
 
             return security;
         }
-
+        
+ 
         /**
          * Figure out how many shares a dividend payment is related to. Extracts
          * the information from the description string given by IB
