@@ -185,7 +185,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 fillInReducedValues(snapshot);
                 break;
             case NONNEUTRAL:
-                fillInNonNeutralValues(snapshot);
+                fillInOnlyRelevantValues(snapshot);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -194,7 +194,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         container.layout();
     }
 
-    private void fillInNonNeutralValues(final ClientPerformanceSnapshot snapshot)
+    private void fillInOnlyRelevantValues(final ClientPerformanceSnapshot snapshot)
     {
         
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
@@ -216,6 +216,8 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         signs[6].setText(categories.get(7).getSign());
         labels[6].setText(categories.get(7).getLabel());
         values[6].setText(Values.Money.format(totalNonNeutralTransactions.toMoney(), getClient().getBaseCurrency()));
+        MutableMoney totalRelevantTransactions = sumCategoryValuations(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
+        values[6].setText(Values.Money.format(totalRelevantTransactions.toMoney(), getClient().getBaseCurrency()));
     }
     
     /**
@@ -224,7 +226,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
      * @param categories The categories for which the total value is computed
      * @return
      */
-    private MutableMoney sumCategoryValuates(String currencyCode, List<ClientPerformanceSnapshot.Category> categories) {
+    private MutableMoney sumCategoryValuations(String currencyCode, List<ClientPerformanceSnapshot.Category> categories) {
         
         MutableMoney totalMoney = MutableMoney.of(currencyCode);
         
@@ -264,7 +266,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     {
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
         
-        MutableMoney misc = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
+        MutableMoney misc = sumCategoryValuations(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(2, 6));
 
         filInValues(0, categories.subList(0, 2));
 
