@@ -33,69 +33,104 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 
 @SuppressWarnings("nls")
 public class IBFlexStatementExtractorWithAccountDetailsTest
 {
-    @Test 
-    public void testIBAcitvityStatement() throws IOException
+
+    private List<Item> runExtractor(List<Exception> errors) throws IOException
     {
         InputStream activityStatement = getClass().getResourceAsStream("IBActivityStatementWithAccountDetails.xml");
         Client client = new Client();
+        Extractor.InputFile tempFile = createTempFile(activityStatement);
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
 
-        Extractor.InputFile tempFile = createTempFile(activityStatement);
+        return extractor.extract(Collections.singletonList(tempFile), errors);
+    }
 
+    @Test
+    public void testIBAcitvityStatement() throws IOException
+    {
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
-
+        List<Item> results = runExtractor(errors);
         assertTrue(errors.isEmpty());
+        int numSecurity = 8;
+        int numBuySell = 9;
+        int numTransactions = 4;
 
         results.stream().filter(i -> !(i instanceof SecurityItem))
                         .forEach(i -> assertThat(i.getAmount(), notNullValue()));
-        
-        List<Extractor.Item> securityItems = results.stream().filter( i -> i instanceof SecurityItem ).collect(Collectors.toList());
 
-        assertThat(securityItems.size(), is(4));
-        
+        List<Extractor.Item> securityItems = results.stream().filter(i -> i instanceof SecurityItem)
+                        .collect(Collectors.toList());
+
+        assertThat(securityItems.size(), is(numSecurity));
+
         assertOptionSecurity((SecurityItem) securityItems.get(2));
- 
-        List<Extractor.Item> buySellTransactions = results.stream().filter( i -> i instanceof BuySellEntryItem ).collect(Collectors.toList());
 
-        assertThat(buySellTransactions.size(), is(5));
+        List<Extractor.Item> buySellTransactions = results.stream().filter(i -> i instanceof BuySellEntryItem)
+                        .collect(Collectors.toList());
+
+        assertThat(buySellTransactions.size(), is(numBuySell));
         assertOptionBuySellTransaction((BuySellEntryItem) buySellTransactions.get(2));
-        
-        List<Extractor.Item> accountTransactions = results.stream().filter( i -> i instanceof TransactionItem ).collect(Collectors.toList());
-        
-        assertThat(accountTransactions.size(), is(4));
-        
-        assertThat(results.size(), is(13));
+
+        List<Extractor.Item> accountTransactions = results.stream().filter(i -> i instanceof TransactionItem)
+                        .collect(Collectors.toList());
+
+        assertThat(accountTransactions.size(), is(numTransactions));
+
+        assertThat(results.size(), is(numSecurity + numBuySell + numTransactions));
 
         assertSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
     }
 
-    
-    private void assertOptionSecurity(SecurityItem item) {
+    @Test
+    public void testSymbolTranslation() throws IOException
+    {
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = runExtractor(errors);
+        List<Extractor.Item> securityItems = results.stream().filter(i -> i instanceof SecurityItem)
+                        .collect(Collectors.toList());
+
+        assertThat(securityItems.get(0).getSecurity().getTickerSymbol(), is("ORCL"));
+        assertThat(securityItems.get(0).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID));
+        assertThat(securityItems.get(3).getSecurity().getTickerSymbol(), is("PAYC181116C00120000"));
+        assertThat(securityItems.get(3).getSecurity().getFeed(), is(YahooFinanceQuoteFeed.ID));
+        assertThat(securityItems.get(4).getSecurity().getTickerSymbol(), is("BMW.DE"));
+        assertThat(securityItems.get(5).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID));
+        assertThat(securityItems.get(5).getSecurity().getTickerSymbol(), is("DBK.DE"));
+        assertThat(securityItems.get(6).getSecurity().getTickerSymbol(), is("H5E.DE"));
+        assertThat(securityItems.get(6).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID));
+        assertThat(securityItems.get(7).getSecurity().getTickerSymbol(), is("BAS"));
+        assertThat(securityItems.get(7).getSecurity().getFeed(), is(AlphavantageQuoteFeed.ID));
+
+    }
+
+    private void assertOptionSecurity(SecurityItem item)
+    {
         assertThat(item.getSecurity().getFeed(), is(YahooFinanceQuoteFeed.ID));
         assertThat(item.getSecurity().getTickerSymbol(), is("ORCL171117C00050000"));
-        
+
     }
-    
-    private void assertOptionBuySellTransaction(BuySellEntryItem item) {
-        assertThat(item.getShares(),is((long) 100 * Values.Share.factor()));
+
+    private void assertOptionBuySellTransaction(BuySellEntryItem item)
+    {
+        assertThat(item.getShares(), is((long) 100 * Values.Share.factor()));
     }
-//    private void assertInterestCharge(Optional<Item> item)
-//    {
-//        assertThat(item.isPresent(), is(true));
-//        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-//        AccountTransaction entry = (AccountTransaction) item.get().getSubject();
-//
-//        assertThat(entry.getType(), is(Type.INTEREST_CHARGE));
-//        assertThat(entry.getMonetaryAmount(), is(Money.of("CAD", 15_17L)));
-//        assertThat(entry.getDate(), is(LocalDate.parse("2013-02-05")));
-//    }
+    // private void assertInterestCharge(Optional<Item> item)
+    // {
+    // assertThat(item.isPresent(), is(true));
+    // assertThat(item.get().getSubject(),
+    // instanceOf(AccountTransaction.class));
+    // AccountTransaction entry = (AccountTransaction) item.get().getSubject();
+    //
+    // assertThat(entry.getType(), is(Type.INTEREST_CHARGE));
+    // assertThat(entry.getMonetaryAmount(), is(Money.of("CAD", 15_17L)));
+    // assertThat(entry.getDate(), is(LocalDate.parse("2013-02-05")));
+    // }
 
     private void assertSecurity(Optional<Item> item)
     {
@@ -121,7 +156,8 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-09-15T16:20")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(100_000000L));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 1_67L)));
-        // 100 shares at 50 USD minus 2USD transaction cost is 49.98 USD per share  times 0.83701 is 41.8338
+        // 100 shares at 50 USD minus 2USD transaction cost is 49.98 USD per
+        // share times 0.83701 is 41.8338
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of("EUR", Values.Quote.factorize(41.8338))));
 
@@ -135,7 +171,7 @@ public class IBFlexStatementExtractorWithAccountDetailsTest
         Client client = new Client();
         IBFlexStatementExtractor extractor = new IBFlexStatementExtractor(client);
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results =  extractor.extract(Collections.singletonList(tempFile), errors);
+        List<Item> results = extractor.extract(Collections.singletonList(tempFile), errors);
 
         assertThat(results.isEmpty(), is(true));
         assertThat(errors.size(), is(1));
