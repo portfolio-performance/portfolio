@@ -441,8 +441,8 @@ public class Messages extends NLS
     public static String LabelLanguageAutomatic;
     public static String LabelLayout;
     public static String LabelLayoutFull;
-    public static String LabelLayoutNonNeutral;
     public static String LabelLayoutReduced;
+    public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNamePlusCopy;

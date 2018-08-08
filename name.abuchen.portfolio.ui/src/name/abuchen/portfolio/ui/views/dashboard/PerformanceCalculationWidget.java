@@ -28,7 +28,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 {
     enum TableLayout
     {
-        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced), NONNEUTRAL(Messages.LabelLayoutNonNeutral);
+        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced), RELEVANT(Messages.LabelLayoutRelevant);
 
         private String label;
 
@@ -103,7 +103,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             case REDUCED:
                 createTable(5);
                 break;
-            case NONNEUTRAL:
+            case RELEVANT:
                 createTable(7);
                 break;
             default:
@@ -186,7 +186,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             case REDUCED:
                 fillInReducedValues(snapshot);
                 break;
-            case NONNEUTRAL:
+            case RELEVANT:
                 fillInOnlyRelevantValues(snapshot);
                 break;
             default:
