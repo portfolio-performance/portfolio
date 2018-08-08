@@ -1,7 +1,9 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Supplier;
+import java.text.MessageFormat;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -199,8 +201,10 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
         
-        // header
-        labels[0].setText(categories.get(0).getLabel());
+        // header 
+        LocalDate startDate = snapshot.getStartClientSnapshot().getTime();
+        String header =  MessageFormat.format(Messages.PerformanceRelevantTransactionsHeader, Values.Date.format(startDate));
+        labels[0].setText(header);
         
         
         for (int i = 1; i < 6; i++) {
@@ -212,10 +216,13 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         
         
         // footer
-        MutableMoney totalNonNeutralTransactions = sumCategoryValuates(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
         signs[6].setText(categories.get(7).getSign());
-        labels[6].setText(categories.get(7).getLabel());
-        values[6].setText(Values.Money.format(totalNonNeutralTransactions.toMoney(), getClient().getBaseCurrency()));
+        
+        
+        LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
+        String footer = MessageFormat.format(Messages.PerformanceRelevantTransactionsFooter,Values.Date.format(endDate));
+        labels[6].setText(footer);
+        
         MutableMoney totalRelevantTransactions = sumCategoryValuations(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
         values[6].setText(Values.Money.format(totalRelevantTransactions.toMoney(), getClient().getBaseCurrency()));
     }

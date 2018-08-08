@@ -689,6 +689,8 @@ public class Messages extends NLS
     public static String PerformanceChartLabelEntirePortfolio;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;
+    public static String PerformanceRelevantTransactionsFooter;
+    public static String PerformanceRelevantTransactionsHeader;
     public static String PerformanceTabAssetsAtEnd;
     public static String PerformanceTabAssetsAtStart;
     public static String PerformanceTabCalculation;
