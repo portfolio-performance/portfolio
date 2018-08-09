@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.online.impl.variableurl;
+package name.abuchen.portfolio.online.impl.variableurl.urls;
 
 import name.abuchen.portfolio.model.Security;
 
