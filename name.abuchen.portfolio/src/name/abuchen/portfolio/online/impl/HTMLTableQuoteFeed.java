@@ -360,21 +360,23 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(), errors);
+            return parse(escapedUrl,
+                            Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(),
+                            errors);
         }
         catch (URISyntaxException | IOException e)
         {
-            errors.add(e);
+            errors.add(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
         }
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
-        return parse(Jsoup.parse(html), errors);
+        return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
-    private List<LatestSecurityPrice> parse(Document document, List<Exception> errors)
+    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -406,7 +408,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                     }
                     catch (Exception e)
                     {
-                        errors.add(e);
+                        errors.add(new IOException(url + '\n' + e.getMessage(), e));
                     }
                 }
 
@@ -417,7 +419,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
 
         return prices;
     }
