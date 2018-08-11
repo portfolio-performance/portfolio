@@ -1,18 +1,22 @@
 package name.abuchen.portfolio.ui.views.columns;
 
 import java.util.Comparator;
+import java.util.Optional;
+
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.SWT;
 
 public class AttributeColumn extends Column
 {
@@ -68,6 +72,38 @@ public class AttributeColumn extends Column
         }
     }
 
+    private static final class BooleanLabelProvider extends ColumnLabelProvider
+    {
+        private final AttributeType attribute;
+
+        private BooleanLabelProvider(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            return getValue(element).map(b -> b ? Messages.LabelYes : Messages.LabelNo).orElse(""); //$NON-NLS-1$
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            return getValue(element).map(b -> b ? Images.CHECK.image() : Images.XMARK.image()).orElse(null);
+        }
+
+        private Optional<Boolean> getValue(Object element)
+        {
+            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            if (attributable == null)
+                return Optional.empty();
+
+            Attributes attributes = attributable.getAttributes();
+            return Optional.ofNullable((Boolean) attributes.get(attribute));
+        }
+    }
+
     public AttributeColumn(final AttributeType attribute)
     {
         super("attribute$" + attribute.getId(), attribute.getColumnLabel(), //$NON-NLS-1$
@@ -75,10 +111,19 @@ public class AttributeColumn extends Column
 
         setMenuLabel(attribute.getName());
         setGroupLabel(Messages.GroupLabelAttributes);
-        setLabelProvider(new AttributeLabelProvider(attribute));
         setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
 
-        new AttributeEditingSupport(attribute).attachTo(this);
+        if (attribute.getType() == Boolean.class)
+        {
+            setLabelProvider(new BooleanLabelProvider(attribute));
+            new BooleanAttributeEditingSupport(attribute).attachTo(this);
+        }
+        else
+        {
+            setLabelProvider(new AttributeLabelProvider(attribute));
+            new AttributeEditingSupport(attribute).attachTo(this);
+        }
+
     }
 
 }

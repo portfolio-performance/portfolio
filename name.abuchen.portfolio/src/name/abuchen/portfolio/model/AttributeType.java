@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
@@ -220,6 +221,25 @@ public class AttributeType
         }
     }
 
+    public static class BooleanConverter implements Converter
+    {
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? ((Boolean) object).toString() : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            if (value.trim().length() == 0)
+                return null;
+
+            return Boolean.valueOf(value);
+        }
+    }
+
     private final String id;
     private String name;
     private String columnLabel;
@@ -285,7 +305,7 @@ public class AttributeType
 
     public boolean supports(Class<? extends Attributable> type)
     {
-        return target != null ? target.isAssignableFrom(type) : true;
+        return target == null || target.isAssignableFrom(type);
     }
 
     public void setConverter(Class<? extends Converter> converterClass)
@@ -299,9 +319,10 @@ public class AttributeType
         try
         {
             if (converter == null)
-                converter = (Converter) Class.forName(converterClass).newInstance();
+                converter = (Converter) Class.forName(converterClass).getConstructor().newInstance();
         }
-        catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
+        catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e)
         {
             throw new IllegalArgumentException(e);
         }

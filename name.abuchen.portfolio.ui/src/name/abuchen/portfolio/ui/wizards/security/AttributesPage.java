@@ -20,6 +20,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
@@ -144,22 +145,36 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         final Label label = new Label(container, SWT.NONE);
         label.setText(attribute.getType().getName());
 
+        final Control value;
+        final Binding binding;
+
         // input
-        final Text value = new Text(container, SWT.BORDER);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
+        if (attribute.getType().getType() == Boolean.class)
+        {
+            value = new Button(container, SWT.CHECK);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(value);
+
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            binding = bindings.getBindingContext().bindValue(WidgetProperties.selection().observe(value), observable);
+        }
+        else
+        {
+            value = new Text(container, SWT.BORDER);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
+
+            ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            binding = bindings.getBindingContext().bindValue( //
+                            WidgetProperties.text(SWT.Modify).observe(value), observable,
+                            new UpdateValueStrategy().setAfterGetValidator(input2model).setConverter(input2model),
+                            new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
+        }
 
         // delete button
         final Button deleteButton = new Button(container, SWT.PUSH);
         deleteButton.setImage(Images.REMOVE.image());
-
-        // model binding
-        ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
-        final Binding binding = bindings.getBindingContext().bindValue( //
-                        WidgetProperties.text(SWT.Modify).observe(value), observable,
-                        new UpdateValueStrategy().setAfterGetValidator(input2model).setConverter(input2model),
-                        new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
 
         // delete selection listener
         deleteButton.addSelectionListener(new SelectionAdapter()

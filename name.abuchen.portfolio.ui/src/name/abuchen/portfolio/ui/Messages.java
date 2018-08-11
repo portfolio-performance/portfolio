@@ -449,6 +449,7 @@ public class Messages extends NLS
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
+    public static String LabelNo;
     public static String LabelNoName;
     public static String LabelNotAvailable;
     public static String LabelNumberDataSeries;
@@ -544,6 +545,7 @@ public class Messages extends NLS
     public static String LabelXDays;
     public static String LabelYear;
     public static String LabelYearlyHeatmap;
+    public static String LabelYes;
     public static String MarkSecurityPageDescription;
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;

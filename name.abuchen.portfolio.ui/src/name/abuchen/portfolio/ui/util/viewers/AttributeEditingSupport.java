@@ -1,19 +1,19 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Text;
+
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Text;
-
 public class AttributeEditingSupport extends ColumnEditingSupport
 {
-    private final AttributeType attribute;
+    protected final AttributeType attribute;
 
     public AttributeEditingSupport(AttributeType attribute)
     {
