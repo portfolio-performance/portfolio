@@ -1,31 +1,36 @@
 package name.abuchen.portfolio.online.impl.variableurl.iterators;
 
+import java.util.Iterator;
+import java.util.NoSuchElementException;
+
 import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 import name.abuchen.portfolio.online.impl.variableurl.macros.PageNumber;
 import name.abuchen.portfolio.online.impl.variableurl.urls.PageURL;
 
-import java.util.Iterator;
-
 public class PageIterator implements Iterator<String>
 {
     private PageURL url;
-    private long current;
+    private long current = 0;
 
     public PageIterator(PageURL url)
     {
         this.url = url;
-        current = 1;
     }
 
     @Override
     public boolean hasNext()
     {
-        return true;
+        return current + 1 < Integer.MAX_VALUE;
     }
 
     @Override
     public String next()
     {
+        current++;
+
+        if (current == Integer.MAX_VALUE)
+            throw new NoSuchElementException();
+
         StringBuilder result = new StringBuilder();
 
         for (Macro macro : url.getMacros())
@@ -39,8 +44,6 @@ public class PageIterator implements Iterator<String>
                 result.append(macro.resolve(url.getSecurity()));
             }
         }
-
-        ++current;
 
         return result.toString();
     }
