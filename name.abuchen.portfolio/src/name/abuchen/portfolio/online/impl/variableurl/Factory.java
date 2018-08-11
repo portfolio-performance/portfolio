@@ -1,16 +1,5 @@
 package name.abuchen.portfolio.online.impl.variableurl;
 
-import name.abuchen.portfolio.online.impl.variableurl.macros.ConstString;
-import name.abuchen.portfolio.online.impl.variableurl.macros.Currency;
-import name.abuchen.portfolio.online.impl.variableurl.macros.FormattedDate;
-import name.abuchen.portfolio.online.impl.variableurl.macros.ISIN;
-import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-import name.abuchen.portfolio.online.impl.variableurl.macros.PageNumber;
-import name.abuchen.portfolio.online.impl.variableurl.macros.TickerSymbol;
-import name.abuchen.portfolio.online.impl.variableurl.macros.WKN;
-import name.abuchen.portfolio.online.impl.variableurl.urls.ConstURL;
-import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +7,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import name.abuchen.portfolio.online.impl.variableurl.macros.ConstString;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Currency;
+import name.abuchen.portfolio.online.impl.variableurl.macros.FormattedDate;
+import name.abuchen.portfolio.online.impl.variableurl.macros.ISIN;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Today;
+import name.abuchen.portfolio.online.impl.variableurl.macros.PageNumber;
+import name.abuchen.portfolio.online.impl.variableurl.macros.TickerSymbol;
+import name.abuchen.portfolio.online.impl.variableurl.macros.WKN;
+import name.abuchen.portfolio.online.impl.variableurl.urls.ConstURL;
+import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 
 public class Factory
 {
@@ -33,7 +34,8 @@ public class Factory
         ISIN::new,
         WKN::new,
         TickerSymbol::new,
-        Currency::new
+        Currency::new,
+        Today::new
     );
 
     private Factory()
@@ -63,7 +65,7 @@ public class Factory
                 {
                     macro = macroParser.parse(part);
                 }
-                catch (IllegalArgumentException e)
+                catch (Exception e)
                 {
                     continue;
                 }
