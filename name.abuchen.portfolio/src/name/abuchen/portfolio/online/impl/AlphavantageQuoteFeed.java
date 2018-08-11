@@ -3,9 +3,7 @@ package name.abuchen.portfolio.online.impl;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
 import java.io.IOException;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -41,44 +39,14 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
     private static final int DAYS_THRESHOLD = 80;
 
-    private static RateLimiter rateLimiter = null;
-
-    static
-    {
-        try
-        {
-            // see https://stackoverflow.com/a/40996838/1158146
-            // and https://github.com/google/guava/issues/1974
-
-            // Downloading quotes is typically done in bursts (e.g. on startup)
-            // but the standard RateLimiter implementation does not allow us to
-            // configure any bursts. Therefore requests would unnecessarily
-            // queue at the beginning. As we control the library dependency, we
-            // can risk to use reflection.
-
-            Class<?> sleepingStopwatchClass = Class
-                            .forName("com.google.common.util.concurrent.RateLimiter$SleepingStopwatch"); //$NON-NLS-1$
-            Method createStopwatchMethod = sleepingStopwatchClass.getDeclaredMethod("createFromSystemTimer"); //$NON-NLS-1$
-            createStopwatchMethod.setAccessible(true);
-            Object stopwatch = createStopwatchMethod.invoke(null);
-
-            Class<?> burstyRateLimiterClass = Class
-                            .forName("com.google.common.util.concurrent.SmoothRateLimiter$SmoothBursty"); //$NON-NLS-1$
-            Constructor<?> burstyRateLimiterConstructor = burstyRateLimiterClass.getDeclaredConstructors()[0];
-            burstyRateLimiterConstructor.setAccessible(true);
-
-            RateLimiter result = (RateLimiter) burstyRateLimiterConstructor.newInstance(stopwatch, 10);
-            result.setRate(1.3);
-
-            rateLimiter = result;
-        }
-        catch (ClassNotFoundException | NoSuchMethodException | SecurityException | IllegalAccessException
-                        | IllegalArgumentException | InvocationTargetException | InstantiationException e)
-        {
-            // shouldn't happen
-            throw new RuntimeException("Error creating SmoothRateLimiter", e); //$NON-NLS-1$ //NOSONAR
-        }
-    }
+    /**
+     * Use rate limiter with Alpha Vantage. By default, Alpha Vantage allows 5
+     * requests per minute. The Guava RateLimiter uses permits per second.
+     * However, with 5 permits per 60 seconds, we still get an error message
+     * every once in a while. Therefore we are a little bit more conservative
+     * when setting up the rate limiter.
+     */
+    private static RateLimiter rateLimiter = RateLimiter.create((5 - .5) / 60d);
 
     private String apiKey;
 
@@ -99,6 +67,22 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         this.apiKey = apiKey;
     }
 
+    /**
+     * Sets the call frequency limit on AlphaVantage. By default, AlphaVantage
+     * allows 5 calls per minute. Various premium API keys allow up to 600 calls
+     * per minute.
+     * 
+     * @param limit
+     *            requests per minute
+     */
+    public void setCallFrequencyLimit(int limit)
+    {
+        if (limit <= 0)
+            throw new IllegalArgumentException();
+
+        rateLimiter.setRate((limit - .5) / 60d);
+    }
+
     @Override
     public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
@@ -107,11 +91,11 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
             return false;
         }
-        
+
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
 
-        if (rateLimiter != null && !rateLimiter.tryAcquire())
+        if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
 
         String wknUrl = MessageFormat.format("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY" //$NON-NLS-1$
@@ -187,38 +171,55 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             outputSize = days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT;
         }
 
-        List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, outputSize, errors);
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : prices)
+        try
         {
-            boolean isAdded = security.addPrice(p);
-            isUpdated = isUpdated || isAdded;
+            List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, outputSize, errors);
+
+            boolean isUpdated = false;
+            for (SecurityPrice p : prices)
+            {
+                boolean isAdded = security.addPrice(p);
+                isUpdated = isUpdated || isAdded;
+            }
+            return isUpdated;
         }
-        return isUpdated;
+        catch (InvocationTargetException | NoSuchMethodException e)
+        {
+            errors.add(e);
+            return false;
+        }
     }
 
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
-        int days = Dates.daysBetween(start, LocalDate.now());
-        return getHistoricalQuotes(LatestSecurityPrice.class, security,
-                        days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT, errors);
+        try
+        {
+            int days = Dates.daysBetween(start, LocalDate.now());
+            return getHistoricalQuotes(LatestSecurityPrice.class, security,
+                            days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT, errors);
+        }
+        catch (InvocationTargetException | NoSuchMethodException e)
+        {
+            errors.add(e);
+            return Collections.emptyList();
+        }
     }
 
     private <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security,
                     OutputSize outputSize, List<Exception> errors)
+                    throws InvocationTargetException, NoSuchMethodException
     {
         if (security.getTickerSymbol() == null)
         {
             errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
             return Collections.emptyList();
         }
-        
+
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
 
-        if (rateLimiter != null && !rateLimiter.tryAcquire())
+        if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
 
         String wknUrl = MessageFormat.format("https://www.alphavantage.co/query?function=TIME_SERIES_DAILY" //$NON-NLS-1$
@@ -247,7 +248,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 // poor man's check
                 if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
                 {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, lines[0])));
+                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, body)));
                     return Collections.emptyList();
                 }
 
@@ -263,7 +264,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                     if (values.length != 6)
                         throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
-                    T price = klass.newInstance();
+                    T price = klass.getConstructor().newInstance();
 
                     if (values[0].length() > 10)
                         values[0] = values[0].substring(0, 10);

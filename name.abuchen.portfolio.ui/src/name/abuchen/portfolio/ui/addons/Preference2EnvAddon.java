@@ -16,7 +16,8 @@ public class Preference2EnvAddon
     @Inject
     @Optional
     public void setAlphavantageApiKey(
-                    @Preference(value = UIConstants.Preferences.ALPHAVANTAGE_API_KEY) String alphavantageApiKey)
+                    @Preference(value = UIConstants.Preferences.ALPHAVANTAGE_API_KEY) String alphavantageApiKey,
+                    @Preference(value = UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT) int callFrequencyLimit)
     {
         // this is a hack to pass the eclipse-based preference via environment
         // to the AlphavantageQuoteFeed implementation which is not created via
@@ -24,5 +25,6 @@ public class Preference2EnvAddon
         
         AlphavantageQuoteFeed quoteFeed = (AlphavantageQuoteFeed)Factory.getQuoteFeedProvider(AlphavantageQuoteFeed.ID);
         quoteFeed.setApiKey(alphavantageApiKey);
+        quoteFeed.setCallFrequencyLimit(callFrequencyLimit);
     }
 }

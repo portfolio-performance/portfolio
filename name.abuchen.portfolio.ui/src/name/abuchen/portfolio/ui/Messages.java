@@ -705,6 +705,7 @@ public class Messages extends NLS
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
     public static String PrefAlphaVantageAPIKey;
+    public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionAlphaVantage;
