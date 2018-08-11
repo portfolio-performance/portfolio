@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -14,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
@@ -25,7 +28,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 {
     enum TableLayout
     {
-        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced);
+        FULL(Messages.LabelLayoutFull), REDUCED(Messages.LabelLayoutReduced), RELEVANT(Messages.LabelLayoutRelevant);
 
         private String label;
 
@@ -99,6 +102,9 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                 break;
             case REDUCED:
                 createTable(5);
+                break;
+            case RELEVANT:
+                createTable(7);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -180,11 +186,76 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             case REDUCED:
                 fillInReducedValues(snapshot);
                 break;
+            case RELEVANT:
+                fillInOnlyRelevantValues(snapshot);
+                break;
             default:
                 throw new IllegalArgumentException();
         }
 
         container.layout();
+    }
+
+    private void fillInOnlyRelevantValues(final ClientPerformanceSnapshot snapshot)
+    {
+
+        List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
+
+        // header
+        LocalDate startDate = snapshot.getStartClientSnapshot().getTime();
+        String header = MessageFormat.format(Messages.PerformanceRelevantTransactionsHeader,
+                        Values.Date.format(startDate));
+        labels[0].setText(header);
+
+        for (int i = 1; i < 6; i++)
+        {
+            ClientPerformanceSnapshot.Category category = categories.get(i);
+            signs[i].setText(category.getSign());
+            labels[i].setText(category.getLabel());
+            values[i].setText(Values.Money.format(category.getValuation(), getClient().getBaseCurrency()));
+        }
+
+        // footer
+        signs[6].setText("="); //$NON-NLS-1$
+
+        LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
+        String footer = MessageFormat.format(Messages.PerformanceRelevantTransactionsFooter,
+                        Values.Date.format(endDate));
+        labels[6].setText(footer);
+
+        Money totalRelevantTransactions = sumCategoryValuations(
+                        snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
+        values[6].setText(Values.Money.format(totalRelevantTransactions, getClient().getBaseCurrency()));
+    }
+
+    /**
+     * @brief Sums up the total currency for the supplied categories
+     * @param currencyCode
+     *            The currency code of the currency that is summed up
+     * @param categories
+     *            The categories for which the total value is computed
+     * @return
+     */
+    private Money sumCategoryValuations(String currencyCode, List<ClientPerformanceSnapshot.Category> categories)
+    {
+        MutableMoney totalMoney = MutableMoney.of(currencyCode);
+
+        for (ClientPerformanceSnapshot.Category category : categories)
+        {
+            switch (category.getSign())
+            {
+                case "+": //$NON-NLS-1$
+                    totalMoney.add(category.getValuation());
+                    break;
+                case "-": //$NON-NLS-1$
+                    totalMoney.subtract(category.getValuation());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        return totalMoney.toMoney();
     }
 
     private void filInValues(int startIndex, List<ClientPerformanceSnapshot.Category> categories)
@@ -203,32 +274,16 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
     private void fillInReducedValues(ClientPerformanceSnapshot snapshot)
     {
-        MutableMoney misc = MutableMoney.of(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode());
-
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
 
-        for (int ii = 2; ii < categories.size() - 2; ii++)
-        {
-            ClientPerformanceSnapshot.Category category = categories.get(ii);
-
-            switch (category.getSign())
-            {
-                case "+": //$NON-NLS-1$
-                    misc.add(category.getValuation());
-                    break;
-                case "-": //$NON-NLS-1$
-                    misc.subtract(category.getValuation());
-                    break;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
+        Money misc = sumCategoryValuations(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(),
+                        categories.subList(2, 6));
 
         filInValues(0, categories.subList(0, 2));
 
         signs[2].setText("+"); //$NON-NLS-1$
         labels[2].setText(Messages.LabelCategoryOtherMovements);
-        values[2].setText(Values.Money.format(misc.toMoney(), getClient().getBaseCurrency()));
+        values[2].setText(Values.Money.format(misc, getClient().getBaseCurrency()));
 
         filInValues(3, categories.subList(categories.size() - 2, categories.size()));
     }
