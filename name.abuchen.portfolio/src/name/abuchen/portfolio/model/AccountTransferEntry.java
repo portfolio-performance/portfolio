@@ -126,6 +126,7 @@ public class AccountTransferEntry extends CrossEntry implements Annotated
         this.transactionTo.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         accountFrom.addTransaction(transactionFrom);

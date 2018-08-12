@@ -126,6 +126,7 @@ public class PortfolioTransferEntry extends CrossEntry implements Annotated
         this.transactionTo.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         portfolioFrom.addTransaction(transactionFrom);

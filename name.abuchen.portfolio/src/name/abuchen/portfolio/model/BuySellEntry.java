@@ -51,19 +51,21 @@ public class BuySellEntry extends CrossEntry implements Annotated
     public void setTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Account && !this.account.equals((Account) subject))
-            this.account = (Account) subject;
-        else if (subject instanceof Portfolio && !this.portfolio.equals((Portfolio) subject))
-            this.portfolio = (Portfolio) subject;
+        if (subject instanceof Portfolio)
+            if (!this.portfolio.equals((Portfolio) subject))
+                this.portfolio = (Portfolio) subject;
+        else
+            throw new IllegalArgumentException();
     }
 
     public void setOtherTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Account && !this.account.equals((Account) subject))
-            this.account = (Account) subject;
-        else if (subject instanceof Portfolio && !this.portfolio.equals((Portfolio) subject))
-            this.portfolio = (Portfolio) subject;
+        if (subject instanceof Account)
+            if (!this.account.equals((Account) subject))
+                this.account = (Account) subject;
+        else
+            throw new IllegalArgumentException();
     }
 
     public TransactionOwner<Transaction> getTransactionOwner()
