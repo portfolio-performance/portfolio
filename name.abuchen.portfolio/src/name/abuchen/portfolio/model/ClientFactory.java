@@ -267,7 +267,7 @@ public class ClientFactory
 
                         client = new XmlSerialization().load(new InputStreamReader(zipin, StandardCharsets.UTF_8));
 
-                        try
+                        try // NOSONAR
                         {
                             // explicitly close the stream to force bad padding
                             // exceptions to occur inside this try-catch-block
@@ -561,6 +561,8 @@ public class ClientFactory
                 // added flag to auto-generate tx from investment plan
             case 36:
                 // converted from LocalDate to LocalDateTime
+            case 37:
+                // added boolean attribute type
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -988,7 +990,7 @@ public class ClientFactory
             for (AttributeType t : typesWithQuotes)
             {
                 Object value = attributes.get(t);
-                if (value != null && value instanceof Long)
+                if (value instanceof Long)
                     attributes.put(t, ((Long) value).longValue() * decimalPlacesAdded);
             }
         });
