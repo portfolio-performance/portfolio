@@ -62,15 +62,25 @@ public class AccountTransferEntry extends CrossEntry implements Annotated
     public void setTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Account && !this.accountFrom.equals((Account) subject))
-            this.accountTo = (Account) subject;
+        if (subject instanceof Account)
+        {
+            if (!this.accountFrom.equals((Account) subject))
+                this.accountTo = (Account) subject;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
     public void setOtherTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Account && !this.accountTo.equals((Account) subject))
-            this.accountFrom = (Account) subject;
+        if (subject instanceof Account)
+        {
+            if (!this.accountTo.equals((Account) subject))
+                this.accountFrom = (Account) subject;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
     public TransactionOwner<Transaction> getTransactionOwner()

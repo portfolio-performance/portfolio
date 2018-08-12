@@ -50,15 +50,25 @@ public class PortfolioTransferEntry extends CrossEntry implements Annotated
     public void setTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Portfolio && !this.portfolioFrom.equals((Portfolio) subject))
-            this.portfolioTo = (Portfolio) subject;
+        if (subject instanceof Portfolio)
+        {
+            if (!this.portfolioFrom.equals((Portfolio) subject))
+                this.portfolioTo = (Portfolio) subject;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
     public void setOtherTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
-        if (subject instanceof Portfolio && !this.portfolioTo.equals((Portfolio) subject))
-            this.portfolioFrom = (Portfolio) subject;
+        if (subject instanceof Portfolio)
+        {
+            if (!this.portfolioTo.equals((Portfolio) subject))
+                this.portfolioFrom = (Portfolio) subject;
+        }
+        else
+            throw new IllegalArgumentException();
     }
 
     public TransactionOwner<Transaction> getTransactionOwner()
