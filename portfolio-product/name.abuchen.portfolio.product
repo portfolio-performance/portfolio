@@ -9,6 +9,8 @@
    <launcherArgs>
       <vmArgs>-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Xmx768m
       </vmArgs>
+      <vmArgsLin>-Djdk.gtk.version=3
+      </vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
