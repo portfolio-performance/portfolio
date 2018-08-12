@@ -27,6 +27,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
@@ -58,11 +59,15 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
     private Client client;
 
     @Inject
-    public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
+    public SecurityTransferDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+                    ExchangeRateProviderFactory factory)
     {
         super(parentShell);
         this.client = client;
-        setModel(new SecurityTransferModel(client));
+
+        SecurityTransferModel m = new SecurityTransferModel(client);
+        m.setExchangeRateProviderFactory(factory);
+        setModel(m);
     }
 
     private SecurityTransferModel model()

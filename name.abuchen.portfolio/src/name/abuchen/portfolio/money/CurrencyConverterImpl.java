@@ -3,6 +3,7 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Objects;
 
 import name.abuchen.portfolio.Messages;
 
@@ -15,8 +16,8 @@ public class CurrencyConverterImpl implements CurrencyConverter
 
     public CurrencyConverterImpl(ExchangeRateProviderFactory factory, String termCurrency)
     {
-        this.factory = factory;
-        this.termCurrency = termCurrency;
+        this.factory = Objects.requireNonNull(factory);
+        this.termCurrency = Objects.requireNonNull(termCurrency);
     }
 
     @Override
