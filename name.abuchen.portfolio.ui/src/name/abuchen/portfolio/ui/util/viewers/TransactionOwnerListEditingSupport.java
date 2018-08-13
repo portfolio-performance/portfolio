@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util.viewers;
 import java.beans.PropertyDescriptor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -41,7 +42,7 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
         if (element instanceof Transaction)
             t = (Transaction) element;
         else if (element instanceof TransactionPair)
-            t = (Transaction) ((TransactionPair) element).getTransaction();
+            t = (Transaction) ((TransactionPair<Transaction>) element).getTransaction();
         else
             throw new UnsupportedOperationException();
         return t;
@@ -58,28 +59,38 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
         boolean canEdit = (adapt(t.getCrossEntry()) != null); 
         if (canEdit)
         {
+            TransactionOwner<? extends Transaction> owner;
+            if (attributeName.equals("transactionOwner")) //$NON-NLS-1$
+                owner = t.getCrossEntry().getOwner(t);
+            else if (attributeName.equals("otherTransactionOwner")) //$NON-NLS-1$
+                owner = t.getCrossEntry().getCrossOwner(t);
+            else
+                throw new IllegalArgumentException();
+
+            final TransactionOwner<? extends Transaction> skip;
+            if (t.getCrossEntry().getOwner(t).getClass().equals(t.getCrossEntry().getCrossOwner(t).getClass()))
+                skip  = t.getCrossEntry().getOwner(t);
+            else
+                skip  = null;
+
             List<?> options; 
-            if (attributeName.equals("transactionOwner"))
+            if (owner instanceof Account)
             {
-                if (t.getCrossEntry().getOwner(t) instanceof Account)
-                    options = client.getAccounts();
-                else if (t.getCrossEntry().getOwner(t) instanceof Portfolio)
-                    options = client.getPortfolios();
-                else
-                    throw new IllegalArgumentException();
+                Account account = (Account) owner;
+                options = client.getAccounts().stream().filter(a -> {return (skip != null?!skip.equals(a):true);}).filter(a -> account.getCurrencyCode().equals(a.getCurrencyCode())).collect(Collectors.toList());
             }
-            else if (attributeName.equals("otherTransactionOwner"))
+            else if (owner instanceof Portfolio)
             {
-                if (t.getCrossEntry().getCrossOwner(t) instanceof Account)
-                    options = client.getAccounts();
-                else if (t.getCrossEntry().getCrossOwner(t) instanceof Portfolio)
-                    options = client.getPortfolios();
-                else
-                    throw new IllegalArgumentException();
+                Portfolio portfolio = (Portfolio) owner;
+                options = client.getPortfolios().stream().filter(p -> {return (skip != null?!skip.equals(p):true);}).collect(Collectors.toList());
             }
             else
                 throw new IllegalArgumentException();
-            setComboBoxItems(new ArrayList<Object>(options));
+
+            if (options.size() > 1)
+                setComboBoxItems(new ArrayList<Object>(options));
+            else
+                return false;
         }
         return canEdit;
     }
