@@ -36,6 +36,7 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
         this.client = client;
     }
 
+    @SuppressWarnings("unchecked")
     private Transaction getTransaction(Object element)
     {
         Transaction t;
@@ -80,10 +81,7 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
                 options = client.getAccounts().stream().filter(a -> {return (skip != null?!skip.equals(a):true);}).filter(a -> account.getCurrencyCode().equals(a.getCurrencyCode())).collect(Collectors.toList());
             }
             else if (owner instanceof Portfolio)
-            {
-                Portfolio portfolio = (Portfolio) owner;
                 options = client.getPortfolios().stream().filter(p -> {return (skip != null?!skip.equals(p):true);}).collect(Collectors.toList());
-            }
             else
                 throw new IllegalArgumentException();
 
@@ -97,10 +95,10 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
 
     private String switchAttributeName(String attributeName)
     {
-        if (attributeName.equals("transactionOwner"))
-            return "otherTransactionOwner";
-        else if (attributeName.equals("otherTransactionOwner"))
-            return "transactionOwner";
+        if (attributeName.equals("transactionOwner")) //$NON-NLS-1$
+            return "otherTransactionOwner"; //$NON-NLS-1$
+        else if (attributeName.equals("otherTransactionOwner")) //$NON-NLS-1$
+            return "transactionOwner"; //$NON-NLS-1$
         else
             throw new IllegalArgumentException();
     }
@@ -166,8 +164,19 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
     {
         Transaction transaction = getTransaction(element);
         Object subject = adapt(transaction.getCrossEntry());
-        TransactionOwner<Transaction> owner      = (TransactionOwner<Transaction>) transaction.getCrossEntry().getOwner(transaction);
-        TransactionOwner<Transaction> crossOwner = (TransactionOwner<Transaction>) transaction.getCrossEntry().getCrossOwner(transaction);
+        TransactionOwner<Transaction> owner;
+        TransactionOwner<Transaction> crossOwner;
+        if (transaction.getCrossEntry().getOwner(transaction) instanceof TransactionPair && transaction.getCrossEntry().getCrossOwner(transaction) instanceof TransactionPair)
+        {
+            @SuppressWarnings("unchecked")
+            TransactionOwner<Transaction> tmpOwner      = (TransactionOwner<Transaction>) transaction.getCrossEntry().getOwner(transaction);
+            @SuppressWarnings("unchecked")
+            TransactionOwner<Transaction> tmpCrossOwner = (TransactionOwner<Transaction>) transaction.getCrossEntry().getCrossOwner(transaction);
+            owner      = tmpOwner;
+            crossOwner = tmpCrossOwner;
+        }
+        else
+            throw new IllegalArgumentException();
         
         int index = (Integer) value;
         if (index < 0)
