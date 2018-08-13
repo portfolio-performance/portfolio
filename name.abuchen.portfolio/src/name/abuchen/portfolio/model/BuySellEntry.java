@@ -48,7 +48,7 @@ public class BuySellEntry extends CrossEntry implements Annotated
         return this.account;
     }
 
-    public void setTransactionOwner(TransactionOwner<Transaction> owner)
+    public void setPrimaryTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
         if (subject instanceof Portfolio)
@@ -58,7 +58,7 @@ public class BuySellEntry extends CrossEntry implements Annotated
             throw new IllegalArgumentException();
     }
 
-    public void setOtherTransactionOwner(TransactionOwner<Transaction> owner)
+    public void setSecondaryTransactionOwner(TransactionOwner<Transaction> owner)
     {
         Object subject = (Object) owner;
         if (subject instanceof Account)
@@ -68,13 +68,13 @@ public class BuySellEntry extends CrossEntry implements Annotated
             throw new IllegalArgumentException();
     }
 
-    public TransactionOwner<Transaction> getTransactionOwner()
+    public TransactionOwner<Transaction> getPrimaryTransactionOwner()
     {
         TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(portfolioTransaction);
         return owner;
     }
 
-    public TransactionOwner<Transaction> getOtherTransactionOwner()
+    public TransactionOwner<Transaction> getSecondaryTransactionOwner()
     {
         TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(accountTransaction);
         return owner;

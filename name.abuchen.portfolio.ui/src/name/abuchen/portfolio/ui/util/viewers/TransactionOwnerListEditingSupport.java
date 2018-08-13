@@ -61,9 +61,9 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
         if (canEdit)
         {
             TransactionOwner<? extends Transaction> owner;
-            if (attributeName.equals("transactionOwner")) //$NON-NLS-1$
+            if (attributeName.equals("primaryTransactionOwner")) //$NON-NLS-1$
                 owner = t.getCrossEntry().getOwner(t);
-            else if (attributeName.equals("otherTransactionOwner")) //$NON-NLS-1$
+            else if (attributeName.equals("secondaryTransactionOwner")) //$NON-NLS-1$
                 owner = t.getCrossEntry().getCrossOwner(t);
             else
                 throw new IllegalArgumentException();
@@ -95,10 +95,10 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
 
     private String switchAttributeName(String attributeName)
     {
-        if (attributeName.equals("transactionOwner")) //$NON-NLS-1$
-            return "otherTransactionOwner"; //$NON-NLS-1$
-        else if (attributeName.equals("otherTransactionOwner")) //$NON-NLS-1$
-            return "transactionOwner"; //$NON-NLS-1$
+        if (attributeName.equals("primaryTransactionOwner")) //$NON-NLS-1$
+            return "secondaryTransactionOwner"; //$NON-NLS-1$
+        else if (attributeName.equals("secondaryTransactionOwner")) //$NON-NLS-1$
+            return "primaryTransactionOwner"; //$NON-NLS-1$
         else
             throw new IllegalArgumentException();
     }
@@ -166,7 +166,7 @@ public class TransactionOwnerListEditingSupport extends ListEditingSupport
         Object subject = adapt(transaction.getCrossEntry());
         TransactionOwner<Transaction> owner;
         TransactionOwner<Transaction> crossOwner;
-        if (transaction.getCrossEntry().getOwner(transaction) instanceof TransactionPair && transaction.getCrossEntry().getCrossOwner(transaction) instanceof TransactionPair)
+        if (transaction.getCrossEntry().getOwner(transaction) instanceof TransactionOwner && transaction.getCrossEntry().getCrossOwner(transaction) instanceof TransactionOwner)
         {
             @SuppressWarnings("unchecked")
             TransactionOwner<Transaction> tmpOwner      = (TransactionOwner<Transaction>) transaction.getCrossEntry().getOwner(transaction);

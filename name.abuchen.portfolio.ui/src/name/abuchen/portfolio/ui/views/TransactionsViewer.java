@@ -322,7 +322,7 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new TransactionLabelProvider(
                         t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null));
-        new TransactionOwnerListEditingSupport(owner.getClient(), CrossEntry.class, "otherTransactionOwner") //$NON-NLS-1$
+        new TransactionOwnerListEditingSupport(owner.getClient(), CrossEntry.class, "secondaryTransactionOwner") //$NON-NLS-1$
             .addListener(this).attachTo(column);
         support.addColumn(column);
 

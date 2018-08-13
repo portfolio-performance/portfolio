@@ -12,15 +12,15 @@ public abstract class CrossEntry
 
     public abstract void insert();
 
-    private TransactionOwner<Transaction> transactionOwner;
+    private TransactionOwner<Transaction> primaryTransactionOwner;
 
-    private TransactionOwner<Transaction> otherTransactionOwner;
+    private TransactionOwner<Transaction> secondaryTransactionOwner;
 
-    public abstract void setTransactionOwner(TransactionOwner<Transaction> transactionOwner);
+    public abstract void setPrimaryTransactionOwner(TransactionOwner<Transaction> transactionOwner);
 
-    public abstract void setOtherTransactionOwner(TransactionOwner<Transaction> transactionOwner);
+    public abstract void setSecondaryTransactionOwner(TransactionOwner<Transaction> transactionOwner);
 
-    public abstract TransactionOwner<Transaction> getTransactionOwner();
+    public abstract TransactionOwner<Transaction> getPrimaryTransactionOwner();
 
-    public abstract TransactionOwner<Transaction> getOtherTransactionOwner();
+    public abstract TransactionOwner<Transaction> getSecondaryTransactionOwner();
 }

@@ -562,7 +562,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        new TransactionOwnerListEditingSupport(getClient(), CrossEntry.class, "otherTransactionOwner") //$NON-NLS-1$
+        new TransactionOwnerListEditingSupport(getClient(), CrossEntry.class, "secondaryTransactionOwner") //$NON-NLS-1$
             .addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
