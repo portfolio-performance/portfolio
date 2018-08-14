@@ -12,6 +12,7 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
@@ -55,12 +56,15 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
     private final class LoadDataFunction extends BrowserFunction
     {
+        private static final String CAPTION_CLASSIFIED = "<b>%s  %s  (%s)</b><br>%s"; //$NON-NLS-1$
+        private static final String CAPTION_UNCLASSIFIED = "<b>%s  %s  (%s)</b>"; //$NON-NLS-1$
         private static final String ENTRY = "{\"label\":\"%s\"," //$NON-NLS-1$
                         + "\"value\":%s," //$NON-NLS-1$
                         + "\"color\":\"%s\"," //$NON-NLS-1$
-                        + "\"caption\":\"%s  %s  (%s)\"," //$NON-NLS-1$
+                        + "\"caption\":\"%s\"," //$NON-NLS-1$
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
+
 
         private LoadDataFunction(Browser browser, String name)
         {
@@ -127,12 +131,48 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         {
             String name = StringEscapeUtils.escapeJson(node.getName());
             String percentage = Values.Percent2.format(node.getActual().getAmount() / (double) total);
+            Classification cl = getClassification(node);
+            String caption;
+            if (cl != null)
+            {
+                caption = String.format(CAPTION_CLASSIFIED, name, Values.Money.format(node.getActual()), percentage, //
+                                cl.getPathName(false));
+            }
+            else
+            {
+                caption = String.format(CAPTION_UNCLASSIFIED, name, Values.Money.format(node.getActual()), percentage);
+            }
             joiner.add(String.format(ENTRY, name, //
                             node.getActual().getAmount(), //
                             color, //
-                            name, Values.Money.format(node.getActual()), percentage, //
+                            caption, //
                             percentage));
 
+        }
+        
+        /**
+         * Gets the {@link Classification} for the given node (or form its
+         * parent if the node has none).
+         * 
+         * @param node
+         *            {@link TaxonomyNode}
+         * @return {@link Classification} on success, else null
+         */
+        private Classification getClassification(TaxonomyNode node)
+        {
+            // first try to get classification from the current node
+            Classification cl = node.getClassification();
+            if (cl != null)
+            {
+                return cl;
+            }
+            // then try the parent node
+            TaxonomyNode parent = node.getParent();
+            if (parent != null)
+            {
+                return getClassification(parent);
+            }
+            return null;
         }
     }
 }
