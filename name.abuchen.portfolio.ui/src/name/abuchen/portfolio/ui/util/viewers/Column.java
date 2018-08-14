@@ -206,7 +206,7 @@ public class Column
         return editingSupport;
     }
 
-                    /* package */String getToolTipText()
+    /* package */String getToolTipText()
     {
         if (description != null)
             return description;

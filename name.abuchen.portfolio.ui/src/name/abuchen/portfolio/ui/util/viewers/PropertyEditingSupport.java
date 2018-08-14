@@ -41,7 +41,7 @@ public abstract class PropertyEditingSupport extends ColumnEditingSupport
         return Adaptor.adapt(subjectType, element);
     }
 
-    private PropertyDescriptor descriptorFor(Class<?> subjectType, String attributeName)
+    protected PropertyDescriptor descriptorFor(Class<?> subjectType, String attributeName)
     {
         try
         {
