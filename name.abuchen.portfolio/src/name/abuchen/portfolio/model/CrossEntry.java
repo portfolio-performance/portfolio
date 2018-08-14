@@ -12,8 +12,10 @@ public abstract class CrossEntry
 
     public abstract void insert();
 
+    @Deprecated
     private TransactionOwner<Transaction> primaryTransactionOwner;
 
+    @Deprecated
     private TransactionOwner<Transaction> secondaryTransactionOwner;
 
     public abstract void setPrimaryTransactionOwner(TransactionOwner<Transaction> transactionOwner);
