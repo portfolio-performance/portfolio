@@ -67,42 +67,6 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         return this.portfolioTo;
     }
 
-    public void setPrimaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Portfolio)
-        {
-            if (!this.portfolioFrom.equals((Portfolio) subject))
-                this.portfolioTo = (Portfolio) subject;
-        }
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public void setSecondaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Portfolio)
-        {
-            if (!this.portfolioTo.equals((Portfolio) subject))
-                this.portfolioFrom = (Portfolio) subject;
-        }
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public TransactionOwner<Transaction> getPrimaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(transactionTo);
-        return owner;
-    }
-
-    public TransactionOwner<Transaction> getSecondaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(transactionFrom);
-        return owner;
-    }
-
     public void setDate(LocalDateTime date)
     {
         this.transactionFrom.setDateTime(date);
@@ -181,6 +145,20 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
             return portfolioTo;
         else
             throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (!(owner instanceof Portfolio))
+            throw new IllegalArgumentException();
+
+        if (t.equals(transactionFrom) && !portfolioTo.equals(owner))
+            portfolioFrom = (Portfolio) owner;
+        else if (t.equals(transactionTo) && !portfolioFrom.equals(owner))
+            portfolioTo = (Portfolio) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override

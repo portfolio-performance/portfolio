@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -31,7 +30,6 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -58,7 +56,7 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.TypeListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
@@ -238,8 +236,7 @@ public final class TransactionsViewer implements ModificationListener
                 return null;
         }));
         ColumnViewerSorter.create(PortfolioTransaction.class, "type").attachTo(column); //$NON-NLS-1$
-        new TypeListEditingSupport(owner.getClient(), PortfolioTransaction.class, "type", (List<PortfolioTransaction.Type>) Arrays.asList(PortfolioTransaction.Type.values())) //$NON-NLS-1$
-        .addListener(this).attachTo(column);
+        new TransactionTypeEditingSupport(owner.getClient()).addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -326,8 +323,8 @@ public final class TransactionsViewer implements ModificationListener
         column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
         column.setLabelProvider(new TransactionLabelProvider(
                         t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null));
-        new TransactionOwnerListEditingSupport(owner.getClient(), CrossEntry.class, "secondaryTransactionOwner") //$NON-NLS-1$
-            .addListener(this).attachTo(column);
+        new TransactionOwnerListEditingSupport(owner.getClient(),
+                        TransactionOwnerListEditingSupport.EditMode.CROSSOWNER).addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnNote, SWT.None, 200);

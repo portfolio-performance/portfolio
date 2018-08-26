@@ -25,17 +25,21 @@ public class RevertDeliveryAction extends Action
     @Override
     public void run()
     {
-        PortfolioTransaction deliveryTransaction = (PortfolioTransaction) transaction.getTransaction(); 
-        
+        PortfolioTransaction deliveryTransaction = transaction.getTransaction();
+
         if (deliveryTransaction instanceof PortfolioTransaction)
+        {
             if (PortfolioTransaction.Type.DELIVERY_INBOUND.equals(deliveryTransaction.getType()))
                 deliveryTransaction.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
             else if (PortfolioTransaction.Type.DELIVERY_OUTBOUND.equals(deliveryTransaction.getType()))
                 deliveryTransaction.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
             else
                 throw new IllegalArgumentException();
+        }
         else
+        {
             throw new IllegalArgumentException();
+        }
 
         client.markDirty();
     }

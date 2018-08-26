@@ -1,202 +1,206 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.beans.PropertyDescriptor;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
-import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 
 /**
- * Creates a cell editor with a combo box of Accounts. Options must be a list of non-null
- * values. By default, the user must choose one option. Override the method
- * {@link #canBeNull} in order to add an additional empty element
+ * Creates a cell editor with a combo box of accounts or portfolios.
  */
-public class TransactionOwnerListEditingSupport extends ListEditingSupport
+public class TransactionOwnerListEditingSupport extends ColumnEditingSupport
 {
-    private Class<?> subjectType;
-    private String attributeName;
-    private Client client;
-
-    public TransactionOwnerListEditingSupport(Client client, Class<?> subjectType, String attributeName)
+    interface TriConsumer<T, U, V>
     {
-        super(subjectType, attributeName, new ArrayList<Object>());
-        this.subjectType = subjectType;
-        this.attributeName = attributeName;
-        this.client = client;
+        void accept(T t, U u, V v);
     }
 
-    @SuppressWarnings("unchecked")
+    public enum EditMode
+    {
+        OWNER((e, t) -> e.getOwner(t), (e, t, o) -> e.setOwner(t, o)), //
+        CROSSOWNER((e, t) -> e.getCrossOwner(t), (e, t, o) -> e.setOwner(e.getCrossTransaction(t), o));
+
+        private final BiFunction<CrossEntry, Transaction, TransactionOwner<?>> getter;
+        private final TriConsumer<CrossEntry, Transaction, TransactionOwner<?>> setter;
+
+        private EditMode(BiFunction<CrossEntry, Transaction, TransactionOwner<?>> getter,
+                        TriConsumer<CrossEntry, Transaction, TransactionOwner<?>> setter)
+        {
+            this.getter = getter;
+            this.setter = setter;
+        }
+
+        @SuppressWarnings("unchecked")
+        public TransactionOwner<Transaction> getOwner(CrossEntry crossEntry, Transaction transaction)
+        {
+            return (TransactionOwner<Transaction>) getter.apply(crossEntry, transaction);
+        }
+
+        public void setOwner(CrossEntry crossEntry, Transaction transaction, TransactionOwner<?> owner)
+        {
+            setter.accept(crossEntry, transaction, owner);
+        }
+    }
+
+    private final Client client;
+    private final EditMode editMode;
+
+    private ComboBoxCellEditor editor;
+    private List<TransactionOwner<?>> comboBoxItems;
+
+    public TransactionOwnerListEditingSupport(Client client, EditMode editMode)
+    {
+        this.client = client;
+        this.editMode = editMode;
+    }
+
     private Transaction getTransaction(Object element)
     {
-        Transaction t;
         if (element instanceof Transaction)
-            t = (Transaction) element;
-        else if (element instanceof TransactionPair)
-            t = (Transaction) ((TransactionPair<Transaction>) element).getTransaction();
+            return (Transaction) element;
+        else if (element instanceof TransactionPair<?>)
+            return ((TransactionPair<?>) element).getTransaction();
         else
-            throw new UnsupportedOperationException();
-        return t;
+            return null;
+    }
+
+    private CrossEntry getCrossEntry(Object element)
+    {
+        Transaction t = getTransaction(element);
+        return t != null ? t.getCrossEntry() : null;
     }
 
     @Override
     public boolean canEdit(Object element)
     {
-        Transaction t = getTransaction(element);
+        return getCrossEntry(element) != null;
+    }
 
-        if (t.getCrossEntry() == null)
-            return false;
+    @Override
+    public final CellEditor createEditor(Composite composite)
+    {
+        editor = new ComboBoxCellEditor(composite, new String[0], SWT.READ_ONLY);
+        return editor;
+    }
 
-        boolean canEdit = (adapt(t.getCrossEntry()) != null); 
-        if (canEdit)
+    @Override
+    public final void prepareEditor(Object element)
+    {
+        // fill drop down with accounts (only with the identical currency) or
+        // portfolios.
+
+        Transaction transaction = getTransaction(element);
+        if (transaction == null)
+            return;
+        CrossEntry crossEntry = transaction.getCrossEntry();
+        if (crossEntry == null)
+            return;
+
+        // Make sure that transfers do not happen from the one and the same
+        // account or portfolio.
+        final TransactionOwner<?> skipTransfer;
+        if (crossEntry.getOwner(transaction).getClass().equals(crossEntry.getCrossOwner(transaction).getClass()))
         {
-            TransactionOwner<? extends Transaction> owner;
-            if (attributeName.equals("primaryTransactionOwner")) //$NON-NLS-1$
-                owner = t.getCrossEntry().getOwner(t);
-            else if (attributeName.equals("secondaryTransactionOwner")) //$NON-NLS-1$
-                owner = t.getCrossEntry().getCrossOwner(t);
-            else
-                throw new IllegalArgumentException();
-
-            final TransactionOwner<? extends Transaction> skip;
-            if (t.getCrossEntry().getOwner(t).getClass().equals(t.getCrossEntry().getCrossOwner(t).getClass()))
-                skip  = t.getCrossEntry().getOwner(t);
-            else
-                skip  = null;
-
-            List<?> options; 
-            if (owner instanceof Account)
+            switch (editMode)
             {
-                Account account = (Account) owner;
-                options = client.getAccounts().stream().filter(a -> {return (skip != null?!skip.equals(a):true);}).filter(a -> account.getCurrencyCode().equals(a.getCurrencyCode())).collect(Collectors.toList());
+                case OWNER:
+                    skipTransfer = crossEntry.getCrossOwner(transaction);
+                    break;
+                case CROSSOWNER:
+                    skipTransfer = crossEntry.getOwner(transaction);
+                    break;
+                default:
+                    throw new IllegalArgumentException();
             }
-            else if (owner instanceof Portfolio)
-                options = client.getPortfolios().stream().filter(p -> {return (skip != null?!skip.equals(p):true);}).collect(Collectors.toList());
-            else
-                throw new IllegalArgumentException();
-
-            if (options.size() > 1)
-                setComboBoxItems(new ArrayList<Object>(options));
-            else
-                return false;
         }
-        return canEdit;
-    }
-
-    private String switchAttributeName(String attributeName)
-    {
-        if (attributeName.equals("primaryTransactionOwner")) //$NON-NLS-1$
-            return "secondaryTransactionOwner"; //$NON-NLS-1$
-        else if (attributeName.equals("secondaryTransactionOwner")) //$NON-NLS-1$
-            return "primaryTransactionOwner"; //$NON-NLS-1$
         else
+        {
+            skipTransfer = null;
+        }
+
+        TransactionOwner<?> ownerToEdit = editMode.getOwner(crossEntry, transaction);
+
+        if (ownerToEdit instanceof Account)
+        {
+            String ownerCurrencyCode = ((Account) ownerToEdit).getCurrencyCode();
+            comboBoxItems = client.getAccounts().stream().filter(a -> !a.equals(skipTransfer))
+                            .filter(a -> a.getCurrencyCode().equals(ownerCurrencyCode)).collect(Collectors.toList());
+        }
+        else if (ownerToEdit instanceof Portfolio)
+        {
+            comboBoxItems = client.getPortfolios().stream().filter(p -> !p.equals(skipTransfer))
+                            .collect(Collectors.toList());
+        }
+        else
+        {
             throw new IllegalArgumentException();
-    }
-    
-    private PropertyDescriptor getDescriptor(Transaction transaction)
-    {
-        if (transaction.getCrossEntry() instanceof BuySellEntry) 
-        {
-            if (transaction instanceof AccountTransaction)
-                return descriptorFor(subjectType, switchAttributeName(attributeName));
-            else if (transaction instanceof PortfolioTransaction)
-                return descriptor();
-            else
-                throw new IllegalArgumentException();
         }
-        else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
-        {
-            if (((AccountTransaction) transaction).getType().equals(AccountTransaction.Type.TRANSFER_OUT))
-                return descriptorFor(subjectType, switchAttributeName(attributeName));
-            else if (((AccountTransaction) transaction).getType().equals(AccountTransaction.Type.TRANSFER_IN))
-                return descriptor();
-            else
-                throw new IllegalArgumentException();
-        }
-        else if (transaction.getCrossEntry() instanceof PortfolioTransferEntry)
-        {
-            if (((PortfolioTransaction) transaction).getType().equals(PortfolioTransaction.Type.TRANSFER_OUT))
-                return descriptorFor(subjectType, switchAttributeName(attributeName));
-            else if (((PortfolioTransaction) transaction).getType().equals(PortfolioTransaction.Type.TRANSFER_IN))
-                return descriptor();
-            else
-                throw new IllegalArgumentException();
-        }
-        else
-            throw new UnsupportedOperationException();
+
+        String[] names = new String[comboBoxItems.size()];
+        int index = 0;
+
+        for (Object item : comboBoxItems)
+            names[index++] = item == null ? "" : item.toString(); //$NON-NLS-1$
+
+        editor.setItems(names);
     }
 
     @Override
     public final Object getValue(Object element) throws Exception
     {
-        Transaction t = getTransaction(element);
+        Transaction transaction = getTransaction(element);
+        if (transaction == null)
+            throw new IllegalArgumentException();
+        CrossEntry crossEntry = transaction.getCrossEntry();
+        if (crossEntry == null)
+            throw new IllegalArgumentException();
 
-        Object subject = adapt(t.getCrossEntry());
-        PropertyDescriptor descriptor = getDescriptor(t);
-
-        Object property = descriptor.getReadMethod().invoke(subject);
-
-        List<Object> comboBoxItems = getComboBoxItems();
-        for (int ii = 0; ii < comboBoxItems.size(); ii++)
-        {
-            Object item = comboBoxItems.get(ii);
-            if (item != null && item.equals(property))
-                return ii;
-            else if (item == null && property == null)
-                return ii;
-        }
-
-        return 0;
+        TransactionOwner<?> owner = editMode.getOwner(crossEntry, transaction);
+        return comboBoxItems.indexOf(owner);
     }
 
     @Override
     public final void setValue(Object element, Object value) throws Exception
     {
-        Transaction transaction = getTransaction(element);
-        Object subject = adapt(transaction.getCrossEntry());
-        TransactionOwner<Transaction> owner;
-        TransactionOwner<Transaction> crossOwner;
-        if (transaction.getCrossEntry().getOwner(transaction) instanceof TransactionOwner && transaction.getCrossEntry().getCrossOwner(transaction) instanceof TransactionOwner)
-        {
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> tmpOwner      = (TransactionOwner<Transaction>) transaction.getCrossEntry().getOwner(transaction);
-            @SuppressWarnings("unchecked")
-            TransactionOwner<Transaction> tmpCrossOwner = (TransactionOwner<Transaction>) transaction.getCrossEntry().getCrossOwner(transaction);
-            owner      = tmpOwner;
-            crossOwner = tmpCrossOwner;
-        }
-        else
-            throw new IllegalArgumentException();
-        
         int index = (Integer) value;
-        if (index < 0)
+        if (index < 0 || index >= comboBoxItems.size())
             return;
 
-        List<Object> comboBoxItems = getComboBoxItems();
+        Transaction transaction = getTransaction(element);
+        if (transaction == null)
+            throw new IllegalArgumentException();
+        CrossEntry crossEntry = transaction.getCrossEntry();
+        if (crossEntry == null)
+            throw new IllegalArgumentException();
 
-        PropertyDescriptor descriptor = getDescriptor(transaction);
+        TransactionOwner<?> newValue = comboBoxItems.get(index);
+        TransactionOwner<?> oldValue = editMode.getOwner(crossEntry, transaction);
 
-        Object newValue = comboBoxItems.get(index);
-        Object oldValue = descriptor.getReadMethod().invoke(subject);
+        if (newValue.equals(oldValue))
+            return;
 
-        if ((newValue != null && !newValue.equals(oldValue)) || (newValue == null && oldValue != null))
-        {
-            descriptor.getWriteMethod().invoke(subject, newValue);
-            notify(transaction, newValue, oldValue);
-            Transaction crossTransaction             = (Transaction) transaction.getCrossEntry().getCrossTransaction(transaction);
-            owner.deleteTransaction(transaction, client);
-            crossOwner.deleteTransaction(crossTransaction, client);
-            transaction.getCrossEntry().insert();
-        }
+        // since we are editing the transaction owner, we must first remove the
+        // transaction and then re-insert it
+
+        @SuppressWarnings("unchecked")
+        TransactionOwner<Transaction> transactionOwner = (TransactionOwner<Transaction>) crossEntry.getOwner(transaction);
+        transactionOwner.deleteTransaction(transaction, client);
+
+        editMode.setOwner(crossEntry, transaction, newValue);
+        crossEntry.insert();
+
+        notify(element, newValue, oldValue);
     }
 }

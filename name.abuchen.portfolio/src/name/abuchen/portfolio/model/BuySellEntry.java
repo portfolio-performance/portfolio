@@ -48,38 +48,6 @@ public class BuySellEntry implements CrossEntry, Annotated
         return this.account;
     }
 
-    public void setPrimaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Portfolio)
-            if (!this.portfolio.equals((Portfolio) subject))
-                this.portfolio = (Portfolio) subject;
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public void setSecondaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Account)
-            if (!this.account.equals((Account) subject))
-                this.account = (Account) subject;
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public TransactionOwner<Transaction> getPrimaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(portfolioTransaction);
-        return owner;
-    }
-
-    public TransactionOwner<Transaction> getSecondaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(accountTransaction);
-        return owner;
-    }
-
     public void setDate(LocalDateTime date)
     {
         this.portfolioTransaction.setDateTime(date);
@@ -134,6 +102,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);
@@ -171,6 +140,17 @@ public class BuySellEntry implements CrossEntry, Annotated
         else
             throw new UnsupportedOperationException();
 
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (t.equals(portfolioTransaction) && owner instanceof Portfolio)
+            portfolio = (Portfolio) owner;
+        else if (t.equals(accountTransaction) && owner instanceof Account)
+            account = (Account) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override

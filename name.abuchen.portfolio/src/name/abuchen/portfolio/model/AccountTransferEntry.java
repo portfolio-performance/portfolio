@@ -67,42 +67,6 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         return accountTo;
     }
 
-    public void setPrimaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Account)
-        {
-            if (!this.accountFrom.equals((Account) subject))
-                this.accountTo = (Account) subject;
-        }
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public void setSecondaryTransactionOwner(TransactionOwner<Transaction> owner)
-    {
-        Object subject = (Object) owner;
-        if (subject instanceof Account)
-        {
-            if (!this.accountTo.equals((Account) subject))
-                this.accountFrom = (Account) subject;
-        }
-        else
-            throw new IllegalArgumentException();
-    }
-
-    public TransactionOwner<Transaction> getPrimaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(transactionTo);
-        return owner;
-    }
-
-    public TransactionOwner<Transaction> getSecondaryTransactionOwner()
-    {
-        TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) this.getOwner(transactionFrom);
-        return owner;
-    }
-
     public void setDate(LocalDateTime date)
     {
         this.transactionFrom.setDateTime(date);
@@ -167,6 +131,20 @@ public class AccountTransferEntry implements CrossEntry, Annotated
             return accountTo;
         else
             throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (!(owner instanceof Account))
+            throw new IllegalArgumentException();
+
+        if (t.equals(transactionFrom) && !accountTo.equals(owner))
+            accountFrom = (Account) owner;
+        else if (t.equals(transactionTo) && !accountFrom.equals(owner))
+            accountTo = (Account) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override

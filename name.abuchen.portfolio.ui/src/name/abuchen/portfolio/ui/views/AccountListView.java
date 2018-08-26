@@ -1,11 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -44,7 +43,6 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
-import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -75,7 +73,7 @@ import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.TypeListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
@@ -421,8 +419,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "type")); //$NON-NLS-1$
-        new TypeListEditingSupport(getClient(), AccountTransaction.class, "type", (List<AccountTransaction.Type>) Arrays.asList(AccountTransaction.Type.values())) //$NON-NLS-1$
-        .addListener(this).attachTo(column);
+        new TransactionTypeEditingSupport(getClient()).addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -566,8 +563,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        new TransactionOwnerListEditingSupport(getClient(), CrossEntry.class, "secondaryTransactionOwner") //$NON-NLS-1$
-            .addListener(this).attachTo(column);
+        new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)
+                        .addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.ColumnNote, SWT.None, 200);
