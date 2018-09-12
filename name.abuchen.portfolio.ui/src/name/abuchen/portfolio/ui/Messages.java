@@ -139,6 +139,8 @@ public class Messages extends NLS
     public static String ColumnDividendMovingAverageTotalRateOfReturn;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_Description;
     public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
+    public static String ColumnEarnings;
+    public static String ColumnEarnings_Description;
     public static String ColumnEntity;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
@@ -155,6 +157,7 @@ public class Messages extends NLS
     public static String ColumnHeight;
     public static String ColumnIndex;
     public static String ColumnInterval;
+    public static String ColumnInterest;
     public static String ColumnIRR;
     public static String ColumnIRR_MenuLabel;
     public static String ColumnIRRPerformance;

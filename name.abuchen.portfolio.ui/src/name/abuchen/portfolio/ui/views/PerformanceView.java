@@ -552,7 +552,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts2", //$NON-NLS-1$
                         getPreferenceStore(), earningsByAccount, layout);
 
         Column column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
@@ -574,7 +574,34 @@ public class PerformanceView extends AbstractHistoricView
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getDividends(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "dividends")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnInterest, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getInterest(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "interest")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnEarnings, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnEarnings_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -585,6 +612,32 @@ public class PerformanceView extends AbstractHistoricView
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "sum")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getFees(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "fees")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getTaxes(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "taxes")); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
