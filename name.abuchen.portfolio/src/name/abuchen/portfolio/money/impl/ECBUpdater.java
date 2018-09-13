@@ -30,7 +30,7 @@ import name.abuchen.portfolio.util.Dates;
  */
 /* package */class ECBUpdater
 {
-    private static final String SOURCE_URL = "http://www.ecb.europa.eu/stats/eurofxref/"; //$NON-NLS-1$
+    private static final String SOURCE_URL = "https://www.ecb.europa.eu/stats/eurofxref/"; //$NON-NLS-1$
 
     private enum Feeds
     {
