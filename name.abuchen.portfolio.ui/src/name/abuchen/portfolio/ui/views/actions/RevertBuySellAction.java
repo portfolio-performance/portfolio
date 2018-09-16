@@ -6,7 +6,10 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
 
 public class RevertBuySellAction extends Action
 {
@@ -43,41 +46,30 @@ public class RevertBuySellAction extends Action
     {
         BuySellEntry buysell = (BuySellEntry) transaction.getTransaction().getCrossEntry();
 
-        if (transaction.getTransaction() instanceof PortfolioTransaction)
+        PortfolioTransaction tx = buysell.getPortfolioTransaction();
+
+        // when converting between buy and sell transactions, we keep the price
+        // of the security the same, but add or subtract fees and taxes
+        // depending on the new type of transaction
+
+        Money grossAmount = tx.getUnit(Unit.Type.GROSS_VALUE).map(Unit::getAmount).orElse(tx.getGrossValue());
+
+        Money feesAndTaxes = tx.getUnits().filter(u -> u.getType() == Unit.Type.FEE || u.getType() == Unit.Type.TAX) //
+                        .map(Unit::getAmount).collect(MoneyCollectors.sum(tx.getCurrencyCode()));
+
+        if (tx.getType() == PortfolioTransaction.Type.BUY)
         {
-            PortfolioTransaction.Type type = ((PortfolioTransaction) transaction.getTransaction()).getType();
-            if (PortfolioTransaction.Type.BUY.equals(type))
-            {
-                buysell.getAccountTransaction().setType(AccountTransaction.Type.SELL);
-                buysell.getPortfolioTransaction().setType(PortfolioTransaction.Type.SELL);
-            }
-            else if (PortfolioTransaction.Type.SELL.equals(type))
-            {
-                buysell.getAccountTransaction().setType(AccountTransaction.Type.BUY);
-                buysell.getPortfolioTransaction().setType(PortfolioTransaction.Type.BUY);
-            }
-            else
-            {
-                throw new IllegalArgumentException();
-            }
+            buysell.getAccountTransaction().setType(AccountTransaction.Type.SELL);
+            tx.setType(PortfolioTransaction.Type.SELL);
+
+            buysell.setMonetaryAmount(grossAmount.subtract(feesAndTaxes));
         }
-        else if (transaction.getTransaction() instanceof AccountTransaction)
+        else if (tx.getType() == PortfolioTransaction.Type.SELL)
         {
-            AccountTransaction.Type type = ((AccountTransaction) transaction.getTransaction()).getType();
-            if (AccountTransaction.Type.BUY.equals(type))
-            {
-                buysell.getAccountTransaction().setType(AccountTransaction.Type.SELL);
-                buysell.getPortfolioTransaction().setType(PortfolioTransaction.Type.SELL);
-            }
-            else if (AccountTransaction.Type.SELL.equals(type))
-            {
-                buysell.getAccountTransaction().setType(AccountTransaction.Type.BUY);
-                buysell.getPortfolioTransaction().setType(PortfolioTransaction.Type.BUY);
-            }
-            else
-            {
-                throw new IllegalArgumentException();
-            }
+            buysell.getAccountTransaction().setType(AccountTransaction.Type.BUY);
+            tx.setType(PortfolioTransaction.Type.BUY);
+
+            buysell.setMonetaryAmount(grossAmount.add(feesAndTaxes));
         }
         else
         {
