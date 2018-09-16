@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views.actions;
 
+import java.text.MessageFormat;
+
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Account;
@@ -25,25 +27,33 @@ public class ConvertDeliveryToBuySellAction extends Action
             throw new IllegalArgumentException();
 
         setText(transaction.getTransaction().getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                        ? Messages.MenuConvertToBuy : Messages.MenuConvertToSell);
+                        ? Messages.MenuConvertToBuy
+                        : Messages.MenuConvertToSell);
     }
 
     @Override
     public void run()
     {
-        // delete existing transaction
+        Portfolio portfolio = (Portfolio) transaction.getOwner();
+        Account account = portfolio.getReferenceAccount();
         PortfolioTransaction deliveryTransaction = transaction.getTransaction();
+
+        // check if the transaction currency fits to the reference account (and
+        // if not, fail fast)
+
+        if (!deliveryTransaction.getCurrencyCode().equals(account.getCurrencyCode()))
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorConvertToBuySellCurrencyMismatch,
+                            deliveryTransaction.getCurrencyCode(), account.getCurrencyCode(), account.getName()));
+
+        // delete existing transaction
         transaction.getOwner().deleteTransaction(deliveryTransaction, client);
 
         // create new buy / sell
-
-        Portfolio portfolio = (Portfolio) transaction.getOwner();
-        Account account = portfolio.getReferenceAccount();
-
         BuySellEntry entry = new BuySellEntry(portfolio, account);
 
         entry.setType(deliveryTransaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                        ? PortfolioTransaction.Type.BUY : PortfolioTransaction.Type.SELL);
+                        ? PortfolioTransaction.Type.BUY
+                        : PortfolioTransaction.Type.SELL);
 
         entry.setDate(deliveryTransaction.getDateTime());
         entry.setMonetaryAmount(deliveryTransaction.getMonetaryAmount());
