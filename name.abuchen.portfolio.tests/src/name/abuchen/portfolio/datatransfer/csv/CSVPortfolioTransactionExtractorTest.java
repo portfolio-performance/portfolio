@@ -44,7 +44,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "DELIVERY_INBOUND", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -82,7 +82,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-01", "DE0007164600", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -122,8 +122,8 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "DE0007164600", "SAP.DE", "", "SAP SE",
-                                        "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "10:00", "DE0007164600", "SAP.DE", "",
+                                        "SAP SE", "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -137,7 +137,7 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(t.getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 100_00)));
         assertThat(t.getNote(), is("Notiz"));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-02T00:00")));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2013-01-02T10:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(1.9)));
         assertThat(t.getSecurity(), is(security));
         assertThat(t.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", 11_00)));
@@ -161,7 +161,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "DE0007164600", "SAP.DE", "", "SAP SE",
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "-100", "EUR", "", "12", "110", "USD", "0,9091", "1,9", "SELL", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -198,8 +198,8 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "SAP.DE", "", "SAP SE", "-100", "EUR",
-                                        "11", "", "", "", "", "1,9", "", "Notiz" }),
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "12:00", "", "SAP.DE", "", "SAP SE",
+                                        "-100", "EUR", "11", "", "", "", "", "1,9", "", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -219,8 +219,8 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
-                        0, Arrays.<String[]>asList(new String[] { "2013-01-02", "", "", "", "SAP SE", "100", "EUR",
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "", "", "", "SAP SE", "100", "EUR",
                                         "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -238,8 +238,8 @@ public class CSVPortfolioTransactionExtractorTest
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
-        List<Item> results = extractor.extract(
-                        0, Arrays.<String[]>asList(new String[] { "", "DE0007164600", "", "", "SAP SE", "100", "EUR",
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList(new String[] { "", "", "DE0007164600", "", "", "SAP SE", "100", "EUR",
                                         "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -256,7 +256,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2013-01-02", "DE0007164600", "", "", "SAP SE", "",
+                        Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "", "", "SAP SE", "",
                                         "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
@@ -277,8 +277,8 @@ public class CSVPortfolioTransactionExtractorTest
 
         List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(0,
-                        Arrays.<String[]>asList(new String[] { "2015-09-15", "LU0419741177", "", "", "", "56", "EUR",
-                                        "0,14", "", "", "USD", "1,1194", "-0,701124", "BUY", "Notiz" }),
+                        Arrays.<String[]>asList(new String[] { "2015-09-15", "XX:XX", "LU0419741177", "", "", "", "56",
+                                        "EUR", "0,14", "", "", "USD", "1,1194", "-0,701124", "BUY", "Notiz" }),
                         buildField2Column(extractor), errors);
 
         assertThat(errors, empty());
@@ -297,5 +297,4 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getForex(),
                         is(Money.of(security.getCurrencyCode(), Values.Amount.factorize(62.53))));
     }
-
 }

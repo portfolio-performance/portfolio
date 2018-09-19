@@ -33,6 +33,7 @@ import name.abuchen.portfolio.money.Money;
 
         List<Field> fields = getFields();
         fields.add(new DateField(Messages.CSVColumn_Date));
+        fields.add(new Field(Messages.CSVColumn_Time).setOptional(true));
         fields.add(new ISINField(Messages.CSVColumn_ISIN).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
         fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
@@ -82,7 +83,7 @@ import name.abuchen.portfolio.money.Money;
         Type type = inferType(rawValues, field2column, amount);
 
         // determine remaining fields
-        LocalDateTime date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 

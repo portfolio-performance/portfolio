@@ -67,7 +67,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
     private SecurityPrice extract(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        LocalDateTime date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, null, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
