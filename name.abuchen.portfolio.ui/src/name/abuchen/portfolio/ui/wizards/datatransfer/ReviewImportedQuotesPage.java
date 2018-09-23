@@ -3,6 +3,9 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -10,9 +13,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
 
 public class ReviewImportedQuotesPage extends AbstractWizardPage
 {

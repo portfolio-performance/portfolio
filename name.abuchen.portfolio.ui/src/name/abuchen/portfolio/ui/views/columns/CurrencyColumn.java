@@ -2,6 +2,9 @@ package name.abuchen.portfolio.ui.views.columns;
 
 import java.util.stream.Collectors;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.swt.SWT;
+
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -9,9 +12,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
-
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.SWT;
 
 public class CurrencyColumn extends Column
 {

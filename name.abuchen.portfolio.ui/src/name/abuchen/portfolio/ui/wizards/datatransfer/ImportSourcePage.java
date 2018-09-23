@@ -2,11 +2,6 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.text.MessageFormat;
 
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -18,6 +13,11 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ImportSourcePage extends AbstractWizardPage
 {

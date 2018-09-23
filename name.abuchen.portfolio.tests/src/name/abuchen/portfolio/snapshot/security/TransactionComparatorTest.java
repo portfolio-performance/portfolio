@@ -6,6 +6,8 @@ import static org.junit.Assert.assertThat;
 import java.util.Collections;
 import java.util.List;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.model.Client;
@@ -13,8 +15,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class TransactionComparatorTest

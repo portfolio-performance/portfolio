@@ -7,10 +7,10 @@ import static org.junit.Assert.assertThat;
 import java.time.LocalDate;
 import java.util.Arrays;
 
+import org.junit.Test;
+
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
-
-import org.junit.Test;
 
 public class RiskTest
 {

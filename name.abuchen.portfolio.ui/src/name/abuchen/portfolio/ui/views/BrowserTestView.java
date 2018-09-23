@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
-
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
 public class BrowserTestView extends AbstractFinanceView
 {

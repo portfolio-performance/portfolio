@@ -3,16 +3,16 @@ package name.abuchen.portfolio.online.impl.variableurl;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.junit.Assert.assertThat;
 
-import com.google.common.collect.Iterators;
-
-import org.junit.Test;
-
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.junit.Test;
+
+import com.google.common.collect.Iterators;
+
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 
 @SuppressWarnings("nls")
 public class ConstStringTest

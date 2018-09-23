@@ -14,12 +14,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Control;
 import org.swtchart.ISeries;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 
 public class TimelineChartCSVExporter extends AbstractCSVExporter
 {

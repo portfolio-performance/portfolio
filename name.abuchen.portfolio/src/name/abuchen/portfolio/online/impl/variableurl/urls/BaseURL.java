@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.online.impl.variableurl.urls;
 
+import java.util.List;
+
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-
-import java.util.List;
 
 public abstract class BaseURL implements VariableURL
 {

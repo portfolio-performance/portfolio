@@ -6,9 +6,9 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.money.ExchangeRate;
-
 import org.junit.Test;
+
+import name.abuchen.portfolio.money.ExchangeRate;
 
 @SuppressWarnings("nls")
 public class InverseExchangeRateTimeSeriesTest

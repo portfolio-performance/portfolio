@@ -3,11 +3,6 @@ package name.abuchen.portfolio.ui.wizards.client;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.FormDataFactory;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.IStructuredSelection;
@@ -16,6 +11,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
+import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 class BaseCurrencySelectionPage extends AbstractWizardPage
 {

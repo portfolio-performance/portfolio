@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.BindingHelper.Model;
-
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -10,6 +7,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper.Model;
 
 public class PasswordDialog extends AbstractDialog
 {
