@@ -9,10 +9,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 
-import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
-
 import org.junit.Assert;
 import org.junit.Test;
+
+import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
 
 @SuppressWarnings("nls")
 public class TokenReplacingReaderTest

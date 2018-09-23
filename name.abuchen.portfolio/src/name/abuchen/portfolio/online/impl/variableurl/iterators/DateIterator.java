@@ -1,12 +1,12 @@
 package name.abuchen.portfolio.online.impl.variableurl.iterators;
 
-import name.abuchen.portfolio.online.impl.variableurl.macros.FormattedDate;
-import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-import name.abuchen.portfolio.online.impl.variableurl.urls.DateURL;
-
 import java.time.LocalDate;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+
+import name.abuchen.portfolio.online.impl.variableurl.macros.FormattedDate;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
+import name.abuchen.portfolio.online.impl.variableurl.urls.DateURL;
 
 public class DateIterator implements Iterator<String>
 {

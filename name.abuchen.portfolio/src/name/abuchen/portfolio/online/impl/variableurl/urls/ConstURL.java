@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.online.impl.variableurl.urls;
 
-import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 
 public class ConstURL extends BaseURL
 {

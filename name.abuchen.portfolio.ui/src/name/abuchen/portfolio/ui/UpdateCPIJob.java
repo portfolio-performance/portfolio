@@ -4,15 +4,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
-import name.abuchen.portfolio.online.CPIFeed;
-import name.abuchen.portfolio.online.DestatisCPIFeed;
-
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.MultiStatus;
 import org.eclipse.core.runtime.Status;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
+import name.abuchen.portfolio.online.CPIFeed;
+import name.abuchen.portfolio.online.DestatisCPIFeed;
 
 public final class UpdateCPIJob extends AbstractClientJob
 {

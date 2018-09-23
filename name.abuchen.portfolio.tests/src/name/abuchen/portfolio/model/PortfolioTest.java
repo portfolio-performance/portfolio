@@ -7,10 +7,10 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 
 public class PortfolioTest
 {

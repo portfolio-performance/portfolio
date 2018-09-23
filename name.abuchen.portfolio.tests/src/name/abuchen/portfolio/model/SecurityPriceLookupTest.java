@@ -5,10 +5,10 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
 
-import name.abuchen.portfolio.SecurityBuilder;
-
 import org.junit.Before;
 import org.junit.Test;
+
+import name.abuchen.portfolio.SecurityBuilder;
 
 @SuppressWarnings("nls")
 public class SecurityPriceLookupTest

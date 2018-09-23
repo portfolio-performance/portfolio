@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import name.abuchen.portfolio.ui.Messages;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -18,6 +16,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.ui.Messages;
 
 public class DisplayTextDialog extends Dialog
 {

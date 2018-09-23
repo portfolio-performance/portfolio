@@ -8,11 +8,11 @@ import java.time.Month;
 import java.util.List;
 import java.util.Scanner;
 
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
-
 import org.htmlparser.lexer.Lexer;
 import org.htmlparser.util.ParserException;
 import org.junit.Test;
+
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
 
 @SuppressWarnings("nls")
 public class DestatisCPIFeedTest

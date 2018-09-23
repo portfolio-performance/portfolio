@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.online.impl.variableurl.urls;
 
-import name.abuchen.portfolio.online.impl.variableurl.iterators.PageIterator;
-import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-
 import java.util.Iterator;
 import java.util.List;
+
+import name.abuchen.portfolio.online.impl.variableurl.iterators.PageIterator;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 
 public class PageURL extends BaseURL
 {

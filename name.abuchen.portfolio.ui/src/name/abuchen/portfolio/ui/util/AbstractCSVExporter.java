@@ -3,15 +3,15 @@ package name.abuchen.portfolio.ui.util;
 import java.io.File;
 import java.io.IOException;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.TextUtil;
-
 import org.apache.commons.csv.CSVStrategy;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.FileDialog;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractCSVExporter
 {

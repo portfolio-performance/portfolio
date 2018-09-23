@@ -2,13 +2,13 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.List;
 
-import name.abuchen.portfolio.ui.util.Colors;
-
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+
+import name.abuchen.portfolio.ui.util.Colors;
 
 /* package */class TaxonomyNodeRenderer
 {

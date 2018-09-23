@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
-import name.abuchen.portfolio.ui.util.NumberVerifyListener;
-import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {

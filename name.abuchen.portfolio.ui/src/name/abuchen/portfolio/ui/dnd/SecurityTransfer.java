@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.ui.dnd;
 
-import name.abuchen.portfolio.model.Security;
-
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
+
+import name.abuchen.portfolio.model.Security;
 
 public class SecurityTransfer extends ByteArrayTransfer
 {

@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.online.impl.variableurl.urls;
 
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.online.impl.variableurl.iterators.DateIterator;
-import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
-
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.online.impl.variableurl.iterators.DateIterator;
+import name.abuchen.portfolio.online.impl.variableurl.macros.Macro;
 
 public class DateURL extends BaseURL
 {
