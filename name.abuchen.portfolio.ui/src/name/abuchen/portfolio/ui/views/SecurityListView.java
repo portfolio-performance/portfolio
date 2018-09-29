@@ -156,15 +156,38 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         {
             super(toolBar, Messages.SecurityListFilter, Images.FILTER_OFF.image(), SWT.NONE);
 
-            if (preferenceStore.getBoolean(this.getClass().getSimpleName() + "-hideInactiveSecurities")) //$NON-NLS-1$
+            int savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettings"); //$NON-NLS-1$
+
+            if ((savedFilters & (1 << 1)) != 0)
                 filter.add(securityIsNotInactive);
+            if ((savedFilters & (1 << 2)) != 0)
+                filter.add(onlySecurities);
+            if ((savedFilters & (1 << 3)) != 0)
+                filter.add(onlyExchangeRates);
+            if ((savedFilters & (1 << 4)) != 0)
+                filter.add(sharesGreaterZero);
+            if ((savedFilters & (1 << 5)) != 0)
+                filter.add(sharesEqualZero);
 
             if (!filter.isEmpty())
                 getToolItem().setImage(Images.FILTER_ON.image());
 
-            toolBar.addDisposeListener(
-                            e -> preferenceStore.setValue(this.getClass().getSimpleName() + "-hideInactiveSecurities", //$NON-NLS-1$
-                                            filter.contains(securityIsNotInactive)));
+            toolBar.addDisposeListener(e -> {
+
+                int savedFilter = 0;
+                if (filter.contains(securityIsNotInactive))
+                    savedFilter += (1 << 1);
+                if (filter.contains(onlySecurities))
+                    savedFilter += (1 << 2);
+                if (filter.contains(onlyExchangeRates))
+                    savedFilter += (1 << 3);
+                if (filter.contains(sharesGreaterZero))
+                    savedFilter += (1 << 4);
+                if (filter.contains(sharesEqualZero))
+                    savedFilter += (1 << 5);
+
+                preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings", savedFilter); //$NON-NLS-1$
+            });
         }
 
         /**
