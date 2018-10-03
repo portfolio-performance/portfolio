@@ -95,6 +95,16 @@ public abstract class Transaction implements Annotated
             return exchangeRate;
         }
 
+        @Override
+        public String toString()
+        {
+            return String.format("%-17s %s %s %s"  //$NON-NLS-1$
+                            , type.name()
+                            , amount.toString()
+                            , (forex != null ? forex.toString() : "<no forex>") //$NON-NLS-1$
+                            , (exchangeRate != null ? exchangeRate.toString() : "<no exchange>")  //$NON-NLS-1$
+                                );
+        }
     }
 
     public static final class ByDate implements Comparator<Transaction>, Serializable

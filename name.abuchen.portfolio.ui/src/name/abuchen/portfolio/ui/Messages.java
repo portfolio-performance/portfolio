@@ -155,6 +155,7 @@ public class Messages extends NLS
     public static String ColumnHeight;
     public static String ColumnIndex;
     public static String ColumnInterval;
+    public static String ColumnInterest;
     public static String ColumnIRR;
     public static String ColumnIRR_MenuLabel;
     public static String ColumnIRRPerformance;
