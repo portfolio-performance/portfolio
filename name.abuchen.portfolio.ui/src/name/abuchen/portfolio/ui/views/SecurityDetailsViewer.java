@@ -272,6 +272,9 @@ public class SecurityDetailsViewer
         @Override
         public void setInput(Security security)
         {
+            if (valueLatestPrices.isDisposed())
+                return;
+
             if (security == null || security.getLatest() == null)
             {
                 clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume,
