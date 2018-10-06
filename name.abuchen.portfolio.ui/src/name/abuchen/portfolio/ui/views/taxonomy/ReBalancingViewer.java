@@ -94,6 +94,42 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             }
         });
         support.addColumn(column);
+        
+        column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+
+                return Values.Percent.format(calculateRelativeDelta(node));
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+                return Display.getCurrent().getSystemColor(calculateRelativeDelta(node) >= 0
+                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+            }
+            
+            private double calculateRelativeDelta(TaxonomyNode node)
+            {
+                long actual = node.getActual().getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount()
+                                : node.getParent().getActual().getAmount();
+                double weightPercent = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
+                double actualPercent = (base != 0) ? (double) actual / base : weightPercent;
+
+                return actualPercent - weightPercent;
+            }
+        });
+        support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnDeltaValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
