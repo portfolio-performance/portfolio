@@ -158,8 +158,8 @@ public class SecuritiesChart
 
         Composite buttons = new Composite(parent, SWT.NONE);
         buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(buttons);
+        RowLayoutFactory.fillDefaults().type(SWT.HORIZONTAL).spacing(2).fill(true).applyTo(buttons);
 
         addConfigButton(buttons);
 
