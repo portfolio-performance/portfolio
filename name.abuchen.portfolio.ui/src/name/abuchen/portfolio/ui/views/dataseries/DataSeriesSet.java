@@ -115,23 +115,30 @@ public class DataSeriesSet
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Colors.DARK_GREEN.getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
-                        Messages.LabelAccumulatedInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Messages.LabelAccumulatedInterest, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Colors.DARK_GREEN.getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE_ACCUMULATED,
-                        Messages.LabelAccumulatedInterestCharge,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Messages.LabelAccumulatedInterestCharge, Colors.DARK_GREEN.getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS, Messages.LabelEarnings,
+                        Colors.DARK_GREEN.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS_ACCUMULATED,
+                        Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
     }
