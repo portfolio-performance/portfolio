@@ -45,6 +45,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -441,7 +442,17 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "amount")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            AccountTransaction accountTransaction1 = (AccountTransaction) o1;
+            long transactionAmount1 = accountTransaction1.getAmount();
+            if (accountTransaction1.getType().isDebit())
+                transactionAmount1 = -transactionAmount1;
+            AccountTransaction accountTransaction2 = (AccountTransaction) o2;
+            long transactionAmount2 = accountTransaction2.getAmount();
+            if (accountTransaction2.getType().isDebit())
+                transactionAmount2 = -transactionAmount2;
+            return Long.compare(transactionAmount1, transactionAmount2);
+        }));
         transactionsColumns.addColumn(column);
 
         column = new Column(Messages.Balance, SWT.RIGHT, 80);
