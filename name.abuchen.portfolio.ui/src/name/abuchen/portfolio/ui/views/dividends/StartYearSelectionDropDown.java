@@ -22,7 +22,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
     public StartYearSelectionDropDown(ToolBar toolBar, DividendsViewModel model)
     {
-        super(toolBar, String.valueOf(model.getStartYear()));
+        super(toolBar, createLabelTextForYear(model.getStartYear()));
         this.model = model;
     }
 
@@ -41,7 +41,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 public void run()
                 {
                     model.updateWith(year);
-                    setLabel(String.valueOf(year));
+                    setLabel(createLabelTextForYear(year));
                 }
             };
             action.setChecked(year == model.getStartYear());
@@ -72,9 +72,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 int year = Integer.parseInt(dialog.getValue());
                 model.updateWith(year);
-                setLabel(String.valueOf(year));
+                setLabel(createLabelTextForYear(year));
             }
 
         }));
+    }
+    
+    private static String createLabelTextForYear(int year) {
+        return Messages.LabelSelectYearSince + " " + String.valueOf(year); //$NON-NLS-1$
     }
 }
