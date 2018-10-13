@@ -165,7 +165,7 @@ public class Messages extends NLS
     public static String ColumnIRRPerformanceOption;
     public static String ColumnISIN;
     public static String ColumnIssue;
-    public static String ColumnLable;
+    public static String ColumnLabel;
     public static String ColumnLastDividendPayment;
     public static String ColumnLastDividendPayment_MenuLabel;
     public static String ColumnLastTrade;

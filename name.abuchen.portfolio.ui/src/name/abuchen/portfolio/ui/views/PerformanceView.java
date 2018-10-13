@@ -178,7 +178,7 @@ public class PerformanceView extends AbstractHistoricView
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
 
-        Column column = new NameColumn("label", Messages.ColumnLable, SWT.NONE, 350); //$NON-NLS-1$
+        Column column = new NameColumn("label", Messages.ColumnLabel, SWT.NONE, 350); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

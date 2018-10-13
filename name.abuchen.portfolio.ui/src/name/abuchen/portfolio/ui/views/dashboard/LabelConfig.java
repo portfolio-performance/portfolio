@@ -24,7 +24,7 @@ public class LabelConfig implements WidgetConfig
 
         manager.add(new SimpleAction(Messages.MenuRenameLabel, a -> {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameLabel,
-                            Messages.ColumnLable, delegate.getWidget().getLabel(), null);
+                            Messages.ColumnLabel, delegate.getWidget().getLabel(), null);
 
             if (dialog.open() != InputDialog.OK)
                 return;
@@ -39,6 +39,6 @@ public class LabelConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return Messages.ColumnLable + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+        return Messages.ColumnLabel + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
     }
 }
