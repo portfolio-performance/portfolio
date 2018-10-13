@@ -494,6 +494,7 @@ public class Messages extends NLS
     public static String LabelSecurityPerformance;
     public static String LabelSecurityTransfer;
     public static String LabelSelectYear;
+    public static String LabelSelectYearSince;
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
