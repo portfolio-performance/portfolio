@@ -61,14 +61,14 @@
 			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository</url>
 		</repository>
 		<repository>
-			<id>eclipse-photon</id>
+			<id>eclipse-2018-09</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.8/R-4.8-201806110500/</url>
+			<url>http://download.eclipse.org/eclipse/updates/4.9/R-4.9-201809060745/</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>

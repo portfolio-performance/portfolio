@@ -4,13 +4,13 @@
 <target name="portfolio-ide" sequenceNumber="22">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.100.v20180611-0422"/>
-		<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.100.v20180611-0422"/>
-		<unit id="org.eclipse.equinox.executable" version="3.8.0.v20180518-2029"/>
-		<unit id="org.eclipse.pde.source.feature.group" version="3.13.100.v20180611-0826"/>
-		<unit id="org.eclipse.platform.feature.group" version="4.8.0.v20180611-0656"/>
-		<unit id="org.eclipse.rcp.source.feature.group" version="4.8.0.v20180611-0656"/>
-		<repository location="http://download.eclipse.org/eclipse/updates/4.8/R-4.8-201806110500/"/>
+		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.200.v20180906-1121"/>
+		<unit id="org.eclipse.e4.rcp.source.feature.group" version="1.6.200.v20180906-1121"/>
+		<unit id="org.eclipse.equinox.executable" version="3.8.100.v20180827-1352"/>
+		<unit id="org.eclipse.pde.source.feature.group" version="3.13.200.v20180906-0745"/>
+		<unit id="org.eclipse.platform.feature.group" version="4.9.0.v20180906-1121"/>
+		<unit id="org.eclipse.rcp.source.feature.group" version="4.9.0.v20180906-1121"/>
+		<repository location="http://download.eclipse.org/eclipse/updates/4.9/R-4.9-201809060745/"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
@@ -24,11 +24,11 @@
 		<unit id="org.mockito.source" version="2.13.0.v20180426-1843"/>
 		<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository"/>
 	</location>
-<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-<unit id="org.eclipse.babel.nls_datatools_de.feature.group" version="4.7.0.v20171231020002"/>
-<unit id="org.eclipse.babel.nls_datatools_es.feature.group" version="4.7.0.v20171231020002"/>
-<repository location="http://download.eclipse.org/technology/babel/update-site/R0.15.1/oxygen"/>
-</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="org.eclipse.babel.nls_datatools_de.feature.group" version="4.8.0.v20180815020001"/>
+		<unit id="org.eclipse.babel.nls_datatools_es.feature.group" version="4.8.0.v20180815020001"/>
+		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/"/>
+	</location>
 <location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 <unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201804281520"/>
 <repository location="http://download.eclipse.org/nebula/releases/2.0.1"/>
