@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
-import name.abuchen.portfolio.ui.util.NumberVerifyListener;
-import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
-
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
@@ -40,7 +40,7 @@ public class ValueEditingSupport extends PropertyEditingSupport
     @Override
     public final Object getValue(Object element) throws Exception
     {
-        return longToString.convert(descriptor().getReadMethod().invoke(adapt(element)));
+        return longToString.convert((Long) descriptor().getReadMethod().invoke(adapt(element)));
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ValueEditingSupport extends PropertyEditingSupport
     {
         Object subject = adapt(element);
 
-        Number newValue = (Number) stringToLong.convert(String.valueOf(value));
+        Number newValue = stringToLong.convert(String.valueOf(value));
         if (int.class.isAssignableFrom(descriptor().getPropertyType())
                         || Integer.class.isAssignableFrom(descriptor().getPropertyType()))
             newValue = Integer.valueOf(newValue.intValue());

@@ -36,7 +36,7 @@ import name.abuchen.portfolio.ui.wizards.security.EditSecurityModel.AttributeDes
 
 public class AttributesPage extends AbstractPage implements IMenuListener
 {
-    private static final class ToAttributeStringConverter implements IConverter
+    private static final class ToAttributeStringConverter implements IConverter<Object, String>
     {
         private final AttributeDesignation attribute;
 
@@ -58,13 +58,13 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         }
 
         @Override
-        public Object convert(Object fromObject)
+        public String convert(Object fromObject)
         {
             return attribute.getType().getConverter().toString(fromObject);
         }
     }
 
-    private static final class ToAttributeObjectConverter implements IValidatingConverter
+    private static final class ToAttributeObjectConverter implements IValidatingConverter<String, Object>
     {
         private final AttributeDesignation attribute;
 
@@ -86,7 +86,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         }
 
         @Override
-        public Object convert(Object fromObject)
+        public Object convert(String fromObject)
         {
             return attribute.getType().getConverter().fromString((String) fromObject);
         }
@@ -155,8 +155,10 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(value);
 
             @SuppressWarnings("unchecked")
-            IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
-            binding = bindings.getBindingContext().bindValue(WidgetProperties.selection().observe(value), observable);
+            IObservableValue<Boolean> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<Button> attributeTarget = WidgetProperties.selection().observe(value);
+            binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel);
         }
         else
         {
@@ -165,11 +167,15 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
             ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
             @SuppressWarnings("unchecked")
-            IObservableValue<?> observable = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<String> attributeTarget = WidgetProperties.text(SWT.Modify).observe(value);
             binding = bindings.getBindingContext().bindValue( //
-                            WidgetProperties.text(SWT.Modify).observe(value), observable,
-                            new UpdateValueStrategy().setAfterGetValidator(input2model).setConverter(input2model),
-                            new UpdateValueStrategy().setConverter(new ToAttributeStringConverter(attribute)));
+                            attributeTarget, attributeModel,
+                            new UpdateValueStrategy<String, Object>().setAfterGetValidator(input2model)
+                                            .setConverter(input2model),
+                            new UpdateValueStrategy<Object, String>()
+                                            .setConverter(new ToAttributeStringConverter(attribute)));
         }
 
         // delete button

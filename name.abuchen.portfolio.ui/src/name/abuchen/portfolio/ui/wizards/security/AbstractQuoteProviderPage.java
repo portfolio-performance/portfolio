@@ -14,7 +14,6 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -354,7 +353,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
             
-            ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
+            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
             @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
             bindings.getBindingContext().bindValue(observeText, observable);

@@ -13,7 +13,6 @@ import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -122,26 +121,28 @@ public class SelectSplitPage extends AbstractWizardPage
         // model binding
 
         DataBindingContext context = bindings.getBindingContext();
+        IObservableValue<?> targetObservable = ViewersObservables.observeSingleSelection(comboSecurity);
         @SuppressWarnings("unchecked")
         IObservableValue<?> securityObservable = BeanProperties.value("security").observe(model); //$NON-NLS-1$
-        context.bindValue(ViewersObservables.observeSingleSelection(comboSecurity), securityObservable, null, null);
+        context.bindValue(targetObservable, securityObservable, null, null);
 
         @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value("exDate").observe(model); //$NON-NLS-1$
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(boxExDate.getControl()), dateObservable,
-                        new UpdateValueStrategy() //
-                                        .setAfterConvertValidator(value -> value != null ? ValidationStatus.ok()
-                                                        : ValidationStatus.error(MessageFormat.format(
-                                                                        Messages.MsgDialogInputRequired,
-                                                                        Messages.ColumnExDate))),
+        IObservableValue<Object> targetExDate = new SimpleDateTimeDateSelectionProperty()
+                        .observe(boxExDate.getControl());
+        @SuppressWarnings("unchecked")
+        IObservableValue<Object> modelExDate = BeanProperties.value("exDate").observe(model); //$NON-NLS-1$
+        context.bindValue(targetExDate, modelExDate, new UpdateValueStrategy<Object, Object>() //
+                        .setAfterConvertValidator(value -> value != null ? ValidationStatus.ok()
+                                        : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
+                                                        Messages.ColumnExDate))),
                         null);
 
-        final ISWTObservableValue newSharesTargetObservable = WidgetProperties.selection().observe(spinnerNewShares);
+        final IObservableValue<?> newSharesTargetObservable = WidgetProperties.selection().observe(spinnerNewShares);
         @SuppressWarnings("unchecked")
         IObservableValue<?> newSharesModelObservable = BeanProperties.value("newShares").observe(model); //$NON-NLS-1$
         context.bindValue(newSharesTargetObservable, newSharesModelObservable);
 
-        final ISWTObservableValue oldSharesTargetObservable = WidgetProperties.selection().observe(spinnerOldShares);
+        final IObservableValue<?> oldSharesTargetObservable = WidgetProperties.selection().observe(spinnerOldShares);
         @SuppressWarnings("unchecked")
         IObservableValue<?> oldSharesModelObservable = BeanProperties.value("oldShares").observe(model); //$NON-NLS-1$
         context.bindValue(oldSharesTargetObservable, oldSharesModelObservable);

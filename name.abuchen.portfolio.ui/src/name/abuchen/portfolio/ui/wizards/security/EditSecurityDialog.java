@@ -163,14 +163,15 @@ public class EditSecurityDialog extends Dialog
         // bind to model
 
         @SuppressWarnings("unchecked")
-        IObservableValue<?> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
-        bindings.getBindingContext().bindValue(WidgetProperties.text(SWT.Modify).observe(name), observable,
-                        new UpdateValueStrategy().setAfterConvertValidator(value -> {
-                            String v = (String) value;
-                            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                                            : ValidationStatus.error(MessageFormat.format(
-                                                            Messages.MsgDialogInputRequired, Messages.ColumnName));
-                        }), //
+        IObservableValue<String> targetName = WidgetProperties.text(SWT.Modify).observe(name);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        bindings.getBindingContext().bindValue(targetName, observable,
+                        new UpdateValueStrategy<String, String>().setAfterConvertValidator(
+                                        v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                                        : ValidationStatus.error(MessageFormat.format(
+                                                                        Messages.MsgDialogInputRequired,
+                                                                        Messages.ColumnName))),
                         null);
     }
 

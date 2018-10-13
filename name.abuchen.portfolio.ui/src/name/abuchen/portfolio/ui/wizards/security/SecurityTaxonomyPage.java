@@ -82,10 +82,10 @@ public class SecurityTaxonomyPage extends AbstractPage
     {
         private final Label label;
         private final Taxonomy taxonomy;
-        private final List<IObservableValue<?>> observables;
+        private final List<IObservableValue<Integer>> observables;
 
         private WeightsAreGreaterThan100Validator(Label label, Taxonomy taxonomy,
-                        List<IObservableValue<?>> weightObservables)
+                        List<IObservableValue<Integer>> weightObservables)
         {
             this.label = label;
             this.taxonomy = taxonomy;
@@ -100,8 +100,8 @@ public class SecurityTaxonomyPage extends AbstractPage
 
             int weights = 0;
 
-            for (IObservableValue<?> value : observables)
-                weights += (Integer) value.getValue();
+            for (IObservableValue<Integer> value : observables)
+                weights += value.getValue();
 
             if (label != null)
                 label.setText(Values.Weight.format(weights) + "%"); //$NON-NLS-1$
@@ -114,7 +114,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         }
     }
 
-    private static final class NotNullValidator implements IValidator
+    private static final class NotNullValidator implements IValidator<Object>
     {
         @Override
         public IStatus validate(Object value)
@@ -124,10 +124,10 @@ public class SecurityTaxonomyPage extends AbstractPage
         }
     }
 
-    private static final class GreaterThanZeroValidator implements IValidator
+    private static final class GreaterThanZeroValidator implements IValidator<Integer>
     {
         @Override
-        public IStatus validate(Object value)
+        public IStatus validate(Integer value)
         {
             int weight = (Integer) value;
             return weight > 0 ? ValidationStatus.ok()
@@ -214,7 +214,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     private void addBlock(final Composite taxonomyPicker, final TaxonomyDesignation designation)
     {
         Label sumOfWeights = null;
-        final List<IObservableValue<?>> weightObservables = new ArrayList<>();
+        final List<IObservableValue<Integer>> weightObservables = new ArrayList<>();
         final List<IObservableValue<?>> classificationObservables = new ArrayList<>();
 
         if (designation.getLinks().size() == 1
@@ -252,7 +252,8 @@ public class SecurityTaxonomyPage extends AbstractPage
     }
 
     private void addFullBlock(Composite picker, TaxonomyDesignation designation, final ClassificationLink link,
-                    List<IObservableValue<?>> weightObservables, List<IObservableValue<?>> classificationObservables)
+                    List<IObservableValue<Integer>> weightObservables,
+                    List<IObservableValue<?>> classificationObservables)
     {
         Composite block = new Composite(picker, SWT.NONE);
         block.setData(link);
@@ -284,7 +285,7 @@ public class SecurityTaxonomyPage extends AbstractPage
     }
 
     private void setupWeightMultiValidator(Label sumOfWeights, TaxonomyDesignation designation,
-                    final List<IObservableValue<?>> weightObservables)
+                    final List<IObservableValue<Integer>> weightObservables)
     {
         MultiValidator multiValidator = new WeightsAreGreaterThan100Validator(sumOfWeights, designation.getTaxonomy(),
                         weightObservables);
@@ -294,16 +295,16 @@ public class SecurityTaxonomyPage extends AbstractPage
 
         for (int ii = 0; ii < weightObservables.size(); ii++)
         {
-            IObservableValue<?> observable = weightObservables.get(ii);
+            IObservableValue<Integer> observable = weightObservables.get(ii);
             ClassificationLink link = designation.getLinks().get(ii);
 
-            UpdateValueStrategy strategy = new UpdateValueStrategy();
+            UpdateValueStrategy<Integer, Integer> strategy = new UpdateValueStrategy<>();
             strategy.setAfterConvertValidator(new GreaterThanZeroValidator());
 
+            IObservableValue<Integer> targetObservable = multiValidator.observeValidatedValue(observable);
             @SuppressWarnings("unchecked")
-            IObservableValue<?> weightObservable = BeanProperties.value("weight").observe(link); //$NON-NLS-1$
-            validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
-                            weightObservable, strategy, null));
+            IObservableValue<Integer> weightObservable = BeanProperties.value("weight").observe(link); //$NON-NLS-1$
+            validators.add(bindings.getBindingContext().bindValue(targetObservable, weightObservable, strategy, null));
         }
     }
 
@@ -320,11 +321,11 @@ public class SecurityTaxonomyPage extends AbstractPage
             IObservableValue<?> observable = classificationObservables.get(ii);
             ClassificationLink link = designation.getLinks().get(ii);
 
-            UpdateValueStrategy strategy = new UpdateValueStrategy();
+            UpdateValueStrategy<Object, Object> strategy = new UpdateValueStrategy<>();
             strategy.setAfterConvertValidator(new NotNullValidator());
 
             @SuppressWarnings("unchecked")
-            IObservableValue<?> classificationObservable = BeanProperties.value("classification").observe(link); //$NON-NLS-1$
+            IObservableValue<Object> classificationObservable = BeanProperties.value("classification").observe(link); //$NON-NLS-1$
             validators.add(bindings.getBindingContext().bindValue(multiValidator.observeValidatedValue(observable),
                             classificationObservable, strategy, null));
         }
@@ -365,7 +366,7 @@ public class SecurityTaxonomyPage extends AbstractPage
         });
     }
 
-    private void addSpinner(Composite block, ClassificationLink link, List<IObservableValue<?>> observables)
+    private void addSpinner(Composite block, ClassificationLink link, List<IObservableValue<Integer>> observables)
     {
         final Spinner spinner = new Spinner(block, SWT.BORDER);
         spinner.setDigits(2);
@@ -373,7 +374,9 @@ public class SecurityTaxonomyPage extends AbstractPage
         spinner.setValues(link.getWeight(), 0, Classification.ONE_HUNDRED_PERCENT, 2, 100, 1000);
         GridDataFactory.fillDefaults().applyTo(spinner);
 
-        observables.add(WidgetProperties.selection().observe(spinner));
+        @SuppressWarnings("unchecked")
+        IObservableValue<Integer> observable = WidgetProperties.selection().observe(spinner);
+        observables.add(observable);
     }
 
     private void createTaxonomyPicker(Composite container)

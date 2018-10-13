@@ -188,9 +188,10 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
+        IObservableValue<?> targetObservable = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote), noteObservable);
+        context.bindValue(targetObservable, noteObservable);
 
         //
         // form layout

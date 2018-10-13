@@ -133,9 +133,10 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
+        IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
-        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote), noteObservable);
+        IObservableValue<?> modelNote = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(targetNote, modelNote);
 
         //
         // form layout

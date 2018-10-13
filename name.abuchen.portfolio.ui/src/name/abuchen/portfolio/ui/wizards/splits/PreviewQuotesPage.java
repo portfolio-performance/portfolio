@@ -122,9 +122,10 @@ public class PreviewQuotesPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
+        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
         @SuppressWarnings("unchecked")
-        IObservableValue<?> observable = BeanProperties.value("changeHistoricalQuotes").observe(model); //$NON-NLS-1$
-        context.bindValue(WidgetProperties.selection().observe(checkbox), observable);
+        IObservableValue<?> modelObservable = BeanProperties.value("changeHistoricalQuotes").observe(model); //$NON-NLS-1$
+        context.bindValue(targetObservable, modelObservable);
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {

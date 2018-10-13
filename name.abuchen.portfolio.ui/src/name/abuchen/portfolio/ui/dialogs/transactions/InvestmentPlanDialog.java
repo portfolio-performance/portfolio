@@ -75,16 +75,16 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         Label lblName = new Label(editArea, SWT.RIGHT);
         lblName.setText(Messages.ColumnName);
         Text valueName = new Text(editArea, SWT.BORDER);
-        IValidator validator = value -> {
-            String v = (String) value;
-            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                            : ValidationStatus.error(
-                                            MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
-        };
+        IValidator<String> validator = v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                        : ValidationStatus.error(
+                                        MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
+
         @SuppressWarnings("unchecked")
-        IObservableValue<?> nameObservable = BeanProperties.value(Properties.name.name()).observe(model);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName), nameObservable,
-                        new UpdateValueStrategy().setAfterConvertValidator(validator), null);
+        IObservableValue<String> nameTarget = WidgetProperties.text(SWT.Modify).observe(valueName);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> nameModel = BeanProperties.value(Properties.name.name()).observe(model);
+        context.bindValue(nameTarget, nameModel,
+                        new UpdateValueStrategy<String, String>().setAfterConvertValidator(validator), null);
 
         // security + portfolio
 
@@ -119,18 +119,20 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         labelAutoGenerate.setText(Messages.MsgCreateTransactionsAutomaticallyUponOpening);
 
         Button buttonAutoGenerate = new Button(editArea, SWT.CHECK);
+        IObservableValue<?> targetAutoGenerate = WidgetProperties.selection().observe(buttonAutoGenerate);
         @SuppressWarnings("unchecked")
-        IObservableValue<?> generateObservable = BeanProperties.value(Properties.autoGenerate.name()).observe(model);
-        context.bindValue(WidgetProperties.selection().observe(buttonAutoGenerate), generateObservable);
+        IObservableValue<?> modelAutoGenerate = BeanProperties.value(Properties.autoGenerate.name()).observe(model);
+        context.bindValue(targetAutoGenerate, modelAutoGenerate);
 
         // date
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
         DatePicker valueDate = new DatePicker(editArea);
+        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
         @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value(Properties.start.name()).observe(model);
-        context.bindValue(new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl()), dateObservable);
+        IObservableValue<?> modelDate = BeanProperties.value(Properties.start.name()).observe(model);
+        context.bindValue(targetDate, modelDate);
 
         // interval
 
