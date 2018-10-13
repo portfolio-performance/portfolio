@@ -555,7 +555,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setText(Messages.SecurityTabChart);
 
         Composite chartComposite = new Composite(folder, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
+        GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
         chart = new SecuritiesChart(chartComposite, getClient(),
