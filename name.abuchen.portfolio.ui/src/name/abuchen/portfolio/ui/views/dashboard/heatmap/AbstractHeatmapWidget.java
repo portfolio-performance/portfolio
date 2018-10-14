@@ -66,6 +66,9 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
         DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
                         .buildColorFunction(resources.getResourceManager());
 
+        int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
+        Values<Double> percentageFormat = numDashboardColumns == 1 ? Values.PercentPlain : Values.PercentShort;
+
         model.getRows().forEach(row -> {
 
             Label label = new Label(table, SWT.CENTER);
@@ -76,7 +79,7 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
 
                 if (data != null)
                 {
-                    dataLabel.setText(Values.PercentShort.format(data));
+                    dataLabel.setText(percentageFormat.format(data));
                     dataLabel.setBackground(coloring.apply(data));
                     dataLabel.setFont(resources.getSmallFont());
                 }
