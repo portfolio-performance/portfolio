@@ -13,6 +13,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.PerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.YearlyPerformanceHeatmapWidget;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
@@ -137,6 +138,8 @@ public enum WidgetFactory
     HEATMAP(Messages.LabelHeatmap, PerformanceHeatmapWidget::new),
 
     HEATMAP_YEARLY(Messages.LabelYearlyHeatmap, YearlyPerformanceHeatmapWidget::new),
+
+    HEATMAP_EARNINGS(Messages.LabelHeatmapEarnings, EarningsHeatmapWidget::new),
 
     CURRENT_DATE(Messages.LabelCurrentDate, CurrentDateWidget::new),
 

@@ -452,6 +452,7 @@ public class Messages extends NLS
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelNamePlusCopy;
+    public static String LabelNet;
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
@@ -509,8 +510,11 @@ public class Messages extends NLS
     public static String LabelDividendsSelectStartYear;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
+    public static String LabelGross;
+    public static String LabelGrossNetCalculation;
     public static String LabelHeading;
     public static String LabelHeatmap;
+    public static String LabelHeatmapEarnings;
     public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
     public static String LabelKeyIndicators;
