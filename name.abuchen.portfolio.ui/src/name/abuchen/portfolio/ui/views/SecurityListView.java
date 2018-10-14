@@ -16,7 +16,6 @@ import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -555,7 +554,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setText(Messages.SecurityTabChart);
 
         Composite chartComposite = new Composite(folder, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
         chart = new SecuritiesChart(chartComposite, getClient(),

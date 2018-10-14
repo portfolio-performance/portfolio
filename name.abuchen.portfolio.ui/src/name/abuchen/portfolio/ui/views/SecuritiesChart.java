@@ -22,7 +22,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
@@ -31,10 +30,12 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Menu;
 import org.swtchart.IAxis;
 import org.swtchart.ILegend;
@@ -103,6 +104,35 @@ public class SecuritiesChart
         }
     }
 
+    private static class CustomLayout extends Layout
+    {
+        private final TimelineChart chart;
+        private final Composite buttons;
+
+        public CustomLayout(TimelineChart chart, Composite buttons)
+        {
+            this.chart = chart;
+            this.buttons = buttons;
+        }
+
+        @Override
+        protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache)
+        {
+            return new Point(wHint, hHint);
+        }
+
+        @Override
+        protected void layout(Composite composite, boolean flushCache)
+        {
+            Rectangle area = composite.getClientArea();
+
+            Point size = buttons.computeSize(SWT.DEFAULT, area.height);
+
+            buttons.setBounds(area.x + area.width - size.x, area.y, size.x, area.height);
+            chart.setBounds(area.x, area.y, area.width - size.x, area.height);
+        }
+    }
+
     private Color colorQuote = Colors.getColor(52, 70, 235);
 
     private Color colorEventPurchase = Colors.getColor(26, 173, 33);
@@ -150,16 +180,13 @@ public class SecuritiesChart
 
         setupTooltip();
 
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-
         ILegend legend = chart.getLegend();
         legend.setPosition(SWT.BOTTOM);
         legend.setVisible(true);
 
         Composite buttons = new Composite(parent, SWT.NONE);
-        buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
+        buttons.setBackground(Colors.WHITE);
+        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).wrap(true).applyTo(buttons);
 
         addConfigButton(buttons);
 
@@ -175,15 +202,12 @@ public class SecuritiesChart
 
         Button button = new Button(buttons, SWT.FLAT);
         button.setText(Messages.SecurityTabChartAll);
-        button.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chartPeriod = null;
-                updateChart();
-            }
-        });
+        button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
+            chartPeriod = null;
+            updateChart();
+        }));
+
+        parent.setLayout(new CustomLayout(chart, buttons));
     }
 
     private void setupTooltip()
