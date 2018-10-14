@@ -409,9 +409,21 @@ public class DashboardView extends AbstractHistoricView
 
         new ContextMenu(filler, manager -> {
             MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
-            for (WidgetFactory type : WidgetFactory.values())
-                subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
             manager.add(subMenu);
+
+            Map<String, MenuManager> group2menu = new HashMap<>();
+            group2menu.put(null, subMenu);
+
+            for (WidgetFactory type : WidgetFactory.values())
+            {
+                MenuManager mm = group2menu.computeIfAbsent(type.getGroup(), group -> {
+                    MenuManager groupMenu = new MenuManager(group);
+                    subMenu.add(groupMenu);
+                    return groupMenu;
+                });
+                mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
+            }
+
             manager.add(new Separator());
             manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft,
                             a -> createNewColumn(column, columnControl)));
