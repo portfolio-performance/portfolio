@@ -5,6 +5,7 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
@@ -14,18 +15,22 @@ import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
-public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
+public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 {
     public YearlyPerformanceHeatmapWidget(Widget widget, DashboardData data)
     {
         super(widget, data);
 
+        addConfig(new ColorSchemaConfig(this));
+        addConfig(new HeatmapOrnamentConfig(this));
         addConfig(new MultiDataSeriesConfig(this));
     }
 
     @Override
-    protected HeatmapModel build()
+    protected HeatmapModel<Double> build()
     {
+        int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
+
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period
         // calculate the color interpolated between red and green with yellow as
@@ -41,19 +46,18 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
                                         : interval.getStart().withDayOfYear(1).minusDays(1),
                         interval.getEnd().withDayOfYear(interval.getEnd().lengthOfYear()));
 
-        HeatmapModel model = new HeatmapModel();
+        HeatmapModel<Double> model = new HeatmapModel<>(
+                        numDashboardColumns == 1 ? Values.PercentPlain : Values.PercentShort);
         model.setCellToolTip(Messages.YearlyPerformanceHeatmapToolTip);
 
         // add header
         for (DataSeries s : dataSeries)
             model.addHeader(s.getLabel());
 
-        int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
-
         for (Integer year : calcInterval.iterYears())
         {
             String label = numDashboardColumns > 2 ? String.valueOf(year % 100) : String.valueOf(year);
-            HeatmapModel.Row row = new HeatmapModel.Row(label);
+            HeatmapModel.Row<Double> row = new HeatmapModel.Row<Double>(label);
 
             // yearly data
             for (DataSeries series : dataSeries)
@@ -69,7 +73,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget
         // add sum
         if (get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM))
         {
-            HeatmapModel.Row row = new HeatmapModel.Row("\u03A3"); //$NON-NLS-1$
+            HeatmapModel.Row<Double> row = new HeatmapModel.Row<Double>("\u03A3"); //$NON-NLS-1$
             for (DataSeries series : dataSeries)
             {
                 PerformanceIndex performanceIndex = getDashboardData().calculate(series,

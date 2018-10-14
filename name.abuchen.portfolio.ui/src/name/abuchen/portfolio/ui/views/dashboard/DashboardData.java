@@ -176,6 +176,11 @@ public class DashboardData
         return dataSeriesCache;
     }
 
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
     public PerformanceIndex calculate(DataSeries dataSeries, ReportingPeriod reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);

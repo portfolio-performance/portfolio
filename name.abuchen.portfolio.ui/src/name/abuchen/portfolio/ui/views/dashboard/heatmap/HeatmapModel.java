@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class HeatmapModel
+import name.abuchen.portfolio.money.Values;
+
+public class HeatmapModel<N extends Number>
 {
-    public static class Row
+    public static class Row<N>
     {
         private String label;
-        private List<Double> data = new ArrayList<>();
+        private List<N> data = new ArrayList<>();
 
         public Row(String label)
         {
@@ -21,27 +23,38 @@ public class HeatmapModel
             return label;
         }
 
-        public void addData(Double value)
+        public void addData(N value)
         {
             this.data.add(value);
         }
 
-        public Double getData(int index)
+        public void setData(int index, N value)
+        {
+            this.data.set(index, value);
+        }
+
+        public N getData(int index)
         {
             return data.get(index);
         }
 
-        public Stream<Double> getData()
+        public Stream<N> getData()
         {
             return data.stream();
         }
 
     }
 
+    private Values<N> formatter;
     private List<String> header = new ArrayList<>();
-    private List<Row> rows = new ArrayList<>();
+    private List<Row<N>> rows = new ArrayList<>();
 
     private String cellToolTip;
+
+    public HeatmapModel(Values<N> formatter)
+    {
+        this.formatter = formatter;
+    }
 
     public void addHeader(String label)
     {
@@ -58,23 +71,28 @@ public class HeatmapModel
         return header.size();
     }
 
-    public void addRow(Row row)
+    public void addRow(Row<N> row)
     {
         rows.add(row);
     }
 
-    public Stream<Row> getRows()
+    public Row<N> getRow(int index)
+    {
+        return rows.get(index);
+    }
+
+    public Stream<Row<N>> getRows()
     {
         return rows.stream();
     }
 
-    public List<Double> getColumnValues(int index)
+    public List<N> getColumnValues(int index)
     {
-        List<Double> values = new ArrayList<>();
+        List<N> values = new ArrayList<>();
 
-        for (Row row : rows)
+        for (Row<N> row : rows)
         {
-            Double v = row.getData(index);
+            N v = row.getData(index);
             if (v != null)
                 values.add(v);
         }
@@ -90,5 +108,10 @@ public class HeatmapModel
     public void setCellToolTip(String cellToolTip)
     {
         this.cellToolTip = cellToolTip;
+    }
+
+    public Values<N> getFormatter()
+    {
+        return formatter;
     }
 }

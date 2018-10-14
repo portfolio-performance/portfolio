@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -53,6 +54,11 @@ public abstract class WidgetDelegate<D>
     {
         return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny()
                         .orElseThrow(IllegalArgumentException::new));
+    }
+
+    public <C extends WidgetConfig> Optional<C> optionallyGet(Class<C> type)
+    {
+        return config.stream().filter(c -> type.equals(c.getClass())).findAny().map(e -> type.cast(e));
     }
 
     public Stream<WidgetConfig> getWidgetConfigs()

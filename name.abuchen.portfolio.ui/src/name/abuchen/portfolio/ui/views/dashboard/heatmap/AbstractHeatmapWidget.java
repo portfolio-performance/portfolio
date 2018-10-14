@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import java.util.function.DoubleFunction;
 import java.util.function.Supplier;
 
@@ -22,7 +25,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
 
-public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
+public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDelegate<HeatmapModel<N>>
 {
     private Composite table;
     private Label title;
@@ -33,8 +36,6 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
         super(widget, data);
 
         addConfig(new ReportingPeriodConfig(this));
-        addConfig(new ColorSchemaConfig(this));
-        addConfig(new HeatmapOrnamentConfig(this));
     }
 
     @Override
@@ -57,17 +58,16 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
         return container;
     }
 
-    protected abstract HeatmapModel build();
+    protected abstract HeatmapModel<N> build();
 
-    private void fillTable(HeatmapModel model, Composite table, DashboardResources resources)
+    private void fillTable(HeatmapModel<N> model, Composite table, DashboardResources resources)
     {
         addHeaderRow(table, model);
 
-        DoubleFunction<Color> coloring = get(ColorSchemaConfig.class).getValue()
-                        .buildColorFunction(resources.getResourceManager());
+        DoubleFunction<Color> coloring = optionallyGet(ColorSchemaConfig.class)
+                        .map(s -> s.getValue().buildColorFunction(resources.getResourceManager())).orElse(null);
 
-        int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
-        Values<Double> percentageFormat = numDashboardColumns == 1 ? Values.PercentPlain : Values.PercentShort;
+        Values<N> formatter = model.getFormatter();
 
         model.getRows().forEach(row -> {
 
@@ -79,8 +79,9 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
 
                 if (data != null)
                 {
-                    dataLabel.setText(percentageFormat.format(data));
-                    dataLabel.setBackground(coloring.apply(data));
+                    dataLabel.setText(formatter.format(data));
+                    if (coloring != null)
+                        dataLabel.setBackground(coloring.apply((double) data));
                     dataLabel.setFont(resources.getSmallFont());
                 }
 
@@ -98,7 +99,7 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
         table.layout(true);
     }
 
-    private void addHeaderRow(Composite table, HeatmapModel model)
+    private void addHeaderRow(Composite table, HeatmapModel<?> model)
     {
         // Top Left is empty
         new Label(table, SWT.NONE);
@@ -113,13 +114,13 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
     }
 
     @Override
-    public Supplier<HeatmapModel> getUpdateTask()
+    public Supplier<HeatmapModel<N>> getUpdateTask()
     {
         return this::build;
     }
 
     @Override
-    public void update(HeatmapModel model)
+    public void update(HeatmapModel<N> model)
     {
         title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
 
@@ -135,6 +136,23 @@ public abstract class AbstractHeatmapWidget extends WidgetDelegate<HeatmapModel>
     public Control getTitleControl()
     {
         return title;
+    }
+
+    protected void addMonthlyHeader(HeatmapModel<?> model, int numDashboardColumns, boolean showSum)
+    {
+        TextStyle textStyle;
+        if (numDashboardColumns == 1)
+            textStyle = TextStyle.FULL;
+        else if (numDashboardColumns == 2)
+            textStyle = TextStyle.SHORT;
+        else
+            textStyle = TextStyle.NARROW;
+
+        // no harm in hardcoding the year as each year has the same months
+        for (LocalDate m = LocalDate.of(2016, 1, 1); m.getYear() == 2016; m = m.plusMonths(1))
+            model.addHeader(m.getMonth().getDisplayName(textStyle, Locale.getDefault()));
+        if (showSum)
+            model.addHeader("\u03A3"); //$NON-NLS-1$
     }
 
     protected Double geometricMean(List<Double> values)
