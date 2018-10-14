@@ -41,6 +41,8 @@ public abstract class ReportingPeriod
             return new SinceX(code);
         else if (type == YearX.CODE)
             return new YearX(code);
+        else if (type == CurrentMonth.CODE)
+            return new CurrentMonth(code);
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -336,6 +338,33 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return String.valueOf(getEndDate().getYear());
+        }
+    }
+
+    public static class CurrentMonth extends ReportingPeriod
+    {
+        private static final char CODE = 'M';
+
+        /* package */ CurrentMonth(String code)
+        {
+            this();
+        }
+
+        public CurrentMonth()
+        {
+            super(LocalDate.now().withDayOfMonth(1).minusDays(1), LocalDate.now());
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentMonth;
         }
     }
 }

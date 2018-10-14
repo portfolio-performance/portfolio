@@ -420,6 +420,7 @@ public class Messages extends NLS
     public static String LabelCurrencies;
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
+    public static String LabelCurrentMonth;
     public static String LabelDashboard;
     public static String LabelDataSeries;
     public static String LabelDefaultReferenceAccountName;
