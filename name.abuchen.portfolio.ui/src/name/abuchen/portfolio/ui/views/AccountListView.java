@@ -30,6 +30,8 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -88,7 +90,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private TableViewer accounts;
     private TableViewer transactions;
-    private TimelineChart accountBalanceChart;
+    private AccountBalanceChart accountBalanceChart;
 
     /**
      * Store current balance of account after given transaction has been
@@ -362,7 +364,22 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.TabAccountBalanceChart);
-        item.setControl(createAccountBalanceChart(folder));
+        accountBalanceChart = new AccountBalanceChart(folder);
+        folder.addSelectionListener(new SelectionListener() {
+            
+            @Override
+            public void widgetSelected(SelectionEvent e)
+            {
+                accountBalanceChart.updateChart((Account) accounts.getSelection());
+            }
+            
+            @Override
+            public void widgetDefaultSelected(SelectionEvent e)
+            {
+                accountBalanceChart.updateChart((Account) accounts.getSelection());
+            }
+        });
+        item.setControl(accountBalanceChart);
 
         folder.setSelection(0);
 
@@ -713,18 +730,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
         }
     }
 
-    private Control createAccountBalanceChart(Composite parent)
-    {
-        accountBalanceChart = new TimelineChart(parent);
-        accountBalanceChart.getTitle().setVisible(false);
-
-        return accountBalanceChart;
-    }
-
     private void updateOnAccountSelected(Account account)
     {
         updateBalance(account);
-        updateChart(account);
+        accountBalanceChart.updateChart(account);
     }
 
     private void updateBalance(Account account)
@@ -765,57 +774,4 @@ public class AccountListView extends AbstractListView implements ModificationLis
             transaction2balance.put(t, balance.toMoney());
         }
     }
-
-    private void updateChart(Account account)
-    {
-        try
-        {
-            accountBalanceChart.suspendUpdate(true);
-
-            for (ISeries s : accountBalanceChart.getSeriesSet().getSeries())
-                accountBalanceChart.getSeriesSet().deleteSeries(s.getId());
-
-            if (account == null)
-                return;
-
-            List<AccountTransaction> tx = account.getTransactions();
-            if (tx.isEmpty())
-                return;
-
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
-            Collections.sort(tx, new Transaction.ByDate());
-
-            LocalDate now = LocalDate.now();
-            LocalDate start = tx.get(0).getDateTime().toLocalDate();
-            LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
-            if (now.isAfter(end))
-                end = now;
-            if (now.isBefore(start))
-                start = now;
-
-            int days = (int) ChronoUnit.DAYS.between(start, end) + 2;
-
-            LocalDate[] dates = new LocalDate[days];
-            double[] values = new double[days];
-
-            dates[0] = start.minusDays(1);
-            values[0] = 0d;
-
-            for (int ii = 1; ii < dates.length; ii++)
-            {
-                values[ii] = AccountSnapshot.create(account, converter, start) //
-                                .getFunds().getAmount() / Values.Amount.divider();
-                dates[ii] = start;
-                start = start.plusDays(1);
-            }
-
-            accountBalanceChart.addDateSeries(dates, values, Colors.CASH, account.getName());
-            accountBalanceChart.adjustRange();
-        }
-        finally
-        {
-            accountBalanceChart.suspendUpdate(false);
-        }
-    }
-
 }
