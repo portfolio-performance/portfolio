@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.model;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
@@ -159,4 +159,38 @@ public class InvestmentPlanTest
         assertThat(tx.get(1).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
         assertThat(((AccountTransaction) tx.get(1)).getType(), is(AccountTransaction.Type.DEPOSIT));
     }
+
+    @Test
+    public void testNoGenerationWithStartInFuture()
+    {
+        Client client = new Client();
+        Account account = new AccountBuilder().addTo(client);
+
+        InvestmentPlan investmentPlan = new InvestmentPlan();
+        investmentPlan.setAccount(account);
+        investmentPlan.setAmount(Values.Amount.factorize(100));
+        investmentPlan.setInterval(1);
+        investmentPlan.setStart(LocalDate.now().minusMonths(6));
+        investmentPlan.setInterval(12);
+
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+        int previousTransactionCount = investmentPlan.getTransactions().size();
+        
+        // given is an investment plan with existing transactions,
+        // the user changes the start date to be in the future
+        
+        investmentPlan.setStart(LocalDate.now().plusMonths(12));
+        investmentPlan.setInterval(1);
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+        
+        // no new transactions should be created until this date
+        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
+        
+        // generation resumes at start date
+        investmentPlan.setStart(LocalDate.now().minusMonths(1).minusDays(10));
+        investmentPlan.generateTransactions(new TestCurrencyConverter());
+        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount+2));
+    }
+
+
 }

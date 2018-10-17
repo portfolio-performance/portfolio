@@ -225,6 +225,10 @@ public class InvestmentPlan implements Named, Adaptable
         // the transaction date might be edited (or moved to the next months b/c
         // of public holidays) -> determine the "normalized" date by comparing
         // the three months around the current transactionDate
+        
+        if (previousDate.isBefore(start.toLocalDate())) {
+            previousDate = start.toLocalDate();
+        }
 
         if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
         {
