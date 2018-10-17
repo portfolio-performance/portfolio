@@ -53,7 +53,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
 
         HeatmapModel<Double> model = new HeatmapModel<>(
-                        numDashboardColumns == 1 ? Values.PercentPlain : Values.PercentShort);
+                        numDashboardColumns == 1 ? Values.Percent : Values.PercentShort);
         model.setCellToolTip(Messages.PerformanceHeatmapToolTip);
 
         // add header
