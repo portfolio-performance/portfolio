@@ -226,10 +226,6 @@ public class InvestmentPlan implements Named, Adaptable
         // of public holidays) -> determine the "normalized" date by comparing
         // the three months around the current transactionDate
         
-        if (previousDate.isBefore(start.toLocalDate())) {
-            previousDate = start.toLocalDate();
-        }
-
         if (transactionDate.getDayOfMonth() != start.getDayOfMonth())
         {
             int daysBetween = Integer.MAX_VALUE;
@@ -257,6 +253,11 @@ public class InvestmentPlan implements Named, Adaptable
         // 31st, but the month has only 30 days)
         next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), start.getDayOfMonth()));
 
+        if (next.isBefore(start.toLocalDate())) {
+            // start date was recently changed, use this value instead
+            next = start.toLocalDate();
+        }
+        
         // do not generate a investment plan transaction on a public holiday
         TradeCalendar tradeCalendar = new TradeCalendar();
         while (tradeCalendar.isHoliday(next))

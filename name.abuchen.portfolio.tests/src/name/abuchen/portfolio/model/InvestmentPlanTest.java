@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.model;
 
-import static org.hamcrest.Matchers.*;
+import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.time.LocalDate;
@@ -187,9 +189,12 @@ public class InvestmentPlanTest
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
         
         // generation resumes at start date
-        investmentPlan.setStart(LocalDate.now().minusMonths(1).minusDays(10));
+        LocalDate resumeDate = LocalDate.now().minusMonths(1).minusDays(10);
+        investmentPlan.setStart(resumeDate);
         investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount+2));
+        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime().toLocalDate();
+        assertThat(firstNewDate, is(resumeDate));
     }
 
 
