@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.ISeries;
 
+import com.google.common.collect.Lists;
+
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -197,6 +199,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().reverseLabels(true);
 
         GC gc = new GC(container);
         gc.setFont(resources.getKpiFont());
@@ -248,8 +251,8 @@ public class ChartWidget extends WidgetDelegate<Object>
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
-                            get(ChartConfig.class).getData());
+            List<DataSeries> series = Lists.reverse(
+                            new DataSeriesSerializer().fromString(dataSeriesSet, get(ChartConfig.class).getData()));
 
             ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
 
