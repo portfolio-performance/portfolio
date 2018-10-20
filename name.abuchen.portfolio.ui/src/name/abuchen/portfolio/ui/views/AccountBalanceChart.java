@@ -33,26 +33,22 @@ public class AccountBalanceChart extends TimelineChart{
         try
         {
             suspendUpdate(true);
-
+            
             for (ISeries s : getSeriesSet().getSeries())
                 getSeriesSet().deleteSeries(s.getId());
-
+            
             if (account == null)
                 return;
-
+            
             List<AccountTransaction> tx = account.getTransactions();
             
-            LocalDate now = LocalDate.now();
-            LocalDate yesterday = LocalDate.now().minusDays(1);
-            
             if (tx.isEmpty()) {
-                //add something to update the chart when switching to an account without transactions
-                addDateSeries(new LocalDate[] {yesterday,now}, new double[]{0,0}, Colors.CASH, account.getName());
                 adjustRange();
                 suspendUpdate(false);
                 return;
             }
             
+            LocalDate now = LocalDate.now();
             LocalDate start = tx.get(0).getDateTime().toLocalDate();
             LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
 
