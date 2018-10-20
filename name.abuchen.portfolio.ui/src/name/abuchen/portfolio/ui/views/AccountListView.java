@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -38,7 +36,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ToolBar;
-import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -46,16 +43,11 @@ import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPart;
@@ -66,7 +58,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -91,6 +82,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private TableViewer accounts;
     private TableViewer transactions;
     private AccountBalanceChart accountBalanceChart;
+    
+    @Inject
+    private ExchangeRateProviderFactory exchangeRateProviderFactory;
+    
 
     /**
      * Store current balance of account after given transaction has been
@@ -105,9 +100,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private ShowHideColumnHelper transactionsColumns;
 
     private boolean isFiltered = false;
-
-    @Inject
-    private ExchangeRateProviderFactory factory;
 
     @Override
     protected String getDefaultTitle()
@@ -302,16 +294,6 @@ public class AccountListView extends AbstractListView implements ModificationLis
         resetInput();
         accounts.refresh();
 
-        accounts.addSelectionChangedListener(event -> {
-            Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
-
-            updateOnAccountSelected(account);
-
-            transactions.setData(Account.class.toString(), account);
-            transactions.setInput(account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
-            transactions.refresh();
-        });
-
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
     }
 
@@ -366,20 +348,29 @@ public class AccountListView extends AbstractListView implements ModificationLis
         item.setText(Messages.TabAccountBalanceChart);
         accountBalanceChart = new AccountBalanceChart(folder);
         folder.addSelectionListener(new SelectionListener() {
-            
             @Override
             public void widgetSelected(SelectionEvent e)
             {
-                accountBalanceChart.updateChart((Account) accounts.getSelection());
+                accountBalanceChart.updateChart((Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement(),exchangeRateProviderFactory);
             }
             
             @Override
             public void widgetDefaultSelected(SelectionEvent e)
             {
-                accountBalanceChart.updateChart((Account) accounts.getSelection());
+                accountBalanceChart.updateChart((Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement(),exchangeRateProviderFactory);
             }
         });
         item.setControl(accountBalanceChart);
+        
+        accounts.addSelectionChangedListener(event -> {
+            Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
+
+            updateOnAccountSelected(account);
+
+            transactions.setData(Account.class.toString(), account);
+            transactions.setInput(account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
+            transactions.refresh();
+        });
 
         folder.setSelection(0);
 
@@ -733,7 +724,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private void updateOnAccountSelected(Account account)
     {
         updateBalance(account);
-        accountBalanceChart.updateChart(account);
+        accountBalanceChart.updateChart(account,exchangeRateProviderFactory);
     }
 
     private void updateBalance(Account account)

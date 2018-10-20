@@ -5,8 +5,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.eclipse.swt.widgets.Composite;
 import org.swtchart.ISeries;
 
@@ -23,8 +21,6 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 
 public class AccountBalanceChart extends TimelineChart{
     
-    @Inject
-    private ExchangeRateProviderFactory factory;
 
     public AccountBalanceChart(Composite parent)
     {
@@ -32,7 +28,7 @@ public class AccountBalanceChart extends TimelineChart{
         getTitle().setVisible(false);
     }
     
-    public void updateChart(Account account)
+    public void updateChart(Account account,ExchangeRateProviderFactory exchangeRateProviderFactory)
     {
         try
         {
@@ -45,15 +41,25 @@ public class AccountBalanceChart extends TimelineChart{
                 return;
 
             List<AccountTransaction> tx = account.getTransactions();
-            if (tx.isEmpty())
-                return;
-
-            CurrencyConverter converter = new CurrencyConverterImpl(factory, account.getCurrencyCode());
-            Collections.sort(tx, new Transaction.ByDate());
-
+            
             LocalDate now = LocalDate.now();
+            LocalDate yesterday = LocalDate.now().minusDays(1);
+            
+            if (tx.isEmpty()) {
+                //add something to update the chart when switching to an account without transactions
+                addDateSeries(new LocalDate[] {yesterday,now}, new double[]{0,0}, Colors.CASH, account.getName());
+                adjustRange();
+                suspendUpdate(false);
+                return;
+            }
+            
             LocalDate start = tx.get(0).getDateTime().toLocalDate();
             LocalDate end = tx.get(tx.size() - 1).getDateTime().toLocalDate();
+
+            CurrencyConverter converter = new CurrencyConverterImpl(exchangeRateProviderFactory, account.getCurrencyCode());
+            Collections.sort(tx, new Transaction.ByDate());
+
+           
             if (now.isAfter(end))
                 end = now;
             if (now.isBefore(start))
