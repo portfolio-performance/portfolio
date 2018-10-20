@@ -412,24 +412,30 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
-        
+
         DocumentType type = new DocumentType("Nachträgliche Verlustverrechnung");
         this.addDocumentTyp(type);
-        
+
         Block block = new Block(" Erstattung/Belastung \\(-\\) von Steuern");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            t.setCurrencyCode(CurrencyUnit.EUR); // nirgends im Dokument ist die Währung aufgeführt.
-            return t;
-        })
-                        
-                        // Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+
+                            // nirgends im Dokument ist die Währung aufgeführt.
+                            t.setCurrencyCode(CurrencyUnit.EUR);
+                            return t;
+                        })
+
+                        // Den Steuerausgleich buchen wir mit Wertstellung
+                        // 10.07.2017
                         .section("date")
                         .match(" *Den Steuerausgleich buchen wir mit Wertstellung (?<date>\\d+.\\d+.\\d{4}) .*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
+                        // @formatter:off
                         // Erstattung/Belastung (-) von Steuern
                         // Anteil                             100,00%
                         // KapSt Person 1                                 :                79,89
@@ -437,12 +443,19 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         // KiSt  Person 1                                 :                 6,36
                         // ======================================================================
                         //                                                                 90,61
-                        .section("amount")
-                        .find(" *Erstattung/Belastung \\(-\\) von Steuern *")
-                        .find(" *=* *")
-                        .match(" *(?<amount>[\\d.]+,\\d{2}) *")
-                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
-                        
+                        // @formatter:on
+
+                        .section("amount", "sign") //
+                        .find(" *Erstattung/Belastung \\(-\\) von Steuern *") //
+                        .find(" *=* *") //
+                        .match(" *(?<amount>[\\d.]+,\\d{2})(?<sign>-?).*") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+
+                            if ("-".equals(v.get("sign")))
+                                t.setType(AccountTransaction.Type.TAXES);
+                        })
+
                         .wrap(t -> new TransactionItem(t)));
     }
 

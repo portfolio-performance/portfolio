@@ -637,6 +637,81 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 5000_00L)));
     }
 
+    @Test
+    public void testNachtraeglicheVerlustverrechnung1() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "ConsorsbankNachtraeglicheVerlustverrechnung1.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction t = (AccountTransaction) item.get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.61))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2017-07-10T00:00")));
+    }
+
+    @Test
+    public void testNachtraeglicheVerlustverrechnung2() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "ConsorsbankNachtraeglicheVerlustverrechnung2.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction t = (AccountTransaction) item.get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.TAXES));
+
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.1))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2017-07-10T00:00")));
+    }
+
+    @Test
+    public void testNachtraeglicheVerlustverrechnung3() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "ConsorsbankNachtraeglicheVerlustverrechnung3.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction t = (AccountTransaction) item.get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.TAX_REFUND));
+
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2017-07-10T00:00")));
+    }
+
     private void checkCurrency(final String accountCurrency, AccountTransaction transaction)
     {
         Account account = new Account();
