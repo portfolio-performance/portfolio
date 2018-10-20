@@ -213,23 +213,25 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 if (SecurityTransfer.getTransfer().isSupportedType(event.currentDataType))
                 {
-                    Security security = SecurityTransfer.getTransfer().getSecurity();
-                    if (security != null)
-                    {
-                        // if the security is dragged from another file, add
-                        // a deep copy to the client's securities list
-                        if (!editor.getClient().getSecurities().contains(security))
-                        {
-                            security = security.deepCopy();
-                            editor.getClient().addSecurity(security);
+                    List<Security> securities = SecurityTransfer.getTransfer().getSecurities();
+                    if (securities != null)
+                    {   
+                        for(Security security : securities) {
+                            // if the security is dragged from another file, add
+                            // a deep copy to the client's securities list
+                            if (!editor.getClient().getSecurities().contains(security))
+                            {
+                                security = security.deepCopy();
+                                editor.getClient().addSecurity(security);
+                            }
+        
+                            if (!watchlist.getSecurities().contains(security))
+                                watchlist.addSecurity(security);
                         }
-
-                        if (!watchlist.getSecurities().contains(security))
-                            watchlist.addSecurity(security);
-
+                        
                         editor.markDirty();
-
                         editor.notifyModelUpdated();
+                        
                     }
                 }
             }

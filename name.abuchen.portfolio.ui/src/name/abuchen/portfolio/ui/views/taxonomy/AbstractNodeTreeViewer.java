@@ -138,11 +138,14 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             // then also enable the drag and drop of securities into a watchlist
 
             Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
-            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
-                SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
-            else
-                SecurityTransfer.getTransfer().setSecurity(null);
-
+            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security) {
+                List<Security> securities = new ArrayList<>();
+                securities.add((Security) assignment.getInvestmentVehicle());
+                SecurityTransfer.getTransfer().setSecurities(securities);
+            }else {
+                SecurityTransfer.getTransfer().setSecurities(null);
+            }
+            
             event.data = nodes;
         }
 

@@ -1,9 +1,11 @@
 package name.abuchen.portfolio.ui.dnd;
 
-import name.abuchen.portfolio.model.Security;
+import java.util.List;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
+
+import name.abuchen.portfolio.model.Security;
 
 public class SecurityTransfer extends ByteArrayTransfer
 {
@@ -13,7 +15,7 @@ public class SecurityTransfer extends ByteArrayTransfer
 
     private static final SecurityTransfer INSTANCE = new SecurityTransfer();
 
-    private Security security;
+    private List<Security> securities;
 
     protected SecurityTransfer()
     {}
@@ -23,14 +25,14 @@ public class SecurityTransfer extends ByteArrayTransfer
         return INSTANCE;
     }
 
-    public Security getSecurity()
+    public List<Security> getSecurities()
     {
-        return security;
+        return securities;
     }
 
-    public void setSecurity(Security security)
+    public void setSecurities(List<Security> securities)
     {
-        this.security = security;
+        this.securities = securities;
     }
 
     @Override
@@ -57,7 +59,7 @@ public class SecurityTransfer extends ByteArrayTransfer
     {
         Object result = super.nativeToJava(transferData);
         if (result instanceof byte[] && TYPE_NAME.equals(new String((byte[]) result)))
-            return security;
+            return securities;
         return null;
     }
 
