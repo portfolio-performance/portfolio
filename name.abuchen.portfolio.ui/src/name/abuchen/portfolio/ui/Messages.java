@@ -583,6 +583,7 @@ public class Messages extends NLS
     public static String MenuCreateAccountOrTransaction;
     public static String MenuCreateColumnConfig;
     public static String MenuCreatePortfolioOrTransaction;
+    public static String MenuDeleteAllTransactions;
     public static String MenuDeleteDashboardColumn;
     public static String MenuDeleteWidget;
     public static String MenuEditInvestmentPlan;

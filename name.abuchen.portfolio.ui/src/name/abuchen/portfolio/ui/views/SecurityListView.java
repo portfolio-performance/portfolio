@@ -1005,6 +1005,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 getClient().markDirty();
             }
         });
+
+        manager.add(new Separator());
+        manager.add(new SimpleAction(Messages.MenuDeleteAllTransactions, a -> {
+
+            List<TransactionPair<?>> txs = security.getTransactions(getClient());
+
+            for (TransactionPair<?> tx : txs)
+            {
+                @SuppressWarnings("unchecked")
+                TransactionPair<Transaction> t = (TransactionPair<Transaction>) tx;
+                t.getOwner().deleteTransaction(t.getTransaction(), getClient());
+            }
+
+            getClient().markDirty();
+        }));
     }
 
     private Action createEditAction(TransactionPair<?> transactionPair)
