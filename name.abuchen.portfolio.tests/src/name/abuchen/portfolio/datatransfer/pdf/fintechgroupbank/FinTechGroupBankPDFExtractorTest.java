@@ -488,6 +488,41 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf12() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf12.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE0001234567"));
+        assertThat(security.getWkn(), is("DS5WKN"));
+        assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1023.90)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-08-13T00:00")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(3.9))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
+    }
+
+    @Test
     public void testKontoauszug() throws IOException
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());

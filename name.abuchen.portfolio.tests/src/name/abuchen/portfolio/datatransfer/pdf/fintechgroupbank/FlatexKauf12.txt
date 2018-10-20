@@ -1,0 +1,66 @@
+
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+FinTech Group Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+45237547623547245632453
+Herrn
+Max Mustermann
+Musterstr. 1
+99999 Musterstadt
+      Frankfurt, den 14.08.2018
+Sammelabrechnung (Wertpapierkauf/-verkauf)
+Ihre Depotnummer: 1234567891
+Depotinhaber:     Max Mustermann
+Nr.123456789/1    Kauf              DEUT.BANK CALL20 BBB (DE0001234567/DS5WKN)
+Ordervolumen  : 2.000,00 St.            Handelsplatz  :          Deutsche Bank
+davon ausgef. : 2.000,00 St.            Schlusstag    :  13.08.2018, 16:20 Uhr
+Kurs          : 0,5100 EUR              Kurswert      :           1.020,00 EUR
+Devisenkurs   :                         Provision     :               3,90 EUR
+Bew-Faktor    : 1,0000                  Eigene Spesen :
+Verwahrart    : GS-Verwahrung          *Fremde Spesen :
+Lagerstelle   : Clearstream Nat.
+Lagerland     : Deutschland             Bemessungs-
+                                    grundlage     :               0,00 EUR
+Valuta        : 15.08.2018            **Einbeh. Steuer:               0,00 EUR
+                                    Endbetrag     :          -1.023,90 EUR
+*   Enthalten sind folgende Gebühren    Courtage      :               0,00 EUR
+                                    Tradinggebühr :               0,00 EUR
+                                    Regulierung   :               0,00 EUR
+                                    Schlussnoten  :               0,00 EUR
+                                    Sonstige      :               0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                             Kapitalertragsteuer  :               0,00 EUR
+                             Solidaritätszuschlag :               0,00 EUR
+                             Kirchensteuer        :               0,00 EUR
+Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+1234567895.
+Die Verrechnung der Endbeträge erfolgt über Ihr Konto Nr.: 234253465477
+______________________________________________________________________________
+                                                                 Seite 1/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001009193270 0113303500000101
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+______________________________________________________________________________
+                                                                 Seite 2/2
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001009193270
