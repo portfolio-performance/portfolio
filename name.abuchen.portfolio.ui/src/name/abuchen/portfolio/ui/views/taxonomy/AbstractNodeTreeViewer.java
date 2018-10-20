@@ -139,10 +139,16 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
             Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
             if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
-                SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
+            {
+                List<Security> securities = new ArrayList<>();
+                securities.add((Security) assignment.getInvestmentVehicle());
+                SecurityTransfer.getTransfer().setSecurities(securities);
+            }
             else
-                SecurityTransfer.getTransfer().setSecurity(null);
-
+            {
+                SecurityTransfer.getTransfer().setSecurities(null);
+            }
+            
             event.data = nodes;
         }
 

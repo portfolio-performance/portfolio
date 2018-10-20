@@ -141,7 +141,8 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 if (subMenu == null || action == null)
                     continue;
 
-                // cannot use the original action b/c it will not highlight the selected entry
+                // cannot use the original action b/c it will not highlight the
+                // selected entry
                 // in the sidebar
                 String text = indent > Sidebar.STEP ? "- " + action.getText() : action.getText(); //$NON-NLS-1$
                 SimpleAction menuAction = new SimpleAction(text, a -> sidebar.select(entry));
@@ -213,23 +214,26 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 if (SecurityTransfer.getTransfer().isSupportedType(event.currentDataType))
                 {
-                    Security security = SecurityTransfer.getTransfer().getSecurity();
-                    if (security != null)
+                    List<Security> securities = SecurityTransfer.getTransfer().getSecurities();
+                    if (securities != null)
                     {
-                        // if the security is dragged from another file, add
-                        // a deep copy to the client's securities list
-                        if (!editor.getClient().getSecurities().contains(security))
+                        for (Security security : securities)
                         {
-                            security = security.deepCopy();
-                            editor.getClient().addSecurity(security);
+                            // if the security is dragged from another file, add
+                            // a deep copy to the client's securities list
+                            if (!editor.getClient().getSecurities().contains(security))
+                            {
+                                security = security.deepCopy();
+                                editor.getClient().addSecurity(security);
+                            }
+
+                            if (!watchlist.getSecurities().contains(security))
+                                watchlist.addSecurity(security);
                         }
 
-                        if (!watchlist.getSecurities().contains(security))
-                            watchlist.addSecurity(security);
-
                         editor.markDirty();
-
                         editor.notifyModelUpdated();
+
                     }
                 }
             }
