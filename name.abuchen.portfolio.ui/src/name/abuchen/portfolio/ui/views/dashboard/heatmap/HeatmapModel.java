@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.money.Values;
@@ -49,7 +50,7 @@ public class HeatmapModel<N extends Number>
     private List<String> header = new ArrayList<>();
     private List<Row<N>> rows = new ArrayList<>();
 
-    private String cellToolTip;
+    private Function<N, String> toolTipBuilder;
 
     public HeatmapModel(Values<N> formatter)
     {
@@ -100,14 +101,14 @@ public class HeatmapModel<N extends Number>
         return values;
     }
 
-    public String getCellToolTip()
+    public Function<N, String> getCellToolTip()
     {
-        return cellToolTip;
+        return toolTipBuilder;
     }
 
-    public void setCellToolTip(String cellToolTip)
+    public void setCellToolTip(Function<N, String> toolTipBuilder)
     {
-        this.cellToolTip = cellToolTip;
+        this.toolTipBuilder = toolTipBuilder;
     }
 
     public Values<N> getFormatter()

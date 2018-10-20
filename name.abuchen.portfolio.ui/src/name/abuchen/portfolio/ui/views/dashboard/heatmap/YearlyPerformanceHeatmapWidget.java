@@ -48,7 +48,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
 
         HeatmapModel<Double> model = new HeatmapModel<>(
                         numDashboardColumns == 1 ? Values.Percent : Values.PercentShort);
-        model.setCellToolTip(Messages.YearlyPerformanceHeatmapToolTip);
+        model.setCellToolTip(v -> Messages.YearlyPerformanceHeatmapToolTip);
 
         // add header
         for (DataSeries s : dataSeries)

@@ -155,6 +155,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 100D, 100) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long amount)
+        {
+            return format.format(amount / divider());
+        }
+    };
+
     public static final Values<Long> Share = new Values<Long>("#,##0.######", 1000000D, 1000000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());

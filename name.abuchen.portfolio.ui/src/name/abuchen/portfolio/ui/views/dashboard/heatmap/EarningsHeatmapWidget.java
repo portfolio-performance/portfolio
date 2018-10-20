@@ -117,7 +117,8 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
                         interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
 
         // build model
-        HeatmapModel<Long> model = new HeatmapModel<>(numDashboardColumns <= 2 ? Values.Amount : Values.AmountPlain);
+        HeatmapModel<Long> model = new HeatmapModel<>(numDashboardColumns <= 1 ? Values.Amount : Values.AmountShort);
+        model.setCellToolTip(value -> value != null ? Values.Amount.format(value) : ""); //$NON-NLS-1$
         addMonthlyHeader(model, numDashboardColumns, true);
         int startYear = calcInterval.getStart().plusDays(1).getYear();
 

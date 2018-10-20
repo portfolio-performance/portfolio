@@ -86,7 +86,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
                 }
 
                 if (model.getCellToolTip() != null)
-                    InfoToolTip.attach(dataLabel, model.getCellToolTip());
+                    InfoToolTip.attach(dataLabel, model.getCellToolTip().apply(data));
             });
         });
 
