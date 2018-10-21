@@ -11,6 +11,7 @@ public class Messages extends NLS
     public static String AccountMenuAdd;
     public static String AccountMenuDeactivate;
     public static String AccountMenuDelete;
+    public static String AccountMenuDeleteConfirm;
     public static String AccountMenuDeleteTransaction;
     public static String AccountMenuTransfer;
     public static String Balance;
@@ -250,6 +251,7 @@ public class Messages extends NLS
     public static String ColumnWKN;
     public static String ColumnYear;
     public static String ConfigurationDelete;
+    public static String ConfigurationDeleteConfirm;
     public static String ConfigurationDuplicate;
     public static String ConfigurationErrorIllegalCharacters;
     public static String ConfigurationErrorMissingValue;
@@ -620,6 +622,7 @@ public class Messages extends NLS
     public static String MenuTaxonomyCopy;
     public static String MenuTaxonomyCreate;
     public static String MenuTaxonomyDelete;
+    public static String MenuTaxonomyDeleteConfirm;
     public static String MenuTaxonomyMakeAssignment;
     public static String MenuTaxonomyRename;
     public static String MenuTaxonomySortByName;
@@ -720,6 +723,7 @@ public class Messages extends NLS
     public static String PortfolioMenuAdd;
     public static String PortfolioMenuDeactivate;
     public static String PortfolioMenuDelete;
+    public static String PortfolioMenuDeleteConfirm;
     public static String PrefAlphaVantageAPIKey;
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefCheckOnStartup;
@@ -760,6 +764,8 @@ public class Messages extends NLS
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;
+    public static String SecurityMenuDeleteSingleSecurityConfirm;
+    public static String SecurityMenuDeleteMultipleSecurityConfirm;
     public static String SecurityMenuDividends;
     public static String SecurityMenuEditSecurity;
     public static String SecurityMenuExportCSV;

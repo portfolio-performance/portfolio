@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -51,6 +52,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -303,7 +305,10 @@ public class DashboardView extends AbstractHistoricView
 
                 manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
                 manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
-                manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(board)));
+                manager.add(new ConfirmAction(
+                                Messages.ConfigurationDelete, 
+                                MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()), 
+                                a -> deleteDashboard(board)));
 
                 if (index > 0)
                 {

@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
@@ -113,7 +114,9 @@ public class ConfigurationStore
         manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNew(null)));
         manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNew(active)));
         manager.add(new SimpleAction(Messages.ConfigurationRename, a -> rename(active)));
-        manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> delete(active)));
+        manager.add(new ConfirmAction(Messages.ConfigurationDelete,
+                        MessageFormat.format(Messages.ConfigurationDeleteConfirm, active.getName()),
+                        a -> delete(active)));
     }
 
     private void createNew(Configuration template)
@@ -192,7 +195,7 @@ public class ConfigurationStore
     {
         return active.getName();
     }
-    
+
     public String getActiveUUID()
     {
         return active.getUUID();
