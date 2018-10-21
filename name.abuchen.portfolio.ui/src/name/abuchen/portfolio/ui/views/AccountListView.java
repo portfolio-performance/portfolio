@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -45,7 +46,6 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -63,6 +63,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -334,16 +335,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         });
 
-        manager.add(new Action(Messages.AccountMenuDelete)
-        {
-            @Override
-            public void run()
-            {
-                getClient().removeAccount(account);
-                markDirty();
-                resetInput();
-            }
-        });
+        manager.add(new ConfirmAction(
+                        Messages.AccountMenuDelete,
+                        MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), 
+                        a -> deleteAccount(account)));
     }
 
     // //////////////////////////////////////////////////////////////
@@ -818,4 +813,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
         }
     }
 
+    private void deleteAccount(Account account) {
+        getClient().removeAccount(account);
+        markDirty();
+        resetInput();        
+    }
+    
 }
