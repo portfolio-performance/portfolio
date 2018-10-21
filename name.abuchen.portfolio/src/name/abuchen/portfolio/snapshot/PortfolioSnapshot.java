@@ -117,7 +117,7 @@ public class PortfolioSnapshot
 
     public Portfolio getPortfolio()
     {
-        return portfolio instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) portfolio).getSource() : portfolio;
+        return portfolio instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) portfolio).unwrap() : portfolio;
     }
 
     public CurrencyConverter getCurrencyConverter()

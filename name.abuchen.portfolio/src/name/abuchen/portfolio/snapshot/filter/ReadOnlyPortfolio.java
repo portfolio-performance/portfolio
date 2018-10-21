@@ -17,6 +17,11 @@ public class ReadOnlyPortfolio extends Portfolio
         this.setName(source.getName());
     }
 
+    public Portfolio unwrap()
+    {
+        return source instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) source).unwrap() : source;
+    }
+
     public Portfolio getSource()
     {
         return source;

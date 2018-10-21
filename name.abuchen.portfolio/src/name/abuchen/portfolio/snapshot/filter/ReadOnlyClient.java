@@ -18,6 +18,11 @@ public class ReadOnlyClient extends Client
         this.source = Objects.requireNonNull(source);
     }
 
+    public Client unwrap()
+    {
+        return source instanceof ReadOnlyClient ? ((ReadOnlyClient) source).unwrap() : source;
+    }
+
     public Client getSource()
     {
         return source;

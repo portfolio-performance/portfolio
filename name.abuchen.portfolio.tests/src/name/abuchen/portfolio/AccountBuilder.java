@@ -12,7 +12,9 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.money.Money;
 
 public class AccountBuilder
 {
@@ -81,6 +83,16 @@ public class AccountBuilder
         return transaction(Type.FEES_REFUND, date, amount);
     }
 
+    public AccountBuilder tax_____(String date, long amount)
+    {
+        return transaction(Type.TAXES, date, amount);
+    }
+
+    public AccountBuilder taxrefnd(String date, long amount)
+    {
+        return transaction(Type.TAX_REFUND, date, amount);
+    }
+
     public AccountBuilder withdraw(String date, long amount)
     {
         return transaction(Type.REMOVAL, date, amount);
@@ -95,6 +107,15 @@ public class AccountBuilder
     {
         AccountTransaction t = new AccountTransaction(asDateTime(date), account.getCurrencyCode(), amount,
                         security, Type.DIVIDENDS);
+        account.addTransaction(t);
+        return this;
+    }
+
+    public AccountBuilder dividend(String date, long amount, long taxes, Security security)
+    {
+        AccountTransaction t = new AccountTransaction(asDateTime(date), account.getCurrencyCode(), amount, security,
+                        Type.DIVIDENDS);
+        t.addUnit(new Unit(Unit.Type.TAX, Money.of(account.getCurrencyCode(), taxes)));
         account.addTransaction(t);
         return this;
     }

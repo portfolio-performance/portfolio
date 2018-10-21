@@ -245,7 +245,7 @@ public class ClientIndexTest
             // use the closing quote of the previous day
 
             long p = security.getSecurityPrice(date.minusDays(1)).getValue();
-            portfolio.inbound_delivery(security, date.atStartOfDay(), Values.Share.factorize(100), p);
+            portfolio.inbound_delivery(security, date.atStartOfDay().toString(), Values.Share.factorize(100), p);
             date = date.plusDays(20);
         }
 
@@ -285,7 +285,8 @@ public class ClientIndexTest
         Account account = new AccountBuilder().addTo(client);
 
         new PortfolioBuilder(account) //
-                        .inbound_delivery(security, LocalDateTime.of(2014, 01, 01, 0, 0), Values.Share.factorize(100), 100) //
+                        .inbound_delivery(security, LocalDateTime.of(2014, 01, 01, 0, 0).toString(),
+                                        Values.Share.factorize(100), 100) //
                         .addTo(client);
 
         ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);

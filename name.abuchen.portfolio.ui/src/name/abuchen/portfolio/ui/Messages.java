@@ -538,6 +538,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
+    public static String LabelSuffix_PreTax;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
     public static String LabelToday;

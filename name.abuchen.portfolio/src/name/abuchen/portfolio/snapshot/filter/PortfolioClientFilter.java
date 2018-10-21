@@ -7,12 +7,16 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
+import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 
 /**
@@ -45,37 +49,40 @@ public class PortfolioClientFilter implements ClientFilter
     {
         ReadOnlyClient pseudoClient = new ReadOnlyClient(client);
 
+        // create all pseudo accounts
         Map<Account, ReadOnlyAccount> account2pseudo = new HashMap<>();
+        Function<Account, ReadOnlyAccount> computeReadOnlyAccount = a -> {
+            ReadOnlyAccount pa = new ReadOnlyAccount(a);
+            pseudoClient.internalAddAccount(pa);
+            return pa;
+        };
+        accounts.stream().forEach(a -> account2pseudo.put(a, computeReadOnlyAccount.apply(a)));
+
+        // create all pseudo portfolios
+        Map<Portfolio, ReadOnlyPortfolio> portfolio2pseudo = new HashMap<>();
+        portfolios.stream().forEach(p -> {
+            ReadOnlyAccount pseudoAccount = account2pseudo.computeIfAbsent(p.getReferenceAccount(),
+                            computeReadOnlyAccount);
+
+            ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(p);
+            pseudoPortfolio.setReferenceAccount(pseudoAccount);
+            pseudoClient.internalAddPortfolio(pseudoPortfolio);
+            portfolio2pseudo.put(p, pseudoPortfolio);
+        });
+
         Set<Security> usedSecurities = new HashSet<>();
 
         for (Portfolio portfolio : portfolios)
         {
-            ReadOnlyAccount pseudoAccount = account2pseudo.computeIfAbsent(portfolio.getReferenceAccount(), a -> {
-                ReadOnlyAccount pa = new ReadOnlyAccount(a);
-                pseudoClient.internalAddAccount(pa);
-                return pa;
-            });
-
-            ReadOnlyPortfolio pseudoPortfolio = new ReadOnlyPortfolio(portfolio);
-            pseudoPortfolio.setReferenceAccount(pseudoAccount);
-            pseudoClient.internalAddPortfolio(pseudoPortfolio);
-
-            adaptPortfolioTransactions(portfolio, pseudoPortfolio, usedSecurities);
+            adaptPortfolioTransactions(portfolio, portfolio2pseudo, account2pseudo, usedSecurities);
 
             if (!accounts.contains(portfolio.getReferenceAccount()))
-                collectSecurityRelevantTx(portfolio, pseudoAccount, usedSecurities);
+                collectSecurityRelevantTx(portfolio, account2pseudo.get(portfolio.getReferenceAccount()),
+                                usedSecurities);
         }
 
         for (Account account : accounts)
-        {
-            ReadOnlyAccount pseudoAccount = account2pseudo.computeIfAbsent(account, a -> {
-                ReadOnlyAccount pa = new ReadOnlyAccount(a);
-                pseudoClient.internalAddAccount(pa);
-                return pa;
-            });
-
-            adaptAccountTransactions(account, pseudoAccount, usedSecurities);
-        }
+            adaptAccountTransactions(account, account2pseudo, usedSecurities);
 
         for (Security security : usedSecurities)
             pseudoClient.internalAddSecurity(security);
@@ -83,9 +90,11 @@ public class PortfolioClientFilter implements ClientFilter
         return pseudoClient;
     }
 
-    private void adaptPortfolioTransactions(Portfolio portfolio, ReadOnlyPortfolio pseudoPortfolio,
-                    Set<Security> usedSecurities)
+    private void adaptPortfolioTransactions(Portfolio portfolio, Map<Portfolio, ReadOnlyPortfolio> portfolio2pseudo,
+                    Map<Account, ReadOnlyAccount> account2pseudo, Set<Security> usedSecurities)
     {
+        ReadOnlyPortfolio pseudoPortfolio = portfolio2pseudo.get(portfolio);
+
         for (PortfolioTransaction t : portfolio.getTransactions())
         {
             usedSecurities.add(t.getSecurity());
@@ -94,29 +103,31 @@ public class PortfolioClientFilter implements ClientFilter
             {
                 case BUY:
                     if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoPortfolio.internalAddTransaction(t);
+                        recreateBuySell((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
+                                        account2pseudo.get(t.getCrossEntry().getCrossOwner(t)));
                     else
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
                     break;
                 case TRANSFER_IN:
                     if (portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoPortfolio.internalAddTransaction(t);
+                        ClientFilterHelper.recreateTransfer((PortfolioTransferEntry) t.getCrossEntry(),
+                                        portfolio2pseudo.get(t.getCrossEntry().getCrossOwner(t)), pseudoPortfolio);
                     else
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
                     break;
                 case SELL:
                     if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoPortfolio.internalAddTransaction(t);
+                        recreateBuySell((BuySellEntry) t.getCrossEntry(), pseudoPortfolio,
+                                        account2pseudo.get(t.getCrossEntry().getCrossOwner(t)));
                     else
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                     break;
                 case TRANSFER_OUT:
-                    if (portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoPortfolio.internalAddTransaction(t);
-                    else
+                    // regular transfer handled by TRANSFER_IN
+                    if (!portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoPortfolio.internalAddTransaction(
                                         convertTo(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                     break;
@@ -130,7 +141,29 @@ public class PortfolioClientFilter implements ClientFilter
         }
     }
 
-    private void collectSecurityRelevantTx(Portfolio portfolio, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
+    private void recreateBuySell(BuySellEntry buySell, ReadOnlyPortfolio readOnlyPortfolio,
+                    ReadOnlyAccount readOnlyAccount)
+    {
+        PortfolioTransaction t = buySell.getPortfolioTransaction();
+
+        BuySellEntry copy = new BuySellEntry(readOnlyPortfolio, readOnlyAccount);
+
+        copy.setDate(t.getDateTime());
+        copy.setCurrencyCode(t.getCurrencyCode());
+        copy.setSecurity(t.getSecurity());
+        copy.setType(t.getType());
+        copy.setNote(t.getNote());
+        copy.setShares(t.getShares());
+        copy.setAmount(t.getAmount());
+
+        t.getUnits().forEach(u -> copy.getPortfolioTransaction().addUnit(u));
+
+        readOnlyPortfolio.internalAddTransaction(copy.getPortfolioTransaction());
+        readOnlyAccount.internalAddTransaction(copy.getAccountTransaction());
+    }
+
+    private void collectSecurityRelevantTx(Portfolio portfolio, ReadOnlyAccount pseudoAccount,
+                    Set<Security> usedSecurities)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -176,34 +209,35 @@ public class PortfolioClientFilter implements ClientFilter
         }
     }
 
-    private void adaptAccountTransactions(Account account, ReadOnlyAccount pseudoAccount, Set<Security> usedSecurities)
+    private void adaptAccountTransactions(Account account, Map<Account, ReadOnlyAccount> account2pseudo,
+                    Set<Security> usedSecurities)
     {
+        ReadOnlyAccount pseudoAccount = account2pseudo.get(account);
+
         for (AccountTransaction t : account.getTransactions())
         {
             switch (t.getType())
             {
                 case BUY:
-                    if (portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoAccount.internalAddTransaction(t);
-                    else
+                    if (!portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
+                    // regular buy is handled via portfolio transactions
                     break;
                 case SELL:
-                    if (portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoAccount.internalAddTransaction(t);
-                    else
+                    if (!portfolios.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
+                    // regular sell is handled via portfolio transactions
                     break;
                 case TRANSFER_IN:
                     if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoAccount.internalAddTransaction(t);
+                        ClientFilterHelper.recreateTransfer((AccountTransferEntry) t.getCrossEntry(),
+                                        account2pseudo.get(t.getCrossEntry().getCrossOwner(t)), pseudoAccount);
                     else
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.DEPOSIT));
                     break;
                 case TRANSFER_OUT:
-                    if (accounts.contains(t.getCrossEntry().getCrossOwner(t)))
-                        pseudoAccount.internalAddTransaction(t);
-                    else
+                    // regular transfer handled by TRANSFER_IN
+                    if (!accounts.contains(t.getCrossEntry().getCrossOwner(t)))
                         pseudoAccount.internalAddTransaction(convertTo(t, AccountTransaction.Type.REMOVAL));
                     break;
                 case DIVIDENDS:

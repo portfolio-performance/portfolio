@@ -19,6 +19,9 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
+import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
@@ -125,13 +128,22 @@ public class DataSeriesCache
                     return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
+                case PORTFOLIO_PRETAX:
+                    return calculatePortfolioPretax(series, reportingPeriod, warnings);
+
                 case PORTFOLIO_PLUS_ACCOUNT:
                     return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
+                case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
+                    return calculatePortfolioPlusAccountPretax(series, reportingPeriod, warnings);
+
                 case ACCOUNT:
                     Account account = (Account) series.getInstance();
                     return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+
+                case ACCOUNT_PRETAX:
+                    return calculateAccountPretax(series, reportingPeriod, warnings);
 
                 case CLASSIFICATION:
                     Classification classification = (Classification) series.getInstance();
@@ -156,5 +168,38 @@ public class DataSeriesCache
             if (!warnings.isEmpty())
                 PortfolioPlugin.log(warnings);
         }
+    }
+
+    private PerformanceIndex calculatePortfolioPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Portfolio portfolio = filteredClient.getPortfolios().stream()
+                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forPortfolio(filteredClient, converter, portfolio, reportingPeriod, warnings);
+    }
+
+    private PerformanceIndex calculatePortfolioPlusAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Portfolio portfolio = filteredClient.getPortfolios().stream()
+                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio, reportingPeriod, warnings);
+    }
+
+    private PerformanceIndex calculateAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Account account = filteredClient.getAccounts().stream()
+                        .filter(a -> ((ReadOnlyAccount) a).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
     }
 }

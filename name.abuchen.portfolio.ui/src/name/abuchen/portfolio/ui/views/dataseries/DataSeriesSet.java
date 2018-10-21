@@ -171,6 +171,8 @@ public class DataSeriesSet
             series.setBenchmark(true);
             availableSeries.add(series);
         }
+
+        buildPreTaxDataSeries(client, wheel, index);
     }
 
     private void buildReturnVolatilitySeries(Client client, ColorWheel wheel)
@@ -189,6 +191,26 @@ public class DataSeriesSet
             series.setBenchmark(true);
             availableSeries.add(series);
         }
+
+        buildPreTaxDataSeries(client, wheel, index);
+    }
+
+    private void buildPreTaxDataSeries(Client client, ColorWheel wheel, int index)
+    {
+        for (Portfolio portfolio : client.getPortfolios())
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
+                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
+
+        for (Portfolio portfolio : client.getPortfolios())
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX, portfolio,
+                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName() //$NON-NLS-1$
+                                            + Messages.LabelSuffix_PreTax,
+                            wheel.getRGB(index++)));
+
+        for (Account account : client.getAccounts())
+            availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
+                            account.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
+
     }
 
     private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
