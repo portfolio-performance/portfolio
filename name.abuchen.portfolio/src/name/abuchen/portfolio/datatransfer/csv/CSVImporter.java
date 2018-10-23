@@ -3,9 +3,15 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
@@ -457,45 +463,66 @@ public class CSVImporter
         return columns;
     }
 
+    private void processStream(InputStream stream) throws IOException
+    {
+        Reader reader = new InputStreamReader(stream, encoding);
+
+        CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
+                        CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+
+        CSVParser parser = new CSVParser(reader, strategy);
+
+        for (int ii = 0; ii < skipLines; ii++)
+            parser.getLine();
+
+        List<String[]> input = new ArrayList<>();
+        String[] header = null;
+        String[] line = parser.getLine();
+        if (isFirstLineHeader)
+        {
+            header = line;
+        }
+        else
+        {
+            header = new String[line.length];
+            for (int ii = 0; ii < header.length; ii++)
+                header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
+            input.add(line);
+        }
+
+        while ((line = parser.getLine()) != null)
+            input.add(line);
+
+        this.columns = new CSVImporter.Column[header.length];
+        for (int ii = 0; ii < header.length; ii++)
+            this.columns[ii] = new Column(ii, header[ii]);
+
+        this.values = input;
+
+        mapToImportDefinition();
+    }
+
     public void processFile() throws IOException
     {
         try (FileInputStream stream = new FileInputStream(inputFile))
         {
-            Reader reader = new InputStreamReader(stream, encoding);
+            processStream(stream);
+        }
+        catch (IOException e)
+        {
+            // fallback for file names with umlaute on Linux
+            byte[] ptext = inputFile.toString().getBytes(StandardCharsets.UTF_8);
+            String str = new String(ptext, StandardCharsets.ISO_8859_1);
+            Path path = Paths.get(URI.create("file://" + str)); //$NON-NLS-1$
 
-            CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
-                            CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
-
-            CSVParser parser = new CSVParser(reader, strategy);
-
-            for (int ii = 0; ii < skipLines; ii++)
-                parser.getLine();
-
-            List<String[]> input = new ArrayList<>();
-            String[] header = null;
-            String[] line = parser.getLine();
-            if (isFirstLineHeader)
+            try (InputStream stream = Files.newInputStream(path))
             {
-                header = line;
+                processStream(stream);
             }
-            else
+            catch (IOException e2)
             {
-                header = new String[line.length];
-                for (int ii = 0; ii < header.length; ii++)
-                    header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
-                input.add(line);
+                throw e;
             }
-
-            while ((line = parser.getLine()) != null)
-                input.add(line);
-
-            this.columns = new CSVImporter.Column[header.length];
-            for (int ii = 0; ii < header.length; ii++)
-                this.columns[ii] = new Column(ii, header[ii]);
-
-            this.values = input;
-
-            mapToImportDefinition();
         }
     }
 
