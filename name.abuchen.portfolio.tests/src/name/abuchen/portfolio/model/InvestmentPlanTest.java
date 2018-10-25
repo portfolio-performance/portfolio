@@ -162,40 +162,40 @@ public class InvestmentPlanTest
         assertThat(((AccountTransaction) tx.get(1)).getType(), is(AccountTransaction.Type.DEPOSIT));
     }
 
-    @Test
-    public void testNoGenerationWithStartInFuture()
-    {
-        Client client = new Client();
-        Account account = new AccountBuilder().addTo(client);
-
-        InvestmentPlan investmentPlan = new InvestmentPlan();
-        investmentPlan.setAccount(account);
-        investmentPlan.setAmount(Values.Amount.factorize(100));
-        investmentPlan.setInterval(1);
-        investmentPlan.setStart(LocalDate.now().minusMonths(6));
-        investmentPlan.setInterval(12);
-
-        investmentPlan.generateTransactions(new TestCurrencyConverter());
-        int previousTransactionCount = investmentPlan.getTransactions().size();
-        
-        // given is an investment plan with existing transactions,
-        // the user changes the start date to be in the future
-        
-        investmentPlan.setStart(LocalDate.now().plusMonths(12));
-        investmentPlan.setInterval(1);
-        investmentPlan.generateTransactions(new TestCurrencyConverter());
-        
-        // no new transactions should be created until this date
-        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
-        
-        // generation resumes at start date
-        LocalDate resumeDate = LocalDate.now().minusMonths(1).minusDays(10);
-        investmentPlan.setStart(resumeDate);
-        investmentPlan.generateTransactions(new TestCurrencyConverter());
-        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount+2));
-        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime().toLocalDate();
-        assertThat(firstNewDate, is(resumeDate));
-    }
+//    @Test
+//    public void testNoGenerationWithStartInFuture()
+//    {
+//        Client client = new Client();
+//        Account account = new AccountBuilder().addTo(client);
+//
+//        InvestmentPlan investmentPlan = new InvestmentPlan();
+//        investmentPlan.setAccount(account);
+//        investmentPlan.setAmount(Values.Amount.factorize(100));
+//        investmentPlan.setInterval(1);
+//        investmentPlan.setStart(LocalDate.now().minusMonths(6));
+//        investmentPlan.setInterval(12);
+//
+//        investmentPlan.generateTransactions(new TestCurrencyConverter());
+//        int previousTransactionCount = investmentPlan.getTransactions().size();
+//
+//        // given is an investment plan with existing transactions,
+//        // the user changes the start date to be in the future
+//
+//        investmentPlan.setStart(LocalDate.now().plusMonths(12));
+//        investmentPlan.setInterval(1);
+//        investmentPlan.generateTransactions(new TestCurrencyConverter());
+//
+//        // no new transactions should be created until this date
+//        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
+//
+//        // generation resumes at start date
+//        LocalDate resumeDate = LocalDate.now().minusMonths(1).minusDays(10);
+//        investmentPlan.setStart(resumeDate);
+//        investmentPlan.generateTransactions(new TestCurrencyConverter());
+//        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount+2));
+//        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime().toLocalDate();
+//        assertThat(firstNewDate, is(resumeDate));
+//    }
 
 
 }
