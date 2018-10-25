@@ -80,7 +80,9 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
@@ -789,6 +791,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return null;
             }
         });
+        new TransactionTypeEditingSupport(getClient()).addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
@@ -918,7 +921,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         support.addColumn(column);
 
         column = new NoteColumn();
-        column.setEditingSupport(null);
+        new StringEditingSupport(AccountTransaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
