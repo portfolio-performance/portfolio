@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 
+import name.abuchen.portfolio.ui.ColorThemeManager;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -63,7 +64,7 @@ public class WelcomePart
     public void createComposite(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        container.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(ColorThemeManager.getBackgroundColor());
 
         RowLayout layout = new RowLayout();
         layout.spacing = 20;
