@@ -81,6 +81,11 @@ public interface UIConstants
          * saving. The backup file has the postfix ".backup".
          */
         String CREATE_BACKUP_BEFORE_SAVING = "CREATE_BACKUP_BEFORE_SAVING"; //$NON-NLS-1$
+        
+        /**
+         * Preference key to enable or disable dark mode theme
+         */
+        String LIGHTS_OUT_THEME = "LIGHTS_OUT_THEME"; //$NON-NLS-1$
 
         /**
          * Preference key to store a comma-separated list of recent files

@@ -18,6 +18,10 @@ public class PresentationPreferencePage extends FieldEditorPreferencePage
     @Override
     public void createFieldEditors()
     {
+        
+        addField(new BooleanFieldEditor(UIConstants.Preferences.LIGHTS_OUT_THEME, //
+                        Messages.PrefLightsOutTheme, getFieldEditorParent()));
+        
         addField(new BooleanFieldEditor(UIConstants.Preferences.USE_INDIRECT_QUOTATION, //
                         Messages.PrefLabelUseIndirectQuotation, getFieldEditorParent()));
 

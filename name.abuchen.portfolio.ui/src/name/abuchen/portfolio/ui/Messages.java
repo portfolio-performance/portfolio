@@ -729,6 +729,7 @@ public class Messages extends NLS
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
     public static String PrefLabelUseIndirectQuotation;
+    public static String PrefLightsOutTheme;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
     public static String PrefNoteIndirectQuotation;
@@ -738,6 +739,7 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
+    public static String PrefTitleAppearance;
     public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
