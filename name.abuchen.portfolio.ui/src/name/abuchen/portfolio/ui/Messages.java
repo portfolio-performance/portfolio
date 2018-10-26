@@ -739,7 +739,6 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
-    public static String PrefTitleAppearance;
     public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
