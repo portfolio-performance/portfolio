@@ -456,45 +456,59 @@ public class SecuritiesChart
                         chartConfig.remove(chartDetails.SCALLING_LOG);
                         break; 
                 }
-                if ((detail == chartDetails.SMA1_WITHOUT) ||
-                    (detail == chartDetails.SMA1_5DAYS) ||
-                    (detail == chartDetails.SMA1_20DAYS) ||
-                    (detail == chartDetails.SMA1_30DAYS) ||
-                    (detail == chartDetails.SMA1_38DAYS) ||
-                    (detail == chartDetails.SMA1_90DAYS) ||
-                    (detail == chartDetails.SMA1_100DAYS) ||
-                    (detail == chartDetails.SMA1_200DAYS))
-                {
-                    chartConfig.remove(chartDetails.SMA1_WITHOUT);
-                    chartConfig.remove(chartDetails.SMA1_5DAYS);
-                    chartConfig.remove(chartDetails.SMA1_20DAYS);
-                    chartConfig.remove(chartDetails.SMA1_30DAYS);
-                    chartConfig.remove(chartDetails.SMA1_38DAYS);
-                    chartConfig.remove(chartDetails.SMA1_90DAYS);
-                    chartConfig.remove(chartDetails.SMA1_100DAYS);
-                    chartConfig.remove(chartDetails.SMA1_200DAYS);
-                    chartConfig.add(detail);                    
-                }
-                if ((detail == chartDetails.SMA2_WITHOUT) ||
-                    (detail == chartDetails.SMA2_5DAYS) ||
-                    (detail == chartDetails.SMA2_20DAYS) ||
-                    (detail == chartDetails.SMA2_30DAYS) ||
-                    (detail == chartDetails.SMA2_38DAYS) ||
-                    (detail == chartDetails.SMA2_90DAYS) ||
-                    (detail == chartDetails.SMA2_100DAYS) ||
-                    (detail == chartDetails.SMA2_200DAYS))
-                {
-                    chartConfig.remove(chartDetails.SMA2_WITHOUT);
-                    chartConfig.remove(chartDetails.SMA2_5DAYS);
-                    chartConfig.remove(chartDetails.SMA2_20DAYS);
-                    chartConfig.remove(chartDetails.SMA2_30DAYS);
-                    chartConfig.remove(chartDetails.SMA2_38DAYS);
-                    chartConfig.remove(chartDetails.SMA2_90DAYS);
-                    chartConfig.remove(chartDetails.SMA2_100DAYS);
-                    chartConfig.remove(chartDetails.SMA2_200DAYS);
-                    chartConfig.add(detail);                    
-                }
             }
+            if (!chartConfig.contains(chartDetails.SCALLING_LINEAR) &&
+                            !chartConfig.contains(chartDetails.SCALLING_LOG))
+                chartConfig.add(chartDetails.SCALLING_LINEAR);
+
+            if (!chartConfig.contains(chartDetails.DEVELOPMENT_WITHOUT) &&
+                            !chartConfig.contains(chartDetails.CLOSING) &&
+                            !chartConfig.contains(chartDetails.PURCHASEPRICE))
+                chartConfig.add(chartDetails.DEVELOPMENT_WITHOUT);
+
+            if ((detail == chartDetails.SMA1_WITHOUT) ||
+                            (detail == chartDetails.SMA1_5DAYS) ||
+                            (detail == chartDetails.SMA1_20DAYS) ||
+                            (detail == chartDetails.SMA1_30DAYS) ||
+                            (detail == chartDetails.SMA1_38DAYS) ||
+                            (detail == chartDetails.SMA1_90DAYS) ||
+                            (detail == chartDetails.SMA1_100DAYS) ||
+                            (detail == chartDetails.SMA1_200DAYS))
+            {
+                chartConfig.remove(chartDetails.SMA1_WITHOUT);
+                chartConfig.remove(chartDetails.SMA1_5DAYS);
+                chartConfig.remove(chartDetails.SMA1_20DAYS);
+                chartConfig.remove(chartDetails.SMA1_30DAYS);
+                chartConfig.remove(chartDetails.SMA1_38DAYS);
+                chartConfig.remove(chartDetails.SMA1_90DAYS);
+                chartConfig.remove(chartDetails.SMA1_100DAYS);
+                chartConfig.remove(chartDetails.SMA1_200DAYS);
+                chartConfig.add(detail);                    
+            }
+            else
+                chartConfig.add(chartDetails.SMA1_WITHOUT);
+
+            if ((detail == chartDetails.SMA2_WITHOUT) ||
+                            (detail == chartDetails.SMA2_5DAYS) ||
+                            (detail == chartDetails.SMA2_20DAYS) ||
+                            (detail == chartDetails.SMA2_30DAYS) ||
+                            (detail == chartDetails.SMA2_38DAYS) ||
+                            (detail == chartDetails.SMA2_90DAYS) ||
+                            (detail == chartDetails.SMA2_100DAYS) ||
+                            (detail == chartDetails.SMA2_200DAYS))
+            {
+                chartConfig.remove(chartDetails.SMA2_WITHOUT);
+                chartConfig.remove(chartDetails.SMA2_5DAYS);
+                chartConfig.remove(chartDetails.SMA2_20DAYS);
+                chartConfig.remove(chartDetails.SMA2_30DAYS);
+                chartConfig.remove(chartDetails.SMA2_38DAYS);
+                chartConfig.remove(chartDetails.SMA2_90DAYS);
+                chartConfig.remove(chartDetails.SMA2_100DAYS);
+                chartConfig.remove(chartDetails.SMA2_200DAYS);
+                chartConfig.add(detail);                    
+            }
+            else
+                chartConfig.add(chartDetails.SMA2_WITHOUT);
 
             client.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
                             chartConfig.stream().map(chartDetails::name).collect(Collectors.toList())));
