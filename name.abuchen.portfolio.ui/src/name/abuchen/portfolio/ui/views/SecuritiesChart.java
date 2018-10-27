@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Menu;
 import org.swtchart.IAxis;
+import org.swtchart.IAxisTick;
 import org.swtchart.ILegend;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
@@ -75,24 +76,41 @@ import name.abuchen.portfolio.util.Interval;
  */
 public class SecuritiesChart
 {
-    private enum ChartDetails
+    private enum chartDetails
     {
-        SHOW_MARKER_LINES(Messages.LabelChartDetailShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailShowDataLabel + SEPERATOR), //
-        CLOSING(Messages.LabelChartDetailClosingIndicator), //
-        PURCHASEPRICE(Messages.LabelChartDetailPurchaseIndicator + SEPERATOR), //
-        INVESTMENT(Messages.LabelChartDetailInvestments), //
-        DIVIDENDS(Messages.LabelChartDetailDividends), //
-        EVENTS(Messages.LabelChartDetailEvents), //
-        FIFOPURCHASE(Messages.LabelChartDetailFIFOpurchase), //
-        FLOATINGAVGPURCHASE(Messages.LabelChartDetailMovingAveragePurchase + SEPERATOR), //
-        SMA50(Messages.LabelChartDetailSMA50), //
-        SMA200(Messages.LabelChartDetailSMA200), //
-        BOLLINGERBANDS(Messages.LabelChartDetailBollingerBands);
+        SCALLING_LINEAR(Messages.LabelChartDetailChartScallingLinear), //
+        SCALLING_LOG(Messages.LabelChartDetailChartScallingLog), //
+        DEVELOPMENT_WITHOUT(Messages.LabelChartDetailChartDevelopmentWithout), //
+        CLOSING(Messages.LabelChartDetailChartDevelopmentClosing), //
+        PURCHASEPRICE(Messages.LabelChartDetailChartDevelopmentClosingFIFO), //
+        INVESTMENT(Messages.LabelChartDetailMarkerInvestments), //
+        DIVIDENDS(Messages.LabelChartDetailMarkerDividends), //
+        EVENTS(Messages.LabelChartDetailMarkerSplits), //
+        FIFOPURCHASE(Messages.LabelChartDetailMarkerPurchaseFIFO), //
+        FLOATINGAVGPURCHASE(Messages.LabelChartDetailMarkerPurchaseMovingAverage), //
+        BOLLINGERBANDS(Messages.LabelChartDetailIndicatorBollingerBands), //
+        SMA1_WITHOUT(Messages.LabelChartDetailMovingAverage_without), //
+        SMA1_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
+        SMA1_20DAYS(Messages.LabelChartDetailMovingAverage_20days), //
+        SMA1_30DAYS(Messages.LabelChartDetailMovingAverage_30days), //
+        SMA1_38DAYS(Messages.LabelChartDetailMovingAverage_38days), //
+        SMA1_90DAYS(Messages.LabelChartDetailMovingAverage_90days), //
+        SMA1_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
+        SMA1_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
+        SMA2_WITHOUT(Messages.LabelChartDetailMovingAverage_without), //
+        SMA2_5DAYS(Messages.LabelChartDetailMovingAverage_5days), //
+        SMA2_20DAYS(Messages.LabelChartDetailMovingAverage_20days), //
+        SMA2_30DAYS(Messages.LabelChartDetailMovingAverage_30days), //
+        SMA2_38DAYS(Messages.LabelChartDetailMovingAverage_38days), //
+        SMA2_90DAYS(Messages.LabelChartDetailMovingAverage_90days), //
+        SMA2_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
+        SMA2_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
+        SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
+        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel); //
 
         private final String label;
 
-        private ChartDetails(String label)
+        private chartDetails(String label)
         {
             this.label = label;
         }
@@ -103,6 +121,7 @@ public class SecuritiesChart
             return label;
         }
     }
+
 
     private static class CustomLayout extends Layout
     {
@@ -142,8 +161,8 @@ public class SecuritiesChart
     private Color colorFifoPurchasePrice = Colors.getColor(226, 122, 121);
     private Color colorMovingAveragePurchasePrice = Colors.getColor(150, 82, 81);
     private Color colorBollingerBands = Colors.getColor(201, 141, 68);
-    private Color colorSMA50 = Colors.getColor(102, 171, 29);
-    private Color colorSMA200 = Colors.getColor(96, 104, 110);
+    private Color colorSMA1 = Colors.getColor(102, 171, 29);
+    private Color colorSMA2 = Colors.getColor(96, 104, 110);
 
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
@@ -161,7 +180,7 @@ public class SecuritiesChart
 
     private TimelineChart chart;
     private LocalDate chartPeriod = LocalDate.now().minusYears(2);
-    private EnumSet<ChartDetails> chartConfig = EnumSet.of(ChartDetails.INVESTMENT, ChartDetails.EVENTS);
+    private EnumSet<chartDetails> chartConfig = EnumSet.of(chartDetails.INVESTMENT, chartDetails.EVENTS, chartDetails.SMA1_WITHOUT, chartDetails.SMA2_WITHOUT, chartDetails.SCALLING_LINEAR, chartDetails.DEVELOPMENT_WITHOUT);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
@@ -215,19 +234,19 @@ public class SecuritiesChart
         TimelineChartToolTip toolTip = chart.getToolTip();
 
         toolTip.setValueFormat(new DecimalFormat(Values.Quote.pattern()));
-        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Negative"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.LabelChartDetailClosingIndicator + "Zero"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Zero"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.SecurityMenuBuy);
         toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.SecurityMenuBuy + "2"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.SecurityMenuSell);
         toolTip.addSeriesExclude(Messages.SecurityMenuSell + "1"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.SecurityMenuSell + "2"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends);
-        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
-        toolTip.addSeriesExclude(Messages.LabelChartDetailBollingerBands);
+        toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends);
+        toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
+        toolTip.addSeriesExclude(Messages.LabelChartDetailIndicatorBollingerBands);
 
         toolTip.addExtraInfo((composite, focus) -> {
             if (focus instanceof Date)
@@ -312,7 +331,7 @@ public class SecuritiesChart
         {
             try
             {
-                chartConfig.add(ChartDetails.valueOf(key));
+                chartConfig.add(chartDetails.valueOf(key));
             }
             catch (IllegalArgumentException e)
             {
@@ -339,6 +358,7 @@ public class SecuritiesChart
                     contextMenu = menuMgr.createContextMenu(buttons.getShell());
 
                     buttons.addDisposeListener(event -> contextMenu.dispose());
+
                 }
 
                 contextMenu.setVisible(true);
@@ -348,29 +368,143 @@ public class SecuritiesChart
 
     private void chartConfigAboutToShow(IMenuManager manager)
     {
-        for (ChartDetails detail : ChartDetails.values())
-        {
-            String buttonDescription = detail.toString().replaceAll(SEPERATOR, ""); //$NON-NLS-1$
+        MenuManager subMenuChartScalling = new MenuManager(Messages.LabelChartDetailChartScalling, null);
+        MenuManager subMenuChartDevelopment = new MenuManager(Messages.LabelChartDetailChartDevelopment, null);
+        MenuManager subMenuChartMarker = new MenuManager(Messages.LabelChartDetailMarker, null);
+        MenuManager subMenuChartIndicator = new MenuManager(Messages.LabelChartDetailIndicator, null);
+        MenuManager subMenuChartMovingAverage1 = new MenuManager(Messages.LabelChartDetailMovingAverage1, null);
+        MenuManager subMenuChartMovingAverage2 = new MenuManager(Messages.LabelChartDetailMovingAverage2, null);
+        MenuManager subMenuChartMovingAverage = new MenuManager(Messages.LabelChartDetailMovingAverage, null);
+        MenuManager subMenuChartSettings = new MenuManager(Messages.LabelChartDetailSettings, null);
 
-            Action action = new SimpleAction(buttonDescription, a -> {
-                boolean isActive = chartConfig.contains(detail);
+        subMenuChartScalling.add(addMenuAction(chartDetails.SCALLING_LINEAR));
+        subMenuChartScalling.add(addMenuAction(chartDetails.SCALLING_LOG));
+        subMenuChartDevelopment.add(addMenuAction(chartDetails.DEVELOPMENT_WITHOUT));
+        subMenuChartDevelopment.add(new Separator());
+        subMenuChartDevelopment.add(addMenuAction(chartDetails.CLOSING));
+        subMenuChartDevelopment.add(addMenuAction(chartDetails.PURCHASEPRICE));
+        subMenuChartMarker.add(addMenuAction(chartDetails.INVESTMENT));
+        subMenuChartMarker.add(addMenuAction(chartDetails.DIVIDENDS));
+        subMenuChartMarker.add(addMenuAction(chartDetails.EVENTS));
+        subMenuChartMarker.add(addMenuAction(chartDetails.FIFOPURCHASE));
+        subMenuChartMarker.add(addMenuAction(chartDetails.FLOATINGAVGPURCHASE));
+        subMenuChartIndicator.add(addMenuAction(chartDetails.BOLLINGERBANDS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_WITHOUT));
+        subMenuChartMovingAverage1.add(new Separator());
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_5DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_20DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_30DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_38DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_90DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_100DAYS));
+        subMenuChartMovingAverage1.add(addMenuAction(chartDetails.SMA1_200DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA1_WITHOUT));
+        subMenuChartMovingAverage2.add(new Separator());
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_5DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_20DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_30DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_38DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_90DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_100DAYS));
+        subMenuChartMovingAverage2.add(addMenuAction(chartDetails.SMA2_200DAYS));
+        subMenuChartSettings.add(addMenuAction(chartDetails.SHOW_MARKER_LINES));
+        subMenuChartSettings.add(addMenuAction(chartDetails.SHOW_DATA_LABELS));
+        manager.add(subMenuChartScalling);
+        manager.add(subMenuChartDevelopment);
+        manager.add(subMenuChartMarker);
+        manager.add(subMenuChartIndicator);
+        subMenuChartMovingAverage.add(subMenuChartMovingAverage1);
+        subMenuChartMovingAverage.add(subMenuChartMovingAverage2);
+        manager.add(subMenuChartMovingAverage);
+        manager.add(subMenuChartSettings);
+    }
 
-                if (isActive)
-                    chartConfig.remove(detail);
-                else
-                    chartConfig.add(detail);
+    private Action addMenuAction(chartDetails detail)
+    {
+        String buttonDescription = detail.toString().replaceAll(SEPERATOR, ""); //$NON-NLS-1$
+        Action action = new SimpleAction(buttonDescription, a -> {
+            boolean isActive = chartConfig.contains(detail);
 
-                client.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
-                                chartConfig.stream().map(ChartDetails::name).collect(Collectors.toList())));
+            if (isActive)
+                chartConfig.remove(detail);
+            else
+                chartConfig.add(detail);
 
-                updateChart();
-            });
+            if (!isActive)
+            {
+                switch(detail) {
+                    case SCALLING_LINEAR:
+                        chartConfig.remove(chartDetails.SCALLING_LOG);
+                        break; 
+                    case SCALLING_LOG:
+                        chartConfig.remove(chartDetails.SCALLING_LINEAR);
+                        chartConfig.remove(chartDetails.PURCHASEPRICE);
+                        chartConfig.remove(chartDetails.CLOSING);
+                        break; 
+                    case DEVELOPMENT_WITHOUT:
+                        chartConfig.remove(chartDetails.CLOSING);
+                        chartConfig.remove(chartDetails.PURCHASEPRICE);
+                        break; 
+                    case CLOSING:
+                        chartConfig.remove(chartDetails.DEVELOPMENT_WITHOUT);
+                        chartConfig.remove(chartDetails.PURCHASEPRICE);
+                        chartConfig.remove(chartDetails.SCALLING_LOG);
+                        break; 
+                    case PURCHASEPRICE:
+                        chartConfig.remove(chartDetails.DEVELOPMENT_WITHOUT);
+                        chartConfig.remove(chartDetails.CLOSING);
+                        chartConfig.remove(chartDetails.SCALLING_LOG);
+                        break; 
+                }
+                if ((detail == chartDetails.SMA1_WITHOUT) ||
+                    (detail == chartDetails.SMA1_5DAYS) ||
+                    (detail == chartDetails.SMA1_20DAYS) ||
+                    (detail == chartDetails.SMA1_30DAYS) ||
+                    (detail == chartDetails.SMA1_38DAYS) ||
+                    (detail == chartDetails.SMA1_90DAYS) ||
+                    (detail == chartDetails.SMA1_100DAYS) ||
+                    (detail == chartDetails.SMA1_200DAYS))
+                {
+                    chartConfig.remove(chartDetails.SMA1_WITHOUT);
+                    chartConfig.remove(chartDetails.SMA1_5DAYS);
+                    chartConfig.remove(chartDetails.SMA1_20DAYS);
+                    chartConfig.remove(chartDetails.SMA1_30DAYS);
+                    chartConfig.remove(chartDetails.SMA1_38DAYS);
+                    chartConfig.remove(chartDetails.SMA1_90DAYS);
+                    chartConfig.remove(chartDetails.SMA1_100DAYS);
+                    chartConfig.remove(chartDetails.SMA1_200DAYS);
+                    chartConfig.add(detail);                    
+                }
+                if ((detail == chartDetails.SMA2_WITHOUT) ||
+                    (detail == chartDetails.SMA2_5DAYS) ||
+                    (detail == chartDetails.SMA2_20DAYS) ||
+                    (detail == chartDetails.SMA2_30DAYS) ||
+                    (detail == chartDetails.SMA2_38DAYS) ||
+                    (detail == chartDetails.SMA2_90DAYS) ||
+                    (detail == chartDetails.SMA2_100DAYS) ||
+                    (detail == chartDetails.SMA2_200DAYS))
+                {
+                    chartConfig.remove(chartDetails.SMA2_WITHOUT);
+                    chartConfig.remove(chartDetails.SMA2_5DAYS);
+                    chartConfig.remove(chartDetails.SMA2_20DAYS);
+                    chartConfig.remove(chartDetails.SMA2_30DAYS);
+                    chartConfig.remove(chartDetails.SMA2_38DAYS);
+                    chartConfig.remove(chartDetails.SMA2_90DAYS);
+                    chartConfig.remove(chartDetails.SMA2_100DAYS);
+                    chartConfig.remove(chartDetails.SMA2_200DAYS);
+                    chartConfig.add(detail);                    
+                }
+            }
 
-            action.setChecked(chartConfig.contains(detail));
-            manager.add(action);
-            if (detail.toString().endsWith(SEPERATOR))
-                manager.add(new Separator());
-        }
+            client.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
+                            chartConfig.stream().map(chartDetails::name).collect(Collectors.toList())));
+
+            updateChart();
+
+        });
+
+        action.setChecked(chartConfig.contains(detail));
+        return (action);
     }
 
     private void addButton(Composite buttons, String label, TemporalAmount amountToAdd)
@@ -439,8 +573,8 @@ public class SecuritiesChart
 
             chart.getTitle().setText(security.getName());
 
-            boolean showAreaRelativeToFirstQuote = chartConfig.contains(ChartDetails.CLOSING)
-                            || chartConfig.contains(ChartDetails.PURCHASEPRICE);
+            boolean showAreaRelativeToFirstQuote = chartConfig.contains(chartDetails.CLOSING)
+                            || chartConfig.contains(chartDetails.PURCHASEPRICE);
 
             List<SecurityPrice> prices = security.getPricesIncludingLatest();
 
@@ -493,7 +627,7 @@ public class SecuritiesChart
 
             SecurityPrice p2 = prices.get(index);
 
-            if (!chartConfig.contains(ChartDetails.PURCHASEPRICE))
+            if (!chartConfig.contains(chartDetails.PURCHASEPRICE))
             {
                 firstQuote = (p2.getValue() / Values.Quote.divider());
             }
@@ -537,14 +671,14 @@ public class SecuritiesChart
             {
 
                 ILineSeries lineSeries2ndNegative = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailClosingIndicator + "Negative"); //$NON-NLS-1$
+                                Messages.LabelChartDetailChartDevelopmentClosing + "Negative"); //$NON-NLS-1$
                 lineSeries2ndNegative.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndNegative.setYAxisId(1);
                 configureSeriesPainter(lineSeries2ndNegative, javaDates, valuesRelativeNegative, colorAreaNegative, 1,
                                 LineStyle.SOLID, true, false);
 
                 ILineSeries lineSeries2ndPositive = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                                Messages.LabelChartDetailClosingIndicator + "Positive"); //$NON-NLS-1$
+                                Messages.LabelChartDetailChartDevelopmentClosing + "Positive"); //$NON-NLS-1$
                 lineSeries2ndPositive.setSymbolType(PlotSymbolType.NONE);
                 lineSeries2ndPositive.setYAxisId(1);
                 configureSeriesPainter(lineSeries2ndPositive, javaDates, valuesRelativePositive, colorAreaPositive, 1,
@@ -568,7 +702,13 @@ public class SecuritiesChart
             yAxis2nd.setRange(
                             new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
 
-        }
+            yAxis1st.enableLogScale(chartConfig.contains(chartDetails.SCALLING_LOG) ? true : false);
+
+            IAxisTick yTick = yAxis1st.getTick();
+            yAxis1st.getTick().setVisible(true); 
+            System.out.println(yTick.getTickMarkStepHint());
+
+            }
         finally
         {
             chart.setRedraw(true);
@@ -578,41 +718,83 @@ public class SecuritiesChart
 
     private void addChartMarkerBackground()
     {
-        if (chartConfig.contains(ChartDetails.BOLLINGERBANDS))
+        if (chartConfig.contains(chartDetails.BOLLINGERBANDS))
             addBollingerBandsMarkerLines(20, 2);
 
-        if (chartConfig.contains(ChartDetails.SMA50))
-            addSMAMarkerLines(50);
+        if (chartConfig.contains(chartDetails.SMA1_5DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1);
 
-        if (chartConfig.contains(ChartDetails.SMA200))
-            addSMAMarkerLines(200);
+        if (chartConfig.contains(chartDetails.SMA1_5DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_20DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_30DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_38DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_90DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_100DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA1_200DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA1);
+
+        if (chartConfig.contains(chartDetails.SMA2_5DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_5DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_5days, 5, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_20DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_20days, 20, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_30DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_30days, 30, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_38DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_38days, 38, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_90DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_90days, 90, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_100DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_100days, 100, colorSMA2);
+
+        if (chartConfig.contains(chartDetails.SMA2_200DAYS))
+            addSMAMarkerLines(Messages.LabelChartDetailMovingAverage1, Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA2);
     }
 
     private void addChartMarkerForeground()
     {
-        if (chartConfig.contains(ChartDetails.FIFOPURCHASE))
+        if (chartConfig.contains(chartDetails.FIFOPURCHASE))
             addFIFOPurchasePrice();
 
-        if (chartConfig.contains(ChartDetails.FLOATINGAVGPURCHASE))
+        if (chartConfig.contains(chartDetails.FLOATINGAVGPURCHASE))
             addMovingAveragePurchasePrice();
 
-        if (chartConfig.contains(ChartDetails.INVESTMENT))
+        if (chartConfig.contains(chartDetails.INVESTMENT))
             addInvestmentMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.DIVIDENDS))
+        if (chartConfig.contains(chartDetails.DIVIDENDS))
             addDividendMarkerLines();
 
-        if (chartConfig.contains(ChartDetails.EVENTS))
+        if (chartConfig.contains(chartDetails.EVENTS))
             addEventMarkerLines();
     }
 
-    private void addSMAMarkerLines(int smaDays)
+    private void addSMAMarkerLines(String smaSeries, String smaDaysWording, int smaDays, Color smaColor)
     {
         ChartLineSeriesAxes smaLines = new SimpleMovingAverage(smaDays, this.security, chartPeriod).getSMA();
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
-        String lineID = smaDays == 200 ? Messages.LabelChartDetailSMA200 : Messages.LabelChartDetailSMA50;
+        String lineID = smaSeries + " (" + smaDaysWording + ")";
 
         ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(smaLines.getDates());
@@ -621,7 +803,7 @@ public class SecuritiesChart
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(smaLines.getValues());
         lineSeriesSMA.setAntialias(SWT.ON);
-        lineSeriesSMA.setLineColor(smaDays == 200 ? colorSMA200 : colorSMA50);
+        lineSeriesSMA.setLineColor(smaColor);
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
     }
@@ -654,7 +836,7 @@ public class SecuritiesChart
 
         customTooltipEvents.addAll(transactions);
 
-        if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
+        if (chartConfig.contains(chartDetails.SHOW_MARKER_LINES))
         {
             transactions.forEach(t -> {
                 String label = Values.Share.format(t.getType().isPurchase() ? t.getShares() : -t.getShares());
@@ -697,7 +879,7 @@ public class SecuritiesChart
             inner.setSymbolColor(color);
             configureSeriesPainter(inner, dates, values, color, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(chartDetails.SHOW_DATA_LABELS))
             {
                 customPaintListeners.add(event -> {
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
@@ -733,7 +915,7 @@ public class SecuritiesChart
 
         customTooltipEvents.addAll(dividends);
 
-        if (chartConfig.contains(ChartDetails.SHOW_MARKER_LINES))
+        if (chartConfig.contains(chartDetails.SHOW_MARKER_LINES))
         {
             dividends.forEach(t -> chart.addMarkerLine(t.getDateTime().toLocalDate(), colorEventDividend,
                             getDividendLabel(t)));
@@ -751,7 +933,7 @@ public class SecuritiesChart
             Arrays.fill(values, yAxis1stAxisPrice);
 
             ILineSeries border = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends + "2"); //$NON-NLS-1$
+                            Messages.LabelChartDetailMarkerDividends + "2"); //$NON-NLS-1$
             border.setYAxisId(0);
             border.setSymbolType(PlotSymbolType.SQUARE);
             border.setSymbolSize(6);
@@ -759,7 +941,7 @@ public class SecuritiesChart
             configureSeriesPainter(border, dates, values, null, 0, LineStyle.NONE, false, false);
 
             ILineSeries background = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends + "1"); //$NON-NLS-1$
+                            Messages.LabelChartDetailMarkerDividends + "1"); //$NON-NLS-1$
             background.setYAxisId(0);
             background.setSymbolType(PlotSymbolType.SQUARE);
             background.setSymbolSize(5);
@@ -767,14 +949,14 @@ public class SecuritiesChart
             configureSeriesPainter(background, dates, values, null, 0, LineStyle.NONE, false, false);
 
             ILineSeries inner = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                            Messages.LabelChartDetailDividends);
+                            Messages.LabelChartDetailMarkerDividends);
             inner.setYAxisId(0);
             inner.setSymbolType(PlotSymbolType.SQUARE);
             inner.setSymbolSize(3);
             inner.setSymbolColor(colorEventDividend);
             configureSeriesPainter(inner, dates, values, null, 0, LineStyle.NONE, false, true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_DATA_LABELS))
+            if (chartConfig.contains(chartDetails.SHOW_DATA_LABELS))
             {
                 customPaintListeners.add(event -> {
                     IAxis xAxis = chart.getAxisSet().getXAxis(0);
@@ -830,7 +1012,7 @@ public class SecuritiesChart
             return;
 
         ILineSeries lineSeriesBollingerBandsLowerBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                        Messages.LabelChartDetailBollingerBandsLower);
+                        Messages.LabelChartDetailIndicatorBollingerBandsLower);
         lineSeriesBollingerBandsLowerBand.setXDateSeries(bollingerBandsLowerBand.getDates());
         lineSeriesBollingerBandsLowerBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsLowerBand.setLineWidth(2);
@@ -844,7 +1026,7 @@ public class SecuritiesChart
         ChartLineSeriesAxes bollingerBandsMiddleBand = new BollingerBands(bollingerBandsDays, bollingerBandsFactor,
                         this.security, chartPeriod).getMiddleBands();
         ILineSeries lineSeriesBollingerBandsMiddleBand = (ILineSeries) chart.getSeriesSet()
-                        .createSeries(SeriesType.LINE, Messages.LabelChartDetailBollingerBands);
+                        .createSeries(SeriesType.LINE, Messages.LabelChartDetailIndicatorBollingerBands);
         lineSeriesBollingerBandsMiddleBand.setXDateSeries(bollingerBandsMiddleBand.getDates());
         lineSeriesBollingerBandsMiddleBand.setLineWidth(2);
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
@@ -858,7 +1040,7 @@ public class SecuritiesChart
         ChartLineSeriesAxes bollingerBandsUpperBand = new BollingerBands(bollingerBandsDays, bollingerBandsFactor,
                         this.security, chartPeriod).getUpperBands();
         ILineSeries lineSeriesBollingerBandsUpperBand = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE,
-                        Messages.LabelChartDetailBollingerBandsUpper);
+                        Messages.LabelChartDetailIndicatorBollingerBandsUpper);
         lineSeriesBollingerBandsUpperBand.setXDateSeries(bollingerBandsUpperBand.getDates());
         lineSeriesBollingerBandsUpperBand.setLineWidth(2);
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
@@ -950,8 +1132,8 @@ public class SecuritiesChart
 
     private void createFIFOPurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
     {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailFIFOpurchase
-                        : MessageFormat.format(Messages.LabelChartDetailFIFOpurchaseHoldingPeriod, seriesCounter + 1);
+        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseFIFO
+                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseFIFOHoldingPeriod, seriesCounter + 1);
 
         ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
 
@@ -1044,8 +1226,8 @@ public class SecuritiesChart
 
     private void createMovingAveragePurchaseLineSeries(List<Double> values, List<LocalDate> dates, int seriesCounter)
     {
-        String label = seriesCounter == 0 ? Messages.LabelChartDetailMovingAveragePurchase
-                        : MessageFormat.format(Messages.LabelChartDetailMovingAveragePurchaseHoldingPeriod, seriesCounter + 1);
+        String label = seriesCounter == 0 ? Messages.LabelChartDetailMarkerPurchaseMovingAverage
+                        : MessageFormat.format(Messages.LabelChartDetailMarkerPurchaseMovingAverageHoldingPeriod, seriesCounter + 1);
 
         ILineSeries series = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, label);
 
