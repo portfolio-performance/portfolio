@@ -38,23 +38,32 @@ public class SecurityDragListener extends DragSourceAdapter
         IStructuredSelection selection = (IStructuredSelection) viewer.getStructuredSelection();
         if (selection.isEmpty())
             return null;
-        
+
         List<Security> selectedSecurities = new ArrayList<>();
         Iterator<Security> selectionIterator = selection.iterator();
-        while(selectionIterator.hasNext()) {
+        while (selectionIterator.hasNext())
+        {
             Object object = selectionIterator.next();
             Security selectedSecurity;
-            if(object instanceof Security) {
+            if (object instanceof Security)
+            {
                 selectedSecurity = (Security) object;
                 selectedSecurities.add(selectedSecurity);
-            }else if(object instanceof Adaptable) {
+            }
+            else if (object instanceof Adaptable)
+            {
                 selectedSecurity = ((Adaptable) object).adapt(Security.class);
-                selectedSecurities.add(selectedSecurity);
-            }else{
-                //ignore elements that cannot be dragged
+                if (selectedSecurity != null)
+                {
+                    selectedSecurities.add(selectedSecurity);
+                }
+            }
+            else
+            {
+                // ignore elements that cannot be dragged
             }
         }
-        
+
         return selectedSecurities;
     }
 }
