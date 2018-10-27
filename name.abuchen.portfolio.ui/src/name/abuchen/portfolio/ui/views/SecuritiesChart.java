@@ -454,7 +454,9 @@ public class SecuritiesChart
                         chartConfig.remove(chartDetails.DEVELOPMENT_WITHOUT);
                         chartConfig.remove(chartDetails.CLOSING);
                         chartConfig.remove(chartDetails.SCALLING_LOG);
-                        break; 
+                        break;
+                    default:
+                        break;
                 }
             }
             if (!chartConfig.contains(chartDetails.SCALLING_LINEAR) &&
@@ -808,7 +810,7 @@ public class SecuritiesChart
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
-        String lineID = smaSeries + " (" + smaDaysWording + ")";
+        String lineID = smaSeries + " (" + smaDaysWording + ")"; //$NON-NLS-1$
 
         ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(smaLines.getDates());
