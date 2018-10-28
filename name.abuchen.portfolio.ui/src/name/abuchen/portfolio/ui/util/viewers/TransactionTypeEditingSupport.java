@@ -21,8 +21,11 @@ import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.actions.RevertBuySellAction;
 import name.abuchen.portfolio.ui.views.actions.RevertDeliveryAction;
-import name.abuchen.portfolio.ui.views.actions.RevertDepositRemovalAction;
-import name.abuchen.portfolio.ui.views.actions.RevertInterestAction;
+import name.abuchen.portfolio.ui.views.actions.RevertAccountAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertToFeeAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertToInterestAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertToTaxAction;
 import name.abuchen.portfolio.ui.views.actions.RevertTransferAction;
 
 /**
@@ -48,6 +51,12 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
 
                     PortfolioTransaction.Type.SELL, PortfolioTransaction.Type.DELIVERY_INBOUND,
                     new Class[] { RevertBuySellAction.class, ConvertBuySellToDeliveryAction.class },
+
+                    PortfolioTransaction.Type.TRANSFER_IN, PortfolioTransaction.Type.TRANSFER_OUT,
+                    new Class[] { RevertTransferAction.class },
+
+                    PortfolioTransaction.Type.TRANSFER_OUT, PortfolioTransaction.Type.TRANSFER_IN,
+                    new Class[] { RevertTransferAction.class },
 
                     PortfolioTransaction.Type.DELIVERY_INBOUND, PortfolioTransaction.Type.DELIVERY_OUTBOUND,
                     new Class[] { RevertDeliveryAction.class },
@@ -79,17 +88,173 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
                     AccountTransaction.Type.TRANSFER_OUT, AccountTransaction.Type.TRANSFER_IN,
                     new Class[] { RevertTransferAction.class },
 
-                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.REMOVAL,
-                    new Class[] { RevertDepositRemovalAction.class },
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
 
-                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.DEPOSIT,
-                    new Class[] { RevertDepositRemovalAction.class },
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class },
+
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.DEPOSIT,
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] {                               RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.FEES,
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.FEES_REFUND, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class },
 
                     AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE,
-                    new Class[] { RevertInterestAction.class },
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.INTEREST, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
 
                     AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.INTEREST,
-                    new Class[] { RevertInterestAction.class } };
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.DEPOSIT,
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] { ConvertToTaxAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.REMOVAL, AccountTransaction.Type.TAXES,
+                    new Class[] { ConvertToTaxAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.TAXES, AccountTransaction.Type.TAX_REFUND,
+                    new Class[] {                           RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.DEPOSIT,
+                    new Class[] { ConvertToDepositRemovalAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
+                    new Class[] { ConvertToFeeAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES_REFUND,
+                    new Class[] { ConvertToFeeAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.INTEREST_CHARGE,
+                    new Class[] { ConvertToInterestAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.INTEREST,
+                    new Class[] { ConvertToInterestAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.REMOVAL,
+                    new Class[] { ConvertToDepositRemovalAction.class, RevertAccountAction.class },
+
+                    AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.TAXES,
+                    new Class[] {                           RevertAccountAction.class } };
 
     private final Client client;
 
@@ -188,7 +353,9 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
         for (int ii = 0; ii < TRANSITIONS.length; ii += 3)
         {
             if (TRANSITIONS[ii] == type)
+            {
                 comboBoxItems.add(TRANSITIONS[ii + 1]);
+            }
         }
 
         Collections.sort(comboBoxItems, (r, l) -> r.toString().compareTo(l.toString()));
