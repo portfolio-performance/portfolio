@@ -392,9 +392,6 @@ public class Messages extends NLS
     public static String LabelAvailableAttributes;
     public static String LabelBenchmarks;
     public static String LabelCategoryOtherMovements;
-    public static String LabelChartDetailChartType;
-    public static String LabelChartDetailChartTypeLine;
-    public static String LabelChartDetailChartTypeMountain;
     public static String LabelChartDetailChartScalling;
     public static String LabelChartDetailChartScallingLinear;
     public static String LabelChartDetailChartScallingLog;
