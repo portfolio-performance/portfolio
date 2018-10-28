@@ -18,6 +18,7 @@ import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 @SuppressWarnings("nls")
 public class InvestmentPlanTest
@@ -177,25 +178,33 @@ public class InvestmentPlanTest
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
         int previousTransactionCount = investmentPlan.getTransactions().size();
-        
+
         // given is an investment plan with existing transactions,
         // the user changes the start date to be in the future
-        
+
         investmentPlan.setStart(LocalDate.now().plusMonths(12));
         investmentPlan.setInterval(1);
         investmentPlan.generateTransactions(new TestCurrencyConverter());
-        
+
         // no new transactions should be created until this date
         assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount));
-        
+
         // generation resumes at start date
         LocalDate resumeDate = LocalDate.now().minusMonths(1).minusDays(10);
         investmentPlan.setStart(resumeDate);
         investmentPlan.generateTransactions(new TestCurrencyConverter());
-        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount+2));
-        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime().toLocalDate();
+        assertThat(investmentPlan.getTransactions(), hasSize(previousTransactionCount + 2));
+
+        LocalDate firstNewDate = investmentPlan.getTransactions().get(previousTransactionCount).getDateTime()
+                        .toLocalDate();
+
+        // if resume date is on a bank holiday, move the resume date to the next
+        // non-holiday
+        TradeCalendar tradeCalendar = new TradeCalendar();
+        while (tradeCalendar.isHoliday(resumeDate))
+            resumeDate = resumeDate.plusDays(1);
+
         assertThat(firstNewDate, is(resumeDate));
     }
-
 
 }
