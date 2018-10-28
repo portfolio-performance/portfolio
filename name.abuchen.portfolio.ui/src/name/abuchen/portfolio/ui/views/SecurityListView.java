@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -68,6 +70,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -1007,19 +1010,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         });
 
         manager.add(new Separator());
-        manager.add(new SimpleAction(Messages.MenuDeleteAllTransactions, a -> {
+        manager.add(new ConfirmAction(Messages.MenuDeleteAllTransactions,
+                        MessageFormat.format(Messages.MenuConfirmDeleteAllTransactions, security.getName()), //
+                        a -> {
 
-            List<TransactionPair<?>> txs = security.getTransactions(getClient());
+                            List<TransactionPair<?>> txs = security.getTransactions(getClient());
 
-            for (TransactionPair<?> tx : txs)
-            {
-                @SuppressWarnings("unchecked")
-                TransactionPair<Transaction> t = (TransactionPair<Transaction>) tx;
-                t.getOwner().deleteTransaction(t.getTransaction(), getClient());
-            }
+                            for (TransactionPair<?> tx : txs)
+                            {
+                                @SuppressWarnings("unchecked")
+                                TransactionPair<Transaction> t = (TransactionPair<Transaction>) tx;
+                                t.getOwner().deleteTransaction(t.getTransaction(), getClient());
+                            }
 
-            getClient().markDirty();
-        }));
+                            getClient().markDirty();
+                        }));
     }
 
     private Action createEditAction(TransactionPair<?> transactionPair)

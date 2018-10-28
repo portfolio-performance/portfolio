@@ -578,6 +578,7 @@ public class Messages extends NLS
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
     public static String MenuConfigureDashboards;
+    public static String MenuConfirmDeleteAllTransactions;
     public static String MenuConvertToBuy;
     public static String MenuConvertToInboundDelivery;
     public static String MenuConvertToOutboundDelivery;
