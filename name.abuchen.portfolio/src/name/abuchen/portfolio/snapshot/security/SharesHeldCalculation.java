@@ -8,6 +8,12 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private long sharesHeld;
 
     @Override
+    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    {
+        sharesHeld = t.getPosition().getShares();
+    }
+
+    @Override
     public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {
         switch (t.getType())
