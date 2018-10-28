@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.snapshot.security;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class CostCalculation extends Calculation
 {
@@ -76,8 +80,8 @@ import name.abuchen.portfolio.money.Money;
                 }
                 else
                 {
-                    movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining );
-                    movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining );
+                    movingRelativeCost = Math.round(movingRelativeCost / (double) heldShares * remaining);
+                    movingRelativeNetCost = Math.round(movingRelativeNetCost / (double) heldShares * remaining);
                     heldShares = remaining;
                 }
 
@@ -100,7 +104,10 @@ import name.abuchen.portfolio.money.Money;
 
                 if (sold > 0)
                 {
-                    // FIXME Oops. More sold than bought. Report error? Ignore?
+                    // FIXME Oops. More sold than bought.
+                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                                    Values.Share.format(sold), t.getSecurity().getName(),
+                                    Values.DateTime.format(t.getDateTime())));
                 }
 
                 break;
@@ -182,7 +189,7 @@ import name.abuchen.portfolio.money.Money;
         return Money.of(getTermCurrency(), movingRelativeNetCost);
     }
 
-    public long getSharesHeld()
+    private long getSharesHeld()
     {
         long shares = 0;
         for (LineItem entry : fifo)

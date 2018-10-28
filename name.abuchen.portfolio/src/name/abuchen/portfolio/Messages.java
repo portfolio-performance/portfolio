@@ -171,6 +171,7 @@ public class Messages extends NLS
     public static String MsgMissingResponse;
     public static String MsgMissingTickerSymbol;
     public static String MsgMoreResultsAvailable;
+    public static String MsgNegativeHoldingsDuringFIFOCostCalculation;
     public static String MsgNoExchangeRateAvailableForConversion;
     public static String MsgNoExchangeRatesAvailableForCustomSeries;
     public static String MsgNoExchangeRateTimeSeriesFound;
