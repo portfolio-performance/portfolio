@@ -57,8 +57,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -687,10 +687,10 @@ public final class SecuritiesTable implements ModificationListener
         manager.add(new Separator());
         if (watchlist == null)
         {
-            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSecurity, 
-                            Messages.SecurityMenuDeleteSingleSecurityConfirm, 
-                            Messages.SecurityMenuDeleteMultipleSecurityConfirm, 
-                            selection,
+            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSecurity,
+                            MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,
+                                            selection.getFirstElement()),
+                            Messages.SecurityMenuDeleteMultipleSecurityConfirm, selection,
                             (s, a) -> deleteSecurity(selection, a)));
         }
         else
