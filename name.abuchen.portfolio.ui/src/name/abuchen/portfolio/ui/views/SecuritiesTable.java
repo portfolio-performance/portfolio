@@ -688,8 +688,8 @@ public final class SecuritiesTable implements ModificationListener
         if (watchlist == null)
         {
             manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSecurity, 
-                            Messages.SecurityMenuDeleteSingleSecurityConfirm, 
-                            Messages.SecurityMenuDeleteMultipleSecurityConfirm, 
+                            MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm, selection),
+                            MessageFormat.format(Messages.SecurityMenuDeleteMultipleSecurityConfirm, selection),
                             selection,
                             (s, a) -> deleteSecurity(selection, a)));
         }
