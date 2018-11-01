@@ -722,8 +722,7 @@ public class SecuritiesChart
 
             IAxisTick yTick = yAxis1st.getTick();
             yAxis1st.getTick().setVisible(true); 
-            System.out.println(yTick.getTickMarkStepHint());
-
+  
             }
         finally
         {
