@@ -11,5 +11,4 @@ Nachträgliche Verlustverrechnung
  KiSt  Person 1                                 :                 0,00
  ======================================================================
                                                                   0,00
-                                                                  
-  Den Steuerausgleich buchen wir mit Wertstellung 10.07.2017  
+

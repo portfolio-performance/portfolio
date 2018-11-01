@@ -45,9 +45,11 @@ import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
+import name.abuchen.portfolio.datatransfer.actions.MarkNonImportableAction;
 import name.abuchen.portfolio.datatransfer.pdf.AssistantPDFExtractor;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -483,13 +485,14 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         {
             ExtractedEntry entry = (ExtractedEntry) element;
 
-            // an entry will be imported if it is marked as to be
-            // imported *and* not a duplicate
+            // an entry will be imported if has a status code OK *or* if it is
+            // marked as to be imported by the user
             atLeastOneImported = atLeastOneImported || entry.isImported();
 
             // an entry will not be imported if it marked as not to be
-            // imported *or* if it is marked as duplicate
-            atLeastOneNotImported = atLeastOneNotImported || !entry.isImported();
+            // imported *or* if it has a WARNING code (e.g. is a duplicate)
+            atLeastOneNotImported = atLeastOneNotImported
+                            || (!entry.isImported() && (entry.getMaxCode() != Code.ERROR));
         }
 
         // provide a hint to the user why the entry is struck out
@@ -647,6 +650,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         actions.add(new CheckValidTypesAction());
         actions.add(new DetectDuplicatesAction());
         actions.add(new CheckCurrenciesAction());
+        actions.add(new MarkNonImportableAction());
 
         for (ExtractedEntry entry : entries)
         {

@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -431,7 +432,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         // Den Steuerausgleich buchen wir mit Wertstellung
                         // 10.07.2017
-                        .section("date")
+                        .section("date").optional()
                         .match(" *Den Steuerausgleich buchen wir mit Wertstellung (?<date>\\d+.\\d+.\\d{4}) .*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
@@ -456,7 +457,19 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 t.setType(AccountTransaction.Type.TAXES);
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(t -> {
+                            if (t.getDateTime() == null)
+                            {
+                                if (t.getAmount() == 0L)
+                                    return new NonImportableItem("Erstattung/Belastung von Steuern mit 0 Euro");
+                                else
+                                    throw new IllegalArgumentException(Messages.MsgErrorMissingDate);
+                            }
+                            else
+                            {
+                                return new TransactionItem(t);
+                            }
+                        }));
     }
 
     @SuppressWarnings("nls")

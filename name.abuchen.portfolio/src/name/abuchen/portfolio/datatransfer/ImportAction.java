@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer;
 
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
@@ -56,15 +57,38 @@ public interface ImportAction
         }
     }
 
-    Status process(Security security);
+    default Status process(Security security)
+    {
+        return Status.OK_STATUS;
+    }
 
-    Status process(AccountTransaction transaction, Account account);
+    default Status process(AccountTransaction transaction, Account account)
+    {
+        return Status.OK_STATUS;
+    }
 
-    Status process(PortfolioTransaction transaction, Portfolio portfolio);
+    default Status process(PortfolioTransaction transaction, Portfolio portfolio)
+    {
+        return Status.OK_STATUS;
+    }
 
-    Status process(BuySellEntry entry, Account account, Portfolio portfolio);
+    default Status process(BuySellEntry entry, Account account, Portfolio portfolio)
+    {
+        return Status.OK_STATUS;
+    }
 
-    Status process(AccountTransferEntry entry, Account source, Account target);
+    default Status process(AccountTransferEntry entry, Account source, Account target)
+    {
+        return Status.OK_STATUS;
+    }
 
-    Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target);
+    default Status process(PortfolioTransferEntry entry, Portfolio source, Portfolio target)
+    {
+        return Status.OK_STATUS;
+    }
+
+    default Status process(NonImportableItem item)
+    {
+        return Status.OK_STATUS;
+    }
 }

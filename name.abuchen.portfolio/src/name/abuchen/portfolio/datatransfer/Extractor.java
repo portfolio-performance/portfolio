@@ -39,7 +39,7 @@ public interface Extractor
             return file.getName();
         }
     }
-    
+
     public abstract static class Item
     {
         public abstract Annotated getSubject();
@@ -61,6 +61,66 @@ public interface Extractor
         }
 
         public abstract Status apply(ImportAction action, Context context);
+    }
+
+    /**
+     * Represents an item which cannot be imported because it is either not
+     * supported or not needed. It is used for documents that can be
+     * successfully parsed, but do not contain any transaction relevant to
+     * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
+     * can be parsed, but is of no further use to PP.
+     */
+    static class NonImportableItem extends Item implements Annotated
+    {
+        private String typeInformation;
+        private String note;
+
+        public NonImportableItem(String typeInformation)
+        {
+            this.typeInformation = typeInformation;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return this;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return null;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return typeInformation;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return null;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(this);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            this.note = note;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return note;
+        }
     }
 
     static class TransactionItem extends Item

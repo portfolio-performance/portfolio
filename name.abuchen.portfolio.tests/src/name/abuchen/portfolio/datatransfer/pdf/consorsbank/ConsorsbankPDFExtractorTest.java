@@ -14,6 +14,7 @@ import java.util.Optional;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
+import name.abuchen.portfolio.datatransfer.Extractor.NonImportableItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
@@ -701,15 +702,8 @@ public class ConsorsbankPDFExtractorTest
         assertThat(results.size(), is(1));
 
         // check buy sell transaction
-        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof NonImportableItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction t = (AccountTransaction) item.get().getSubject();
-
-        assertThat(t.getType(), is(AccountTransaction.Type.TAX_REFUND));
-
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
-        assertThat(t.getDateTime(), is(LocalDateTime.parse("2017-07-10T00:00")));
     }
 
     private void checkCurrency(final String accountCurrency, AccountTransaction transaction)
