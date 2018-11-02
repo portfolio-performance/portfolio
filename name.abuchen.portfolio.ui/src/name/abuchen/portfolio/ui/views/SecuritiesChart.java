@@ -707,9 +707,8 @@ public class SecuritiesChart
         if (smaLines == null || smaLines.getValues() == null || smaLines.getDates() == null)
             return;
 
-        String lineID = smaSeries + " (";
-        lineID = lineID + smaDaysWording; //$NON-NLS-1$
-        lineID = lineID + ")"; 
+        @SuppressWarnings("nls")
+        String lineID = smaSeries + " (" + smaDaysWording + ")"; 
 
         ILineSeries lineSeriesSMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
         lineSeriesSMA.setXDateSeries(smaLines.getDates());
