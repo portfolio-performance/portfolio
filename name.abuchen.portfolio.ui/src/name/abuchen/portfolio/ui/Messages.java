@@ -396,7 +396,6 @@ public class Messages extends NLS
     public static String LabelChartDetailChartScallingLinear;
     public static String LabelChartDetailChartScallingLog;
     public static String LabelChartDetailChartDevelopment;
-    public static String LabelChartDetailChartDevelopmentWithout;
     public static String LabelChartDetailChartDevelopmentClosing;
     public static String LabelChartDetailChartDevelopmentClosingFIFO;
     public static String LabelChartDetailMarker;
@@ -412,9 +411,6 @@ public class Messages extends NLS
     public static String LabelChartDetailIndicatorBollingerBandsLower;
     public static String LabelChartDetailIndicatorBollingerBandsUpper;
     public static String LabelChartDetailMovingAverage;
-    public static String LabelChartDetailMovingAverage1;
-    public static String LabelChartDetailMovingAverage2;
-    public static String LabelChartDetailMovingAverage_without;
     public static String LabelChartDetailMovingAverage_5days;
     public static String LabelChartDetailMovingAverage_20days;
     public static String LabelChartDetailMovingAverage_30days;
