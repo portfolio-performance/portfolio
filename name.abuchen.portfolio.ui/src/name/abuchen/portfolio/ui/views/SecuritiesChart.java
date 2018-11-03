@@ -160,7 +160,6 @@ public class SecuritiesChart
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
 
-    private static final String SEPERATOR = "---"; //$NON-NLS-1$
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
@@ -400,8 +399,7 @@ public class SecuritiesChart
 
     private Action addMenuAction(ChartDetails detail)
     {
-        String buttonDescription = detail.toString().replaceAll(SEPERATOR, ""); //$NON-NLS-1$
-        Action action = new SimpleAction(buttonDescription, a -> {
+        Action action = new SimpleAction(detail.toString(), a -> {
             boolean isActive = chartConfig.contains(detail);
 
             if (isActive)
