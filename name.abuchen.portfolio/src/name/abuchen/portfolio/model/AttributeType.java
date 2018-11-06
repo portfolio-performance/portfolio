@@ -169,7 +169,7 @@ public class AttributeType
         public Object fromString(String value)
         {
             Double v = (Double) super.fromString(value.replace("%", "")); //$NON-NLS-1$ //$NON-NLS-2$
-            return BigDecimal.valueOf(v).divide(BigDecimal.valueOf(100)).doubleValue();
+            return v == null ? null : BigDecimal.valueOf(v).divide(BigDecimal.valueOf(100)).doubleValue();
         }
     }
 

@@ -25,7 +25,7 @@ public class AttributeEditingSupport extends ColumnEditingSupport
     {
         TextCellEditor textEditor = new TextCellEditor(composite);
         if (attribute.isNumber())
-            ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener());
+            ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
         return textEditor;
     }
 
