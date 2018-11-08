@@ -175,6 +175,7 @@ public class DataSeriesSelectionDialog extends Dialog
             case CLASSIFICATION:
                 return Messages.LabelTaxonomies;
             case CLIENT:
+            case CLIENT_PRETAX:
                 return Messages.LabelCommon;
             default:
                 return Messages.LabelClientFilterDialogTitle;

@@ -115,6 +115,10 @@ public class DataSeriesCache
                 case CLIENT:
                     return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
 
+                case CLIENT_PRETAX:
+                    return PerformanceIndex.forClient(new WithoutTaxesFilter().filter(client), converter,
+                                    reportingPeriod, warnings);
+
                 case SECURITY:
                     return PerformanceIndex.forInvestment(client, converter, (Security) series.getInstance(),
                                     reportingPeriod, warnings);
@@ -158,6 +162,12 @@ public class DataSeriesCache
                     ClientFilterMenu.Item item = (ClientFilterMenu.Item) series.getInstance();
                     return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,
                                     warnings);
+
+                case CLIENT_FILTER_PRETAX:
+                    ClientFilterMenu.Item pretax = (ClientFilterMenu.Item) series.getInstance();
+                    return PerformanceIndex.forClient(
+                                    new WithoutTaxesFilter().filter(pretax.getFilter().filter(client)), converter,
+                                    reportingPeriod, warnings);
 
                 default:
                     throw new IllegalArgumentException(series.getType().name());

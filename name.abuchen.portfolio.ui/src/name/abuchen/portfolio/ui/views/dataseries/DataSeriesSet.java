@@ -41,10 +41,10 @@ public class DataSeriesSet
                 buildStatementOfAssetsDataSeries();
                 break;
             case PERFORMANCE:
-                buildPerformanceDataSeries(client, wheel);
+                buildPerformanceDataSeries(client, preferences, wheel);
                 break;
             case RETURN_VOLATILITY:
-                buildReturnVolatilitySeries(client, wheel);
+                buildReturnVolatilitySeries(client, preferences, wheel);
                 break;
             default:
                 throw new IllegalArgumentException(useCase.name());
@@ -143,7 +143,7 @@ public class DataSeriesSet
 
     }
 
-    private void buildPerformanceDataSeries(Client client, ColorWheel wheel)
+    private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
@@ -172,10 +172,10 @@ public class DataSeriesSet
             availableSeries.add(series);
         }
 
-        buildPreTaxDataSeries(client, wheel, index);
+        buildPreTaxDataSeries(client, preferences, wheel, index);
     }
 
-    private void buildReturnVolatilitySeries(Client client, ColorWheel wheel)
+    private void buildReturnVolatilitySeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
@@ -192,11 +192,15 @@ public class DataSeriesSet
             availableSeries.add(series);
         }
 
-        buildPreTaxDataSeries(client, wheel, index);
+        buildPreTaxDataSeries(client, preferences, wheel, index);
     }
 
-    private void buildPreTaxDataSeries(Client client, ColorWheel wheel, int index)
+    private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel, int index)
     {
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT_PRETAX, ClientDataSeries.TOTALS,
+                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax,
+                        wheel.getRGB(index++)));
+
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
                             portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
@@ -211,6 +215,29 @@ public class DataSeriesSet
             availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
                             account.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
 
+        addCustomClientFilters(client, preferences, true, wheel, index);
+    }
+
+    private void addCustomClientFilters(Client client, IPreferenceStore preferences, boolean isPreTax, ColorWheel wheel,
+                    int index)
+    {
+        // custom client filters
+        ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
+
+        // quick fix: users can create duplicate client filters that end up to
+        // have the same UUID. Avoid adding both violates the precondition that
+        // every data series must have a unique id
+        Set<String> addedSeries = new HashSet<>();
+        for (ClientFilterMenu.Item item : menu.getCustomItems())
+        {
+            DataSeries series = new DataSeries(
+                            isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
+                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(),
+                            wheel.getRGB(index++));
+
+            if (addedSeries.add(series.getUUID()))
+                availableSeries.add(series);
+        }
     }
 
     private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
@@ -219,7 +246,7 @@ public class DataSeriesSet
 
         for (Security security : client.getSecurities())
         {
-            // securites w/o currency code (e.g. a stock index) cannot be added
+            // securities w/o currency code (e.g. a stock index) cannot be added
             // as equity data series (only as benchmark)
             if (security.getCurrencyCode() == null)
                 continue;
@@ -241,21 +268,7 @@ public class DataSeriesSet
             availableSeries.add(series);
         }
 
-        // custom client filters
-        ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
-
-        // quick fix: users can create duplicate client filters that end up to
-        // have the same UUID. Avoid adding both violates the precondition that
-        // every data series must have a unique id
-        Set<String> addedSeries = new HashSet<>();
-        for (ClientFilterMenu.Item item : menu.getCustomItems())
-        {
-            DataSeries series = new DataSeries(DataSeries.Type.CLIENT_FILTER, item, item.getLabel(),
-                            wheel.getRGB(index++));
-
-            if (addedSeries.add(series.getUUID()))
-                availableSeries.add(series);
-        }
+        addCustomClientFilters(client, preferences, false, wheel, index);
 
         for (Account account : client.getAccounts())
             availableSeries.add(
