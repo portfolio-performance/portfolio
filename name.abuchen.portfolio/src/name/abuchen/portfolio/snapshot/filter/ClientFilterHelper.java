@@ -35,12 +35,17 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
         AccountTransferEntry copy = new AccountTransferEntry(sourceAccount, targetAccount);
 
         copy.setDate(t.getDateTime());
-        copy.setCurrencyCode(t.getCurrencyCode());
         copy.setNote(t.getNote());
-        copy.setAmount(t.getAmount());
+
+        copy.getSourceTransaction().setCurrencyCode(t.getCurrencyCode());
+        copy.getSourceTransaction().setAmount(t.getAmount());
+        copy.getSourceTransaction().addUnits(t.getUnits());
+
+        AccountTransaction tt = transferEntry.getTargetTransaction();
+        copy.getTargetTransaction().setCurrencyCode(tt.getCurrencyCode());
+        copy.getTargetTransaction().setAmount(tt.getAmount());
 
         sourceAccount.internalAddTransaction(copy.getSourceTransaction());
         targetAccount.internalAddTransaction(copy.getTargetTransaction());
     }
-
 }

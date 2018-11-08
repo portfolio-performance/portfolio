@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.filter;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -16,10 +17,12 @@ import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -168,6 +171,42 @@ public class WithoutTaxesFilterTest
                         .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-03-02T00:00"))) //
                         .filter(t -> t.getAmount() == Values.Amount.factorize(250 + 3)) //
                         .findAny().isPresent(), is(true));
+    }
+
+    @Test
+    public void testAccountTransfersWithForex()
+    {
+        Client client = new Client();
+
+        Account a = new Account();
+        a.setCurrencyCode(CurrencyUnit.EUR);
+        client.addAccount(a);
+
+        Account b = new Account();
+        b.setCurrencyCode(CurrencyUnit.USD);
+        client.addAccount(b);
+
+        AccountTransferEntry entry = new AccountTransferEntry(a, b);
+        entry.setDate(LocalDateTime.now());
+        entry.getSourceTransaction().setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
+        entry.getTargetTransaction().setMonetaryAmount(Money.of(CurrencyUnit.USD, Values.Amount.factorize(200)));
+
+        Transaction.Unit forex = new Transaction.Unit(Transaction.Unit.Type.GROSS_VALUE, //
+                        entry.getSourceTransaction().getMonetaryAmount(), //
+                        entry.getTargetTransaction().getMonetaryAmount(), //
+                        BigDecimal.valueOf(0.5));
+        entry.getSourceTransaction().addUnit(forex);
+
+        entry.insert();
+
+        Client result = new WithoutTaxesFilter().filter(client);
+
+        assertThat(result.getAccounts().size(), is(2));
+
+        AccountTransferEntry copy = (AccountTransferEntry) result.getAccounts().get(0).getTransactions().get(0)
+                        .getCrossEntry();
+        assertThat(copy.getSourceAccount().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(copy.getTargetAccount().getCurrencyCode(), is(CurrencyUnit.USD));
     }
 
 }
