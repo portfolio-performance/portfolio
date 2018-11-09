@@ -77,8 +77,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
         }));
     }
-    
-    private static String createLabelTextForYear(int year) {
-        return Messages.LabelSelectYearSince + " " + String.valueOf(year); //$NON-NLS-1$
+
+    private static String createLabelTextForYear(int year)
+    {
+        return Messages.LabelSelectYearSince + " " + year; //$NON-NLS-1$
     }
 }
