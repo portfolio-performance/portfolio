@@ -163,16 +163,15 @@ public class DataSeriesSet
         availableSeries.add(series);
 
         // securities as benchmark
-        int index = 0;
         for (Security security : client.getSecurities())
         {
             series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
+                            wheel.next());
             series.setBenchmark(true);
             availableSeries.add(series);
         }
 
-        buildPreTaxDataSeries(client, preferences, wheel, index);
+        buildPreTaxDataSeries(client, preferences, wheel);
     }
 
     private void buildReturnVolatilitySeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
@@ -182,44 +181,41 @@ public class DataSeriesSet
                         Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         // securities as benchmark
-        int index = 0;
         for (Security security : client.getSecurities())
         {
             DataSeries series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
+                            wheel.next());
 
             series.setBenchmark(true);
             availableSeries.add(series);
         }
 
-        buildPreTaxDataSeries(client, preferences, wheel, index);
+        buildPreTaxDataSeries(client, preferences, wheel);
     }
 
-    private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel, int index)
+    private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT_PRETAX, ClientDataSeries.TOTALS,
-                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax,
-                        wheel.getRGB(index++)));
+                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax, wheel.next()));
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
-                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
+                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName() //$NON-NLS-1$
                                             + Messages.LabelSuffix_PreTax,
-                            wheel.getRGB(index++)));
+                            wheel.next()));
 
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
-                            account.getName() + Messages.LabelSuffix_PreTax, wheel.getRGB(index++)));
+                            account.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
 
-        addCustomClientFilters(client, preferences, true, wheel, index);
+        addCustomClientFilters(client, preferences, true, wheel);
     }
 
-    private void addCustomClientFilters(Client client, IPreferenceStore preferences, boolean isPreTax, ColorWheel wheel,
-                    int index)
+    private void addCustomClientFilters(Client client, IPreferenceStore preferences, boolean isPreTax, ColorWheel wheel)
     {
         // custom client filters
         ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
@@ -232,8 +228,7 @@ public class DataSeriesSet
         {
             DataSeries series = new DataSeries(
                             isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
-                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(),
-                            wheel.getRGB(index++));
+                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(), wheel.next());
 
             if (addedSeries.add(series.getUUID()))
                 availableSeries.add(series);
@@ -242,8 +237,6 @@ public class DataSeriesSet
 
     private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
-        int index = client.getSecurities().size();
-
         for (Security security : client.getSecurities())
         {
             // securities w/o currency code (e.g. a stock index) cannot be added
@@ -252,27 +245,26 @@ public class DataSeriesSet
                 continue;
 
             availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
-                            wheel.getRGB(index++)));
+                            wheel.next()));
         }
 
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
-                            wheel.getRGB(index++)));
+                            wheel.next()));
 
         // portfolio + reference account
         for (Portfolio portfolio : client.getPortfolios())
         {
             DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
                             portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                            wheel.getRGB(index++));
+                            wheel.next());
             availableSeries.add(series);
         }
 
-        addCustomClientFilters(client, preferences, false, wheel, index);
+        addCustomClientFilters(client, preferences, false, wheel);
 
         for (Account account : client.getAccounts())
-            availableSeries.add(
-                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++)));
+            availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.next()));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
         {
