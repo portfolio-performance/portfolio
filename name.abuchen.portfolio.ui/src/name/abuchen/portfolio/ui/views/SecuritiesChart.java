@@ -668,7 +668,6 @@ public class SecuritiesChart
                     chart.addNonTradingDayMarker(nonTradingDay.get(index2), colorNonTradingDay);
 
                 }
-                System.out.println(nonTradingDay);
             }
         }
         finally
