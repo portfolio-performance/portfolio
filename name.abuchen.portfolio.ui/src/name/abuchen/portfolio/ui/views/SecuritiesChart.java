@@ -1,5 +1,11 @@
 package name.abuchen.portfolio.ui.views;
 
+import de.jollyday.Holiday;
+import de.jollyday.HolidayCalendar;
+import de.jollyday.HolidayManager;
+import de.jollyday.ManagerParameters;
+
+import java.time.DayOfWeek;
 import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -15,6 +21,7 @@ import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ArrayUtils;
@@ -95,7 +102,8 @@ public class SecuritiesChart
         SMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         SMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel); //
+        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
 
         private final String label;
 
@@ -160,6 +168,8 @@ public class SecuritiesChart
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
 
+    private Color colorNonTradingDay = Colors.getColor(255, 137, 89);
+
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
@@ -176,6 +186,7 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
+    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
@@ -189,6 +200,7 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener .forEach(l -> l.paintControl(event)));
 
         setupTooltip();
 
@@ -379,7 +391,6 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
-        subMenuChartMovingAverage.add(new Separator());
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_20DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_30DAYS));
@@ -389,6 +400,7 @@ public class SecuritiesChart
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -499,7 +511,9 @@ public class SecuritiesChart
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.clearMarkerLines();
+            chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
+            customBehindPaintListener.clear(); 
             customTooltipEvents.clear();
 
             if (security == null || security.getPrices().isEmpty())
@@ -645,12 +659,96 @@ public class SecuritiesChart
 
             yAxis1st.getTick().setVisible(true);
 
+            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
+            {
+                ArrayList<LocalDate> nonTradingDay = new ArrayList<LocalDate>();
+                nonTradingDay = getNonTradingDay (dates, HolidayCalendar.GERMANY);
+                for (int index2 = 0; index2 < nonTradingDay.size(); index2++)
+                {
+                    chart.addNonTradingDayMarker(nonTradingDay.get(index2), colorNonTradingDay);
+
+                }
+                System.out.println(nonTradingDay);
+            }
         }
         finally
         {
             chart.setRedraw(true);
             chart.redraw();
         }
+    }
+
+    private ArrayList<LocalDate> getNonTradingDay (LocalDate[] dates, HolidayCalendar manager)
+    {
+
+        if (dates.length == 0)
+            return null;
+
+        // Step 1 - Build non trading day calendar
+        HolidayManager nonTradingDayManager = HolidayManager.getInstance(ManagerParameters.create(manager)); 
+        ArrayList<LocalDate> nonTradingDayDates = new ArrayList<LocalDate>();
+        LocalDate fromDate;
+        LocalDate toDate;
+        fromDate = dates[0];
+        toDate = dates[dates.length - 1];
+        for (int iYear = fromDate.getYear(); iYear <= toDate.getYear(); iYear++)
+        {
+            Set<Holiday> nonTradingDay = nonTradingDayManager.getHolidays(iYear); 
+            for(Holiday h : nonTradingDay)
+            {
+                if (!h.getDate().isAfter(toDate))
+                nonTradingDayDates.add(h.getDate());
+            }
+        }
+
+        // Step 2 - Build the business day calendar
+        ArrayList<LocalDate> missingTradingDayDates = new ArrayList<LocalDate>();
+        Set<DayOfWeek> weekend = EnumSet.of( DayOfWeek.SATURDAY , DayOfWeek.SUNDAY );
+
+        for (LocalDate currentDate = fromDate; currentDate.isBefore(toDate); currentDate = currentDate.plusDays(1))
+
+        {
+            DayOfWeek dow = currentDate.getDayOfWeek();
+            Boolean todayIsWeekend = weekend.contains(dow);
+
+            // In case of weekend check if previous Friday and next Monday is a non trading day or is not available
+            if (todayIsWeekend)
+            {
+                switch (dow)
+                {
+                    case SATURDAY:
+                        if ((nonTradingDayDates.contains(currentDate.minusDays(1)) ||
+                                        !Arrays.asList(dates).contains(currentDate.minusDays(1))) &&
+                                        (nonTradingDayDates.contains(currentDate.plusDays(2)) ||
+                                        !Arrays.asList(dates).contains(currentDate.plusDays(2))))
+                            missingTradingDayDates.add(currentDate);
+                        break;
+                    case SUNDAY:
+                        if ((nonTradingDayDates.contains(currentDate.minusDays(2)) ||
+                                        !Arrays.asList(dates).contains(currentDate.minusDays(2))) &&
+                                        (nonTradingDayDates.contains(currentDate.plusDays(1)) ||
+                                        !Arrays.asList(dates).contains(currentDate.plusDays(1))))
+                            missingTradingDayDates.add(currentDate);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else
+            {
+                missingTradingDayDates.add(currentDate);
+            }
+        }
+        
+        // Step 3 - Remove available dates 
+        for (int i=0; i < dates.length; i++ )
+            missingTradingDayDates.remove(dates[i]);
+        
+        // Step 4 - Remove holiday dates 
+        for (int i=0; i < nonTradingDayDates.size(); i++ )
+            missingTradingDayDates.remove(nonTradingDayDates.get(i));
+        
+        return missingTradingDayDates;
     }
 
     private void addChartMarkerBackground()

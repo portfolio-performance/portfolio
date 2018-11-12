@@ -421,6 +421,7 @@ public class Messages extends NLS
     public static String LabelChartDetailSettings;
     public static String LabelChartDetailSettingsShowMarkerLines;
     public static String LabelChartDetailSettingsShowDataLabel;
+    public static String LabelChartDetailSettingsShowMissingTradingDays;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
