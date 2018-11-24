@@ -181,6 +181,8 @@ public class SecuritiesChart
     private List<PaintListener> customPaintListeners = new ArrayList<>();
     private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
+    
+    private int swtAntialias;
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -311,7 +313,7 @@ public class SecuritiesChart
         series.setXDateSeries(dates);
         series.enableArea(enableArea);
         series.setYSeries(values);
-        series.setAntialias(SWT.ON);
+        series.setAntialias(swtAntialias);
 
         if (color != null)
             series.setLineColor(color);
@@ -569,6 +571,9 @@ public class SecuritiesChart
                 valuesZeroLine = new double[prices.size() - index];
             }
 
+            // Disable SWT antialias for more than 1000 records due to SWT performance issue in Drawing 
+            swtAntialias = dates.length > 1000 ? SWT.OFF : swtAntialias; 
+
             SecurityPrice p2 = prices.get(index);
 
             if (!chartConfig.contains(ChartDetails.PURCHASEPRICE))
@@ -739,7 +744,7 @@ public class SecuritiesChart
         lineSeriesSMA.enableArea(false);
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(smaLines.getValues());
-        lineSeriesSMA.setAntialias(SWT.ON);
+        lineSeriesSMA.setAntialias(swtAntialias);
         lineSeriesSMA.setLineColor(smaColor);
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
@@ -955,7 +960,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsLowerBand.setLineWidth(2);
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsLowerBand.setYSeries(bollingerBandsLowerBand.getValues());
-        lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsLowerBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsLowerBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
         lineSeriesBollingerBandsLowerBand.setVisibleInLegend(false);
@@ -969,7 +974,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
         lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsMiddleBand.setYSeries(bollingerBandsMiddleBand.getValues());
-        lineSeriesBollingerBandsMiddleBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsMiddleBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsMiddleBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsMiddleBand.setYAxisId(0);
         lineSeriesBollingerBandsMiddleBand.setVisibleInLegend(true);
@@ -983,7 +988,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsUpperBand.setYSeries(bollingerBandsUpperBand.getValues());
-        lineSeriesBollingerBandsUpperBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsUpperBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsUpperBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
         lineSeriesBollingerBandsUpperBand.setVisibleInLegend(false);
