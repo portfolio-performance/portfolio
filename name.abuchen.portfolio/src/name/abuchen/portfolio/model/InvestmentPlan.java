@@ -231,6 +231,7 @@ public class InvestmentPlan implements Named, Adaptable
             int daysBetween = Integer.MAX_VALUE;
 
             LocalDate testDate = transactionDate.minusMonths(1);
+            
             testDate = testDate.withDayOfMonth(Math.min(testDate.lengthOfMonth(), start.getDayOfMonth()));
 
             for (int ii = 0; ii < 3; ii++)
@@ -270,7 +271,16 @@ public class InvestmentPlan implements Named, Adaptable
     public LocalDate getDateOfNextTransactionToBeGenerated()
     {
         LocalDate lastDate = getLastDate();
-        return lastDate != null ? next(lastDate) : start.toLocalDate();
+        LocalDate startDate = start.toLocalDate();
+        if (lastDate == null)
+        {
+            // do not generate a investment plan transaction on a public holiday
+            TradeCalendar tradeCalendar = new TradeCalendar();
+            while (tradeCalendar.isHoliday(startDate))
+                startDate = startDate.plusDays(1);
+        }
+
+        return lastDate != null ? next(lastDate) : startDate;
     }
 
     public List<Transaction> generateTransactions(CurrencyConverter converter)

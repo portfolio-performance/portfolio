@@ -23,8 +23,6 @@
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
 		<sonar.jacoco.reportPaths>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPaths>
 		<argLine>-ea</argLine>
-		<maven.compiler.source>1.8</maven.compiler.source>
-		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<modules>
@@ -149,6 +147,16 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>23.5-jre</version>
+		</dependency>
+		<dependency>
+			<groupId>de.jollyday</groupId>
+			<artifactId>jollyday</artifactId>
+			<version>0.5.7</version>
+		</dependency>
+		<dependency>
+			<groupId>org.threeten</groupId>
+			<artifactId>threeten-extra</artifactId>
+			<version>1.4</version>
 		</dependency>
 	</dependencies>
 

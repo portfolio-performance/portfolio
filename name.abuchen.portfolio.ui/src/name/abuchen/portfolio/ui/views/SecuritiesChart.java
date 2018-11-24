@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
@@ -69,6 +68,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TradeCalendar;
 
 /**
  * Chart of historical quotes for a given security
@@ -95,7 +95,8 @@ public class SecuritiesChart
         SMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         SMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel); //
+        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
 
         private final String label;
 
@@ -160,6 +161,8 @@ public class SecuritiesChart
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
 
+    private Color colorNonTradingDay = Colors.getColor(255, 137, 89);
+
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
@@ -176,6 +179,7 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
+    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
@@ -189,6 +193,7 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener .forEach(l -> l.paintControl(event)));
 
         setupTooltip();
 
@@ -370,7 +375,6 @@ public class SecuritiesChart
 
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LINEAR));
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LOG));
-        subMenuChartDevelopment.add(new Separator());
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.CLOSING));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
@@ -379,7 +383,6 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
-        subMenuChartMovingAverage.add(new Separator());
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_20DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_30DAYS));
@@ -389,6 +392,7 @@ public class SecuritiesChart
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -499,7 +503,9 @@ public class SecuritiesChart
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.clearMarkerLines();
+            chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
+            customBehindPaintListener.clear(); 
             customTooltipEvents.clear();
 
             if (security == null || security.getPrices().isEmpty())
@@ -644,6 +650,18 @@ public class SecuritiesChart
             yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG) ? true : false);
 
             yAxis1st.getTick().setVisible(true);
+
+            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
+            {
+                TradeCalendar tradeCalendar = new TradeCalendar();
+                for (int tradingDateIndex = 0; tradingDateIndex < dates.length; tradingDateIndex++)
+                {
+                    if(tradeCalendar.isHoliday(dates[tradingDateIndex], security.getCalendar()))
+                    {
+                        chart.addNonTradingDayMarker(dates[tradingDateIndex], colorNonTradingDay);
+                    }
+                 }
+            }
 
         }
         finally

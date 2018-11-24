@@ -41,6 +41,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.TradeCalendarCode;
 import name.abuchen.portfolio.util.Isin;
 
 public class BindingHelper
@@ -84,6 +85,48 @@ public class BindingHelper
         public Object convert(Object fromObject)
         {
             return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
+        }
+    }
+
+    private static final class StringToCalendarConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return TradeCalendarCode.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return fromObject == null ? TradeCalendarCode.EMPTY : TradeCalendarCode.getInstance((String) fromObject);
+        }
+    }
+
+    private static final class CalendarToStringConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return TradeCalendarCode.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return TradeCalendarCode.EMPTY.equals(fromObject) ? null : ((TradeCalendarCode) fromObject).getCalendarCode();
         }
     }
 
@@ -302,6 +345,39 @@ public class BindingHelper
 
         UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
         modelToTarget.setConverter(new StringToCurrencyUnitConverter());
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
+        return combo;
+    }
+
+    public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property)
+    {
+        return bindCalendarCombo(editArea, label, property, true);
+    }
+
+    public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property,
+                    boolean includeEmpty)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+
+        List<TradeCalendarCode> calendars = new ArrayList<>();
+        if (includeEmpty)
+            calendars.add(TradeCalendarCode.EMPTY);
+        calendars.addAll(TradeCalendarCode.getAvailableCalendars().stream().sorted().collect(Collectors.toList()));
+        combo.setInput(calendars);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        targetToModel.setConverter(new CalendarToStringConverter());
+
+        UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
+        modelToTarget.setConverter(new StringToCalendarConverter());
 
         @SuppressWarnings("unchecked")
         IObservableValue<?> observable = BeanProperties.value(property).observe(model);

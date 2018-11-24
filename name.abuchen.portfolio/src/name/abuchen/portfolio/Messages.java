@@ -115,6 +115,8 @@ public class Messages extends NLS
     public static String LabelNameReferenceAccountRecovered;
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
+    public static String LabelNoCalendar;
+    public static String LabelNoCalendarDescription;
     public static String LabelPotentialDuplicate;
     public static String LabelRemovals;
     public static String LabelReportingPeriodCurrentMonth;
@@ -195,6 +197,9 @@ public class Messages extends NLS
     public static String PDFMsgMissingShares;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
+    public static String CalendarNameDJ_STOXX;
+    public static String CalendarNameNYSE;
+    public static String CalendarNameTARGET;
     static
     {
         // initialize resource bundle

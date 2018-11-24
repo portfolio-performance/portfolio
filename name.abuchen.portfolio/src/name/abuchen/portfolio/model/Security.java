@@ -38,6 +38,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String calendar;
 
     // feed and feedURL are used to update historical prices
     private String feed;
@@ -193,6 +194,16 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setWkn(String wkn)
     {
         this.wkn = wkn;
+    }
+
+    public String getCalendar()
+    {
+        return calendar;
+    }
+
+    public void setCalendar(String calendar)
+    {
+        this.calendar = calendar;
     }
 
     /**
@@ -518,6 +529,7 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
+        answer.calendar = calendar;
 
         answer.feed = feed;
         answer.feedURL = feedURL;
