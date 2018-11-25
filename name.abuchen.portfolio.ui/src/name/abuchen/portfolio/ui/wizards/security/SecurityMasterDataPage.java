@@ -71,8 +71,7 @@ public class SecurityMasterDataPage extends AbstractPage
             bindings.bindStringInput(container, Messages.ColumnWKN, "wkn", SWT.NONE, 12); //$NON-NLS-1$
         if (!isExchangeRate)
         {
-            ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityExchangeCalendar, "calendar", //$NON-NLS-1$
-                            !isExchangeRate);
+            ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityExchangeCalendar, "calendar"); //$NON-NLS-1$
         }
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$

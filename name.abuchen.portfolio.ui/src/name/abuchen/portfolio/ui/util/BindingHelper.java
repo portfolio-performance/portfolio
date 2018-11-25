@@ -105,7 +105,11 @@ public class BindingHelper
         @Override
         public Object convert(Object fromObject)
         {
-            return fromObject == null ? TradeCalendarCode.EMPTY : TradeCalendarCode.getInstance((String) fromObject);
+            if (fromObject == null)
+            {
+                return TradeCalendarCode.getInstance("GERMANY"); //$NON-NLS-1$
+            }
+            return TradeCalendarCode.getInstance((String) fromObject);
         }
     }
 
@@ -126,7 +130,7 @@ public class BindingHelper
         @Override
         public Object convert(Object fromObject)
         {
-            return TradeCalendarCode.EMPTY.equals(fromObject) ? null : ((TradeCalendarCode) fromObject).getCalendarCode();
+            return ((TradeCalendarCode) fromObject).getCalendarCode();
         }
     }
 
@@ -354,12 +358,6 @@ public class BindingHelper
 
     public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property)
     {
-        return bindCalendarCombo(editArea, label, property, true);
-    }
-
-    public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property,
-                    boolean includeEmpty)
-    {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
         ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
@@ -367,8 +365,6 @@ public class BindingHelper
         combo.setLabelProvider(new LabelProvider());
 
         List<TradeCalendarCode> calendars = new ArrayList<>();
-        if (includeEmpty)
-            calendars.add(TradeCalendarCode.EMPTY);
         calendars.addAll(TradeCalendarCode.getAvailableCalendars().stream().sorted().collect(Collectors.toList()));
         combo.setInput(calendars);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());

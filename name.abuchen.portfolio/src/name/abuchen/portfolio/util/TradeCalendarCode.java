@@ -2,7 +2,6 @@ package name.abuchen.portfolio.util;
 
 import de.jollyday.HolidayCalendar;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,8 +12,6 @@ import name.abuchen.portfolio.Messages;
 
 public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
 {
-    public static final TradeCalendarCode EMPTY = new TradeCalendarCode(Messages.LabelNoCalendar, Messages.LabelNoCalendarDescription, null);
-
     private static final Map<String, TradeCalendarCode> CACHE = new HashMap<>();
 
     static
@@ -23,16 +20,17 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
         {
             String calendarCode = c.toString();
 
-            String calendarISO = c.getId();
-
             String displayName;
             Locale obj = new Locale("", c.getId()); //$NON-NLS-1$
             String displayNameISO = obj.getDisplayCountry();
             
-            switch (calendarISO)
+            switch (c.getId())
             {
                 case "DJ_STOXX": //$NON-NLS-1$
                     displayName = Messages.CalendarNameDJ_STOXX;
+                    break;
+                case "LME": //$NON-NLS-1$
+                    displayName = Messages.CalendarNameLME;
                     break;
                 case "NYSE": //$NON-NLS-1$
                     displayName = Messages.CalendarNameNYSE;
@@ -44,19 +42,17 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
                     displayName = displayNameISO;
             }
 
-            CACHE.put(calendarCode, new TradeCalendarCode(calendarCode, displayName, calendarISO));
+            CACHE.put(calendarCode, new TradeCalendarCode(calendarCode, displayName));
         }
     }
 
     private String calendarCode;
     private String displayName;
-    private String calendarISO;
 
-    private TradeCalendarCode(String calendarCode, String displayName, String calendarISO)
+    private TradeCalendarCode(String calendarCode, String displayName)
     {
         this.calendarCode = calendarCode;
         this.displayName = displayName;
-        this.calendarISO = calendarISO;
     }
 
     public static List<TradeCalendarCode> getAvailableCalendars()
@@ -79,14 +75,9 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
         return displayName;
     }
 
-    public String getCurrencySymbol()
-    {
-        return calendarISO;
-    }
-
     public String getLabel()
     {
-        return MessageFormat.format(Messages.FixAssignCurrencyCode, calendarCode, displayName);
+        return displayName;
     }
 
     @Override

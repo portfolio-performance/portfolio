@@ -198,6 +198,7 @@ public class Messages extends NLS
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
     public static String CalendarNameDJ_STOXX;
+    public static String CalendarNameLME;
     public static String CalendarNameNYSE;
     public static String CalendarNameTARGET;
     static
