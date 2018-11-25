@@ -89,7 +89,7 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
     @Override
     public int compareTo(TradeCalendarCode other)
     {
-        return getCalendarCode().compareTo(other.getCalendarCode());
+        return getDisplayName().compareTo(other.getDisplayName());
     }
 
     @Override

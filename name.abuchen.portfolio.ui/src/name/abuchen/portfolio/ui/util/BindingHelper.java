@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -366,6 +367,7 @@ public class BindingHelper
 
         List<TradeCalendarCode> calendars = new ArrayList<>();
         calendars.addAll(TradeCalendarCode.getAvailableCalendars().stream().sorted().collect(Collectors.toList()));
+        Collections.sort(calendars);
         combo.setInput(calendars);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
 
