@@ -72,6 +72,7 @@ public class SecurityMasterDataPage extends AbstractPage
         if (!isExchangeRate)
         {
             ComboViewer calendar = bindings.bindCalendarCombo(container, Messages.LabelSecurityExchangeCalendar, "calendar"); //$NON-NLS-1$
+            calendar.getCombo().setToolTipText(Messages.ColumnTargetCurrencyToolTip);
         }
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
