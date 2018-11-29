@@ -23,7 +23,7 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 38;
+    public static final int CURRENT_VERSION = 39;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport;
@@ -188,7 +188,7 @@ public class Client
 
         propertyChangeSupport.firePropertyChange("securities", security, null); //$NON-NLS-1$
     }
-    
+
     /**
      * Gets a list of used {@link CurrencyUnit}s.
      * 

@@ -38,6 +38,8 @@ public final class Security implements Attributable, InvestmentVehicle
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String calendar;
+    private String calendarProvince;
 
     // feed and feedURL are used to update historical prices
     private String feed;
@@ -195,6 +197,26 @@ public final class Security implements Attributable, InvestmentVehicle
         this.wkn = wkn;
     }
 
+    public String getCalendar()
+    {
+        return calendar;
+    }
+
+    public void setCalendar(String calendar)
+    {
+        this.calendar = calendar;
+    }
+
+    public String getCalendarProvince()
+    {
+        return calendarProvince;
+    }
+
+    public void setCalendarProvince(String calendarProvince)
+    {
+        this.calendarProvince = calendarProvince;
+    }
+
     /**
      * Is this an exchange rate symbol?
      * 
@@ -204,7 +226,7 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         return this.targetCurrencyCode != null;
     }
-    
+
     /**
      * Returns ISIN, Ticker or WKN - whatever is available.
      */
@@ -518,6 +540,8 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
+        answer.calendar = calendar;
+        answer.calendarProvince = calendarProvince;
 
         answer.feed = feed;
         answer.feedURL = feedURL;
