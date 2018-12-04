@@ -36,12 +36,10 @@ public class ConvertToInterestAction extends Action
         if (AccountTransaction.Type.DEPOSIT.equals(accountTransaction.getType())
                         || AccountTransaction.Type.FEES_REFUND.equals(accountTransaction.getType())
                         || AccountTransaction.Type.TAX_REFUND.equals(accountTransaction.getType())
-                        || AccountTransaction.Type.INTEREST.equals(accountTransaction.getType()))
             accountTransaction.setType(AccountTransaction.Type.INTEREST);
         else if (AccountTransaction.Type.REMOVAL.equals(accountTransaction.getType())
                         || AccountTransaction.Type.FEES.equals(accountTransaction.getType())
                         || AccountTransaction.Type.TAXES.equals(accountTransaction.getType())
-                        || AccountTransaction.Type.INTEREST_CHARGE.equals(accountTransaction.getType()))
             accountTransaction.setType(AccountTransaction.Type.INTEREST_CHARGE);
         else
             throw new IllegalArgumentException();
