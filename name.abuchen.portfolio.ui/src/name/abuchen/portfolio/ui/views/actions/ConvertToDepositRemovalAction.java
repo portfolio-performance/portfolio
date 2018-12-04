@@ -33,13 +33,11 @@ public class ConvertToDepositRemovalAction extends Action
     {
         AccountTransaction accountTransaction = transaction.getTransaction();
 
-        if (AccountTransaction.Type.DEPOSIT.equals(accountTransaction.getType())
-                        || AccountTransaction.Type.FEES_REFUND.equals(accountTransaction.getType())
+        if (AccountTransaction.Type.FEES_REFUND.equals(accountTransaction.getType())
                         || AccountTransaction.Type.TAX_REFUND.equals(accountTransaction.getType())
                         || AccountTransaction.Type.INTEREST.equals(accountTransaction.getType()))
             accountTransaction.setType(AccountTransaction.Type.DEPOSIT);
-        else if (AccountTransaction.Type.REMOVAL.equals(accountTransaction.getType())
-                        || AccountTransaction.Type.FEES.equals(accountTransaction.getType())
+        else if (AccountTransaction.Type.FEES.equals(accountTransaction.getType())
                         || AccountTransaction.Type.TAXES.equals(accountTransaction.getType())
                         || AccountTransaction.Type.INTEREST_CHARGE.equals(accountTransaction.getType()))
             accountTransaction.setType(AccountTransaction.Type.REMOVAL);
