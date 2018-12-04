@@ -520,7 +520,7 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public boolean canEdit(Object element)
             {
                 AccountTransaction t = (AccountTransaction) element;
-                return (t.getType() == AccountTransaction.Type.DIVIDENDS && t.getShares() != 0);
+                return (t.getType() == AccountTransaction.Type.DIVIDENDS);
             }
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
