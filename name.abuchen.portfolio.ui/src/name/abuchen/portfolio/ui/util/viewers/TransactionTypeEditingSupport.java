@@ -100,7 +100,7 @@ public class TransactionTypeEditingSupport extends ColumnEditingSupport
                     AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.INTEREST,
                     new Class[] { ConvertToInterestAction.class },
 
-                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.DEPOSIT,
+                    AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.REMOVAL,
                     new Class[] {                           RevertAccountAction.class },
 
                     AccountTransaction.Type.DEPOSIT, AccountTransaction.Type.TAX_REFUND,
