@@ -23,6 +23,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     {
         super(client);
 
+        addBankIdentifier(""); //$NON-NLS-1$
         addBankIdentifier("onvista bank"); //$NON-NLS-1$
 
         addBuyTransaction();
