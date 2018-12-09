@@ -1,8 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
@@ -30,19 +28,9 @@ public class PDFImportAssistant
                 return extractor;
         }
 
-        // PDF import assistant - Level 2 - Precheck if specific securities
-        // could cause faulty detection
-        // ISIN DE0005088108 = Baader Bank Aktie detect the bank
-        // identifier "Baader Bank"
-        Matcher matcherISIN = Pattern.compile(
-                        "DE0005088108|DE0005428007|DE000CBK1001|FR0000131104|INE007B01023|DE000FTG1111|CH0001351862|CH0001350328|CH0001354296|CH0001352720|CH0001350112|CH0318681860|CH0001343885|FR0000131104|INE007B01023") //$NON-NLS-1$
-                        .matcher(text);
-
-        if (matcherISIN.find())
-            return null;
-
-        // PDF import assistent - Level 3 - use bank identifier
-
+        // PDF import assistent - Level 2 - use bank identifier
+        int countIdentifier = 0;
+        Extractor matchedExtractor = null;
         for (Extractor extractor : extractors)
         {
             if (!(extractor instanceof AbstractPDFExtractor))
@@ -59,10 +47,15 @@ public class PDFImportAssistant
                     continue;
 
                 if (text.contains(identifier))
-                    return extractor;
+                {
+                    countIdentifier++;
+                    matchedExtractor = extractor;
+                }
             }
-
         }
+
+        if (countIdentifier == 1)
+            return matchedExtractor;
 
         return null;
     }
