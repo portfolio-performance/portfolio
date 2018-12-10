@@ -12,7 +12,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -20,11 +19,11 @@ import name.abuchen.portfolio.model.SecurityPrice;
 {
     private List<Field> fields;
 
-    /* package */ CSVSecurityPriceExtractor(Client client)
+    /* package */ CSVSecurityPriceExtractor()
     {
         fields = new ArrayList<>();
         fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new AmountField(Messages.CSVColumn_Quote));
+        fields.add(new AmountField(Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Override
@@ -50,8 +49,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
             try
             {
                 SecurityPrice p = extract(line, field2column);
-                if (p != null)
-                    dummy.addPrice(p);
+                dummy.addPrice(p);
             }
             catch (ParseException e)
             {
