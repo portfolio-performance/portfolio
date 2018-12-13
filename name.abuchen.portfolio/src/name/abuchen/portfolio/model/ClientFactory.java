@@ -246,12 +246,12 @@ public class ClientFactory
                     read = decrypted.read(bytes); // major version number
                     if (read != bytes.length)
                         throw new IOException();
-                    
+
                     int majorVersion = ByteBuffer.wrap(bytes).getInt();
                     read = decrypted.read(bytes); // version number
                     if (read != bytes.length)
                         throw new IOException();
-                    
+
                     int version = ByteBuffer.wrap(bytes).getInt();
 
                     // sanity check if the file was properly decrypted
@@ -563,6 +563,8 @@ public class ClientFactory
                 // converted from LocalDate to LocalDateTime
             case 37:
                 // added boolean attribute type
+            case 38:
+                // added security exchange calendar
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -579,7 +581,8 @@ public class ClientFactory
         {
             if ("STOCK".equals(security.getType())) //$NON-NLS-1$ // NOSONAR
                 security.setType("EQUITY"); //$NON-NLS-1$ // NOSONAR
-            else if ("BOND".equals(security.getType())) //$NON-NLS-1$ // NOSONAR
+            else if ("BOND".equals(security.getType())) //$NON-NLS-1$ //
+                                                        // NOSONAR
                 security.setType("DEBT"); //$NON-NLS-1$ // NOSONAR
         }
     }

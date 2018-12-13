@@ -37,11 +37,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Text;
 
+import de.jollyday.HolidayCalendar;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.Isin;
+import name.abuchen.portfolio.util.TradeCalendarCode;
+import name.abuchen.portfolio.util.TradeCalendarProvinceCode;
 
 public class BindingHelper
 {
@@ -84,6 +87,93 @@ public class BindingHelper
         public Object convert(Object fromObject)
         {
             return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
+        }
+    }
+
+    private static final class StringToCalendarConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return TradeCalendarCode.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return fromObject == null ? TradeCalendarCode.getInstance("GERMANY") //$NON-NLS-1$
+                            : TradeCalendarCode.getInstance((String) fromObject);
+        }
+    }
+
+    private static final class CalendarToStringConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return TradeCalendarCode.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return ((TradeCalendarCode) fromObject).getCalendarCode();
+        }
+    }
+
+    private static final class StringToCalendarProvinceConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return TradeCalendarProvinceCode.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return fromObject == null ? TradeCalendarProvinceCode.EMPTY
+                            : TradeCalendarProvinceCode.getInstance((String) fromObject);
+        }
+    }
+
+    private static final class CalendarProvinceToStringConverter implements IConverter
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return TradeCalendarProvinceCode.class;
+        }
+
+        @Override
+        public Object convert(Object fromObject)
+        {
+            return (TradeCalendarProvinceCode.EMPTY.equals(fromObject) || fromObject == null) ? null
+                            : ((TradeCalendarProvinceCode) fromObject).getCalendarProvinceCode();
         }
     }
 
@@ -306,6 +396,67 @@ public class BindingHelper
         @SuppressWarnings("unchecked")
         IObservableValue<?> observable = BeanProperties.value(property).observe(model);
         context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
+        return combo;
+    }
+
+    public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+
+        List<TradeCalendarCode> calendar = new ArrayList<>();
+        calendar.addAll(TradeCalendarCode.getAvailableCalendar().stream().sorted().collect(Collectors.toList()));
+        combo.setInput(calendar);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        targetToModel.setConverter(new CalendarToStringConverter());
+
+        UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
+        modelToTarget.setConverter(new StringToCalendarConverter());
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
+        return combo;
+    }
+
+    public final ComboViewer bindCalendarProvinceCombo(Composite editArea, String label, String property,
+                    String initialCalendar)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+
+        List<TradeCalendarProvinceCode> calendarProvince = new ArrayList<>();
+        calendarProvince.add(TradeCalendarProvinceCode.EMPTY);
+        calendarProvince.addAll(TradeCalendarProvinceCode
+                        .getAvailableCalendarProvinces(HolidayCalendar.valueOf(initialCalendar)).stream().sorted()
+                        .collect(Collectors.toList()));
+        combo.setInput(calendarProvince);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy targetToModel = new UpdateValueStrategy();
+        targetToModel.setConverter(new CalendarProvinceToStringConverter());
+
+        UpdateValueStrategy modelToTarget = new UpdateValueStrategy();
+        modelToTarget.setConverter(new StringToCalendarProvinceConverter());
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
+
+        if (calendarProvince.size() == 1)
+        {
+            combo.setInput(null);
+            combo.getControl().setEnabled(false);
+        }
+
         return combo;
     }
 
