@@ -9,19 +9,53 @@ import name.abuchen.portfolio.money.Values;
 
 public class HeatmapModel<N extends Number>
 {
-    public static class Row<N>
+    public static class Header
     {
         private String label;
-        private List<N> data = new ArrayList<>();
+        private String toolTip;
 
-        public Row(String label)
+        public Header(String label, String toolTip)
         {
             this.label = label;
+            this.toolTip = toolTip;
         }
 
         public String getLabel()
         {
             return label;
+        }
+
+        public String getToolTip()
+        {
+            return toolTip;
+        }
+    }
+
+    public static class Row<N>
+    {
+        private String label;
+        private String toolTip;
+        private List<N> data = new ArrayList<>();
+
+        public Row(String label)
+        {
+            this(label, null);
+        }
+
+        public Row(String label, String toolTip)
+        {
+            this.label = label;
+            this.toolTip = toolTip;
+        }
+
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public String getToolTip()
+        {
+            return toolTip;
         }
 
         public void addData(N value)
@@ -44,10 +78,14 @@ public class HeatmapModel<N extends Number>
             return data.stream();
         }
 
+        public List<N> getDataSubList(int fromIndex, int toIndex)
+        {
+            return data.subList(fromIndex, toIndex);
+        }
     }
 
     private Values<N> formatter;
-    private List<String> header = new ArrayList<>();
+    private List<Header> header = new ArrayList<>();
     private List<Row<N>> rows = new ArrayList<>();
 
     private Function<N, String> toolTipBuilder;
@@ -59,10 +97,15 @@ public class HeatmapModel<N extends Number>
 
     public void addHeader(String label)
     {
-        header.add(label);
+        addHeader(label, null);
     }
 
-    public Stream<String> getHeader()
+    public void addHeader(String label, String toolTip)
+    {
+        header.add(new Header(label, toolTip));
+    }
+
+    public Stream<Header> getHeader()
     {
         return header.stream();
     }

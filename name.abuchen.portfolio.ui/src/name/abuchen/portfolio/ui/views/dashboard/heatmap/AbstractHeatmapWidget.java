@@ -73,6 +73,8 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
 
             Label label = new Label(table, SWT.CENTER);
             label.setText(row.getLabel());
+            if (row.getToolTip() != null)
+                InfoToolTip.attach(label, row.getToolTip());
 
             row.getData().forEach(data -> {
                 CLabel dataLabel = new CLabel(table, SWT.CENTER);
@@ -104,12 +106,12 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         // Top Left is empty
         new Label(table, SWT.NONE);
 
-        model.getHeader().forEach(label -> {
+        model.getHeader().forEach(header -> {
             CLabel l = new CLabel(table, SWT.CENTER);
-            l.setText(label);
+            l.setText(header.getLabel());
             l.setBackground(Colors.WHITE);
 
-            InfoToolTip.attach(l, label);
+            InfoToolTip.attach(l, header.getToolTip() != null ? header.getToolTip() : header.getLabel());
         });
     }
 
@@ -138,7 +140,8 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         return title;
     }
 
-    protected void addMonthlyHeader(HeatmapModel<?> model, int numDashboardColumns, boolean showSum)
+    protected void addMonthlyHeader(HeatmapModel<?> model, int numDashboardColumns, boolean showSum,
+                    boolean showStandardDeviation)
     {
         TextStyle textStyle;
         if (numDashboardColumns == 1)
@@ -152,7 +155,9 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         for (LocalDate m = LocalDate.of(2016, 1, 1); m.getYear() == 2016; m = m.plusMonths(1))
             model.addHeader(m.getMonth().getDisplayName(textStyle, Locale.getDefault()));
         if (showSum)
-            model.addHeader("\u03A3"); //$NON-NLS-1$
+            model.addHeader("\u03A3", HeatmapOrnament.SUM.toString()); //$NON-NLS-1$
+        if (showStandardDeviation)
+            model.addHeader("s", HeatmapOrnament.STANDARD_DEVIATION.toString()); //$NON-NLS-1$
     }
 
     protected Double geometricMean(List<Double> values)
@@ -169,4 +174,34 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
 
         return Math.pow(sum, 1 / (double) values.size()) - 1;
     }
+
+    protected Double standardDeviation(List<Double> values)
+    {
+        int count = 0;
+        double sum = 0d;
+
+        for (Double data : values)
+        {
+            if (data != null)
+            {
+                count++;
+                sum += data;
+            }
+        }
+
+        if (count == 0)
+            return null;
+
+        double mean = sum / count;
+
+        double deviationSquares = 0d;
+        for (Double data : values)
+        {
+            if (data != null)
+                deviationSquares += Math.pow(data - mean, 2);
+        }
+
+        return Math.sqrt(deviationSquares / count);
+    }
+
 }

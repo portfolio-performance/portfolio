@@ -5,7 +5,8 @@ import name.abuchen.portfolio.ui.Messages;
 public enum HeatmapOrnament
 {
     SUM(Messages.HeatmapOrnamentSum), //
-    GEOMETRIC_MEAN(Messages.HeatmapOrnamentGeometricMean);
+    GEOMETRIC_MEAN(Messages.HeatmapOrnamentGeometricMean), //
+    STANDARD_DEVIATION(Messages.HeatmapOrnamentStandardDeviation);
 
     private String label;
 
