@@ -104,14 +104,14 @@ public class SecurityMasterDataPage extends AbstractPage
                 {
                     IStructuredSelection calendarSelection = (IStructuredSelection) calendar.getSelection();
                     TradeCalendarCode calendarSelectionCode = (TradeCalendarCode) calendarSelection.getFirstElement();
-                    List<TradeCalendarProvinceCode> calendarsProvinceUpdate = new ArrayList<>();
-                    calendarsProvinceUpdate.add(TradeCalendarProvinceCode.EMPTY);
-                    calendarsProvinceUpdate.addAll(TradeCalendarProvinceCode
-                                    .getAvailableCalendarsProvinces(
+                    List<TradeCalendarProvinceCode> calendarProvinceUpdate = new ArrayList<>();
+                    calendarProvinceUpdate.add(TradeCalendarProvinceCode.EMPTY);
+                    calendarProvinceUpdate.addAll(TradeCalendarProvinceCode
+                                    .getAvailableCalendarProvinces(
                                                     HolidayCalendar.valueOf(calendarSelectionCode.getCalendarCode()))
                                     .stream().sorted().collect(Collectors.toList()));
-                    calendarProvince.setInput(calendarsProvinceUpdate);
-                    if (calendarsProvinceUpdate.size() == 1)
+                    calendarProvince.setInput(calendarProvinceUpdate);
+                    if (calendarProvinceUpdate.size() == 1)
                     {
                         calendarProvince.setInput(null);
                         calendarProvince.getControl().setEnabled(false);

@@ -407,9 +407,9 @@ public class BindingHelper
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setLabelProvider(new LabelProvider());
 
-        List<TradeCalendarCode> calendars = new ArrayList<>();
-        calendars.addAll(TradeCalendarCode.getAvailableCalendars().stream().sorted().collect(Collectors.toList()));
-        combo.setInput(calendars);
+        List<TradeCalendarCode> calendar = new ArrayList<>();
+        calendar.addAll(TradeCalendarCode.getAvailableCalendar().stream().sorted().collect(Collectors.toList()));
+        combo.setInput(calendar);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
 
         UpdateValueStrategy targetToModel = new UpdateValueStrategy();
@@ -433,12 +433,12 @@ public class BindingHelper
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setLabelProvider(new LabelProvider());
 
-        List<TradeCalendarProvinceCode> calendarsProvince = new ArrayList<>();
-        calendarsProvince.add(TradeCalendarProvinceCode.EMPTY);
-        calendarsProvince.addAll(TradeCalendarProvinceCode
-                        .getAvailableCalendarsProvinces(HolidayCalendar.valueOf(initialCalendar)).stream().sorted()
+        List<TradeCalendarProvinceCode> calendarProvince = new ArrayList<>();
+        calendarProvince.add(TradeCalendarProvinceCode.EMPTY);
+        calendarProvince.addAll(TradeCalendarProvinceCode
+                        .getAvailableCalendarProvinces(HolidayCalendar.valueOf(initialCalendar)).stream().sorted()
                         .collect(Collectors.toList()));
-        combo.setInput(calendarsProvince);
+        combo.setInput(calendarProvince);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
 
         UpdateValueStrategy targetToModel = new UpdateValueStrategy();
@@ -450,6 +450,13 @@ public class BindingHelper
         @SuppressWarnings("unchecked")
         IObservableValue<?> observable = BeanProperties.value(property).observe(model);
         context.bindValue(ViewersObservables.observeSingleSelection(combo), observable, targetToModel, modelToTarget);
+
+        if (calendarProvince.size() == 1)
+        {
+            combo.setInput(null);
+            combo.getControl().setEnabled(false);
+        }
+
         return combo;
     }
 

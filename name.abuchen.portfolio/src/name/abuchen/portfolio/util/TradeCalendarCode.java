@@ -35,7 +35,7 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
         this.displayName = displayName;
     }
 
-    public static List<TradeCalendarCode> getAvailableCalendars()
+    public static List<TradeCalendarCode> getAvailableCalendar()
     {
         return new ArrayList<>(CACHE.values());
     }

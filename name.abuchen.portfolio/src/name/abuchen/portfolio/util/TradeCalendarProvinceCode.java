@@ -29,7 +29,7 @@ public final class TradeCalendarProvinceCode implements Comparable<TradeCalendar
         this.displayProvinceName = displayProvinceName;
     }
 
-    public static List<TradeCalendarProvinceCode> getAvailableCalendarsProvinces(HolidayCalendar calendar)
+    public static List<TradeCalendarProvinceCode> getAvailableCalendarProvinces(HolidayCalendar calendar)
     {
         CACHE.clear();
         HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(calendar));

@@ -182,7 +182,7 @@ public class SecuritiesChart
     private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
-    private int swtAntialias;
+    private int swtAntialias = SWT.ON;
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -573,7 +573,7 @@ public class SecuritiesChart
 
             // Disable SWT antialias for more than 1000 records due to SWT
             // performance issue in Drawing
-            swtAntialias = dates.length > 1000 ? SWT.OFF : swtAntialias;
+            swtAntialias = dates.length > 1000 ? SWT.OFF : SWT.ON;
 
             SecurityPrice p2 = prices.get(index);
 
