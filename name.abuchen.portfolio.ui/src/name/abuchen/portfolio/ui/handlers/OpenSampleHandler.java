@@ -117,7 +117,7 @@ public class OpenSampleHandler
         taxonomy.setDimensions(original.getDimensions());
 
         Map<String, Classification> translated = original.getAllClassifications() //
-                        .stream().collect(Collectors.toMap(c -> c.getId(), c -> c));
+                        .stream().collect(Collectors.toMap(Classification::getId, c -> c));
 
         taxonomy.foreach(new Visitor()
         {
@@ -136,19 +136,14 @@ public class OpenSampleHandler
 
     private static ITokenResolver buildResourcesTokenResolver()
     {
-        return new ITokenResolver()
-        {
-            @Override
-            public String resolveToken(String tokenName)
+        return tokenName -> {
+            try
             {
-                try
-                {
-                    return RESOURCES.getString(tokenName);
-                }
-                catch (MissingResourceException e)
-                {
-                    return tokenName;
-                }
+                return RESOURCES.getString(tokenName);
+            }
+            catch (MissingResourceException e)
+            {
+                return tokenName;
             }
         };
     }

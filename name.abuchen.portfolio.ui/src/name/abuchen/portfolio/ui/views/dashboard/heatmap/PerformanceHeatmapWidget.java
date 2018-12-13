@@ -51,13 +51,15 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         Interval actualInterval = performanceIndex.getActualInterval();
 
         boolean showSum = get(HeatmapOrnamentConfig.class).getValues().contains(HeatmapOrnament.SUM);
+        boolean showStandardDeviation = get(HeatmapOrnamentConfig.class).getValues()
+                        .contains(HeatmapOrnament.STANDARD_DEVIATION);
 
         HeatmapModel<Double> model = new HeatmapModel<>(
                         numDashboardColumns == 1 ? Values.Percent : Values.PercentShort);
         model.setCellToolTip(v -> Messages.PerformanceHeatmapToolTip);
 
         // add header
-        addMonthlyHeader(model, numDashboardColumns, showSum);
+        addMonthlyHeader(model, numDashboardColumns, showSum, showStandardDeviation);
 
         for (Integer year : actualInterval.iterYears())
         {
@@ -76,6 +78,9 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
             // sum
             if (showSum)
                 row.addData(getSumPerformance(performanceIndex, LocalDate.of(year, 1, 1)));
+
+            if (showStandardDeviation)
+                row.addData(standardDeviation(row.getDataSubList(0, 12)));
 
             model.addRow(row);
         }

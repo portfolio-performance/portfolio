@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -124,24 +125,29 @@ public class CSVImporter
 
     public static class Field
     {
-        private final String name;
-        private final String normalizedName;
+        private final String[] names;
+        private final Set<String> normalizedNames;
         private boolean isOptional = false;
 
-        public Field(String name)
+        public Field(String... names)
         {
-            this.name = name;
-            this.normalizedName = normalizeColumnName(name);
+            if (names.length < 1)
+                throw new IllegalArgumentException();
+
+            this.names = names;
+            this.normalizedNames = new HashSet<>();
+            for (int ii = 0; ii < names.length; ii++)
+                this.normalizedNames.add(normalizeColumnName(names[ii]));
         }
 
         public String getName()
         {
-            return name;
+            return names[0];
         }
 
-        public String getNormalizedName()
+        public Set<String> getNormalizedNames()
         {
-            return normalizedName;
+            return normalizedNames;
         }
 
         public Field setOptional(boolean isOptional)
@@ -158,7 +164,7 @@ public class CSVImporter
         @Override
         public String toString()
         {
-            return name;
+            return getName();
         }
     }
 
@@ -224,7 +230,7 @@ public class CSVImporter
                             return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
                         })));
 
-        /* package */ AmountField(String name)
+        /* package */ AmountField(String... name)
         {
             super(name);
         }
@@ -399,7 +405,7 @@ public class CSVImporter
 
         this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
                         new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
-                        new CSVSecurityPriceExtractor(client)));
+                        new CSVSecurityPriceExtractor()));
         this.currentExtractor = extractors.get(0);
     }
 
@@ -538,7 +544,8 @@ public class CSVImporter
             while (iter.hasNext())
             {
                 Field field = iter.next();
-                if (field.getNormalizedName().equals(normalizedColumnName))
+                
+                if (field.getNormalizedNames().contains(normalizedColumnName))
                 {
                     column.setField(field);
 
@@ -575,7 +582,7 @@ public class CSVImporter
         Map<String, Column> field2column = new HashMap<>();
         for (Column column : getColumns())
             if (column.getField() != null)
-                field2column.put(column.getField().name, column);
+                field2column.put(column.getField().getName(), column);
 
         int startingLineNo = skipLines + (isFirstLineHeader ? 1 : 0);
         return currentExtractor.extract(startingLineNo, values, field2column, errors);

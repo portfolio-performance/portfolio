@@ -24,6 +24,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier(""); //$NON-NLS-1$
+        addBankIdentifier("onvista bank"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
@@ -81,8 +82,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "amount", "currency") //
-                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
-                        .match("Handelszeit (?<time>\\d+:\\d+)(.*)")
+                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)").match("Handelszeit (?<time>\\d+:\\d+)(.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
                         // 14.01.2015 172306238 EUR 59,55
                         // Wert Konto-Nr. Betrag zu Ihren Lasten
@@ -95,7 +95,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new);
-        
+
         addFeesSectionsTransaction(pdfTransaction);
     }
 
@@ -136,7 +136,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time", "amount", "currency") //
-                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)")
+                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)") //
                         .match("Handelszeit (?<time>\\d+:\\d+)(.*)")
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Gunsten(\\s*)$")
                         .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
@@ -909,7 +909,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
             }
         });
         this.addDocumentTyp(type);
-        
+
         // 31.10. 31.10. REF: 000017304356 37,66
         Block block = new Block("^\\d+\\.\\d+\\.\\s+\\d+\\.\\d+\\.\\s+REF:\\s+\\d+\\s+[\\d.-]+,\\d+[+-]?(.*)");
         type.addBlock(block);
@@ -985,14 +985,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                             && t.getType() != AccountTransaction.Type.BUY
                                             && t.getType() != AccountTransaction.Type.SELL
                                             && t.getType() != AccountTransaction.Type.TAX_REFUND)
-                                                return new TransactionItem(t);
+                                return new TransactionItem(t);
                             return null;
                         });
     }
 
     private void addAccountStatementTransaction2017()
     {
-        // this seems to be the new format of account statements from the year 2017
+        // this seems to be the new format of account statements from the year
+        // 2017
         final DocumentType type = new DocumentType("Kontoauszug Nr.", (context, lines) -> {
             Pattern pYear = Pattern.compile("^Kontoauszug Nr. (\\d{4}) / .*\\.(\\d{4})$");
             Pattern pCurrency = Pattern.compile("^(\\w{3}+) - Verrechnungskonto: .*$");
@@ -1092,7 +1093,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             return null;
                         });
     }
-    
+
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
     {
         pdfTransaction.section("tax", "withheld", "sign").optional() //
@@ -1234,7 +1235,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
                         .section("date", "currency").optional()
                         .find("Wert(\\s+)Konto-Nr.(\\s+)Abrechnungs-Nr.(\\s+)Betrag zu Ihren Gunsten(\\s*)$")
-                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren Gunsten
+                        // Wert Konto-Nr. Abrechnungs-Nr. Betrag zu Ihren
+                        // Gunsten
                         // 06.05.2013 172306238 56072633 EUR 3,05
                         .match("(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+)(\\s)(\\d+)?(\\s)?(\\d+)?(\\s)(?<currency>\\w{3}+) (\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> {
