@@ -46,6 +46,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
@@ -70,6 +71,8 @@ public class PerformanceView extends AbstractHistoricView
 
     private ClientFilterDropDown clientFilter;
 
+    private boolean preTax = false;
+
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
     private StatementOfAssetsViewer snapshotEnd;
@@ -93,6 +96,16 @@ public class PerformanceView extends AbstractHistoricView
                         PerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         new ExportDropDown(toolBar); // NOSONAR
+
+        AbstractDropDown.create(toolBar, Messages.MenuConfigureView, Images.CONFIG.image(), SWT.NONE, manager -> {
+            SimpleAction action = new SimpleAction(Messages.LabelPreTax, a -> {
+                this.preTax = !this.preTax;
+                reportingPeriodUpdated();
+            });
+
+            action.setChecked(this.preTax);
+            manager.add(action);
+        });
     }
 
     @Override
@@ -101,6 +114,10 @@ public class PerformanceView extends AbstractHistoricView
         ReportingPeriod period = getReportingPeriod();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+
+        if (preTax)
+            filteredClient = new WithoutTaxesFilter().filter(filteredClient);
+
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 
         try
@@ -275,7 +292,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation.addSelectionChangedListener(event -> {
             Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
-            if (selection != null && selection instanceof ClientPerformanceSnapshot.Position
+            if (selection instanceof ClientPerformanceSnapshot.Position
                             && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
                 selectionService.setSelection(new SecuritySelection(getClient(),
                                 ((ClientPerformanceSnapshot.Position) selection).getSecurity()));

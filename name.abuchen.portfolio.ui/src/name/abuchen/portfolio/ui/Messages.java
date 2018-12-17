@@ -486,6 +486,7 @@ public class Messages extends NLS
     public static String LabelPortfolioPerformanceFile;
     public static String LabelPortfolios;
     public static String LabelPortfolioTimeMachine;
+    public static String LabelPreTax;
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
@@ -591,6 +592,7 @@ public class Messages extends NLS
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
     public static String MenuConfigureDashboards;
+    public static String MenuConfigureView;
     public static String MenuConfirmDeleteAllTransactions;
     public static String MenuConvertToBuy;
     public static String MenuConvertToInboundDelivery;
