@@ -17,4 +17,7 @@ sed -i -e 's/css\/styles.css/portfolio\/css\/styles.css/g' updatesite/index.html
 sed -i -e 's/images\/pp_16.gif/portfolio\/images\/pp_16.gif/g' updatesite/index.html
 sed -i -e "s/<body>/<body><!-- ${PCK_VERSION} -->/g" updatesite/index.html
 
-netlifyctl deploy --publish-directory updatesite --message ${PCK_VERSION} --site-id 963dc23a-4a77-4591-bcd0-b680a493e2d3
+
+firebase use --add pp-update-site-firebase
+firebase target:apply hosting updatesite pp-update-site-firebase
+firebase deploy
