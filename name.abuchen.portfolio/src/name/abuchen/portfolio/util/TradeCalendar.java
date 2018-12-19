@@ -5,6 +5,9 @@ import java.time.LocalDate;
 import java.util.EnumSet;
 import java.util.Set;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.InstanceScope;
+
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
 import de.jollyday.ManagerParameters;
@@ -13,7 +16,9 @@ public class TradeCalendar
 {
     public boolean isHoliday(LocalDate date)
     {
-        return checkIsHoliday(date, HolidayCalendar.GERMANY, null);
+        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
+        String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
+        return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), null);
     }
 
     public boolean isHoliday(LocalDate date, HolidayCalendar manager)
@@ -23,13 +28,26 @@ public class TradeCalendar
 
     public boolean isHoliday(LocalDate date, String manager)
     {
-        return checkIsHoliday(date, manager == null ? HolidayCalendar.GERMANY : HolidayCalendar.valueOf(manager), null);
+        if (manager == null)
+        {
+            IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
+            String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
+            return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), null);
+        }
+        else
+            return checkIsHoliday(date, HolidayCalendar.valueOf(manager), null);
     }
 
     public boolean isHoliday(LocalDate date, String manager, String managerProvince)
     {
-        return checkIsHoliday(date, manager == null ? HolidayCalendar.GERMANY : HolidayCalendar.valueOf(manager),
-                        managerProvince == null ? "" : managerProvince); //$NON-NLS-1$
+        if (manager == null)
+        {
+            IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
+            String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
+            return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), managerProvince);
+        }
+        else
+            return checkIsHoliday(date, HolidayCalendar.valueOf(manager), managerProvince);
     }
 
     private boolean checkIsHoliday(LocalDate date, HolidayCalendar manager, String managerProvince)
@@ -39,7 +57,8 @@ public class TradeCalendar
         if (weekend.contains(dayOfWeek))
             return true;
         HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(manager));
-        return managerProvince != null ? tradingDayManager.isHoliday(date, managerProvince)
+        return managerProvince != null
+                        ? tradingDayManager.isHoliday(date, managerProvince.isEmpty() ? "" : managerProvince) //$NON-NLS-1$
                         : tradingDayManager.isHoliday(date);
     }
 }

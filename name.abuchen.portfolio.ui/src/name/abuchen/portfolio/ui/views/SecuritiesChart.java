@@ -660,17 +660,16 @@ public class SecuritiesChart
             if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
             {
                 TradeCalendar tradeCalendar = new TradeCalendar();
+                List<LocalDate> calendarDates = new ArrayList<>();
                 for (LocalDate calendarDate = dates[0]; calendarDate
                                 .isBefore(dates[dates.length - 1]); calendarDate = calendarDate.plusDays(1))
+                    calendarDates.add(calendarDate);
+                for (LocalDate pricingDate : dates)
+                    calendarDates.remove(pricingDate);
+                for (LocalDate targetDate : calendarDates)
                 {
-                    if (!Arrays.stream(dates).anyMatch(calendarDate::equals))
-                    {
-                        if (!tradeCalendar.isHoliday(calendarDate, security.getCalendar(),
-                                        security.getCalendarProvince()))
-                        {
-                            chart.addNonTradingDayMarker(calendarDate, colorNonTradingDay);
-                        }
-                    }
+                    if (!tradeCalendar.isHoliday(targetDate, security.getCalendar()))
+                        chart.addNonTradingDayMarker(targetDate, colorNonTradingDay);
                 }
             }
         }

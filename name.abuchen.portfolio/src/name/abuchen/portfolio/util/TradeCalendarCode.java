@@ -2,27 +2,36 @@ package name.abuchen.portfolio.util;
 
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
 import de.jollyday.ManagerParameters;
+import name.abuchen.portfolio.Messages;
 
 public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
 {
+    public static final TradeCalendarCode EMPTY = new TradeCalendarCode(null, Messages.LabelApplyClientCalendar);
     private static final Map<String, TradeCalendarCode> CACHE = new HashMap<>();
 
     static
     {
-        for (HolidayCalendar c : HolidayCalendar.values())
+        Set<HolidayCalendar> ignoreCalendar = EnumSet.of(HolidayCalendar.DOW_JONES_STOXX,
+                        HolidayCalendar.LONDON_METAL_EXCHANGE, HolidayCalendar.NYSE, HolidayCalendar.TARGET);
+        for (HolidayCalendar calendar : HolidayCalendar.values())
         {
-            HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(c));
-            String calendarCode = c.toString();
-            CACHE.put(calendarCode, new TradeCalendarCode(c.toString(),
-                            tradingDayManager.getCalendarHierarchy().getDescription()));
+            if (!ignoreCalendar.contains(calendar))
+            {
+                HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(calendar));
+                String calendarCode = calendar.toString();
+                CACHE.put(calendarCode, new TradeCalendarCode(calendar.toString(),
+                                tradingDayManager.getCalendarHierarchy().getDescription()));
+            }
         }
     }
 

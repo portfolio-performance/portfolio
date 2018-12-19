@@ -755,6 +755,7 @@ public class Messages extends NLS
     public static String PrefLabelUseIndirectQuotation;
     public static String PrefMsgConfigureUpdates;
     public static String PrefMsgLanguageConfig;
+    public static String PrefMsgCalendar;
     public static String PrefNoteIndirectQuotation;
     public static String PrefNoteStoreSettingsNextToFile;
     public static String PrefStoreSettingsNextToFile;
@@ -766,6 +767,7 @@ public class Messages extends NLS
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
+    public static String PrefTitleCalendar;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;
     public static String SecurityFilterSharesHeldGreaterZero;

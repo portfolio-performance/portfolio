@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.preferences.APIKeysPreferencePage;
+import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
@@ -31,6 +32,7 @@ public class OpenPreferenceDialogHandler
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".presentation", new PresentationPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".general", new GeneralPreferencePage())); //$NON-NLS-1$
         pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".apikeys", new APIKeysPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".calendar", new CalendarPreferencePage())); //$NON-NLS-1$
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm)
         {

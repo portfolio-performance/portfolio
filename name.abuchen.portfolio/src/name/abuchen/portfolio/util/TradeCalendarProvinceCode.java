@@ -11,13 +11,9 @@ import de.jollyday.CalendarHierarchy;
 import de.jollyday.HolidayCalendar;
 import de.jollyday.HolidayManager;
 import de.jollyday.ManagerParameters;
-import name.abuchen.portfolio.Messages;
 
 public final class TradeCalendarProvinceCode implements Comparable<TradeCalendarProvinceCode>
 {
-    public static final TradeCalendarProvinceCode EMPTY = new TradeCalendarProvinceCode(null,
-                    Messages.LabelNoCalendarProvince);
-
     private static Map<String, TradeCalendarProvinceCode> CACHE = new HashMap<>();
 
     private String calendarProvinceCode;
