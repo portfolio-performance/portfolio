@@ -10,7 +10,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     @Override
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
-        sharesHeld = t.getPosition().getShares();
+        // there can be multiple DividendInitialTransaction if the same security
+        // is held in multiple portfolios --> plus
+        sharesHeld += t.getPosition().getShares();
     }
 
     @Override
