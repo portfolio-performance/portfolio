@@ -6,15 +6,13 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 
-public class SearchYahooWizard extends Wizard
+public class SearchSecurityWizard extends Wizard
 {
     private final Client client;
-    private SearchSecurityWizardPage page;
 
-    public SearchYahooWizard(Client client)
+    public SearchSecurityWizard(Client client)
     {
         this.client = client;
 
@@ -30,27 +28,29 @@ public class SearchYahooWizard extends Wizard
     @Override
     public void addPages()
     {
-        addPage(page = new SearchSecurityWizardPage(client));
+        addPage(new SearchSecurityWizardPage(client));
     }
 
     public Security getSecurity()
     {
-        ResultItem item = page.getResult();
+        ResultItem item = getResultItem();
 
         if (item == null)
             return null;
 
         Security security = new Security();
-        security.setName(item.getName());
-        security.setTickerSymbol(item.getSymbol());
-        security.setFeed(YahooFinanceQuoteFeed.ID);
-
+        item.applyTo(security);
         return security;
     }
 
     @Override
     public boolean performFinish()
     {
-        return page.getResult() != null;
+        return getResultItem() != null;
+    }
+
+    private ResultItem getResultItem()
+    {
+        return ((SearchSecurityWizardPage) this.getPage(SearchSecurityWizardPage.PAGE_ID)).getResult();
     }
 }

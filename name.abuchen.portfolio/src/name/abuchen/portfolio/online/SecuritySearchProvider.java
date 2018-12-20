@@ -7,58 +7,18 @@ import name.abuchen.portfolio.model.Security;
 
 public interface SecuritySearchProvider
 {
-    public static class ResultItem
+    public interface ResultItem
     {
-        private String symbol;
-        private String name;
-        private String type;
-        private String exchange;
+        String getName();
 
-        public String getSymbol()
-        {
-            return symbol;
-        }
+        String getSymbol();
+        String getIsin();
+        String getWkn();
 
-        public void setSymbol(String symbol)
-        {
-            this.symbol = symbol;
-        }
+        String getType();
+        String getExchange();
 
-        public String getName()
-        {
-            return name;
-        }
-
-        public void setName(String name)
-        {
-            this.name = name;
-        }
-
-        public String getType()
-        {
-            return type;
-        }
-
-        public void setType(String type)
-        {
-            this.type = type;
-        }
-
-        public String getExchange()
-        {
-            return exchange;
-        }
-
-        public void setExchange(String exchange)
-        {
-            this.exchange = exchange;
-        }
-
-        public void applyTo(Security security)
-        {
-            security.setTickerSymbol(getSymbol());
-            security.setName(getName());
-        }
+        void applyTo(Security security);
     }
 
     String getName();

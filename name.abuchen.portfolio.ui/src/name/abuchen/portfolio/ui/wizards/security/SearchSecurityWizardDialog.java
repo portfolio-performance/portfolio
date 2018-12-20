@@ -10,11 +10,11 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 
-public class SearchYahooWizardDialog extends WizardDialog
+public class SearchSecurityWizardDialog extends WizardDialog
 {
-    public SearchYahooWizardDialog(Shell parentShell, Client client)
+    public SearchSecurityWizardDialog(Shell parentShell, Client client)
     {
-        super(parentShell, new SearchYahooWizard(client));
+        super(parentShell, new SearchSecurityWizard(client));
     }
 
     @Override
@@ -29,6 +29,6 @@ public class SearchYahooWizardDialog extends WizardDialog
 
     public Security getSecurity()
     {
-        return ((SearchYahooWizard) this.getWizard()).getSecurity();
+        return ((SearchSecurityWizard) this.getWizard()).getSecurity();
     }
 }

@@ -89,7 +89,7 @@ import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.security.SearchYahooWizardDialog;
+import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.Dates;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
@@ -121,8 +121,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
             manager.add(new Separator());
 
-            manager.add(new SimpleAction(Messages.SecurityMenuSearchYahoo, a -> {
-                SearchYahooWizardDialog dialog = new SearchYahooWizardDialog(getToolBar().getShell(), getClient());
+            manager.add(new SimpleAction(Messages.SecurityMenuSearch4Securities, a -> {
+                SearchSecurityWizardDialog dialog = new SearchSecurityWizardDialog(getToolBar().getShell(), getClient());
                 if (dialog.open() == Dialog.OK)
                     openEditDialog(dialog.getSecurity());
             }));

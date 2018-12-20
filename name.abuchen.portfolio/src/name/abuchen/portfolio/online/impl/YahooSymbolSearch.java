@@ -17,9 +17,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+
 /* package */ class YahooSymbolSearch
 {
-    /* package */ static class Result
+    /* package */ static class Result implements ResultItem
     {
         private String symbol;
         private String name;
@@ -43,24 +46,53 @@ import org.json.simple.JSONValue;
             this.exchange = exchange;
         }
 
+        /* package */ Result(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
         public String getSymbol()
         {
             return symbol;
         }
 
+        @Override
         public String getName()
         {
             return name;
         }
 
+        @Override
         public String getType()
         {
             return type;
         }
 
+        @Override
         public String getExchange()
         {
             return exchange;
+        }
+
+        @Override
+        public String getIsin()
+        {
+            return null;
+        }
+
+        @Override
+        public String getWkn()
+        {
+            return null;
+        }
+
+        @Override
+        public void applyTo(Security security)
+        {
+            security.setName(name);
+            security.setTickerSymbol(symbol);
+            security.setFeed(YahooFinanceQuoteFeed.ID);
         }
     }
 

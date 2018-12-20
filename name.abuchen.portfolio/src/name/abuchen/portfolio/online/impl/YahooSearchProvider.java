@@ -19,32 +19,10 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.online.impl.YahooSymbolSearch.Result;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
-    public static class YahooResultItem extends ResultItem
-    {
-        @Override
-        public void applyTo(Security security)
-        {
-            super.applyTo(security);
-            security.setFeed(YahooFinanceQuoteFeed.ID);
-        }
-
-        public static ResultItem from(Result r)
-        {
-            YahooResultItem item = new YahooResultItem();
-            item.setSymbol(r.getSymbol());
-            item.setName(r.getName());
-            item.setExchange(r.getExchange());
-            item.setType(r.getType());
-            return item;
-        }
-    }
-
     @Override
     public String getName()
     {
@@ -62,8 +40,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
         if (answer.size() >= 10)
         {
-            ResultItem item = new YahooResultItem();
-            item.setName(Messages.MsgMoreResultsAvailable);
+            YahooSymbolSearch.Result item = new YahooSymbolSearch.Result(Messages.MsgMoreResultsAvailable);
             answer.add(item);
         }
 
@@ -75,8 +52,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
         Set<String> existingSymbols = answer.stream().map(ResultItem::getSymbol).collect(Collectors.toSet());
 
         new YahooSymbolSearch().search(query)//
-                        .filter(r -> !existingSymbols.contains(r.getSymbol()))
-                        .forEach(r -> answer.add(YahooResultItem.from(r)));
+                        .filter(r -> !existingSymbols.contains(r.getSymbol())).forEach(answer::add);
     }
 
     private void addSearchPage(List<ResultItem> answer, String query) throws IOException
@@ -112,13 +88,7 @@ public class YahooSearchProvider implements SecuritySearchProvider
                     for (int ii = 0; ii < items.size(); ii++)
                     {
                         JSONObject item = (JSONObject) items.get(ii);
-
-                        YahooResultItem resultItem = new YahooResultItem();
-                        resultItem.setName(item.get("name").toString()); //$NON-NLS-1$
-                        resultItem.setSymbol(item.get("symbol").toString()); //$NON-NLS-1$
-                        resultItem.setType(item.get("typeDisp").toString()); //$NON-NLS-1$
-                        resultItem.setExchange(item.get("exchDisp").toString()); //$NON-NLS-1$
-                        answer.add(resultItem);
+                        answer.add(YahooSymbolSearch.Result.from(item));
                     }
                 }
             }
