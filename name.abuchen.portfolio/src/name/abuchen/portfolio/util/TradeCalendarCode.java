@@ -21,17 +21,12 @@ public final class TradeCalendarCode implements Comparable<TradeCalendarCode>
 
     static
     {
-        Set<HolidayCalendar> ignoreCalendar = EnumSet.of(HolidayCalendar.DOW_JONES_STOXX,
-                        HolidayCalendar.LONDON_METAL_EXCHANGE, HolidayCalendar.NYSE, HolidayCalendar.TARGET);
         for (HolidayCalendar calendar : HolidayCalendar.values())
         {
-            if (!ignoreCalendar.contains(calendar))
-            {
-                HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(calendar));
-                String calendarCode = calendar.toString();
-                CACHE.put(calendarCode, new TradeCalendarCode(calendar.toString(),
-                                tradingDayManager.getCalendarHierarchy().getDescription()));
-            }
+            HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(calendar));
+            String calendarCode = calendar.toString();
+            CACHE.put(calendarCode, new TradeCalendarCode(calendar.toString(),
+                            tradingDayManager.getCalendarHierarchy().getDescription()));
         }
     }
 
