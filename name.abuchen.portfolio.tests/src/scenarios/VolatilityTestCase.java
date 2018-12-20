@@ -41,7 +41,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.14154409652302308, 0.1e-10)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.141568791460, 0.1e-10)); // excel
     }
 
     @Test
@@ -56,8 +56,8 @@ public class VolatilityTestCase
         PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.20055381503459427, 0.1e-10)); // excel
-        assertThat(clientIndex.getVolatility().getStandardDeviation(), closeTo(0.20057708976532865, 0.1e-10)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.200573810778, 0.1e-10)); // excel
+        assertThat(clientIndex.getVolatility().getStandardDeviation(), closeTo(0.200599730118, 0.1e-10)); // excel
         assertThat(index.getDates()[index.getDates().length - 1], is(LocalDate.parse("2015-01-31")));
     }
 
@@ -72,7 +72,7 @@ public class VolatilityTestCase
         PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, basf, report, warnings);
 
         assertThat(warnings, empty());
-        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.20292376022238387, 0.1e-10)); // excel
+        assertThat(index.getVolatility().getStandardDeviation(), closeTo(0.202942041440, 0.1e-10)); // excel
         assertThat(index.getDates()[index.getDates().length - 1], is(LocalDate.parse("2015-02-20")));
     }
 
@@ -91,7 +91,7 @@ public class VolatilityTestCase
         assertThat(warnings, empty());
         // quotes only until December 31st
         assertThat(sapIndex.getDates()[sapIndex.getDates().length - 1], is(LocalDate.parse("2014-12-31")));
-        assertThat(sapIndex.getVolatility().getStandardDeviation(), closeTo(0.19304305063898652, 0.1e-10)); // excel
+        assertThat(sapIndex.getVolatility().getStandardDeviation(), closeTo(0.193062749491, 0.1e-10)); // excel
     }
 
 }

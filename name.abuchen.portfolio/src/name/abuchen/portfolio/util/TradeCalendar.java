@@ -1,64 +1,83 @@
 package name.abuchen.portfolio.util;
 
+import java.text.Collator;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.EnumSet;
+import java.util.Objects;
 import java.util.Set;
 
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
-import org.eclipse.core.runtime.preferences.InstanceScope;
-
-import de.jollyday.HolidayCalendar;
+import de.jollyday.Holiday;
 import de.jollyday.HolidayManager;
-import de.jollyday.ManagerParameters;
 
-public class TradeCalendar
+public class TradeCalendar implements Comparable<TradeCalendar>
 {
+    private static final Set<DayOfWeek> WEEKEND = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
+
+    private final String code;
+    private final String description;
+    private final HolidayManager holidayManager;
+
+    /* package */ TradeCalendar(String code, String description, HolidayManager holidayManager)
+    {
+        this.code = Objects.requireNonNull(code);
+        this.description = Objects.requireNonNull(description);
+        this.holidayManager = holidayManager;
+    }
+
+    public String getCode()
+    {
+        return code;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    @Override
+    public String toString()
+    {
+        return getDescription();
+    }
+
     public boolean isHoliday(LocalDate date)
     {
-        IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
-        String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
-        return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), null);
-    }
-
-    public boolean isHoliday(LocalDate date, HolidayCalendar manager)
-    {
-        return checkIsHoliday(date, manager, null);
-    }
-
-    public boolean isHoliday(LocalDate date, String manager)
-    {
-        if (manager == null)
-        {
-            IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
-            String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
-            return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), null);
-        }
-        else
-            return checkIsHoliday(date, HolidayCalendar.valueOf(manager), null);
-    }
-
-    public boolean isHoliday(LocalDate date, String manager, String managerProvince)
-    {
-        if (manager == null)
-        {
-            IEclipsePreferences prefs = InstanceScope.INSTANCE.getNode("name.abuchen.portfolio.ui"); //$NON-NLS-1$
-            String clientCalendar = prefs.get("CALENDAR", "GERMANY"); //$NON-NLS-1$ //$NON-NLS-2$
-            return checkIsHoliday(date, HolidayCalendar.valueOf(clientCalendar), managerProvince);
-        }
-        else
-            return checkIsHoliday(date, HolidayCalendar.valueOf(manager), managerProvince);
-    }
-
-    private boolean checkIsHoliday(LocalDate date, HolidayCalendar manager, String managerProvince)
-    {
-        Set<DayOfWeek> weekend = EnumSet.of(DayOfWeek.SATURDAY, DayOfWeek.SUNDAY);
-        DayOfWeek dayOfWeek = date.getDayOfWeek();
-        if (weekend.contains(dayOfWeek))
+        if (WEEKEND.contains(date.getDayOfWeek()))
             return true;
-        HolidayManager tradingDayManager = HolidayManager.getInstance(ManagerParameters.create(manager));
-        return managerProvince != null
-                        ? tradingDayManager.isHoliday(date, managerProvince.isEmpty() ? "" : managerProvince) //$NON-NLS-1$
-                        : tradingDayManager.isHoliday(date);
+
+        return holidayManager.isHoliday(date);
+    }
+
+    public Set<Holiday> getHolidays(int year)
+    {
+        return holidayManager.getHolidays(year);
+    }
+
+    @Override
+    public int compareTo(TradeCalendar other)
+    {
+        Collator collator = Collator.getInstance();
+        collator.setStrength(Collator.SECONDARY);
+        return collator.compare(getDescription(), other.getDescription());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return code.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        TradeCalendar other = (TradeCalendar) obj;
+        return code.equals(other.code);
     }
 }

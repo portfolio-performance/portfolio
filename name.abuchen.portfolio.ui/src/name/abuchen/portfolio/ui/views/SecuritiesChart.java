@@ -69,6 +69,7 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 /**
  * Chart of historical quotes for a given security
@@ -659,7 +660,7 @@ public class SecuritiesChart
 
             if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
             {
-                TradeCalendar tradeCalendar = new TradeCalendar();
+                TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
                 List<LocalDate> calendarDates = new ArrayList<>();
                 for (LocalDate calendarDate = dates[0]; calendarDate
                                 .isBefore(dates[dates.length - 1]); calendarDate = calendarDate.plusDays(1))
@@ -668,7 +669,7 @@ public class SecuritiesChart
                     calendarDates.remove(pricingDate);
                 for (LocalDate targetDate : calendarDates)
                 {
-                    if (!tradeCalendar.isHoliday(targetDate, security.getCalendar()))
+                    if (!tradeCalendar.isHoliday(targetDate))
                         chart.addNonTradingDayMarker(targetDate, colorNonTradingDay);
                 }
             }

@@ -11,6 +11,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public abstract class ReportingPeriod
 {
@@ -219,7 +220,7 @@ public abstract class ReportingPeriod
 
         /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
         {
-            TradeCalendar calendar = new TradeCalendar();
+            TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
 
             LocalDate date = start;
             int daysToGo = tradingDays;

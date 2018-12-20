@@ -19,6 +19,7 @@ import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("nls")
 public class InvestmentPlanTest
@@ -200,7 +201,7 @@ public class InvestmentPlanTest
 
         // if resume date is on a bank holiday, move the resume date to the next
         // non-holiday
-        TradeCalendar tradeCalendar = new TradeCalendar();
+        TradeCalendar tradeCalendar = TradeCalendarManager.getDefaultInstance();
         while (tradeCalendar.isHoliday(resumeDate))
             resumeDate = resumeDate.plusDays(1);
 

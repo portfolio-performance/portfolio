@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tns:Configuration hierarchy="trade-calendar-de"
+ xmlns:tns="http://www.example.org/Holiday"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:schemaLocation="http://www.example.org/Holiday /Holiday.xsd ">
+ <tns:Holidays>
+  <tns:Fixed month="JANUARY" day="1"
+   descriptionPropertiesKey="NEW_YEAR" />
+  <tns:Fixed month="MAY" day="1"
+   descriptionPropertiesKey="LABOUR_DAY" />
+
+  <!-- Tag der deutschen Einheit bis 1990 -->
+  <tns:Fixed month="JUNE" day="17" validFrom="1954"
+   validTo="1990" descriptionPropertiesKey="UNIFICATION" />
+  <!-- Tag der Deutschen Einheit ab 1990 -->
+  <tns:Fixed month="OCTOBER" day="3" validFrom="1990"
+   descriptionPropertiesKey="UNIFICATION_GERMANY" />
+
+  <tns:Fixed month="DECEMBER" day="24"
+   descriptionPropertiesKey="CHRISTMAS_EVE" />
+  <tns:Fixed month="DECEMBER" day="25"
+   descriptionPropertiesKey="FIRST_CHRISTMAS_DAY" />
+  <tns:Fixed month="DECEMBER" day="26"
+   descriptionPropertiesKey="SECOND_CHRISTMAS_DAY" />
+  <tns:Fixed month="DECEMBER" day="31"
+   descriptionPropertiesKey="NEW_YEARS_EVE" />
+
+  <tns:ChristianHoliday type="GOOD_FRIDAY" />
+  <tns:ChristianHoliday type="EASTER_MONDAY" />
+  <tns:ChristianHoliday type="WHIT_MONDAY" />
+ </tns:Holidays>
+</tns:Configuration>
