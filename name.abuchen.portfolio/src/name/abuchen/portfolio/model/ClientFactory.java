@@ -565,6 +565,7 @@ public class ClientFactory
                 // added boolean attribute type
             case 38:
                 // added security exchange calendar
+                // added onlineId to security
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

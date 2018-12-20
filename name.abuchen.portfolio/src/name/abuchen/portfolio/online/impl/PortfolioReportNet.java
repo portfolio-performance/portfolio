@@ -128,6 +128,8 @@ public class PortfolioReportNet
         @Override
         public void applyTo(Security security)
         {
+            security.setOnlineId(id);
+
             security.setName(name);
 
             security.setIsin(isin);
