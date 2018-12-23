@@ -2,7 +2,7 @@ package name.abuchen.portfolio.math;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 import name.abuchen.portfolio.util.Interval;
 
@@ -111,7 +111,7 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(double[] returns, Predicate<Integer> filter)
+        public Volatility(double[] returns, IntPredicate filter)
         {
             Objects.requireNonNull(returns);
 
@@ -148,7 +148,7 @@ public final class Risk
             }
         }
 
-        private double logAverage(double[] returns, Predicate<Integer> filter)
+        private double logAverage(double[] returns, IntPredicate filter)
         {
             double sum = 0;
             int count = 0;
