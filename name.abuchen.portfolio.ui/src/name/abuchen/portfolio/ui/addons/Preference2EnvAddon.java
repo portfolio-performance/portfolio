@@ -8,6 +8,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 @SuppressWarnings("restriction")
 public class Preference2EnvAddon
@@ -22,9 +23,21 @@ public class Preference2EnvAddon
         // this is a hack to pass the eclipse-based preference via environment
         // to the AlphavantageQuoteFeed implementation which is not created via
         // dependency injection but via Java Service Locator.
-        
-        AlphavantageQuoteFeed quoteFeed = (AlphavantageQuoteFeed)Factory.getQuoteFeedProvider(AlphavantageQuoteFeed.ID);
+
+        AlphavantageQuoteFeed quoteFeed = (AlphavantageQuoteFeed) Factory
+                        .getQuoteFeedProvider(AlphavantageQuoteFeed.ID);
         quoteFeed.setApiKey(alphavantageApiKey);
         quoteFeed.setCallFrequencyLimit(callFrequencyLimit);
     }
+
+    @Inject
+    @Optional
+    public void setDefaultCalendar(@Preference(value = UIConstants.Preferences.CALENDAR) String defaultCalendarCode)
+    {
+        // pass calendar preferences into TradeCalendarManager (which is
+        // statically created)
+
+        TradeCalendarManager.setDefaultCalendarCode(defaultCalendarCode);
+    }
+
 }

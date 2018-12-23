@@ -21,7 +21,6 @@ import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintListener;
@@ -69,6 +68,8 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 /**
  * Chart of historical quotes for a given security
@@ -95,7 +96,8 @@ public class SecuritiesChart
         SMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         SMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
-        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel); //
+        SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
+        SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
 
         private final String label;
 
@@ -160,6 +162,8 @@ public class SecuritiesChart
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
 
+    private Color colorNonTradingDay = Colors.getColor(255, 137, 89);
+
     private static final String PREF_KEY = "security-chart-details"; //$NON-NLS-1$
 
     private DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("d LLL"); //$NON-NLS-1$
@@ -176,7 +180,10 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
+    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
+
+    private int swtAntialias = SWT.ON;
 
     public SecuritiesChart(Composite parent, Client client, CurrencyConverter converter)
     {
@@ -189,6 +196,7 @@ public class SecuritiesChart
         chart.getTitle().setText("..."); //$NON-NLS-1$
 
         chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
 
         setupTooltip();
 
@@ -306,7 +314,7 @@ public class SecuritiesChart
         series.setXDateSeries(dates);
         series.enableArea(enableArea);
         series.setYSeries(values);
-        series.setAntialias(SWT.ON);
+        series.setAntialias(swtAntialias);
 
         if (color != null)
             series.setLineColor(color);
@@ -370,7 +378,6 @@ public class SecuritiesChart
 
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LINEAR));
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LOG));
-        subMenuChartDevelopment.add(new Separator());
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.CLOSING));
         subMenuChartDevelopment.add(addMenuAction(ChartDetails.PURCHASEPRICE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.INVESTMENT));
@@ -379,7 +386,6 @@ public class SecuritiesChart
         subMenuChartMarker.add(addMenuAction(ChartDetails.FIFOPURCHASE));
         subMenuChartMarker.add(addMenuAction(ChartDetails.FLOATINGAVGPURCHASE));
         subMenuChartIndicator.add(addMenuAction(ChartDetails.BOLLINGERBANDS));
-        subMenuChartMovingAverage.add(new Separator());
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_5DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_20DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_30DAYS));
@@ -389,6 +395,7 @@ public class SecuritiesChart
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
+        subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
         manager.add(subMenuChartScaling);
         manager.add(subMenuChartDevelopment);
         manager.add(subMenuChartMarker);
@@ -499,7 +506,9 @@ public class SecuritiesChart
                 chart.getSeriesSet().deleteSeries(s.getId());
 
             chart.clearMarkerLines();
+            chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
+            customBehindPaintListener.clear();
             customTooltipEvents.clear();
 
             if (security == null || security.getPrices().isEmpty())
@@ -562,6 +571,10 @@ public class SecuritiesChart
                 valuesRelativeNegative = new double[prices.size() - index];
                 valuesZeroLine = new double[prices.size() - index];
             }
+
+            // Disable SWT antialias for more than 1000 records due to SWT
+            // performance issue in Drawing
+            swtAntialias = dates.length > 1000 ? SWT.OFF : SWT.ON;
 
             SecurityPrice p2 = prices.get(index);
 
@@ -645,6 +658,21 @@ public class SecuritiesChart
 
             yAxis1st.getTick().setVisible(true);
 
+            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
+            {
+                TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
+                List<LocalDate> calendarDates = new ArrayList<>();
+                for (LocalDate calendarDate = dates[0]; calendarDate
+                                .isBefore(dates[dates.length - 1]); calendarDate = calendarDate.plusDays(1))
+                    calendarDates.add(calendarDate);
+                for (LocalDate pricingDate : dates)
+                    calendarDates.remove(pricingDate);
+                for (LocalDate targetDate : calendarDates)
+                {
+                    if (!tradeCalendar.isHoliday(targetDate))
+                        chart.addNonTradingDayMarker(targetDate, colorNonTradingDay);
+                }
+            }
         }
         finally
         {
@@ -721,7 +749,7 @@ public class SecuritiesChart
         lineSeriesSMA.enableArea(false);
         lineSeriesSMA.setSymbolType(PlotSymbolType.NONE);
         lineSeriesSMA.setYSeries(smaLines.getValues());
-        lineSeriesSMA.setAntialias(SWT.ON);
+        lineSeriesSMA.setAntialias(swtAntialias);
         lineSeriesSMA.setLineColor(smaColor);
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
@@ -937,7 +965,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsLowerBand.setLineWidth(2);
         lineSeriesBollingerBandsLowerBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsLowerBand.setYSeries(bollingerBandsLowerBand.getValues());
-        lineSeriesBollingerBandsLowerBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsLowerBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsLowerBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsLowerBand.setYAxisId(0);
         lineSeriesBollingerBandsLowerBand.setVisibleInLegend(false);
@@ -951,7 +979,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsMiddleBand.setLineStyle(LineStyle.DOT);
         lineSeriesBollingerBandsMiddleBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsMiddleBand.setYSeries(bollingerBandsMiddleBand.getValues());
-        lineSeriesBollingerBandsMiddleBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsMiddleBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsMiddleBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsMiddleBand.setYAxisId(0);
         lineSeriesBollingerBandsMiddleBand.setVisibleInLegend(true);
@@ -965,7 +993,7 @@ public class SecuritiesChart
         lineSeriesBollingerBandsUpperBand.setLineStyle(LineStyle.SOLID);
         lineSeriesBollingerBandsUpperBand.setSymbolType(PlotSymbolType.NONE);
         lineSeriesBollingerBandsUpperBand.setYSeries(bollingerBandsUpperBand.getValues());
-        lineSeriesBollingerBandsUpperBand.setAntialias(SWT.ON);
+        lineSeriesBollingerBandsUpperBand.setAntialias(swtAntialias);
         lineSeriesBollingerBandsUpperBand.setLineColor(colorBollingerBands);
         lineSeriesBollingerBandsUpperBand.setYAxisId(0);
         lineSeriesBollingerBandsUpperBand.setVisibleInLegend(false);

@@ -14,7 +14,7 @@ public class TradeCalendarTest
     @Test
     public void testEasterHolidays()
     {
-        TradeCalendar calendar = new TradeCalendar();
+        TradeCalendar calendar = TradeCalendarManager.getInstance("trade-calendar-de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-04-02")), is(false));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-04-03")), is(true));
@@ -29,7 +29,7 @@ public class TradeCalendarTest
     @Test
     public void testWeekends()
     {
-        TradeCalendar calendar = new TradeCalendar();
+        TradeCalendar calendar = TradeCalendarManager.getInstance("trade-calendar-de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-01-31")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-02-01")), is(true));
@@ -38,7 +38,7 @@ public class TradeCalendarTest
     @Test
     public void testFixedPublicHolidays()
     {
-        TradeCalendar calendar = new TradeCalendar();
+        TradeCalendar calendar = TradeCalendarManager.getInstance("trade-calendar-de");
 
         assertThat(calendar.isHoliday(LocalDate.parse("2015-01-01")), is(true));
         assertThat(calendar.isHoliday(LocalDate.parse("2015-05-01")), is(true));

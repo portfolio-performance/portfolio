@@ -36,6 +36,7 @@ import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class PerformanceIndex
 {
@@ -238,7 +239,7 @@ public class PerformanceIndex
      */
     private Predicate<Integer> filterReturnsForVolatilityCalculation()
     {
-        TradeCalendar calendar = new TradeCalendar();
+        TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
         return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
     }
 

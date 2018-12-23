@@ -40,6 +40,8 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.util.Isin;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class BindingHelper
 {
@@ -82,6 +84,55 @@ public class BindingHelper
         public String convert(CurrencyUnit fromObject)
         {
             return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
+        }
+    }
+
+    private static final class StringToCalendarConverter implements IConverter<String, TradeCalendar>
+    {
+        private TradeCalendar emptyOption;
+
+        public StringToCalendarConverter(TradeCalendar emptyOption)
+        {
+            this.emptyOption = emptyOption;
+        }
+
+        @Override
+        public Object getToType()
+        {
+            return TradeCalendar.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public TradeCalendar convert(String fromObject)
+        {
+            return fromObject == null ? emptyOption : TradeCalendarManager.getInstance(fromObject);
+        }
+    }
+
+    private static final class CalendarToStringConverter implements IConverter<TradeCalendar, String>
+    {
+        @Override
+        public Object getToType()
+        {
+            return String.class;
+        }
+
+        @Override
+        public Object getFromType()
+        {
+            return TradeCalendar.class;
+        }
+
+        @Override
+        public String convert(TradeCalendar fromObject)
+        {
+            return fromObject.getCode().isEmpty() ? null : fromObject.getCode();
         }
     }
 
@@ -283,6 +334,36 @@ public class BindingHelper
         @SuppressWarnings("unchecked")
         IObservableValue<CurrencyUnit> comboTarget = ViewersObservables.observeSingleSelection(combo);
         context.bindValue(comboTarget, comboModel, targetToModel, modelToTarget);
+        return combo;
+    }
+
+    public final ComboViewer bindCalendarCombo(Composite editArea, String label, String property)
+    {
+        Label l = new Label(editArea, SWT.NONE);
+        l.setText(label);
+        ComboViewer combo = new ComboViewer(editArea, SWT.READ_ONLY);
+        combo.setContentProvider(ArrayContentProvider.getInstance());
+        combo.setLabelProvider(new LabelProvider());
+
+        TradeCalendar emptyOption = TradeCalendarManager.createEmpty();
+
+        List<TradeCalendar> calendar = new ArrayList<>();
+        calendar.add(emptyOption);
+        calendar.addAll(TradeCalendarManager.getAvailableCalendar().sorted().collect(Collectors.toList()));
+        combo.setInput(calendar);
+        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL).applyTo(combo.getControl());
+
+        UpdateValueStrategy<TradeCalendar, String> targetToModel = new UpdateValueStrategy<>();
+        targetToModel.setConverter(new CalendarToStringConverter());
+
+        UpdateValueStrategy<String, TradeCalendar> modelToTarget = new UpdateValueStrategy<>();
+        modelToTarget.setConverter(new StringToCalendarConverter(emptyOption));
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<TradeCalendar> targetObservable = ViewersObservables.observeSingleSelection(combo);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> observable = BeanProperties.value(property).observe(model);
+        context.bindValue(targetObservable, observable, targetToModel, modelToTarget);
         return combo;
     }
 
