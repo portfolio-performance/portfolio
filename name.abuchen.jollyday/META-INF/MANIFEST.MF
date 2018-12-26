@@ -1,0 +1,9 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Jollyday
+Bundle-SymbolicName: name.abuchen.jollyday
+Bundle-Version: 0.36.2.qualifier
+Fragment-Host: jollyday
+Automatic-Module-Name: name.abuchen.jollyday
+Bundle-RequiredExecutionEnvironment: JavaSE-1.8
+Import-Package: com.sun.xml.bind.v2;version="2.4.0"
