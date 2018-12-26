@@ -21,3 +21,6 @@ cache:
 
 jdk:
 - oraclejdk8
+
+git:
+  depth: false
