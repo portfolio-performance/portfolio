@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;

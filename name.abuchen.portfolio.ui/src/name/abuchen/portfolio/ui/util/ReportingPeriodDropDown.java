@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
 import name.abuchen.portfolio.ui.dialogs.EditReportingPeriodsDialog;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public final class ReportingPeriodDropDown extends AbstractDropDown
 {

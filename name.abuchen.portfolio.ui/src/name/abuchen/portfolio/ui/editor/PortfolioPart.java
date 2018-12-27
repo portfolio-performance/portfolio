@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +61,15 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
+import name.abuchen.portfolio.ui.jobs.UpdateCPIJob;
+import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -485,7 +493,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         return preferenceStore;
     }
 
-    /* package */void markDirty()
+    /* package */ void markDirty()
     {
         dirty.setDirty(true);
     }

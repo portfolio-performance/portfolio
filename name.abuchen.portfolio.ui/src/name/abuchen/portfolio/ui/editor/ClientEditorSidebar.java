@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.editor;
 
 import java.text.MessageFormat;
 import java.util.List;
@@ -29,8 +29,10 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.ui.Sidebar.Entry;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.Sidebar.Entry;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;

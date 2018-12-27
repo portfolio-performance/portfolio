@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> extends AbstractFinanceView
 {

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.jobs;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -43,6 +43,8 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 
 public class ConsistencyChecksJob extends AbstractClientJob

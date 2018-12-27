@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +8,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 
 public class LoadClientThread extends Thread
 {

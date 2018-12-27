@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 
 public abstract class ColumnEditingSupport
 {

@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.jobs;
 
 import org.eclipse.core.runtime.jobs.Job;
 

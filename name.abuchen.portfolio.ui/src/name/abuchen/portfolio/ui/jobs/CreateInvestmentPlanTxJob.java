@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui;
+package name.abuchen.portfolio.ui.jobs;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,8 +21,9 @@ import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.ui.Messages;
 
-final class CreateInvestmentPlanTxJob extends AbstractClientJob
+public final class CreateInvestmentPlanTxJob extends AbstractClientJob
 {
     private Job startAfterOtherJob;
 
