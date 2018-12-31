@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
 import name.abuchen.portfolio.util.Dates;
 
@@ -17,7 +20,7 @@ import name.abuchen.portfolio.util.Dates;
     /**
      * A dividend payment.
      */
-    private static class DividendPayment
+    /* package */static class DividendPayment
     {
         /**
          * Amount of the payment.
@@ -31,6 +34,10 @@ import name.abuchen.portfolio.util.Dates;
          * Year of the payment.
          */
         public final int year;
+        /**
+         * Rate of return for this payment.
+         */
+        public final double rateOfReturn;
 
         /**
          * Constructs an instance.
@@ -39,33 +46,61 @@ import name.abuchen.portfolio.util.Dates;
          *            currency converter
          * @param t
          *            {@link DividendTransaction}
+         * @param security
+         *            {@link Security}
          */
-        public DividendPayment(CurrencyConverter converter, DividendTransaction t)
+        public DividendPayment(CurrencyConverter converter, DividendTransaction t, Security security)
         {
             this.amount = t.getGrossValue().with(converter.at(t.getDateTime()));
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
+            // try to set rate of return, default is NaN
+            double rateOfReturn = Double.NaN;
+            if (security != null)
+            {
+                // try to get moving average/fifo price
+                rateOfReturn = t.getPersonalDividendYieldMovingAverage();
+                // check if it is valid (non 0)
+                if (rateOfReturn == 0)
+                {
+                    // else use the security price at that date
+                    SecurityPrice p = security.getSecurityPrice(date);
+                    // getSecurityPrice may return an empty price value, so
+                    // check that
+                    long pValue = p.getValue();
+                    if (pValue != 0)
+                    {
+                        double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
+                                        * Values.AmountFraction.factor();
+                        rateOfReturn = t.getDividendPerShare() / sharePriceAmount;
+                    }
+                }
+            }
+            this.rateOfReturn = rateOfReturn;
         }
     }
 
     private final List<DividendPayment> payments = new ArrayList<>();
     private Periodicity periodicity;
     private MutableMoney sum;
+    private double rateOfReturnPerYear;
 
     @Override
     public void finish()
     {
-        // first sort
-        Collections.sort(payments, (r, l) -> r.date.compareTo(l.date));
-        // default is unknown periodicity
-        this.periodicity = Periodicity.UNKNOWN;
-
+        // no payments result in no periodicity
         if (payments.isEmpty())
         {
             this.periodicity = Periodicity.NONE;
             return;
         }
+
+        // default is unknown periodicity
+        this.periodicity = Periodicity.UNKNOWN;
+
+        // first sort
+        Collections.sort(payments, (r, l) -> r.date.compareTo(l.date));
 
         // get first and last payment
         LocalDate firstPayment = payments.get(0).date;
@@ -73,21 +108,25 @@ import name.abuchen.portfolio.util.Dates;
 
         int significantCount = 0;
         int insignificantYears = 0;
+        double sumRateOfReturn = 0;
 
-        // first calc total sum
+        // first calc total sum of all payments
         for (DividendPayment p : payments)
         {
-            // add total sum
+            // add to total sum
             sum.add(p.amount);
+            sumRateOfReturn += p.rateOfReturn;
         }
 
+        int years = 0;
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
+            years++;
             int countPerYear = 0;
             long sumPerYear = 0;
 
-            // first calc sum for year
+            // first calc sum only for this year
             for (DividendPayment p : payments)
             {
                 if (p.year == year)
@@ -104,7 +143,7 @@ import name.abuchen.portfolio.util.Dates;
                 continue;
             }
 
-            // expected amount
+            // calc expected amount for this year
             double expectedAmount = sumPerYear / (double) countPerYear;
 
             // then calc significance
@@ -113,7 +152,8 @@ import name.abuchen.portfolio.util.Dates;
                 if (p.year == year)
                 {
                     // check if dividend contributes the expected amount (if
-                    // it is not a very small extraordinary payment)
+                    // it is not a very small extraordinary payment below 30% of
+                    // the expected one)
                     double significance = p.amount.getAmount() / expectedAmount;
                     if (significance > 0.3)
                     {
@@ -123,32 +163,34 @@ import name.abuchen.portfolio.util.Dates;
             }
         }
 
-        if (significantCount == 0)
-            return;
+        this.rateOfReturnPerYear = sumRateOfReturn / years;
 
         // determine periodicity?
-        // days in current time range
-        int days = Dates.daysBetween(firstPayment, lastPayment) - (insignificantYears * 365);
-        long daysBetweenPayments = Math.round(days / (double) (significantCount - 1));
-
-        // just check payments inbetween one year
-        if (daysBetweenPayments < 430)
+        if (significantCount > 0)
         {
-            if (daysBetweenPayments > 270)
+            // days in current time range
+            int days = Dates.daysBetween(firstPayment, lastPayment) - (insignificantYears * 365);
+            long daysBetweenPayments = Math.round(days / (double) (significantCount - 1));
+
+            // just check payments inbetween one year
+            if (daysBetweenPayments < 430)
             {
-                this.periodicity = Periodicity.ANNUAL;
-            }
-            else if (daysBetweenPayments > 130)
-            {
-                this.periodicity = Periodicity.SEMIANNUAL;
-            }
-            else if (daysBetweenPayments > 60)
-            {
-                this.periodicity = Periodicity.QUARTERLY;
-            }
-            else if (daysBetweenPayments > 20)
-            {
-                this.periodicity = Periodicity.MONTHLY;
+                if (daysBetweenPayments > 270)
+                {
+                    this.periodicity = Periodicity.ANNUAL;
+                }
+                else if (daysBetweenPayments > 130)
+                {
+                    this.periodicity = Periodicity.SEMIANNUAL;
+                }
+                else if (daysBetweenPayments > 60)
+                {
+                    this.periodicity = Periodicity.QUARTERLY;
+                }
+                else if (daysBetweenPayments > 20)
+                {
+                    this.periodicity = Periodicity.MONTHLY;
+                }
             }
         }
     }
@@ -162,10 +204,20 @@ import name.abuchen.portfolio.util.Dates;
     {
         return payments.size();
     }
+    
+    public List<DividendPayment> getPayments()
+    {
+        return payments;
+    }
 
     public Periodicity getPeriodicity()
     {
         return periodicity;
+    }
+
+    public double getRateOfReturnPerYear()
+    {
+        return rateOfReturnPerYear;
     }
 
     public Money getSum()
@@ -184,6 +236,6 @@ import name.abuchen.portfolio.util.Dates;
     public void visit(CurrencyConverter converter, DividendTransaction t)
     {
         // construct new payment and add it to the list
-        payments.add(new DividendPayment(converter, t));
+        payments.add(new DividendPayment(converter, t, getSecurity()));
     }
 }
