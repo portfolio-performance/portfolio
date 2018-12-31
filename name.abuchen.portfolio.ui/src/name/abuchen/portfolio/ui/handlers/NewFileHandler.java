@@ -15,9 +15,9 @@ import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.wizards.client.NewClientWizard;
 
 public class NewFileHandler
@@ -34,7 +34,8 @@ public class NewFileHandler
         {
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(Messages.LabelUnnamedXml);
-            part.getTransientData().put(Client.class.getName(), wizard.getClient());
+            part.getTransientData().put(ClientInput.class.getName(),
+                            new ClientInput(Messages.LabelUnnamedXml, wizard.getClient()));
 
             if (activePart != null)
                 activePart.getParent().getChildren().add(part);

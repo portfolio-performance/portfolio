@@ -2,8 +2,11 @@
 <application:Application xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:application="http://www.eclipse.org/ui/2010/UIModel/application" xmlns:basic="http://www.eclipse.org/ui/2010/UIModel/application/ui/basic" xmlns:menu="http://www.eclipse.org/ui/2010/UIModel/application/ui/menu" xmlns:ui="http://www.eclipse.org/ui/2010/UIModel/application/ui" xmi:id="_D8SDoBfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.application" bindingContexts="_7d8q4RjAEeO8gYEHAOvLsA">
   <children xsi:type="basic:TrimmedWindow" xmi:id="_Zk-qYBfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.window.mainwindow" selectedElement="_nBpq4BfFEeOders_POVQHQ" label="Portfolio Performance" width="1000" height="700">
     <children xsi:type="basic:PartStack" xmi:id="_nBpq4BfFEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.partstack.main">
-      <children xsi:type="basic:Part" xmi:id="_gK7-APO8EeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.part.welcome" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.WelcomePart" label="%part.welcome" closeable="true"/>
+      <children xsi:type="basic:Part" xmi:id="_gK7-APO8EeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.part.welcome" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.WelcomePart" label="%part.welcome" closeable="true">
+        <tags>NoDetach</tags>
+      </children>
       <children xsi:type="basic:Part" xmi:id="_SD5U8KE1EeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.part.errorlog" visible="false" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.log.ErrorLogPart" label="%part.errorlog" closeable="true">
+        <tags>NoDetach</tags>
         <toolbar xmi:id="_Xi5poKMJEeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.toolbar.0">
           <children xsi:type="menu:HandledToolItem" xmi:id="__AfZEKzzEeO6qtqDeqiitg" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogopenlog" label="%command.errorlog.openlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/text.png" command="_h9fugKz0EeO6qtqDeqiitg"/>
           <children xsi:type="menu:HandledToolItem" xmi:id="_ZU7n8KMJEeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.handledtoolitem.commanderrorlogclearlog" label="%command.errorlog.clearlog" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/xmark.png" command="_8B-l8KSiEeO6qtqDeqiitg"/>
@@ -140,6 +143,8 @@
   </rootContext>
   <descriptors xmi:id="_ksNWIBfIEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.part.portfolio" label="%part.portfolio" iconURI="" bindingContexts="_KwZhsBoEEeiQOJdQgYCbNA" allowMultiple="true" closeable="true" dirtyable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.editor.PortfolioPart">
     <tags>removeOnHide</tags>
+    <tags>Editor</tags>
+    <tags>Cloneable</tags>
   </descriptors>
   <descriptors xmi:id="_4RiCMKz9EeOjzfbCEdp40A" elementId="name.abuchen.portfolio.ui.part.textviewer" label="%part.textviewer" allowMultiple="true" closeable="true" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.parts.TextViewerPart"/>
   <commands xmi:id="_1mco0Bi8EeO8gYEHAOvLsA" elementId="org.eclipse.ui.file.exit" commandName="quitCommand"/>

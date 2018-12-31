@@ -15,7 +15,6 @@ public class ProgressMonitorInputStream extends FilterInputStream
     private IProgressMonitor monitor;
     private int updateIncrement;
     private long bytesRead = 0;
-    private long lastUpdate = -1;
     private long nextUpdate = 0;
 
     public ProgressMonitorInputStream(InputStream in, int updateIncrement, IProgressMonitor monitor)
@@ -23,6 +22,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
         super(in);
         this.updateIncrement = updateIncrement;
         this.monitor = monitor;
+        this.nextUpdate = updateIncrement;
     }
 
     /**
@@ -109,10 +109,7 @@ public class ProgressMonitorInputStream extends FilterInputStream
     {
         if (bytesRead >= nextUpdate)
         {
-            nextUpdate = bytesRead - (bytesRead % updateIncrement);
-            if (nextUpdate != lastUpdate)
-                monitor.worked(1);
-            lastUpdate = nextUpdate;
+            monitor.worked(1);
             nextUpdate += updateIncrement;
         }
     }

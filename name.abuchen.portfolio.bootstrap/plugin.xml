@@ -20,6 +20,10 @@
                name="lifeCycleURI"
                value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.LifeCycleManager">
          </property>
+         <property
+               name="rendererFactoryUri"
+               value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.swt.CustomRendererFactory">
+         </property>
       </product>
    </extension>
    <extension

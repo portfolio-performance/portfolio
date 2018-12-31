@@ -2,30 +2,20 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import org.eclipse.core.runtime.Status;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Optional;
-import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
@@ -34,13 +24,9 @@ import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.ErrorDialog;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -51,7 +37,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.ProgressBar;
 import org.eclipse.swt.widgets.Shell;
@@ -65,56 +50,22 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
-import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
-import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
-import name.abuchen.portfolio.ui.jobs.UpdateCPIJob;
-import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.editor.ClientInput.ClientInputListener;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.ExceptionView;
-import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
-@SuppressWarnings("restriction")
-public class PortfolioPart implements LoadClientThread.Callback
+public class PortfolioPart implements ClientInputListener
 {
-    private abstract class BuildContainerRunnable implements Runnable
-    {
-        @Override
-        public final void run()
-        {
-            if (container != null && !container.isDisposed())
-            {
-                Composite parent = container.getParent();
-                parent.setRedraw(false);
-                try
-                {
-                    container.dispose();
-                    createContainer(parent);
-                    parent.layout(true);
-                }
-                finally
-                {
-                    parent.setRedraw(true);
-                }
-            }
-        }
-
-        public abstract void createContainer(Composite parent);
-    }
-
     // compatibility: the value used to be stored in the AbstractHistoricView
     private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
 
-    private File clientFile;
-    private Client client;
+    private ClientInput clientInput;
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
 
-    private PreferenceStore preferenceStore = new PreferenceStore();
-    private List<Job> regularJobs = new ArrayList<>();
-
     private Composite container;
+    private ProgressBar progressBar;
     private PageBook book;
     private AbstractFinanceView view;
 
@@ -130,47 +81,53 @@ public class PortfolioPart implements LoadClientThread.Callback
     IEventBroker broker;
 
     @Inject
-    @Preference
-    IEclipsePreferences preferences;
-    
-    @Inject
     ESelectionService selectionService;
+
+    @Inject
+    ClientInputFactory clientInputFactory;
 
     @PostConstruct
     public void createComposite(Composite parent, MPart part)
     {
         // is client available? (e.g. via new file wizard)
-        Client attachedClient = (Client) part.getTransientData().get(Client.class.getName());
-        if (attachedClient != null)
+        clientInput = (ClientInput) part.getTransientData().get(ClientInput.class.getName());
+
+        if (clientInput == null)
         {
-            internalSetClient(attachedClient);
-            dirty.setDirty(true);
+            // is file name available? (e.g. load file, open on startup)
+            String filename = part.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY);
+            if (filename != null)
+            {
+                clientInput = clientInputFactory.lookup(new File(filename));
+                part.getTransientData().put(ClientInput.class.getName(), clientInput);
+
+                broker.post(UIConstants.Event.File.OPENED, clientInput.getFile().getAbsolutePath());
+            }
         }
 
-        // is file name available? (e.g. load file, open on startup)
-        String filename = part.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY);
-        if (filename != null)
-        {
-            clientFile = new File(filename);
-            broker.post(UIConstants.Event.File.OPENED, clientFile.getAbsolutePath());
-            loadPreferences();
-        }
+        if (clientInput == null)
+            throw new IllegalArgumentException();
 
-        if (attachedClient != null)
+        if (clientInput.getFile() != null)
+            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientInput.getFile().getAbsolutePath());
+
+        clientInput.addListener(this);
+
+        if (clientInput.getClient() != null)
         {
+            setupClient(clientInput.getClient());
             createContainerWithViews(parent);
         }
-        else if (ClientFactory.isEncrypted(clientFile))
+        else if (ClientFactory.isEncrypted(clientInput.getFile()))
         {
-            createContainerWithMessage(parent, MessageFormat.format(Messages.MsgOpenFile, clientFile.getName()), false,
-                            true);
+            createContainerWithMessage(parent,
+                            MessageFormat.format(Messages.MsgOpenFile, clientInput.getFile().getName()), false, true);
         }
         else
         {
-            ProgressBar bar = createContainerWithMessage(parent,
-                            MessageFormat.format(Messages.MsgLoadingFile, clientFile.getName()), true, false);
-
-            new LoadClientThread(broker, new ProgressMonitor(bar), this, clientFile, null).start();
+            this.progressBar = createContainerWithMessage(parent,
+                            MessageFormat.format(Messages.MsgLoadingFile, clientInput.getFile().getName()), true,
+                            false);
         }
     }
 
@@ -196,7 +153,7 @@ public class PortfolioPart implements LoadClientThread.Callback
         divider.setBackground(Colors.SIDEBAR_BORDER);
         GridDataFactory.fillDefaults().span(0, 2).hint(1, SWT.DEFAULT).applyTo(divider);
 
-        ClientProgressProvider provider = make(ClientProgressProvider.class, client, navigationBar);
+        ClientProgressProvider provider = make(ClientProgressProvider.class, clientInput.getClient(), navigationBar);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(provider.getControl());
 
         book = new PageBook(sash, SWT.NONE);
@@ -281,79 +238,87 @@ public class PortfolioPart implements LoadClientThread.Callback
             public void widgetDefaultSelected(SelectionEvent e)
             {
                 final String password = pwd.getText();
-                Display.getDefault().syncExec(new BuildContainerRunnable()
-                {
-                    @Override
-                    public void createContainer(Composite parent)
-                    {
-                        ProgressBar bar = createContainerWithMessage(parent, MessageFormat.format(
-                                        Messages.MsgLoadingFile, PortfolioPart.this.clientFile.getName()), true, false);
-                        new LoadClientThread(broker, new ProgressMonitor(bar), PortfolioPart.this, clientFile,
-                                        password.toCharArray()).start();
-                    }
-                });
+
+                new LoadClientThread(clientInput, broker, new ProgressProvider(clientInput), password.toCharArray())
+                                .start();
             }
         });
 
         return pwd;
     }
 
-    @Override
-    public void setClient(Client client)
+    private void rebuildContainer(Consumer<Composite> builder)
     {
-        // additional safeguard: make a copy of the file that could be
-        // successfully read b/c we get reports of corrupted files
-
-        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-            createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
-
-        internalSetClient(client);
-
-        Display.getDefault().asyncExec(new BuildContainerRunnable()
+        if (container != null && !container.isDisposed())
         {
-            @Override
-            public void createContainer(Composite parent)
+            Composite parent = container.getParent();
+            parent.setRedraw(false);
+            try
             {
-                createContainerWithViews(parent);
+                container.dispose();
+                builder.accept(parent);
+                parent.layout(true);
             }
-        });
+            finally
+            {
+                parent.setRedraw(true);
+            }
+        }
     }
 
-    public void internalSetClient(Client client)
+    private void setupClient(Client client)
     {
-        this.client = client;
-        this.dirty.setDirty(false);
         this.context.set(Client.class, client);
 
-        client.addPropertyChangeListener(event -> notifyModelUpdated());
+        // build factory for exchange rates once client is available
+        this.exchangeRateProviderFacory = make(ExchangeRateProviderFactory.class);
+        this.context.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
+    }
 
-        if (client.getFileVersionAfterRead() < Client.VERSION_WITH_CURRENCY_SUPPORT)
+    @Override
+    public void onLoading(int totalWork, int worked)
+    {
+        if (this.progressBar == null || this.progressBar.isDisposed())
         {
-            Display.getDefault().asyncExec(() -> {
-                Dialog dialog = new ClientMigrationDialog(Display.getDefault().getActiveShell(), client);
-                dialog.open();
+            rebuildContainer(parent -> { // NOSONAR
+                progressBar = createContainerWithMessage(parent, MessageFormat.format(Messages.MsgLoadingFile,
+                                PortfolioPart.this.clientInput.getFile().getName()), true, false);
             });
         }
 
-        // build factory for exchange rates
-        this.exchangeRateProviderFacory = make(ExchangeRateProviderFactory.class);
-        this.context.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
-        
-        new ConsistencyChecksJob(client, false).schedule(100);
-        scheduleOnlineUpdateJobs();
+        int max = progressBar.getMaximum();
+        if (max != totalWork)
+            this.progressBar.setMaximum(totalWork);
+        this.progressBar.setSelection(worked);
     }
 
     @Override
-    public void setErrorMessage(final String message)
+    public void onLoaded()
     {
-        Display.getDefault().asyncExec(new BuildContainerRunnable()
-        {
-            @Override
-            public void createContainer(Composite parent)
-            {
-                createContainerWithMessage(parent, message, false, ClientFactory.isEncrypted(clientFile));
-            }
-        });
+        setupClient(clientInput.getClient());
+        rebuildContainer(this::createContainerWithViews);
+    }
+
+    @Override
+    public void onError(String message)
+    {
+        rebuildContainer(parent -> createContainerWithMessage(parent, message, false,
+                        ClientFactory.isEncrypted(clientInput.getFile())));
+    }
+
+    @Override
+    public void onSaved()
+    {
+
+    }
+
+    @Override
+    public void onDirty(boolean isDirty)
+    {
+        dirty.setDirty(isDirty);
+
+        if (view != null && view.getControl() != null && !view.getControl().isDisposed())
+            view.notifyModelUpdated();
     }
 
     @Focus
@@ -366,136 +331,39 @@ public class PortfolioPart implements LoadClientThread.Callback
     @PreDestroy
     public void destroy()
     {
-        if (clientFile != null)
-            storePreferences(false);
-
-        regularJobs.forEach(Job::cancel);
+        this.clientInput.removeListener(this);
     }
 
     @Persist
     public void save(MPart part, @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        if (clientFile == null)
-        {
-            doSaveAs(part, shell, null, null);
-            return;
-        }
-
-        try
-        {
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientFile.getAbsolutePath());
-
-            if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-                createBackup(clientFile, "backup"); //$NON-NLS-1$
-
-            ClientFactory.save(client, clientFile, null, null);
-            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-            dirty.setDirty(false);
-
-            storePreferences(false);
-        }
-        catch (IOException e)
-        {
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
-    }
-
-    private void createBackup(File file, String suffix)
-    {
-        try
-        {
-            // keep original extension in order to be able to open the backup
-            // file directly from within PP
-            String filename = file.getName();
-            int l = filename.lastIndexOf('.');
-            String backupName = l > 0 ? filename.substring(0, l) + '.' + suffix + filename.substring(l)
-                            : filename + '.' + suffix;
-
-            Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
-            Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
-                            Messages.LabelError, e.getMessage()));
-        }
+        this.clientInput.save();
+        // FIXME
     }
 
     public void doSaveAs(MPart part, Shell shell, String extension, String encryptionMethod) // NOSONAR
     {
-        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setOverwrite(true);
+        // FIXME
+    }
 
-        // if an extension is given, make sure the file name proposal has the
-        // right extension in the save as dialog
-        String fileNameProposal = clientFile != null ? clientFile.getName() : part.getLabel();
-        if (extension != null && !fileNameProposal.endsWith('.' + extension))
-        {
-            int p = fileNameProposal.lastIndexOf('.');
-            fileNameProposal = (p > 0 ? fileNameProposal.substring(0, p + 1) : fileNameProposal + '.') + extension;
-        }
-
-        dialog.setFileName(fileNameProposal);
-        dialog.setFilterPath(clientFile != null ? clientFile.getAbsolutePath() : System.getProperty("user.home")); //$NON-NLS-1$
-
-        String path = dialog.open();
-        if (path == null)
-            return;
-
-        // again make sure the extension is correct as the user might have
-        // changed it in the save dialog
-        if (extension != null && !path.endsWith('.' + extension))
-            path += '.' + extension;
-
-        File localFile = new File(path);
-        char[] password = null;
-
-        if (ClientFactory.isEncrypted(localFile))
-        {
-            PasswordDialog pwdDialog = new PasswordDialog(shell);
-            if (pwdDialog.open() != PasswordDialog.OK)
-                return;
-            password = pwdDialog.getPassword().toCharArray();
-        }
-
-        try
-        {
-            clientFile = localFile;
-
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientFile.getAbsolutePath());
-            ClientFactory.save(client, clientFile, encryptionMethod, password);
-            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-
-            dirty.setDirty(false);
-            part.setLabel(clientFile.getName());
-            part.setTooltip(clientFile.getAbsolutePath());
-
-            storePreferences(true);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
+    public ClientInput getClientInput()
+    {
+        return clientInput;
     }
 
     public Client getClient()
     {
-        return client;
+        return clientInput.getClient();
     }
 
     public IPreferenceStore getPreferenceStore()
     {
-        return preferenceStore;
+        return clientInput.getPreferenceStore();
     }
 
     /* package */ void markDirty()
     {
-        dirty.setDirty(true);
+        clientInput.markDirty();
     }
 
     @Inject
@@ -504,20 +372,10 @@ public class PortfolioPart implements LoadClientThread.Callback
     {
         if (exchangeRateProviderFacory != null)
             exchangeRateProviderFacory.clearCache();
-        
+
         // update view w/o marking the model dirty
         if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.notifyModelUpdated();
-    }
-
-    public void notifyModelUpdated()
-    {
-        Display.getDefault().asyncExec(() -> {
-            markDirty();
-
-            if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-                view.notifyModelUpdated();
-        });
     }
 
     @SuppressWarnings("unchecked")
@@ -545,8 +403,8 @@ public class PortfolioPart implements LoadClientThread.Callback
     private void createView(Class<? extends AbstractFinanceView> clazz, Object parameter)
     {
         IEclipseContext viewContext = this.context.createChild();
-        viewContext.set(Client.class, this.client);
-        viewContext.set(IPreferenceStore.class, this.preferenceStore);
+        viewContext.set(Client.class, this.clientInput.getClient());
+        viewContext.set(IPreferenceStore.class, this.clientInput.getPreferenceStore());
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ESelectionService.class, selectionService);
         viewContext.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
@@ -570,32 +428,6 @@ public class PortfolioPart implements LoadClientThread.Callback
             if (!view.getControl().isDisposed())
                 view.getControl().dispose();
             view = null;
-        }
-    }
-
-    private void scheduleOnlineUpdateJobs()
-    {
-        if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
-        {
-            Job initialQuoteUpdate = new UpdateQuotesJob(client,
-                            EnumSet.of(UpdateQuotesJob.Target.LATEST, UpdateQuotesJob.Target.HISTORIC));
-            initialQuoteUpdate.schedule(1000);
-
-            CreateInvestmentPlanTxJob checkInvestmentPlans = make(CreateInvestmentPlanTxJob.class, this);
-            checkInvestmentPlans.startAfter(initialQuoteUpdate);
-            checkInvestmentPlans.schedule(1100);
-
-            int thirtyMinutes = 1000 * 60 * 30;
-            Job job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).repeatEvery(thirtyMinutes);
-            job.schedule(thirtyMinutes);
-            regularJobs.add(job);
-
-            int sixHours = 1000 * 60 * 60 * 6;
-            job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
-            job.schedule(sixHours);
-            regularJobs.add(job);
-
-            new UpdateCPIJob(client).schedule(1000);
         }
     }
 
@@ -643,76 +475,6 @@ public class PortfolioPart implements LoadClientThread.Callback
         }
 
         getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
-    }
-
-    private void storePreferences(boolean forceWrite)
-    {
-        if (clientFile != null && (forceWrite || preferenceStore.needsSaving()))
-        {
-            try
-            {
-                preferenceStore.setFilename(getPreferenceStoreFile(clientFile).getAbsolutePath());
-                preferenceStore.save();
-            }
-            catch (IOException ignore)
-            {
-                PortfolioPlugin.log(ignore);
-            }
-        }
-    }
-
-    private void loadPreferences()
-    {
-        if (clientFile != null)
-        {
-            try
-            {
-                File preferenceFile = getPreferenceStoreFile(clientFile);
-                preferenceStore.setFilename(preferenceFile.getAbsolutePath());
-                if (preferenceFile.exists())
-                {
-                    preferenceStore.load();
-                }
-            }
-            catch (IOException ignore)
-            {
-                PortfolioPlugin.log(ignore);
-            }
-        }
-    }
-
-    private File getPreferenceStoreFile(File file) throws IOException
-    {
-        boolean storeNextToFile = preferences.getBoolean(UIConstants.Preferences.STORE_SETTINGS_NEXT_TO_FILE, false);
-
-        if (storeNextToFile)
-        {
-            String filename = file.getName();
-            int last = filename.lastIndexOf('.');
-            if (last > 0)
-                filename = filename.substring(0, last);
-            
-            return new File(file.getParentFile(), filename + ".settings"); //$NON-NLS-1$
-        }
-        else
-        {
-            try
-            {
-                byte[] digest = MessageDigest.getInstance("MD5").digest(file.getAbsolutePath().getBytes()); //$NON-NLS-1$
-
-                StringBuilder filename = new StringBuilder();
-                filename.append("prf_"); //$NON-NLS-1$
-                for (int i = 0; i < digest.length; i++)
-                    filename.append(Integer.toString((digest[i] & 0xff) + 0x100, 16).substring(1));
-                filename.append(".txt"); //$NON-NLS-1$
-
-                return new File(PortfolioPlugin.getDefault().getStateLocation().toFile(), filename.toString());
-            }
-            catch (NoSuchAlgorithmException e)
-            {
-                throw new IOException(e);
-            }
-        }
     }
 
     private <T> T make(Class<T> type, Object... parameters)

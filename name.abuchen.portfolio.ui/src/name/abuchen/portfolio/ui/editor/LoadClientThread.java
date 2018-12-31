@@ -1,38 +1,28 @@
 package name.abuchen.portfolio.ui.editor;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 
-import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 
-public class LoadClientThread extends Thread
+/* package */ class LoadClientThread extends Thread
 {
-    public interface Callback
-    {
-        void setClient(Client client);
-
-        void setErrorMessage(String message);
-    }
-
+    private final ClientInput clientInput;
     private final IEventBroker broker;
-    private final IProgressMonitor monitor;
-    private final Callback callback;
-    private final File file;
+    private final ProgressProvider progressProvider;
     private final char[] password;
 
-    public LoadClientThread(IEventBroker broker, IProgressMonitor monitor, Callback callback, File file,
+    public LoadClientThread(ClientInput clientInput, IEventBroker broker, ProgressProvider progressProvider,
                     char[] password)
     {
+        this.clientInput = clientInput;
         this.broker = broker;
-        this.monitor = monitor;
-        this.callback = callback;
-        this.file = file;
+        this.progressProvider = progressProvider;
         this.password = password;
     }
 
@@ -41,18 +31,19 @@ public class LoadClientThread extends Thread
     {
         try
         {
-            Client client = ClientFactory.load(file, password, monitor);
-            callback.setClient(client);
+            Client client = ClientFactory.load(clientInput.getFile(), password, progressProvider.createMonitor());
+
+            Display.getDefault().asyncExec(() -> clientInput.setClient(client));
         }
         catch (FileNotFoundException exception)
         {
-            broker.post(UIConstants.Event.File.REMOVED, file.getAbsolutePath());
-            callback.setErrorMessage(exception.getMessage());
+            broker.post(UIConstants.Event.File.REMOVED, clientInput.getFile().getAbsolutePath());
+            Display.getDefault().asyncExec(() -> clientInput.setErrorMessage(exception.getMessage()));
             PortfolioPlugin.log(exception);
         }
         catch (Exception exception)
         {
-            callback.setErrorMessage(exception.getMessage());
+            Display.getDefault().asyncExec(() -> clientInput.setErrorMessage(exception.getMessage()));
             PortfolioPlugin.log(exception);
         }
     }
