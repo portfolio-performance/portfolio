@@ -128,7 +128,10 @@ public class Messages extends NLS
     public static String LabelSecurity;
     public static String LabelSuffixEntryCorrected;
     public static String LabelTradeCalendarDefault;
+    public static String LabelTradeCalendarEuronext;
     public static String LabelTradeCalendarGermany;
+    public static String LabelTradeCalendarLSE;
+    public static String LabelTradeCalendarNYSE;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTransferAccount;
     public static String LabelTransferPortfolio;

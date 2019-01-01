@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import java.time.LocalDate;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -14,10 +14,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import de.jollyday.Holiday;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.util.Holiday;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
@@ -86,12 +86,12 @@ public class CalendarPreferencePage extends FieldEditorPreferencePage
         if (calendar == null)
             return ""; //$NON-NLS-1$
 
-        Set<Holiday> holidays = calendar.getHolidays(LocalDate.now().getYear());
+        Collection<Holiday> holidays = calendar.getHolidays(LocalDate.now().getYear());
 
         StringBuilder buffer = new StringBuilder();
         holidays.stream().sorted((r, l) -> r.getDate().compareTo(l.getDate()))
                         .forEach(h -> buffer.append(Values.Date.format(h.getDate())).append(" ") //$NON-NLS-1$
-                                        .append(h.getDescription()).append("\n")); //$NON-NLS-1$
+                                        .append(h.getLabel()).append("\n")); //$NON-NLS-1$
         return buffer.toString();
     }
 }

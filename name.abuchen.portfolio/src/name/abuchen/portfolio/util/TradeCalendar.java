@@ -3,12 +3,15 @@ package name.abuchen.portfolio.util;
 import java.text.Collator;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-
-import de.jollyday.Holiday;
-import de.jollyday.HolidayManager;
+import java.util.stream.Collectors;
 
 public class TradeCalendar implements Comparable<TradeCalendar>
 {
@@ -16,13 +19,30 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 
     private final String code;
     private final String description;
-    private final HolidayManager holidayManager;
 
-    /* package */ TradeCalendar(String code, String description, HolidayManager holidayManager)
+    private final List<HolidayType> holidayTypes = new ArrayList<>();
+    private final Map<Integer, Map<LocalDate, Holiday>> cache = new HashMap<Integer, Map<LocalDate, Holiday>>()
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public Map<LocalDate, Holiday> get(Object key)
+        {
+            return super.computeIfAbsent((Integer) key, year -> holidayTypes.stream().map(type -> type.getHoliday(year))
+                            .filter(Objects::nonNull).collect(Collectors.toMap(Holiday::getDate, t -> t, (r, l) -> r)));
+        }
+
+    };
+
+    /* package */ TradeCalendar(String code, String description)
     {
         this.code = Objects.requireNonNull(code);
         this.description = Objects.requireNonNull(description);
-        this.holidayManager = holidayManager;
+    }
+
+    /* package */ void add(HolidayType type)
+    {
+        this.holidayTypes.add(type);
     }
 
     public String getCode()
@@ -46,12 +66,12 @@ public class TradeCalendar implements Comparable<TradeCalendar>
         if (WEEKEND.contains(date.getDayOfWeek()))
             return true;
 
-        return holidayManager.isHoliday(date);
+        return cache.get(date.getYear()).containsKey(date);
     }
 
-    public Set<Holiday> getHolidays(int year)
+    public Collection<Holiday> getHolidays(int year)
     {
-        return holidayManager.getHolidays(year);
+        return cache.get(year).values();
     }
 
     @Override

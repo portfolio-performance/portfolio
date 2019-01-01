@@ -1,9 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: System-extension
-Bundle-SymbolicName: name.abuchen.system-extension;singleton:=true
-Bundle-Version: 0.36.2.qualifier
-Fragment-Host: system.bundle; extension:=framework
-Automatic-Module-Name: name.abuchen.system-extension
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Export-Package: com.sun.source.tree,com.sun.source.util

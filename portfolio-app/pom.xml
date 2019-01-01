@@ -34,8 +34,6 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
-		<module>../name.abuchen.jollyday</module>
-		<module>../name.abuchen.system-extension</module>
 		<module>../portfolio-product</module>
 	</modules>
 
@@ -151,37 +149,6 @@
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
 			<version>23.5-jre</version>
-		</dependency>
-		<dependency>
-			<groupId>de.jollyday</groupId>
-			<artifactId>jollyday</artifactId>
-			<version>0.5.7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.threeten</groupId>
-			<artifactId>threeten-extra</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<!-- support for XML serialization (necessary since Java 11) -->
-		<dependency>
-			<groupId>javax.xml.bind</groupId>
-			<artifactId>jaxb-api</artifactId>
-			<version>2.4.0-b180830.0359</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-osgi</artifactId>
-			<version>2.4.0-b180830.0438</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.xml.bind</groupId>
-			<artifactId>jaxb-impl</artifactId>
-			<version>2.4.0-b180830.0438</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.activation</groupId>
-			<artifactId>jakarta.activation</artifactId>
-			<version>1.2.1</version>
 		</dependency>
 	</dependencies>
 

@@ -41,20 +41,6 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          unpack="false"/>
 
    <plugin
-         id="name.abuchen.jollyday"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="name.abuchen.system-extension"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="de.engehausen.treemap"
          download-size="0"
          install-size="0"
@@ -168,41 +154,6 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
 
    <plugin
          id="com.google.guava"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jollyday"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.sun.xml.bind.jaxb-osgi"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.sun.xml.bind.jaxb-impl"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="jaxb-api"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
-         id="com.sun.activation.jakarta.activation"
          download-size="0"
          install-size="0"
          version="0.0.0"
