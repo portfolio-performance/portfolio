@@ -2,7 +2,8 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.text.NumberFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.util.List;
 import java.util.Locale;
@@ -21,7 +22,7 @@ import name.abuchen.portfolio.money.Values;
 
 public class BankSLMPDFExtractor extends AbstractPDFExtractor
 {
-    private final NumberFormat swissNumberFormat = NumberFormat.getInstance(new Locale("de", "CH")); //$NON-NLS-1$ //$NON-NLS-2$
+    private final DecimalFormat swissNumberFormat;
 
     public BankSLMPDFExtractor(Client client) throws IOException
     {
@@ -33,6 +34,12 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
         addBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
+
+        swissNumberFormat = (DecimalFormat) DecimalFormat.getInstance(new Locale("de", "CH")); //$NON-NLS-1$ //$NON-NLS-2$
+        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
+        decimalFormatSymbols.setDecimalSeparator('.');
+        decimalFormatSymbols.setGroupingSeparator('\'');
+        swissNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
     }
 
     @SuppressWarnings("nls")

@@ -15,7 +15,7 @@ public class AggregationTest
     {
         // first day of week is locale dependent
         Locale locale = Locale.getDefault();
-        Locale.setDefault(Locale.GERMAN);
+        Locale.setDefault(Locale.GERMANY);
 
         try
         {
