@@ -36,6 +36,7 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TokenReplacingReader;
 import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
@@ -73,9 +74,12 @@ public class OpenSampleHandler
                         fixTaxonomyLabels(client);
 
                         sync.asyncExec(() -> {
+                            String label = sampleFile.substring(sampleFile.lastIndexOf('/') + 1);
+                            ClientInput clientInput = ClientInput.createFor(label, client, app.getContext());
+
                             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
-                            part.setLabel(sampleFile.substring(sampleFile.lastIndexOf('/') + 1));
-                            part.getTransientData().put(Client.class.getName(), client);
+                            part.setLabel(label);
+                            part.getTransientData().put(ClientInput.class.getName(), clientInput);
 
                             MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
                             stack.getChildren().add(part);

@@ -45,9 +45,7 @@ public class CustomStackRenderer extends StackRenderer
         MPart selectedPart = (MPart) menu.getData(SELECTED_PART);
         EPartService partService = getContextForParent(selectedPart).get(EPartService.class);
         if (partService.savePart(selectedPart, true))
-        {
             partService.hidePart(selectedPart);
-        }
     }
 
     private void cloneSelectedPart(final Menu menu)

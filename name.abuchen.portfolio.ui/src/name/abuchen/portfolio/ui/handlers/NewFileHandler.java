@@ -32,10 +32,12 @@ public class NewFileHandler
         WizardDialog dialog = new WizardDialog(shell, wizard);
         if (dialog.open() == Window.OK)
         {
+            ClientInput clientInput = ClientInput.createFor(Messages.LabelUnnamedXml, wizard.getClient(),
+                            modelService.getContainingContext(activePart));
+
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(Messages.LabelUnnamedXml);
-            part.getTransientData().put(ClientInput.class.getName(),
-                            new ClientInput(Messages.LabelUnnamedXml, wizard.getClient()));
+            part.getTransientData().put(ClientInput.class.getName(), clientInput);
 
             if (activePart != null)
                 activePart.getParent().getChildren().add(part);

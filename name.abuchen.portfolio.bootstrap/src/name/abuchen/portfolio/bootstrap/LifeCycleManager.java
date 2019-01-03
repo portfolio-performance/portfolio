@@ -233,7 +233,7 @@ public class LifeCycleManager
     {
         List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE,
                         element -> {
-                            if (!"name.abuchen.portfolio.ui.part.portfolio".equals(element.getElementId())) //$NON-NLS-1$
+                            if (!ModelConstants.PORTFOLIO_PART.equals(element.getElementId()))
                                 return false;
                             return element.getPersistedState().get("file") == null; //$NON-NLS-1$
                         });

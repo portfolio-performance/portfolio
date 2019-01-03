@@ -47,14 +47,15 @@ public abstract class AbstractFinanceView
 
     protected final void updateTitle(String title)
     {
-        this.title.setText(title);
+        if (!this.title.isDisposed())
+            this.title.setText(title);
     }
 
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
     {}
 
-    public void init(PortfolioPart part, Object parameter)
+    public void init(PortfolioPart part, Object parameter) // NOSONAR
     {
         this.part = part;
     }
