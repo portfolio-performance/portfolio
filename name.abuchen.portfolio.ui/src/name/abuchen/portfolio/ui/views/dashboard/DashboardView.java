@@ -350,7 +350,7 @@ public class DashboardView extends AbstractHistoricView
         resources = new DashboardResources(parent);
 
         dashboardData = make(DashboardData.class);
-        dashboardData.setDefaultReportingPeriods(getReportingPeriods());
+        dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
 
         int indexOfSelectedDashboard = Math.max(0, preferences.getInt(SELECTED_DASHBOARD_KEY));

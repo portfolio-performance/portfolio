@@ -43,6 +43,6 @@ public class BookmarkMenu extends MenuManager
 
         add(new Separator());
         add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,
-                        a -> editor.activateView("settings.Settings", Integer.valueOf(0)))); //$NON-NLS-1$
+                        a -> editor.activateView("settings.Settings", null, Integer.valueOf(0)))); //$NON-NLS-1$
     }
 }

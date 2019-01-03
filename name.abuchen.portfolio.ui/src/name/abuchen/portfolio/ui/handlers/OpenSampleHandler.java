@@ -37,6 +37,7 @@ import name.abuchen.portfolio.model.TaxonomyTemplate;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.util.ProgressMonitorInputStream;
 import name.abuchen.portfolio.util.TokenReplacingReader;
 import name.abuchen.portfolio.util.TokenReplacingReader.ITokenResolver;
@@ -45,6 +46,9 @@ public class OpenSampleHandler
 {
     @Inject
     private UISynchronize sync;
+
+    @Inject
+    private ClientInputFactory clientInputFactory;
 
     private static final ResourceBundle RESOURCES = ResourceBundle
                     .getBundle("name.abuchen.portfolio.ui.parts.samplemessages"); //$NON-NLS-1$
@@ -75,7 +79,7 @@ public class OpenSampleHandler
 
                         sync.asyncExec(() -> {
                             String label = sampleFile.substring(sampleFile.lastIndexOf('/') + 1);
-                            ClientInput clientInput = ClientInput.createFor(label, client, app.getContext());
+                            ClientInput clientInput = clientInputFactory.create(label, client);
 
                             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
                             part.setLabel(label);

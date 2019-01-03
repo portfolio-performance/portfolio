@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.editor;
 
-import java.io.IOException;
-
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
@@ -103,7 +101,7 @@ public class ClientProgressProvider extends ProgressProvider
     }
 
     @PostConstruct
-    public void createComposite(Composite parent) throws IOException
+    public void createComposite(Composite parent)
     {
         label = new Label(parent, SWT.LEFT);
         label.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY));

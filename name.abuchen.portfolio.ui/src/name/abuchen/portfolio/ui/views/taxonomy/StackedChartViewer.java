@@ -124,7 +124,7 @@ public class StackedChartViewer extends AbstractChartPage
     {
         super(model, renderer);
 
-        Interval interval = part.loadReportingPeriods().getFirst().toInterval();
+        Interval interval = part.getReportingPeriods().getFirst().toInterval();
 
         Period weekly = Aggregation.Period.WEEKLY;
 

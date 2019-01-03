@@ -39,7 +39,13 @@ public interface UIConstants
     interface File // NOSONAR
     {
         String ENCRYPTED_EXTENSION = "portfolio"; //$NON-NLS-1$
-        String PERSISTED_STATE_KEY = "file"; //$NON-NLS-1$
+    }
+
+    interface PersistedState // NOSONAR
+    {
+        String FILENAME = "file"; //$NON-NLS-1$
+        String REPORTING_PERIOD = "reporting-period"; //$NON-NLS-1$
+        String VIEW = "view"; //$NON-NLS-1$
     }
 
     /**

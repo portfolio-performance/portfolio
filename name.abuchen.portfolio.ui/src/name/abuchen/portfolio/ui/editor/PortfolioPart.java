@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
@@ -15,11 +15,9 @@ import javax.inject.Named;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.Focus;
 import org.eclipse.e4.ui.di.Persist;
-import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -50,7 +48,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.editor.ClientInput.ClientInputListener;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -58,11 +55,8 @@ import name.abuchen.portfolio.ui.views.ExceptionView;
 
 public class PortfolioPart implements ClientInputListener
 {
-    // compatibility: the value used to be stored in the AbstractHistoricView
-    private static final String REPORTING_PERIODS_KEY = "AbstractHistoricView"; //$NON-NLS-1$
-
     private ClientInput clientInput;
-    private ExchangeRateProviderFactory exchangeRateProviderFacory;
+    private ReportingPeriod selectedPeriod;
 
     private Composite container;
     private ProgressBar progressBar;
@@ -98,7 +92,7 @@ public class PortfolioPart implements ClientInputListener
         if (clientInput == null)
         {
             // is file name available? (e.g. load file, open on startup)
-            String filename = part.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY);
+            String filename = part.getPersistedState().get(UIConstants.PersistedState.FILENAME);
             if (filename != null)
             {
                 clientInput = clientInputFactory.lookup(new File(filename));
@@ -112,14 +106,14 @@ public class PortfolioPart implements ClientInputListener
             throw new IllegalArgumentException();
 
         if (clientInput.getFile() != null)
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientInput.getFile().getAbsolutePath());
+            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, clientInput.getFile().getAbsolutePath());
 
         clientInput.addListener(this);
         dirty.setDirty(clientInput.isDirty());
 
         if (clientInput.getClient() != null)
         {
-            setupClient(clientInput.getClient());
+            this.context.set(Client.class, clientInput.getClient());
             createContainerWithViews(parent);
         }
         else if (ClientFactory.isEncrypted(clientInput.getFile()))
@@ -164,10 +158,22 @@ public class PortfolioPart implements ClientInputListener
 
         // restore & save size of navigation bar
         final String sashIdentifier = PortfolioPart.class.getSimpleName() + "-newsash"; //$NON-NLS-1$
-        int size = getPreferenceStore().getInt(sashIdentifier);
+        int size = 0;
+
+        try
+        {
+            String value = part.getPersistedState().get(sashIdentifier);
+            if (value != null && !value.isEmpty())
+                size = Integer.parseInt(value);
+        }
+        catch (NumberFormatException ignore)
+        {
+            PortfolioPlugin.log(ignore);
+        }
+
         navigationBar.setLayoutData(new SashLayoutData(size != 0 ? size : 180));
-        sash.addDisposeListener(e -> getPreferenceStore().setValue(sashIdentifier,
-                        ((SashLayoutData) navigationBar.getLayoutData()).getSize()));
+        sash.addDisposeListener(e -> part.getPersistedState().put(sashIdentifier,
+                        String.valueOf(((SashLayoutData) navigationBar.getLayoutData()).getSize())));
 
         sidebar.selectDefaultView();
 
@@ -270,15 +276,6 @@ public class PortfolioPart implements ClientInputListener
         }
     }
 
-    private void setupClient(Client client)
-    {
-        this.context.set(Client.class, client);
-
-        // build factory for exchange rates once client is available
-        this.exchangeRateProviderFacory = make(ExchangeRateProviderFactory.class);
-        this.context.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
-    }
-
     @Override
     public void onLoading(int totalWork, int worked)
     {
@@ -299,7 +296,7 @@ public class PortfolioPart implements ClientInputListener
     @Override
     public void onLoaded()
     {
-        setupClient(clientInput.getClient());
+        this.context.set(Client.class, clientInput.getClient());
         rebuildContainer(this::createContainerWithViews);
     }
 
@@ -313,7 +310,7 @@ public class PortfolioPart implements ClientInputListener
     @Override
     public void onSaved()
     {
-        part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, clientInput.getFile().getAbsolutePath());
+        part.getPersistedState().put(UIConstants.PersistedState.FILENAME, clientInput.getFile().getAbsolutePath());
         part.setLabel(clientInput.getLabel());
         part.setTooltip(clientInput.getFile().getAbsolutePath());
     }
@@ -323,7 +320,14 @@ public class PortfolioPart implements ClientInputListener
     {
         dirty.setDirty(isDirty);
 
-        if (isDirty && view != null && view.getControl() != null && !view.getControl().isDisposed())
+        if (isDirty)
+            onRecalculationNeeded();
+    }
+
+    @Override
+    public void onRecalculationNeeded()
+    {
+        if (view != null && view.getControl() != null && !view.getControl().isDisposed())
             view.notifyModelUpdated();
     }
 
@@ -338,6 +342,7 @@ public class PortfolioPart implements ClientInputListener
     public void destroy()
     {
         this.clientInput.removeListener(this);
+        this.clientInput.savePreferences();
     }
 
     @Persist
@@ -366,25 +371,61 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getPreferenceStore();
     }
 
+    public LinkedList<ReportingPeriod> getReportingPeriods() // NOSONAR
+    {
+        return clientInput.getReportingPeriods();
+    }
+
+    public ReportingPeriod getSelectedPeriod()
+    {
+        if (selectedPeriod != null)
+            return selectedPeriod;
+
+        try
+        {
+            String code = part.getPersistedState().get(UIConstants.PersistedState.REPORTING_PERIOD);
+            if (code != null)
+                selectedPeriod = ReportingPeriod.from(code);
+        }
+        catch (IOException ignore)
+        {
+            PortfolioPlugin.log(ignore);
+        }
+
+        if (selectedPeriod == null)
+            selectedPeriod = clientInput.getReportingPeriods().getFirst();
+
+        return selectedPeriod;
+    }
+
+    public void setSelectedPeriod(ReportingPeriod selectedPeriod)
+    {
+        this.selectedPeriod = Objects.requireNonNull(selectedPeriod);
+        part.getPersistedState().put(UIConstants.PersistedState.REPORTING_PERIOD, selectedPeriod.getCode());
+    }
+
+    public String getSelectedViewId()
+    {
+        return part.getPersistedState().get(UIConstants.PersistedState.VIEW);
+    }
+
+    public void setSelectedViewId(String viewId)
+    {
+        part.getPersistedState().put(UIConstants.PersistedState.VIEW, viewId);
+    }
+
     /* package */ void markDirty()
     {
         clientInput.markDirty();
     }
 
-    @Inject
-    @Optional
-    public void onExchangeRatesLoaded(@UIEventTopic(UIConstants.Event.ExchangeRates.LOADED) Object obj)
+    public void activateView(String target, String id)
     {
-        if (exchangeRateProviderFacory != null)
-            exchangeRateProviderFacory.clearCache();
-
-        // update view w/o marking the model dirty
-        if (view != null && view.getControl() != null && !view.getControl().isDisposed())
-            view.notifyModelUpdated();
+        this.activateView(target, id, null);
     }
 
     @SuppressWarnings("unchecked")
-    public void activateView(String target, Object parameter)
+    public void activateView(String target, String id, Object parameter)
     {
         disposeView();
 
@@ -396,6 +437,9 @@ public class PortfolioPart implements ClientInputListener
                 return;
 
             createView((Class<AbstractFinanceView>) clazz, parameter);
+
+            if (id != null)
+                setSelectedViewId(id);
         }
         catch (Exception e)
         {
@@ -412,7 +456,7 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(IPreferenceStore.class, this.clientInput.getPreferenceStore());
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ESelectionService.class, selectionService);
-        viewContext.set(ExchangeRateProviderFactory.class, this.exchangeRateProviderFacory);
+        viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
 
         view = ContextInjectionFactory.make(clazz, viewContext);
         viewContext.set(AbstractFinanceView.class, view);
@@ -428,58 +472,15 @@ public class PortfolioPart implements ClientInputListener
     {
         if (view != null)
         {
-            view.getContext().dispose();
+            AbstractFinanceView toBeDisposed = view;
 
-            if (!view.getControl().isDisposed())
-                view.getControl().dispose();
             view = null;
+
+            toBeDisposed.getContext().dispose();
+
+            if (!toBeDisposed.getControl().isDisposed())
+                toBeDisposed.getControl().dispose();
         }
-    }
-
-    // //////////////////////////////////////////////////////////////
-    // preference store functions
-    // //////////////////////////////////////////////////////////////
-
-    public LinkedList<ReportingPeriod> loadReportingPeriods() // NOSONAR
-    {
-        LinkedList<ReportingPeriod> answer = new LinkedList<>();
-
-        String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
-        if (config != null && config.trim().length() > 0)
-        {
-            String[] codes = config.split(";"); //$NON-NLS-1$
-            for (String c : codes)
-            {
-                try
-                {
-                    answer.add(ReportingPeriod.from(c));
-                }
-                catch (IOException | RuntimeException ignore)
-                {
-                    PortfolioPlugin.log(ignore);
-                }
-            }
-        }
-
-        if (answer.isEmpty())
-        {
-            for (int ii = 1; ii <= 5; ii++)
-                answer.add(new ReportingPeriod.LastX(ii, 0));
-        }
-
-        return answer;
-    }
-
-    public void storeReportingPeriods(List<ReportingPeriod> periods)
-    {
-        StringBuilder buf = new StringBuilder();
-        for (ReportingPeriod p : periods)
-        {
-            p.writeTo(buf);
-            buf.append(';');
-        }
-
-        getPreferenceStore().setValue(REPORTING_PERIODS_KEY, buf.toString());
     }
 
     private <T> T make(Class<T> type, Object... parameters)

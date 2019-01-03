@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
@@ -14,8 +13,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.graphics.Color;
@@ -34,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public final class Sidebar extends Composite
@@ -43,7 +42,8 @@ public final class Sidebar extends Composite
         private String id;
         private Sidebar bar;
         private Item item;
-        private Action action;
+        private EntryAction action;
+        private Images image;
 
         public Entry(Sidebar sidebar, String label)
         {
@@ -65,10 +65,15 @@ public final class Sidebar extends Composite
             item = bar.createItem(index, this, label, parent.item.indent + STEP);
         }
 
-        public Entry(Entry parent, Action action)
+        public Entry(Entry parent, String label, EntryAction action)
         {
-            this(parent, action.getText());
-            setAction(action);
+            this(parent, label, action, null);
+        }
+
+        public Entry(Entry parent, String label, EntryAction action, Images image)
+        {
+            this(parent, label);
+            setAction(action, image);
         }
 
         public String getId()
@@ -76,17 +81,22 @@ public final class Sidebar extends Composite
             return id;
         }
 
-        public void setAction(Action action)
+        public void setAction(EntryAction action, Images image)
         {
             this.action = action;
-
-            if (action.getImageDescriptor() != null)
-                item.setImage(action.getImageDescriptor().createImage(true));
+            this.image = image;
+            if (image != null)
+                this.item.setImage(image.image());
         }
 
-        public Action getAction()
+        public EntryAction getAction()
         {
             return action;
+        }
+
+        public Images getImage()
+        {
+            return image;
         }
 
         public void setContextMenu(MenuListener listener)
@@ -199,7 +209,6 @@ public final class Sidebar extends Composite
             if (bar.selection == this)
                 bar.selection = null;
 
-            item.dispose();
             bar.layout();
         }
 
@@ -229,6 +238,11 @@ public final class Sidebar extends Composite
     public interface MenuListener
     {
         void menuAboutToShow(Entry entry, IMenuManager manager);
+    }
+
+    public interface EntryAction
+    {
+        void run(Entry entry);
     }
 
     public static final int STEP = 10;
@@ -263,7 +277,7 @@ public final class Sidebar extends Composite
         if (selection.item != null)
             selection.item.redraw();
 
-        entry.action.run();
+        entry.action.run(entry);
     }
 
     public Entry selectById(String id)
@@ -381,17 +395,11 @@ public final class Sidebar extends Composite
         item.setLayoutData(data);
     }
 
-    private void action(Entry entry)
-    {
-        if (entry.action != null)
-            entry.action.run();
-    }
-
     //
     // item widget
     //
 
-    private class Item extends Canvas
+    private class Item extends Canvas // NOSONAR
     {
         private static final int MARGIN_X = 6;
         private static final int MARGIN_Y = 4;
@@ -422,36 +430,31 @@ public final class Sidebar extends Composite
                     e.doit = false;
             }));
 
-            addMouseListener(new MouseAdapter()
-            {
-                @Override
-                public void mouseDown(MouseEvent event)
+            addMouseListener(MouseListener.mouseDownAdapter(event -> {
+                if (event.button == 1)
                 {
-                    if (event.button == 1)
+                    if (indent > 0)
                     {
-                        if (indent > 0)
+                        Sidebar.this.select(Item.this.entry);
+                    }
+                    else if (indent == 0 && Item.this.entry.action != null)
+                    {
+                        boolean doIt = true;
+
+                        if (image != null)
                         {
-                            Sidebar.this.select(Item.this.entry);
+                            Rectangle clientArea = getClientArea();
+                            Rectangle imgBounds = image.getBounds();
+
+                            doIt = (event.x >= clientArea.width - imgBounds.width - MARGIN_X)
+                                            && (event.x <= clientArea.width - MARGIN_X);
                         }
-                        else if (indent == 0 && Item.this.entry.action != null)
-                        {
-                            boolean doIt = true;
 
-                            if (image != null)
-                            {
-                                Rectangle clientArea = getClientArea();
-                                Rectangle imgBounds = image.getBounds();
-
-                                doIt = (event.x >= clientArea.width - imgBounds.width - MARGIN_X)
-                                                && (event.x <= clientArea.width - MARGIN_X);
-                            }
-
-                            if (doIt)
-                                Sidebar.this.action(Item.this.entry);
-                        }
+                        if (doIt)
+                            action(Item.this.entry);
                     }
                 }
-            });
+            }));
         }
 
         public void addContextMenu(final MenuListener listener)
@@ -469,9 +472,6 @@ public final class Sidebar extends Composite
 
         private void widgetDisposed()
         {
-            if (image != null)
-                image.dispose();
-
             if (contextMenu != null)
                 contextMenu.dispose();
         }
@@ -494,6 +494,12 @@ public final class Sidebar extends Composite
         public void setImage(Image image)
         {
             this.image = image;
+        }
+
+        private void action(Entry entry)
+        {
+            if (entry.action != null)
+                entry.action.run(entry);
         }
 
         @Override

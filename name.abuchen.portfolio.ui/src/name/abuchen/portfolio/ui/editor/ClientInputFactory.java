@@ -3,16 +3,17 @@ package name.abuchen.portfolio.ui.editor;
 import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.HashSet;
-import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.Creatable;
 import org.eclipse.e4.core.services.events.IEventBroker;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 
 @Creatable
@@ -29,17 +30,22 @@ public class ClientInputFactory
 
     public synchronized ClientInput lookup(File clientFile)
     {
-        Optional<WeakReference<ClientInput>> clientInput = cache.stream()
-                        .filter(r -> r.get() != null && clientFile.equals(r.get().getFile())).findAny();
+        ClientInput clientInput = null;
 
-        if (clientInput.isPresent())
+        for (WeakReference<ClientInput> ref : cache)
         {
-            ClientInput answer = clientInput.get().get();
-            if (answer != null)
-                return answer;
+            ClientInput candidate = ref.get();
+            if (candidate == null)
+                continue;
+            if (clientFile.equals(candidate.getFile()))
+                clientInput = candidate;
         }
 
-        ClientInput answer = ClientInput.createFor(clientFile, context);
+        if (clientInput != null)
+            return clientInput;
+
+        ClientInput answer = new ClientInput(clientFile.getName(), clientFile);
+        ContextInjectionFactory.inject(answer, context);
 
         cache.add(new WeakReference<>(answer));
 
@@ -49,4 +55,15 @@ public class ClientInputFactory
         return answer;
     }
 
+    public synchronized ClientInput create(String label, Client client)
+    {
+        ClientInput answer = new ClientInput(label, null);
+        ContextInjectionFactory.inject(answer, context);
+        answer.setClient(client);
+        answer.markDirty();
+
+        cache.add(new WeakReference<>(answer));
+
+        return answer;
+    }
 }

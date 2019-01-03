@@ -95,7 +95,6 @@ public class OpenDialogAction extends Action
         if (dialog.hasAtLeastOneSuccessfulEdit())
         {
             owner.markDirty();
-            owner.notifyModelUpdated();
         }
     }
 }

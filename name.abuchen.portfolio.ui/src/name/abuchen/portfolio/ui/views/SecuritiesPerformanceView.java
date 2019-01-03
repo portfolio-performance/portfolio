@@ -1058,7 +1058,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Override
     public void reportingPeriodUpdated()
     {
-        ReportingPeriod period = dropDown.getPeriods().getFirst();
+        ReportingPeriod period = dropDown.getSelectedPeriod();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.filter(getClient());
         records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());

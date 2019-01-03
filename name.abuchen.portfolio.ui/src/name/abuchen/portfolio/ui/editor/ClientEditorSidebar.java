@@ -9,7 +9,6 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -33,43 +32,13 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.Sidebar.Entry;
+import name.abuchen.portfolio.ui.editor.Sidebar.EntryAction;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 /* package */class ClientEditorSidebar
 {
-    private final class ActivateViewAction extends Action
-    {
-        private String view;
-        private Object parameter;
-
-        private ActivateViewAction(String label, String view)
-        {
-            this(label, view, null, null);
-        }
-
-        private ActivateViewAction(String text, String view, ImageDescriptor image)
-        {
-            this(text, view, null, image);
-        }
-
-        public ActivateViewAction(String text, String view, Object parameter, ImageDescriptor image)
-        {
-            super(text, image);
-            this.view = view;
-            this.parameter = parameter;
-        }
-
-        @Override
-        public void run()
-        {
-            editor.activateView(view, parameter);
-        }
-    }
-
-    private static final String START_PAGE_KEY = "pp-start-page"; //$NON-NLS-1$
-
     private PortfolioPart editor;
 
     private Menu taxonomyMenu;
@@ -79,16 +48,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private Entry allSecurities;
     private Entry statementOfAssets;
     private Entry taxonomies;
-
-    private Sidebar.MenuListener setAsStartPage = (entry, manager) -> manager
-                    .add(new Action(Messages.MenuLabelSetAsStartPage)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            editor.getPreferenceStore().setValue(START_PAGE_KEY, entry.getId());
-                        }
-                    });
 
     public ClientEditorSidebar(PortfolioPart editor)
     {
@@ -131,7 +90,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         for (Entry entry : sidebar.getEntries())
         {
             int indent = entry.getIndent();
-            Action action = entry.getAction();
+            EntryAction action = entry.getAction();
 
             if (indent == 0)
             {
@@ -143,12 +102,10 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 if (subMenu == null || action == null)
                     continue;
 
-                // cannot use the original action b/c it will not highlight the
-                // selected entry
-                // in the sidebar
-                String text = indent > Sidebar.STEP ? "- " + action.getText() : action.getText(); //$NON-NLS-1$
+                String text = indent > Sidebar.STEP ? "- " + entry.getLabel() : entry.getLabel(); //$NON-NLS-1$
                 SimpleAction menuAction = new SimpleAction(text, a -> sidebar.select(entry));
-                menuAction.setImageDescriptor(action.getImageDescriptor());
+                if (entry.getImage() != null)
+                    menuAction.setImageDescriptor(entry.getImage().descriptor());
                 subMenu.add(menuAction);
             }
         }
@@ -156,7 +113,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
     public void selectDefaultView()
     {
-        String defaultView = editor.getPreferenceStore().getString(START_PAGE_KEY);
+        String defaultView = editor.getSelectedViewId();
 
         if (defaultView == null)
         {
@@ -173,29 +130,23 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private void createGeneralDataSection(final Sidebar sidebar)
     {
         final Entry section = new Entry(sidebar, Messages.LabelSecurities);
-        section.setAction(new Action(Messages.LabelSecurities, Images.PLUS.descriptor())
-        {
-            @Override
-            public void run()
-            {
-                String name = askWatchlistName(Messages.WatchlistNewLabel);
-                if (name == null)
-                    return;
+        section.setAction(entry -> {
+            String name = askWatchlistName(Messages.WatchlistNewLabel);
+            if (name == null)
+                return;
 
-                Watchlist watchlist = new Watchlist();
-                watchlist.setName(name);
-                editor.getClient().getWatchlists().add(watchlist);
-                editor.markDirty();
+            Watchlist watchlist = new Watchlist();
+            watchlist.setName(name);
+            editor.getClient().getWatchlists().add(watchlist);
+            editor.markDirty();
 
-                createWatchlistEntry(section, watchlist);
-                sidebar.layout();
-                scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-            }
-        });
+            createWatchlistEntry(section, watchlist);
+            sidebar.layout();
+            scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+        }, Images.PLUS);
 
-        allSecurities = new Entry(section, new ActivateViewAction(Messages.LabelAllSecurities, "SecurityList", //$NON-NLS-1$
-                        Images.SECURITY.descriptor()));
-        allSecurities.setContextMenu(setAsStartPage);
+        allSecurities = new Entry(section, Messages.LabelAllSecurities,
+                        e -> editor.activateView("SecurityList", e.getId()), Images.SECURITY); //$NON-NLS-1$
 
         for (Watchlist watchlist : editor.getClient().getWatchlists())
             createWatchlistEntry(section, watchlist);
@@ -204,8 +155,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private void createWatchlistEntry(Entry section, final Watchlist watchlist)
     {
         Entry entry = new Entry(section, watchlist.getName());
-        entry.setAction(new ActivateViewAction(watchlist.getName(), "SecurityList", watchlist, //$NON-NLS-1$
-                        Images.WATCHLIST.descriptor()));
+        entry.setAction(e -> editor.activateView("SecurityList", e.getId(), watchlist), Images.WATCHLIST); //$NON-NLS-1$
 
         entry.setContextMenu((e, m) -> watchlistContextMenuAboutToShow(watchlist, e, m));
 
@@ -273,8 +223,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
         addMoveUpAndDownActions(watchlist, entry, manager);
         manager.add(new Separator());
-
-        setAsStartPage.menuAboutToShow(entry, manager);
     }
 
     private void addMoveUpAndDownActions(Watchlist watchlist, Entry entry, IMenuManager manager)
@@ -335,55 +283,43 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private void createMasterDataSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelClientMasterData);
-        new Entry(section, new ActivateViewAction(Messages.LabelAccounts, "AccountList", //$NON-NLS-1$
-                        Images.ACCOUNT.descriptor())).setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.LabelPortfolios, "PortfolioList", //$NON-NLS-1$
-                        Images.PORTFOLIO.descriptor())).setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.LabelInvestmentPlans, "InvestmentPlanList", //$NON-NLS-1$
-                        Images.INVESTMENTPLAN.descriptor())).setContextMenu(setAsStartPage);
+        new Entry(section, Messages.LabelAccounts, e -> editor.activateView("AccountList", e.getId()), //$NON-NLS-1$
+                        Images.ACCOUNT);
+        new Entry(section, Messages.LabelPortfolios, e -> editor.activateView("PortfolioList", e.getId()), //$NON-NLS-1$
+                        Images.PORTFOLIO);
+        new Entry(section, Messages.LabelInvestmentPlans, e -> editor.activateView("InvestmentPlanList", e.getId()), //$NON-NLS-1$
+                        Images.INVESTMENTPLAN);
     }
 
     private void createPerformanceSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelReports);
 
-        statementOfAssets = new Entry(section,
-                        new ActivateViewAction(Messages.LabelStatementOfAssets, "StatementOfAssets")); //$NON-NLS-1$
-        statementOfAssets.setContextMenu(setAsStartPage);
+        statementOfAssets = new Entry(section, Messages.LabelStatementOfAssets,
+                        e -> editor.activateView("StatementOfAssets", e.getId())); //$NON-NLS-1$
 
-        new Entry(statementOfAssets,
-                        new ActivateViewAction(Messages.ClientEditorLabelChart, "StatementOfAssetsHistory")) //$NON-NLS-1$
-                                        .setContextMenu(setAsStartPage);
-        new Entry(statementOfAssets, new ActivateViewAction(Messages.ClientEditorLabelHoldings, "HoldingsPieChart")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
+        new Entry(statementOfAssets, Messages.ClientEditorLabelChart,
+                        e -> editor.activateView("StatementOfAssetsHistory", e.getId())); //$NON-NLS-1$
+        new Entry(statementOfAssets, Messages.ClientEditorLabelHoldings,
+                        e -> editor.activateView("HoldingsPieChart", e.getId())); //$NON-NLS-1$
 
-        Entry performance = new Entry(section,
-                        new ActivateViewAction(Messages.ClientEditorLabelPerformance, "dashboard.Dashboard")); //$NON-NLS-1$
-        performance.setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.ClientEditorPerformanceCalculation, "Performance")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.ClientEditorLabelChart, "PerformanceChart")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
-        new Entry(performance,
-                        new ActivateViewAction(Messages.ClientEditorLabelReturnsVolatility, "ReturnsVolatilityChart")) //$NON-NLS-1$
-                                        .setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.LabelSecurities, "SecuritiesPerformance")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
-        new Entry(performance, new ActivateViewAction(Messages.LabelDividends, "dividends.Dividends")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
+        Entry performance = new Entry(section, Messages.ClientEditorLabelPerformance,
+                        e -> editor.activateView("dashboard.Dashboard", e.getId())); //$NON-NLS-1$
+
+        new Entry(performance, Messages.ClientEditorPerformanceCalculation,
+                        e -> editor.activateView("Performance", e.getId())); //$NON-NLS-1$
+        new Entry(performance, Messages.ClientEditorLabelChart,
+                        e -> editor.activateView("PerformanceChart", e.getId())); //$NON-NLS-1$
+        new Entry(performance, Messages.ClientEditorLabelReturnsVolatility,
+                        e -> editor.activateView("ReturnsVolatilityChart", e.getId())); //$NON-NLS-1$
+        new Entry(performance, Messages.LabelSecurities, e -> editor.activateView("SecuritiesPerformance", e.getId())); //$NON-NLS-1$
+        new Entry(performance, Messages.LabelDividends, e -> editor.activateView("dividends.Dividends", e.getId())); //$NON-NLS-1$
     }
 
     private void createTaxonomyDataSection(final Sidebar sidebar)
     {
         taxonomies = new Entry(sidebar, Messages.LabelTaxonomies);
-        taxonomies.setAction(new Action(Messages.LabelTaxonomies, Images.PLUS.descriptor())
-        {
-            @Override
-            public void run()
-            {
-                showCreateTaxonomyMenu();
-            }
-        });
+        taxonomies.setAction(entry -> showCreateTaxonomyMenu(), Images.PLUS);
 
         for (Taxonomy taxonomy : editor.getClient().getTaxonomies())
             createTaxonomyEntry(taxonomies, taxonomy);
@@ -392,7 +328,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private Entry createTaxonomyEntry(Entry section, final Taxonomy taxonomy)
     {
         Entry entry = new Entry(section, taxonomy.getName());
-        entry.setAction(new ActivateViewAction(taxonomy.getName(), "taxonomy.Taxonomy", taxonomy, null)); //$NON-NLS-1$
+        entry.setAction(e -> editor.activateView("taxonomy.Taxonomy", e.getId(), taxonomy), null); //$NON-NLS-1$
         entry.setContextMenu((e, m) -> taxonomyContextMenuAboutToShow(taxonomy, e, m));
         return entry;
     }
@@ -403,7 +339,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         {
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(manager -> taxonomyCreateMenuAboutToShow(manager));
+            menuMgr.addMenuListener(this::taxonomyCreateMenuAboutToShow);
             taxonomyMenu = menuMgr.createContextMenu(sidebar.getShell());
 
             sidebar.addDisposeListener(e -> taxonomyMenu.dispose());
@@ -484,8 +420,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
         addMoveUpAndDownActions(taxonomy, entry, manager);
         manager.add(new Separator());
-
-        setAsStartPage.menuAboutToShow(entry, manager);
     }
 
     private void addMoveUpAndDownActions(Taxonomy taxonomy, Entry entry, IMenuManager manager)
@@ -555,15 +489,13 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private void createMiscSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
-        new Entry(section, new ActivateViewAction(Messages.LabelConsumerPriceIndex, "ConsumerPriceIndexList")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.LabelCurrencies, "currency.Currency")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
-        new Entry(section, new ActivateViewAction(Messages.LabelSettings, "settings.Settings")) //$NON-NLS-1$
-                        .setContextMenu(setAsStartPage);
+        new Entry(section, Messages.LabelConsumerPriceIndex,
+                        e -> editor.activateView("ConsumerPriceIndexList", e.getId())); //$NON-NLS-1$
+        new Entry(section, Messages.LabelCurrencies, e -> editor.activateView("currency.Currency", e.getId())); //$NON-NLS-1$
+        new Entry(section, Messages.LabelSettings, e -> editor.activateView("settings.Settings", e.getId())); //$NON-NLS-1$
 
         if ("yes".equals(System.getProperty("name.abuchen.portfolio.debug"))) //$NON-NLS-1$ //$NON-NLS-2$
-            new Entry(section, new ActivateViewAction("Browser Test", "BrowserTest")); //$NON-NLS-1$ //$NON-NLS-2$
+            new Entry(section, "Browser Test", e -> editor.activateView("BrowserTest", e.getId())); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void deleteTaxonomyAndDisposeEntry(Taxonomy taxonomy, Entry entry)

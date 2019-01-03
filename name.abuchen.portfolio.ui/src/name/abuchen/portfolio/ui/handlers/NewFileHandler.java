@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Execute;
@@ -18,10 +19,13 @@ import org.eclipse.swt.widgets.Shell;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.ClientInput;
+import name.abuchen.portfolio.ui.editor.ClientInputFactory;
 import name.abuchen.portfolio.ui.wizards.client.NewClientWizard;
 
 public class NewFileHandler
 {
+    @Inject
+    private ClientInputFactory clientInputFactory;
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
@@ -32,8 +36,7 @@ public class NewFileHandler
         WizardDialog dialog = new WizardDialog(shell, wizard);
         if (dialog.open() == Window.OK)
         {
-            ClientInput clientInput = ClientInput.createFor(Messages.LabelUnnamedXml, wizard.getClient(),
-                            modelService.getContainingContext(activePart));
+            ClientInput clientInput = clientInputFactory.create(Messages.LabelUnnamedXml, wizard.getClient());
 
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(Messages.LabelUnnamedXml);

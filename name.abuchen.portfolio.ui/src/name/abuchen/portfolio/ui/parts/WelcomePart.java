@@ -180,7 +180,7 @@ public class WelcomePart
 
             java.util.Optional<MPart> part = partService.getParts().stream()
                             .filter(p -> UIConstants.Part.PORTFOLIO.equals(p.getElementId())) //
-                            .filter(p -> file.equals(p.getPersistedState().get(UIConstants.File.PERSISTED_STATE_KEY)))
+                            .filter(p -> file.equals(p.getPersistedState().get(UIConstants.PersistedState.FILENAME)))
                             .findAny();
 
             if (part.isPresent())

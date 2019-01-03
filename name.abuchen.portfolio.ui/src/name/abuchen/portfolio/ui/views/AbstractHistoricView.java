@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.util.List;
-
 import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -21,11 +19,6 @@ public abstract class AbstractHistoricView extends AbstractFinanceView implement
 
     protected final ReportingPeriod getReportingPeriod()
     {
-        return dropDown.getPeriods().getFirst();
-    }
-
-    protected final List<ReportingPeriod> getReportingPeriods()
-    {
-        return dropDown.getPeriods();
+        return dropDown.getSelectedPeriod();
     }
 }

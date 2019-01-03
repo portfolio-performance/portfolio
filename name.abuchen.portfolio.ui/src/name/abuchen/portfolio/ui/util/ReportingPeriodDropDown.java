@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.util.LinkedList;
+import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -22,99 +23,106 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
         void reportingPeriodUpdated();
     }
 
-    private ReportingPeriodListener listener;
-    private LinkedList<ReportingPeriod> periods = new LinkedList<>();
+    private final PortfolioPart part;
+    private final ReportingPeriodListener listener;
+
+    private ReportingPeriod selected;
+    private LinkedList<ReportingPeriod> periods;
 
     public ReportingPeriodDropDown(ToolBar toolBar, final PortfolioPart part, ReportingPeriodListener listener)
     {
         super(toolBar, "x"); //$NON-NLS-1$
-        this.periods = part.loadReportingPeriods();
-        this.listener = listener;
+        this.part = part;
+        this.listener = Objects.requireNonNull(listener);
 
-        getToolItem().setText(periods.getFirst().toString());
+        this.selected = part.getSelectedPeriod();
+        this.periods = part.getReportingPeriods();
 
-        toolBar.addDisposeListener(e -> part.storeReportingPeriods(periods));
+        getToolItem().setText(selected.toString());
     }
 
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        boolean isFirst = true;
+        Action action = createActionFor(selected);
+        action.setChecked(true);
+        manager.add(action);
+
         for (final ReportingPeriod period : periods)
         {
-            Action action = new Action(period.toString())
-            {
-                @Override
-                public void run()
-                {
-                    periods.remove(period);
-                    periods.addFirst(period);
-                    setLabel(period.toString());
-
-                    if (listener != null)
-                        listener.reportingPeriodUpdated();
-                }
-            };
-            if (isFirst)
-                action.setChecked(true);
-            isFirst = false;
-
-            manager.add(action);
+            if (period.equals(selected))
+                continue;
+            manager.add(createActionFor(period));
         }
 
         manager.add(new Separator());
-        manager.add(new Action(Messages.LabelReportingAddPeriod)
-        {
-            @Override
-            public void run()
+        manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(getToolBar().getShell(), periods.getFirst());
+
+            if (dialog.open() == Dialog.OK)
             {
-                ReportingPeriodDialog dialog = new ReportingPeriodDialog(getToolBar().getShell(), periods.getFirst());
+                ReportingPeriod period = dialog.getReportingPeriod();
 
-                if (dialog.open() == Dialog.OK)
+                doSelect(period);
+
+                periods.addFirst(period);
+
+                if (listener != null)
+                    listener.reportingPeriodUpdated();
+
+                if (periods.size() > 20)
+                    periods.removeLast();
+            }
+        }));
+
+        manager.add(new SimpleAction(Messages.MenuReportingPeriodManage, a -> {
+            EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(getToolBar().getShell());
+            dialog.setReportingPeriods(periods);
+
+            if (dialog.open() == Dialog.OK)
+            {
+                periods.clear();
+                periods.addAll(dialog.getReportingPeriods());
+
+                // make sure at least one entry exists
+                if (periods.isEmpty())
+                    periods.add(selected);
+
+                if (!selected.equals(periods.getFirst()))
                 {
-                    ReportingPeriod period = dialog.getReportingPeriod();
-                    periods.addFirst(period);
-                    setLabel(period.toString());
-
-                    if (listener != null)
-                        listener.reportingPeriodUpdated();
-
-                    if (periods.size() > 20)
-                        periods.removeLast();
+                    doSelect(periods.getFirst());
+                    listener.reportingPeriodUpdated();
                 }
             }
-        });
+        }));
+    }
 
-        manager.add(new Action(Messages.MenuReportingPeriodManage)
-        {
-            @Override
-            public void run()
-            {
-                EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(getToolBar().getShell());
-                dialog.setReportingPeriods(periods);
+    private void doSelect(ReportingPeriod period)
+    {
+        selected = period;
+        part.setSelectedPeriod(period);
+        setLabel(period.toString());
+    }
 
-                if (dialog.open() == Dialog.OK)
-                {
-                    ReportingPeriod currentSelection = periods.getFirst();
+    private Action createActionFor(final ReportingPeriod period)
+    {
+        return new SimpleAction(period.toString(), a -> {
+            doSelect(period);
 
-                    periods.clear();
-                    periods.addAll(dialog.getReportingPeriods());
+            periods.remove(period);
+            periods.addFirst(period);
 
-                    // make sure at least one entry exists
-                    if (periods.isEmpty())
-                        periods.add(currentSelection);
-
-                    if (listener != null && !currentSelection.equals(periods.getFirst()))
-                    {
-                        setLabel(periods.getFirst().toString());
-                        listener.reportingPeriodUpdated();
-                    }
-                }
-            }
+            if (listener != null)
+                listener.reportingPeriodUpdated();
         });
     }
 
-    public LinkedList<ReportingPeriod> getPeriods()
+    public ReportingPeriod getSelectedPeriod()
+    {
+        return selected;
+    }
+
+    public LinkedList<ReportingPeriod> getPeriodsXXX()
     {
         return periods;
     }

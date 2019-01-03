@@ -492,7 +492,7 @@ public class StatementOfAssetsViewer
 
         // create a modifiable copy as all menus share the same list of
         // reporting periods
-        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().loadReportingPeriods());
+        List<ReportingPeriod> options = new ArrayList<>(owner.getPart().getReportingPeriods());
 
         addPerformanceColumns(options);
         addDividendColumns(options);
