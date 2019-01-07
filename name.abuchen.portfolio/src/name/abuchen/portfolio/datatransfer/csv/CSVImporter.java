@@ -34,6 +34,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,6 +44,7 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -52,8 +54,8 @@ public class CSVImporter
 {
     public static final class Column
     {
-        private int columnIndex;
-        private String label;
+        private final int columnIndex;
+        private final String label;
         private Field field;
         private FieldFormat format;
 
@@ -125,19 +127,32 @@ public class CSVImporter
 
     public static class Field
     {
+        /**
+         * Unique code of the field which is used to identify the field in the
+         * JSON configuration. The code is not translated, must be unique per
+         * extractor, and must not change.
+         */
+        private final String code;
+
         private final String[] names;
         private final Set<String> normalizedNames;
         private boolean isOptional = false;
 
-        public Field(String... names)
+        public Field(String code, String... names)
         {
             if (names.length < 1)
                 throw new IllegalArgumentException();
 
+            this.code = code;
             this.names = names;
             this.normalizedNames = new HashSet<>();
             for (int ii = 0; ii < names.length; ii++)
                 this.normalizedNames.add(normalizeColumnName(names[ii]));
+        }
+
+        public String getCode()
+        {
+            return code;
         }
 
         public String getName()
@@ -161,6 +176,35 @@ public class CSVImporter
             return isOptional;
         }
 
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return Collections.emptyList();
+        }
+
+        /**
+         * Returns the initial format - optionally using Client and one value to
+         * guess the best fitting format
+         *
+         * @param client
+         *            target Client into which data will be imported
+         * @param value
+         *            example value from the current file; can be null
+         */
+        public FieldFormat guessFormat(Client client, String value) // NOSONAR
+        {
+            return null;
+        }
+
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public FieldFormat textToFormat(String text)
+        {
+            throw new UnsupportedOperationException();
+        }
+
         @Override
         public String toString()
         {
@@ -170,7 +214,7 @@ public class CSVImporter
 
     public static class DateField extends CSVImporter.Field
     {
-        public static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
@@ -184,9 +228,15 @@ public class CSVImporter
                         new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")) //$NON-NLS-1$
         ));
 
-        /* package */ DateField(String name)
+        /* package */ DateField(String code, String name)
         {
-            super(name);
+            super(code, name);
+        }
+
+        @Override
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return FORMATS;
         }
 
         /**
@@ -196,7 +246,8 @@ public class CSVImporter
          *            value (can be null)
          * @return date format on success, else first date format
          */
-        public static FieldFormat guessDateFormat(String value)
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
             if (value != null)
             {
@@ -217,11 +268,29 @@ public class CSVImporter
             // fallback
             return FORMATS.get(0);
         }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return ((SimpleDateFormat) fieldFormat.getFormat()).toPattern();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            for (FieldFormat format : getAvailableFieldFormats())
+            {
+                if (((SimpleDateFormat) format.getFormat()).toPattern().equals(text))
+                    return format;
+            }
+            
+            return getAvailableFieldFormats().get(0);
+        }
     }
 
     public static class AmountField extends CSVImporter.Field
     {
-        public static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
                         new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
                         new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)),
                         new FieldFormat(Messages.CSVFormatApostrophe, () -> {
@@ -230,19 +299,50 @@ public class CSVImporter
                             return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
                         })));
 
-        /* package */ AmountField(String... name)
+        /* package */ AmountField(String code, String... name)
         {
-            super(name);
+            super(code, name);
         }
+
+        @Override
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return FORMATS;
+        }
+
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
+        {
+            return FORMATS.get(0);
+        }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return ((DecimalFormat) fieldFormat.getFormat()).toPattern();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            for (FieldFormat format : getAvailableFieldFormats())
+            {
+                if (((DecimalFormat) format.getFormat()).toPattern().equals(text))
+                    return format;
+            }
+
+            return getAvailableFieldFormats().get(0);
+        }
+
     }
 
     public static class EnumField<M extends Enum<M>> extends CSVImporter.Field
     {
         private final Class<M> enumType;
 
-        /* package */ EnumField(String name, Class<M> enumType)
+        /* package */ EnumField(String code, String name, Class<M> enumType)
         {
-            super(name);
+            super(code, name);
             this.enumType = enumType;
         }
 
@@ -251,10 +351,51 @@ public class CSVImporter
             return enumType;
         }
 
-        public EnumMapFormat<M> createFormat()
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
-            return new EnumMapFormat<>(enumType);
+            return new FieldFormat(null, new EnumMapFormat<>(enumType));
         }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            EnumMapFormat<?> f = (EnumMapFormat<?>) fieldFormat.getFormat();
+
+            StringJoiner answer = new StringJoiner(";"); //$NON-NLS-1$
+            f.map().forEach((e, t) -> answer.add(e.name() + "=" + t)); //$NON-NLS-1$
+
+            return answer.toString();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            EnumMapFormat<M> format = new EnumMapFormat<>(enumType);
+            FieldFormat answer = new FieldFormat(null, format);
+
+            String[] entries = text.split(";");
+            for (String e : entries)
+            {
+                String[] entry = e.split("=");
+                if (entry.length != 2)
+                    continue;
+
+                try
+                {
+                    M key = Enum.valueOf(enumType, entry[0]);
+                    String value = entry[1];
+
+                    format.map().put(key, value);
+                }
+                catch (IllegalArgumentException | NullPointerException ignore)
+                {
+                    PortfolioLog.error(ignore);
+                }
+            }
+            return answer;
+        }
+
     }
 
     public static class EnumMapFormat<M extends Enum<M>> extends Format
@@ -321,14 +462,27 @@ public class CSVImporter
     public static class ISINField extends CSVImporter.Field
     {
 
-        /* package */ ISINField(String name)
+        /* package */ ISINField(String code, String name)
         {
-            super(name);
+            super(code, name);
         }
 
-        public ISINFormat createFormat(List<Security> securityList)
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
-            return new ISINFormat(securityList);
+            return new FieldFormat(null, new ISINFormat(client.getSecurities()));
+        }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return null;
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            return new FieldFormat(null, new ISINFormat(Collections.emptyList()));
         }
     }
 
@@ -444,9 +598,19 @@ public class CSVImporter
         this.delimiter = delimiter;
     }
 
+    public char getDelimiter()
+    {
+        return delimiter;
+    }
+
     public void setEncoding(Charset encoding)
     {
         this.encoding = encoding;
+    }
+
+    public Charset getEncoding()
+    {
+        return encoding;
     }
 
     public void setSkipLines(int skipLines)
@@ -454,9 +618,19 @@ public class CSVImporter
         this.skipLines = skipLines;
     }
 
+    public int getSkipLines()
+    {
+        return skipLines;
+    }
+
     public void setFirstLineHeader(boolean isFirstLineHeader)
     {
         this.isFirstLineHeader = isFirstLineHeader;
+    }
+
+    public boolean isFirstLineHeader()
+    {
+        return isFirstLineHeader;
     }
 
     public List<String[]> getRawValues()
@@ -544,30 +718,13 @@ public class CSVImporter
             while (iter.hasNext())
             {
                 Field field = iter.next();
-                
+
                 if (field.getNormalizedNames().contains(normalizedColumnName))
                 {
                     column.setField(field);
 
-                    if (field instanceof DateField)
-                    {
-                        // try to guess date format
-                        String value = getFirstNonEmptyValue(column);
-                        column.setFormat(DateField.guessDateFormat(value));
-                    }
-                    else if (field instanceof AmountField)
-                    {
-                        column.setFormat(AmountField.FORMATS.get(0));
-                    }
-                    else if (field instanceof ISINField)
-                    {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
-                    }
-                    else if (field instanceof EnumField<?>)
-                    {
-                        column.setFormat(new FieldFormat(null, ((EnumField<?>) field).createFormat()));
-                    }
+                    String value = getFirstNonEmptyValue(column);
+                    column.setFormat(field.guessFormat(client, value));
 
                     iter.remove();
                     break;

@@ -538,7 +538,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
     private static class ColumnConfigDialog extends Dialog implements ISelectionChangedListener
     {
-        private static final Field EMPTY = new Field("---"); //$NON-NLS-1$
+        private static final Field EMPTY = new Field("#", "---"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private CSVExtractor definition;
         private Column column;
@@ -584,6 +584,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             fields.add(EMPTY);
             fields.addAll(definition.getFields());
             mappedTo.setInput(fields);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(mappedTo.getControl());
 
             final Composite details = new Composite(composite, SWT.NONE);
             final StackLayout layout = new StackLayout();
@@ -599,9 +600,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             label.setText(Messages.CSVImportLabelFormat);
             final ComboViewer dateFormats = new ComboViewer(dateArea, SWT.READ_ONLY);
             dateFormats.setContentProvider(ArrayContentProvider.getInstance());
-            dateFormats.setInput(DateField.FORMATS);
             dateFormats.getCombo().select(0);
             dateFormats.addSelectionChangedListener(this);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(dateFormats.getControl());
 
             final Composite valueArea = new Composite(details, SWT.NONE);
             glf.applyTo(valueArea);
@@ -609,9 +610,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             label.setText(Messages.CSVImportLabelFormat);
             final ComboViewer valueFormats = new ComboViewer(valueArea, SWT.READ_ONLY);
             valueFormats.setContentProvider(ArrayContentProvider.getInstance());
-            valueFormats.setInput(AmountField.FORMATS);
             valueFormats.getCombo().select(0);
             valueFormats.addSelectionChangedListener(this);
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(valueFormats.getControl());
 
             final Composite keyArea = new Composite(details, SWT.NONE);
             glf.applyTo(keyArea);
@@ -664,6 +665,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     if (field instanceof DateField)
                     {
                         layout.topControl = dateArea;
+                        dateFormats.setInput(field.getAvailableFieldFormats());
                         if (column.getFormat() != null)
                             dateFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
@@ -672,6 +674,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     else if (field instanceof AmountField)
                     {
                         layout.topControl = valueArea;
+                        valueFormats.setInput(field.getAvailableFieldFormats());
                         if (column.getFormat() != null)
                             valueFormats.setSelection(new StructuredSelection(column.getFormat()));
                         else
@@ -679,19 +682,16 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                     }
                     else if (field instanceof ISINField)
                     {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
+                        column.setFormat(field.guessFormat(client, null));
                     }
                     else if (field instanceof EnumField)
                     {
                         layout.topControl = keyArea;
 
-                        EnumField<?> ef = (EnumField<?>) field;
-
                         FieldFormat f = column.getFormat();
                         if (f == null || !(f.getFormat() instanceof EnumMapFormat))
                         {
-                            f = new FieldFormat(null, ef.createFormat());
+                            f = field.guessFormat(client, null);
                             column.setFormat(f);
                         }
 

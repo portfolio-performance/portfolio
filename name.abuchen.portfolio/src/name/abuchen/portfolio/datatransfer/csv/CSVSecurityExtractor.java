@@ -21,12 +21,12 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
         super(client, Messages.CSVDefSecurities);
 
         List<Field> fields = getFields();
-        fields.add(new Field(Messages.CSVColumn_ISIN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_SecurityName).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_Currency).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
+        fields.add(new Field("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("currency", Messages.CSVColumn_Currency).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override

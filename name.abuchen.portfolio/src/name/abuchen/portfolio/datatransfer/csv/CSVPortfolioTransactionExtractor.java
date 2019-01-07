@@ -32,22 +32,23 @@ import name.abuchen.portfolio.money.Money;
         super(client, Messages.CSVDefPortfolioTransactions);
 
         List<Field> fields = getFields();
-        fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new Field(Messages.CSVColumn_Time).setOptional(true));
-        fields.add(new ISINField(Messages.CSVColumn_ISIN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_SecurityName).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Value));
-        fields.add(new Field(Messages.CSVColumn_TransactionCurrency).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Fees).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_GrossAmount).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_CurrencyGrossAmount).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_ExchangeRate).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Shares));
-        fields.add(new EnumField<PortfolioTransaction.Type>(Messages.CSVColumn_Type, Type.class).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
+        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
+        fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
+        fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
+        fields.add(new Field("currency", Messages.CSVColumn_TransactionCurrency).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("fees", Messages.CSVColumn_Fees).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("gross", Messages.CSVColumn_GrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("currencyGross", Messages.CSVColumn_CurrencyGrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("exchangeRate", Messages.CSVColumn_ExchangeRate).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("shares", Messages.CSVColumn_Shares)); //$NON-NLS-1$
+        fields.add(new EnumField<PortfolioTransaction.Type>("type", Messages.CSVColumn_Type, Type.class) //$NON-NLS-1$
+                        .setOptional(true));
+        fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override

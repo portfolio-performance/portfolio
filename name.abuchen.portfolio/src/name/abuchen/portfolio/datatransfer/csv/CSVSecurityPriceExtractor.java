@@ -22,8 +22,8 @@ import name.abuchen.portfolio.model.SecurityPrice;
     /* package */ CSVSecurityPriceExtractor()
     {
         fields = new ArrayList<>();
-        fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new AmountField(Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
+        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     }
 
     @Override

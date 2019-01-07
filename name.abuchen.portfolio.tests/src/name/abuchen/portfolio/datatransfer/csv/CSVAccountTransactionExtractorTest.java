@@ -25,6 +25,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumMapFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -389,7 +390,9 @@ public class CSVAccountTransactionExtractorTest
         @SuppressWarnings("unchecked")
         EnumField<AccountTransaction.Type> field = (EnumField<AccountTransaction.Type>) typeColumn.getField();
 
-        EnumMapFormat<AccountTransaction.Type> format = field.createFormat();
+        @SuppressWarnings("unchecked")
+        EnumMapFormat<AccountTransaction.Type> format = (EnumMapFormat<Type>) field.guessFormat(new Client(), null)
+                        .getFormat();
         format.map().put(AccountTransaction.Type.FEES_REFUND, "Gebührenerstattung");
         format.map().put(AccountTransaction.Type.FEES, "Gebühren");
         typeColumn.setFormat(new FieldFormat(Messages.CSVColumn_Type, format));
