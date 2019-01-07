@@ -185,13 +185,20 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("shares") //
                         .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("amount", "currency") //
-                        .match(" * Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        
+                        .oneOf(
+                                        section -> section.attributes("amount", "currency") //
+                                        .match(" * Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        }), 
+                                        section -> section.attributes("amount", "currency") //
+                                        .match(" * Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                        }))
 
                         .section("fee", "currency").optional()
                         //
@@ -444,8 +451,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             else
                             {
                                 // but if not in Fx but Euro already...
-                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
-                                                Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")))));
+                                t.setAmount(asAmount(v.get("amountGrossFx")));
                             }
                         })
 
