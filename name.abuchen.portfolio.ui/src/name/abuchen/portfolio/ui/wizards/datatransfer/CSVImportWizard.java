@@ -5,12 +5,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -56,6 +59,9 @@ public class CSVImportWizard extends Wizard
     private IPreferenceStore preferences;
     private CSVImporter importer;
 
+    @Inject
+    private CSVConfigManager configManager;
+
     /**
      * If a target security is given, then only security prices are imported
      * directly into that security.
@@ -88,7 +94,8 @@ public class CSVImportWizard extends Wizard
     @Override
     public void addPages()
     {
-        definitionPage = new CSVImportDefinitionPage(client, importer, target != null);
+        definitionPage = new CSVImportDefinitionPage(client, importer, configManager, target != null);
+
         addPage(definitionPage);
 
         selectSecurityPage = new SelectSecurityPage(client);

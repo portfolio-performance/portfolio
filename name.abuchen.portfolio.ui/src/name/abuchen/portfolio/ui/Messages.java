@@ -262,6 +262,13 @@ public class Messages extends NLS
     public static String ConfigurationStandard;
     public static String ConsumerPriceIndexMenuAdd;
     public static String ConsumerPriceIndexMenuDelete;
+    public static String CSVConfigCSVImportLabelFileJSON;
+    public static String CSVConfigDelete;
+    public static String CSVConfigDialogTitleSave;
+    public static String CSVConfigExport;
+    public static String CSVConfigImport;
+    public static String CSVConfigRereadColumnsFromFile;
+    public static String CSVConfigSave;
     public static String CSVImportErrorMissingFields;
     public static String CSVImportInformationOptionalFields;
     public static String CSVImportLabelDelimiter;

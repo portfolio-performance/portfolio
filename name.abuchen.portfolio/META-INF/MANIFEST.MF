@@ -38,6 +38,7 @@ Import-Package: com.google.common.util.concurrent;version="23.5.0",
  org.htmlparser.lexer,
  org.htmlparser.util,
  org.json.simple;version="1.1.1",
+ org.json.simple.parser;version="1.1.1",
  org.jsoup;version="1.7.2",
  org.jsoup.nodes;version="1.7.2",
  org.jsoup.select;version="1.7.2"

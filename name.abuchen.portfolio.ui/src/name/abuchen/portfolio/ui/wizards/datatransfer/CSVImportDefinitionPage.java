@@ -2,8 +2,16 @@ package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.Writer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -14,11 +22,21 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.eclipse.core.databinding.DataBindingContext;
+import org.eclipse.core.databinding.UpdateValueStrategy;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.databinding.viewers.ViewersObservables;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -42,10 +60,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -57,14 +73,20 @@ import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVExtractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
@@ -76,52 +98,34 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+import name.abuchen.portfolio.util.TextUtil;
 
-public class CSVImportDefinitionPage extends AbstractWizardPage implements ISelectionChangedListener
+public class CSVImportDefinitionPage extends AbstractWizardPage
 {
-    private static final class Delimiter
-    {
-        private final char delimiter;
-        private final String label;
-
-        private Delimiter(char delimiter, String label)
-        {
-            this.delimiter = delimiter;
-            this.label = label;
-        }
-
-        public char getDelimiter()
-        {
-            return delimiter;
-        }
-
-        public String getLabel()
-        {
-            return label;
-        }
-
-        @Override
-        public String toString()
-        {
-            return getLabel();
-        }
-    }
-
     private final Client client;
     private final CSVImporter importer;
+    private CSVConfig currentConfig;
+
+    private CSVConfigManager configManager;
     private final boolean onlySecurityPrices;
 
     private TableViewer tableViewer;
+    private Menu configurationDropDownMenu;
 
-    public CSVImportDefinitionPage(Client client, CSVImporter importer, boolean onlySecurityPrices)
+    private DataBindingContext context;
+
+    public CSVImportDefinitionPage(Client client, CSVImporter importer, CSVConfigManager configManager,
+                    boolean onlySecurityPrices)
     {
         super("importdefinition"); //$NON-NLS-1$
         setTitle(Messages.CSVImportWizardTitle);
@@ -129,10 +133,13 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
 
         this.client = client;
         this.importer = importer;
+        this.configManager = configManager;
         this.onlySecurityPrices = onlySecurityPrices;
 
         if (onlySecurityPrices)
             importer.setExtractor(importer.getSecurityPriceExtractor());
+
+        this.context = new DataBindingContext();
     }
 
     public CSVImporter getImporter()
@@ -173,24 +180,45 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
             }
         });
         target.getCombo().setEnabled(!onlySecurityPrices);
-        target.addSelectionChangedListener(this);
+        target.addSelectionChangedListener(event -> onTargetChanged(
+                        (CSVExtractor) ((IStructuredSelection) event.getSelectionProvider().getSelection())
+                                        .getFirstElement()));
+
+        Button button = new Button(container, SWT.NONE);
+        button.setImage(Images.CONFIG.image());
+        button.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> onConfigurationDropDown(button)));
 
         Label lblDelimiter = new Label(container, SWT.NONE);
         lblDelimiter.setText(Messages.CSVImportLabelDelimiter);
         Combo cmbDelimiter = new Combo(container, SWT.READ_ONLY);
         ComboViewer delimiter = new ComboViewer(cmbDelimiter);
         delimiter.setContentProvider(ArrayContentProvider.getInstance());
-        delimiter.setInput(new Delimiter[] { new Delimiter(',', Messages.CSVImportSeparatorComma), //
-                        new Delimiter(';', Messages.CSVImportSeparatorSemicolon), //
-                        new Delimiter('\t', Messages.CSVImportSeparatorTab) });
-        cmbDelimiter.select(1);
-        delimiter.addSelectionChangedListener(this);
+        delimiter.setInput(Delimiter.AVAILABLE);
+
+        UpdateValueStrategy<Delimiter, Character> targetToModel = new UpdateValueStrategy<>();
+        targetToModel.setConverter(new Delimiter.DelimiterToCharConverter());
+
+        UpdateValueStrategy<Character, Delimiter> modelToTarget = new UpdateValueStrategy<>();
+        modelToTarget.setConverter(new Delimiter.CharToDelimiterConverter());
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<Delimiter> delimiterTarget = ViewersObservables.observeSingleSelection(delimiter);
+        @SuppressWarnings("unchecked")
+        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter").observe(importer); //$NON-NLS-1$
+        context.bindValue(delimiterTarget, delimiterModel, targetToModel, modelToTarget);
+        delimiter.addSelectionChangedListener(e -> doProcessFile());
 
         Label lblSkipLines = new Label(container, SWT.NONE);
         lblSkipLines.setText(Messages.CSVImportLabelSkipLines);
         final Spinner skipLines = new Spinner(container, SWT.BORDER);
         skipLines.setMinimum(0);
-        skipLines.addModifyListener(event -> onSkipLinesChanged(skipLines.getSelection()));
+
+        IObservableValue<?> spinnerTarget = WidgetProperties.selection().observe(skipLines);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> spinnerModel = BeanProperties.value("skipLines").observe(importer); //$NON-NLS-1$
+        context.bindValue(spinnerTarget, spinnerModel);
+
+        skipLines.addModifyListener(event -> doProcessFile());
 
         Label lblEncoding = new Label(container, SWT.NONE);
         lblEncoding.setText(Messages.CSVImportLabelEncoding);
@@ -198,20 +226,22 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         ComboViewer encoding = new ComboViewer(cmbEncoding);
         encoding.setContentProvider(ArrayContentProvider.getInstance());
         encoding.setInput(Charset.availableCharsets().values().toArray());
-        encoding.setSelection(new StructuredSelection(Charset.defaultCharset()));
-        encoding.addSelectionChangedListener(this);
+
+        IObservableValue<?> encodingTarget = ViewersObservables.observeSingleSelection(encoding);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> encodingModel = BeanProperties.value("encoding").observe(importer); //$NON-NLS-1$
+        context.bindValue(encodingTarget, encodingModel);
+        encoding.addSelectionChangedListener(event -> doProcessFile());
 
         final Button firstLineIsHeader = new Button(container, SWT.CHECK);
         firstLineIsHeader.setText(Messages.CSVImportLabelFirstLineIsHeader);
-        firstLineIsHeader.setSelection(true);
-        firstLineIsHeader.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent event)
-            {
-                onFirstLineIsHeaderChanged(firstLineIsHeader.getSelection());
-            }
-        });
+
+        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(firstLineIsHeader);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelObservable = BeanProperties.value("firstLineHeader").observe(importer); //$NON-NLS-1$
+        context.bindValue(targetObservable, modelObservable);
+
+        firstLineIsHeader.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> doProcessFile()));
 
         Composite compositeTable = new Composite(container, SWT.NONE);
 
@@ -225,6 +255,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
                         .right(new FormAttachment(50, -5)).thenBelow(cmbDelimiter).label(lblDelimiter)
                         .right(new FormAttachment(50, -5)).thenBelow(cmbEncoding).label(lblEncoding)
                         .right(new FormAttachment(50, -5));
+
+        FormDataFactory.startingWith(cmbTarget).thenRight(button);
 
         FormDataFactory.startingWith(cmbDelimiter).thenRight(lblSkipLines).suffix(skipLines);
 
@@ -254,37 +286,24 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         tableViewer.setLabelProvider(new ImportLabelProvider(importer));
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-        table.addMouseListener(new MouseListener()
-        {
-            @Override
-            public void mouseUp(MouseEvent e) // NOSONAR
-            {}
+        table.addMouseListener(MouseListener.mouseDoubleClickAdapter(e -> {
+            TableItem item = table.getItem(0);
+            if (item == null)
+                return;
 
-            @Override
-            public void mouseDown(MouseEvent e) // NOSONAR
-            {}
-
-            @Override
-            public void mouseDoubleClick(MouseEvent e)
+            int columnIndex = -1;
+            for (int ii = 0; ii < table.getColumnCount(); ii++)
             {
-                TableItem item = table.getItem(0);
-                if (item == null)
-                    return;
+                Rectangle bounds = item.getBounds(ii);
+                int w = table.getColumn(ii).getWidth();
 
-                int columnIndex = -1;
-                for (int ii = 0; ii < table.getColumnCount(); ii++)
-                {
-                    Rectangle bounds = item.getBounds(ii);
-                    int width = table.getColumn(ii).getWidth();
-
-                    if (e.x >= bounds.x && e.x <= bounds.x + width)
-                        columnIndex = ii;
-                }
-
-                if (columnIndex >= 0)
-                    onColumnSelected(columnIndex);
+                if (e.x >= bounds.x && e.x <= bounds.x + w)
+                    columnIndex = ii;
             }
-        });
+
+            if (columnIndex >= 0)
+                onColumnSelected(columnIndex);
+        }));
 
         //
         // setup form elements
@@ -294,46 +313,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         doProcessFile();
     }
 
-    @Override
-    public void selectionChanged(SelectionChangedEvent event)
-    {
-        Object element = ((IStructuredSelection) event.getSelectionProvider().getSelection()).getFirstElement();
-
-        if (element instanceof CSVExtractor)
-        {
-            onTargetChanged((CSVExtractor) element);
-        }
-        else if (element instanceof Delimiter)
-        {
-            importer.setDelimiter(((Delimiter) element).getDelimiter());
-            doProcessFile();
-        }
-        else if (element instanceof Charset)
-        {
-            importer.setEncoding((Charset) element);
-            doProcessFile();
-        }
-    }
-
     private void onTargetChanged(CSVExtractor def)
     {
         if (!def.equals(importer.getExtractor()))
         {
             importer.setExtractor(def);
+            currentConfig = null;
             doProcessFile();
         }
-    }
-
-    private void onSkipLinesChanged(int linesToSkip)
-    {
-        importer.setSkipLines(linesToSkip);
-        doProcessFile();
-    }
-
-    private void onFirstLineIsHeaderChanged(boolean isFirstLineHeader)
-    {
-        importer.setFirstLineHeader(isFirstLineHeader);
-        doProcessFile();
     }
 
     private void onColumnSelected(int columnIndex)
@@ -345,11 +332,148 @@ public class CSVImportDefinitionPage extends AbstractWizardPage implements ISele
         doUpdateTable();
     }
 
+    private void onConfigurationDropDown(Button button)
+    {
+        if (configurationDropDownMenu == null)
+        {
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(manager -> {
+
+                if (currentConfig != null)
+                {
+                    manager.add(new SimpleAction(Messages.CSVConfigRereadColumnsFromFile, a -> onRereadColumns()));
+                    manager.add(new Separator());
+                }
+
+                configManager.getBuiltInConfigurations().forEach(config -> manager
+                                .add(new SimpleAction(config.getLabel(), a -> onConfigSelected(config))));
+
+                manager.add(new Separator());
+
+                configManager.getUserSpecificConfigurations().forEach(config -> manager
+                                .add(new SimpleAction(config.getLabel(), a -> onConfigSelected(config))));
+
+                manager.add(new Separator());
+                manager.add(new SimpleAction(Messages.CSVConfigSave, a -> onConfigSaved()));
+                MenuManager subMenu = new MenuManager(Messages.CSVConfigDelete);
+                manager.add(subMenu);
+
+                manager.add(new Separator());
+                configManager.getUserSpecificConfigurations().forEach(config -> subMenu
+                                .add(new SimpleAction(config.getLabel(), a -> onConfigDeleted(config))));
+                manager.add(new SimpleAction(Messages.CSVConfigExport, a -> onConfigExport()));
+                manager.add(new SimpleAction(Messages.CSVConfigImport, a -> onConfigImport()));
+
+            });
+
+            configurationDropDownMenu = menuMgr.createContextMenu(button);
+            button.addDisposeListener(e -> configurationDropDownMenu.dispose());
+        }
+
+        configurationDropDownMenu.setVisible(true);
+    }
+
+    private void onRereadColumns()
+    {
+        this.currentConfig = null;
+        doProcessFile();
+    }
+
+    private void onConfigSelected(CSVConfig config)
+    {
+        currentConfig = config;
+        config.writeTo(importer);
+        doProcessFile();
+    }
+
+    private void onConfigDeleted(CSVConfig config)
+    {
+        configManager.removeUserSpecificConfiguration(config);
+
+        if (config == currentConfig)
+            onRereadColumns();
+    }
+
+    private void onConfigSaved()
+    {
+        InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.CSVConfigDialogTitleSave,
+                        Messages.ColumnName, currentConfig != null ? currentConfig.getLabel() : null, null);
+        if (dlg.open() != InputDialog.OK)
+            return;
+
+        CSVConfig config = new CSVConfig();
+        config.setLabel(dlg.getValue());
+        config.readFrom(importer);
+
+        configManager.addUserSpecificConfiguration(config);
+        this.currentConfig = config;
+    }
+
+    private void onConfigExport()
+    {
+        FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
+
+        String proposal = TextUtil.sanitizeFilename(currentConfig != null ? currentConfig.getLabel() : "csv-config"); //$NON-NLS-1$
+        dialog.setFileName(proposal + ".json");//$NON-NLS-1$
+        dialog.setOverwrite(true);
+        String fileName = dialog.open();
+        if (fileName == null)
+            return;
+
+        File file = new File(fileName);
+
+        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        {
+            CSVConfig config = new CSVConfig();
+            config.setLabel(currentConfig != null ? currentConfig.getLabel() : file.getName());
+            config.readFrom(importer);
+
+            JSONValue.writeJSONString(config.toJSON(), writer);
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(getControl().getShell(), Messages.ExportWizardErrorExporting, e.getMessage());
+        }
+    }
+
+    private void onConfigImport()
+    {
+        FileDialog fileDialog = new FileDialog(getControl().getShell(), SWT.OPEN);
+        fileDialog.setFilterNames(
+                        new String[] { Messages.CSVConfigCSVImportLabelFileJSON, Messages.CSVImportLabelFileAll }); // Messages.CSVImportLabelFileCSV
+        fileDialog.setFilterExtensions(new String[] { "*.json", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
+        String fileName = fileDialog.open();
+
+        if (fileName == null)
+            return;
+
+        File file = new File(fileName);
+
+        try (Reader reader = new InputStreamReader(new FileInputStream(file), StandardCharsets.UTF_8))
+        {
+            JSONObject jsonObject = (JSONObject) JSONValue.parseWithException(reader);
+
+            CSVConfig config = new CSVConfig();
+            config.fromJSON(jsonObject);
+
+            configManager.addUserSpecificConfiguration(config);
+
+            onConfigSelected(config);
+        }
+        catch (IOException | org.json.simple.parser.ParseException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(getControl().getShell(), Messages.ExportWizardErrorExporting, e.getMessage());
+        }
+    }
+
     private void doProcessFile()
     {
         try
         {
-            importer.processFile();
+            importer.processFile(currentConfig == null);
 
             tableViewer.getTable().setRedraw(false);
 

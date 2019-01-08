@@ -89,6 +89,7 @@ public class QuotesContextMenu
 
                 CSVImportWizard wizard = new CSVImportWizard(owner.getClient(), owner.getPreferenceStore(),
                                 new File(fileName));
+                owner.inject(wizard);
                 wizard.setTarget(security);
                 Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
 

@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -50,7 +52,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
 
-public class CSVImporter
+public final class CSVImporter
 {
     public static final class Column
     {
@@ -122,6 +124,18 @@ public class CSVImporter
         public Format getFormat()
         {
             return format;
+        }
+
+        public String toPattern()
+        {
+            if (format instanceof SimpleDateFormat)
+                return ((SimpleDateFormat) format).toPattern();
+            else if (format instanceof DecimalFormat)
+                return ((DecimalFormat) format).toPattern();
+            else if (format instanceof ISINFormat)
+                return Isin.PATTERN;
+
+            return null;
         }
     }
 
@@ -283,7 +297,7 @@ public class CSVImporter
                 if (((SimpleDateFormat) format.getFormat()).toPattern().equals(text))
                     return format;
             }
-            
+
             return getAvailableFieldFormats().get(0);
         }
     }
@@ -374,10 +388,10 @@ public class CSVImporter
             EnumMapFormat<M> format = new EnumMapFormat<>(enumType);
             FieldFormat answer = new FieldFormat(null, format);
 
-            String[] entries = text.split(";");
+            String[] entries = text.split(";"); //$NON-NLS-1$
             for (String e : entries)
             {
-                String[] entry = e.split("=");
+                String[] entry = e.split("="); //$NON-NLS-1$
                 if (entry.length != 2)
                     continue;
 
@@ -482,7 +496,7 @@ public class CSVImporter
         @Override
         public FieldFormat textToFormat(String text)
         {
-            return new FieldFormat(null, new ISINFormat(Collections.emptyList()));
+            return null;
         }
     }
 
@@ -537,6 +551,8 @@ public class CSVImporter
             }
         }
     }
+
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     private final Client client;
     private final File inputFile;
@@ -595,7 +611,7 @@ public class CSVImporter
 
     public void setDelimiter(char delimiter)
     {
-        this.delimiter = delimiter;
+        propertyChangeSupport.firePropertyChange("delimiter", this.delimiter, this.delimiter = delimiter); //$NON-NLS-1$ //NOSONAR
     }
 
     public char getDelimiter()
@@ -605,7 +621,7 @@ public class CSVImporter
 
     public void setEncoding(Charset encoding)
     {
-        this.encoding = encoding;
+        propertyChangeSupport.firePropertyChange("encoding", this.encoding, this.encoding = encoding); //$NON-NLS-1$ //NOSONAR
     }
 
     public Charset getEncoding()
@@ -615,7 +631,7 @@ public class CSVImporter
 
     public void setSkipLines(int skipLines)
     {
-        this.skipLines = skipLines;
+        propertyChangeSupport.firePropertyChange("skipLines", this.skipLines, this.skipLines = skipLines); //$NON-NLS-1$ //NOSONAR
     }
 
     public int getSkipLines()
@@ -625,7 +641,8 @@ public class CSVImporter
 
     public void setFirstLineHeader(boolean isFirstLineHeader)
     {
-        this.isFirstLineHeader = isFirstLineHeader;
+        propertyChangeSupport.firePropertyChange("firstLineHeader", this.isFirstLineHeader, //$NON-NLS-1$
+                        this.isFirstLineHeader = isFirstLineHeader); // NOSONAR
     }
 
     public boolean isFirstLineHeader()
@@ -643,7 +660,12 @@ public class CSVImporter
         return columns;
     }
 
-    private void processStream(InputStream stream) throws IOException
+    /* package */ void setColumns(Column[] columns)
+    {
+        this.columns = columns;
+    }
+
+    private void processStream(InputStream stream, boolean remap) throws IOException
     {
         Reader reader = new InputStreamReader(stream, encoding);
 
@@ -673,34 +695,43 @@ public class CSVImporter
         while ((line = parser.getLine()) != null)
             input.add(line);
 
-        this.columns = new CSVImporter.Column[header.length];
-        for (int ii = 0; ii < header.length; ii++)
-            this.columns[ii] = new Column(ii, header[ii]);
-
         this.values = input;
 
-        mapToImportDefinition();
+        if (this.columns == null || remap)
+        {
+            this.columns = new CSVImporter.Column[header.length];
+            for (int ii = 0; ii < header.length; ii++)
+                this.columns[ii] = new Column(ii, header[ii]);
+
+            mapToImportDefinition();
+        }
     }
 
-    public void processFile() throws IOException
+    public void processFile(boolean remap) throws IOException
     {
         try (FileInputStream stream = new FileInputStream(inputFile))
         {
-            processStream(stream);
+            processStream(stream, remap);
         }
         catch (IOException e)
         {
-            // fallback for file names with umlaute on Linux
-            byte[] ptext = inputFile.toString().getBytes(StandardCharsets.UTF_8);
-            String str = new String(ptext, StandardCharsets.ISO_8859_1);
-            Path path = Paths.get(URI.create("file://" + str)); //$NON-NLS-1$
+            PortfolioLog.error(e);
 
-            try (InputStream stream = Files.newInputStream(path))
+            try
             {
-                processStream(stream);
+                // fallback for file names with umlaute on Linux
+                byte[] ptext = inputFile.toString().getBytes(StandardCharsets.UTF_8);
+                String str = new String(ptext, StandardCharsets.ISO_8859_1);
+                Path path = Paths.get(URI.create("file://" + str)); //$NON-NLS-1$
+
+                try (InputStream stream = Files.newInputStream(path))
+                {
+                    processStream(stream, remap);
+                }
             }
-            catch (IOException e2)
+            catch (IllegalArgumentException | IOException ignore)
             {
+                PortfolioLog.error(ignore);
                 throw e;
             }
         }
@@ -802,5 +833,20 @@ public class CSVImporter
             }
         }
         return sb.toString();
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

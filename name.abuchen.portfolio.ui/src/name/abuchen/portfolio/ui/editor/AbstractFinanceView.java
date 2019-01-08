@@ -197,4 +197,9 @@ public abstract class AbstractFinanceView
             c2.set(param.getClass().getName(), param);
         return ContextInjectionFactory.make(type, this.context, c2);
     }
+
+    public void inject(Object object)
+    {
+        ContextInjectionFactory.inject(object, context);
+    }
 }

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.math.BigDecimal;
+import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.DateTimeException;
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
@@ -94,8 +96,18 @@ public abstract class CSVExtractor implements Extractor
         if (value == null)
             return null;
 
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
+        try
+        {
+            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
+        }
+        catch (ParseException e)
+        {
+            // Improve error message by adding context
+            throw new ParseException(MessageFormat.format(Messages.MsgErrorParseErrorWithGivenPattern, value,
+                            field2column.get(name).getFormat().toPattern()), e.getErrorOffset());
+        }
+
     }
 
     protected LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
@@ -104,8 +116,19 @@ public abstract class CSVExtractor implements Extractor
         String dateValue = getText(dateColumn, rawValues, field2column);
         if (dateValue == null)
             return null;
-        Date date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
-        LocalDateTime result = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+
+        LocalDateTime result;
+        try
+        {
+            Date date = (Date) field2column.get(dateColumn).getFormat().getFormat().parseObject(dateValue);
+            result = LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+        }
+        catch (ParseException e)
+        {
+            // Improve error message by adding context
+            throw new ParseException(MessageFormat.format(Messages.MsgErrorParseErrorWithGivenPattern, dateValue,
+                            field2column.get(dateColumn).getFormat().toPattern()), e.getErrorOffset());
+        }
 
         if (timeColumn == null)
             return result;

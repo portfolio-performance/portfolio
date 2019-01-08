@@ -162,11 +162,13 @@ public class Messages extends NLS
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;
     public static String MsgErrorMissingDate;
+    public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingValueMatches;
     public static String MsgErrorNoCrumbFound;
     public static String MsgErrorNoneOfSubSectionsMatched;
     public static String MsgErrorNotAllPatternMatched;
     public static String MsgErrorNotAValidDate;
+    public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorsConvertingValue;
     public static String MsgErrorTransactionTypeNotSupported;
     public static String MsgErrorUnexpectedStatusCode;

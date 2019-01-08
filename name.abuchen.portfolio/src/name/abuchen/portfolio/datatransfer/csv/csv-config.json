@@ -1,0 +1,74 @@
+[{
+    "label": "comdirect Musterdepot",
+	"delimiter": ";",
+    "encoding": "windows-1250",
+    "isFirstLineHeader": true,
+    "skipLines": 5,
+    "columns": [
+        {
+            "label": "Stück/Nom.",
+            "code": "shares",
+            "format":"#,##0.###"
+        },
+        {
+            "label": "Bezeichnung",
+            "code": "name"
+        },
+        {
+            "code": "wkn",
+            "label": "WKN"
+        },
+        {
+            "label": "Typ"
+        },
+        {
+            "label": "Währung"
+        },
+        {
+            "label": "Akt. Kurs"
+        },
+        {
+            "label": "Diff. abs."
+        },
+        {
+            "label": "Diff. %"
+        },
+        {
+            "label": "Wert in EUR"
+        },
+        {
+            "label": "Diff. abs."
+        },
+        {
+            "label": "Diff. %"
+        },
+        {
+            "label": "Datum"
+        },
+        {
+            "label": "Zeit"
+        },
+        {
+            "label": "Börse"
+        },
+        {
+            "label": "Kaufkurs in EUR"
+        },
+        {
+            "label": "Kaufdatum",
+            "code": "date",
+            "format": "dd.MM.yyyy"
+        },
+        {
+            "label": "Kaufwert in EUR",
+            "code": "value",
+            "format": "#,##0.###"
+        },
+        {
+            "label": "Limit+"
+        },
+        {
+            "label": "Limit-"
+        }
+    ]
+}]
