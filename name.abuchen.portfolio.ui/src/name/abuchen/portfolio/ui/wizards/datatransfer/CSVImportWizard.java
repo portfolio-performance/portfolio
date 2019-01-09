@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter;
 import name.abuchen.portfolio.model.Client;
@@ -68,6 +69,12 @@ public class CSVImportWizard extends Wizard
      */
     private Security target;
 
+    /**
+     * If a CSVConfig is given, then this configuration is preset (used when
+     * opening the wizard with a specific configuration from the menu)
+     */
+    private CSVConfig initialConfig;
+
     private CSVImportDefinitionPage definitionPage;
     private ReviewExtractedItemsPage reviewPage;
     private SelectSecurityPage selectSecurityPage;
@@ -85,6 +92,11 @@ public class CSVImportWizard extends Wizard
         this.target = target;
     }
 
+    public void setConfiguration(CSVConfig config)
+    {
+        this.initialConfig = config;
+    }
+
     @Override
     public Image getDefaultPageImage()
     {
@@ -95,17 +107,17 @@ public class CSVImportWizard extends Wizard
     public void addPages()
     {
         definitionPage = new CSVImportDefinitionPage(client, importer, configManager, target != null);
-
+        if (initialConfig != null)
+            definitionPage.setInitialConfiguration(initialConfig);
         addPage(definitionPage);
 
         selectSecurityPage = new SelectSecurityPage(client);
         addPage(selectSecurityPage);
-        
+
         reviewPage = new ReviewExtractedItemsPage(client, new ExtractorProxy(importer), preferences,
                         Arrays.asList(new Extractor.InputFile(importer.getInputFile())), REVIEW_PAGE_ID);
         reviewPage.setDoExtractBeforeEveryPageDisplay(true);
         addPage(reviewPage);
-
 
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }

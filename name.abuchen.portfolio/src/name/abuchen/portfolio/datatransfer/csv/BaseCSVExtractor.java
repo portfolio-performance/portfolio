@@ -138,10 +138,17 @@ import name.abuchen.portfolio.money.Money;
 
     protected Money getMoney(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        Long amount = getAmount(Messages.CSVColumn_Value, rawValues, field2column);
+        return getMoney(Messages.CSVColumn_Value, Messages.CSVColumn_TransactionCurrency, rawValues, field2column);
+    }
+
+    protected Money getMoney(String value, String currency, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
+    {
+        Long amount = getAmount(value, rawValues, field2column);
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Value), 0);
-        String currencyCode = getCurrencyCode(Messages.CSVColumn_TransactionCurrency, rawValues, field2column);
+        String currencyCode = getCurrencyCode(currency, rawValues, field2column);
         return Money.of(currencyCode, amount);
     }
+
 }

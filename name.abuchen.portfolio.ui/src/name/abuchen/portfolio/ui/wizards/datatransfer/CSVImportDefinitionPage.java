@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -153,6 +154,12 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     public CSVImporter getImporter()
     {
         return importer;
+    }
+
+    public void setInitialConfiguration(CSVConfig config)
+    {
+        currentConfigLabel = Objects.requireNonNull(config).getLabel();
+        config.writeTo(importer);
     }
 
     @Override

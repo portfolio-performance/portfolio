@@ -576,7 +576,7 @@ public final class CSVImporter
 
         this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
                         new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
-                        new CSVSecurityPriceExtractor()));
+                        new CSVSecurityPriceExtractor(), new CSVPortfolioExtractor(client)));
         this.currentExtractor = extractors.get(0);
     }
 
@@ -688,6 +688,16 @@ public final class CSVImporter
         List<String[]> input = new ArrayList<>();
         String[] header = null;
         String[] line = parser.getLine();
+
+        // no more data available after skipping lines
+        if (line == null)
+        {
+            this.values = Collections.emptyList();
+            if (remap)
+                this.columns = new Column[0];
+            return;
+        }
+
         if (isFirstLineHeader)
         {
             header = line;

@@ -3,10 +3,10 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Scanner;
-import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -99,14 +99,14 @@ public class CSVConfigManager
         return answer;
     }
 
-    public Stream<CSVConfig> getBuiltInConfigurations()
+    public List<CSVConfig> getBuiltInConfigurations()
     {
-        return builtIn.stream();
+        return Collections.unmodifiableList(builtIn);
     }
 
-    public Stream<CSVConfig> getUserSpecificConfigurations()
+    public List<CSVConfig> getUserSpecificConfigurations()
     {
-        return userSpecific.stream();
+        return Collections.unmodifiableList(userSpecific);
     }
 
     public void addUserSpecificConfiguration(CSVConfig config)
