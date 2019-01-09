@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -103,6 +104,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupportWrapper;
@@ -114,7 +116,13 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 {
     private final Client client;
     private final CSVImporter importer;
-    private CSVConfig currentConfig;
+
+    /**
+     * The label of any selected configuration. It is used (a) as indicator that
+     * the number of columns should not be re-created and (b) as a proposal when
+     * saving the configuration.
+     */
+    private String currentConfigLabel;
 
     private CSVConfigManager configManager;
     private final boolean onlySecurityPrices;
@@ -136,8 +144,8 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         this.configManager = configManager;
         this.onlySecurityPrices = onlySecurityPrices;
 
-        if (onlySecurityPrices)
-            importer.setExtractor(importer.getSecurityPriceExtractor());
+        importer.setExtractor(
+                        onlySecurityPrices ? importer.getSecurityPriceExtractor() : importer.getExtractors().get(0));
 
         this.context = new DataBindingContext();
     }
@@ -166,23 +174,9 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         setControl(container);
         container.setLayout(new FormLayout());
 
-        Label lblTarget = new Label(container, SWT.RIGHT);
-        lblTarget.setText(Messages.CSVImportLabelTarget);
-        Combo cmbTarget = new Combo(container, SWT.READ_ONLY);
-        ComboViewer target = new ComboViewer(cmbTarget);
-        target.setContentProvider(ArrayContentProvider.getInstance());
-        target.setLabelProvider(new LabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                return ((Extractor) element).getLabel();
-            }
-        });
-        target.getCombo().setEnabled(!onlySecurityPrices);
-        target.addSelectionChangedListener(event -> onTargetChanged(
-                        (CSVExtractor) ((IStructuredSelection) event.getSelectionProvider().getSelection())
-                                        .getFirstElement()));
+        Label lblExtractor = new Label(container, SWT.RIGHT);
+        lblExtractor.setText(Messages.CSVImportLabelTarget);
+        ComboViewer extractor = createExtractorComboViewer(container);
 
         Button button = new Button(container, SWT.NONE);
         button.setImage(Images.CONFIG.image());
@@ -190,23 +184,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
         Label lblDelimiter = new Label(container, SWT.NONE);
         lblDelimiter.setText(Messages.CSVImportLabelDelimiter);
-        Combo cmbDelimiter = new Combo(container, SWT.READ_ONLY);
-        ComboViewer delimiter = new ComboViewer(cmbDelimiter);
-        delimiter.setContentProvider(ArrayContentProvider.getInstance());
-        delimiter.setInput(Delimiter.AVAILABLE);
-
-        UpdateValueStrategy<Delimiter, Character> targetToModel = new UpdateValueStrategy<>();
-        targetToModel.setConverter(new Delimiter.DelimiterToCharConverter());
-
-        UpdateValueStrategy<Character, Delimiter> modelToTarget = new UpdateValueStrategy<>();
-        modelToTarget.setConverter(new Delimiter.CharToDelimiterConverter());
-
-        @SuppressWarnings("unchecked")
-        IObservableValue<Delimiter> delimiterTarget = ViewersObservables.observeSingleSelection(delimiter);
-        @SuppressWarnings("unchecked")
-        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter").observe(importer); //$NON-NLS-1$
-        context.bindValue(delimiterTarget, delimiterModel, targetToModel, modelToTarget);
-        delimiter.addSelectionChangedListener(e -> doProcessFile());
+        ComboViewer delimiter = createDelimiterComboViewer(container);
 
         Label lblSkipLines = new Label(container, SWT.NONE);
         lblSkipLines.setText(Messages.CSVImportLabelSkipLines);
@@ -249,16 +227,16 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         // form layout
         //
 
-        int width = widest(lblTarget, lblDelimiter, lblEncoding);
+        int width = widest(lblExtractor, lblDelimiter, lblEncoding);
 
-        FormDataFactory.startingWith(lblTarget).width(width).top(new FormAttachment(0, 5)).thenRight(cmbTarget)
-                        .right(new FormAttachment(50, -5)).thenBelow(cmbDelimiter).label(lblDelimiter)
-                        .right(new FormAttachment(50, -5)).thenBelow(cmbEncoding).label(lblEncoding)
-                        .right(new FormAttachment(50, -5));
+        FormDataFactory.startingWith(lblExtractor).width(width).top(new FormAttachment(0, 5))
+                        .thenRight(extractor.getCombo()).right(new FormAttachment(50, -5))
+                        .thenBelow(delimiter.getCombo()).label(lblDelimiter).right(new FormAttachment(50, -5))
+                        .thenBelow(cmbEncoding).label(lblEncoding).right(new FormAttachment(50, -5));
 
-        FormDataFactory.startingWith(cmbTarget).thenRight(button);
+        FormDataFactory.startingWith(extractor.getCombo()).thenRight(button);
 
-        FormDataFactory.startingWith(cmbDelimiter).thenRight(lblSkipLines).suffix(skipLines);
+        FormDataFactory.startingWith(delimiter.getCombo()).thenRight(lblSkipLines).suffix(skipLines);
 
         FormDataFactory.startingWith(cmbEncoding).thenRight(firstLineIsHeader);
 
@@ -308,19 +286,70 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         //
         // setup form elements
         //
-        target.setInput(importer.getExtractors());
-        target.getCombo().select(importer.getExtractors().indexOf(importer.getExtractor()));
         doProcessFile();
     }
 
-    private void onTargetChanged(CSVExtractor def)
+    private ComboViewer createExtractorComboViewer(Composite container)
     {
-        if (!def.equals(importer.getExtractor()))
+        Combo cmbExtractor = new Combo(container, SWT.READ_ONLY);
+        ComboViewer extractor = new ComboViewer(cmbExtractor);
+        extractor.setContentProvider(ArrayContentProvider.getInstance());
+        extractor.setInput(importer.getExtractors());
+        extractor.getCombo().setEnabled(!onlySecurityPrices);
+
+        extractor.setLabelProvider(new LabelProvider()
         {
-            importer.setExtractor(def);
-            currentConfig = null;
-            doProcessFile();
-        }
+            @Override
+            public String getText(Object element)
+            {
+                return ((Extractor) element).getLabel();
+            }
+        });
+
+        IObservableValue<?> targetObservable = ViewersObservables.observeSingleSelection(extractor);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelObservable = BeanProperties.value("extractor").observe(importer); //$NON-NLS-1$
+        context.bindValue(targetObservable, modelObservable);
+        extractor.addSelectionChangedListener(e -> onTargetChanged());
+
+        return extractor;
+    }
+
+    private ComboViewer createDelimiterComboViewer(Composite container)
+    {
+        Combo cmbDelimiter = new Combo(container, SWT.READ_ONLY);
+        ComboViewer delimiter = new ComboViewer(cmbDelimiter);
+        delimiter.setContentProvider(ArrayContentProvider.getInstance());
+        delimiter.setInput(Delimiter.AVAILABLE);
+
+        UpdateValueStrategy<Delimiter, Character> targetToModel = new UpdateValueStrategy<>();
+        targetToModel.setConverter(new Delimiter.DelimiterToCharConverter());
+
+        UpdateValueStrategy<Character, Delimiter> modelToTarget = new UpdateValueStrategy<>();
+        modelToTarget.setConverter(new Delimiter.CharToDelimiterConverter());
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<Delimiter> delimiterTarget = ViewersObservables.observeSingleSelection(delimiter);
+        @SuppressWarnings("unchecked")
+        IObservableValue<Character> delimiterModel = BeanProperties.value("delimiter").observe(importer); //$NON-NLS-1$
+        context.bindValue(delimiterTarget, delimiterModel, targetToModel, modelToTarget);
+        delimiter.addSelectionChangedListener(e -> doProcessFile());
+        return delimiter;
+    }
+
+    private void onTargetChanged()
+    {
+        // important: by changing the extractor, there still might be old (now
+        // invalid) column configurations. We could just force the
+        // #doProcessFile to re-read the columns, however, we would loose
+        // whatever the user has manually configured. By reading and writing via
+        // CSVConfig, we keep only valid column configurations.
+
+        CSVConfig config = new CSVConfig();
+        config.readFrom(importer);
+        config.writeTo(importer);
+
+        doProcessFile(false);
     }
 
     private void onColumnSelected(int columnIndex)
@@ -340,19 +369,20 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
             menuMgr.setRemoveAllWhenShown(true);
             menuMgr.addMenuListener(manager -> {
 
-                if (currentConfig != null)
+                if (currentConfigLabel != null)
                 {
                     manager.add(new SimpleAction(Messages.CSVConfigRereadColumnsFromFile, a -> onRereadColumns()));
                     manager.add(new Separator());
                 }
 
+                manager.add(new LabelOnly(Messages.CSVConfigLabelBuiltIn));
                 configManager.getBuiltInConfigurations().forEach(config -> manager
-                                .add(new SimpleAction(config.getLabel(), a -> onConfigSelected(config))));
+                                .add(new SimpleAction(labelFor(config), a -> onConfigSelected(config))));
 
                 manager.add(new Separator());
-
+                manager.add(new LabelOnly(Messages.CSVConfigLabelUserSpecific));
                 configManager.getUserSpecificConfigurations().forEach(config -> manager
-                                .add(new SimpleAction(config.getLabel(), a -> onConfigSelected(config))));
+                                .add(new SimpleAction(labelFor(config), a -> onConfigSelected(config))));
 
                 manager.add(new Separator());
                 manager.add(new SimpleAction(Messages.CSVConfigSave, a -> onConfigSaved()));
@@ -374,15 +404,21 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         configurationDropDownMenu.setVisible(true);
     }
 
+    private String labelFor(CSVConfig config)
+    {
+        Optional<CSVExtractor> extractor = importer.getExtractorByCode(config.getTarget());
+        return extractor.isPresent() ? config.getLabel() + " (" + extractor.get().getLabel() + ")" : config.getLabel(); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     private void onRereadColumns()
     {
-        this.currentConfig = null;
+        this.currentConfigLabel = null;
         doProcessFile();
     }
 
     private void onConfigSelected(CSVConfig config)
     {
-        currentConfig = config;
+        currentConfigLabel = config.getLabel();
         config.writeTo(importer);
         doProcessFile();
     }
@@ -391,14 +427,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     {
         configManager.removeUserSpecificConfiguration(config);
 
-        if (config == currentConfig)
+        if (config.getLabel() == currentConfigLabel)
             onRereadColumns();
     }
 
     private void onConfigSaved()
     {
         InputDialog dlg = new InputDialog(Display.getDefault().getActiveShell(), Messages.CSVConfigDialogTitleSave,
-                        Messages.ColumnName, currentConfig != null ? currentConfig.getLabel() : null, null);
+                        Messages.ColumnName, currentConfigLabel != null ? currentConfigLabel : null, null);
         if (dlg.open() != InputDialog.OK)
             return;
 
@@ -407,14 +443,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         config.readFrom(importer);
 
         configManager.addUserSpecificConfiguration(config);
-        this.currentConfig = config;
+        this.currentConfigLabel = config.getLabel();
     }
 
     private void onConfigExport()
     {
         FileDialog dialog = new FileDialog(getControl().getShell(), SWT.SAVE);
 
-        String proposal = TextUtil.sanitizeFilename(currentConfig != null ? currentConfig.getLabel() : "csv-config"); //$NON-NLS-1$
+        String proposal = TextUtil.sanitizeFilename(currentConfigLabel != null ? currentConfigLabel : "csv-config"); //$NON-NLS-1$
         dialog.setFileName(proposal + ".json");//$NON-NLS-1$
         dialog.setOverwrite(true);
         String fileName = dialog.open();
@@ -426,7 +462,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
         try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
         {
             CSVConfig config = new CSVConfig();
-            config.setLabel(currentConfig != null ? currentConfig.getLabel() : file.getName());
+            config.setLabel(currentConfigLabel != null ? currentConfigLabel : file.getName());
             config.readFrom(importer);
 
             JSONValue.writeJSONString(config.toJSON(), writer);
@@ -471,9 +507,14 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
 
     private void doProcessFile()
     {
+        doProcessFile(currentConfigLabel == null);
+    }
+
+    private void doProcessFile(boolean remap)
+    {
         try
         {
-            importer.processFile(currentConfig == null);
+            importer.processFile(remap);
 
             tableViewer.getTable().setRedraw(false);
 

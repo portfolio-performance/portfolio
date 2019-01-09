@@ -30,6 +30,12 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
     }
 
     @Override
+    public String getCode()
+    {
+        return "investment-vehicle"; //$NON-NLS-1$
+    }
+
+    @Override
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // check if we can identify a security

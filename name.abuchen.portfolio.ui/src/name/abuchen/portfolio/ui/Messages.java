@@ -267,6 +267,8 @@ public class Messages extends NLS
     public static String CSVConfigDialogTitleSave;
     public static String CSVConfigExport;
     public static String CSVConfigImport;
+    public static String CSVConfigLabelBuiltIn;
+    public static String CSVConfigLabelUserSpecific;
     public static String CSVConfigRereadColumnsFromFile;
     public static String CSVConfigSave;
     public static String CSVImportErrorMissingFields;

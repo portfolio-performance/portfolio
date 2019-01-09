@@ -52,6 +52,12 @@ import name.abuchen.portfolio.money.Money;
     }
 
     @Override
+    public String getCode()
+    {
+        return "portfolio-transaction"; //$NON-NLS-1$
+    }
+
+    @Override
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // if forex gross amount is available then assume that is the currency

@@ -47,6 +47,12 @@ import name.abuchen.portfolio.money.Money;
     }
 
     @Override
+    public String getCode()
+    {
+        return "account-transaction"; //$NON-NLS-1$
+    }
+
+    @Override
     void extract(List<Item> items, String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
         // check if we have a security

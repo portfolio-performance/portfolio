@@ -8,44 +8,48 @@ import java.util.Optional;
 import java.util.Scanner;
 import java.util.stream.Stream;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.eclipse.core.runtime.preferences.IEclipsePreferences;
 import org.eclipse.e4.core.di.annotations.Creatable;
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
+import org.osgi.service.prefs.BackingStoreException;
 
 import name.abuchen.portfolio.PortfolioLog;
 
 @Singleton
 @Creatable
+@SuppressWarnings("restriction")
 public class CSVConfigManager
 {
-    private List<CSVConfig> buildIn = new ArrayList<>();
+    @Inject
+    @Preference
+    private IEclipsePreferences preferences;
+
+    private List<CSVConfig> builtIn = new ArrayList<>();
+
+    private boolean isDirty = false;
     private List<CSVConfig> userSpecific = new ArrayList<>();
 
-    public CSVConfigManager() throws IOException
+    @PostConstruct
+    private void loadConfigurations() throws IOException
     {
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream("csv-config.json"), //$NON-NLS-1$
                         StandardCharsets.UTF_8.name()))
         {
             String json = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-            JSONArray array = (JSONArray) JSONValue.parseWithException(json);
+            builtIn.addAll(fromJSON(json));
 
-            for (int ii = 0; ii < array.size(); ii++)
-            {
-                try // NOSONAR
-                {
-                    CSVConfig config = new CSVConfig();
-                    config.fromJSON((JSONObject) array.get(ii));
-                    buildIn.add(config);
-                }
-                catch (Exception e)
-                {
-                    PortfolioLog.error(e);
-                }
-            }
+            String saved = preferences.get(CSVConfigManager.class.getName(), null);
+            if (saved != null)
+                userSpecific.addAll(fromJSON(saved));
         }
         catch (ParseException e)
         {
@@ -53,9 +57,51 @@ public class CSVConfigManager
         }
     }
 
+    @SuppressWarnings("unchecked")
+    @PreDestroy
+    private void saveConfigurations()
+    {
+        if (!isDirty)
+            return;
+
+        try
+        {
+            JSONArray array = new JSONArray();
+            userSpecific.forEach(config -> array.add(config.toJSON()));
+            preferences.put(CSVConfigManager.class.getName(), array.toJSONString());
+            preferences.flush();
+        }
+        catch (BackingStoreException e)
+        {
+            PortfolioLog.error(e);
+        }
+    }
+
+    private List<CSVConfig> fromJSON(String json) throws ParseException
+    {
+        JSONArray array = (JSONArray) JSONValue.parseWithException(json);
+
+        List<CSVConfig> answer = new ArrayList<>();
+        for (int ii = 0; ii < array.size(); ii++)
+        {
+            try
+            {
+                CSVConfig config = new CSVConfig();
+                config.fromJSON((JSONObject) array.get(ii));
+                answer.add(config);
+            }
+            catch (Exception e)
+            {
+                PortfolioLog.error(e);
+            }
+        }
+
+        return answer;
+    }
+
     public Stream<CSVConfig> getBuiltInConfigurations()
     {
-        return buildIn.stream();
+        return builtIn.stream();
     }
 
     public Stream<CSVConfig> getUserSpecificConfigurations()
@@ -72,10 +118,14 @@ public class CSVConfigManager
             userSpecific.remove(previous.get());
 
         userSpecific.add(config);
+
+        isDirty = true;
     }
 
     public void removeUserSpecificConfiguration(CSVConfig config)
     {
         userSpecific.remove(config);
+
+        isDirty = true;
     }
 }

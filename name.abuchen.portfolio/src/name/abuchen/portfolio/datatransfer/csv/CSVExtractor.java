@@ -27,6 +27,8 @@ public abstract class CSVExtractor implements Extractor
     public abstract List<Item> extract(int skipLines, List<String[]> rawValues, Map<String, Column> field2column,
                     List<Exception> errors);
 
+    public abstract String getCode();
+
     @Override
     public String getFilterExtension()
     {

@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.function.Supplier;
@@ -596,7 +597,8 @@ public final class CSVImporter
 
     public void setExtractor(CSVExtractor extractor)
     {
-        this.currentExtractor = extractor;
+        propertyChangeSupport.firePropertyChange("extractor", this.currentExtractor, //$NON-NLS-1$
+                        this.currentExtractor = extractor); // NOSONAR
     }
 
     public CSVExtractor getExtractor()
@@ -606,7 +608,13 @@ public final class CSVImporter
 
     public CSVExtractor getSecurityPriceExtractor()
     {
-        return extractors.get(3);
+        return extractors.stream().filter(e -> e instanceof CSVSecurityPriceExtractor).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public Optional<CSVExtractor> getExtractorByCode(String code)
+    {
+        return extractors.stream().filter(e -> code.equals(e.getCode())).findAny();
     }
 
     public void setDelimiter(char delimiter)

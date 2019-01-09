@@ -24,6 +24,7 @@ public class CSVConfig
     private interface Key // NOSONAR
     {
         String CODE = "code";
+        String TARGET = "target";
         String LABEL = "label";
         String FORMAT = "format";
         String DELIMITER = "delimiter";
@@ -72,6 +73,8 @@ public class CSVConfig
 
     private String label;
 
+    private String target;
+
     private char delimiter = ';';
     private Charset encoding = Charset.defaultCharset();
     private int skipLines = 0;
@@ -89,8 +92,20 @@ public class CSVConfig
         this.label = label;
     }
 
+    public String getTarget()
+    {
+        return this.target;
+    }
+
+    public void setTarget(String target)
+    {
+        this.target = target;
+    }
+
     public void readFrom(CSVImporter importer)
     {
+        this.target = importer.getExtractor().getCode();
+
         this.delimiter = importer.getDelimiter();
         this.encoding = importer.getEncoding();
         this.skipLines = importer.getSkipLines();
@@ -115,9 +130,10 @@ public class CSVConfig
             this.columns.add(copy);
         }
     }
-
     public void writeTo(CSVImporter importer)
     {
+        importer.getExtractorByCode(this.target).ifPresent(importer::setExtractor);
+
         importer.setDelimiter(this.delimiter);
         importer.setEncoding(this.encoding);
         importer.setSkipLines(this.skipLines);
@@ -160,6 +176,8 @@ public class CSVConfig
 
         answer.put(Key.LABEL, this.label);
 
+        answer.put(Key.TARGET, this.target);
+
         answer.put(Key.DELIMITER, String.valueOf(this.delimiter));
         answer.put(Key.ENCODING, this.encoding.name());
         answer.put(Key.SKIP_LINES, this.skipLines);
@@ -196,6 +214,9 @@ public class CSVConfig
     {
         this.label = Objects.requireNonNull((String) json.get(Key.LABEL),
                         MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, Key.LABEL));
+
+        this.target = Objects.requireNonNull((String) json.get(Key.TARGET),
+                        MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, Key.TARGET));
 
         char d = Objects.requireNonNull((String) json.get(Key.DELIMITER),
                         MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, Key.DELIMITER)).charAt(0);
@@ -239,5 +260,4 @@ public class CSVConfig
             this.columns.add(column);
         }
     }
-
 }

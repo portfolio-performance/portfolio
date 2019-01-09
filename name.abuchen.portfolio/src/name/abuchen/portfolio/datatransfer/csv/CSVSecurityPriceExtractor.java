@@ -27,6 +27,12 @@ import name.abuchen.portfolio.model.SecurityPrice;
     }
 
     @Override
+    public String getCode()
+    {
+        return "investment-vehicle-price"; //$NON-NLS-1$
+    }
+
+    @Override
     public String getLabel()
     {
         return Messages.CSVDefHistoricalQuotes;

@@ -1,5 +1,6 @@
 [{
     "label": "comdirect Musterdepot",
+    "target": "portfolio-transaction",
 	"delimiter": ";",
     "encoding": "windows-1250",
     "isFirstLineHeader": true,
