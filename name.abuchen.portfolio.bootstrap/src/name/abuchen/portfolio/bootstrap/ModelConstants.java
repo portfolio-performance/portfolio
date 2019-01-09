@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.bootstrap;
 
-public interface ModelConstants
+public interface ModelConstants // NOSONAR
 {
     String PORTFOLIO_PART = "name.abuchen.portfolio.ui.part.portfolio"; //$NON-NLS-1$
 

@@ -30,7 +30,7 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
-public class TimelineChart extends Chart
+public class TimelineChart extends Chart // NOSONAR
 {
     private static class MarkerLine
     {
@@ -311,9 +311,9 @@ public class TimelineChart extends Chart
         LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
         LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
         long days = ChronoUnit.DAYS.between(start, end);
-        double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1));
+        double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1d));
         int markerWidthXLeft = (int) (dayWidth / 2);
-        ArrayList<LocalDate> nonTradingDayDates = new ArrayList<LocalDate>();
+        ArrayList<LocalDate> nonTradingDayDates = new ArrayList<>();
         for (NonTradingDayMarker marker : nonTradingDayMarkers)
         {
             nonTradingDayDates.add(marker.date);

@@ -121,9 +121,4 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
     {
         return selected;
     }
-
-    public LinkedList<ReportingPeriod> getPeriodsXXX()
-    {
-        return periods;
-    }
 }

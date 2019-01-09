@@ -55,14 +55,15 @@ import name.abuchen.portfolio.util.Dates;
             LocalDateTime time = t.getDateTime();
             this.year = time.getYear();
             this.date = time.toLocalDate();
+
             // try to set rate of return, default is NaN
-            double rateOfReturn = Double.NaN;
+            double rr = Double.NaN;
             if (security != null)
             {
                 // try to get moving average/fifo price
-                rateOfReturn = t.getPersonalDividendYieldMovingAverage();
+                rr = t.getPersonalDividendYieldMovingAverage();
                 // check if it is valid (non 0)
-                if (rateOfReturn == 0)
+                if (rr == 0)
                 {
                     // else use the security price at that date
                     SecurityPrice p = security.getSecurityPrice(date);
@@ -73,11 +74,11 @@ import name.abuchen.portfolio.util.Dates;
                     {
                         double sharePriceAmount = ((double) pValue) / Values.Quote.factor()
                                         * Values.AmountFraction.factor();
-                        rateOfReturn = t.getDividendPerShare() / sharePriceAmount;
+                        rr = t.getDividendPerShare() / sharePriceAmount;
                     }
                 }
             }
-            this.rateOfReturn = rateOfReturn;
+            this.rateOfReturn = rr;
         }
     }
 

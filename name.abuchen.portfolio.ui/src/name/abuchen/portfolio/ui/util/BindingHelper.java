@@ -83,7 +83,7 @@ public class BindingHelper
         @Override
         public String convert(CurrencyUnit fromObject)
         {
-            return CurrencyUnit.EMPTY.equals(fromObject) ? null : ((CurrencyUnit) fromObject).getCurrencyCode();
+            return CurrencyUnit.EMPTY.equals(fromObject) ? null : fromObject.getCurrencyCode();
         }
     }
 
@@ -205,8 +205,7 @@ public class BindingHelper
         @Override
         public String convert(IStatus fromObject)
         {
-            IStatus status = (IStatus) fromObject;
-            return status.isOK() ? "" : status.getMessage(); //$NON-NLS-1$
+            return fromObject.isOK() ? "" : fromObject.getMessage(); //$NON-NLS-1$
         }
     }
 

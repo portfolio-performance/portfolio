@@ -160,6 +160,7 @@ public class WithoutTaxesFilter implements ClientFilter
                 case TRANSFER_IN:
                     ClientFilterHelper.recreateTransfer((AccountTransferEntry) t.getCrossEntry(),
                                     account2pseudo.get(t.getCrossEntry().getCrossOwner(t)), pseudoAccount);
+                    break;
                 case TRANSFER_OUT:
                     // skip -> handled by inbound transfer
                     break;

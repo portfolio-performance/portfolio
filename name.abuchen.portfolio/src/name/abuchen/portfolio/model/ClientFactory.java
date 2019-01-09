@@ -581,8 +581,7 @@ public class ClientFactory
         {
             if ("STOCK".equals(security.getType())) //$NON-NLS-1$ // NOSONAR
                 security.setType("EQUITY"); //$NON-NLS-1$ // NOSONAR
-            else if ("BOND".equals(security.getType())) //$NON-NLS-1$ //
-                                                        // NOSONAR
+            else if ("BOND".equals(security.getType())) // NOSONAR //$NON-NLS-1$
                 security.setType("DEBT"); //$NON-NLS-1$ // NOSONAR
         }
     }

@@ -66,6 +66,8 @@ public class Classification implements Named
     public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
     public static final String VIRTUAL_ROOT = "$virtualroot$"; //$NON-NLS-1$
 
+    private static final Random RANDOM = new Random();
+
     private String id;
     private String name;
     private String description;
@@ -77,6 +79,7 @@ public class Classification implements Named
 
     private int weight;
     private int rank;
+
 
     public Classification()
     {
@@ -344,11 +347,9 @@ public class Classification implements Named
 
     public void assignRandomColors()
     {
-        Random random = new Random();
-
-        float hue = random.nextFloat() * 360f;
-        float saturation = (random.nextFloat() * 0.5f) + 0.3f;
-        float brightness = (random.nextFloat() * 0.4f) + 0.5f;
+        float hue = RANDOM.nextFloat() * 360f;
+        float saturation = (RANDOM.nextFloat() * 0.5f) + 0.3f;
+        float brightness = (RANDOM.nextFloat() * 0.4f) + 0.5f;
 
         assignRandomColors(hue, saturation, brightness);
     }
