@@ -8,7 +8,9 @@ import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
@@ -27,6 +29,10 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
         fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("currency", Messages.CSVColumn_Currency).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
+
+        fields.add(new DateField("date", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        .setOptional(true));
     }
 
     @Override
@@ -58,12 +64,12 @@ import name.abuchen.portfolio.online.impl.YahooFinanceQuoteFeed;
                                             .toString()),
                             0);
 
-        // security exists
-        if (getClient().getSecurities().contains(security))
-            throw new ParseException(MessageFormat.format(Messages.CSVImportSecurityExists, security.getName(),
-                            security.getExternalIdentifier()), 0);
+        // nothing to do to add the security: if necessary, the security item
+        // has been created in the callback of the #extractSecurity method
 
-        // nothing to do: if necessary, the security item has been created in
-        // the callback of the #extractSecurity method
+        // check if the data contains price
+
+        getSecurityPrice(Messages.CSVColumn_DateQuote, rawValues, field2column)
+                        .ifPresent(price -> items.add(new SecurityPriceItem(security, price)));
     }
 }

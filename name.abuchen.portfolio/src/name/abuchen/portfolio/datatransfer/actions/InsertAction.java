@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 
 public class InsertAction implements ImportAction
 {
@@ -32,6 +33,13 @@ public class InsertAction implements ImportAction
         // might have been added via a transaction
         if (!client.getSecurities().contains(security))
             client.addSecurity(security);
+        return Status.OK_STATUS;
+    }
+
+    @Override
+    public Status process(Security security, SecurityPrice price)
+    {
+        security.addPrice(price);
         return Status.OK_STATUS;
     }
 

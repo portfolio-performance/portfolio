@@ -15,8 +15,10 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public interface Extractor
 {
@@ -370,7 +372,7 @@ public interface Extractor
         @Override
         public Annotated getSubject()
         {
-            return security;
+            return getSecurity();
         }
 
         @Override
@@ -395,6 +397,54 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             return action.process(security);
+        }
+    }
+
+    static class SecurityPriceItem extends Item
+    {
+        private Security security;
+        private SecurityPrice price;
+
+        public SecurityPriceItem(Security security, SecurityPrice price)
+        {
+            this.security = security;
+            this.price = price;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return getSecurity();
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelSecurityPrice;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return price.getDate().atStartOfDay();
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return Money.of(security.getCurrencyCode(), Math.round(price.getValue() / Values.Quote.dividerToMoney()));
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(security, price);
         }
     }
 

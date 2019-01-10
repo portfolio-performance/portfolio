@@ -28,7 +28,7 @@ import name.abuchen.portfolio.money.Money;
         super(client, Messages.CSVDefPortfolio);
 
         List<Field> fields = getFields();
-        fields.add(new DateField("date", Messages.CSVColumn_Date).setOptional(true)); //$NON-NLS-1$
+        fields.add(new DateField("date", Messages.CSVColumn_DateValue).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
 
         fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
@@ -41,6 +41,10 @@ import name.abuchen.portfolio.money.Money;
 
         fields.add(new AmountField("shares", Messages.CSVColumn_Shares)); //$NON-NLS-1$
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
+
+        fields.add(new DateField("date-quote", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        .setOptional(true));
     }
 
     @Override
@@ -78,7 +82,7 @@ import name.abuchen.portfolio.money.Money;
                             0);
 
         // determine remaining fields
-        LocalDateTime date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_DateValue, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             date = LocalDate.now().atStartOfDay();
 
@@ -94,5 +98,10 @@ import name.abuchen.portfolio.money.Money;
         entry.setNote(note);
 
         items.add(new BuySellEntryItem(entry));
+
+        // check if the data contains price
+
+        getSecurityPrice(Messages.CSVColumn_DateQuote, rawValues, field2column)
+                        .ifPresent(price -> items.add(new SecurityPriceItem(security, price)));
     }
 }

@@ -24,6 +24,8 @@ public class Messages extends NLS
     public static String ColumnPaidTaxes;
     public static String ColumnTransfers;
     public static String CSVColumn_Date;
+    public static String CSVColumn_DateQuote;
+    public static String CSVColumn_DateValue;
     public static String CSVColumn_Fees;
     public static String CSVColumn_InboundTransferals;
     public static String CSVColumn_ISIN;
@@ -127,6 +129,7 @@ public class Messages extends NLS
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
     public static String LabelSecurity;
+    public static String LabelSecurityPrice;
     public static String LabelSuffixEntryCorrected;
     public static String LabelTradeCalendarDefault;
     public static String LabelTradeCalendarEuronext;
