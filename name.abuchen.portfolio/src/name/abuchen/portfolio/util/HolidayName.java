@@ -5,9 +5,11 @@ import java.util.ResourceBundle;
 
 /* package */ enum HolidayName
 {
-    BANK_HOLIDAY, BOXING_DAY,
+    BANK_HOLIDAY,
+    BOXING_DAY,
     CHRISTMAS,
     CHRISTMAS_EVE,
+    NEW_YEARS_EVE,
     EASTER_MONDAY,
     FIRST_CHRISTMAS_DAY,
     FUNERAL_OF_PRESIDENT_REAGAN,

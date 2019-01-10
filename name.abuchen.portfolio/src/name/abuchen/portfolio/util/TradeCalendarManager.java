@@ -4,6 +4,7 @@ import static name.abuchen.portfolio.util.HolidayName.BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
+import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
@@ -64,6 +65,7 @@ public class TradeCalendarManager
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar("nyse", Messages.LabelTradeCalendarNYSE); //$NON-NLS-1$
