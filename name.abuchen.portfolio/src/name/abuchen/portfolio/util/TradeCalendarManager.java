@@ -103,7 +103,10 @@ public class TradeCalendarManager
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
-    }
+
+        tc = new TradeCalendar("empty", Messages.LabelTradeCalendarEmpty); //$NON-NLS-1$
+        CACHE.put(tc.getCode(), tc);
+}
 
     private TradeCalendarManager()
     {
