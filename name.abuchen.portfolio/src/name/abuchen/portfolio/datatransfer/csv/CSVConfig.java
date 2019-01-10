@@ -23,7 +23,7 @@ public class CSVConfig
     @SuppressWarnings("nls")
     private interface Key // NOSONAR
     {
-        String CODE = "code";
+        String FIELD = "field";
         String TARGET = "target";
         String LABEL = "label";
         String FORMAT = "format";
@@ -191,7 +191,7 @@ public class CSVConfig
             col.put(Key.LABEL, c.getLabel());
 
             if (c.getCode() != null)
-                col.put(Key.CODE, c.getCode());
+                col.put(Key.FIELD, c.getCode());
 
             if (c.getFormat() != null)
                 col.put(Key.FORMAT, c.getFormat());
@@ -254,7 +254,7 @@ public class CSVConfig
             CSVColumnConfig column = new CSVColumnConfig();
             column.setLabel(Objects.requireNonNull((String) col.get(Key.LABEL),
                             MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, Key.LABEL)));
-            column.setCode((String) col.get(Key.CODE));
+            column.setCode((String) col.get(Key.FIELD));
             column.setFormat((String) col.get(Key.FORMAT));
 
             this.columns.add(column);

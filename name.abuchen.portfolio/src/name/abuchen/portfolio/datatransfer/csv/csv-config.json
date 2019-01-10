@@ -8,15 +8,15 @@
     "columns": [
         {
             "label": "Stück/Nom.",
-            "code": "shares",
+            "field": "shares",
             "format":"#,##0.###"
         },
         {
             "label": "Bezeichnung",
-            "code": "name"
+            "field": "name"
         },
         {
-            "code": "wkn",
+            "field": "wkn",
             "label": "WKN"
         },
         {
@@ -24,11 +24,11 @@
         },
         {
             "label": "Währung",
-            "code": "currency"
+            "field": "currency"
         },
         {
             "label": "Akt. Kurs",
-            "code": "quote",
+            "field": "quote",
             "format": "#,##0.###"
         },
         {
@@ -48,7 +48,7 @@
         },
         {
             "label": "Datum",
-            "code": "date-quote",
+            "field": "date-quote",
             "format": "dd.MM.yy"
         },
         {
@@ -62,12 +62,12 @@
         },
         {
             "label": "Kaufdatum",
-            "code": "date",
+            "field": "date",
             "format": "dd.MM.yy"
         },
         {
             "label": "Kaufwert in EUR",
-            "code": "value",
+            "field": "value",
             "format": "#,##0.###"
         },
         {
@@ -88,24 +88,24 @@
     "columns": [
         {
             "label": "Anzahl",
-            "code": "shares",
+            "field": "shares",
             "format": "#,##0.###"
         },
         {
             "label": "Kaufpreis"
         },
         {
-            "code": "value",
+            "field": "value",
             "format": "#,##0.###",
             "label": "Kaufsumme"
         },
         {
-            "code": "date",
+            "field": "date",
             "format": "dd.MM.yyyy",
             "label": "Kaufdatum"
         },
         {
-            "code": "name",
+            "field": "name",
             "label": "Name"
         },
         {
@@ -119,7 +119,7 @@
         },
         {
             "label": "Kurs",
-            "code": "quote",
+            "field": "quote",
             "format": "#,##0.###"
         },
         {
@@ -133,11 +133,11 @@
         },
         {
             "label": "Datum",
-            "code": "date-quote",
+            "field": "date-quote",
             "format": "dd.MM.yyyy"
         },
         {
-            "code": "wkn",
+            "field": "wkn",
             "label": "WKN"
         },
         {
@@ -145,7 +145,7 @@
         },
         {
             "label": "Währung",
-            "code": "currency"
+            "field": "currency"
         },
         {
             "label": "Spalte 17"
@@ -164,24 +164,24 @@
             "label": "Bankleistungsnummer"
         },
         {
-            "code": "shares",
+            "field": "shares",
             "format": "#,##0.###",
             "label": "Bestand"
         },
         {
-            "code": "name",
+            "field": "name",
             "label": "Bezeichnung"
         },
         {
-            "code": "wkn",
+            "field": "wkn",
             "label": "WKN"
         },
         {
-            "code": "isin",
+            "field": "isin",
             "label": "ISIN"
         },
         {
-            "code": "currency",
+            "field": "currency",
             "label": "Währung"
         },
         {
@@ -195,7 +195,7 @@
         },
         {
             "label": "Kurs",
-            "code": "quote",
+            "field": "quote",
             "format": "#,##0.###"
         },
         {
@@ -208,7 +208,7 @@
             "label": "Gewinn/Verlust in %"
         },
         {
-            "code": "value",
+            "field": "value",
             "format": "#,##0.###",
             "label": "Marktwert in EUR inkl. Stückzinsen"
         },
