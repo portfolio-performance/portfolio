@@ -189,7 +189,8 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "wkn").setCanEditCheck(e -> !((Security) e).isExchangeRate()) //$NON-NLS-1$
+        new StringEditingSupport(Security.class, "wkn") //$NON-NLS-1$
+                        .setCanEditCheck(e -> !((Security) e).isExchangeRate() && ((Security) e).getOnlineId() == null)
                         .addListener(this).attachTo(column);
         column.setVisible(false);
         support.addColumn(column);

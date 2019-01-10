@@ -453,7 +453,7 @@ public class BindingHelper
         return txtValue;
     }
 
-    public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property)
+    public final Text bindStringInput(Composite editArea, final String label, String property)
     {
         return bindStringInput(editArea, label, property, SWT.NONE, SWT.DEFAULT);
     }
@@ -461,11 +461,19 @@ public class BindingHelper
     public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property,
                     int style)
     {
-        return bindStringInput(editArea, label, property, style, SWT.DEFAULT);
+        Text txtValue = createTextInput(editArea, label, style, SWT.DEFAULT);
+
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> targetObservablebserveText = WidgetProperties.text(SWT.Modify).observe(txtValue);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> modelObeservable = BeanProperties.value(property).observe(model);
+        context.bindValue(targetObservablebserveText, modelObeservable);
+
+        return targetObservablebserveText;
     }
 
     @SuppressWarnings("unchecked")
-    public final IObservableValue<String> bindStringInput(Composite editArea, final String label, String property,
+    public final Text bindStringInput(Composite editArea, final String label, String property,
                     int style, int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
@@ -473,10 +481,10 @@ public class BindingHelper
         ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(txtValue);
         context.bindValue(observeText, BeanProperties.value(property).observe(model));
 
-        return observeText;
+        return txtValue;
     }
 
-    public final Control bindISINInput(Composite editArea, final String label, String property)
+    public final Text bindISINInput(Composite editArea, final String label, String property)
     {
         Text txtValue = createTextInput(editArea, label, SWT.NONE, 12);
         txtValue.setTextLimit(12);

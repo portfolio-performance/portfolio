@@ -1,24 +1,28 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
+import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 
 public class PortfolioReportNet
@@ -45,7 +49,8 @@ public class PortfolioReportNet
         }
 
         private Market()
-        {}
+        {
+        }
 
         public String getName()
         {
@@ -73,7 +78,14 @@ public class PortfolioReportNet
             OnlineItem vehicle = new OnlineItem();
             vehicle.id = (String) json.get("uuid"); //$NON-NLS-1$
             vehicle.name = (String) json.get("name"); //$NON-NLS-1$
-            vehicle.type = (String) json.get("security_type"); //$NON-NLS-1$
+
+            String t = (String) json.get("security_type"); //$NON-NLS-1$
+            if (TYPE_SHARE.equals(t))
+                vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
+            else if (TYPE_BOND.equals(t))
+                vehicle.type = SecuritySearchProvider.Type.BOND.toString();
+            else
+                vehicle.type = t;
 
             vehicle.isin = (String) json.get("isin"); //$NON-NLS-1$
             vehicle.wkn = (String) json.get("wkn"); //$NON-NLS-1$
@@ -82,9 +94,11 @@ public class PortfolioReportNet
         }
 
         private OnlineItem()
-        {}
+        {
+        }
 
-        public String getId()
+        @Override
+        public String getOnlineId()
         {
             return id;
         }
@@ -138,27 +152,77 @@ public class PortfolioReportNet
         }
     }
 
-    private static final String QUERY_URL;
+    private static final String TYPE_SHARE = "share"; //$NON-NLS-1$
+    private static final String TYPE_BOND = "bond"; //$NON-NLS-1$
 
-    static
+    private static final String HOST = "www.portfolio-report.net"; //$NON-NLS-1$
+
+    public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        String baseURL = System.getProperty("net.portfolio-report.baseUrl"); //$NON-NLS-1$
-        if (baseURL == null || baseURL.isEmpty())
-            baseURL = "https://www.portfolio-report.net"; //$NON-NLS-1$
+        try
+        {
+            URIBuilder uriBuilder = new URIBuilder().setScheme("https").setHost(HOST) //$NON-NLS-1$
+                            .setPath("/api/securities/search/" + query); //$NON-NLS-1$
 
-        QUERY_URL = baseURL + "/api/securities/search/{0}"; //$NON-NLS-1$
+            if (type != null)
+            {
+                if (type == SecuritySearchProvider.Type.SHARE)
+                    uriBuilder.addParameter("type", TYPE_SHARE); //$NON-NLS-1$
+                else if (type == SecuritySearchProvider.Type.BOND)
+                    uriBuilder.addParameter("type", TYPE_BOND); //$NON-NLS-1$
+            }
+
+            URL searchUrl = uriBuilder.build().toURL();
+
+            URLConnection con = searchUrl.openConnection();
+            con.setConnectTimeout(500);
+            con.setReadTimeout(2000);
+
+            return readItems(con);
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e);
+        }
     }
 
-    public List<ResultItem> search(String query) throws IOException
+    public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
-        String searchUrl = MessageFormat.format(QUERY_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
+        try
+        {
+            URL objectUrl = new URIBuilder().setScheme("https").setHost(HOST).setPath("/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
+                            .build().toURL();
 
-        URL url = new URL(searchUrl);
-        URLConnection con = url.openConnection();
-        con.setConnectTimeout(500);
-        con.setReadTimeout(2000);
+            HttpURLConnection con = (HttpURLConnection) objectUrl.openConnection();
+            con.setConnectTimeout(1000);
+            con.setReadTimeout(2000);
 
-        return readItems(con);
+            con.setRequestProperty("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
+                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
+            con.setRequestProperty("X-Reason", "periodic update"); //$NON-NLS-1$ //$NON-NLS-2$
+            con.setRequestProperty("Content-Type", "application/json;chartset=UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            Optional<ResultItem> onlineItem = Optional.empty();
+
+            int responseCode = con.getResponseCode();
+            if (responseCode != HttpURLConnection.HTTP_OK)
+                throw new IOException(objectUrl + " --> " + responseCode); //$NON-NLS-1$
+
+            try (Scanner scanner = new Scanner(con.getInputStream(), StandardCharsets.UTF_8.name()))
+            {
+                String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+
+                JSONObject response = (JSONObject) JSONValue.parse(html);
+                if (response != null)
+                    onlineItem = Optional.of(OnlineItem.from(response));
+            }
+
+            return onlineItem;
+        }
+        catch (URISyntaxException e)
+        {
+            throw new IOException(e);
+        }
     }
 
     private List<ResultItem> readItems(URLConnection con) throws IOException

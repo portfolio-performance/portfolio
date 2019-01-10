@@ -311,6 +311,8 @@ public class Messages extends NLS
     public static String EditWizardMasterDataMsgWeightEqualsZero;
     public static String EditWizardMasterDataMsgWeightNot100Percent;
     public static String EditWizardMasterDataTitle;
+    public static String EditWizardMasterDataUnlink;
+    public static String EditWizardMasterDataUnlink_ToolTip;
     public static String EditWizardOptionSameAsHistoricalQuoteFeed;
     public static String EditWizardQuoteFeedLabelFeedURL;
     public static String EditWizardQuoteFeedMsgErrorMissingURL;
@@ -371,6 +373,7 @@ public class Messages extends NLS
     public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String InvestmentPlanTypeBuyDelivery;
     public static String InvestmentPlanTypeDeposit;
+    public static String JobLabelSyncSecuritiesOnline;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdateStackedLineChart;

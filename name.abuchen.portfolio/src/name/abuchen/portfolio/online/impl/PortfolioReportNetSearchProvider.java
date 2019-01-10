@@ -15,8 +15,8 @@ public class PortfolioReportNetSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query) throws IOException
+    public List<ResultItem> search(String query, Type type) throws IOException
     {
-        return new PortfolioReportNet().search(query);
+        return new PortfolioReportNet().search(query, type);
     }
 }

@@ -24,6 +24,8 @@ public enum Images
 
     BANNER("banner.png"), //$NON-NLS-1$
 
+    // model items
+
     SECURITY("security.png"), //$NON-NLS-1$
     SECURITY_RETIRED("watchlist.png"), //$NON-NLS-1$
     ACCOUNT("account.png"), //$NON-NLS-1$
@@ -31,6 +33,8 @@ public enum Images
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
+
+    // buttons
 
     PLUS("plus.png"), //$NON-NLS-1$
     CONFIG("config.png"), //$NON-NLS-1$
@@ -41,6 +45,8 @@ public enum Images
     CALENDAR_ON("calendar_on.png"), //$NON-NLS-1$
     CALENDAR_OFF("calendar_off.png"), //$NON-NLS-1$
     CLOCK("clock.png"), //$NON-NLS-1$
+
+    // views
 
     VIEW_TABLE("view_table.png"), //$NON-NLS-1$
     VIEW_TREEMAP("view_treemap.png"), //$NON-NLS-1$
@@ -62,19 +68,20 @@ public enum Images
 
     DASHBOARD("dashboard.png"), //$NON-NLS-1$
     DASHBOARD_SELECTED("dashboard_selected.png"), //$NON-NLS-1$
-    
+
     TEXT("text.png"), //$NON-NLS-1$
 
     ERROR("error.png"), //$NON-NLS-1$
     WARNING("warning.png"), //$NON-NLS-1$
     INFO("info.png"), //$NON-NLS-1$
+    ONLINE("online.png"), //$NON-NLS-1$
 
     RED_ARROW("red_arrow.png"), //$NON-NLS-1$
     GREEN_ARROW("green_arrow.png"), //$NON-NLS-1$
 
     HANDLE_NS("handle_ns.png"), //$NON-NLS-1$
     HANDLE_WE("handle_we.png"); //$NON-NLS-1$
-    
+
     static
     {
         // Enable use of HiDPI icons as described here:

@@ -170,6 +170,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private Security security;
 
     private String name;
+    private String onlineId;
+
     private String currencyCode;
     private String targetCurrencyCode;
     private String note;
@@ -200,6 +202,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         this.security = security;
 
         this.name = security.getName();
+        this.onlineId = security.getOnlineId();
         this.currencyCode = security.getCurrencyCode();
         this.targetCurrencyCode = security.getTargetCurrencyCode();
         this.note = security.getNote();
@@ -235,6 +238,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setName(String name)
     {
         firePropertyChange("name", this.name, this.name = name); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public String getOnlineId()
+    {
+        return onlineId;
+    }
+
+    public void setOnlineId(String onlineId)
+    {
+        firePropertyChange("onlineId", this.onlineId, this.onlineId = onlineId); //$NON-NLS-1$ //NOSONAR
     }
 
     public String getCurrencyCode()
@@ -413,6 +426,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     public void setAttributes(Security security)
     {
         security.setName(name);
+        security.setOnlineId(onlineId);
         security.setCurrencyCode(currencyCode);
         security.setTargetCurrencyCode(targetCurrencyCode);
         security.setNote(note);
