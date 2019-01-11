@@ -658,8 +658,7 @@ public class SecuritiesChart
 
             yAxis1st.getTick().setVisible(true);
 
-            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS)
-                            != TradeCalendar.EMPTY_CODE.equals(security.getCalendar()))
+            if (chartConfig.contains(ChartDetails.SHOW_MISSING_TRADING_DAYS))
             {
                 TradeCalendar tradeCalendar = TradeCalendarManager.getInstance(security);
                 List<LocalDate> calendarDates = new ArrayList<>();
