@@ -4,7 +4,6 @@ import static name.abuchen.portfolio.util.HolidayName.BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
-import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.EASTER_MONDAY;
 import static name.abuchen.portfolio.util.HolidayName.FIRST_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.FUNERAL_OF_PRESIDENT_REAGAN;
@@ -15,6 +14,7 @@ import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
+import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
@@ -104,7 +104,7 @@ public class TradeCalendarManager
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26));
         CACHE.put(tc.getCode(), tc);
 
-        tc = new TradeCalendar("empty", Messages.LabelTradeCalendarEmpty); //$NON-NLS-1$
+        tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);
         CACHE.put(tc.getCode(), tc);
 }
 
@@ -134,7 +134,7 @@ public class TradeCalendarManager
         return CACHE.get(calendarCode);
     }
 
-    public static TradeCalendar createEmpty()
+    public static TradeCalendar createInheritDefaultOption()
     {
         String description = MessageFormat.format(Messages.LabelTradeCalendarUseDefault,
                         getDefaultInstance().getDescription());
