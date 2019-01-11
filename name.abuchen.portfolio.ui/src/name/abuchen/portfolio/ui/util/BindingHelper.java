@@ -344,7 +344,7 @@ public class BindingHelper
         combo.setContentProvider(ArrayContentProvider.getInstance());
         combo.setLabelProvider(new LabelProvider());
 
-        TradeCalendar emptyOption = TradeCalendarManager.createEmpty();
+        TradeCalendar emptyOption = TradeCalendarManager.createInheritDefaultOption();
 
         List<TradeCalendar> calendar = new ArrayList<>();
         calendar.add(emptyOption);
