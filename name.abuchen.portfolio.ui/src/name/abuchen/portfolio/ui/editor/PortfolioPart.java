@@ -458,12 +458,15 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(ESelectionService.class, selectionService);
         viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
 
-        view = ContextInjectionFactory.make(clazz, viewContext);
-        viewContext.set(AbstractFinanceView.class, view);
-        view.setContext(viewContext);
-        view.init(this, parameter);
-        view.createViewControl(book);
+        // assign to 'view' only *after* creating the view control to avoid
+        // dirty listeners to trigger the view while it is under construction
+        AbstractFinanceView underConstruction = ContextInjectionFactory.make(clazz, viewContext);
+        viewContext.set(AbstractFinanceView.class, underConstruction);
+        underConstruction.setContext(viewContext);
+        underConstruction.init(this, parameter);
+        underConstruction.createViewControl(book);
 
+        view = underConstruction;
         book.showPage(view.getControl());
         view.setFocus();
     }
@@ -474,6 +477,7 @@ public class PortfolioPart implements ClientInputListener
         {
             AbstractFinanceView toBeDisposed = view;
 
+            // null view first to avoid dirty listener to notify view
             view = null;
 
             toBeDisposed.getContext().dispose();
