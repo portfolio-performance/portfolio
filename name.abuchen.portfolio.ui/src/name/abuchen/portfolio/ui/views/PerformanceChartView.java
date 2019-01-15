@@ -86,29 +86,13 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        Action save = new Action()
-        {
-            @Override
-            public void run()
-            {
-                picker.showSaveMenu(getActiveShell());
-            }
-        };
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuSaveChart);
-        toolBar.add(save);
+        Action createNew = new SimpleAction(a -> picker.createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
 
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                picker.showMenu(getActiveShell());
-            }
-        };
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuConfigureChart);
-        toolBar.add(config);
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
+                        manager -> picker.configMenuAboutToShow(manager)));
     }
 
     @Override
@@ -129,6 +113,7 @@ public class PerformanceChartView extends AbstractHistoricView
 
         picker = new DataSeriesConfigurator(this, DataSeries.UseCase.PERFORMANCE);
         picker.addListener(this::updateChart);
+        picker.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, picker);
 

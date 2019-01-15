@@ -16,6 +16,7 @@ import com.google.common.collect.Lists;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
@@ -80,15 +81,13 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        Action save = new SimpleAction(a -> configurator.showSaveMenu(getActiveShell()));
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuSaveChart);
-        toolBar.add(save);
+        Action createNew = new SimpleAction(a -> configurator.createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
 
-        Action config = new SimpleAction(a -> configurator.showMenu(getActiveShell()));
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuConfigureChart);
-        toolBar.add(config);
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
+                        manager -> configurator.configMenuAboutToShow(manager)));
     }
 
     @Override
@@ -106,6 +105,7 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.STATEMENT_OF_ASSETS);
         configurator.addListener(this::updateChart);
+        configurator.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 

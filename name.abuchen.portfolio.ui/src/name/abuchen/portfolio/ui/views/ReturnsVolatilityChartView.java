@@ -66,15 +66,13 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void addConfigButton(ToolBarManager toolBar)
     {
-        Action save = new SimpleAction(Messages.MenuSaveChart, a -> configurator.showSaveMenu(getActiveShell()));
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuSaveChart);
-        toolBar.add(save);
+        Action createNew = new SimpleAction(a -> configurator.createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
 
-        Action config = new SimpleAction(Messages.MenuConfigureChart, a -> configurator.showMenu(getActiveShell()));
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuConfigureChart);
-        toolBar.add(config);
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
+                        manager -> configurator.configMenuAboutToShow(manager)));
     }
 
     @Override
@@ -89,7 +87,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         chart = new ScatterChart(composite);
         chart.getTitle().setVisible(false);
- 
+
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setText(Messages.LabelVolatility);
         xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
@@ -119,6 +117,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
         configurator.addListener(this::updateChart);
+        configurator.setToolBarManager(getViewToolBarManager());
 
         DataSeriesChartLegend legend = new DataSeriesChartLegend(composite, configurator);
 

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dataseries;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
@@ -37,6 +38,16 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
         this.setSelectedData(store.getActive());
 
         view.getControl().addDisposeListener(e -> DataSeriesConfigurator.this.widgetDisposed());
+    }
+
+    public void setToolBarManager(ToolBarManager toolBar)
+    {
+        store.setToolBarManager(toolBar);
+    }
+
+    public void createNew()
+    {
+        store.createNew();
     }
 
     public String getConfigurationName()
