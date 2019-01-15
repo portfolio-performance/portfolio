@@ -12,10 +12,10 @@ import java.util.Map;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -35,7 +35,6 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -55,9 +54,9 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -127,14 +126,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager manager)
     {
-        addNewButton(toolBar);
-        addFilterButton(toolBar);
-        addConfigButton(toolBar);
+        addNewButton(manager);
+        addFilterButton(manager);
+        addConfigButton(manager);
     }
 
-    private void addNewButton(ToolBar toolBar)
+    private void addNewButton(ToolBarManager manager)
     {
         SimpleAction.Runnable newAccountAction = a -> {
             Account account = new Account();
@@ -148,20 +147,18 @@ public class AccountListView extends AbstractListView implements ModificationLis
             accounts.editElement(account, 0);
         };
 
-        AbstractDropDown.create(toolBar, Messages.MenuCreateAccountOrTransaction, Images.PLUS.image(), SWT.NONE,
-                        (dd, manager) -> {
+        manager.add(new DropDown(Messages.MenuCreateAccountOrTransaction, Images.PLUS, SWT.NONE,
+                        menuListener -> {
+                            menuListener.add(new SimpleAction(Messages.AccountMenuAdd, newAccountAction));
 
-                            manager.add(new SimpleAction(Messages.AccountMenuAdd, newAccountAction));
-
-                            manager.add(new Separator());
+                            menuListener.add(new Separator());
 
                             Account account = (Account) accounts.getStructuredSelection().getFirstElement();
-                            new AccountContextMenu(AccountListView.this).menuAboutToShow(manager, account, null);
-                        });
-
+                            new AccountContextMenu(AccountListView.this).menuAboutToShow(menuListener, account, null);
+                        }));
     }
 
-    private void addFilterButton(ToolBar toolBar)
+    private void addFilterButton(ToolBarManager manager)
     {
         Action filter = new Action()
         {
@@ -176,25 +173,20 @@ public class AccountListView extends AbstractListView implements ModificationLis
         };
         filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
-        new ActionContributionItem(filter).fill(toolBar, -1);
+        manager.add(filter);
     }
 
-    private void addConfigButton(final ToolBar toolBar)
+    private void addConfigButton(final ToolBarManager manager)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE) // NOSONAR
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                MenuManager m = new MenuManager(Messages.LabelAccounts);
-                accountColumns.menuAboutToShow(m);
-                manager.add(m);
+        manager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, mm -> {
+            MenuManager m = new MenuManager(Messages.LabelAccounts);
+            accountColumns.menuAboutToShow(m);
+            mm.add(m);
 
-                m = new MenuManager(Messages.LabelTransactions);
-                transactionsColumns.menuAboutToShow(m);
-                manager.add(m);
-            }
-        };
+            m = new MenuManager(Messages.LabelTransactions);
+            transactionsColumns.menuAboutToShow(m);
+            mm.add(m);
+        }));
     }
 
     @Override

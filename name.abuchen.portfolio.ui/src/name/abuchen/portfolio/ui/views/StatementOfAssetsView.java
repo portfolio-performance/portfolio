@@ -8,13 +8,12 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -27,8 +26,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.DateSelectionDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -62,98 +61,96 @@ public class StatementOfAssetsView extends AbstractFinanceView
     }
 
     @Override
-    protected void addButtons(final ToolBar toolBar)
+    protected void addButtons(final ToolBarManager toolBar)
     {
-        AbstractDropDown dropdown = new AbstractDropDown(toolBar, getClient().getBaseCurrency())
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
+        DropDown dropDown = new DropDown(getClient().getBaseCurrency());
+        dropDown.setMenuListener(manager -> {
+            // put list of favorite units on top
+            List<CurrencyUnit> allUnits = getClient().getUsedCurrencies();
+            // add a separator marker
+            allUnits.add(null);
+            // then all available units
+            List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
+            Collections.sort(available);
+            allUnits.addAll(available);
+            // now show the list
+            for (final CurrencyUnit unit : allUnits)
             {
-                // put list of favorite units on top
-                List<CurrencyUnit> allUnits = getClient().getUsedCurrencies();
-                // add a separator marker
-                allUnits.add(null);
-                // then all available units
-                List<CurrencyUnit> available = CurrencyUnit.getAvailableCurrencyUnits();
-                Collections.sort(available);
-                allUnits.addAll(available);
-                // now show the list
-                for (final CurrencyUnit unit : allUnits)
+                // is this a unit or a separator?
+                if (unit != null)
                 {
-                    // is this a unit or a separator?
-                    if (unit != null)
-                    {
-                        Action action = new SimpleAction(unit.getLabel(), a -> {
-                            setLabel(unit.getCurrencyCode());
-                            getClient().setBaseCurrency(unit.getCurrencyCode());
-                        });
-                        action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
-                        manager.add(action);
-                    }
-                    else
-                    {
-                        // add a separator
-                        manager.add(new Separator());
-                    }
+                    Action action = new SimpleAction(unit.getLabel(), a -> {
+                        dropDown.setLabel(unit.getCurrencyCode());
+                        getClient().setBaseCurrency(unit.getCurrencyCode());
+                    });
+                    action.setChecked(getClient().getBaseCurrency().equals(unit.getCurrencyCode()));
+                    manager.add(action);
+                }
+                else
+                {
+                    // add a separator
+                    manager.add(new Separator());
                 }
             }
-        };
-        currencyChangeListener = e -> dropdown.setLabel(e.getNewValue().toString());
+        });
+
+        toolBar.add(dropDown);
+        currencyChangeListener = e -> dropDown.setLabel(e.getNewValue().toString());
         getClient().addPropertyChangeListener("baseCurrency", currencyChangeListener); //$NON-NLS-1$
 
         addCalendarButton(toolBar);
 
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         StatementOfAssetsView.class.getSimpleName(), filter -> notifyModelUpdated());
 
         Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
                         .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
         export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
-        new ActionContributionItem(export).fill(toolBar, -1);
+        toolBar.add(export);
 
         Action save = new SimpleAction(null, a -> assetViewer.showSaveMenu(getActiveShell()));
         save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveColumns);
-        new ActionContributionItem(save).fill(toolBar, -1);
+        toolBar.add(save);
 
-        Action config = new SimpleAction(null, a -> assetViewer.showConfigMenu(toolBar.getShell()));
+        Action config = new SimpleAction(null, a -> assetViewer.showConfigMenu(Display.getDefault().getActiveShell()));
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuShowHideColumns);
-        new ActionContributionItem(config).fill(toolBar, -1);
+        toolBar.add(config);
     }
 
-    private void addCalendarButton(ToolBar toolBar)
+    private void addCalendarButton(ToolBarManager toolBar)
     {
-        AbstractDropDown.create(toolBar, Messages.LabelPortfolioTimeMachine, Images.CALENDAR_OFF.image(), SWT.NONE,
-                        (dropDown, manager) -> {
-                            manager.add(new LabelOnly(Values.Date.format(snapshotDate)));
-                            manager.add(new Separator());
+        DropDown dropDown = new DropDown(Messages.LabelPortfolioTimeMachine,
+                        Images.CALENDAR_OFF, SWT.NONE);
+        dropDown.setMenuListener(manager -> {
+            manager.add(new LabelOnly(Values.Date.format(snapshotDate)));
+            manager.add(new Separator());
 
-                            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
-                                snapshotDate = LocalDate.now();
-                                notifyModelUpdated();
-                                dropDown.getToolItem().setImage(Images.CALENDAR_OFF.image());
-                            });
-                            action.setEnabled(!snapshotDate.equals(LocalDate.now()));
-                            manager.add(action);
+            SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
+                snapshotDate = LocalDate.now();
+                notifyModelUpdated();
+                dropDown.setImage(Images.CALENDAR_OFF);
+            });
+            action.setEnabled(!snapshotDate.equals(LocalDate.now()));
+            manager.add(action);
 
-                            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
-                                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                                dialog.setSelection(snapshotDate);
-                                if (dialog.open() != DateSelectionDialog.OK)
-                                    return;
-                                if (snapshotDate.equals(dialog.getSelection()))
-                                    return;
+            manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
+                DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
+                dialog.setSelection(snapshotDate);
+                if (dialog.open() != DateSelectionDialog.OK)
+                    return;
+                if (snapshotDate.equals(dialog.getSelection()))
+                    return;
 
-                                snapshotDate = dialog.getSelection();
-                                notifyModelUpdated();
-                                dropDown.getToolItem()
-                                                .setImage(LocalDate.now().equals(snapshotDate)
-                                                                ? Images.CALENDAR_OFF.image()
-                                                                : Images.CALENDAR_ON.image());
-                            }));
-                        });
+                snapshotDate = dialog.getSelection();
+                notifyModelUpdated();
+                dropDown.setImage(LocalDate.now().equals(snapshotDate) ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
+            }));
+        });
+
+        toolBar.add(dropDown);
     }
 
     @Override

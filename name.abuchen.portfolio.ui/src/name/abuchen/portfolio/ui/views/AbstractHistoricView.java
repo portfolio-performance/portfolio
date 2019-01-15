@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
-import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.jface.action.ToolBarManager;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -12,9 +12,10 @@ public abstract class AbstractHistoricView extends AbstractFinanceView implement
     private ReportingPeriodDropDown dropDown;
 
     @Override
-    protected void addButtons(final ToolBar toolBar)
+    protected void addButtons(final ToolBarManager toolBarManager)
     {
-        dropDown = new ReportingPeriodDropDown(toolBar, getPart(), this);
+        dropDown = new ReportingPeriodDropDown(getPart(), this);
+        toolBarManager.add(dropDown);
     }
 
     protected final ReportingPeriod getReportingPeriod()

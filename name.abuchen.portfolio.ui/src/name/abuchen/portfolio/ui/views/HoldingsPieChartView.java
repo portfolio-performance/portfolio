@@ -6,11 +6,11 @@ import java.util.StringJoiner;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -46,10 +46,11 @@ public class HoldingsPieChartView extends AbstractFinanceView
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+        clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         HoldingsPieChartView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
     }
 
     @Override

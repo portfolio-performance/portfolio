@@ -10,6 +10,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -20,7 +21,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -36,7 +36,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -84,43 +84,37 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         addNewInvestmentPlanButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addNewInvestmentPlanButton(ToolBar toolBar)
+    private void addNewInvestmentPlanButton(ToolBarManager toolBar)
     {
-        AbstractDropDown.create(toolBar, Messages.InvestmentPlanMenuCreate, Images.PLUS.image(), SWT.NONE,
-                        (dd, manager) -> {
+        toolBar.add(new DropDown(Messages.InvestmentPlanMenuCreate, Images.PLUS, SWT.NONE, manager -> {
 
-                            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
-                                            .type(InvestmentPlanDialog.class) //
-                                            .parameters(PortfolioTransaction.class));
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(PortfolioTransaction.class));
 
-                            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
-                                            .type(InvestmentPlanDialog.class) //
-                                            .parameters(AccountTransaction.class));
-                        });
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(AccountTransaction.class));
+        }));
     }
 
-    private void addConfigButton(final ToolBar toolBar)
+    private void addConfigButton(final ToolBarManager toolBar)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                MenuManager m = new MenuManager(Messages.LabelInvestmentPlans);
-                planColumns.menuAboutToShow(m);
-                manager.add(m);
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
+            MenuManager m = new MenuManager(Messages.LabelInvestmentPlans);
+            planColumns.menuAboutToShow(m);
+            manager.add(m);
 
-                m = new MenuManager(Messages.LabelTransactions);
-                transactions.getColumnSupport().menuAboutToShow(m);
-                manager.add(m);
-            }
-        };
+            m = new MenuManager(Messages.LabelTransactions);
+            transactions.getColumnSupport().menuAboutToShow(m);
+            manager.add(m);
+        }));
     }
 
     @Override

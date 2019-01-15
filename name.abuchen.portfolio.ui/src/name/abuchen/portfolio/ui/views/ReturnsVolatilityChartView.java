@@ -6,9 +6,10 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.resource.JFaceResources;
@@ -17,9 +18,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.widgets.Shell;
 import org.swtchart.IAxis;
 import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
@@ -33,7 +33,7 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
@@ -57,24 +57,24 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
-        new ExportDropDown(toolBar);
+        toolBar.add(new ExportDropDown());
         addConfigButton(toolBar);
     }
 
-    private void addConfigButton(ToolBar toolBar)
+    private void addConfigButton(ToolBarManager toolBar)
     {
         Action save = new SimpleAction(Messages.MenuSaveChart, a -> configurator.showSaveMenu(getActiveShell()));
         save.setImageDescriptor(Images.SAVE.descriptor());
         save.setToolTipText(Messages.MenuSaveChart);
-        new ActionContributionItem(save).fill(toolBar, -1);
+        toolBar.add(save);
 
         Action config = new SimpleAction(Messages.MenuConfigureChart, a -> configurator.showMenu(getActiveShell()));
         config.setImageDescriptor(Images.CONFIG.descriptor());
         config.setToolTipText(Messages.MenuConfigureChart);
-        new ActionContributionItem(config).fill(toolBar, -1);
+        toolBar.add(config);
     }
 
     @Override
@@ -194,11 +194,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         });
     }
 
-    private final class ExportDropDown extends AbstractDropDown
+    private final class ExportDropDown extends DropDown implements IMenuListener
     {
-        private ExportDropDown(ToolBar toolBar)
+        private ExportDropDown()
         {
-            super(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE);
+            super(Messages.MenuExportData, Images.EXPORT, SWT.NONE);
+            setMenuListener(this);
         }
 
         @Override
@@ -230,9 +231,9 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 }
 
                 @Override
-                protected Control getControl()
+                protected Shell getShell()
                 {
-                    return ExportDropDown.this.getToolBar();
+                    return chart.getShell();
                 }
             };
             exporter.export(getTitle() + "_" + series.getLabel() + ".csv"); //$NON-NLS-1$ //$NON-NLS-2$

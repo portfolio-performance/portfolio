@@ -10,9 +10,10 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
@@ -20,8 +21,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -31,20 +30,21 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
-    private class FilterDropDown extends AbstractDropDown
+    private class FilterDropDown extends DropDown implements IMenuListener
     {
         private ClientFilterMenu clientFilterMenu;
 
-        public FilterDropDown(ToolBar toolBar, IPreferenceStore preferenceStore)
+        public FilterDropDown(IPreferenceStore preferenceStore)
         {
-            super(toolBar, Messages.SecurityFilter, Images.FILTER_OFF.image(), SWT.NONE);
+            super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
+            setMenuListener(this);
 
             this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
 
@@ -62,7 +62,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             loadPreselectedFilter(preferenceStore);
 
             if (clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty())
-                getToolItem().setImage(Images.FILTER_ON.image());
+                setImage(Images.FILTER_ON);
 
             // As the taxonomy model is initially calculated in the #init
             // method, we must recalculate the values if an active filter
@@ -94,7 +94,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED))
                 model.getNodeFilters().add(TaxonomyModel.FILTER_NOT_RETIRED);
 
-            this.getToolBar().addDisposeListener(e -> {
+            addDisposeListener(e -> {
                 preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO,
                                 model.getNodeFilters().contains(TaxonomyModel.FILTER_NON_ZERO));
                 preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED,
@@ -105,7 +105,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         private void updateIcon()
         {
             boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty();
-            getToolItem().setImage(hasActiveFilter ? Images.FILTER_ON.image() : Images.FILTER_OFF.image());
+            setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
         }
 
         @Override
@@ -224,7 +224,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     }
 
     @Override
-    protected void addButtons(final ToolBar toolBar)
+    protected void addButtons(final ToolBarManager toolBar)
     {
         addView(toolBar, Messages.LabelViewTaxonomyDefinition, Images.VIEW_TABLE, 0);
         addView(toolBar, Messages.LabelViewReBalancing, Images.VIEW_REBALANCING, 1);
@@ -233,23 +233,23 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 4);
         addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 5);
 
-        new ToolItem(toolBar, SWT.SEPARATOR);
+        toolBar.add(new Separator());
 
-        new FilterDropDown(toolBar, getPreferenceStore());
+        toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addExportButton(ToolBar toolBar)
+    private void addExportButton(ToolBarManager toolBar)
     {
-        AbstractDropDown.create(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE,
-                        (dropdown, manager) -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
+                        manager -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager))));
     }
 
-    private void addConfigButton(ToolBar toolBar)
+    private void addConfigButton(ToolBarManager toolBar)
     {
-        AbstractDropDown.create(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE,
-                        (dropdown, manager) -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
     }
 
     private Optional<Page> getCurrentPage()
@@ -267,12 +267,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         model.fireTaxonomyModelChange(model.getVirtualRootNode());
     }
 
-    private void addView(final ToolBar toolBar, String label, Images image, final int index)
+    private void addView(final ToolBarManager toolBar, String label, Images image, final int index)
     {
         Action showDefinition = new SimpleAction(label, Action.AS_CHECK_BOX, a -> activateView(index));
         showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
-        new ActionContributionItem(showDefinition).fill(toolBar, -1);
+        toolBar.add(showDefinition);
         viewActions.add(showDefinition);
     }
 

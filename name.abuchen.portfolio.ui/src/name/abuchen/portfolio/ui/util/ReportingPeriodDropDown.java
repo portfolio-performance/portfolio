@@ -4,10 +4,12 @@ import java.util.LinkedList;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.widgets.ToolBar;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
@@ -15,7 +17,7 @@ import name.abuchen.portfolio.ui.dialogs.EditReportingPeriodsDialog;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
-public final class ReportingPeriodDropDown extends AbstractDropDown
+public final class ReportingPeriodDropDown extends DropDown implements IMenuListener
 {
     @FunctionalInterface
     public interface ReportingPeriodListener
@@ -29,16 +31,17 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
     private ReportingPeriod selected;
     private LinkedList<ReportingPeriod> periods;
 
-    public ReportingPeriodDropDown(ToolBar toolBar, final PortfolioPart part, ReportingPeriodListener listener)
+    public ReportingPeriodDropDown(final PortfolioPart part, ReportingPeriodListener listener)
     {
-        super(toolBar, "x"); //$NON-NLS-1$
+        super("x", null, SWT.DROP_DOWN, null); //$NON-NLS-1$
         this.part = part;
         this.listener = Objects.requireNonNull(listener);
 
         this.selected = part.getSelectedPeriod();
         this.periods = part.getReportingPeriods();
 
-        getToolItem().setText(selected.toString());
+        setMenuListener(this);
+        setLabel(selected.toString());
     }
 
     @Override
@@ -57,7 +60,8 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
-            ReportingPeriodDialog dialog = new ReportingPeriodDialog(getToolBar().getShell(), periods.getFirst());
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
+                            periods.getFirst());
 
             if (dialog.open() == Dialog.OK)
             {
@@ -76,7 +80,7 @@ public final class ReportingPeriodDropDown extends AbstractDropDown
         }));
 
         manager.add(new SimpleAction(Messages.MenuReportingPeriodManage, a -> {
-            EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(getToolBar().getShell());
+            EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(Display.getDefault().getActiveShell());
             dialog.setReportingPeriods(periods);
 
             if (dialog.open() == Dialog.OK)

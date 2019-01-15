@@ -6,7 +6,9 @@ import java.util.function.Function;
 import javax.inject.Inject;
 
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
@@ -26,7 +28,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -50,8 +51,8 @@ import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
@@ -88,16 +89,18 @@ public class PerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
 
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         PerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
 
-        new ExportDropDown(toolBar); // NOSONAR
+        toolBar.add(clientFilter);
 
-        AbstractDropDown.create(toolBar, Messages.MenuConfigureView, Images.CONFIG.image(), SWT.NONE, manager -> {
+        toolBar.add(new ExportDropDown());
+
+        toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
             SimpleAction action = new SimpleAction(Messages.LabelPreTax, a -> {
                 this.preTax = !this.preTax;
                 reportingPeriodUpdated();
@@ -105,7 +108,7 @@ public class PerformanceView extends AbstractHistoricView
 
             action.setChecked(this.preTax);
             manager.add(action);
-        });
+        }));
     }
 
     @Override
@@ -747,11 +750,12 @@ public class PerformanceView extends AbstractHistoricView
         }
     }
 
-    private final class ExportDropDown extends AbstractDropDown
+    private final class ExportDropDown extends DropDown implements IMenuListener
     {
-        private ExportDropDown(ToolBar toolBar)
+        private ExportDropDown()
         {
-            super(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE);
+            super(Messages.MenuExportData, Images.EXPORT, SWT.NONE);
+            setMenuListener(this);
         }
 
         @Override

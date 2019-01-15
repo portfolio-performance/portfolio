@@ -9,6 +9,7 @@ import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -35,6 +36,7 @@ public abstract class AbstractFinanceView
 
     private Composite top;
     private Label title;
+    private ToolBarManager toolBarManager;
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<>();
 
@@ -128,9 +130,12 @@ public abstract class AbstractFinanceView
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
-        ToolBar toolBar = new ToolBar(header, SWT.FLAT | SWT.RIGHT);
+        toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+
+        addButtons(toolBarManager);
+
+        ToolBar toolBar = toolBarManager.createControl(header);
         toolBar.setBackground(header.getBackground());
-        addButtons(toolBar);
 
         // layout
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(header);
@@ -140,8 +145,13 @@ public abstract class AbstractFinanceView
         return header;
     }
 
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBarManager)
     {}
+
+    protected ToolBarManager getToolBarManager()
+    {
+        return this.toolBarManager;
+    }
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
     {
@@ -170,6 +180,8 @@ public abstract class AbstractFinanceView
 
     public void dispose()
     {
+        toolBarManager.dispose();
+
         for (Menu contextMenu : contextMenus)
             if (!contextMenu.isDisposed())
                 contextMenu.dispose();

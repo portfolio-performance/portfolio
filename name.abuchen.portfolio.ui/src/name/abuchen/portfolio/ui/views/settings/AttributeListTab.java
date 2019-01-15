@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -16,7 +17,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
@@ -24,8 +24,8 @@ import name.abuchen.portfolio.model.ClientSettings;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -51,14 +51,14 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     }
 
     @Override
-    public void addButtons(ToolBar toolBar)
+    public void addButtons(ToolBarManager manager)
     {
-        AbstractDropDown.create(toolBar, Messages.LabelNewFieldByType, Images.PLUS.image(), SWT.NONE, manager -> {
-            manager.add(new LabelOnly(Messages.LabelNewFieldByType));
+        manager.add(new DropDown(Messages.LabelNewFieldByType, Images.PLUS, SWT.NONE, menuListener -> {
+            menuListener.add(new LabelOnly(Messages.LabelNewFieldByType));
 
             for (AttributeFieldType fieldType : AttributeFieldType.values())
             {
-                manager.add(new Action(fieldType.toString())
+                menuListener.add(new Action(fieldType.toString())
                 {
                     @Override
                     public void run()
@@ -79,7 +79,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     }
                 });
             }
-        });
+        }));
     }
 
     @Override

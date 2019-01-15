@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.ToolBar;
 import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.model.ConsumerPriceIndex;
@@ -56,13 +55,13 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager manager)
     {
-        super.addButtons(toolBar);
-        addExportButton(toolBar);
+        super.addButtons(manager);
+        addExportButton(manager);
     }
 
-    private void addExportButton(ToolBar toolBar)
+    private void addExportButton(ToolBarManager manager)
     {
         Action export = new Action()
         {
@@ -80,7 +79,7 @@ public class ConsumerPriceIndexListView extends AbstractListView implements Modi
         export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
-        new ActionContributionItem(export).fill(toolBar, -1);
+        manager.add(export);
     }
 
     private void exportMenuAboutToShow(IMenuManager manager)

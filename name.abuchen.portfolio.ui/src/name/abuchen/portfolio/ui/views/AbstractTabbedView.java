@@ -2,14 +2,13 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.List;
 
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -22,11 +21,10 @@ public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> exten
 
         Composite createTab(Composite parent);
 
-        default void addButtons(ToolBar toolBar)
+        default void addButtons(ToolBarManager toolBarManager)
         {}
     }
 
-    private ToolBar toolBar;
     private CTabFolder folder;
     private int initiallySelectedTab = 0;
 
@@ -46,25 +44,14 @@ public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> exten
             initiallySelectedTab = ((Integer) parameter).intValue();
     }
 
-    @Override
-    protected final void addButtons(ToolBar toolBar)
-    {
-        this.toolBar = toolBar;
-    }
-
     private void updateToolBar()
     {
-        if (toolBar.isDisposed())
-            return;
+        ToolBarManager manager = getToolBarManager();
+        manager.removeAll();
 
-        for (ToolItem child : toolBar.getItems())
-        {
-            child.dispose();
-        }
+        getSelection().addButtons(getToolBarManager());
 
-        getSelection().addButtons(toolBar);
-
-        toolBar.getParent().layout(true);
+        manager.update(true);
     }
 
     @Override

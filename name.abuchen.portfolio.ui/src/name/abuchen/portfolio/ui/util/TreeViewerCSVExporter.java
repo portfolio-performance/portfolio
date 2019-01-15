@@ -14,7 +14,7 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -29,9 +29,9 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
     }
 
     @Override
-    protected Control getControl()
+    protected Shell getShell()
     {
-        return viewer.getTree();
+        return viewer.getTree().getShell();
     }
 
     @Override
