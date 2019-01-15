@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.function.Consumer;
@@ -18,7 +16,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ContributionItem;
-import org.eclipse.jface.action.GroupMarker;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -50,6 +47,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -185,9 +183,6 @@ public class DashboardView extends AbstractHistoricView
         }
     }
 
-    private static final String GROUP_MARKER_DASHBOARDS = "dashboards"; //$NON-NLS-1$
-    private static final String GROUP_MARKER_OTHERS = "others"; //$NON-NLS-1$
-
     public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
@@ -205,7 +200,6 @@ public class DashboardView extends AbstractHistoricView
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
-    private List<ContributionItem> dashboardContributionItems = new ArrayList<>();
 
     @Override
     protected String getDefaultTitle()
@@ -229,15 +223,14 @@ public class DashboardView extends AbstractHistoricView
     }
 
     @Override
+    protected void addViewButtons(ToolBarManager toolBar)
+    {
+        createDashboardToolItems(toolBar);
+    }
+
+    @Override
     protected void addButtons(ToolBarManager toolBar)
     {
-        toolBar.add(new GroupMarker(GROUP_MARKER_DASHBOARDS));
-
-        createDashboardToolItems(toolBar);
-
-        toolBar.add(new GroupMarker(GROUP_MARKER_OTHERS));
-        toolBar.add(new Separator());
-
         super.addButtons(toolBar);
 
         Action newAction = new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null));
@@ -250,38 +243,8 @@ public class DashboardView extends AbstractHistoricView
 
     private void createDashboardToolItems(ToolBarManager toolBar)
     {
-        this.dashboardContributionItems.clear();
-
-        int index = 0;
-
-        boolean includesSelected = false;
-
-        Dashboard[] dashboards = getClient().getDashboards().toArray(Dashboard[]::new);
-        for (Dashboard board : dashboards)
-        {
-            if (index >= 4) // # of dashboards shown by default
-                break;
-
-            includesSelected = includesSelected || board.equals(dashboard);
-
-            this.dashboardContributionItems.add(createToolItem(index++, board));
-        }
-
-        if (!includesSelected && dashboard != null)
-            this.dashboardContributionItems.add(createToolItem(index++, dashboard));
-
-        if (index < dashboards.length)
-        {
-            DropDown dropdown = new DropDown(Messages.MenuConfigureDashboards, Images.SAVE, SWT.NONE,
-                            manager -> getClient().getDashboards().forEach(d -> {
-                                Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
-                                action.setChecked(d.equals(dashboard));
-                                manager.add(action);
-                            }));
-            this.dashboardContributionItems.add(dropdown);
-        }
-
-        this.dashboardContributionItems.forEach(item -> toolBar.appendToGroup(GROUP_MARKER_DASHBOARDS, item));
+        int[] index = { 0 };
+        getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
     }
 
     private ContributionItem createToolItem(int index, Dashboard board)
@@ -316,11 +279,11 @@ public class DashboardView extends AbstractHistoricView
 
     private void recreateDashboardToolItems()
     {
-        ToolBarManager toolBar = getToolBarManager();
+        ToolBarManager toolBar = getViewToolBarManager();
         if (toolBar.getControl().isDisposed())
             return;
 
-        this.dashboardContributionItems.forEach(toolBar::remove);
+        toolBar.removeAll();
 
         createDashboardToolItems(toolBar);
 
@@ -349,7 +312,7 @@ public class DashboardView extends AbstractHistoricView
                         });
 
         container = new Composite(parent, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
 
         selectDashboard(dashboard);
 

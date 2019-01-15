@@ -75,6 +75,11 @@ public class DropDown extends ContributionItem
         this.menuListener = menuListener;
     }
 
+    public final String getLabel()
+    {
+        return label;
+    }
+
     public final void setLabel(String label)
     {
         this.label = label;
@@ -91,12 +96,22 @@ public class DropDown extends ContributionItem
         }
     }
 
+    public Images getImage()
+    {
+        return image;
+    }
+
     public final void setImage(Images image)
     {
         this.image = image;
 
         if (image != null && widget != null && !widget.isDisposed())
             widget.setImage(image.image());
+    }
+
+    public final IMenuListener getMenuListener()
+    {
+        return menuListener;
     }
 
     public final void setMenuListener(IMenuListener menuListener)

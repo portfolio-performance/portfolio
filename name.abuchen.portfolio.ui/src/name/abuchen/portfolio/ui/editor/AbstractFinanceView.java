@@ -36,12 +36,23 @@ public abstract class AbstractFinanceView
 
     private Composite top;
     private Label title;
-    private ToolBarManager toolBarManager;
+
+    /**
+     * Tool bar used for switching between different views. It displays an
+     * abridged tool bar if the spaces does not allow to display all views.
+     */
+    private ToolBarManager viewToolBar;
+
+    /**
+     * Tool bar used for actions (new, columns, configuration).
+     */
+    private ToolBarManager actionToolBar;
+
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
     private List<Menu> contextMenus = new ArrayList<>();
 
     protected abstract String getDefaultTitle();
-    
+
     protected String getTitle()
     {
         return title.getText();
@@ -50,12 +61,19 @@ public abstract class AbstractFinanceView
     protected final void updateTitle(String title)
     {
         if (!this.title.isDisposed())
+        {
+            boolean isEqual = title.equals(this.title.getText());
+
             this.title.setText(title);
+            if (!isEqual)
+                this.title.getParent().layout(true);
+        }
     }
 
     /** called when some other view modifies the model */
     public void notifyModelUpdated()
-    {}
+    {
+    }
 
     public void init(PortfolioPart part, Object parameter) // NOSONAR
     {
@@ -116,7 +134,7 @@ public abstract class AbstractFinanceView
 
     protected abstract Control createBody(Composite parent);
 
-    private Control createHeader(Composite parent)
+    private final Control createHeader(Composite parent)
     {
         Composite header = new Composite(parent, SWT.NONE);
         header.setBackground(Colors.WHITE);
@@ -130,27 +148,47 @@ public abstract class AbstractFinanceView
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
 
-        toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        Composite wrapper = new Composite(header, SWT.NONE);
+        wrapper.setBackground(header.getBackground());
 
-        addButtons(toolBarManager);
+        viewToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        addViewButtons(viewToolBar);
+        ToolBar tb1 = viewToolBar.createControl(wrapper);
+        tb1.setBackground(header.getBackground());
 
-        ToolBar toolBar = toolBarManager.createControl(header);
-        toolBar.setBackground(header.getBackground());
+        // create layout *after* the toolbar to keep the tab order right
+        wrapper.setLayout(new ToolBarPlusChevronLayout(wrapper));
+
+        actionToolBar = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        addButtons(actionToolBar);
+        ToolBar tb2 = actionToolBar.createControl(header);
+        tb2.setBackground(header.getBackground());
 
         // layout
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(header);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-        GridDataFactory.fillDefaults().applyTo(toolBar);
+        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(header);
+        GridDataFactory.fillDefaults().applyTo(title);
+        GridDataFactory.fillDefaults().grab(true, false).align(SWT.END, SWT.CENTER).applyTo(wrapper);
+        GridDataFactory.fillDefaults().applyTo(tb2);
 
         return header;
     }
 
+    protected void addViewButtons(ToolBarManager toolBarManager)
+    {
+    }
+
     protected void addButtons(ToolBarManager toolBarManager)
-    {}
+    {
+    }
+
+    protected ToolBarManager getViewToolBarManager()
+    {
+        return this.viewToolBar;
+    }
 
     protected ToolBarManager getToolBarManager()
     {
-        return this.toolBarManager;
+        return this.actionToolBar;
     }
 
     protected final void hookContextMenu(Control control, IMenuListener listener)
@@ -180,7 +218,8 @@ public abstract class AbstractFinanceView
 
     public void dispose()
     {
-        toolBarManager.dispose();
+        viewToolBar.dispose();
+        actionToolBar.dispose();
 
         for (Menu contextMenu : contextMenus)
             if (!contextMenu.isDisposed())
@@ -199,7 +238,7 @@ public abstract class AbstractFinanceView
         getControl().setFocus();
     }
 
-    public <T> T make(Class<T> type, Object... parameters)
+    public final <T> T make(Class<T> type, Object... parameters)
     {
         if (parameters == null || parameters.length == 0)
             return ContextInjectionFactory.make(type, this.context);
@@ -210,7 +249,7 @@ public abstract class AbstractFinanceView
         return ContextInjectionFactory.make(type, this.context, c2);
     }
 
-    public void inject(Object object)
+    public final void inject(Object object)
     {
         ContextInjectionFactory.inject(object, context);
     }
