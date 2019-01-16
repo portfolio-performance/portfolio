@@ -9,6 +9,9 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -28,8 +31,8 @@ import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -166,11 +169,10 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         return taxonomy.getName();
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy parameter)
     {
-        super.init(part, parameter);
-        this.taxonomy = (Taxonomy) parameter;
+        this.taxonomy = parameter;
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
@@ -183,7 +185,8 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
                         + taxonomy.getId();
 
         this.model = make(TaxonomyModel.class, taxonomy);
-        IPreferenceStore preferences = part.getPreferenceStore();
+
+        IPreferenceStore preferences = getPreferenceStore();
         this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
         this.model.setExcludeSecuritiesInPieChart(preferences.getBoolean(identifierExclucdeSecuritiesInPieChart));
         this.model.setOrderByTaxonomyInStackChart(preferences.getBoolean(identifierOrderByTaxonomy));

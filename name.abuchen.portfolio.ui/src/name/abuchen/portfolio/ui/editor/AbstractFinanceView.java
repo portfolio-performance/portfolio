@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
@@ -31,8 +33,11 @@ import name.abuchen.portfolio.ui.util.Colors;
 
 public abstract class AbstractFinanceView
 {
-    private PortfolioPart part;
+    @Inject
     private IEclipseContext context;
+
+    @Inject
+    private PortfolioPart part;
 
     private Composite top;
     private Label title;
@@ -75,11 +80,6 @@ public abstract class AbstractFinanceView
     {
     }
 
-    public void init(PortfolioPart part, Object parameter) // NOSONAR
-    {
-        this.part = part;
-    }
-
     public PortfolioPart getPart()
     {
         return part;
@@ -88,16 +88,6 @@ public abstract class AbstractFinanceView
     public IPreferenceStore getPreferenceStore()
     {
         return part.getPreferenceStore();
-    }
-
-    /* package */void setContext(IEclipseContext context)
-    {
-        this.context = context;
-    }
-
-    /* package */IEclipseContext getContext()
-    {
-        return this.context;
     }
 
     public Client getClient()
@@ -226,6 +216,8 @@ public abstract class AbstractFinanceView
                 contextMenu.dispose();
 
         resourceManager.dispose();
+
+        context.dispose();
     }
 
     public final Control getControl()

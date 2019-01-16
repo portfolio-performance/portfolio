@@ -2,6 +2,10 @@ package name.abuchen.portfolio.ui.views;
 
 import java.util.List;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -10,8 +14,8 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> extends AbstractFinanceView
 {
@@ -35,13 +39,11 @@ public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> exten
 
     protected abstract List<T> createTabs();
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    @Optional
+    public void init(@Named(UIConstants.Parameter.VIEW_PARAMETER) Integer parameter)
     {
-        super.init(part, parameter);
-
-        if (parameter instanceof Integer)
-            initiallySelectedTab = ((Integer) parameter).intValue();
+        initiallySelectedTab = parameter.intValue();
     }
 
     private void updateToolBar()

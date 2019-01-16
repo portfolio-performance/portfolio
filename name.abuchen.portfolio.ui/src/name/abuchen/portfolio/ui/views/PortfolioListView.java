@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
@@ -31,7 +32,6 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -66,12 +66,10 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         return Messages.LabelPortfolios;
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @PostConstruct
+    public void setup()
     {
-        super.init(part, parameter);
-
-        isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
+        isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_PORTFOLIOS);
     }
 
     @Override

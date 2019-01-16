@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
@@ -53,7 +54,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
@@ -106,12 +106,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
         return Messages.LabelAccounts;
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @PostConstruct
+    public void setup()
     {
-        super.init(part, parameter);
-
-        isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+        isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
     }
 
     @Override

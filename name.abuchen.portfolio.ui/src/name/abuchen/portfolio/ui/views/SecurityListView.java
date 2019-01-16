@@ -9,7 +9,9 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
 import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ControlContribution;
@@ -64,11 +66,11 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
@@ -355,13 +357,11 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         markDirty();
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Watchlist parameter)
     {
-        super.init(part, parameter);
-
-        if (parameter instanceof Watchlist)
-            this.watchlist = (Watchlist) parameter;
+        this.watchlist = parameter;
     }
 
     @Override

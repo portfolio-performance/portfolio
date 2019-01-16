@@ -3,6 +3,9 @@ package name.abuchen.portfolio.ui.views;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
+import javax.inject.Inject;
+import javax.inject.Named;
+
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -11,8 +14,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class ExceptionView extends AbstractFinanceView
 {
@@ -24,13 +27,10 @@ public class ExceptionView extends AbstractFinanceView
         return Messages.LabelError;
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    public void init(@Named(UIConstants.Parameter.VIEW_PARAMETER) Exception parameter)
     {
-        super.init(part, parameter);
-
-        if (parameter instanceof Exception)
-            this.exception = (Exception) parameter;
+        this.exception = parameter;
     }
 
     @Override

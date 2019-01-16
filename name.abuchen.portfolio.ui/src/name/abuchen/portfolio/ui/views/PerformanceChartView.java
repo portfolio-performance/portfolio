@@ -6,6 +6,8 @@ import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 
+import javax.annotation.PostConstruct;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,7 +28,6 @@ import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -55,12 +56,10 @@ public class PerformanceChartView extends AbstractHistoricView
         return Messages.LabelPerformanceChart;
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @PostConstruct
+    public void setup()
     {
-        super.init(part, parameter);
-
-        String key = part.getPreferenceStore().getString(KEY_AGGREGATION_PERIOD);
+        String key = getPreferenceStore().getString(KEY_AGGREGATION_PERIOD);
         if (key != null && key.length() > 0)
         {
             try
