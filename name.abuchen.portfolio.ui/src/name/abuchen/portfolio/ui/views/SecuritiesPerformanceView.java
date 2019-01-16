@@ -69,7 +69,6 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -221,11 +220,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
-
-        Action createNew = new SimpleAction(a -> recordColumns.createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
 
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> recordColumns.menuAboutToShow(manager)));

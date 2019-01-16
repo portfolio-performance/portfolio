@@ -43,7 +43,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
         addExportButton(toolBar);
-        addConfigButton(toolBar);
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
+                        manager -> configurator.configMenuAboutToShow(manager)));
     }
 
     private void addExportButton(ToolBarManager toolBar)
@@ -77,17 +78,6 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         }));
         manager.add(new Separator());
         chart.exportMenuAboutToShow(manager, getTitle());
-    }
-
-    private void addConfigButton(ToolBarManager toolBar)
-    {
-        Action createNew = new SimpleAction(a -> configurator.createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
-
-        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
-                        manager -> configurator.configMenuAboutToShow(manager)));
     }
 
     @Override

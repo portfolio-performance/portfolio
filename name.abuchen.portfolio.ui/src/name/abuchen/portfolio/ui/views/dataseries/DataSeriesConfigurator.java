@@ -45,11 +45,6 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
         store.setToolBarManager(toolBar);
     }
 
-    public void createNew()
-    {
-        store.createNew();
-    }
-
     public String getConfigurationName()
     {
         return store.getActiveName();

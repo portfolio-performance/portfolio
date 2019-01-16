@@ -81,16 +81,6 @@ public class PerformanceChartView extends AbstractHistoricView
         super.addButtons(toolBar);
         toolBar.add(new AggregationPeriodDropDown());
         toolBar.add(new ExportDropDown());
-        addConfigButton(toolBar);
-    }
-
-    private void addConfigButton(ToolBarManager toolBar)
-    {
-        Action createNew = new SimpleAction(a -> picker.createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
-
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
                         manager -> picker.configMenuAboutToShow(manager)));
     }

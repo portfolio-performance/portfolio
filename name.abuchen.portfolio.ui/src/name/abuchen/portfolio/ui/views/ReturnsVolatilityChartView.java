@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -61,16 +60,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
         toolBar.add(new ExportDropDown());
-        addConfigButton(toolBar);
-    }
-
-    private void addConfigButton(ToolBarManager toolBar)
-    {
-        Action createNew = new SimpleAction(a -> configurator.createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
-
         toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
                         manager -> configurator.configMenuAboutToShow(manager)));
     }

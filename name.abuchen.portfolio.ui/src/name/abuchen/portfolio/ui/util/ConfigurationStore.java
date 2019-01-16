@@ -109,7 +109,7 @@ public class ConfigurationStore
     {
         configSet.getConfigurations().forEach(config -> {
             DropDown item = new DropDown(config.getName(),
-                            config.equals(active) ? Images.DASHBOARD_SELECTED : Images.DASHBOARD);
+                            config.equals(active) ? Images.VIEW_SELECTED : Images.VIEW);
 
             item.setMenuListener(manager -> {
 
@@ -143,6 +143,11 @@ public class ConfigurationStore
 
             toolBar.add(item);
         });
+
+        Action createNew = new SimpleAction(a -> createNew(null));
+        createNew.setImageDescriptor(Images.VIEW_PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
     }
 
     /**
@@ -187,11 +192,6 @@ public class ConfigurationStore
         manager.add(new ConfirmAction(Messages.ConfigurationDelete,
                         MessageFormat.format(Messages.ConfigurationDeleteConfirm, active.getName()),
                         a -> delete(active)));
-    }
-
-    public void createNew()
-    {
-        createNew(null);
     }
 
     private void createNew(Configuration template)

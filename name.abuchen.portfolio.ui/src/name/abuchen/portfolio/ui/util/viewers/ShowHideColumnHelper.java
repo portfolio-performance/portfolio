@@ -397,14 +397,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         store.setToolBarManager(toolBar);
     }
 
-    public void createNew()
-    {
-        if (store == null)
-            throw new NullPointerException("store"); //$NON-NLS-1$
-
-        store.createNew();
-    }
-
     public void showSaveMenu(Shell shell)
     {
         if (store == null)

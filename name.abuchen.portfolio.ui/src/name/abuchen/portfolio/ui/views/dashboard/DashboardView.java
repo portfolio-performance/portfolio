@@ -250,7 +250,7 @@ public class DashboardView extends AbstractHistoricView
     private ContributionItem createToolItem(int index, Dashboard board)
     {
         DropDown toolItem = new DropDown(board.getName(),
-                        board.equals(dashboard) ? Images.DASHBOARD_SELECTED : Images.DASHBOARD, SWT.DROP_DOWN);
+                        board.equals(dashboard) ? Images.VIEW_SELECTED : Images.VIEW, SWT.DROP_DOWN);
 
         toolItem.setMenuListener(manager -> {
             if (!board.equals(dashboard))

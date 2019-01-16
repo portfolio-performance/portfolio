@@ -811,14 +811,6 @@ public class StatementOfAssetsViewer
         support.setToolBarManager(toolBar);
     }
 
-    public void createNew()
-    {
-        if (support == null)
-            throw new NullPointerException("support"); //$NON-NLS-1$
-
-        support.createNew();
-    }
-
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
     {
         Element element = (Element) ((IStructuredSelection) assets.getSelection()).getFirstElement();

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.editor;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -23,6 +24,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 /**
  * Display a chevron menu that contains the not visible toolbar items.
@@ -164,6 +166,20 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
                 subMenu.setImageDescriptor(dropDown.getImage().descriptor());
                 dropDown.getMenuListener().menuAboutToShow(subMenu);
                 manager.add(subMenu);
+            }
+            else if (item instanceof ActionContributionItem)
+            {
+                ActionContributionItem action = (ActionContributionItem) item;
+
+                // need to create a wrapper action because an action in the
+                // toolbar typically has no text (only the icon)
+
+                String label = action.getAction().getText();
+                if (label == null || label.isEmpty())
+                    label = action.getAction().getToolTipText();
+
+                manager.add(new SimpleAction(label, action.getAction().getImageDescriptor(),
+                                a -> action.getAction().run()));
             }
             else
             {

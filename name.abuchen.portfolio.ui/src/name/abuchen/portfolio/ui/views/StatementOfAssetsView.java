@@ -108,11 +108,6 @@ public class StatementOfAssetsView extends AbstractFinanceView
         export.setToolTipText(Messages.MenuExportData);
         toolBar.add(export);
 
-        Action createNew = new SimpleAction(a -> assetViewer.createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
-
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> assetViewer.menuAboutToShow(manager)));
     }

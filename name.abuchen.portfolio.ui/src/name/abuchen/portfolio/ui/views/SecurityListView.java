@@ -375,11 +375,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
 
-        Action createNew = new SimpleAction(a -> securities.getColumnHelper().createNew());
-        createNew.setImageDescriptor(Images.PLUS.descriptor());
-        createNew.setToolTipText(Messages.ConfigurationNew);
-        toolBar.add(createNew);
-
         toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
                         manager -> securities.getColumnHelper().menuAboutToShow(manager)));
     }
