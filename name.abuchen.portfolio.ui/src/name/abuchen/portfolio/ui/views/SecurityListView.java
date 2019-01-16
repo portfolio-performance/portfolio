@@ -374,8 +374,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         toolBar.add(new CreateSecurityDropDown());
         toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
-        addSaveButton(toolBar);
-        addConfigButton(toolBar);
+
+        Action createNew = new SimpleAction(a -> securities.getColumnHelper().createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> securities.getColumnHelper().menuAboutToShow(manager)));
     }
 
     private void addSearchButton(ToolBarManager toolBar)
@@ -431,38 +437,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         toolBar.add(export);
     }
 
-    private void addSaveButton(ToolBarManager toolBar)
-    {
-        Action save = new Action()
-        {
-            @Override
-            public void run()
-            {
-                securities.getColumnHelper().showSaveMenu(getActiveShell());
-            }
-        };
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuConfigureChart);
-
-        toolBar.add(save);
-    }
-
-    private void addConfigButton(ToolBarManager toolBar)
-    {
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                securities.getColumnHelper().showHideShowColumnsMenu(getActiveShell());
-            }
-        };
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuShowHideColumns);
-
-        toolBar.add(config);
-    }
-
     // //////////////////////////////////////////////////////////////
     // top table: securities
     // //////////////////////////////////////////////////////////////
@@ -473,6 +447,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         securities = new SecuritiesTable(parent, this);
         updateTitle(getDefaultTitle());
         securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
+        securities.getColumnHelper().setToolBarManager(getViewToolBarManager());
 
         securities.addSelectionChangedListener(event -> onSecurityChanged(
                         (Security) ((IStructuredSelection) event.getSelection()).getFirstElement()));

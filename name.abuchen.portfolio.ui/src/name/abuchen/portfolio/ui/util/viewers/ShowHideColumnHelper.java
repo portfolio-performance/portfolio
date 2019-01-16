@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -386,6 +387,22 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
     public void addListener(Listener l)
     {
         this.listeners.add(l);
+    }
+
+    public void setToolBarManager(ToolBarManager toolBar)
+    {
+        if (store == null)
+            throw new NullPointerException("store"); //$NON-NLS-1$
+
+        store.setToolBarManager(toolBar);
+    }
+
+    public void createNew()
+    {
+        if (store == null)
+            throw new NullPointerException("store"); //$NON-NLS-1$
+
+        store.createNew();
     }
 
     public void showSaveMenu(Shell shell)

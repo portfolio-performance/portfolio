@@ -21,6 +21,7 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.FontDescriptor;
@@ -802,6 +803,22 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
     }
 
+    public void setToolBarManager(ToolBarManager toolBar)
+    {
+        if (support == null)
+            throw new NullPointerException("support"); //$NON-NLS-1$
+
+        support.setToolBarManager(toolBar);
+    }
+
+    public void createNew()
+    {
+        if (support == null)
+            throw new NullPointerException("support"); //$NON-NLS-1$
+
+        support.createNew();
+    }
+
     public void hookMenuListener(IMenuManager manager, final AbstractFinanceView view)
     {
         Element element = (Element) ((IStructuredSelection) assets.getSelection()).getFirstElement();
@@ -838,7 +855,7 @@ public class StatementOfAssetsViewer
         contextMenu.setVisible(true);
     }
 
-    private void menuAboutToShow(IMenuManager manager) // NOSONAR
+    public void menuAboutToShow(IMenuManager manager)
     {
         manager.add(new LabelOnly(Messages.LabelTaxonomies));
         for (final Taxonomy t : client.getTaxonomies())

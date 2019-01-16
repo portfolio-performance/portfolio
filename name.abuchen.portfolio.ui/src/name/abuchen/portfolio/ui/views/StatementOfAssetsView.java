@@ -13,7 +13,6 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -109,15 +108,13 @@ public class StatementOfAssetsView extends AbstractFinanceView
         export.setToolTipText(Messages.MenuExportData);
         toolBar.add(export);
 
-        Action save = new SimpleAction(null, a -> assetViewer.showSaveMenu(getActiveShell()));
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuSaveColumns);
-        toolBar.add(save);
+        Action createNew = new SimpleAction(a -> assetViewer.createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
 
-        Action config = new SimpleAction(null, a -> assetViewer.showConfigMenu(Display.getDefault().getActiveShell()));
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuShowHideColumns);
-        toolBar.add(config);
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> assetViewer.menuAboutToShow(manager)));
     }
 
     private void addCalendarButton(ToolBarManager toolBar)
@@ -158,6 +155,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         assetViewer = make(StatementOfAssetsViewer.class);
         Control control = assetViewer.createControl(parent);
+        assetViewer.setToolBarManager(getViewToolBarManager());
 
         updateTitle(getDefaultTitle());
         assetViewer.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));

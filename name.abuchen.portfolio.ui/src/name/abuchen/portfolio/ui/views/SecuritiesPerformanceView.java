@@ -69,6 +69,7 @@ import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
@@ -213,15 +214,21 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     }
 
     @Override
-    protected void addButtons(ToolBarManager manager)
+    protected void addButtons(ToolBarManager toolBar)
     {
         dropDown = new ReportingPeriodDropDown(getPart(), this);
-        manager.add(dropDown);
+        toolBar.add(dropDown);
 
-        manager.add(new FilterDropDown(getPreferenceStore()));
-        addExportButton(manager);
-        addSaveButton(manager);
-        addConfigButton(manager);
+        toolBar.add(new FilterDropDown(getPreferenceStore()));
+        addExportButton(toolBar);
+
+        Action createNew = new SimpleAction(a -> recordColumns.createNew());
+        createNew.setImageDescriptor(Images.PLUS.descriptor());
+        createNew.setToolTipText(Messages.ConfigurationNew);
+        toolBar.add(createNew);
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> recordColumns.menuAboutToShow(manager)));
     }
 
     private void addExportButton(ToolBarManager manager)
@@ -240,37 +247,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         manager.add(new ActionContributionItem(export));
     }
 
-    private void addSaveButton(ToolBarManager manager)
-    {
-        Action save = new Action()
-        {
-            @Override
-            public void run()
-            {
-                recordColumns.showSaveMenu(getActiveShell());
-            }
-        };
-        save.setImageDescriptor(Images.SAVE.descriptor());
-        save.setToolTipText(Messages.MenuConfigureChart);
-        manager.add(new ActionContributionItem(save));
-    }
-
-    private void addConfigButton(ToolBarManager manager)
-    {
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                recordColumns.showHideShowColumnsMenu(getActiveShell());
-            }
-        };
-        config.setImageDescriptor(Images.CONFIG.descriptor());
-        config.setToolTipText(Messages.MenuShowHideColumns);
-
-        manager.add(new ActionContributionItem(config));
-    }
-
     @Override
     protected void createTopTable(Composite parent)
     {
@@ -284,6 +260,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         updateTitle(getDefaultTitle());
         recordColumns.addListener(() -> updateTitle(getDefaultTitle()));
+        recordColumns.setToolBarManager(getViewToolBarManager());
 
         ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
