@@ -60,7 +60,7 @@ public class ClientInputFactory
         ClientInput answer = new ClientInput(label, null);
         ContextInjectionFactory.inject(answer, context);
         answer.setClient(client);
-        answer.markDirty();
+        answer.touch();
 
         cache.add(new WeakReference<>(answer));
 

@@ -319,9 +319,6 @@ public class PortfolioPart implements ClientInputListener
     public void onDirty(boolean isDirty)
     {
         dirty.setDirty(isDirty);
-
-        if (isDirty)
-            onRecalculationNeeded();
     }
 
     @Override

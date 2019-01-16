@@ -26,7 +26,7 @@ public class Client
     public static final int CURRENT_VERSION = 39;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
-    private transient PropertyChangeSupport propertyChangeSupport;
+    private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
 
     /**
      * The (minor) version of the file format. If it is lower than the current
@@ -38,7 +38,7 @@ public class Client
     /**
      * The (minor) version of the file format as it has been read from file.
      */
-    private transient int fileVersionAfterRead = CURRENT_VERSION;
+    private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
 
     private String baseCurrency = CurrencyUnit.EUR;
 
@@ -63,7 +63,7 @@ public class Client
     @Deprecated
     private Category rootCategory;
 
-    private transient SecretKey secret;
+    private transient SecretKey secret; // NOSONAR
 
     public Client()
     {
@@ -130,7 +130,7 @@ public class Client
 
     public void setBaseCurrency(String baseCurrency)
     {
-        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$
+        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
     }
 
     public List<InvestmentPlan> getPlans()
@@ -197,7 +197,7 @@ public class Client
     public List<CurrencyUnit> getUsedCurrencies()
     {
         // collect all used currency codes
-        HashSet<String> hsUsedCodes = new HashSet<String>();
+        HashSet<String> hsUsedCodes = new HashSet<>();
         // first client and all accounts
         hsUsedCodes.add(baseCurrency);
         for (Account account : accounts)
@@ -218,7 +218,7 @@ public class Client
             hsUsedCodes.add(security.getCurrencyCode());
         }
         // now get the currency units
-        List<CurrencyUnit> lUnits = new ArrayList<CurrencyUnit>();
+        List<CurrencyUnit> lUnits = new ArrayList<>();
         for (String code : hsUsedCodes)
         {
             CurrencyUnit unit = CurrencyUnit.getInstance(code);
@@ -566,9 +566,23 @@ public class Client
         }
     }
 
+    /**
+     * Marks the client as dirty and triggers a re-calculation of all views.
+     * Consider using {@link Client#touch} if only properties changed that are
+     * not relevant for calculations - such as preferences.
+     */
     public void markDirty()
     {
         propertyChangeSupport.firePropertyChange("dirty", false, true); //$NON-NLS-1$
+    }
+
+    /**
+     * Touches the client, i.e. marks it as dirty but does <strong>not</strong>
+     * trigger a re-calculation of views.
+     */
+    public void touch()
+    {
+        propertyChangeSupport.firePropertyChange("touch", false, true); //$NON-NLS-1$
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)

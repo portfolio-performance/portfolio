@@ -97,15 +97,29 @@ public class ClientInput
         return isDirty;
     }
 
+    /**
+     * See {@link Client#markDirty}.
+     */
     public void markDirty()
     {
-        setDirty(true);
+        setDirty(true, true);
     }
 
-    private void setDirty(boolean isDirty)
+    /**
+     * See {@link Client#touch}.
+     */
+    public void touch()
+    {
+        setDirty(true, false);
+    }
+
+    private void setDirty(boolean isDirty, boolean recalculate)
     {
         this.isDirty = isDirty;
         this.listeners.forEach(l -> l.onDirty(this.isDirty));
+
+        if (isDirty && recalculate)
+            this.listeners.forEach(ClientInputListener::onRecalculationNeeded);
     }
 
     public String getLabel()
@@ -155,7 +169,7 @@ public class ClientInput
             storePreferences(false);
 
             broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-            setDirty(false);
+            setDirty(false, false);
             listeners.forEach(ClientInputListener::onSaved);
         }
         catch (IOException e)
@@ -211,7 +225,7 @@ public class ClientInput
             storePreferences(true);
 
             broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-            setDirty(false);
+            setDirty(false, false);
             listeners.forEach(ClientInputListener::onSaved);
         }
         catch (IOException e)
@@ -429,14 +443,20 @@ public class ClientInput
 
         client.addPropertyChangeListener(event -> {
 
+            boolean recalculate = !"touch".equals(event.getPropertyName()); //$NON-NLS-1$
+
             // convenience: Client#markDirty can be called on any thread, but
             // ClientInputListener#onDirty will always be called on the UI
             // thread
 
             if (Display.getDefault().getThread() == Thread.currentThread())
-                markDirty();
+            {
+                setDirty(true, recalculate);
+            }
             else
-                Display.getDefault().asyncExec(this::markDirty);
+            {
+                Display.getDefault().asyncExec(() -> setDirty(true, recalculate));
+            }
         });
 
         loadPreferences();

@@ -73,7 +73,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
                         client.getSettings().addAttributeType(attributeType);
                         tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                        client.markDirty();
+                        client.touch();
 
                         tableViewer.editElement(attributeType, 0);
                     }
@@ -186,7 +186,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     settings.removeAttributeType(attributeType);
                     settings.addAttributeType(index - 1, attributeType);
                     tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
@@ -202,7 +202,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     settings.removeAttributeType(attributeType);
                     settings.addAttributeType(index + 1, attributeType);
                     tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
@@ -226,7 +226,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
                     settings.removeAttributeType(attribute);
                 }
 
-                client.markDirty();
+                client.touch();
                 tableViewer.setInput(settings.getAttributeTypes().toArray());
             }
         });
@@ -235,6 +235,6 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        client.markDirty();
+        client.touch();
     }
 }

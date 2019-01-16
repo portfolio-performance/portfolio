@@ -209,7 +209,7 @@ public class ConfigurationStore
         active = new Configuration(name, template != null ? template.getData() : null);
 
         configSet.add(active);
-        client.markDirty();
+        client.touch();
 
         preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
 
@@ -225,7 +225,7 @@ public class ConfigurationStore
             return;
 
         config.setName(dlg.getValue());
-        client.markDirty();
+        client.touch();
     }
 
     private void delete(Configuration config)
@@ -257,7 +257,7 @@ public class ConfigurationStore
         if (!Objects.equals(data, active.getData()))
         {
             active.setData(data);
-            client.markDirty();
+            client.touch();
         }
     }
 
@@ -281,6 +281,6 @@ public class ConfigurationStore
         active = new Configuration(Messages.ConfigurationStandard, data);
         configSet.add(active);
         preferences.setValue(identifier + KEY_ACTIVE, active.getUUID());
-        client.markDirty();
+        client.touch();
     }
 }

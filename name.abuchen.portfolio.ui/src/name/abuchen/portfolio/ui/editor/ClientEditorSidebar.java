@@ -242,7 +242,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                     List<Watchlist> watchlists = client.getWatchlists();
                     watchlists.remove(watchlist);
                     watchlists.add(index - 1, watchlist);
-                    client.markDirty();
+                    client.touch();
 
                     entry.moveUp();
                     sidebar.layout();
@@ -261,7 +261,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                     List<Watchlist> watchlists = client.getWatchlists();
                     watchlists.remove(watchlist);
                     watchlists.add(index + 1, watchlist);
-                    client.markDirty();
+                    client.touch();
 
                     entry.findNeighbor(SWT.ARROW_DOWN).moveUp();
                     sidebar.layout();
@@ -438,7 +438,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                     Client client = editor.getClient();
                     client.removeTaxonomy(taxonomy);
                     client.addTaxonomy(index - 1, taxonomy);
-                    client.markDirty();
+                    client.touch();
 
                     entry.moveUp();
                     sidebar.layout();
@@ -456,7 +456,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                     Client client = editor.getClient();
                     client.removeTaxonomy(taxonomy);
                     client.addTaxonomy(index + 1, taxonomy);
-                    client.markDirty();
+                    client.touch();
 
                     entry.findNeighbor(SWT.ARROW_DOWN).moveUp();
                     sidebar.layout();
