@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
@@ -22,12 +23,14 @@ import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
 
 public class PortfolioReportNet
 {
-    public static class Market
+    /* package */ static class Market
     {
         private String name;
         private String symbol;
@@ -63,7 +66,7 @@ public class PortfolioReportNet
         }
     }
 
-    public static class OnlineItem implements ResultItem
+    /* package */ static class OnlineItem implements ResultItem
     {
         private String id;
         private String name;
@@ -73,13 +76,13 @@ public class PortfolioReportNet
         private String wkn;
         private List<Market> markets;
 
-        /* package */ static OnlineItem from(JSONObject json)
+        /* package */ static OnlineItem from(JSONObject jsonObject)
         {
             OnlineItem vehicle = new OnlineItem();
-            vehicle.id = (String) json.get("uuid"); //$NON-NLS-1$
-            vehicle.name = (String) json.get("name"); //$NON-NLS-1$
+            vehicle.id = (String) jsonObject.get("uuid"); //$NON-NLS-1$
+            vehicle.name = (String) jsonObject.get("name"); //$NON-NLS-1$
 
-            String t = (String) json.get("security_type"); //$NON-NLS-1$
+            String t = (String) jsonObject.get("security_type"); //$NON-NLS-1$
             if (TYPE_SHARE.equals(t))
                 vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
             else if (TYPE_BOND.equals(t))
@@ -87,9 +90,9 @@ public class PortfolioReportNet
             else
                 vehicle.type = t;
 
-            vehicle.isin = (String) json.get("isin"); //$NON-NLS-1$
-            vehicle.wkn = (String) json.get("wkn"); //$NON-NLS-1$
-            vehicle.markets = Market.from((JSONObject) json.get("markets")); //$NON-NLS-1$
+            vehicle.isin = (String) jsonObject.get("isin"); //$NON-NLS-1$
+            vehicle.wkn = (String) jsonObject.get("wkn"); //$NON-NLS-1$
+            vehicle.markets = Market.from((JSONObject) jsonObject.get("markets")); //$NON-NLS-1$
             return vehicle;
         }
 
@@ -124,7 +127,7 @@ public class PortfolioReportNet
         @Override
         public String getSymbol()
         {
-            return markets.stream().findAny().map(Market::getSymbol).orElse(null);
+            return markets.stream().map(Market::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$
         }
 
         @Override
@@ -148,7 +151,54 @@ public class PortfolioReportNet
 
             security.setIsin(isin);
             security.setWkn(wkn);
-            security.setTickerSymbol(getSymbol());
+            security.setTickerSymbol(markets.stream().map(Market::getSymbol).findAny().orElse(null));
+            markets.forEach(market -> security.addProperty(
+                            new SecurityProperty(SecurityProperty.Type.MARKET, market.getName(), market.getSymbol())));
+        }
+
+        public boolean update(Security security)
+        {
+            boolean isDirty = false;
+
+            if (!Objects.equals(isin, security.getIsin()))
+            {
+                security.setIsin(isin);
+                isDirty = true;
+            }
+
+            if (!Objects.equals(wkn, security.getWkn()))
+            {
+                security.setWkn(wkn);
+                isDirty = true;
+            }
+
+            List<SecurityProperty> local = security.getProperties()
+                            .filter(property -> property.getType() == SecurityProperty.Type.MARKET)
+                            .collect(Collectors.toList());
+
+            // we can collect the list into a map because the original JSON data
+            // structure is actually a map
+            Map<String, String> remote = markets.stream().collect(Collectors.toMap(Market::getName, Market::getSymbol));
+
+            for (SecurityProperty property : local)
+            {
+                String symbol = remote.remove(property.getName());
+                if (symbol == null)
+                {
+                    security.removeProperty(property);
+                    isDirty = true;
+                }
+                else if (!symbol.equals(property.getValue()))
+                {
+                    security.removeProperty(property);
+                    security.addProperty(new SecurityProperty(Type.MARKET, property.getName(), symbol));
+                    isDirty = true;
+                }
+            }
+
+            remote.forEach((k, v) -> security.addProperty(new SecurityProperty(Type.MARKET, k, v)));
+
+            return isDirty || !remote.isEmpty();
         }
     }
 
@@ -242,5 +292,13 @@ public class PortfolioReportNet
         }
 
         return onlineItems;
+    }
+
+    public static boolean updateWith(Security security, ResultItem item)
+    {
+        if (!(item instanceof OnlineItem))
+            throw new IllegalArgumentException();
+
+        return ((OnlineItem) item).update(security);
     }
 }

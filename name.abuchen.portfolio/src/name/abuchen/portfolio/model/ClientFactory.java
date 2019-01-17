@@ -1076,6 +1076,7 @@ public class ClientFactory
             xstream.alias("account-transaction", AccountTransaction.class);
             xstream.alias("portfolio-transaction", PortfolioTransaction.class);
             xstream.alias("security", Security.class);
+            xstream.addImplicitCollection(Security.class, "properties");
             xstream.alias("latest", LatestSecurityPrice.class);
             xstream.alias("category", Category.class); // NOSONAR
             xstream.alias("watchlist", Watchlist.class);
@@ -1113,6 +1114,8 @@ public class ClientFactory
             xstream.alias("event", SecurityEvent.class);
             xstream.alias("config-set", ConfigurationSet.class);
             xstream.alias("config", ConfigurationSet.Configuration.class);
+
+            xstream.processAnnotations(SecurityProperty.class);
         }
         return xstream;
     }

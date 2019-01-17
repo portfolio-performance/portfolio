@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.jobs;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -51,19 +50,8 @@ public final class SyncOnlineSecuritiesJob extends AbstractClientJob
 
                 if (item.isPresent())
                 {
-                    String isin = item.get().getIsin();
-                    if (!Objects.equals(isin, security.getIsin()))
-                    {
-                        security.setIsin(isin);
-                        isDirty = true;
-                    }
-
-                    String wkn = item.get().getWkn();
-                    if (!Objects.equals(wkn, security.getWkn()))
-                    {
-                        security.setWkn(wkn);
-                        isDirty = true;
-                    }
+                    boolean hasUpdate = PortfolioReportNet.updateWith(security, item.get());
+                    isDirty = isDirty || hasUpdate;
                 }
                 else
                 {
