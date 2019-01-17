@@ -326,8 +326,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return true;
             }
         });
-
-        reportingPeriodUpdated();
     }
 
     private void createCommonColumns()
@@ -791,7 +789,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         Composite chartComposite = new Composite(folder, SWT.NONE);
         item.setControl(chartComposite);
 
-        chart = new SecuritiesChart(chartComposite, getClient(),
+        chart = new SecuritiesChart(chartComposite, clientFilter.filter(getClient()),
                         new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
 
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
@@ -812,6 +810,20 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                         SecuritiesPerformanceView.class.getSimpleName() + "@bottom4", getPreferenceStore(), //$NON-NLS-1$
                         transactions, layout);
 
+        createTransactionColumns(support);
+
+        support.createColumns();
+
+        transactions.getTable().setHeaderVisible(true);
+        transactions.getTable().setLinesVisible(true);
+
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
+
+        reportingPeriodUpdated();
+    }
+
+    private void createTransactionColumns(ShowHideColumnHelper support)
+    {
         // date
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -1007,13 +1019,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
         support.addColumn(column);
-
-        support.createColumns();
-
-        transactions.getTable().setHeaderVisible(true);
-        transactions.getTable().setLinesVisible(true);
-
-        transactions.setContentProvider(ArrayContentProvider.getInstance());
     }
 
     @Override
@@ -1042,6 +1047,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         Client filteredClient = clientFilter.filter(getClient());
         records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());
         records.refresh();
+        chart.setClient(filteredClient);
     }
 
     private void fillContextMenu(IMenuManager manager) // NOSONAR

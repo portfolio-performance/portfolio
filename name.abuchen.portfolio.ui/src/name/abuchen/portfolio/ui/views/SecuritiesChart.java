@@ -60,6 +60,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -441,7 +442,7 @@ public class SecuritiesChart
             if (!chartConfig.contains(ChartDetails.SCALING_LINEAR) && !chartConfig.contains(ChartDetails.SCALING_LOG))
                 chartConfig.add(ChartDetails.SCALING_LINEAR);
 
-            client.setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
+            ReadOnlyClient.unwrap(client).setProperty(PREF_KEY, String.join(",", //$NON-NLS-1$
                             chartConfig.stream().map(ChartDetails::name).collect(Collectors.toList())));
 
             updateChart();
@@ -486,6 +487,12 @@ public class SecuritiesChart
         {
             // not used
         }
+    }
+
+    public void setClient(Client client)
+    {
+        this.client = client;
+        updateChart();
     }
 
     public void updateChart(Security security)
@@ -653,8 +660,8 @@ public class SecuritiesChart
             yAxis2nd.setRange(
                             new Range(yAxis1st.getRange().lower - firstQuote, yAxis1st.getRange().upper - firstQuote));
 
-            yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG) ? true : false);
-            yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG) ? true : false);
+            yAxis1st.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
+            yAxis2nd.enableLogScale(chartConfig.contains(ChartDetails.SCALING_LOG));
 
             yAxis1st.getTick().setVisible(true);
 
