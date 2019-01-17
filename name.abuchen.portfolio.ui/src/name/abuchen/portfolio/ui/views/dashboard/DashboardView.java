@@ -233,10 +233,6 @@ public class DashboardView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
 
-        Action newAction = new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null));
-        newAction.setImageDescriptor(Images.PLUS.descriptor());
-        toolBar.add(newAction);
-
         toolBar.add(new DropDown(Messages.MenuConfigureCurrentDashboard, Images.CONFIG, SWT.NONE, manager -> manager
                         .add(new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn()))));
     }
@@ -245,6 +241,10 @@ public class DashboardView extends AbstractHistoricView
     {
         int[] index = { 0 };
         getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
+
+        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard(null));
+        newAction.setImageDescriptor(Images.VIEW_PLUS.descriptor());
+        toolBar.add(newAction);
     }
 
     private ContributionItem createToolItem(int index, Dashboard board)
