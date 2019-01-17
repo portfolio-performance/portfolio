@@ -1,10 +1,5 @@
 package name.abuchen.portfolio.online.impl.variableurl.macros;
 
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.impl.variableurl.VariableURLConstructor;
-import name.abuchen.portfolio.online.impl.variableurl.iterators.DateIterator;
-import name.abuchen.portfolio.online.impl.variableurl.urls.DateURL;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
@@ -13,13 +8,18 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.impl.variableurl.VariableURLConstructor;
+import name.abuchen.portfolio.online.impl.variableurl.iterators.DateIterator;
+import name.abuchen.portfolio.online.impl.variableurl.urls.DateURL;
+
 public class FormattedDate implements Macro
 {
     private static final Pattern MACRO = Pattern.compile("DATE:(.*?)"); //$NON-NLS-1$
 
     private DateTimeFormatter formatter;
 
-    public FormattedDate(CharSequence input) throws IllegalArgumentException
+    public FormattedDate(CharSequence input)
     {
         Matcher matcher = MACRO.matcher(input);
 
@@ -49,7 +49,7 @@ public class FormattedDate implements Macro
     }
 
     @Override
-    public CharSequence resolve(Security security) throws UnsupportedOperationException
+    public CharSequence resolve(Security security)
     {
         throw new UnsupportedOperationException();
     }

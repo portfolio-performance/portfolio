@@ -14,7 +14,7 @@ public class ISIN implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return security.getIsin();
+        return security != null ? security.getIsin() : null;
     }
 
     @Override

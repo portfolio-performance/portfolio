@@ -14,7 +14,7 @@ public class TickerSymbol implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return security.getTickerSymbol();
+        return security != null ? security.getTickerSymbol() : null;
     }
 
     @Override

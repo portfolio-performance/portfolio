@@ -14,7 +14,7 @@ public class Currency implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return security.getCurrencyCode();
+        return security != null ? security.getCurrencyCode() : null;
     }
 
     @Override

@@ -14,7 +14,7 @@ public class WKN implements Macro
     @Override
     public CharSequence resolve(Security security)
     {
-        return security.getWkn();
+        return security != null ? security.getWkn() : null;
     }
 
     @Override

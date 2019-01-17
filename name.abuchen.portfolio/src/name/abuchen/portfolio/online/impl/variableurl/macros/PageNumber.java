@@ -6,7 +6,7 @@ import name.abuchen.portfolio.online.impl.variableurl.urls.PageURL;
 
 public class PageNumber implements Macro
 {
-    public PageNumber(CharSequence input) throws IllegalArgumentException
+    public PageNumber(CharSequence input)
     {
         if (!"PAGE".equals(input)) //$NON-NLS-1$
             throw new IllegalArgumentException();
@@ -19,7 +19,7 @@ public class PageNumber implements Macro
     }
 
     @Override
-    public CharSequence resolve(Security security) throws UnsupportedOperationException
+    public CharSequence resolve(Security security)
     {
         throw new UnsupportedOperationException();
     }
