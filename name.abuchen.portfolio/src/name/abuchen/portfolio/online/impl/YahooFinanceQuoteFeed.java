@@ -19,8 +19,12 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -37,6 +41,7 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Dates;
@@ -333,43 +338,82 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         List<Exchange> answer = new ArrayList<>();
 
+        // This is not the best place to include the market information from
+        // portfolio-report.net, but for now the list of exchanges is only
+        // available for Yahoo search provider.
+
+        List<SecurityProperty> markets = subject.getProperties()
+                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).collect(Collectors.toList());
+
+        markets.stream().map(p -> {
+            Exchange exchange = new Exchange(p.getValue(), ExchangeLabels.getString("portfolio-report." + p.getName())); //$NON-NLS-1$
+            if ("XFRA".equals(p.getName())) //$NON-NLS-1$
+                exchange.setId(exchange.getId() + ".DE"); //$NON-NLS-1$
+            return exchange;
+        }).forEach(answer::add);
+
+        Set<String> candidates = new HashSet<>();
+        answer.forEach(e -> candidates.add(e.getId()));
+
+        // add existing ticker symbol as well
         String symbol = subject.getTickerSymbol();
+        if (symbol != null && !symbol.isEmpty())
+            candidates.add(symbol);
 
-        // if symbol is null, return empty list
-        if (symbol == null || symbol.trim().length() == 0)
-            return answer;
+        for (String candidate : candidates)
+        {
+            searchExchanges(candidate, answer, errors);
+        }
 
+        if (symbol != null && !symbol.isEmpty())
+        {
+            // Issue #251
+            // sometimes Yahoo does not return the default exchange which
+            // prevents selecting this security (example: searching for GOOG
+            // does return only unimportant exchanges)
+            Optional<Exchange> defaultExchange = answer.stream() //
+                            .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
+            if (!defaultExchange.isPresent())
+                answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
+
+            if (answer.isEmpty())
+            {
+                // Issue #29
+                // at least add the given ticker symbol if the search returns
+                // nothing (sometimes accidentally)
+                answer.add(createExchange(subject.getTickerSymbol()));
+            }
+        }
+
+        Collections.sort(answer, (r, l) -> r.getId().compareTo(l.getId()));
+
+        return answer;
+    }
+
+    private void searchExchanges(String candidate, List<Exchange> answer, List<Exception> errors)
+    {
         // strip away exchange suffix to search for all available exchanges
-        int p = symbol.indexOf('.');
-        String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
+        int p = candidate.indexOf('.');
+        String prefix = p >= 0 ? candidate.substring(0, p + 1) : candidate + "."; //$NON-NLS-1$
+
+        // ensure we do not add duplicates
+        Set<String> duplicates = new HashSet<>();
+        answer.forEach(e -> duplicates.add(e.getId()));
 
         try
         {
-            searchSymbols(answer, prefix);
+            searchSymbols(prefix) //
+                            .filter(r -> !duplicates.contains(r.getSymbol())) //
+                            .map(r -> createExchange(r.getSymbol())).forEach(e -> {
+                                duplicates.add(e.getId());
+                                answer.add(e);
+                            });
         }
         catch (IOException e)
         {
             errors.add(e);
         }
 
-        // Issue #251
-        // sometimes Yahoo does not return the default exchange which prevents
-        // selecting this security (example: searching for GOOG does return only
-        // unimportant exchanges)
-        Optional<Exchange> defaultExchange = answer.stream() //
-                        .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
-        if (!defaultExchange.isPresent())
-            answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
-
-        if (answer.isEmpty())
-        {
-            // Issue #29
-            // at least add the given ticker symbol if the search returns
-            // nothing (sometimes accidentally)
-            answer.add(createExchange(subject.getTickerSymbol()));
-        }
-
-        return answer;
     }
 
     private Exchange createExchange(String symbol)
@@ -377,7 +421,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         int e = symbol.indexOf('.');
         String exchange = e >= 0 ? symbol.substring(e) : ".default"; //$NON-NLS-1$
         String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
-        return new Exchange(symbol, String.format("%s (%s)", label, symbol)); //$NON-NLS-1$
+        return new Exchange(symbol, label);
     }
 
     protected BufferedReader openReader(String url, List<Exception> errors)
@@ -400,8 +444,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     /* enable testing */
-    protected void searchSymbols(List<Exchange> answer, String query) throws IOException
+    protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
     {
-        new YahooSymbolSearch().search(query).map(r -> createExchange(r.getSymbol())).forEach(answer::add);
+        return new YahooSymbolSearch().search(query);
     }
 }

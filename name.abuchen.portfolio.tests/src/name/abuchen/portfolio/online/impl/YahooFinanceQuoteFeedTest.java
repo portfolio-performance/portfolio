@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
@@ -115,7 +116,7 @@ public class YahooFinanceQuoteFeedTest
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
         {
             @Override
-            protected void searchSymbols(List<Exchange> answer, String query) throws IOException
+            protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
             {
                 throw new IOException();
             }

@@ -258,6 +258,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         // create a temporary security and set all attributes
         Security security = new Security();
         model.setAttributes(security);
+        model.getSecurity().getProperties().forEach(security::addProperty);
         return security;
     }
 
@@ -330,7 +331,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 @Override
                 public String getText(Object element)
                 {
-                    return ((Exchange) element).getName();
+                    Exchange exchange = (Exchange) element;
+                    return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
                 }
             });
             GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
