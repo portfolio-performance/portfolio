@@ -348,7 +348,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         markets.stream().map(p -> {
             Exchange exchange = new Exchange(p.getValue(), ExchangeLabels.getString("portfolio-report." + p.getName())); //$NON-NLS-1$
             if ("XFRA".equals(p.getName())) //$NON-NLS-1$
-                exchange.setId(exchange.getId() + ".DE"); //$NON-NLS-1$
+                exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
             return exchange;
         }).forEach(answer::add);
 
