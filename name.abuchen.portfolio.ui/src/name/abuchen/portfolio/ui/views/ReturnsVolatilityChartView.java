@@ -49,10 +49,8 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
     private static final String KEY_USE_IRR = ReturnsVolatilityChartView.class.getSimpleName() + "-use-irr"; //$NON-NLS-1$
-    private static final String KEY_SHOW_LABELS = ReturnsVolatilityChartView.class.getSimpleName() + "-show-labels"; //$NON-NLS-1$
 
     private boolean useIRR = false;
-    private boolean showLabels = false;
 
     private ScatterChart chart;
     private LocalResourceManager resources;
@@ -64,14 +62,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     public void construct()
     {
         this.useIRR = getPreferenceStore().getBoolean(KEY_USE_IRR);
-        this.showLabels = getPreferenceStore().getBoolean(KEY_SHOW_LABELS);
     }
 
     @PreDestroy
     public void destroy()
     {
         getPreferenceStore().setValue(KEY_USE_IRR, this.useIRR);
-        getPreferenceStore().setValue(KEY_SHOW_LABELS, this.showLabels);
     }
 
     @Override
@@ -110,15 +106,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             });
             irr.setChecked(this.useIRR);
             manager.add(irr);
-            manager.add(new Separator());
-
-            manager.add(new LabelOnly(Messages.LabelChartDetailSettings));
-            Action labels = new SimpleAction(Messages.LabelChartShowLabels, a -> {
-                this.showLabels = !this.showLabels;
-                reportingPeriodUpdated();
-            });
-            labels.setChecked(this.showLabels);
-            manager.add(labels);
             manager.add(new Separator());
 
             manager.add(new LabelOnly(Messages.LabelDataSeries));
@@ -243,12 +230,6 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             lineSeries.setSymbolColor(color);
             lineSeries.enableArea(series.isShowArea());
             lineSeries.setLineStyle(series.getLineStyle());
-
-            if (showLabels)
-            {
-                lineSeries.getLabel().setFormat(series.getLabel());
-                lineSeries.getLabel().setVisible(true);
-            }
         });
     }
 
