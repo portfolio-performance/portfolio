@@ -40,7 +40,8 @@ public class ValueEditingSupport extends PropertyEditingSupport
     @Override
     public final Object getValue(Object element) throws Exception
     {
-        return longToString.convert((Long) descriptor().getReadMethod().invoke(adapt(element)));
+        Number value = (Number) descriptor().getReadMethod().invoke(adapt(element));
+        return longToString.convert(value.longValue());
     }
 
     @Override
