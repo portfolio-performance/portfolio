@@ -111,9 +111,8 @@ public class PerformanceIndex
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security)
     {
-        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
-                        clientIndex.getReportInterval());
-        index.calculate(clientIndex, security);
+        SecurityIndex index = new SecurityIndex(clientIndex, security);
+        index.calculate();
         return index;
     }
 
@@ -208,10 +207,10 @@ public class PerformanceIndex
             for (; startAt < totals.length; startAt++)
                 if (totals[startAt] != 0)
                     break;
-            
+
             if (startAt == totals.length)
                 startAt = totals.length - 1;
-            
+
             drawdown = new Drawdown(accumulated, dates, startAt);
         }
 
@@ -243,12 +242,22 @@ public class PerformanceIndex
         return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
     }
 
-    public ClientPerformanceSnapshot getClientPerformanceSnapshot()
+    /**
+     * Returns the ClientPerformanceSnapshot if available. The snapshot is not
+     * available for benchmarks and the consumer price indices.
+     */
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
     {
         if (performanceSnapshot == null)
             performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
 
-        return performanceSnapshot;
+        return Optional.of(performanceSnapshot);
+    }
+
+    public double getPerformanceIRR()
+    {
+        return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
     public long[] getTaxes()
@@ -286,7 +295,7 @@ public class PerformanceIndex
 
         long startValue = 0;
         Interval interval = getActualInterval();
-        
+
         LocalDateTime intervalStart = interval.getStart().atStartOfDay();
 
         for (Account account : getClient().getAccounts())

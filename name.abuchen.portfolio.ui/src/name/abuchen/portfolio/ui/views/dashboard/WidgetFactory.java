@@ -44,11 +44,7 @@ public enum WidgetFactory
     IRR(Messages.LabelIRR, Messages.ClientEditorLabelPerformance, //
                     (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
                                     .with(Values.Percent2) //
-                                    .with((ds, period) -> {
-                                        ClientPerformanceSnapshot snapshot = data.calculate(ds, period)
-                                                        .getClientPerformanceSnapshot();
-                                        return snapshot.getPerformanceIRR();
-                                    }) //
+                                    .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
@@ -68,7 +64,8 @@ public enum WidgetFactory
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
                                         ClientPerformanceSnapshot snapshot = data.calculate(ds, period)
-                                                        .getClientPerformanceSnapshot();
+                                                        .getClientPerformanceSnapshot()
+                                                        .orElseThrow(IllegalArgumentException::new);
                                         return snapshot.getAbsoluteDelta().getAmount();
                                     }) //
                                     .withBenchmarkDataSeries(false) //

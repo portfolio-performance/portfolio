@@ -15,6 +15,10 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 
+/**
+ * Creates a Client that does only contain the specified securities and their
+ * related transactions (buy, sell, deliveries, dividends, taxes, fees).
+ */
 public class ClientSecurityFilter implements ClientFilter
 {
     private final List<Security> securities;
@@ -105,20 +109,23 @@ public class ClientSecurityFilter implements ClientFilter
                 long taxes = t.getUnitSum(Unit.Type.TAX).getAmount();
                 long amount = t.getAmount();
 
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                t.getCurrencyCode(), amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(
+                                t.getDateTime(), t.getCurrencyCode(), amount + taxes, t.getSecurity(), t.getType()));
+                getAccount.apply((Account) pair.getOwner())
+                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                                amount + taxes, t.getSecurity(), AccountTransaction.Type.REMOVAL));
                 break;
             case FEES:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                t.getCurrencyCode(), t.getAmount(), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
+                getAccount.apply((Account) pair.getOwner())
+                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.DEPOSIT));
                 break;
             case FEES_REFUND:
                 getAccount.apply((Account) pair.getOwner()).internalAddTransaction(t);
-                getAccount.apply((Account) pair.getOwner()).internalAddTransaction(new AccountTransaction(t.getDateTime(),
-                                t.getCurrencyCode(), t.getAmount(), t.getSecurity(), AccountTransaction.Type.REMOVAL));
+                getAccount.apply((Account) pair.getOwner())
+                                .internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
+                                                t.getAmount(), t.getSecurity(), AccountTransaction.Type.REMOVAL));
                 break;
             case TAXES:
             case TAX_REFUND:

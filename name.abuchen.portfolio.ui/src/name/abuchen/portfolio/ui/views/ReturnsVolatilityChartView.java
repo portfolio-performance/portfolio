@@ -5,6 +5,10 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -33,6 +37,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.ScatterChart;
 import name.abuchen.portfolio.ui.util.chart.ScatterChartCSVExporter;
@@ -43,11 +48,31 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
+    private static final String KEY_USE_IRR = ReturnsVolatilityChartView.class.getSimpleName() + "-use-irr"; //$NON-NLS-1$
+    private static final String KEY_SHOW_LABELS = ReturnsVolatilityChartView.class.getSimpleName() + "-show-labels"; //$NON-NLS-1$
+
+    private boolean useIRR = false;
+    private boolean showLabels = false;
+
     private ScatterChart chart;
     private LocalResourceManager resources;
     private DataSeriesConfigurator configurator;
 
     private DataSeriesCache cache;
+
+    @PostConstruct
+    public void construct()
+    {
+        this.useIRR = getPreferenceStore().getBoolean(KEY_USE_IRR);
+        this.showLabels = getPreferenceStore().getBoolean(KEY_SHOW_LABELS);
+    }
+
+    @PreDestroy
+    public void destroy()
+    {
+        getPreferenceStore().setValue(KEY_USE_IRR, this.useIRR);
+        getPreferenceStore().setValue(KEY_SHOW_LABELS, this.showLabels);
+    }
 
     @Override
     protected String getDefaultTitle()
@@ -60,8 +85,45 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     {
         super.addButtons(toolBar);
         toolBar.add(new ExportDropDown());
-        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE,
-                        manager -> configurator.configMenuAboutToShow(manager)));
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
+
+            manager.add(new LabelOnly(Messages.LabelPerformanceMetric));
+
+            Action ttwror = new SimpleAction(Messages.ColumnTWROR, a -> {
+                this.useIRR = false;
+
+                IAxis yAxis = chart.getAxisSet().getYAxis(0);
+                yAxis.getTitle().setText(Messages.LabelPerformanceTTWROR);
+
+                reportingPeriodUpdated();
+            });
+            ttwror.setChecked(!this.useIRR);
+            manager.add(ttwror);
+
+            Action irr = new SimpleAction(Messages.ColumnIRR, a -> {
+                this.useIRR = true;
+
+                IAxis yAxis = chart.getAxisSet().getYAxis(0);
+                yAxis.getTitle().setText(Messages.LabelPerformanceIRR);
+
+                reportingPeriodUpdated();
+            });
+            irr.setChecked(this.useIRR);
+            manager.add(irr);
+            manager.add(new Separator());
+
+            manager.add(new LabelOnly(Messages.LabelChartDetailSettings));
+            Action labels = new SimpleAction(Messages.LabelChartShowLabels, a -> {
+                this.showLabels = !this.showLabels;
+                reportingPeriodUpdated();
+            });
+            labels.setChecked(this.showLabels);
+            manager.add(labels);
+            manager.add(new Separator());
+
+            manager.add(new LabelOnly(Messages.LabelDataSeries));
+            configurator.configMenuAboutToShow(manager);
+        }));
     }
 
     @Override
@@ -82,7 +144,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
-        yAxis.getTitle().setText(Messages.LabelPeformanceTTWROR);
+        yAxis.getTitle().setText(useIRR ? Messages.LabelPerformanceIRR : Messages.LabelPerformanceTTWROR);
         yAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
@@ -171,14 +233,22 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             PerformanceIndex index = cache.lookup(series, getReportingPeriod());
             Volatility volatility = index.getVolatility();
 
+            double r = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
+
             ILineSeries lineSeries = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
-                            new double[] { index.getFinalAccumulatedPercentage() }, series.getLabel());
+                            new double[] { r }, series.getLabel());
 
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);
             lineSeries.setSymbolColor(color);
             lineSeries.enableArea(series.isShowArea());
             lineSeries.setLineStyle(series.getLineStyle());
+
+            if (showLabels)
+            {
+                lineSeries.getLabel().setFormat(series.getLabel());
+                lineSeries.getLabel().setVisible(true);
+            }
         });
     }
 

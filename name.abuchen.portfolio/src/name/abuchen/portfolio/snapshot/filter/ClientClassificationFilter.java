@@ -20,6 +20,12 @@ import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
 
+/**
+ * Creates a Client that does only contain the securities and accounts included
+ * in the specified classification. Because securities and accounts might only
+ * be partially assigned to a classification, the transaction amount is adopted
+ * if needed.
+ */
 public class ClientClassificationFilter implements ClientFilter
 {
     private static class CalculationState
@@ -212,8 +218,9 @@ public class ClientClassificationFilter implements ClientFilter
         if (accountAmount - commonAmount > 0)
         {
             AccountTransaction ta = new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                            accountAmount - commonAmount, null, t.getType() == PortfolioTransaction.Type.BUY
-                                            ? AccountTransaction.Type.REMOVAL : AccountTransaction.Type.DEPOSIT);
+                            accountAmount - commonAmount, null,
+                            t.getType() == PortfolioTransaction.Type.BUY ? AccountTransaction.Type.REMOVAL
+                                            : AccountTransaction.Type.DEPOSIT);
 
             state.asReadOnly(account).internalAddTransaction(ta);
         }
@@ -384,8 +391,8 @@ public class ClientClassificationFilter implements ClientFilter
         {
             AccountTransaction.Type deltaType = delta > 0 ^ t.getType().isDebit() ? AccountTransaction.Type.DEPOSIT
                             : AccountTransaction.Type.REMOVAL;
-            state.asReadOnly(account).internalAddTransaction(
-                            new AccountTransaction(t.getDateTime(), t.getCurrencyCode(), Math.abs(delta), null, deltaType));
+            state.asReadOnly(account).internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                            t.getCurrencyCode(), Math.abs(delta), null, deltaType));
         }
     }
 
