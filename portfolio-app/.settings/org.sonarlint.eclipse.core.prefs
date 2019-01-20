@@ -5,4 +5,4 @@ fileExclusions=
 idePrefixKey=
 projectKey=name.abuchen.portfolio\:portfolio-app
 serverId=SonarCloud/buchen-github
-sqPrefixKey=name.abuchen.portfolio
+sqPrefixKey=name.abuchen.portfolio.ui
