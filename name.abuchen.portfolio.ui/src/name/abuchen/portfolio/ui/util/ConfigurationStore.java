@@ -6,16 +6,12 @@ import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ConfigurationSet;
@@ -59,8 +55,6 @@ public class ConfigurationStore
     private final ConfigurationSet configSet;
 
     private Configuration active;
-
-    private Menu contextMenu;
 
     public ConfigurationStore(String identifier, Client client, IPreferenceStore preferences,
                     ConfigurationStoreOwner listener)
@@ -159,50 +153,6 @@ public class ConfigurationStore
         createNew.setImageDescriptor(Images.VIEW_PLUS.descriptor());
         createNew.setToolTipText(Messages.ConfigurationNew);
         toolBar.add(createNew);
-    }
-
-    /**
-     * Shows menu to manage views, e.g. create, copy, rename, and delete a view.
-     * 
-     * @param shell
-     */
-    public void showMenu(Shell shell)
-    {
-        if (contextMenu == null)
-        {
-            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
-            menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(this::saveMenuAboutToShow);
-            contextMenu = menuMgr.createContextMenu(shell);
-        }
-        contextMenu.setVisible(true);
-    }
-
-    /**
-     * Disposes the configuration store.
-     */
-    public void dispose()
-    {
-        if (contextMenu != null && !contextMenu.isDisposed())
-            contextMenu.dispose();
-    }
-
-    private void saveMenuAboutToShow(IMenuManager manager) // NOSONAR
-    {
-        configSet.getConfigurations().forEach(config -> {
-            Action action = new SimpleAction(config.getName(), a -> activate(config));
-            action.setChecked(active == config);
-            manager.add(action);
-        });
-
-        manager.add(new Separator());
-
-        manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNew(null)));
-        manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNew(active)));
-        manager.add(new SimpleAction(Messages.ConfigurationRename, a -> rename(active)));
-        manager.add(new ConfirmAction(Messages.ConfigurationDelete,
-                        MessageFormat.format(Messages.ConfigurationDeleteConfirm, active.getName()),
-                        a -> delete(active)));
     }
 
     private void createNew(Configuration template)

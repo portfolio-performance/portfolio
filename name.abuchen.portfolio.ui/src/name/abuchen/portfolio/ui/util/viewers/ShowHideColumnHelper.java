@@ -374,9 +374,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (contextMenu != null)
             contextMenu.dispose();
-
-        if (store != null)
-            store.dispose();
     }
 
     public String getConfigurationName()
@@ -395,14 +392,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             throw new NullPointerException("store"); //$NON-NLS-1$
 
         store.setToolBarManager(toolBar);
-    }
-
-    public void showSaveMenu(Shell shell)
-    {
-        if (store == null)
-            throw new UnsupportedOperationException();
-
-        store.showMenu(shell);
     }
 
     public void showHideShowColumnsMenu(Shell shell)

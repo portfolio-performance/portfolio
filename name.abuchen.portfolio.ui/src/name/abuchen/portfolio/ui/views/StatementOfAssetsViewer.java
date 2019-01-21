@@ -875,11 +875,6 @@ public class StatementOfAssetsViewer
         support.menuAboutToShow(manager);
     }
 
-    public void showSaveMenu(Shell shell)
-    {
-        support.showSaveMenu(shell);
-    }
-
     public void setInput(ClientSnapshot snapshot, ClientFilter filter)
     {
         this.clientSnapshot = snapshot;

@@ -63,17 +63,6 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
         configContextMenu.setVisible(true);
     }
 
-    /**
-     * Shows the menu to manage sets of data series, e.g. add, create, delete
-     * sets.
-     * 
-     * @param shell
-     */
-    public void showSaveMenu(Shell shell)
-    {
-        store.showMenu(shell);
-    }
-
     private Menu createMenu(Shell shell, IMenuListener listener)
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
@@ -86,8 +75,6 @@ public class DataSeriesConfigurator extends BasicDataSeriesConfigurator implemen
     {
         if (configContextMenu != null && !configContextMenu.isDisposed())
             configContextMenu.dispose();
-
-        store.dispose();
     }
 
     @Override
