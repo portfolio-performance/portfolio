@@ -31,7 +31,7 @@ public class MultiDataSeriesConfig implements WidgetConfig
                             new DataSeriesSerializer().toString(configurator.getSelectedDataSeries()));
 
             delegate.update();
-            delegate.markDirty();
+            delegate.getClient().touch();
         });
     }
 

@@ -82,7 +82,7 @@ public class DataSeriesConfig implements WidgetConfig
         delegate.getWidget().setLabel(label);
 
         delegate.update();
-        delegate.markDirty();
+        delegate.getClient().touch();
     }
 
     @Override

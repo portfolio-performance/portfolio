@@ -60,7 +60,7 @@ public class ExchangeRateSeriesConfig implements WidgetConfig
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.EXCHANGE_RATE_SERIES.name(), code);
 
                 delegate.update();
-                delegate.markDirty();
+                delegate.getClient().touch();
             });
             action.setChecked(series.equals(ts));
             subMenu.add(action);

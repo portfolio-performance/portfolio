@@ -74,7 +74,7 @@ public class ChartWidget extends WidgetDelegate<Object>
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
 
                     delegate.update();
-                    delegate.markDirty();
+                    delegate.getClient().touch();
                 });
                 action.setChecked(c.equals(config));
                 subMenu.add(action);
@@ -130,7 +130,7 @@ public class ChartWidget extends WidgetDelegate<Object>
                 delegate.getWidget().getConfiguration().remove(Dashboard.Config.AGGREGATION.name());
 
                 delegate.update();
-                delegate.markDirty();
+                delegate.getClient().touch();
             });
             action.setChecked(aggregation == null);
             subMenu.add(action);
@@ -141,7 +141,7 @@ public class ChartWidget extends WidgetDelegate<Object>
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.AGGREGATION.name(), a.name());
 
                     delegate.update();
-                    delegate.markDirty();
+                    delegate.getClient().touch();
                 });
                 menu.setChecked(aggregation == a);
                 subMenu.add(menu);

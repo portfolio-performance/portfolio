@@ -93,7 +93,7 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
                             String.join(",", values.stream().map(E::name).collect(Collectors.toList()))); //$NON-NLS-1$
 
             delegate.update();
-            delegate.markDirty();
+            delegate.getClient().touch();
         });
         action.setChecked(this.values.contains(value));
         return action;

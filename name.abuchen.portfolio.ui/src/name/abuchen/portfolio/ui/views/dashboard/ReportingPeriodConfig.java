@@ -50,11 +50,14 @@ public class ReportingPeriodConfig implements WidgetConfig
     {
         this.reportingPeriod = reportingPeriod;
 
-        delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
-                        reportingPeriod.getCode());
+        if (reportingPeriod != null)
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                            reportingPeriod.getCode());
+        else
+            delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
 
         delegate.update();
-        delegate.markDirty();
+        delegate.getClient().touch();
     }
 
     @Override
@@ -68,13 +71,7 @@ public class ReportingPeriodConfig implements WidgetConfig
                         : Messages.LabelUsingDashboardDefaultReportingPeriod));
         subMenu.add(new Separator());
 
-        subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> {
-            reportingPeriod = null;
-            delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
-
-            delegate.update();
-            delegate.markDirty();
-        }));
+        subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> setReportingPeriod(null)));
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
                         .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> setReportingPeriod(p))));

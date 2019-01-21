@@ -32,7 +32,7 @@ public class LabelConfig implements WidgetConfig
             delegate.getWidget().setLabel(dialog.getValue());
 
             delegate.update();
-            delegate.markDirty();
+            delegate.getClient().touch();
         }));
     }
 

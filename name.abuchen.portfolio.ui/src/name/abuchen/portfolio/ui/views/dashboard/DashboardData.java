@@ -9,7 +9,6 @@ import java.util.Objects;
 
 import javax.inject.Inject;
 
-import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Client;
@@ -75,9 +74,6 @@ public class DashboardData
     private Map<Widget, Object> resultCache = Collections.synchronizedMap(new HashMap<>());
 
     private Dashboard dashboard;
-
-    @Inject
-    private MDirtyable dirtyable;
 
     @Inject
     public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory)
@@ -196,13 +192,5 @@ public class DashboardData
         // create a new cache map in order to make sure that old (possibly
         // still running) tasks do not write into the new cache
         resultCache = Collections.synchronizedMap(new HashMap<>());
-    }
-
-    /**
-     * Marks the file as dirty <b>without</b> triggering an update.
-     */
-    public void markDirty()
-    {
-        dirtyable.setDirty(true);
     }
 }

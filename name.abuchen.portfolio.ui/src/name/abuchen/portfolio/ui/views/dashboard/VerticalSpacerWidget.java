@@ -86,7 +86,7 @@ public class VerticalSpacerWidget extends WidgetDelegate<Object>
                 delegate.getWidget().getConfiguration().put(Dashboard.Config.HEIGHT.name(), String.valueOf(height));
 
                 delegate.update();
-                delegate.markDirty();
+                delegate.getClient().touch();
             }));
         }
 
