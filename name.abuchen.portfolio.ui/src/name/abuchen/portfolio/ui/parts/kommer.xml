@@ -54278,6 +54278,64 @@
             </widget>
           </widgets>
         </column>
+        <column>
+          <widgets>
+            <widget type="HEADING">
+              <label>2019</label>
+            </widget>
+            <widget type="CHART">
+              <label>Performance-Diagramm</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2019</string>
+                </entry>
+                <entry>
+                  <string>CONFIG_UUID</string>
+                  <string>8bca0451-2846-4612-85dd-3943642ef68d</string>
+                </entry>
+                <entry>
+                  <string>AGGREGATION</string>
+                  <string>WEEKLY</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="TTWROR">
+              <label>True Time-Weighted Rate of Return</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2019</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="DELTA">
+              <label>Delta</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2019</string>
+                </entry>
+              </configuration>
+            </widget>
+            <widget type="HEADING">
+              <label>Weltportfolio</label>
+            </widget>
+            <widget type="TTWROR">
+              <label>Risikobehafteter Portfolioteil</label>
+              <configuration>
+                <entry>
+                  <string>REPORTING_PERIOD</string>
+                  <string>Y2019</string>
+                </entry>
+                <entry>
+                  <string>DATA_SERIES</string>
+                  <string>Classification6c3f0511-3f9b-4951-9432-641ffd3a4993</string>
+                </entry>
+              </configuration>
+            </widget>
+          </widgets>
+        </column>
       </columns>
     </dashboard>
     <dashboard name="Erträge">
