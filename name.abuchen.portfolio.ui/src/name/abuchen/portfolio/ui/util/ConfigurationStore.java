@@ -34,6 +34,10 @@ public class ConfigurationStore
         void beforeConfigurationPicked();
 
         void onConfigurationPicked(String data);
+
+        default void onConfigurationSetUpdated()
+        {
+        }
     }
 
     private static final class InputValidator implements IInputValidator
@@ -89,11 +93,7 @@ public class ConfigurationStore
             @Override
             public void onConfigurationPicked(String data)
             {
-                if (toolBar.getControl().isDisposed())
-                    return;
-                toolBar.removeAll();
-                createToolBarItems(toolBar);
-                toolBar.update(true);
+                onConfigurationSetUpdated();
             }
 
             @Override
@@ -101,6 +101,17 @@ public class ConfigurationStore
             {
                 // no changes to the toolbar before switching to a new
                 // configuration
+            }
+
+            @Override
+            public void onConfigurationSetUpdated()
+            {
+                if (toolBar.getControl().isDisposed())
+                    return;
+                toolBar.removeAll();
+                createToolBarItems(toolBar);
+                toolBar.update(true);
+
             }
         });
     }
@@ -226,11 +237,18 @@ public class ConfigurationStore
 
         config.setName(dlg.getValue());
         client.touch();
+        listeners.forEach(ConfigurationStoreOwner::onConfigurationSetUpdated);
     }
 
     private void delete(Configuration config)
     {
         configSet.remove(config);
+
+        if (active != config)
+        {
+            listeners.forEach(ConfigurationStoreOwner::onConfigurationSetUpdated);
+            return;
+        }
 
         listeners.forEach(ConfigurationStoreOwner::beforeConfigurationPicked);
         active = configSet.getConfigurations().findAny().orElseGet(() -> {
