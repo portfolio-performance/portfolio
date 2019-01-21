@@ -602,6 +602,7 @@ public class Messages extends NLS
     public static String MenuAddAll;
     public static String MenuAddNewDashboardColumnLeft;
     public static String MenuAddNewDashboardColumnRight;
+    public static String MenuApplyToAllWidgets;
     public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;

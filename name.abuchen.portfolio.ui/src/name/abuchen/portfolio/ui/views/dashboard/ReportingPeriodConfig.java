@@ -46,6 +46,17 @@ public class ReportingPeriodConfig implements WidgetConfig
         return reportingPeriod != null ? reportingPeriod : delegate.getDashboardData().getDefaultReportingPeriod();
     }
 
+    public void setReportingPeriod(ReportingPeriod reportingPeriod)
+    {
+        this.reportingPeriod = reportingPeriod;
+
+        delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                        reportingPeriod.getCode());
+
+        delegate.update();
+        delegate.markDirty();
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
@@ -66,14 +77,7 @@ public class ReportingPeriodConfig implements WidgetConfig
         }));
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
-                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
-                            reportingPeriod = p;
-                            delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
-                                            p.getCode());
-
-                            delegate.update();
-                            delegate.markDirty();
-                        })));
+                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> setReportingPeriod(p))));
         subMenu.add(new Separator());
 
         subMenu.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
@@ -81,16 +85,11 @@ public class ReportingPeriodConfig implements WidgetConfig
                             getReportingPeriod());
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
-                reportingPeriod = dialog.getReportingPeriod();
+                ReportingPeriod rp = dialog.getReportingPeriod();
+                if (!delegate.getDashboardData().getDefaultReportingPeriods().contains(rp))
+                    delegate.getDashboardData().getDefaultReportingPeriods().add(rp);
 
-                if (!delegate.getDashboardData().getDefaultReportingPeriods().contains(reportingPeriod))
-                    delegate.getDashboardData().getDefaultReportingPeriods().add(reportingPeriod);
-
-                delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
-                                reportingPeriod.getCode());
-
-                delegate.update();
-                delegate.markDirty();
+                setReportingPeriod(rp);
             }
         }));
 

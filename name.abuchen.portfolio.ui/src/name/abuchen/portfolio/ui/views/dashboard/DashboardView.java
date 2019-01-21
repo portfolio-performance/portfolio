@@ -186,7 +186,7 @@ public class DashboardView extends AbstractHistoricView
     public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
-    private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
+    /* package */ static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
     private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
 
     @Inject
@@ -347,34 +347,7 @@ public class DashboardView extends AbstractHistoricView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(filler);
         columnControl.setData(FILLER_KEY, filler);
 
-        new ContextMenu(filler, manager -> {
-            MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
-            manager.add(subMenu);
-
-            Map<String, MenuManager> group2menu = new HashMap<>();
-            group2menu.put(null, subMenu);
-
-            for (WidgetFactory type : WidgetFactory.values())
-            {
-                MenuManager mm = group2menu.computeIfAbsent(type.getGroup(), group -> {
-                    MenuManager groupMenu = new MenuManager(group);
-                    subMenu.add(groupMenu);
-                    return groupMenu;
-                });
-                mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
-            }
-
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft,
-                            a -> createNewColumn(column, columnControl, SWT.LEFT)));
-            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnRight,
-                            a -> createNewColumn(column, columnControl, SWT.RIGHT)));
-            manager.add(new SimpleAction(Messages.MenuMenuDuplicateDashboardColumn,
-                            a -> duplicateColumn(column, columnControl)));
-
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
-        }).hook();
+        new ContextMenu(filler, manager -> columnMenuAboutToShow(manager, column, columnControl)).hook();
 
         for (Dashboard.Widget widget : column.getWidgets())
         {
@@ -386,6 +359,40 @@ public class DashboardView extends AbstractHistoricView
         }
 
         return columnControl;
+    }
+
+    private void columnMenuAboutToShow(IMenuManager manager, Dashboard.Column column, Composite columnControl)
+    {
+        MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
+        manager.add(subMenu);
+
+        Map<String, MenuManager> group2menu = new HashMap<>();
+        group2menu.put(null, subMenu);
+
+        for (WidgetFactory type : WidgetFactory.values())
+        {
+            MenuManager mm = group2menu.computeIfAbsent(type.getGroup(), group -> {
+                MenuManager groupMenu = new MenuManager(group);
+                subMenu.add(groupMenu);
+                return groupMenu;
+            });
+            mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
+        }
+
+        manager.add(new Separator());
+        manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft,
+                        a -> createNewColumn(column, columnControl, SWT.LEFT)));
+        manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnRight,
+                        a -> createNewColumn(column, columnControl, SWT.RIGHT)));
+        manager.add(new SimpleAction(Messages.MenuDuplicateDashboardColumn,
+                        a -> duplicateColumn(column, columnControl)));
+
+        MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
+        manager.add(applyToAll);
+        new ReportingPeriodApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
+
+        manager.add(new Separator());
+        manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
     }
 
     private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)

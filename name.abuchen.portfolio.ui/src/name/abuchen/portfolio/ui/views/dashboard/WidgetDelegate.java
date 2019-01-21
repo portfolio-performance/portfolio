@@ -58,7 +58,7 @@ public abstract class WidgetDelegate<D>
 
     public <C extends WidgetConfig> Optional<C> optionallyGet(Class<C> type)
     {
-        return config.stream().filter(c -> type.equals(c.getClass())).findAny().map(e -> type.cast(e));
+        return config.stream().filter(c -> type.equals(c.getClass())).findAny().map(type::cast);
     }
 
     public Stream<WidgetConfig> getWidgetConfigs()
