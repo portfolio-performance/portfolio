@@ -30,6 +30,7 @@ public class Messages extends NLS
     public static String BookmarksListView_LabelAttributeReplacements;
     public static String BookmarksListView_LabelDefaultReplacements;
     public static String BookmarksListView_LabelReplaceFirstAvailable;
+    public static String MenuDuplicateDashboardColumn;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
     public static String BookmarksListView_NewBookmark;
@@ -600,6 +601,7 @@ public class Messages extends NLS
     public static String MarkSecurityPageTitle;
     public static String MenuAddAll;
     public static String MenuAddNewDashboardColumnLeft;
+    public static String MenuAddNewDashboardColumnRight;
     public static String MenuChangeHeight;
     public static String MenuChartAdjustRange;
     public static String MenuChartYScrollDown;
