@@ -3,7 +3,9 @@ package name.abuchen.portfolio.ui.views;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -45,6 +47,7 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -84,6 +87,17 @@ public final class SecuritiesTable implements ModificationListener
 
     private TableViewer securities;
 
+    private Map<Security, QuoteQualityMetrics> metricsCache = new HashMap<Security, QuoteQualityMetrics>()
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public QuoteQualityMetrics get(Object key)
+        {
+            return super.computeIfAbsent((Security) key, QuoteQualityMetrics::new);
+        }
+    };
+
     private ShowHideColumnHelper support;
 
     public SecuritiesTable(Composite parent, AbstractFinanceView view)
@@ -117,6 +131,7 @@ public final class SecuritiesTable implements ModificationListener
 
         addAttributeColumns();
         addQuoteFeedColumns();
+        addDataQualityColumns();
 
         support.createColumns();
 
@@ -366,6 +381,7 @@ public final class SecuritiesTable implements ModificationListener
     {
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
         column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
@@ -553,6 +569,89 @@ public final class SecuritiesTable implements ModificationListener
         support.addColumn(column);
     }
 
+    private void addDataQualityColumns()
+    {
+        // ColumnLatestHistoricalDate
+        Column column = new Column("q-date-first-historic", Messages.ColumnDateFirstHistoricalQuote, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDateFirstHistoricalQuote_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                List<SecurityPrice> prices = ((Security) element).getPrices();
+                return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> {
+            List<SecurityPrice> prices = ((Security) element).getPrices();
+            return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
+        }));
+        support.addColumn(column);
+
+        column = new Column("qqm-completeness", Messages.ColumnMetricCompleteness, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setDescription(Messages.ColumnMetricCompleteness_Description);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Percent2.format(metricsCache.get((Security) e).getCompleteness());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getCompleteness()));
+        support.addColumn(column);
+
+        column = new Column("qqm-expected", Messages.ColumnMetricExpectedNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Integer.toString(metricsCache.get((Security) e).getExpectedNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getExpectedNumberOfQuotes()));
+        support.addColumn(column);
+
+        column = new Column("qqm-actual", Messages.ColumnMetricActualNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Integer.toString(metricsCache.get((Security) e).getActualNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getActualNumberOfQuotes()));
+        support.addColumn(column);
+
+        column = new Column("qqm-missing", Messages.ColumnMetricNumberOfMissingQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+                return Integer.toString(metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+            return metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes();
+        }));
+        support.addColumn(column);
+    }
+
     public void addSelectionChangedListener(ISelectionChangedListener listener)
     {
         this.securities.addSelectionChangedListener(listener);
@@ -577,15 +676,21 @@ public final class SecuritiesTable implements ModificationListener
 
     public void refresh(Security security)
     {
+        this.metricsCache.remove(security);
         this.securities.refresh(security, true);
     }
 
-    public void refresh()
+    public void refresh(boolean updateLabels)
     {
         try
         {
             securities.getControl().setRedraw(false);
-            securities.refresh();
+
+            if (updateLabels)
+                metricsCache.clear();
+            securities.refresh(updateLabels);
+            securities.setSelection(securities.getSelection());
+
         }
         finally
         {

@@ -9,8 +9,8 @@ import java.util.NoSuchElementException;
 public final class Interval
 {
 
-    private LocalDate start;
-    private LocalDate end;
+    private final LocalDate start;
+    private final LocalDate end;
 
     private Interval(LocalDate start, LocalDate end)
     {

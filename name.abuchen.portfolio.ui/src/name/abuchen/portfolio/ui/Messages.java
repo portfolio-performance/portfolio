@@ -112,6 +112,8 @@ public class Messages extends NLS
     public static String ColumnCurrentShares;
     public static String ColumnDataSeries;
     public static String ColumnDate;
+    public static String ColumnDateFirstHistoricalQuote;
+    public static String ColumnDateFirstHistoricalQuote_MenuLabel;
     public static String ColumnDateLatestExchangeRate;
     public static String ColumnDateOfQuote;
     public static String ColumnDaysHigh;
@@ -185,6 +187,11 @@ public class Messages extends NLS
     public static String ColumnMaxDrawdown;
     public static String ColumnMaxDrawdownDuration;
     public static String ColumnMessage;
+    public static String ColumnMetricActualNumberOfQuotes;
+    public static String ColumnMetricCompleteness;
+    public static String ColumnMetricCompleteness_Description;
+    public static String ColumnMetricExpectedNumberOfQuotes;
+    public static String ColumnMetricNumberOfMissingQuotes;
     public static String ColumnMonth;
     public static String ColumnName;
     public static String ColumnNote;
@@ -333,6 +340,7 @@ public class Messages extends NLS
     public static String ExportWizardTitle;
     public static String ExportWizardUnsupportedExport;
     public static String GroupLabelAttributes;
+    public static String GroupLabelDataQuality;
     public static String GroupLabelDividends;
     public static String GroupLabelPerformance;
     public static String GroupLabelQuoteFeed;
@@ -454,6 +462,7 @@ public class Messages extends NLS
     public static String LabelCurrentMonth;
     public static String LabelDashboard;
     public static String LabelDataSeries;
+    public static String LabelDateXToY;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
     public static String LabelDoImport;
@@ -559,6 +568,7 @@ public class Messages extends NLS
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
+    public static String LabelMetricCheckInterval;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;

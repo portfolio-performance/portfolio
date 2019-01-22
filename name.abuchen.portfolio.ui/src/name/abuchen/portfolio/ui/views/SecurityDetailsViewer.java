@@ -22,7 +22,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Classification;
@@ -308,7 +307,7 @@ public class SecurityDetailsViewer
         private Taxonomy taxonomy;
 
         private Label heading;
-        private List<Label> labels = new ArrayList<Label>();
+        private List<Label> labels = new ArrayList<>();
 
         public TaxonomyFacet(Taxonomy taxonomy, Font boldFont, Color color)
         {
@@ -395,7 +394,7 @@ public class SecurityDetailsViewer
 
     private Composite container;
 
-    private List<SecurityFacet> children = new ArrayList<SecurityFacet>();
+    private List<SecurityFacet> children = new ArrayList<>();
 
     public SecurityDetailsViewer(Composite parent, int style, Client client)
     {
@@ -405,7 +404,7 @@ public class SecurityDetailsViewer
     public SecurityDetailsViewer(Composite parent, int style, Client client, boolean showMasterData)
     {
         container = new Composite(parent, style);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        container.setBackground(Colors.WHITE);
         container.setBackgroundMode(SWT.INHERIT_FORCE);
 
         // fonts

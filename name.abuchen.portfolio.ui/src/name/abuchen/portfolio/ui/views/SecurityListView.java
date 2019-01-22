@@ -267,7 +267,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     }
 
                     setImage(filter.isEmpty() ? Images.FILTER_OFF : Images.FILTER_ON);
-                    securities.refresh();
+                    securities.refresh(false);
                 }
             };
             action.setChecked(filter.contains(predicate));
@@ -287,6 +287,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     private TableViewer events;
     private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
+    private SecurityQuoteQualityMetricsViewer metrics;
 
     private List<Predicate<Security>> filter = new ArrayList<>();
 
@@ -315,8 +316,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         if (securities != null && !securities.getTableViewer().getTable().isDisposed())
         {
             updateTitle(getDefaultTitle());
-            securities.getTableViewer().refresh(true);
-            securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
+            securities.refresh(true);
         }
     }
 
@@ -350,6 +350,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         securities.refresh(security);
         prices.refresh(element);
         latest.setInput(security);
+        metrics.setInput(security);
         transactions.setInput(security.getTransactions(getClient()));
         events.setInput(security.getEvents());
         chart.updateChart(security);
@@ -395,12 +396,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     if (filterText.length() == 0)
                     {
                         filterPattern = null;
-                        securities.refresh();
+                        securities.refresh(false);
                     }
                     else
                     {
                         filterPattern = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-                        securities.refresh();
+                        securities.refresh(false);
                     }
                 });
 
@@ -513,6 +514,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices.refresh();
 
         latest.setInput(security);
+        metrics.setInput(security);
 
         transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
 
@@ -563,6 +565,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabEvents);
         item.setControl(createEventsTable(folder));
+
+        // tab 5: data quality
+        metrics = make(SecurityQuoteQualityMetricsViewer.class);
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.GroupLabelDataQuality);
+        item.setControl(metrics.createViewControl(folder));
 
         folder.setSelection(0);
     }
@@ -660,6 +668,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
+                    metrics.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
                     chart.updateChart(security);
@@ -696,6 +705,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
+                    metrics.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
                     chart.updateChart(security);
@@ -720,6 +730,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
+                    metrics.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
                     chart.updateChart(security);
@@ -1051,10 +1062,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             throw new IllegalArgumentException();
         }
     }
-
-    // //////////////////////////////////////////////////////////////
-    // tab item: transactions
-    // //////////////////////////////////////////////////////////////
 
     protected Composite createEventsTable(Composite parent)
     {
