@@ -29,6 +29,6 @@ public class UpdateQuotesHandler
         if (client == null)
             return;
 
-        new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).schedule();
+        new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
     }
 }
