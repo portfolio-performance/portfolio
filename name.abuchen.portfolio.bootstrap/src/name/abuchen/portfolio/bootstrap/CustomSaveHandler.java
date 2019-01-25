@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.eclipse.e4.ui.internal.workbench.PartServiceSaveHandler;
+import org.eclipse.e4.ui.model.application.MApplication;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -34,6 +36,44 @@ public class CustomSaveHandler extends PartServiceSaveHandler
     @Override
     public Save promptToSave(MPart dirtyPart)
     {
+        Object clientInput = dirtyPart.getTransientData().get(ModelConstants.EDITOR_INPUT);
+        if (clientInput == null)
+            throw new IllegalArgumentException();
+
+        EModelService modelService = dirtyPart.getContext().get(EModelService.class);
+        MApplication app = dirtyPart.getContext().get(MApplication.class);
+
+        int count = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE, element -> {
+            if (!ModelConstants.PORTFOLIO_PART.equals(element.getElementId()))
+                return false;
+            return clientInput.equals(element.getTransientData().get(ModelConstants.EDITOR_INPUT));
+        }).size();
+
+        // there are other dirty windows with the same file open. Do not ask the
+        // user to save just because one of many views is closed.
+        if (count > 1)
+            return Save.NO;
+
+        return promptToSaveSingle(dirtyPart);
+    }
+
+    @Override
+    public Save[] promptToSave(Collection<MPart> dirtyParts)
+    {
+        // need to map dirtyParts to editor inputs, because only editor inputs
+        // are saved. For other parts (the second or third open window) just
+        // return no.
+
+        Collection<FileInfo> editorInputs = collectFileInfos(dirtyParts);
+
+        if (editorInputs.size() == 1)
+            return new Save[] { promptToSaveSingle(editorInputs.iterator().next().getParts().get(0)) };
+        else
+            return promptToSaveMultiple(dirtyParts, editorInputs);
+    }
+
+    private Save promptToSaveSingle(MPart dirtyPart)
+    {
         String prompt = MessageFormat.format(Messages.SaveHandlerPrompt, dirtyPart.getLabel());
 
         MessageDialog dialog = new PromptForSaveDialog(Display.getDefault().getActiveShell(), prompt);
@@ -48,21 +88,6 @@ public class CustomSaveHandler extends PartServiceSaveHandler
             default:
                 return Save.CANCEL;
         }
-    }
-
-    @Override
-    public Save[] promptToSave(Collection<MPart> dirtyParts)
-    {
-        // need to map dirtyParts to editor inputs, because only editor inputs
-        // are saved. For other parts (the second or third open window) just
-        // return no.
-
-        Collection<FileInfo> editorInputs = collectFileInfos(dirtyParts);
-
-        if (editorInputs.size() == 1)
-            return new Save[] { promptToSave(editorInputs.iterator().next().getParts().get(0)) };
-        else
-            return promptToSaveMultiple(dirtyParts, editorInputs);
     }
 
     private Save[] promptToSaveMultiple(Collection<MPart> dirtyParts, Collection<FileInfo> editorInputs)
