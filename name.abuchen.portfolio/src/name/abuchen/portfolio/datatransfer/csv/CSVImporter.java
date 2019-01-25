@@ -102,18 +102,30 @@ public final class CSVImporter
 
     public static class FieldFormat
     {
+        private final String code;
         private final String label;
         private final Format format;
 
-        public FieldFormat(String label, Format format)
+        public FieldFormat(String code, String label, Format format)
         {
+            this.code = code;
             this.label = label;
             this.format = format;
         }
 
-        public FieldFormat(String label, Supplier<Format> supplier)
+        public FieldFormat(String label, Format format)
         {
-            this(label, supplier.get());
+            this(null, label, format);
+        }
+
+        public FieldFormat(String code, String label, Supplier<Format> supplier)
+        {
+            this(code, label, supplier.get());
+        }
+
+        public String getCode()
+        {
+            return code;
         }
 
         @Override
@@ -306,12 +318,14 @@ public final class CSVImporter
     public static class AmountField extends CSVImporter.Field
     {
         private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
-                        new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)),
-                        new FieldFormat(Messages.CSVFormatApostrophe, () -> {
+                        new FieldFormat("0.000,00", Messages.CSVFormatNumberGermany, //$NON-NLS-1$
+                                        NumberFormat.getInstance(Locale.GERMANY)),
+                        new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
+                                        NumberFormat.getInstance(Locale.US)),
+                        new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');
-                            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
                         })));
 
         /* package */ AmountField(String code, String... name)
@@ -334,7 +348,7 @@ public final class CSVImporter
         @Override
         public String formatToText(FieldFormat fieldFormat)
         {
-            return ((DecimalFormat) fieldFormat.getFormat()).toPattern();
+            return fieldFormat.getCode();
         }
 
         @Override
@@ -342,7 +356,7 @@ public final class CSVImporter
         {
             for (FieldFormat format : getAvailableFieldFormats())
             {
-                if (((DecimalFormat) format.getFormat()).toPattern().equals(text))
+                if (format.getCode().equals(text))
                     return format;
             }
 

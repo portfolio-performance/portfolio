@@ -9,7 +9,7 @@
         {
             "label": "Stück/Nom.",
             "field": "shares",
-            "format":"#,##0.###"
+            "format":"0.000,00"
         },
         {
             "label": "Bezeichnung",
@@ -29,7 +29,7 @@
         {
             "label": "Akt. Kurs",
             "field": "quote",
-            "format": "#,##0.###"
+            "format": "0.000,00"
         },
         {
             "label": "Diff. abs."
@@ -68,7 +68,7 @@
         {
             "label": "Kaufwert in EUR",
             "field": "value",
-            "format": "#,##0.###"
+            "format": "0.000,00"
         },
         {
             "label": "Limit+"
@@ -89,14 +89,14 @@
         {
             "label": "Anzahl",
             "field": "shares",
-            "format": "#,##0.###"
+            "format": "0.000,00"
         },
         {
             "label": "Kaufpreis"
         },
         {
             "field": "value",
-            "format": "#,##0.###",
+            "format": "0.000,00",
             "label": "Kaufsumme"
         },
         {
@@ -120,7 +120,7 @@
         {
             "label": "Kurs",
             "field": "quote",
-            "format": "#,##0.###"
+            "format": "0.000,00"
         },
         {
             "label": "abs. Diff. zum Vortag"
@@ -165,7 +165,7 @@
         },
         {
             "field": "shares",
-            "format": "#,##0.###",
+            "format": "0.000,00",
             "label": "Bestand"
         },
         {
@@ -196,7 +196,7 @@
         {
             "label": "Kurs",
             "field": "quote",
-            "format": "#,##0.###"
+            "format": "0.000,00"
         },
         {
             "label": "Devisenkurs"
@@ -209,7 +209,7 @@
         },
         {
             "field": "value",
-            "format": "#,##0.###",
+            "format": "0.000,00",
             "label": "Marktwert in EUR inkl. Stückzinsen"
         },
         {
