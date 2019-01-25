@@ -93,12 +93,12 @@
 							<value>Copyright 2012 - 2019 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
-							<name>CFBundleLocalizations</name>
-							<value>[en,de,es]</value>
-						</property>
-						<property>
 							<name>Eclipse</name>
 							<value />
+						</property>
+						<property>
+							<name>CFBundleLocalizations</name>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
