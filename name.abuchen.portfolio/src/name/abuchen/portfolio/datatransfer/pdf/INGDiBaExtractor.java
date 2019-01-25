@@ -272,7 +272,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         final DocumentType type = new DocumentType("Dividendengutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendengutschrift");
+        Block block = new Block("Dividendengutschrift.*");
         type.addBlock(block);
         Transaction<AccountTransaction> transaction = new Transaction<AccountTransaction>()
 
