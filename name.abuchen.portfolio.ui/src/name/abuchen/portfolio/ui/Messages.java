@@ -885,6 +885,8 @@ public class Messages extends NLS
     public static String HeatmapOrnamentGeometricMean;
     public static String HeatmapOrnamentStandardDeviation;
     public static String HeatmapOrnamentSum;
+    public static String HoldingsWarningAssetsWithNegativeValuation;
+    public static String HoldingsWarningAssetsWithNegativeValuationDetails;
     public static String YearlyPerformanceHeatmapToolTip;
     static
     {

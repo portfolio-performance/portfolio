@@ -34,7 +34,8 @@ public final class Colors
     public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
     public static final Color INFO_TOOLTIP_BACKGROUND = getColor(236, 235, 236);
 
-    public static final Color WARNING = getColor(254, 223, 107);
+    public static final Color WARNING = getColor(254, 223, 107); // FEDF6B
+    public static final Color WARNING_RED = getColor(209, 29, 29); // D11D1D
 
     public static final Color SIDEBAR_TEXT = getColor(57, 62, 66);
     public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250); // F9FAFA
