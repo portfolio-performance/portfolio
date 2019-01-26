@@ -4,6 +4,7 @@ import java.beans.PropertyChangeListener;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -36,7 +37,13 @@ public class StatementOfAssetsView extends AbstractFinanceView
     private StatementOfAssetsViewer assetViewer;
     private PropertyChangeListener currencyChangeListener;
     private ClientFilterDropDown clientFilter;
-    private LocalDate snapshotDate = LocalDate.now();
+
+    /**
+     * The date for which to calculate the statement of assets. If the date is
+     * empty, it means using the current date. We do not save the current date
+     * here, because some users have the view open more than 24 hours.
+     */
+    private Optional<LocalDate> snapshotDate = Optional.empty();
 
     @Inject
     private ExchangeRateProviderFactory factory;
@@ -53,7 +60,8 @@ public class StatementOfAssetsView extends AbstractFinanceView
     {
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter, snapshotDate);
+        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, converter,
+                        snapshotDate.orElse(LocalDate.now()));
 
         assetViewer.setInput(snapshot, clientFilter.getSelectedFilter());
         updateTitle(getDefaultTitle());
@@ -114,31 +122,31 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
     private void addCalendarButton(ToolBarManager toolBar)
     {
-        DropDown dropDown = new DropDown(Messages.LabelPortfolioTimeMachine,
-                        Images.CALENDAR_OFF, SWT.NONE);
+        DropDown dropDown = new DropDown(Messages.LabelPortfolioTimeMachine, Images.CALENDAR_OFF, SWT.NONE);
         dropDown.setMenuListener(manager -> {
-            manager.add(new LabelOnly(Values.Date.format(snapshotDate)));
+            manager.add(new LabelOnly(Values.Date.format(snapshotDate.orElse(LocalDate.now()))));
             manager.add(new Separator());
 
             SimpleAction action = new SimpleAction(Messages.LabelToday, a -> {
-                snapshotDate = LocalDate.now();
+                snapshotDate = Optional.empty();
                 notifyModelUpdated();
                 dropDown.setImage(Images.CALENDAR_OFF);
             });
-            action.setEnabled(!snapshotDate.equals(LocalDate.now()));
+            action.setEnabled(snapshotDate.isPresent());
             manager.add(action);
 
             manager.add(new SimpleAction(Messages.MenuPickOtherDate, a -> {
                 DateSelectionDialog dialog = new DateSelectionDialog(getActiveShell());
-                dialog.setSelection(snapshotDate);
+                dialog.setSelection(snapshotDate.orElse(LocalDate.now()));
                 if (dialog.open() != DateSelectionDialog.OK)
                     return;
-                if (snapshotDate.equals(dialog.getSelection()))
+                if (snapshotDate.isPresent() && snapshotDate.get().equals(dialog.getSelection()))
                     return;
 
-                snapshotDate = dialog.getSelection();
+                snapshotDate = LocalDate.now().equals(dialog.getSelection()) ? Optional.empty()
+                                : Optional.of(dialog.getSelection());
                 notifyModelUpdated();
-                dropDown.setImage(LocalDate.now().equals(snapshotDate) ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
+                dropDown.setImage(!snapshotDate.isPresent() ? Images.CALENDAR_OFF : Images.CALENDAR_ON);
             }));
         });
 
