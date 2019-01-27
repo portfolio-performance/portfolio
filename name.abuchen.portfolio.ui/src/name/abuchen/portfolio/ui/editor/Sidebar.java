@@ -209,6 +209,8 @@ public final class Sidebar extends Composite
             if (bar.selection == this)
                 bar.selection = null;
 
+            item.dispose();
+
             bar.layout();
         }
 
