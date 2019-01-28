@@ -23,9 +23,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -58,6 +56,7 @@ import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
 import name.abuchen.portfolio.snapshot.security.DividendTransaction;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
@@ -197,6 +196,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
     private TableViewer records;
     private TableViewer transactions;
+    private TradesTableViewer trades;
     private ReportingPeriodDropDown dropDown;
 
     private ClientFilter clientFilter;
@@ -278,27 +278,27 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         hookContextMenu(records.getTable(), this::fillContextMenu);
 
-        records.addSelectionChangedListener(new ISelectionChangedListener() // NOSONAR
-        {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event)
+        records.addSelectionChangedListener(event -> {
+            SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement();
+
+            if (record != null)
             {
-                SecurityPerformanceRecord record = (SecurityPerformanceRecord) ((IStructuredSelection) event
-                                .getSelection()).getFirstElement();
-
-                Security security = null;
-                List<Transaction> transactionList = null;
-
-                if (record != null)
-                {
-                    transactionList = record.getTransactions();
-                    security = record.getSecurity();
-                }
-
-                transactions.setInput(transactionList);
+                transactions.setInput(record.getTransactions());
                 transactions.refresh();
-                chart.updateChart(security);
-                latest.setInput(security);
+                chart.updateChart(record.getSecurity());
+                Client filteredClient = clientFilter.filter(getClient());
+                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                trades.setInput(new TradeCollector(filteredClient, converter).collect(record.getSecurity()));
+                latest.setInput(record.getSecurity());
+            }
+            else
+            {
+                transactions.setInput(null);
+                transactions.refresh();
+                chart.updateChart(null);
+                trades.setInput(null);
+                latest.setInput(null);
             }
         });
 
@@ -783,17 +783,16 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // folder
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
+        // folder - chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabChart);
-
         Composite chartComposite = new Composite(folder, SWT.NONE);
         item.setControl(chartComposite);
 
         chart = new SecuritiesChart(chartComposite, clientFilter.filter(getClient()),
                         new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
 
-        latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
+        // folder - transactions
 
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabTransactions);
@@ -802,22 +801,31 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        folder.setSelection(0);
-
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@bottom4", getPreferenceStore(), //$NON-NLS-1$
                         transactions, layout);
-
         createTransactionColumns(support);
-
         support.createColumns();
 
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
-
         transactions.setContentProvider(ArrayContentProvider.getInstance());
+
+        // folder - trades
+
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.SecurityTabTrades);
+        trades = new TradesTableViewer(this);
+        item.setControl(trades.createViewControl(folder));
+
+        folder.setSelection(0);
+
+        // latest quote information
+
+        latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
+        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         reportingPeriodUpdated();
     }

@@ -148,10 +148,13 @@ public class Messages extends NLS
     public static String ColumnDividendMovingAverageTotalRateOfReturn_MenuLabel;
     public static String ColumnEarnings;
     public static String ColumnEarnings_Description;
+    public static String ColumnEndDate;
     public static String ColumnEntity;
+    public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
     public static String ColumnExDate;
+    public static String ColumnExitValue;
     public static String ColumnFeedURLHistoric;
     public static String ColumnFeedURLLatest;
     public static String ColumnFees;
@@ -162,6 +165,7 @@ public class Messages extends NLS
     public static String ColumnGrossDividend;
     public static String ColumnGrossValue;
     public static String ColumnHeight;
+    public static String ColumnHoldingPeriod;
     public static String ColumnIndex;
     public static String ColumnInterval;
     public static String ColumnInterest;
@@ -195,6 +199,7 @@ public class Messages extends NLS
     public static String ColumnMonth;
     public static String ColumnName;
     public static String ColumnNote;
+    public static String ColumnNumberOfTransactions;
     public static String ColumnOffsetAccount;
     public static String ColumnPeer;
     public static String ColumnPerShare;
@@ -502,6 +507,7 @@ public class Messages extends NLS
     public static String LabelNotAvailable;
     public static String LabelNumberDataSeries;
     public static String LabelOneOfX;
+    public static String LabelOpenTrade;
     public static String LabelOrderByTaxonomy;
     public static String LabelPassword;
     public static String LabelPasswordRepeat;
@@ -847,6 +853,7 @@ public class Messages extends NLS
     public static String SecurityTabChartAll;
     public static String SecurityTabEvents;
     public static String SecurityTabHistoricalQuotes;
+    public static String SecurityTabTrades;
     public static String SecurityTabTransactions;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
