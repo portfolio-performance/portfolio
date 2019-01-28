@@ -1,5 +1,5 @@
 <client>
-  <version>34</version>
+  <version>39</version>
   <baseCurrency>EUR</baseCurrency>
   <securities>
     <security>
@@ -45,6 +45,7 @@
       <uuid>07c00f1e-101b-46b2-8587-93b137a4119b</uuid>
       <name>Allianz SE</name>
       <currencyCode>EUR</currencyCode>
+      <note>#testPartialOutboundDeliveryIncludingTransfers</note>
       <isin>DE0008404005</isin>
       <tickerSymbol>ALV.DE</tickerSymbol>
       <feed>MANUAL</feed>
@@ -123,6 +124,7 @@
       <uuid>6d90d476-112b-4bec-b345-53db714d7c4b</uuid>
       <name>Commerzbank AG</name>
       <currencyCode>EUR</currencyCode>
+      <note>#testCompletedTrade</note>
       <isin>DE0008032004</isin>
       <tickerSymbol>CBK.DE</tickerSymbol>
       <feed>MANUAL</feed>
@@ -205,6 +207,7 @@
       <uuid>3765c42a-e243-4444-a113-f4fba5b79e21</uuid>
       <name>Linde AG</name>
       <currencyCode>EUR</currencyCode>
+      <note>#testPartialTransferOutOfMultiplePurchases</note>
       <isin>DE0006483001</isin>
       <tickerSymbol>LIN.DE</tickerSymbol>
       <feed>MANUAL</feed>
@@ -386,14 +389,14 @@
       <isRetired>false</isRetired>
       <transactions>
         <account-transaction>
-          <date>2011-12-31</date>
+          <date>2011-12-31T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1500000</amount>
           <shares>0</shares>
           <type>DEPOSIT</type>
         </account-transaction>
         <account-transaction>
-          <date>2012-01-01</date>
+          <date>2012-01-01T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>101980</amount>
           <security reference="../../../../../securities/security[4]"/>
@@ -419,7 +422,7 @@
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2012-01-01</date>
+                  <date>2012-01-01T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>381358</amount>
                   <security reference="../../../../../../../../../securities/security[6]"/>
@@ -449,7 +452,7 @@
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2012-01-02</date>
+                  <date>2012-01-02T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>239760</amount>
                   <security reference="../../../../../../../../../securities/security"/>
@@ -476,7 +479,7 @@
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2012-01-02</date>
+                  <date>2012-01-02T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>664030</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
@@ -503,7 +506,7 @@
                   <type>BUY</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2012-01-10</date>
+                  <date>2012-01-10T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>68836</amount>
                   <security reference="../../../../../../../../../securities/security[4]"/>
@@ -517,7 +520,7 @@
                       <isRetired>false</isRetired>
                       <transactions>
                         <account-transaction>
-                          <date>2012-01-10</date>
+                          <date>2012-01-10T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1650</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[6]"/>
@@ -534,42 +537,42 @@
                           <type>SELL</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-20</date>
+                          <date>2012-01-20T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>2000</amount>
                           <shares>0</shares>
                           <type>INTEREST</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-21</date>
+                          <date>2012-01-21T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1000</amount>
                           <shares>0</shares>
                           <type>FEES</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-22</date>
+                          <date>2012-01-22T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>2000</amount>
                           <shares>0</shares>
                           <type>FEES_REFUND</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-23</date>
+                          <date>2012-01-23T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1000</amount>
                           <shares>0</shares>
                           <type>INTEREST_CHARGE</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-24</date>
+                          <date>2012-01-24T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>10000</amount>
                           <shares>0</shares>
                           <type>REMOVAL</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-25</date>
+                          <date>2012-01-25T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>10000</amount>
                           <crossEntry class="account-transfer">
@@ -589,14 +592,14 @@
                           <type>TRANSFER_OUT</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-26</date>
+                          <date>2012-01-26T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1000</amount>
                           <shares>0</shares>
                           <type>TAX_REFUND</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-27</date>
+                          <date>2012-01-27T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1000</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[6]"/>
@@ -604,7 +607,7 @@
                           <type>TAX_REFUND</type>
                         </account-transaction>
                         <account-transaction>
-                          <date>2012-01-28</date>
+                          <date>2012-01-28T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>1000</amount>
                           <shares>0</shares>
@@ -626,7 +629,7 @@
                   <type>SELL</type>
                 </portfolio-transaction>
                 <portfolio-transaction>
-                  <date>2012-01-11</date>
+                  <date>2012-01-11T00:00</date>
                   <currencyCode>EUR</currencyCode>
                   <amount>666000</amount>
                   <security reference="../../../../../../../../../securities/security[2]"/>
@@ -649,7 +652,7 @@
                           <type>TRANSFER_IN</type>
                         </portfolio-transaction>
                         <portfolio-transaction>
-                          <date>2012-01-12</date>
+                          <date>2012-01-12T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>93450</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[7]"/>
@@ -665,7 +668,7 @@
                           <type>DELIVERY_INBOUND</type>
                         </portfolio-transaction>
                         <portfolio-transaction>
-                          <date>2012-01-13</date>
+                          <date>2012-01-13T00:00</date>
                           <currencyCode>EUR</currencyCode>
                           <amount>160500</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[2]"/>
@@ -681,7 +684,7 @@
                           <type>DELIVERY_OUTBOUND</type>
                         </portfolio-transaction>
                         <portfolio-transaction>
-                          <date>2012-01-16</date>
+                          <date>2012-01-16T00:00</date>
                           <currencyCode>USD</currencyCode>
                           <amount>47648</amount>
                           <security reference="../../../../../../../../../../../../../securities/security[8]"/>
@@ -695,7 +698,7 @@
                               <isRetired>false</isRetired>
                               <transactions>
                                 <account-transaction>
-                                  <date>2011-12-31</date>
+                                  <date>2011-12-31T00:00</date>
                                   <currencyCode>USD</currencyCode>
                                   <amount>100000</amount>
                                   <shares>0</shares>
@@ -711,7 +714,7 @@
                                   <type>BUY</type>
                                 </account-transaction>
                                 <account-transaction>
-                                  <date>2012-01-17</date>
+                                  <date>2012-01-17T00:00</date>
                                   <currencyCode>USD</currencyCode>
                                   <amount>10000</amount>
                                   <crossEntry class="account-transfer">
@@ -724,7 +727,7 @@
                                       <isRetired>false</isRetired>
                                       <transactions>
                                         <account-transaction>
-                                          <date>2011-12-31</date>
+                                          <date>2011-12-31T00:00</date>
                                           <currencyCode>EUR</currencyCode>
                                           <amount>100000</amount>
                                           <shares>0</shares>
@@ -739,7 +742,7 @@
                                           <type>TRANSFER_IN</type>
                                         </account-transaction>
                                         <account-transaction>
-                                          <date>2012-01-18</date>
+                                          <date>2012-01-18T00:00</date>
                                           <currencyCode>EUR</currencyCode>
                                           <amount>39135</amount>
                                           <security reference="../../../../../../../../../../../../../../../../../../../../../securities/security[8]"/>
@@ -813,6 +816,28 @@
                           <type>BUY</type>
                         </portfolio-transaction>
                         <portfolio-transaction reference="../portfolio-transaction[4]/crossEntry/account/transactions/account-transaction[3]/crossEntry/accountTo/transactions/account-transaction[3]/crossEntry/portfolioTransaction"/>
+                        <portfolio-transaction>
+                          <date>2019-01-28T00:00</date>
+                          <currencyCode>EUR</currencyCode>
+                          <amount>478160</amount>
+                          <security reference="../../../../../../../../../../../../../securities/security[6]"/>
+                          <crossEntry class="portfolio-transfer">
+                            <portfolioFrom reference="../../../../../../../.."/>
+                            <transactionFrom>
+                              <date reference="../../../date"/>
+                              <currencyCode>EUR</currencyCode>
+                              <amount>478160</amount>
+                              <security reference="../../../../../../../../../../../../../../../securities/security[6]"/>
+                              <crossEntry class="portfolio-transfer" reference="../.."/>
+                              <shares>40000000</shares>
+                              <type>TRANSFER_OUT</type>
+                            </transactionFrom>
+                            <portfolioTo reference="../../../.."/>
+                            <transactionTo reference="../.."/>
+                          </crossEntry>
+                          <shares>40000000</shares>
+                          <type>TRANSFER_IN</type>
+                        </portfolio-transaction>
                       </transactions>
                     </portfolioTo>
                     <transactionTo reference="../portfolioTo/transactions/portfolio-transaction"/>
@@ -820,6 +845,29 @@
                   <shares>90000000</shares>
                   <type>TRANSFER_OUT</type>
                 </portfolio-transaction>
+                <portfolio-transaction>
+                  <date>2012-01-28T00:00</date>
+                  <currencyCode>EUR</currencyCode>
+                  <amount>198526</amount>
+                  <security reference="../../../../../../../../../securities/security[6]"/>
+                  <crossEntry class="buysell">
+                    <portfolio reference="../../../.."/>
+                    <portfolioTransaction reference="../.."/>
+                    <account reference="../../../../../../../.."/>
+                    <accountTransaction>
+                      <date reference="../../../date"/>
+                      <currencyCode>EUR</currencyCode>
+                      <amount>198526</amount>
+                      <security reference="../../../../../../../../../../../securities/security[6]"/>
+                      <crossEntry class="buysell" reference="../.."/>
+                      <shares>0</shares>
+                      <type>BUY</type>
+                    </accountTransaction>
+                  </crossEntry>
+                  <shares>17000000</shares>
+                  <type>BUY</type>
+                </portfolio-transaction>
+                <portfolio-transaction reference="../portfolio-transaction[6]/crossEntry/portfolioTo/transactions/portfolio-transaction[6]/crossEntry/transactionFrom"/>
               </transactions>
             </portfolio>
             <portfolioTransaction reference="../portfolio/transactions/portfolio-transaction"/>
@@ -833,7 +881,7 @@
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[3]/crossEntry/accountTransaction"/>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[4]/crossEntry/accountTransaction"/>
         <account-transaction>
-          <date>2012-01-10</date>
+          <date>2012-01-10T00:00</date>
           <currencyCode>EUR</currencyCode>
           <amount>1944</amount>
           <security reference="../../../../../securities/security"/>
@@ -846,6 +894,7 @@
           <type>DIVIDENDS</type>
         </account-transaction>
         <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account/transactions/account-transaction[8]/crossEntry/transactionTo"/>
+        <account-transaction reference="../account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[7]/crossEntry/accountTransaction"/>
       </transactions>
     </account>
     <account reference="../account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
@@ -857,712 +906,7 @@
     <portfolio reference="../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/portfolioTo"/>
   </portfolios>
   <plans/>
-  <taxonomies>
-    <taxonomy>
-      <id>ce9391a5-7c0f-4e30-966c-01864c3be7d4</id>
-      <name>case_1</name>
-      <root>
-        <id>dc62e8ef-5cb6-4d75-b9bc-53868da2fa83</id>
-        <name>case_1</name>
-        <color>#bcf9bd</color>
-        <children>
-          <classification>
-            <id>04c6ff35-e4c6-46d8-9cf6-8e9e9c0b8f41</id>
-            <name>subcategory</name>
-            <color>#ac96e7</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>00e4444a-3fb6-45c3-aa29-80bb4b8800ff</id>
-                <name>category_security</name>
-                <color>#b1ce80</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>0039696c-8047-441c-aeed-9092b9e80e07</id>
-                <name>category_cash</name>
-                <color>#7f9ce4</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>0</weight>
-            <rank>2</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>9a138dfb-d4bf-4961-8ea4-4cbd4e793199</id>
-      <name>case_2</name>
-      <root>
-        <id>d809b8f4-2145-49c4-9d77-ff57ace5ac45</id>
-        <name>case_2</name>
-        <color>#bcf9bd</color>
-        <children>
-          <classification>
-            <id>0c51f296-6ab2-4ede-9c5f-27cae3d863a5</id>
-            <name>subcategory</name>
-            <color>#ac96e7</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>0f633308-5575-498d-ba00-e9efa90be6bd</id>
-                <name>category_security</name>
-                <color>#b1ce80</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>77d3d3e7-d321-4f96-a6cb-384bae7bc317</id>
-                <name>category_cash</name>
-                <color>#7f9ce4</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>5000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>0</weight>
-            <rank>2</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>4ce78491-8b07-48ff-a0ba-fcd1ea49bc01</id>
-      <name>case_3</name>
-      <root>
-        <id>a9fdf377-94ef-42ec-823e-8bce60465a1c</id>
-        <name>case_3</name>
-        <color>#bcf9bd</color>
-        <children>
-          <classification>
-            <id>850d7ded-1f53-4021-8d43-5d9b656af4d2</id>
-            <name>subcategory</name>
-            <color>#ac96e7</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>8253ad5c-edaf-4ad3-8821-d5d8f52e2caf</id>
-                <name>category_security</name>
-                <color>#b1ce80</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>95d6801e-846c-43c1-a8ef-5e0298f34c18</id>
-                <name>category_cash</name>
-                <color>#7f9ce4</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>5000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>0</weight>
-            <rank>2</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>d273cf8c-0ce5-4b9c-8275-74ad5999b571</id>
-      <name>case_4</name>
-      <root>
-        <id>0c1ba864-edaf-473b-813a-58365252949a</id>
-        <name>case_4</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>0b8d7662-f414-4563-ab79-1ed9e319835d</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>63b74331-241e-4a5f-8a4d-7cddbf2aa663</id>
-                <name>category_account1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>5c3a155e-e9bc-446d-9732-f210338893d4</id>
-                <name>category_account2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>44ba44c5-ef19-455f-8c9e-61788c7708b2</id>
-      <name>case_5</name>
-      <root>
-        <id>80fc40e9-c83f-4114-b374-5f45d32e9de1</id>
-        <name>case_5</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>436ef553-c186-4bfe-9556-eb6d3e27898d</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>831ba592-1a24-41cf-a18b-dd2fcc458c76</id>
-                <name>category_account1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>7000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>067387cb-364d-4762-aa6a-5c7a4a000fbe</id>
-                <name>category_account2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>329b9635-e996-4b01-a77c-3018e3f76a7e</id>
-      <name>case_6</name>
-      <root>
-        <id>a3b947a1-b27c-44f4-a2c6-b791bffa5aa7</id>
-        <name>case_6</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>d35cb457-6af6-45ad-a8ae-901dda08fabf</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>4978d547-18d4-476b-9687-bc75168aa4d3</id>
-                <name>category_account1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>b618cc32-2e3b-421e-b382-70e6496c487c</id>
-                <name>category_account2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>8000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>fae11a3f-283d-47e9-9078-69796d0f688c</id>
-      <name>case_7</name>
-      <root>
-        <id>0c226c62-26d5-4405-917a-a6b45907f913</id>
-        <name>case_7</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>4f971038-7d23-48cc-8691-7465a15f6621</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>3f3ace04-98f0-433a-b492-9213d3dade32</id>
-                <name>category_account1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>9b01d22f-19ae-4fd1-b296-c98f0ceceb95</id>
-                <name>category_account2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>0ae66a3c-cd08-41ef-8e2f-134dc18edc67</id>
-      <name>case_8</name>
-      <root>
-        <id>4006461d-012a-40cf-9f61-4abe37fe6f06</id>
-        <name>case_8</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>957b2ee6-271c-4a5f-880b-7ec25ae38669</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>ad8fdc32-52ec-4de7-b910-112c23f004d3</id>
-                <name>subcategory1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[2]"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[6]"/>
-                    <weight>10000</weight>
-                    <rank>1</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>7c985a88-15a1-4908-bfc3-651dff95126d</id>
-                <name>subcategory2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>3607b69d-b274-40d0-9648-636a595974d9</id>
-      <name>case_9</name>
-      <root>
-        <id>6d770b27-9ef9-450c-9b95-60eb5df84e9e</id>
-        <name>case_9</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>5ca01a24-2240-44ca-9d21-ea2e9b5ac9e2</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>5480ae82-21f8-453c-8bf4-ae474ca3996c</id>
-                <name>subcategory1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[6]"/>
-                    <weight>10000</weight>
-                    <rank>1</rank>
-                  </assignment>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[4]"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[5]"/>
-                    <weight>10000</weight>
-                    <rank>2</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>c4c8cb58-2c2c-4d25-a214-3538239790a7</id>
-                <name>subcategory2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>3ab81b51-504b-4b2d-900c-ddd79541a971</id>
-      <name>case_10</name>
-      <root>
-        <id>30cbe56f-86bd-47f7-8f20-7d2ff11357ce</id>
-        <name>case_10</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>d6952d09-a98f-45b7-9823-51ee04db51e3</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>098a886f-4c29-4d11-8c03-6e9457d6afc7</id>
-                <name>subcategory1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[4]"/>
-                    <weight>3000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>4cdc670f-728e-4f5e-b39f-647fc9d0b3b2</id>
-                <name>subcategory2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[5]/crossEntry/account"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>9c35b2e2-1f4b-4521-9fae-f52ff3ee5d5b</id>
-      <name>case_11</name>
-      <root>
-        <id>28cb17c9-71f2-4c72-8c82-9debd812bfb8</id>
-        <name>case_11</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>457e0215-f81b-4130-9609-b8fb7d6a1d58</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>ddd15df1-8c79-4676-b8c6-b3a29ebdba37</id>
-                <name>subcategory1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="security" reference="../../../../../../../../../../securities/security[8]"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>1e0c2cf3-ef95-4066-81bd-bc37e42e0f71</id>
-                <name>subcategory2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/portfolioTo/transactions/portfolio-transaction[4]/crossEntry/account"/>
-                    <weight>7000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/portfolioTo/transactions/portfolio-transaction[4]/crossEntry/account/transactions/account-transaction[3]/crossEntry/accountTo"/>
-                    <weight>10000</weight>
-                    <rank>1</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-    <taxonomy>
-      <id>d4fefa59-9bdd-4bfd-8925-9af6d310c288</id>
-      <name>case_12</name>
-      <root>
-        <id>00cf0bc5-4f51-485c-8784-8cb21c8eb967</id>
-        <name>case_12</name>
-        <color>#7fbef3</color>
-        <children>
-          <classification>
-            <id>4486c4b7-dffe-4d44-baea-477edd8bb40e</id>
-            <name>category</name>
-            <color>#b68ee4</color>
-            <parent reference="../../.."/>
-            <children>
-              <classification>
-                <id>bf35309f-d3b7-4dc4-bc59-6940e3297cc2</id>
-                <name>subcategory1</name>
-                <color>#d78792</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/portfolioTo/transactions/portfolio-transaction[4]/crossEntry/account"/>
-                    <weight>10000</weight>
-                    <rank>0</rank>
-                  </assignment>
-                </assignments>
-                <weight>10000</weight>
-                <rank>0</rank>
-              </classification>
-              <classification>
-                <id>6dfa2578-ed3d-40bd-8898-52e3718252c3</id>
-                <name>subcategory2</name>
-                <color>#b38b8e</color>
-                <parent reference="../../.."/>
-                <children/>
-                <assignments>
-                  <assignment>
-                    <investmentVehicle class="account" reference="../../../../../../../../../../accounts/account/transactions/account-transaction[2]/crossEntry/portfolio/transactions/portfolio-transaction[6]/crossEntry/portfolioTo/transactions/portfolio-transaction[4]/crossEntry/account/transactions/account-transaction[3]/crossEntry/accountTo"/>
-                    <weight>5000</weight>
-                    <rank>1</rank>
-                  </assignment>
-                </assignments>
-                <weight>0</weight>
-                <rank>1</rank>
-              </classification>
-            </children>
-            <assignments/>
-            <weight>10000</weight>
-            <rank>0</rank>
-          </classification>
-        </children>
-        <assignments/>
-        <weight>10000</weight>
-        <rank>0</rank>
-      </root>
-    </taxonomy>
-  </taxonomies>
+  <taxonomies/>
   <dashboards/>
   <properties/>
   <settings>
@@ -1626,7 +970,7 @@
             <config>
               <uuid>12c9e399-4ab2-4ef6-8bb8-b6d43986f1f7</uuid>
               <name>Standard</name>
-              <data>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false,Classification45;#0080ff;DOT;false</data>
+              <data>Client-totals;#000000;SOLID;false,Client-transferals;#808080;SOLID;false</data>
             </config>
           </configurations>
         </config-set>
@@ -1644,13 +988,25 @@
         </config-set>
       </entry>
       <entry>
+        <string>name.abuchen.portfolio.ui.views.SecuritiesPerformanceView</string>
+        <config-set>
+          <configurations>
+            <config>
+              <uuid>086a4b67-2166-4cbd-a04d-771b7d5f5484</uuid>
+              <name>Standard</name>
+              <data>shares=80;name=1024$144;pv=75;pp=75;quote=75;mv=75;sumdiv=80;twror=80;izf=80;delta=80;note=214;</data>
+            </config>
+          </configurations>
+        </config-set>
+      </entry>
+      <entry>
         <string>name.abuchen.portfolio.ui.views.SecuritiesTable</string>
         <config-set>
           <configurations>
             <config>
               <uuid>ab5938a9-b8e5-474b-b8f2-fa0ca22ada7e</uuid>
               <name>Standard</name>
-              <data>0=1024$334;note=33;1=100;2=80;4=60;5=78;9=88;10=154;</data>
+              <data>0=1024$176;note=341;</data>
             </config>
           </configurations>
         </config-set>

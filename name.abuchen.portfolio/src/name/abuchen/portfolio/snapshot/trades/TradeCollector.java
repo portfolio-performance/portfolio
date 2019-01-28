@@ -15,15 +15,18 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 
 public class TradeCollector
 {
     private Client client;
+    private CurrencyConverter converter;
 
-    public TradeCollector(Client client)
+    public TradeCollector(Client client, CurrencyConverter converter)
     {
         this.client = client;
+        this.converter = converter;
     }
 
     public List<Trade> collect(Security security)
@@ -34,44 +37,48 @@ public class TradeCollector
                         (p1, p2) -> p1.getTransaction().getDateTime().compareTo(p2.getTransaction().getDateTime()));
 
         List<Trade> trades = new ArrayList<>();
-        Map<Portfolio, List<TransactionPair<?>>> openTransactions = new HashMap<>();
+        Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions = new HashMap<>();
 
-        for (TransactionPair<?> pair : transactions)
+        for (TransactionPair<?> txp : transactions)
         {
-            if (pair.getTransaction() instanceof PortfolioTransaction)
+            if (!(txp.getTransaction() instanceof PortfolioTransaction))
+                continue;
+
+            @SuppressWarnings("unchecked")
+            TransactionPair<PortfolioTransaction> pair = (TransactionPair<PortfolioTransaction>) txp;
+
+            Portfolio portfolio = (Portfolio) txp.getOwner();
+            PortfolioTransaction t = (PortfolioTransaction) txp.getTransaction();
+
+            switch (t.getType())
             {
-                Portfolio portfolio = (Portfolio) pair.getOwner();
-                PortfolioTransaction t = (PortfolioTransaction) pair.getTransaction();
+                case BUY:
+                case DELIVERY_INBOUND:
+                    openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
+                    break;
 
-                switch (t.getType())
-                {
-                    case BUY:
-                    case DELIVERY_INBOUND:
-                        openTransactions.computeIfAbsent(portfolio, p -> new ArrayList<>()).add(pair);
-                        break;
+                case SELL:
+                case DELIVERY_OUTBOUND:
+                    trades.add(createNewTradeFromSell(openTransactions, pair));
+                    break;
 
-                    case SELL:
-                    case DELIVERY_OUTBOUND:
-                        trades.add(createNewTradeFromSell(security, openTransactions, pair));
-                        break;
+                case TRANSFER_IN:
+                    moveOpenTransaction(openTransactions, pair);
+                    break;
 
-                    case TRANSFER_IN:
-                        moveOpenTransaction(openTransactions, pair);
-                        break;
+                case TRANSFER_OUT:
+                    // ignore -> handled via TRANSFER_IN
+                    break;
 
-                    case TRANSFER_OUT:
-                        // ignore -> handled via TRANSFER_IN
-                        break;
+                default:
+                    throw new IllegalArgumentException();
 
-                    default:
-                        throw new IllegalArgumentException();
-                }
             }
         }
 
         // create open trades out of the remaining
 
-        for (List<TransactionPair<?>> position : openTransactions.values())
+        for (List<TransactionPair<PortfolioTransaction>> position : openTransactions.values())
         {
             if (position.isEmpty())
                 continue;
@@ -85,22 +92,24 @@ public class TradeCollector
             trades.add(newTrade);
         }
 
+        trades.forEach(t -> t.calculate(converter));
+
         return trades;
     }
 
-    private Trade createNewTradeFromSell(Security security, Map<Portfolio, List<TransactionPair<?>>> openTransactions,
-                    TransactionPair<?> pair)
+    private Trade createNewTradeFromSell(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+                    TransactionPair<PortfolioTransaction> pair)
     {
-        Trade newTrade = new Trade(security, pair.getTransaction().getShares());
+        Trade newTrade = new Trade(pair.getTransaction().getSecurity(), pair.getTransaction().getShares());
 
-        List<TransactionPair<?>> open = openTransactions.get(pair.getOwner());
+        List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 
         if (open == null || open.isEmpty())
             throw new IllegalArgumentException();
 
         long sharesToDistribute = pair.getTransaction().getShares();
 
-        for (TransactionPair<?> candidate : new ArrayList<>(open))
+        for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(open))
         {
             if (sharesToDistribute == 0)
                 break;
@@ -121,8 +130,7 @@ public class TradeCollector
                 open.set(open.indexOf(candidate),
                                 split(candidate, (candidate.getTransaction().getShares() - sharesToDistribute)
                                                 / (double) candidate.getTransaction().getShares()));
-                
-                
+
                 sharesToDistribute = 0;
             }
         }
@@ -136,17 +144,65 @@ public class TradeCollector
         return newTrade;
     }
 
-    private TransactionPair<?> split(TransactionPair<?> candidate, double weight)
+    private void moveOpenTransaction(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
+                    TransactionPair<PortfolioTransaction> pair)
+    {
+        PortfolioTransferEntry transfer = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
+        Portfolio outbound = (Portfolio) transfer.getOwner(transfer.getSourceTransaction());
+        Portfolio inbound = (Portfolio) transfer.getOwner(transfer.getTargetTransaction());
+
+        // remove from outbound portfolio
+
+        List<TransactionPair<PortfolioTransaction>> target = openTransactions.computeIfAbsent(inbound,
+                        p -> new ArrayList<>());
+
+        List<TransactionPair<PortfolioTransaction>> positions = openTransactions.get(outbound);
+        if (positions == null || positions.isEmpty())
+            throw new IllegalArgumentException();
+
+        long sharesToTransfer = pair.getTransaction().getShares();
+
+        for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
+        {
+            if (sharesToTransfer >= candidate.getTransaction().getShares())
+            {
+                positions.remove(candidate);
+                target.add(candidate);
+                sharesToTransfer -= candidate.getTransaction().getShares();
+            }
+            else if (sharesToTransfer < candidate.getTransaction().getShares())
+            {
+                positions.remove(candidate);
+
+                long remainingShares = candidate.getTransaction().getShares() - sharesToTransfer;
+
+                positions.add(0, split(candidate, remainingShares / (double) candidate.getTransaction().getShares()));
+                target.add(split(candidate, sharesToTransfer / (double) candidate.getTransaction().getShares()));
+
+                sharesToTransfer = 0;
+            }
+
+            if (sharesToTransfer == 0)
+                break;
+        }
+
+        if (sharesToTransfer > 0)
+            throw new IllegalArgumentException();
+
+    }
+
+    private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate, double weight)
     {
         if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry)
             return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), weight);
         else if (candidate.getTransaction() instanceof PortfolioTransaction)
-            return splitPT((Portfolio) candidate.getOwner(), (PortfolioTransaction) candidate.getTransaction(), weight);
+            return splitPortfolioTransaction((Portfolio) candidate.getOwner(),
+                            (PortfolioTransaction) candidate.getTransaction(), weight);
         else
             throw new UnsupportedOperationException();
     }
 
-    private TransactionPair<?> splitBuySell(BuySellEntry entry, double weight)
+    private TransactionPair<PortfolioTransaction> splitBuySell(BuySellEntry entry, double weight)
     {
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
@@ -165,7 +221,8 @@ public class TradeCollector
         return new TransactionPair<>(entry.getPortfolio(), copy.getPortfolioTransaction());
     }
 
-    private TransactionPair<?> splitPT(Portfolio portfolio, PortfolioTransaction transaction, double weight)
+    private TransactionPair<PortfolioTransaction> splitPortfolioTransaction(Portfolio portfolio,
+                    PortfolioTransaction transaction, double weight)
     {
         PortfolioTransaction newTransaction = new PortfolioTransaction();
         newTransaction.setType(transaction.getType());
@@ -196,45 +253,6 @@ public class TradeCollector
                                                 Math.round(unit.getForex().getAmount() * weight)),
                                 unit.getExchangeRate()));
         });
-    }
-
-    private void moveOpenTransaction(Map<Portfolio, List<TransactionPair<?>>> openTransactions, TransactionPair<?> pair)
-    {
-        PortfolioTransferEntry transfer = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
-        Portfolio outbound = (Portfolio) transfer.getOwner(transfer.getSourceTransaction());
-        Portfolio inbound = (Portfolio) transfer.getOwner(transfer.getTargetTransaction());
-
-        // remove from outbound portfolio
-
-        List<TransactionPair<?>> target = openTransactions.computeIfAbsent(inbound, p -> new ArrayList<>());
-
-        List<TransactionPair<?>> positions = openTransactions.get(outbound);
-        if (positions == null || positions.isEmpty())
-            throw new IllegalArgumentException();
-
-        long sharesToTransfer = pair.getTransaction().getShares();
-
-        for (TransactionPair<?> candidate : new ArrayList<>(positions))
-        {
-            if (sharesToTransfer >= candidate.getTransaction().getShares())
-            {
-                target.add(candidate);
-                positions.remove(candidate);
-                sharesToTransfer -= candidate.getTransaction().getShares();
-                break;
-            }
-            else if (sharesToTransfer < candidate.getTransaction().getShares())
-            {
-                // FIXME split transaction
-
-                sharesToTransfer -= candidate.getTransaction().getShares();
-                break;
-            }
-        }
-
-        if (sharesToTransfer > 0)
-            throw new IllegalArgumentException();
-
     }
 
 }

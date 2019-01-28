@@ -18,6 +18,7 @@ Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.snapshot,
  name.abuchen.portfolio.snapshot.filter,
  name.abuchen.portfolio.snapshot.security,
+ name.abuchen.portfolio.snapshot.trades,
  name.abuchen.portfolio.util
 Import-Package: com.google.common.util.concurrent;version="23.5.0",
  com.thoughtworks.xstream;version="1.4.7",
