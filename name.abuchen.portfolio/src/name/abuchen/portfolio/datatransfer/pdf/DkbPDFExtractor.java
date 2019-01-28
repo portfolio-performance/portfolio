@@ -106,7 +106,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         block.set(pdfTransaction);
         pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{1,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
