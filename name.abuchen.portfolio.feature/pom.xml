@@ -22,7 +22,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jarsigner-plugin</artifactId>
-				<version>${jarsigner.plugin.version}</version>
 			</plugin>
 		</plugins>
 	</build>
