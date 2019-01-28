@@ -105,4 +105,31 @@ public class TradeCollectorTest
         assertThat(secondTrade.getShares(), is(Values.Share.factorize(10)));
     }
 
+    @Test
+    public void testPurchaseWithMultipleSells()
+    {
+        TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
+
+        Security man = client.getSecurities().stream().filter(s -> "MAN SE".equals(s.getName())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        List<Trade> trades = collector.collect(man);
+        Collections.sort(trades, (r, l) -> r.getStart().compareTo(l.getStart()));
+
+        assertThat(trades.size(), is(3));
+
+        Trade firstTrade = trades.get(0);
+
+        assertThat(firstTrade.getShares(), is(Values.Share.factorize(5)));
+
+        Trade secondTrade = trades.get(1);
+
+        assertThat(secondTrade.getShares(), is(Values.Share.factorize(4)));
+
+        Trade thirdTrade = trades.get(2);
+
+        assertThat(thirdTrade.getShares(), is(Values.Share.factorize(1)));
+        assertThat(thirdTrade.getEnd().isPresent(), is(false));
+    }
+
 }

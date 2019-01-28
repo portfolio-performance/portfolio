@@ -126,9 +126,11 @@ public class TradeCollector
             else if (sharesToDistribute < candidate.getTransaction().getShares())
             {
                 newTrade.getTransactions().add(
-                                split(candidate, sharesToDistribute / (double) candidate.getTransaction().getShares()));
+                                split(candidate, (Portfolio) pair.getOwner(),
+                                                sharesToDistribute / (double) candidate.getTransaction().getShares()));
                 open.set(open.indexOf(candidate),
-                                split(candidate, (candidate.getTransaction().getShares() - sharesToDistribute)
+                                split(candidate, (Portfolio) pair.getOwner(),
+                                                (candidate.getTransaction().getShares() - sharesToDistribute)
                                                 / (double) candidate.getTransaction().getShares()));
 
                 sharesToDistribute = 0;
@@ -164,6 +166,9 @@ public class TradeCollector
 
         for (TransactionPair<PortfolioTransaction> candidate : new ArrayList<>(positions))
         {
+            if (sharesToTransfer == 0)
+                break;
+
             if (sharesToTransfer >= candidate.getTransaction().getShares())
             {
                 positions.remove(candidate);
@@ -172,18 +177,16 @@ public class TradeCollector
             }
             else if (sharesToTransfer < candidate.getTransaction().getShares())
             {
-                positions.remove(candidate);
-
                 long remainingShares = candidate.getTransaction().getShares() - sharesToTransfer;
 
-                positions.add(0, split(candidate, remainingShares / (double) candidate.getTransaction().getShares()));
-                target.add(split(candidate, sharesToTransfer / (double) candidate.getTransaction().getShares()));
+                positions.set(positions.indexOf(candidate),
+                                split(candidate, outbound,
+                                                remainingShares / (double) candidate.getTransaction().getShares()));
+                target.add(split(candidate, inbound,
+                                sharesToTransfer / (double) candidate.getTransaction().getShares()));
 
                 sharesToTransfer = 0;
             }
-
-            if (sharesToTransfer == 0)
-                break;
         }
 
         if (sharesToTransfer > 0)
@@ -191,10 +194,11 @@ public class TradeCollector
 
     }
 
-    private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate, double weight)
+    private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate,
+                    Portfolio newOwner, double weight)
     {
         if (candidate.getTransaction().getCrossEntry() instanceof BuySellEntry)
-            return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), weight);
+            return splitBuySell((BuySellEntry) candidate.getTransaction().getCrossEntry(), newOwner, weight);
         else if (candidate.getTransaction() instanceof PortfolioTransaction)
             return splitPortfolioTransaction((Portfolio) candidate.getOwner(),
                             (PortfolioTransaction) candidate.getTransaction(), weight);
@@ -202,11 +206,14 @@ public class TradeCollector
             throw new UnsupportedOperationException();
     }
 
-    private TransactionPair<PortfolioTransaction> splitBuySell(BuySellEntry entry, double weight)
+    private TransactionPair<PortfolioTransaction> splitBuySell(BuySellEntry entry, Portfolio portfolio, double weight)
     {
         PortfolioTransaction t = entry.getPortfolioTransaction();
 
         BuySellEntry copy = new BuySellEntry();
+        copy.setPortfolio(portfolio);
+        copy.setAccount(entry.getAccount());
+
         copy.setDate(t.getDateTime());
         copy.setCurrencyCode(t.getCurrencyCode());
         copy.setSecurity(t.getSecurity());
