@@ -760,6 +760,7 @@ public class Messages extends NLS
     public static String PDFImportWizardMsgExtracting;
     public static String PDFImportWizardTitle;
     public static String PDFImportWizardAssistant;
+    public static String PDFImportWizardErroneousFiles;
     public static String PDFImportWizardExtractor;
     public static String PDFImportDebugAuthor;
     public static String PDFImportErrorParsingDocument;

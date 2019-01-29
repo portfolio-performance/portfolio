@@ -42,7 +42,7 @@ public class DkbPDFExtractorPDFTest
                         .resolve(getClass().getResource("DkBErtragsgutschrift2_GBP_Freibetrrag_ausgeschoepft.pdf"));
 
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
-        inputFile.parse();
+        inputFile.convertPDFtoText();
 
         List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
 

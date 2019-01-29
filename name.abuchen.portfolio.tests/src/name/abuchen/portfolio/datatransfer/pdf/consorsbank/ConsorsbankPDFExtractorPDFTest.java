@@ -49,7 +49,7 @@ public class ConsorsbankPDFExtractorPDFTest
                         getClass().getResource("ConsorsbankErtragsgutschrift6_USD_Freibetrag_ausgeschoepft.pdf"));
 
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
-        inputFile.parse();
+        inputFile.convertPDFtoText();
 
         List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
 
@@ -83,7 +83,7 @@ public class ConsorsbankPDFExtractorPDFTest
                         getClass().getResource("ConsorsbankErtragsgutschrift7_USD_Freibetrag_nicht_ausgeschoepft.pdf"));
 
         PDFInputFile inputFile = new PDFInputFile(new File(url.getPath()));
-        inputFile.parse();
+        inputFile.convertPDFtoText();
 
         List<Item> results = extractor.extract(Arrays.asList(inputFile), errors);
 

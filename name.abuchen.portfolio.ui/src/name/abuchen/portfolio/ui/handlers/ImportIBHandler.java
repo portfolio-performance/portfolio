@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
-import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
@@ -39,7 +40,7 @@ public class ImportIBHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell) throws IOException
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
         Client client = MenuHelper.getActiveClient(part);
         if (client == null)
@@ -51,9 +52,9 @@ public class ImportIBHandler
 
             FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
             fileDialog.setText(extractor.getLabel());
-            fileDialog.setFilterNames(new String[] {
-                            MessageFormat.format("{0} ({1})", extractor.getLabel(), extractor.getFilterExtension()) }); //$NON-NLS-1$
-            fileDialog.setFilterExtensions(new String[] { extractor.getFilterExtension() });
+            fileDialog.setFilterNames(
+                            new String[] { MessageFormat.format("{0} ({1})", extractor.getLabel(), "*.xml") }); //$NON-NLS-1$ //$NON-NLS-2$
+            fileDialog.setFilterExtensions(new String[] { "*.xml" }); //$NON-NLS-1$
             fileDialog.open();
 
             String[] filenames = fileDialog.getFileNames();
@@ -65,10 +66,21 @@ public class ImportIBHandler
             for (String filename : filenames)
                 files.add(new Extractor.InputFile(new File(fileDialog.getFilterPath(), filename)));
 
+            ArrayList<Exception> errors = new ArrayList<>();
+            List<Extractor.Item> items = extractor.extract(files, errors);
+
+            Map<Extractor, List<Extractor.Item>> result = new HashMap<>();
+            result.put(extractor, items);
+
+            Map<File, List<Exception>> e = new HashMap<>();
+            if (!errors.isEmpty())
+                e.put(files.get(0).getFile(), errors);
+
             IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
-            Dialog wizwardDialog = new WizardDialog(Display.getDefault().getActiveShell(),
-                            new ImportExtractedItemsWizard(client, extractor, preferences, files));
-            wizwardDialog.open();
+
+            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, e);
+            Dialog dialog = new WizardDialog(Display.getDefault().getActiveShell(), wizard);
+            dialog.open();
         }
         catch (IllegalArgumentException e)
         {

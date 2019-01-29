@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
@@ -21,16 +22,14 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
 
-import com.ibm.icu.text.MessageFormat;
-
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -49,10 +48,10 @@ public class ImportPDFHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        doExecute(part, shell, false);
+        doExecute(part, shell);
     }
 
-    /* package */ void doExecute(MPart part, Shell shell, boolean isLegacyMode)
+    /* package */ void doExecute(MPart part, Shell shell)
     {
 
         Client client = MenuHelper.getActiveClient(part);
@@ -70,33 +69,21 @@ public class ImportPDFHandler
         if (filenames.length == 0)
             return;
 
-        List<Extractor.InputFile> files = new ArrayList<>();
+        List<File> files = new ArrayList<>();
         for (String filename : filenames)
-            files.add(new PDFInputFile(new File(fileDialog.getFilterPath(), filename)));
+            files.add(new File(fileDialog.getFilterPath(), filename));
 
         IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
 
         try
         {
             IRunnableWithProgress operation = monitor -> {
-                monitor.beginTask(Messages.PDFImportWizardMsgExtracting, files.size());
 
-                for (Extractor.InputFile inputFile : files)
-                {
-                    monitor.setTaskName(inputFile.getName());
+                PDFImportAssistant assistent = new PDFImportAssistant(client, files);
 
-                    try
-                    {
-                        ((PDFInputFile) inputFile).parse();
-                    }
-                    catch (IOException e)
-                    {
-                        throw new IllegalArgumentException(MessageFormat.format(Messages.PDFImportErrorParsingDocument,
-                                        inputFile.getName()), e);
-                    }
+                Map<File, List<Exception>> errors = new HashMap<>();
 
-                    monitor.worked(1);
-                }
+                Map<Extractor, List<Extractor.Item>> result = assistent.run(monitor, errors);
 
                 // if we just run this async, then the main window on macOS does
                 // not regain focus and the menus are not usable
@@ -105,11 +92,14 @@ public class ImportPDFHandler
                     @Override
                     protected IStatus run(IProgressMonitor monitor)
                     {
-                        shell.getDisplay().asyncExec(() -> openWizard(shell, client, files, preferences, isLegacyMode));
+                        shell.getDisplay().asyncExec(() -> {
+                            Wizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
+                            Dialog wizwardDialog = new WizardDialog(shell, wizard);
+                            wizwardDialog.open();
+                        });
                         return Status.OK_STATUS;
                     }
                 }.schedule(50);
-
             };
 
             new ProgressMonitorDialog(shell).run(true, true, operation);
@@ -120,23 +110,6 @@ public class ImportPDFHandler
             PortfolioPlugin.log(e);
             String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             MessageDialog.openError(shell, Messages.LabelError, message);
-        }
-    }
-
-    protected void openWizard(Shell shell, Client client, List<Extractor.InputFile> files, IPreferenceStore preferences,
-                    boolean isLegacyMode)
-    {
-        try
-        {
-            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, null, preferences, files);
-            wizard.setLegacyMode(isLegacyMode);
-            Dialog wizwardDialog = new WizardDialog(shell, wizard);
-            wizwardDialog.open();
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
         }
     }
 }

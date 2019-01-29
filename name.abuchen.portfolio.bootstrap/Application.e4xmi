@@ -100,7 +100,6 @@
   <handlers xmi:id="_bpblsBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.handler.export" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ExportHandler" command="_lcgCQBfWEeOders_POVQHQ"/>
   <handlers xmi:id="_DRzO4BhXEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.import" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportCSVHandler" command="_GgTyQBhXEeOR1rNFCzC82A"/>
   <handlers xmi:id="_ftWRYLYaEeeT6Pb7tGT2uw" elementId="name.abuchen.portfolio.ui.handler.import.pdf" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFHandler" command="_pgC00EYREeSRXYVe298mXg"/>
-  <handlers xmi:id="_8lgp0EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.handler.import.pdf" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportPDFXHandler" command="_aegN8LYaEeeT6Pb7tGT2uw"/>
   <handlers xmi:id="_SL7BYLptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.handler.import.pdf.create-text" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CreateTextFromPDFHandler" command="_Jw7yELptEeSHOs-ah25CLg"/>
   <handlers xmi:id="_LyQvULCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.handler.import.ib" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ImportIBHandler" command="_QQsCcLCxEeefXq-wtldCQQ"/>
   <handlers xmi:id="_Gig3QBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.handler.consistencychecks" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.RunConsistencyChecksHandler" command="_D9tYMBiPEeOR1rNFCzC82A"/>
@@ -133,7 +132,7 @@
     <bindings xmi:id="_CoeVILEFEeefXq-wtldCQQ" elementId="" keySequence="M1+U V" command="_LwwoUBiQEeOR1rNFCzC82A"/>
     <bindings xmi:id="_w7HC4LEBEeefXq-wtldCQQ" elementId="" keySequence="M1+I P" command="_pgC00EYREeSRXYVe298mXg"/>
     <bindings xmi:id="_jcQwwLEEEeefXq-wtldCQQ" elementId="" keySequence="M1+I C" command="_GgTyQBhXEeOR1rNFCzC82A"/>
-    <bindings xmi:id="_XmmMsLYaEeeT6Pb7tGT2uw" elementId="" keySequence="M1+L" command="_aegN8LYaEeeT6Pb7tGT2uw"/>
+    <bindings xmi:id="_XmmMsLYaEeeT6Pb7tGT2uw" elementId="" keySequence="M1+L" command="_pgC00EYREeSRXYVe298mXg"/>
     <bindings xmi:id="_HdGacBk_EeiQOJdQgYCbNA" elementId="" keySequence="M1+B" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
   </bindingTables>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
@@ -157,7 +156,6 @@
     <parameters xmi:id="_MY53cBRFEemo-IqrE7irYg" elementId="name.abuchen.portfolio.ui.param.name" name="name"/>
   </commands>
   <commands xmi:id="_pgC00EYREeSRXYVe298mXg" elementId="name.abuchen.portfolio.ui.command.import.pdf" commandName="%command.import.pdf.import-pdf"/>
-  <commands xmi:id="_aegN8LYaEeeT6Pb7tGT2uw" elementId="name.abuchen.portfolio.ui.command.import.pdf-legacy" commandName="PDF Import (mit Auswahl der Banken)"/>
   <commands xmi:id="_Jw7yELptEeSHOs-ah25CLg" elementId="name.abuchen.portfolio.ui.command.import.pdf.create-text" commandName="importCommand.pdf.create-text"/>
   <commands xmi:id="_QQsCcLCxEeefXq-wtldCQQ" elementId="name.abuchen.portfolio.ui.command.import.ib" commandName="importCommand.ib"/>
   <commands xmi:id="_tukxoBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.command.updatequotes" commandName="%command.updateQuotes.label"/>

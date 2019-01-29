@@ -3,15 +3,20 @@ package name.abuchen.portfolio.datatransfer;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -454,13 +459,44 @@ public interface Extractor
     String getLabel();
 
     /**
-     * Returns the filter extension for the file dialog, e.g. "*.pdf"
-     */
-    String getFilterExtension();
-
-    /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<InputFile> files, List<Exception> errors);
+    List<Item> extract(SecurityCache securityCache, InputFile file, List<Exception> errors);
+
+    default List<Item> extract(List<InputFile> file, List<Exception> errors)
+    {
+        // keep the method signature stable to avoid changing *all* test cases.
+        // one could move the Client away from the constructor and into the
+        // extract method. Maybe even remove all state from the extractors by
+        // passing on a ExtractionContext.
+
+        Client client = null;
+
+        if (this instanceof AbstractPDFExtractor)
+        {
+            client = ((AbstractPDFExtractor) this).getClient();
+        }
+        else if (this instanceof IBFlexStatementExtractor)
+        {
+            client = ((IBFlexStatementExtractor) this).getClient();
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+
+        SecurityCache securityCache = new SecurityCache(client);
+
+        List<Item> result = file.stream() //
+                        .flatMap(f -> extract(securityCache, f, errors).stream()) //
+                        .collect(Collectors.toList());
+
+        Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
+        itemsByExtractor.put(this, result);
+
+        securityCache.addMissingSecurityItems(itemsByExtractor);
+
+        return result;
+    }
 
 }

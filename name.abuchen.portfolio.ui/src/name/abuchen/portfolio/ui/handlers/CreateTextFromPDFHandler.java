@@ -38,7 +38,7 @@ public class CreateTextFromPDFHandler
         try
         {
             PDFInputFile inputFile = new PDFInputFile(new File(fileDialog.getFilterPath(), fileName));
-            inputFile.parse();
+            inputFile.convertPDFtoText();
 
             String text = MessageFormat.format(Messages.PDFImportDebugAuthor, inputFile.getAuthor());
             text += "\nPDFBox Version: " + inputFile.getPDFBoxVersion().toString(); //$NON-NLS-1$

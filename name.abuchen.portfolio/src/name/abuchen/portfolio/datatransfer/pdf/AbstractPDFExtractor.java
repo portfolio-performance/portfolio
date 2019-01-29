@@ -43,6 +43,11 @@ public abstract class AbstractPDFExtractor implements Extractor
         this.client = client;
     }
 
+    public final Client getClient()
+    {
+        return client;
+    }
+
     protected final void addDocumentTyp(DocumentType type)
     {
         this.documentTypes.add(type);
@@ -64,32 +69,20 @@ public abstract class AbstractPDFExtractor implements Extractor
     }
 
     @Override
-    public String getFilterExtension()
-    {
-        return "*.pdf"; //$NON-NLS-1$
-    }
-
-    @Override
-    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+    public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {
         // careful: security cache makes extractor stateful
-        securityCache = new SecurityCache(client);
+        this.securityCache = securityCache;
 
         List<Item> results = new ArrayList<>();
-        for (Extractor.InputFile f : files)
-        {
-            if (!(f instanceof PDFInputFile))
-                throw new IllegalArgumentException();
 
-            PDFInputFile inputFile = (PDFInputFile) f;
+        if (!(inputFile instanceof PDFInputFile))
+            throw new IllegalArgumentException();
 
-            String text = inputFile.getText();
-            results.addAll(extract(inputFile.getFile().getName(), text, errors));
-        }
+        String text = ((PDFInputFile) inputFile).getText();
+        results.addAll(extract(inputFile.getFile().getName(), text, errors));
 
-        results.addAll(securityCache.createMissingSecurityItems(results));
-
-        securityCache = null;
+        this.securityCache = null;
 
         return results;
     }
@@ -105,7 +98,7 @@ public abstract class AbstractPDFExtractor implements Extractor
             if (items.isEmpty())
             {
                 errors.add(new UnsupportedOperationException(
-                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename)));
+                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, getLabel(), filename)));
             }
 
             for (Item item : items)
