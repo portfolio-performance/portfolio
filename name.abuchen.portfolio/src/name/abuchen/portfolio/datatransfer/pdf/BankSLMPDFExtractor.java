@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -24,7 +23,7 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
 {
     private final DecimalFormat swissNumberFormat;
 
-    public BankSLMPDFExtractor(Client client) throws IOException
+    public BankSLMPDFExtractor(Client client)
     {
         super(client);
 

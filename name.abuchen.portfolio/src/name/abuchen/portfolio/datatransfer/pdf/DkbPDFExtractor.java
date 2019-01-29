@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -21,7 +20,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 {
     private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
 
-    public DkbPDFExtractor(Client client) throws IOException
+    public DkbPDFExtractor(Client client)
     {
         super(client);
 

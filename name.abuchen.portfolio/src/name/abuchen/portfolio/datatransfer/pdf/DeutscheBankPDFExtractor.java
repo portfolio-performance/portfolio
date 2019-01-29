@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -16,7 +15,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 
 public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 {
-    public DeutscheBankPDFExtractor(Client client) throws IOException
+    public DeutscheBankPDFExtractor(Client client)
     {
         super(client);
         

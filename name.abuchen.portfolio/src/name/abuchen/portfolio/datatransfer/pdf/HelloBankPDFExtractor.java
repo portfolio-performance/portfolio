@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -19,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
-    public HelloBankPDFExtractor(Client client) throws IOException
+    public HelloBankPDFExtractor(Client client)
     {
         super(client);
 

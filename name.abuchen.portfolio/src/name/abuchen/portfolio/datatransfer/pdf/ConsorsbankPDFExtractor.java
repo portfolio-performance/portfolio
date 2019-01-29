@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
@@ -20,7 +19,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 {
-    public ConsorsbankPDFExtractor(Client client) throws IOException
+    public ConsorsbankPDFExtractor(Client client)
     {
         super(client);
 

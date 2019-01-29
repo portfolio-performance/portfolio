@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class DABPDFExtractor extends AbstractPDFExtractor
 {
-    public DABPDFExtractor(Client client) throws IOException
+    public DABPDFExtractor(Client client)
     {
         super(client);
 

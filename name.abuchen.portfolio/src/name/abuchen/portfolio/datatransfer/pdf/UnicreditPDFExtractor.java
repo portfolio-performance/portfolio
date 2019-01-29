@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
-
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -14,7 +12,7 @@ import name.abuchen.portfolio.money.Money;
 public class UnicreditPDFExtractor extends AbstractPDFExtractor
 {
 
-    public UnicreditPDFExtractor(Client client) throws IOException
+    public UnicreditPDFExtractor(Client client)
     {
         super(client);
         

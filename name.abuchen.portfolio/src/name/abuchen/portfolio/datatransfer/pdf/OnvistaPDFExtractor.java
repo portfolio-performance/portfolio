@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -19,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 public class OnvistaPDFExtractor extends AbstractPDFExtractor
 {
 
-    public OnvistaPDFExtractor(Client client) throws IOException
+    public OnvistaPDFExtractor(Client client)
     {
         super(client);
 

@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ import name.abuchen.portfolio.money.Money;
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    public BaaderBankPDFExtractor(Client client) throws IOException
+    public BaaderBankPDFExtractor(Client client)
     {
         super(client);
         

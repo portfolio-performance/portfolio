@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -18,7 +17,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 
 public class ComdirectPDFExtractor extends AbstractPDFExtractor
 {
-    public ComdirectPDFExtractor(Client client) throws IOException
+    public ComdirectPDFExtractor(Client client)
     {
         super(client);
 
