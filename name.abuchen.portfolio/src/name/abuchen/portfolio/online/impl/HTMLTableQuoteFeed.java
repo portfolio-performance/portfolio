@@ -84,7 +84,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         protected boolean matches(Element header)
         {
-            String text = header.text();
+            String text = TextUtil.strip(header.text());
             for (Pattern pattern : patterns)
             {
                 if (pattern.matcher(text).matches())
