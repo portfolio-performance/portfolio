@@ -246,6 +246,37 @@ public class OnvistaPDFExtractorTest
 
         return security;
     }
+    
+    private Security assertSecurityFusionNeu(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("DE000A2GS4R1"));
+        assertThat(security.getName(), is("Vonovia SE Inhaber-Teilrechte (Gagfah)"));
+
+        return security;
+    }
+    
+    private Security assertSecurityFusionAusbuchung(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU0269583422"));
+        assertThat(security.getName(), is("Gagfah S.A. Actions nom. EO 1,25"));
+
+        return security;
+    }
+    
+    private Security assertSecurityRegistrierungsgebuehrAndDepotauszug2018(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000A1ML7J1"));
+        assertThat(security.getName(), is("Vonovia SE Namens-Aktien o.N."));
+
+        return security;
+    }
 
     private Security assertFirstSecurityDepotauszug(List<Item> results)
     {
@@ -254,6 +285,24 @@ public class OnvistaPDFExtractorTest
         Security security = ((SecurityItem) item.get()).getSecurity();
         assertThat(security.getIsin(), is("DE000PAH0038"));
         assertThat(security.getName(), is("Porsche Automobil Holding SE Inhaber-Vorzugsaktien o.St.o.N"));
+
+        return security;
+    }
+    
+    private Security assertSecondSecurityDepotauszug2018(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("DE000A1YCMM2"));
+        assertThat(security.getName(), is("SolarWorld AG Inhaber-Aktien o.N."));
+
+        return security;
+    }
+    
+    private Security assertSecondToLastSecurityDepotauszug2018(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("SG1DD2000002"));
+        assertThat(security.getName(), is("Ocean Sky International Ltd Registered"));
 
         return security;
     }
@@ -1034,6 +1083,84 @@ public class OnvistaPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(is(LocalDateTime.parse("2013-06-11T00:00"))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
     }
+    
+    @Test
+    public void testFusion() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaFusion.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+
+        // check security
+        Security security = assertSecurityFusionAusbuchung(results);
+
+        // check transaction (original security, out)
+        Optional<Item> item = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                        .findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction transaction = (PortfolioTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-04T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(12)));
+
+        // check security (new)
+        assertSecurityFusionNeu(
+                        results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1));
+
+        Item targetItem = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                        .findFirst().get();
+
+        // check transaction (new security, in)
+        PortfolioTransaction entry2 = (PortfolioTransaction) targetItem.getSubject();
+        assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2017-07-04T00:00")));
+        assertThat(entry2.getShares(), is(Values.Share.factorize(6.840)));
+    }
+    
+    @Test
+    public void testRegistrierungsgebuehr() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaRegistrierungsgebuehr.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = assertSecurityRegistrierungsgebuehrAndDepotauszug2018(results);
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-24T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.89))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+    }
 
     @Test
     public void testDepotauszug() throws IOException
@@ -1074,6 +1201,62 @@ public class OnvistaPDFExtractorTest
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(1)));
+
+    }
+    
+    @Test
+    public void testDepotauszug2018() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaDepotauszug2018.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(22));
+
+        // check first security
+        Security security = assertSecurityRegistrierungsgebuehrAndDepotauszug2018(results);
+
+        // check transaction (first security, in)
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction transaction = (PortfolioTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+
+        // check second security
+        assertSecondSecurityDepotauszug2018(
+                        results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1));
+        Item secondItem = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(1);
+
+        // check second transaction (second security, in)
+        assertThat(secondItem.getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction entry2 = (PortfolioTransaction) secondItem.getSubject();
+        assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(entry2.getShares(), is(Values.Share.factorize(600)));
+        
+        //check second to last security
+        assertSecondToLastSecurityDepotauszug2018(
+                        results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(9));
+        Item secondToLastItem = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
+                        .get(9);
+
+        // check second transaction (second security, in)
+        assertThat(secondToLastItem.getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction entry10 = (PortfolioTransaction) secondToLastItem.getSubject();
+        assertThat(entry10.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(entry10.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry10.getDateTime(), is(LocalDateTime.parse("2018-12-31T00:00")));
+        assertThat(entry10.getShares(), is(Values.Share.factorize(1000)));
 
     }
 
