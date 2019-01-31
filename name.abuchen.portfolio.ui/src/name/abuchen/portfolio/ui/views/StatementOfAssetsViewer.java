@@ -957,14 +957,16 @@ public class StatementOfAssetsViewer
 
         private Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
 
-        private Element(AssetCategory category, int sortOrder)
+        private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
+            this.groupByTaxonomy = groupByTaxonomy;
             this.category = category;
             this.sortOrder = sortOrder;
         }
 
-        private Element(AssetPosition position, int sortOrder)
+        private Element(GroupByTaxonomy groupByTaxonomy, AssetPosition position, int sortOrder)
         {
+            this.groupByTaxonomy = groupByTaxonomy;
             this.position = position;
             this.sortOrder = sortOrder;
         }
@@ -973,6 +975,11 @@ public class StatementOfAssetsViewer
         {
             this.groupByTaxonomy = groupByTaxonomy;
             this.sortOrder = sortOrder;
+        }
+
+        public GroupByTaxonomy getGroupByTaxonomy()
+        {
+            return groupByTaxonomy;
         }
 
         public void addChild(Element child)
@@ -1007,7 +1014,7 @@ public class StatementOfAssetsViewer
 
         public boolean isGroupByTaxonomy()
         {
-            return groupByTaxonomy != null;
+            return groupByTaxonomy != null && category == null && position == null;
         }
 
         public boolean isCategory()
@@ -1175,7 +1182,7 @@ public class StatementOfAssetsViewer
             }
         }
 
-        private Element[] flatten(GroupByTaxonomy categories)
+        private Element[] flatten(GroupByTaxonomy groupByTaxonomy)
         {
             // when flattening, assign sortOrder to keep the tree structure for
             // sorting (only positions within a category are sorted)
@@ -1184,23 +1191,23 @@ public class StatementOfAssetsViewer
             List<Element> answer = new ArrayList<>();
             List<Element> catElements = new ArrayList<>();
 
-            for (AssetCategory cat : categories.asList())
+            for (AssetCategory cat : groupByTaxonomy.asList())
             {
-                Element catElement = new Element(cat, sortOrder);
+                Element catElement = new Element(groupByTaxonomy, cat, sortOrder);
                 answer.add(catElement);
                 catElements.add(catElement);
                 sortOrder++;
 
                 for (AssetPosition p : cat.getPositions())
                 {
-                    Element child = new Element(p, sortOrder);
+                    Element child = new Element(groupByTaxonomy, p, sortOrder);
                     answer.add(child);
                     catElement.addChild(child);
                 }
                 sortOrder++;
             }
 
-            Element root = new Element(categories, ++sortOrder);
+            Element root = new Element(groupByTaxonomy, ++sortOrder);
             catElements.forEach(root::addChild);
             answer.add(root);
             return answer.toArray(new Element[0]);
@@ -1251,14 +1258,25 @@ public class StatementOfAssetsViewer
 
                 // check if asset has been split across multiple categories
 
-                long positionShares = element.getPosition().getPosition().getShares();
-                long recordShares = record.getSharesHeld();
+                // problem: we cannot use the "shares held" of the current
+                // record, because the record can have a different reporting
+                // period than the point in time of this particular snapshot
+                // (for example the snapshot is from today, but the reporting
+                // period is is for the year 2000). Therefore the "shares held"
+                // given in the record can be different due to other
+                // transactions.
 
-                if (positionShares != recordShares)
+                long positionShares = element.getPosition().getPosition().getShares();
+
+                long totalShares = element.getGroupByTaxonomy().getCategories().flatMap(c -> c.getPositions().stream())
+                                .filter(p -> element.getSecurity().equals(p.getSecurity()))
+                                .mapToLong(p -> p.getPosition().getShares()).sum();
+
+                if (positionShares != totalShares)
                 {
                     Money moneyValue = (Money) value;
                     return Money.of(moneyValue.getCurrencyCode(),
-                                    Math.round(moneyValue.getAmount() * positionShares / (double) recordShares));
+                                    Math.round(moneyValue.getAmount() * positionShares / (double) totalShares));
                 }
                 else
                 {
