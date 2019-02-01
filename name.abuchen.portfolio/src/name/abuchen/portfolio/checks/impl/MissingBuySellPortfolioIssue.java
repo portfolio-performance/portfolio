@@ -41,7 +41,7 @@ import name.abuchen.portfolio.money.Values;
         public void execute()
         {
             BuySellEntry entry = new BuySellEntry(portfolio, account);
-            entry.setDate(transaction.getDate());
+            entry.setDate(transaction.getDateTime());
             entry.setType(PortfolioTransaction.Type.valueOf(transaction.getType().name()));
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(Values.Share.factor());

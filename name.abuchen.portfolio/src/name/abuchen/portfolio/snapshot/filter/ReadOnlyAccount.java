@@ -17,6 +17,11 @@ public class ReadOnlyAccount extends Account
         this.source = Objects.requireNonNull(source);
     }
 
+    public Account unwrap()
+    {
+        return source instanceof ReadOnlyAccount ? ((ReadOnlyAccount) source).unwrap() : source;
+    }
+
     public Account getSource()
     {
         return source;

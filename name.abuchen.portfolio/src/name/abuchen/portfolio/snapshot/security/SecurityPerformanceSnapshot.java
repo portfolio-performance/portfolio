@@ -45,7 +45,7 @@ public class SecurityPerformanceSnapshot
         Map<Security, SecurityPerformanceRecord> records = new HashMap<>();
 
         for (Security s : client.getSecurities())
-            records.put(s, new SecurityPerformanceRecord(s));
+            records.put(s, new SecurityPerformanceRecord(client, s));
         return records;
     }
 
@@ -88,15 +88,8 @@ public class SecurityPerformanceSnapshot
             {
                 case DIVIDENDS:
                 case INTEREST:
-                    DividendTransaction dt = new DividendTransaction();
-                    dt.setDate(t.getDate());
-                    dt.setSecurity(t.getSecurity());
+                    DividendTransaction dt = DividendTransaction.from(t);
                     dt.setAccount(account);
-                    dt.setCurrencyCode(t.getCurrencyCode());
-                    dt.setAmount(t.getAmount());
-                    dt.setShares(t.getShares());
-                    dt.setNote(t.getNote());
-                    dt.addUnits(t.getUnits());
                     records.get(t.getSecurity()).addTransaction(dt);
                     break;
                 case TAXES:
@@ -134,14 +127,14 @@ public class SecurityPerformanceSnapshot
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity())
-                            .addTransaction(new DividendInitialTransaction(position, period.getStartDate()));
+                            .addTransaction(new DividendInitialTransaction(position, period.getStartDate().atStartOfDay()));
         }
 
         snapshot = PortfolioSnapshot.create(portfolio, converter, period.getEndDate());
         for (SecurityPosition position : snapshot.getPositions())
         {
             records.get(position.getSecurity())
-                            .addTransaction(new DividendFinalTransaction(position, period.getEndDate()));
+                            .addTransaction(new DividendFinalTransaction(position, period.getEndDate().atStartOfDay()));
         }
     }
 

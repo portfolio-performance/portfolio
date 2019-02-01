@@ -1,22 +1,29 @@
 package name.abuchen.portfolio.datatransfer;
 
 import java.io.File;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
+import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public interface Extractor
 {
@@ -39,7 +46,7 @@ public interface Extractor
             return file.getName();
         }
     }
-    
+
     public abstract static class Item
     {
         public abstract Annotated getSubject();
@@ -48,7 +55,7 @@ public interface Extractor
 
         public abstract String getTypeInformation();
 
-        public abstract LocalDate getDate();
+        public abstract LocalDateTime getDate();
 
         public Money getAmount()
         {
@@ -61,6 +68,66 @@ public interface Extractor
         }
 
         public abstract Status apply(ImportAction action, Context context);
+    }
+
+    /**
+     * Represents an item which cannot be imported because it is either not
+     * supported or not needed. It is used for documents that can be
+     * successfully parsed, but do not contain any transaction relevant to
+     * Portfolio Performance. For example, a tax refund of 0 Euro (Consorsbank)
+     * can be parsed, but is of no further use to PP.
+     */
+    static class NonImportableItem extends Item implements Annotated
+    {
+        private String typeInformation;
+        private String note;
+
+        public NonImportableItem(String typeInformation)
+        {
+            this.typeInformation = typeInformation;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return this;
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return null;
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return typeInformation;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return null;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(this);
+        }
+
+        @Override
+        public void setNote(String note)
+        {
+            this.note = note;
+        }
+
+        @Override
+        public String getNote()
+        {
+            return note;
+        }
     }
 
     static class TransactionItem extends Item
@@ -107,9 +174,9 @@ public interface Extractor
         }
 
         @Override
-        public LocalDate getDate()
+        public LocalDateTime getDate()
         {
-            return transaction.getDate();
+            return transaction.getDateTime();
         }
 
         @Override
@@ -164,9 +231,9 @@ public interface Extractor
         }
 
         @Override
-        public LocalDate getDate()
+        public LocalDateTime getDate()
         {
-            return entry.getAccountTransaction().getDate();
+            return entry.getAccountTransaction().getDateTime();
         }
 
         @Override
@@ -219,9 +286,9 @@ public interface Extractor
         }
 
         @Override
-        public LocalDate getDate()
+        public LocalDateTime getDate()
         {
-            return entry.getSourceTransaction().getDate();
+            return entry.getSourceTransaction().getDateTime();
         }
 
         @Override
@@ -268,9 +335,9 @@ public interface Extractor
         }
 
         @Override
-        public LocalDate getDate()
+        public LocalDateTime getDate()
         {
-            return entry.getSourceTransaction().getDate();
+            return entry.getSourceTransaction().getDateTime();
         }
 
         @Override
@@ -310,7 +377,7 @@ public interface Extractor
         @Override
         public Annotated getSubject()
         {
-            return security;
+            return getSecurity();
         }
 
         @Override
@@ -320,7 +387,7 @@ public interface Extractor
         }
 
         @Override
-        public LocalDate getDate()
+        public LocalDateTime getDate()
         {
             return null;
         }
@@ -338,19 +405,98 @@ public interface Extractor
         }
     }
 
+    static class SecurityPriceItem extends Item
+    {
+        private Security security;
+        private SecurityPrice price;
+
+        public SecurityPriceItem(Security security, SecurityPrice price)
+        {
+            this.security = security;
+            this.price = price;
+        }
+
+        @Override
+        public Annotated getSubject()
+        {
+            return getSecurity();
+        }
+
+        @Override
+        public String getTypeInformation()
+        {
+            return Messages.LabelSecurityPrice;
+        }
+
+        @Override
+        public LocalDateTime getDate()
+        {
+            return price.getDate().atStartOfDay();
+        }
+
+        @Override
+        public Money getAmount()
+        {
+            return Money.of(security.getCurrencyCode(), Math.round(price.getValue() / Values.Quote.dividerToMoney()));
+        }
+
+        @Override
+        public Security getSecurity()
+        {
+            return security;
+        }
+
+        @Override
+        public Status apply(ImportAction action, Context context)
+        {
+            return action.process(security, price);
+        }
+    }
+
     /**
      * Returns a readable label for the type of documents
      */
     String getLabel();
 
     /**
-     * Returns the filter extension for the file dialog, e.g. "*.pdf"
-     */
-    String getFilterExtension();
-
-    /**
      * Returns a list of extracted items.
      */
-    List<Item> extract(List<InputFile> files, List<Exception> errors);
+    List<Item> extract(SecurityCache securityCache, InputFile file, List<Exception> errors);
+
+    default List<Item> extract(List<InputFile> file, List<Exception> errors)
+    {
+        // keep the method signature stable to avoid changing *all* test cases.
+        // one could move the Client away from the constructor and into the
+        // extract method. Maybe even remove all state from the extractors by
+        // passing on a ExtractionContext.
+
+        Client client = null;
+
+        if (this instanceof AbstractPDFExtractor)
+        {
+            client = ((AbstractPDFExtractor) this).getClient();
+        }
+        else if (this instanceof IBFlexStatementExtractor)
+        {
+            client = ((IBFlexStatementExtractor) this).getClient();
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+
+        SecurityCache securityCache = new SecurityCache(client);
+
+        List<Item> result = file.stream() //
+                        .flatMap(f -> extract(securityCache, f, errors).stream()) //
+                        .collect(Collectors.toList());
+
+        Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
+        itemsByExtractor.put(this, result);
+
+        securityCache.addMissingSecurityItems(itemsByExtractor);
+
+        return result;
+    }
 
 }

@@ -28,6 +28,7 @@ import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
@@ -199,7 +200,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             left = new Label(data, SWT.NONE);
             left.setBackground(color);
             left.setForeground(Colors.getTextColor(color));
-            left.setText(series.getId());
+            left.setText(TextUtil.tooltip(series.getId()));
             GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
 
             right = new Label(data, SWT.RIGHT);

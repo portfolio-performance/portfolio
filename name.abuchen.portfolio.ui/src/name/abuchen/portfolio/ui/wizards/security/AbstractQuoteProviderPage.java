@@ -9,11 +9,11 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.jface.databinding.swt.ISWTObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -258,6 +258,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         // create a temporary security and set all attributes
         Security security = new Security();
         model.setAttributes(security);
+        model.getSecurity().getProperties().forEach(security::addProperty);
         return security;
     }
 
@@ -330,7 +331,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 @Override
                 public String getText(Object element)
                 {
-                    return ((Exchange) element).getName();
+                    Exchange exchange = (Exchange) element;
+                    return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
                 }
             });
             GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
@@ -353,8 +355,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
             
-            ISWTObservableValue observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
-            bindings.getBindingContext().bindValue(observeText, BeanProperties.value("tickerSymbol").observe(model)); //$NON-NLS-1$
+            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
+            bindings.getBindingContext().bindValue(observeText, observable);
             
             model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }

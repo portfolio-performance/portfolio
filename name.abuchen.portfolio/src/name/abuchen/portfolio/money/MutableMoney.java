@@ -10,9 +10,20 @@ public final class MutableMoney
         this.currencyCode = currencyCode;
     }
 
+    private MutableMoney(String currencyCode, long amount)
+    {
+        this(currencyCode);
+        this.amount = amount;
+    }
+
     public static MutableMoney of(String currencyCode)
     {
         return new MutableMoney(currencyCode);
+    }
+
+    public static MutableMoney of(Money money)
+    {
+        return new MutableMoney(money.getCurrencyCode(), money.getAmount());
     }
 
     public long getAmount()

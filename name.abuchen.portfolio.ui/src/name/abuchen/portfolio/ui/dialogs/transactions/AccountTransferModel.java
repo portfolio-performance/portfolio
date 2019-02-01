@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -89,7 +90,7 @@ public class AccountTransferModel extends AbstractModel
             t.insert();
         }
 
-        t.setDate(date);
+        t.setDate(date.atStartOfDay());
         t.setNote(note);
 
         // if source and target account have the same currencies, no forex data
@@ -137,7 +138,8 @@ public class AccountTransferModel extends AbstractModel
         this.sourceAccount = (Account) entry.getOwner(entry.getSourceTransaction());
         this.targetAccount = (Account) entry.getOwner(entry.getTargetTransaction());
 
-        this.date = entry.getSourceTransaction().getDate();
+        LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
+        this.date = transactionDate.toLocalDate();
         this.note = entry.getSourceTransaction().getNote();
 
         this.fxAmount = entry.getSourceTransaction().getAmount();
@@ -226,6 +228,11 @@ public class AccountTransferModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // do not auto-suggest exchange rate when editing an existing
+        // transaction
+        if (source != null)
+            return;
+
         if (getSourceAccountCurrency().equals(getTargetAccountCurrency()))
         {
             setExchangeRate(BigDecimal.ONE);

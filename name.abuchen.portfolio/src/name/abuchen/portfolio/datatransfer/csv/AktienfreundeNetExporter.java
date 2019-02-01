@@ -67,7 +67,7 @@ public class AktienfreundeNetExporter
                         && transaction.getType() != AccountTransaction.Type.DIVIDENDS)
             return;
 
-        printer.print(DATE_FORMAT.format(transaction.getDate()));
+        printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");
@@ -99,7 +99,7 @@ public class AktienfreundeNetExporter
                 return;
         }
 
-        printer.print(DATE_FORMAT.format(transaction.getDate()));
+        printer.print(DATE_FORMAT.format(transaction.getDateTime().toLocalDate()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getIsin()));
         printer.print(CSVExporter.escapeNull(transaction.getSecurity().getName()));
         printer.print("Aktie");

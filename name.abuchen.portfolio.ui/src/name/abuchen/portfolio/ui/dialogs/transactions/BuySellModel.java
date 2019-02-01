@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import java.time.LocalDateTime;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -77,7 +79,7 @@ import name.abuchen.portfolio.ui.Messages;
             entry.insert();
         }
 
-        entry.setDate(date);
+        entry.setDate(LocalDateTime.of(date, time));
         entry.setCurrencyCode(account.getCurrencyCode());
         entry.setSecurity(security);
         entry.setShares(shares);

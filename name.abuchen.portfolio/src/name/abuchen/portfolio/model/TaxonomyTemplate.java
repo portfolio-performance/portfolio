@@ -20,7 +20,8 @@ public final class TaxonomyTemplate
                     new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL), //
                     new TaxonomyTemplate("kommer"), //$NON-NLS-1$
                     new TaxonomyTemplate("regions"), //$NON-NLS-1$
-                    new TaxonomyTemplate("regions-msci")); //$NON-NLS-1$
+                    new TaxonomyTemplate("regions-msci"), //$NON-NLS-1$
+                    new TaxonomyTemplate("security-type")); //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -102,7 +103,10 @@ public final class TaxonomyTemplate
 
         Classification root = new Classification(id, name);
         taxonomy.setRootNode(root);
-        taxonomy.setDimensions(Arrays.asList(getString(bundle, "labels").split(","))); //$NON-NLS-1$ //$NON-NLS-2$
+        String labels = getString(bundle, "labels"); //$NON-NLS-1$
+        if (labels == null)
+            throw new IllegalArgumentException();
+        taxonomy.setDimensions(Arrays.asList(labels.split(","))); //$NON-NLS-1$
 
         readClassification(bundle, root);
 

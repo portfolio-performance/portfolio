@@ -6,6 +6,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -22,10 +23,10 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 36;
+    public static final int CURRENT_VERSION = 39;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
-    private transient PropertyChangeSupport propertyChangeSupport;
+    private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
 
     /**
      * The (minor) version of the file format. If it is lower than the current
@@ -37,7 +38,7 @@ public class Client
     /**
      * The (minor) version of the file format as it has been read from file.
      */
-    private transient int fileVersionAfterRead = CURRENT_VERSION;
+    private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
 
     private String baseCurrency = CurrencyUnit.EUR;
 
@@ -62,7 +63,7 @@ public class Client
     @Deprecated
     private Category rootCategory;
 
-    private transient SecretKey secret;
+    private transient SecretKey secret; // NOSONAR
 
     public Client()
     {
@@ -129,7 +130,7 @@ public class Client
 
     public void setBaseCurrency(String baseCurrency)
     {
-        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$
+        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
     }
 
     public List<InvestmentPlan> getPlans()
@@ -168,7 +169,10 @@ public class Client
     public void addSecurity(Security security)
     {
         Objects.requireNonNull(security);
+
         securities.add(security);
+
+        propertyChangeSupport.firePropertyChange("securities", null, security); //$NON-NLS-1$
     }
 
     public void removeSecurity(final Security security)
@@ -179,7 +183,53 @@ public class Client
         deleteTaxonomyAssignments(security);
         deleteAccountTransactions(security);
         deletePortfolioTransactions(security);
+
         securities.remove(security);
+
+        propertyChangeSupport.firePropertyChange("securities", security, null); //$NON-NLS-1$
+    }
+
+    /**
+     * Gets a list of used {@link CurrencyUnit}s.
+     * 
+     * @return list
+     */
+    public List<CurrencyUnit> getUsedCurrencies()
+    {
+        // collect all used currency codes
+        HashSet<String> hsUsedCodes = new HashSet<>();
+        // first client and all accounts
+        hsUsedCodes.add(baseCurrency);
+        for (Account account : accounts)
+        {
+            hsUsedCodes.add(account.getCurrencyCode());
+        }
+        // then portfolios
+        for (Portfolio portfolio : portfolios)
+        {
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                hsUsedCodes.add(t.getCurrencyCode());
+            }
+        }
+        // then from all securities
+        for (Security security : securities)
+        {
+            hsUsedCodes.add(security.getCurrencyCode());
+        }
+        // now get the currency units
+        List<CurrencyUnit> lUnits = new ArrayList<>();
+        for (String code : hsUsedCodes)
+        {
+            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            if (unit != null)
+            {
+                lUnits.add(unit);
+            }
+        }
+        // sort list to allow using it as a favorite list
+        Collections.sort(lUnits);
+        return lUnits;
     }
 
     public List<Watchlist> getWatchlists()
@@ -354,6 +404,11 @@ public class Client
         this.dashboards.add(dashboard);
     }
 
+    public void addDashboard(int index, Dashboard dashboard)
+    {
+        this.dashboards.add(index, dashboard);
+    }
+
     public void removeDashboard(Dashboard dashboard)
     {
         this.dashboards.remove(dashboard);
@@ -511,9 +566,23 @@ public class Client
         }
     }
 
+    /**
+     * Marks the client as dirty and triggers a re-calculation of all views.
+     * Consider using {@link Client#touch} if only properties changed that are
+     * not relevant for calculations - such as preferences.
+     */
     public void markDirty()
     {
         propertyChangeSupport.firePropertyChange("dirty", false, true); //$NON-NLS-1$
+    }
+
+    /**
+     * Touches the client, i.e. marks it as dirty but does <strong>not</strong>
+     * trigger a re-calculation of views.
+     */
+    public void touch()
+    {
+        propertyChangeSupport.firePropertyChange("touch", false, true); //$NON-NLS-1$
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)

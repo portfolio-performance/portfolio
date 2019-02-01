@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class AccountTransferEntry implements CrossEntry, Annotated
 {
@@ -25,6 +25,16 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this();
         this.accountFrom = accountFrom;
         this.accountTo = accountTo;
+    }
+
+    public void setSourceTransaction(AccountTransaction transaction)
+    {
+        this.transactionFrom = transaction;
+    }
+
+    public void setTargetTransaction(AccountTransaction transaction)
+    {
+        this.transactionTo = transaction;
     }
 
     public AccountTransaction getSourceTransaction()
@@ -57,10 +67,10 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         return accountTo;
     }
 
-    public void setDate(LocalDate date)
+    public void setDate(LocalDateTime date)
     {
-        this.transactionFrom.setDate(date);
-        this.transactionTo.setDate(date);
+        this.transactionFrom.setDateTime(date);
+        this.transactionTo.setDateTime(date);
     }
 
     public void setAmount(long amount)
@@ -88,6 +98,7 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.transactionTo.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         accountFrom.addTransaction(transactionFrom);
@@ -107,7 +118,7 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
     {
-        target.setDate(source.getDate());
+        target.setDateTime(source.getDateTime());
         target.setNote(source.getNote());
     }
 
@@ -120,6 +131,20 @@ public class AccountTransferEntry implements CrossEntry, Annotated
             return accountTo;
         else
             throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (!(owner instanceof Account))
+            throw new IllegalArgumentException();
+
+        if (t.equals(transactionFrom) && !accountTo.equals(owner))
+            accountFrom = (Account) owner;
+        else if (t.equals(transactionTo) && !accountFrom.equals(owner))
+            accountTo = (Account) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override

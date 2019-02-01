@@ -1,11 +1,19 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URI;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.FieldPosition;
@@ -20,13 +28,16 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,17 +47,18 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVStrategy;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.util.Isin;
 
-public class CSVImporter
+public final class CSVImporter
 {
     public static final class Column
     {
-        private int columnIndex;
-        private String label;
+        private final int columnIndex;
+        private final String label;
         private Field field;
         private FieldFormat format;
 
@@ -90,18 +102,30 @@ public class CSVImporter
 
     public static class FieldFormat
     {
+        private final String code;
         private final String label;
         private final Format format;
 
-        public FieldFormat(String label, Format format)
+        public FieldFormat(String code, String label, Format format)
         {
+            this.code = code;
             this.label = label;
             this.format = format;
         }
 
-        public FieldFormat(String label, Supplier<Format> supplier)
+        public FieldFormat(String label, Format format)
         {
-            this(label, supplier.get());
+            this(null, label, format);
+        }
+
+        public FieldFormat(String code, String label, Supplier<Format> supplier)
+        {
+            this(code, label, supplier.get());
+        }
+
+        public String getCode()
+        {
+            return code;
         }
 
         @Override
@@ -114,28 +138,58 @@ public class CSVImporter
         {
             return format;
         }
+
+        public String toPattern()
+        {
+            if (format instanceof SimpleDateFormat)
+                return ((SimpleDateFormat) format).toPattern();
+            else if (format instanceof DecimalFormat)
+                return ((DecimalFormat) format).toPattern();
+            else if (format instanceof ISINFormat)
+                return Isin.PATTERN;
+
+            return null;
+        }
     }
 
     public static class Field
     {
-        private final String name;
-        private final String normalizedName;
+        /**
+         * Unique code of the field which is used to identify the field in the
+         * JSON configuration. The code is not translated, must be unique per
+         * extractor, and must not change.
+         */
+        private final String code;
+
+        private final String[] names;
+        private final Set<String> normalizedNames;
         private boolean isOptional = false;
 
-        public Field(String name)
+        public Field(String code, String... names)
         {
-            this.name = name;
-            this.normalizedName = normalizeColumnName(name);
+            if (names.length < 1)
+                throw new IllegalArgumentException();
+
+            this.code = code;
+            this.names = names;
+            this.normalizedNames = new HashSet<>();
+            for (int ii = 0; ii < names.length; ii++)
+                this.normalizedNames.add(normalizeColumnName(names[ii]));
+        }
+
+        public String getCode()
+        {
+            return code;
         }
 
         public String getName()
         {
-            return name;
+            return names[0];
         }
 
-        public String getNormalizedName()
+        public Set<String> getNormalizedNames()
         {
-            return normalizedName;
+            return normalizedNames;
         }
 
         public Field setOptional(boolean isOptional)
@@ -149,26 +203,67 @@ public class CSVImporter
             return isOptional;
         }
 
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return Collections.emptyList();
+        }
+
+        /**
+         * Returns the initial format - optionally using Client and one value to
+         * guess the best fitting format
+         *
+         * @param client
+         *            target Client into which data will be imported
+         * @param value
+         *            example value from the current file; can be null
+         */
+        public FieldFormat guessFormat(Client client, String value) // NOSONAR
+        {
+            return null;
+        }
+
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            throw new UnsupportedOperationException();
+        }
+
+        public FieldFormat textToFormat(String text)
+        {
+            throw new UnsupportedOperationException();
+        }
+
         @Override
         public String toString()
         {
-            return name;
+            return getName();
         }
     }
 
     public static class DateField extends CSVImporter.Field
     {
-        public static final FieldFormat[] FORMATS = new FieldFormat[] {
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
                         new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
                         new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")) //$NON-NLS-1$
-        };
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMYY1, new SimpleDateFormat("dd/MM/yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYYYY1, new SimpleDateFormat("MM/dd/yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYY1, new SimpleDateFormat("MM/dd/yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYY, new SimpleDateFormat("MM-dd-yy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatMMDDYYYY, new SimpleDateFormat("MM-dd-yyyy")), //$NON-NLS-1$
+                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")) //$NON-NLS-1$
+        ));
 
-        /* package */ DateField(String name)
+        /* package */ DateField(String code, String name)
         {
-            super(name);
+            super(code, name);
+        }
+
+        @Override
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return FORMATS;
         }
 
         /**
@@ -178,7 +273,8 @@ public class CSVImporter
          *            value (can be null)
          * @return date format on success, else first date format
          */
-        public static FieldFormat guessDateFormat(String value)
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
             if (value != null)
             {
@@ -191,38 +287,91 @@ public class CSVImporter
                         return f;
                     }
                     catch (ParseException e)
-                    {}
+                    {
+                        // ignore, try next date format
+                    }
                 }
             }
             // fallback
-            return FORMATS[0];
+            return FORMATS.get(0);
+        }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return ((SimpleDateFormat) fieldFormat.getFormat()).toPattern();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            for (FieldFormat format : getAvailableFieldFormats())
+            {
+                if (((SimpleDateFormat) format.getFormat()).toPattern().equals(text))
+                    return format;
+            }
+
+            return getAvailableFieldFormats().get(0);
         }
     }
 
     public static class AmountField extends CSVImporter.Field
     {
-        public static final FieldFormat[] FORMATS = new FieldFormat[] {
-                        new FieldFormat(Messages.CSVFormatNumberGermany, NumberFormat.getInstance(Locale.GERMANY)),
-                        new FieldFormat(Messages.CSVFormatNumberUS, NumberFormat.getInstance(Locale.US)),
-                        new FieldFormat(Messages.CSVFormatApostrophe, () -> {
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
+                        new FieldFormat("0.000,00", Messages.CSVFormatNumberGermany, //$NON-NLS-1$
+                                        NumberFormat.getInstance(Locale.GERMANY)),
+                        new FieldFormat("0,000.00", Messages.CSVFormatNumberUS, //$NON-NLS-1$
+                                        NumberFormat.getInstance(Locale.US)),
+                        new FieldFormat("0'000,00", Messages.CSVFormatApostrophe, () -> { //$NON-NLS-1$
                             DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
                             unusualSymbols.setGroupingSeparator('\'');
-                            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-                        }) };
+                            return new DecimalFormat("#,##0.###", unusualSymbols); //$NON-NLS-1$
+                        })));
 
-        /* package */ AmountField(String name)
+        /* package */ AmountField(String code, String... name)
         {
-            super(name);
+            super(code, name);
         }
+
+        @Override
+        public List<FieldFormat> getAvailableFieldFormats()
+        {
+            return FORMATS;
+        }
+
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
+        {
+            return FORMATS.get(0);
+        }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return fieldFormat.getCode();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            for (FieldFormat format : getAvailableFieldFormats())
+            {
+                if (format.getCode().equals(text))
+                    return format;
+            }
+
+            return getAvailableFieldFormats().get(0);
+        }
+
     }
 
     public static class EnumField<M extends Enum<M>> extends CSVImporter.Field
     {
         private final Class<M> enumType;
 
-        /* package */ EnumField(String name, Class<M> enumType)
+        /* package */ EnumField(String code, String name, Class<M> enumType)
         {
-            super(name);
+            super(code, name);
             this.enumType = enumType;
         }
 
@@ -231,10 +380,51 @@ public class CSVImporter
             return enumType;
         }
 
-        public EnumMapFormat<M> createFormat()
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
-            return new EnumMapFormat<>(enumType);
+            return new FieldFormat(null, new EnumMapFormat<>(enumType));
         }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            EnumMapFormat<?> f = (EnumMapFormat<?>) fieldFormat.getFormat();
+
+            StringJoiner answer = new StringJoiner(";"); //$NON-NLS-1$
+            f.map().forEach((e, t) -> answer.add(e.name() + "=" + t)); //$NON-NLS-1$
+
+            return answer.toString();
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            EnumMapFormat<M> format = new EnumMapFormat<>(enumType);
+            FieldFormat answer = new FieldFormat(null, format);
+
+            String[] entries = text.split(";"); //$NON-NLS-1$
+            for (String e : entries)
+            {
+                String[] entry = e.split("="); //$NON-NLS-1$
+                if (entry.length != 2)
+                    continue;
+
+                try
+                {
+                    M key = Enum.valueOf(enumType, entry[0]);
+                    String value = entry[1];
+
+                    format.map().put(key, value);
+                }
+                catch (IllegalArgumentException | NullPointerException ignore)
+                {
+                    PortfolioLog.error(ignore);
+                }
+            }
+            return answer;
+        }
+
     }
 
     public static class EnumMapFormat<M extends Enum<M>> extends Format
@@ -250,7 +440,7 @@ public class CSVImporter
                 enumMap.put(element, element.toString());
         }
 
-        public EnumMap<M, String> map()
+        public EnumMap<M, String> map() // NOSONAR
         {
             return enumMap;
         }
@@ -301,14 +491,27 @@ public class CSVImporter
     public static class ISINField extends CSVImporter.Field
     {
 
-        /* package */ ISINField(String name)
+        /* package */ ISINField(String code, String name)
         {
-            super(name);
+            super(code, name);
         }
 
-        public ISINFormat createFormat(List<Security> securityList)
+        @Override
+        public FieldFormat guessFormat(Client client, String value)
         {
-            return new ISINFormat(securityList);
+            return new FieldFormat(null, new ISINFormat(client.getSecurities()));
+        }
+
+        @Override
+        public String formatToText(FieldFormat fieldFormat)
+        {
+            return null;
+        }
+
+        @Override
+        public FieldFormat textToFormat(String text)
+        {
+            return null;
         }
     }
 
@@ -364,6 +567,8 @@ public class CSVImporter
         }
     }
 
+    private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+
     private final Client client;
     private final File inputFile;
     private final List<CSVExtractor> extractors;
@@ -385,7 +590,7 @@ public class CSVImporter
 
         this.extractors = Collections.unmodifiableList(Arrays.asList(new CSVAccountTransactionExtractor(client),
                         new CSVPortfolioTransactionExtractor(client), new CSVSecurityExtractor(client),
-                        new CSVSecurityPriceExtractor(client)));
+                        new CSVSecurityPriceExtractor(), new CSVPortfolioExtractor(client)));
         this.currentExtractor = extractors.get(0);
     }
 
@@ -406,7 +611,8 @@ public class CSVImporter
 
     public void setExtractor(CSVExtractor extractor)
     {
-        this.currentExtractor = extractor;
+        propertyChangeSupport.firePropertyChange("extractor", this.currentExtractor, //$NON-NLS-1$
+                        this.currentExtractor = extractor); // NOSONAR
     }
 
     public CSVExtractor getExtractor()
@@ -416,27 +622,54 @@ public class CSVImporter
 
     public CSVExtractor getSecurityPriceExtractor()
     {
-        return extractors.get(3);
+        return extractors.stream().filter(e -> e instanceof CSVSecurityPriceExtractor).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
+    public Optional<CSVExtractor> getExtractorByCode(String code)
+    {
+        return extractors.stream().filter(e -> code.equals(e.getCode())).findAny();
     }
 
     public void setDelimiter(char delimiter)
     {
-        this.delimiter = delimiter;
+        propertyChangeSupport.firePropertyChange("delimiter", this.delimiter, this.delimiter = delimiter); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public char getDelimiter()
+    {
+        return delimiter;
     }
 
     public void setEncoding(Charset encoding)
     {
-        this.encoding = encoding;
+        propertyChangeSupport.firePropertyChange("encoding", this.encoding, this.encoding = encoding); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public Charset getEncoding()
+    {
+        return encoding;
     }
 
     public void setSkipLines(int skipLines)
     {
-        this.skipLines = skipLines;
+        propertyChangeSupport.firePropertyChange("skipLines", this.skipLines, this.skipLines = skipLines); //$NON-NLS-1$ //NOSONAR
+    }
+
+    public int getSkipLines()
+    {
+        return skipLines;
     }
 
     public void setFirstLineHeader(boolean isFirstLineHeader)
     {
-        this.isFirstLineHeader = isFirstLineHeader;
+        propertyChangeSupport.firePropertyChange("firstLineHeader", this.isFirstLineHeader, //$NON-NLS-1$
+                        this.isFirstLineHeader = isFirstLineHeader); // NOSONAR
+    }
+
+    public boolean isFirstLineHeader()
+    {
+        return isFirstLineHeader;
     }
 
     public List<String[]> getRawValues()
@@ -449,45 +682,90 @@ public class CSVImporter
         return columns;
     }
 
-    public void processFile() throws IOException
+    /* package */ void setColumns(Column[] columns)
     {
-        try (FileInputStream stream = new FileInputStream(inputFile))
+        this.columns = columns;
+    }
+
+    private void processStream(InputStream stream, boolean remap) throws IOException
+    {
+        Reader reader = new InputStreamReader(stream, encoding);
+
+        CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
+                        CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+
+        CSVParser parser = new CSVParser(reader, strategy);
+
+        for (int ii = 0; ii < skipLines; ii++)
+            parser.getLine();
+
+        List<String[]> input = new ArrayList<>();
+        String[] header = null;
+        String[] line = parser.getLine();
+
+        // no more data available after skipping lines
+        if (line == null)
         {
-            Reader reader = new InputStreamReader(stream, encoding);
+            this.values = Collections.emptyList();
+            if (remap)
+                this.columns = new Column[0];
+            return;
+        }
 
-            CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
-                            CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+        if (isFirstLineHeader)
+        {
+            header = line;
+        }
+        else
+        {
+            header = new String[line.length];
+            for (int ii = 0; ii < header.length; ii++)
+                header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
+            input.add(line);
+        }
 
-            CSVParser parser = new CSVParser(reader, strategy);
+        while ((line = parser.getLine()) != null)
+            input.add(line);
 
-            for (int ii = 0; ii < skipLines; ii++)
-                parser.getLine();
+        this.values = input;
 
-            List<String[]> input = new ArrayList<>();
-            String[] header = null;
-            String[] line = parser.getLine();
-            if (isFirstLineHeader)
-            {
-                header = line;
-            }
-            else
-            {
-                header = new String[line.length];
-                for (int ii = 0; ii < header.length; ii++)
-                    header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
-                input.add(line);
-            }
-
-            while ((line = parser.getLine()) != null)
-                input.add(line);
-
+        if (this.columns == null || remap)
+        {
             this.columns = new CSVImporter.Column[header.length];
             for (int ii = 0; ii < header.length; ii++)
                 this.columns[ii] = new Column(ii, header[ii]);
 
-            this.values = input;
-
             mapToImportDefinition();
+        }
+    }
+
+    public void processFile(boolean remap) throws IOException
+    {
+        try (FileInputStream stream = new FileInputStream(inputFile))
+        {
+            processStream(stream, remap);
+        }
+        catch (IOException e)
+        {
+            PortfolioLog.error(e);
+
+            try
+            {
+                // fallback for file names with umlaute on Linux
+                byte[] ptext = inputFile.toString().getBytes(StandardCharsets.UTF_8);
+                String str = new String(ptext, StandardCharsets.ISO_8859_1);
+                Path path = Paths.get(URI.create("file://" + str)); //$NON-NLS-1$
+
+                try (InputStream stream = Files.newInputStream(path))
+                {
+                    processStream(stream, remap);
+                }
+            }
+            catch (IllegalArgumentException | IOException ignore)
+            {
+                PortfolioLog.error(ignore);
+                throw e;
+            }
         }
     }
 
@@ -503,29 +781,13 @@ public class CSVImporter
             while (iter.hasNext())
             {
                 Field field = iter.next();
-                if (field.getNormalizedName().equals(normalizedColumnName))
+
+                if (field.getNormalizedNames().contains(normalizedColumnName))
                 {
                     column.setField(field);
 
-                    if (field instanceof DateField)
-                    {
-                        // try to guess date format
-                        String value = getFirstNonEmptyValue(column);
-                        column.setFormat(DateField.guessDateFormat(value));
-                    }
-                    else if (field instanceof AmountField)
-                    {
-                        column.setFormat(AmountField.FORMATS[0]);
-                    }
-                    else if (field instanceof ISINField)
-                    {
-                        column.setFormat(new FieldFormat(null,
-                                        ((ISINField) field).createFormat(client.getSecurities())));
-                    }
-                    else if (field instanceof EnumField<?>)
-                    {
-                        column.setFormat(new FieldFormat(null, ((EnumField<?>) field).createFormat()));
-                    }
+                    String value = getFirstNonEmptyValue(column);
+                    column.setFormat(field.guessFormat(client, value));
 
                     iter.remove();
                     break;
@@ -540,7 +802,7 @@ public class CSVImporter
         Map<String, Column> field2column = new HashMap<>();
         for (Column column : getColumns())
             if (column.getField() != null)
-                field2column.put(column.getField().name, column);
+                field2column.put(column.getField().getName(), column);
 
         int startingLineNo = skipLines + (isFirstLineHeader ? 1 : 0);
         return currentExtractor.extract(startingLineNo, values, field2column, errors);
@@ -603,5 +865,20 @@ public class CSVImporter
             }
         }
         return sb.toString();
+    }
+
+    public void addPropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        propertyChangeSupport.addPropertyChangeListener(propertyName, listener);
+    }
+
+    public void removePropertyChangeListener(PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(listener);
     }
 }

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.model;
 
 import java.io.Serializable;
 import java.util.Comparator;
+import java.util.Objects;
 
 /**
  * A pair of transaction owner (account or portfolio) and a transaction.
@@ -15,7 +16,7 @@ public class TransactionPair<T extends Transaction> implements Adaptable
         @Override
         public int compare(TransactionPair<?> t1, TransactionPair<?> t2)
         {
-            return t1.getTransaction().getDate().compareTo(t2.getTransaction().getDate());
+            return t1.getTransaction().getDateTime().compareTo(t2.getTransaction().getDateTime());
         }
     }
 
@@ -24,8 +25,8 @@ public class TransactionPair<T extends Transaction> implements Adaptable
 
     public TransactionPair(TransactionOwner<T> owner, T transaction)
     {
-        this.owner = owner;
-        this.transaction = transaction;
+        this.owner = Objects.requireNonNull(owner);
+        this.transaction = Objects.requireNonNull(transaction);
     }
 
     public TransactionOwner<T> getOwner()

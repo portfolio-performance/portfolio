@@ -15,6 +15,7 @@ public class PresentationPreferencePage extends FieldEditorPreferencePage
         setTitle(Messages.PrefTitlePresentation);
     }
 
+    @Override
     public void createFieldEditors()
     {
         addField(new BooleanFieldEditor(UIConstants.Preferences.USE_INDIRECT_QUOTATION, //

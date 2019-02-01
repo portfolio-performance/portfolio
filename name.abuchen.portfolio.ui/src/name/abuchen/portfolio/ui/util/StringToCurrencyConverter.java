@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
-public class StringToCurrencyConverter implements IValidatingConverter
+public class StringToCurrencyConverter implements IValidatingConverter<String, Long>
 {
     private final Pattern pattern;
     private final NumberFormat full;
@@ -40,10 +40,9 @@ public class StringToCurrencyConverter implements IValidatingConverter
     }
 
     @Override
-    public Object convert(Object fromObject)
+    public Long convert(String fromObject)
     {
-        String value = (String) fromObject;
-        value = value.trim();
+        String value = fromObject.trim();
 
         try
         {

@@ -2,7 +2,7 @@ package name.abuchen.portfolio.math;
 
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 import name.abuchen.portfolio.util.Interval;
 
@@ -20,10 +20,10 @@ public final class Risk
         {
             if (values.length != dates.length)
                 throw new IllegalArgumentException();
-                
+
             if (startAt >= values.length)
                 throw new IllegalArgumentException();
-            
+
             double peak = values[startAt] + 1;
             double bottom = values[startAt] + 1;
             LocalDate lastPeakDate = dates[startAt];
@@ -111,7 +111,7 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(double[] returns, Predicate<Integer> filter)
+        public Volatility(double[] returns, IntPredicate filter)
         {
             Objects.requireNonNull(returns);
 
@@ -120,7 +120,7 @@ public final class Risk
             int count = 0;
 
             double averageLogReturn = logAverage(returns, filter);
-            
+
             for (int ii = 0; ii < returns.length; ii++)
             {
                 if (!filter.test(ii))
@@ -135,12 +135,20 @@ public final class Risk
                 if (logReturn < averageLogReturn)
                     tempSemi = tempSemi + add;
             }
-            
-            stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
-            semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);            
+
+            if (count <= 1)
+            {
+                stdDeviation = 0d;
+                semiDeviation = 0d;
+            }
+            else
+            {
+                stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
+                semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);
+            }
         }
 
-        private double logAverage(double[] returns, Predicate<Integer> filter)
+        private double logAverage(double[] returns, IntPredicate filter)
         {
             double sum = 0;
             int count = 0;
@@ -153,6 +161,9 @@ public final class Risk
                 sum += Math.log(1 + returns[ii]);
                 count++;
             }
+
+            if (count == 0)
+                return 0;
 
             return sum / count;
         }

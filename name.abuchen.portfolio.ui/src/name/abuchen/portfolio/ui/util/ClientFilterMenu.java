@@ -81,7 +81,7 @@ public final class ClientFilterMenu implements IMenuListener
         selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", c -> c); //$NON-NLS-1$
         defaultItems.add(selectedItem);
 
-        client.getPortfolios().forEach(portfolio -> {
+        client.getActivePortfolios().forEach(portfolio -> {
             defaultItems.add(new Item(portfolio.getName(), portfolio.getUUID(), new PortfolioClientFilter(portfolio)));
             defaultItems.add(new Item(portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
                             portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$

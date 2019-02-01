@@ -4,6 +4,7 @@ import java.text.MessageFormat;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -11,6 +12,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
@@ -25,6 +27,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -38,6 +41,9 @@ public class TransactionsTab implements DividendsTab
 
     @Inject
     private DividendsViewModel model;
+
+    @Inject
+    private ESelectionService selectionService;
 
     @Inject
     private IPreferenceStore preferences;
@@ -83,6 +89,14 @@ public class TransactionsTab implements DividendsTab
         tableViewer.getTable().setLinesVisible(true);
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
+        tableViewer.addSelectionChangedListener(event -> {
+            TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement());
+            if (tx != null && tx.getTransaction().getSecurity() != null)
+                selectionService.setSelection(
+                                new SecuritySelection(model.getClient(), tx.getTransaction().getSecurity()));
+        });
+
         tableViewer.setInput(model.getTransactions());
 
         model.addUpdateListener(() -> tableViewer.setInput(model.getTransactions()));
@@ -98,10 +112,10 @@ public class TransactionsTab implements DividendsTab
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column, SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);

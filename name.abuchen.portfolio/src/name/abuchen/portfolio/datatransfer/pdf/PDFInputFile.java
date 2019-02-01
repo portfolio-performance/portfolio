@@ -69,7 +69,7 @@ public class PDFInputFile extends Extractor.InputFile
         return FrameworkUtil.getBundle(PDDocument.class).getVersion();
     }
 
-    public void parse() throws IOException
+    public void convertPDFtoText() throws IOException
     {
         try (PDDocument document = PDDocument.load(getFile()))
         {

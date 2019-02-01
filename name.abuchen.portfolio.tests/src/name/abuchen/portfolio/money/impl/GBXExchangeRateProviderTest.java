@@ -9,6 +9,7 @@ import java.time.LocalDate;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
@@ -18,7 +19,7 @@ public class GBXExchangeRateProviderTest
     @Test
     public void testIt()
     {
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory();
+        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(new Client());
 
         // default value EUR -> GBP is 0.72666
         ExchangeRateTimeSeries eur_gbx = factory.getTimeSeries("EUR", "GBX");

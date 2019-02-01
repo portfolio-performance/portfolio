@@ -37,15 +37,15 @@ public class SecurityTest
 
             if (p.getPropertyType() == String.class && p.getWriteMethod() != null)
                 p.getWriteMethod().invoke(source, UUID.randomUUID().toString());
-            else if (p.getPropertyType() == boolean.class)
+            else if (p.getPropertyType() == boolean.class && p.getWriteMethod() != null)
                 p.getWriteMethod().invoke(source, true);
-            else if (p.getPropertyType() == int.class)
+            else if (p.getPropertyType() == int.class && p.getWriteMethod() != null)
                 p.getWriteMethod().invoke(source, new Random().nextInt());
             else
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(7));
+        assertThat(skipped, equalTo(9));
 
         Security target = source.deepCopy();
 

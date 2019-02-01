@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,6 +13,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -46,33 +48,30 @@ public class DashboardData
         {
             if (this == obj)
                 return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
+            if (!(obj instanceof CacheKey))
                 return false;
 
             CacheKey other = (CacheKey) obj;
-            if (!type.equals(other.type))
-                return false;
-            if (!period.equals(other.period))
-                return false;
-            return true;
+            return type.equals(other.type) && period.equals(other.period);
         }
-
     }
+
+    public static final Object EMPTY_RESULT = new Object();
 
     private final Client client;
     private final IPreferenceStore preferences;
     private final ExchangeRateProviderFactory factory;
     private final CurrencyConverter converter;
 
-    private final Map<CacheKey, Object> cache = new HashMap<>();
+    private final Map<CacheKey, Object> cache = Collections.synchronizedMap(new HashMap<>());
 
     private List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
     private ReportingPeriod defaultReportingPeriod;
 
     private DataSeriesSet dataSeriesSet;
     private DataSeriesCache dataSeriesCache;
+
+    private Map<Widget, Object> resultCache = Collections.synchronizedMap(new HashMap<>());
 
     private Dashboard dashboard;
 
@@ -138,10 +137,12 @@ public class DashboardData
         return dataSeriesSet;
     }
 
-    public void clearCache()
+    public synchronized void clearCache()
     {
         cache.clear();
         dataSeriesCache.clear();
+
+        clearResultCache();
     }
 
     public <T> T calculate(Class<T> type, ReportingPeriod period)
@@ -171,8 +172,25 @@ public class DashboardData
         return dataSeriesCache;
     }
 
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
     public PerformanceIndex calculate(DataSeries dataSeries, ReportingPeriod reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);
+    }
+
+    public synchronized Map<Widget, Object> getResultCache()
+    {
+        return resultCache;
+    }
+
+    public synchronized void clearResultCache()
+    {
+        // create a new cache map in order to make sure that old (possibly
+        // still running) tasks do not write into the new cache
+        resultCache = Collections.synchronizedMap(new HashMap<>());
     }
 }

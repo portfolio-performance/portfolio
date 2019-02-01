@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,7 +17,7 @@ import name.abuchen.portfolio.money.Money;
 public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 {
 
-    public BaaderBankPDFExtractor(Client client) throws IOException
+    public BaaderBankPDFExtractor(Client client)
     {
         super(client);
         
@@ -166,7 +165,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("date", "amount", "currency")
                         .match("Zu Gunsten Konto \\d+ Valuta: (?<date>\\d+.\\d+.\\d{4}) *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            t.setDateTime(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -206,7 +205,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("date")
                         .match("Unterschleißheim, (?<date>\\d+.\\d+.\\d{4})")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency")
                         .match("Erstattung *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
@@ -243,7 +242,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("date")
                         .match("Abbuchungsdatum: (?<date>\\d+.\\d+.\\d{4})")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         
                         .wrap(t -> new TransactionItem(t)));
     }
@@ -280,7 +279,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                                 Map<String, String> context = type.getCurrentContext();
                                 t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                t.setDate(asDate(v.get("valuta")));
+                                t.setDateTime(asDate(v.get("valuta")));
                                 t.setAmount(asAmount(v.get("amount")));
                                 //t.setNote(v.get("text"));
                         }).wrap(t -> new TransactionItem(t)));

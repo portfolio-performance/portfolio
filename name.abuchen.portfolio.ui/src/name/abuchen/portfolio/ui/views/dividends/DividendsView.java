@@ -6,23 +6,22 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class DividendsView extends AbstractFinanceView
@@ -78,53 +77,40 @@ public class DividendsView extends AbstractFinanceView
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
-        new StartYearSelectionDropDown(toolBar, model);
+        toolBar.add(new StartYearSelectionDropDown(model));
 
-        AbstractDropDown dropDown = AbstractDropDown.create(toolBar, Messages.MenuChooseClientFilter,
-                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON.image()
-                                        : Images.FILTER_OFF.image(),
-                        SWT.NONE, model.getClientFilterMenu()::menuAboutToShow);
-        model.getClientFilterMenu()
-                        .addListener(f -> dropDown.getToolItem()
-                                        .setImage(model.getClientFilterMenu().hasActiveFilter()
-                                                        ? Images.FILTER_ON.image()
-                                                        : Images.FILTER_OFF.image()));
+        DropDown dropDown = new DropDown(Messages.MenuChooseClientFilter,
+                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF, SWT.NONE,
+                        model.getClientFilterMenu()::menuAboutToShow);
+        model.getClientFilterMenu().addListener(f -> dropDown.setImage(
+                        model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
+        toolBar.add(dropDown);
 
-        new AbstractDropDown(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
+        toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
+            final int itemCount = folder.getItemCount();
+            for (int ii = 0; ii < itemCount; ii++)
             {
-                final int itemCount = folder.getItemCount();
-                for (int ii = 0; ii < itemCount; ii++)
-                {
-                    DividendsTab tab = (DividendsTab) folder.getItem(ii).getData();
-                    if (tab != null)
-                        tab.addExportActions(manager);
-                }
-            }
-        };
-
-        new AbstractDropDown(toolBar, Messages.MenuConfigureChart, Images.CONFIG.image(), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                Action action = new SimpleAction(Messages.LabelUseGrossDividends,
-                                a -> model.setUseGrossValue(!model.usesGrossValue()));
-                action.setChecked(model.usesGrossValue());
-                manager.add(action);
-
-                DividendsTab tab = (DividendsTab) folder.getSelection().getData();
+                DividendsTab tab = (DividendsTab) folder.getItem(ii).getData();
                 if (tab != null)
-                {
-                    manager.add(new Separator());
-                    tab.addConfigActions(manager);
-                }
+                    tab.addExportActions(manager);
             }
-        };
+        }));
+
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
+            Action action = new SimpleAction(Messages.LabelUseGrossDividends,
+                            a -> model.setUseGrossValue(!model.usesGrossValue()));
+            action.setChecked(model.usesGrossValue());
+            manager.add(action);
+
+            DividendsTab tab = (DividendsTab) folder.getSelection().getData();
+            if (tab != null)
+            {
+                manager.add(new Separator());
+                tab.addConfigActions(manager);
+            }
+        }));
     }
 
     @Override
@@ -132,15 +118,17 @@ public class DividendsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, DividendsMatrixTab.class);
-        createTab(folder, DividendsYearMatrixTab.class);
-        createTab(folder, DividendsChartTab.class);
-        createTab(folder, DividendsPerYearChartTab.class);
-        createTab(folder, AccumulatedDividendsChartTab.class);
-        createTab(folder, TransactionsTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, DividendsYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsPerQuarterChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, DividendsPerYearChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, AccumulatedDividendsChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
-        if (tab <= 0 || tab >= 4)
+        if (tab < 0 || tab > 7)
             tab = 0;
         folder.setSelection(tab);
         folder.addDisposeListener(e -> preferences.setValue(KEY_TAB, folder.getSelectionIndex()));
@@ -148,7 +136,7 @@ public class DividendsView extends AbstractFinanceView
         return folder;
     }
 
-    private void createTab(CTabFolder folder, Class<? extends DividendsTab> tabClass)
+    private void createTab(CTabFolder folder, Images image, Class<? extends DividendsTab> tabClass)
     {
         DividendsTab tab = this.make(tabClass, model);
         Control control = tab.createControl(folder);
@@ -156,5 +144,6 @@ public class DividendsView extends AbstractFinanceView
         item.setText(tab.getLabel());
         item.setControl(control);
         item.setData(tab);
+        item.setImage(image.image());
     }
 }

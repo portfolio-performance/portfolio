@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.28.5-SNAPSHOT</version>
+		<version>0.37.2-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
 	<artifactId>portfolio.product</artifactId>
 	<packaging>eclipse-repository</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -37,13 +42,6 @@
 						<id>materialize-products</id>
 						<goals>
 							<goal>materialize-products</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>archive-products</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>archive-products</goal>
 						</goals>
 					</execution>
 				</executions>
@@ -71,13 +69,15 @@
 					<execution>
 						<id>fix-info-plist</id>
 						<phase>package</phase>
+						<configuration>
+							<productId>name.abuchen.portfolio.product</productId>
+						</configuration>
 						<goals>
 							<goal>fix-info-plist</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<productId>name.abuchen.portfolio.product</productId>
 					<appName>PortfolioPerformance.app</appName>
 					<properties>
 						<property>
@@ -90,15 +90,15 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2017 Andreas Buchen. All rights reserved.</value>
-						</property>
-						<property>
-							<name>CFBundleLocalizations</name>
-							<value>[en]</value>
+							<value>Copyright 2012 - 2019 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
 							<value />
+						</property>
+						<property>
+							<name>CFBundleLocalizations</name>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -108,39 +108,71 @@
 
 	<profiles>
 		<profile>
+			<id>package-distro</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>dmg-distro</name>
-					<value>true</value>
-				</property>
 			</activation>
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>exec-maven-plugin</artifactId>
-						<groupId>org.codehaus.mojo</groupId>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-director-plugin</artifactId>
+						<version>${tycho-version}</version>
 						<executions>
 							<execution>
-								<id>dmg-distro</id>
-								<phase>package</phase>
+								<id>archive-products</id>
+								<phase>integration-test</phase>
 								<goals>
-									<goal>exec</goal>
+									<goal>archive-products</goal>
 								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<products>
+								<product>
+									<id>name.abuchen.portfolio.product</id>
+									<attachId>name.abuchen.portfolio.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+								<product>
+									<id>name.abuchen.portfolio.distro.product</id>
+									<attachId>name.abuchen.portfolio.disto.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-distro-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+							</products>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>name.abuchen</groupId>
+						<artifactId>fix-info-plist-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>fix-info-plist</id>
+								<phase>package</phase>
 								<configuration>
-									<executable>/usr/bin/hdiutil</executable>
-									<arguments>
-										<argument>create</argument>
-										<argument>-srcfolder</argument>
-										<argument>target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64</argument>
-										<argument>-ov</argument>
-										<argument>-format</argument>
-										<argument>UDZO</argument>
-										<argument>-volname</argument>
-										<argument>PortfolioPerformance-${project.version}</argument>
-										<argument>target/products/PortfolioPerformance-${project.version}.dmg</argument>
-									</arguments>
+									<productId>name.abuchen.portfolio.product</productId>
 								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>fix-info-plist-distro</id>
+								<phase>package</phase>
+								<configuration>
+									<productId>name.abuchen.portfolio.distro.product</productId>
+								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
 							</execution>
 						</executions>
 					</plugin>

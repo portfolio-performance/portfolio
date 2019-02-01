@@ -6,13 +6,17 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.28.5-SNAPSHOT</version>
+		<version>0.37.2-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
 	<artifactId>name.abuchen.portfolio.ui.tests</artifactId>
 	<packaging>eclipse-test-plugin</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>

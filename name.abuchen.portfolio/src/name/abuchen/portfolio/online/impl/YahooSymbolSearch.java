@@ -1,22 +1,28 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 import java.util.stream.Stream;
 
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+
 /* package */ class YahooSymbolSearch
 {
-    /* package */ static class Result
+    /* package */ static class Result implements ResultItem
     {
         private String symbol;
         private String name;
@@ -40,24 +46,53 @@ import org.json.simple.JSONValue;
             this.exchange = exchange;
         }
 
+        /* package */ Result(String name)
+        {
+            this.name = name;
+        }
+
+        @Override
         public String getSymbol()
         {
             return symbol;
         }
 
+        @Override
         public String getName()
         {
             return name;
         }
 
+        @Override
         public String getType()
         {
             return type;
         }
 
+        @Override
         public String getExchange()
         {
             return exchange;
+        }
+
+        @Override
+        public String getIsin()
+        {
+            return null;
+        }
+
+        @Override
+        public String getWkn()
+        {
+            return null;
+        }
+
+        @Override
+        public void applyTo(Security security)
+        {
+            security.setName(name);
+            security.setTickerSymbol(symbol);
+            security.setFeed(YahooFinanceQuoteFeed.ID);
         }
     }
 
@@ -65,36 +100,40 @@ import org.json.simple.JSONValue;
 
     public Stream<Result> search(String query) throws IOException
     {
-        // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
-        String searchUrl = MessageFormat.format(SEARCH_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
-
         List<Result> answer = new ArrayList<>();
-
-        try (Scanner scanner = new Scanner(new URL(searchUrl).openStream(), StandardCharsets.UTF_8.name()))
+        
+        try (CloseableHttpClient client = HttpClients.createSystem())
         {
-            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
+            String searchUrl = MessageFormat.format(SEARCH_URL,
+                            URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
 
-            // strip away java script call back method
-            int start = html.indexOf('(');
-            int end = html.lastIndexOf(')');
-            html = html.substring(start + 1, end);
-
-            JSONObject response = (JSONObject) JSONValue.parse(html);
-            if (response != null)
+            try (CloseableHttpResponse response = client.execute(new HttpGet(searchUrl)))
             {
-                JSONObject resultSet = (JSONObject) response.get("ResultSet"); //$NON-NLS-1$
-                if (resultSet != null)
+                String html = EntityUtils.toString(response.getEntity());
+
+                // strip away java script call back method
+                int start = html.indexOf('(');
+                int end = html.lastIndexOf(')');
+                html = html.substring(start + 1, end);
+
+                JSONObject responseData = (JSONObject) JSONValue.parse(html);
+                if (responseData != null)
                 {
-                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
-                    if (result != null)
+                    JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
+                    if (resultSet != null)
                     {
-                        for (int ii = 0; ii < result.size(); ii++)
-                            answer.add(Result.from((JSONObject) result.get(ii)));
+                        JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                        if (result != null)
+                        {
+                            for (int ii = 0; ii < result.size(); ii++)
+                                answer.add(Result.from((JSONObject) result.get(ii)));
+                        }
                     }
                 }
             }
         }
-
+        
         return answer.stream();
     }
 }

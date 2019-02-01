@@ -126,7 +126,7 @@ public class ClientSnapshot
         return getAssetPositions().collect(Collectors.toMap(p -> {
             InvestmentVehicle v = p.getInvestmentVehicle();
             if (v instanceof ReadOnlyAccount)
-                return ((ReadOnlyAccount) v).getSource();
+                return ((ReadOnlyAccount) v).unwrap();
             else
                 return v;
         }, v -> v));

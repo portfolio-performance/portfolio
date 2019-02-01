@@ -2,7 +2,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +12,6 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 
@@ -20,11 +19,17 @@ import name.abuchen.portfolio.model.SecurityPrice;
 {
     private List<Field> fields;
 
-    /* package */ CSVSecurityPriceExtractor(Client client)
+    /* package */ CSVSecurityPriceExtractor()
     {
         fields = new ArrayList<>();
-        fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new AmountField(Messages.CSVColumn_Quote));
+        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
+        fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    }
+
+    @Override
+    public String getCode()
+    {
+        return "investment-vehicle-price"; //$NON-NLS-1$
     }
 
     @Override
@@ -50,8 +55,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
             try
             {
                 SecurityPrice p = extract(line, field2column);
-                if (p != null)
-                    dummy.addPrice(p);
+                dummy.addPrice(p);
             }
             catch (ParseException e)
             {
@@ -67,7 +71,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
     private SecurityPrice extract(String[] rawValues, Map<String, Column> field2column) throws ParseException
     {
-        LocalDate date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, null, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
@@ -75,6 +79,6 @@ import name.abuchen.portfolio.model.SecurityPrice;
         if (amount == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Quote), 0);
 
-        return new SecurityPrice(date, Math.abs(amount));
+        return new SecurityPrice(date.toLocalDate(), Math.abs(amount));
     }
 }

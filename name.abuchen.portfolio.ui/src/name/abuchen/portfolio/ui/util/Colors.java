@@ -14,6 +14,8 @@ public final class Colors
     public static final Color GRAY = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
     public static final Color WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
     public static final Color DARK_GRAY = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+    public static final Color DARK_RED = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+    public static final Color DARK_GREEN = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
     public static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
     private static final ColorRegistry REGISTRY = new ColorRegistry();
@@ -28,16 +30,17 @@ public final class Colors
 
     public static final Color DARK_BLUE = getColor(149, 165, 180); // 95A5B4
 
-    public static final Color HEADINGS = getColor(57, 62, 66); // 95A5B4
+    public static final Color HEADINGS = getColor(57, 62, 66); // 393E42
     public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
     public static final Color INFO_TOOLTIP_BACKGROUND = getColor(236, 235, 236);
 
-    public static final Color WARNING = getColor(254, 223, 107);
-    
+    public static final Color WARNING = getColor(254, 223, 107); // FEDF6B
+    public static final Color WARNING_RED = getColor(209, 29, 29); // D11D1D
+
     public static final Color SIDEBAR_TEXT = getColor(57, 62, 66);
-    public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250);
-    public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233);
-    public static final Color SIDEBAR_BORDER = getColor(244, 245, 245);
+    public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250); // F9FAFA
+    public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233); // E4E6E9
+    public static final Color SIDEBAR_BORDER = getColor(244, 245, 245); // F4F5F5
 
     private Colors()
     {}
@@ -47,6 +50,19 @@ public final class Colors
         return getColor(rgb.red, rgb.green, rgb.blue);
     }
 
+    /**
+     * Constructs a color instance with the given red, green and blue values.
+     *
+     * @param red
+     *            the red component of the new instance
+     * @param green
+     *            the green component of the new instance
+     * @param blue
+     *            the blue component of the new instance
+     * @exception IllegalArgumentException
+     *                if the red, green or blue argument is not between 0 and
+     *                255
+     */
     public static Color getColor(int red, int green, int blue)
     {
         String key = getColorKey(red, green, blue);
@@ -61,7 +77,7 @@ public final class Colors
         }
     }
 
-    public static Color getColor(String key)
+    private static Color getColor(String key)
     {
         return REGISTRY.get(key);
     }
@@ -88,8 +104,8 @@ public final class Colors
     }
 
     /**
-     * Returns an appropriate text color (black or white) for the given background
-     * color.
+     * Returns an appropriate text color (black or white) for the given
+     * background color.
      */
     public static Color getTextColor(Color color)
     {

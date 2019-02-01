@@ -95,6 +95,11 @@ public class DividendsViewModel
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 
+    /* package */Client getClient()
+    {
+        return client;
+    }
+
     public ClientFilterMenu getClientFilterMenu()
     {
         return clientFilter;
@@ -192,8 +197,8 @@ public class DividendsViewModel
                 transactions.add(new TransactionPair<>(account, t));
 
                 Money dividendValue = useGrossValue ? t.getGrossValue() : t.getMonetaryAmount();
-                long value = dividendValue.with(converter.at(t.getDate())).getAmount();
-                int index = (t.getDate().getYear() - startYear) * 12 + t.getDate().getMonthValue() - 1;
+                long value = dividendValue.with(converter.at(t.getDateTime())).getAmount();
+                int index = (t.getDateTime().getYear() - startYear) * 12 + t.getDateTime().getMonthValue() - 1;
 
                 Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));
                 line.values[index] += value;

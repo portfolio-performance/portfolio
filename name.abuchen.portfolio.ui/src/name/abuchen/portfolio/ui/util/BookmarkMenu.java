@@ -7,7 +7,7 @@ import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class BookmarkMenu extends MenuManager
 {
@@ -43,6 +43,6 @@ public class BookmarkMenu extends MenuManager
 
         add(new Separator());
         add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,
-                        a -> editor.activateView("settings.Settings", Integer.valueOf(0)))); //$NON-NLS-1$
+                        a -> editor.activateView("settings.Settings", null, Integer.valueOf(0)))); //$NON-NLS-1$
     }
 }

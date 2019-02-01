@@ -1,0 +1,62 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+FinTech Group Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        17.01.2019
+0202272000001113524520
+Herr Auftragsdatum     17.01.2019n
+Max Mu Stermann Schlusstag        17.01.2019u Ausführungszeit   17:52 Uhr
+-
+Muster Str 1 Valuta            21.01.2019. 
+11111 Musterstadt Auftragsnummer    11111111/1
+Ausf.platz/-art   Lang und Schwarz
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  1111111111
+Depotinhaber      Mustermann, Max
+Nr.111111111/1 Kauf              FRAN.LIB.Q EM EQ.UC.DLA (IE00BF2B0K52/A2DTF1)
+Ausgeführt                  61 St.      Kurswert                  1.270,94 EUR
+Kurs                 20,835000 EUR      Provision                     5,90 EUR
+Devisenkurs                             Eigene Spesen
+Verwahrart     Wertpapierrechnung      *Fremde Spesen                 2,71 EUR
+Lagerstelle    Clearstream Lux.
+Lagerland      Irland
+                                        Bemessungs-
+                                        grundlage                     0,00 EUR
+Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                0,00 EUR
+                                        Endbetrag                -1.279,55 EUR
+*   Enthalten sind folgende Gebühren    Courtage                      0,00 EUR
+                                        Tradinggebühr                 0,00 EUR
+                                        Regulierung                   2,67 EUR
+                                        Schlussnoten                  0,04 EUR
+                                        Sonstige                      0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                    Kapitalertragsteuer               0,00 EUR
+                                    Solidaritätszuschlag              0,00 EUR
+                                    Kirchensteuer                     0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1111111111.
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1111111111
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001113524520 0113202270000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001113524520 0113202270000202

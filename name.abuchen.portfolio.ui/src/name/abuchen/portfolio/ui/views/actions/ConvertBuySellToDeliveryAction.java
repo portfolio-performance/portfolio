@@ -36,7 +36,7 @@ public class ConvertBuySellToDeliveryAction extends Action
         PortfolioTransaction delivery = new PortfolioTransaction();
         delivery.setType(buySellTransaction.getType() == PortfolioTransaction.Type.BUY
                         ? PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-        delivery.setDate(buySellTransaction.getDate());
+        delivery.setDateTime(buySellTransaction.getDateTime());
         delivery.setMonetaryAmount(buySellTransaction.getMonetaryAmount());
         delivery.setSecurity(buySellTransaction.getSecurity());
         delivery.setNote(buySellTransaction.getNote());

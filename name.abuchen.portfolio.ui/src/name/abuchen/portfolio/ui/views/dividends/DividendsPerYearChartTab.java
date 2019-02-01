@@ -20,6 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class DividendsPerYearChartTab extends AbstractChartTab
 {
@@ -75,7 +76,7 @@ public class DividendsPerYearChartTab extends AbstractChartTab
             lines.forEach(line -> {
                 Label l = new Label(container, SWT.NONE);
                 l.setForeground(foregroundColor);
-                l.setText(line.getVehicle().getName());
+                l.setText(TextUtil.tooltip(line.getVehicle().getName()));
 
                 long value = 0;
                 for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)

@@ -15,6 +15,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
@@ -45,10 +46,10 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -107,13 +108,15 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
-        // date
+        // date & time
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.date.name()).observe(model));
+        DatePicker valueDate = new DatePicker(editArea);
+        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
+        context.bindValue(targetDate, dateObservable);
 
         // shares
 
@@ -190,15 +193,17 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
-                        BeanProperties.value(Properties.note.name()).observe(model));
+        IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(targetNote, noteObservable);
 
         //
         // form layout
         //
 
         int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        fxGrossAmount.label, lblNote);
+                        taxes.label, total.label, lblNote);
 
         FormDataFactory forms;
         if (securities != null)
@@ -218,9 +223,9 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date
         // shares
-        forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
-                        // shares [- amount per share]
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
+        forms = forms.thenBelow(valueDate.getControl()).label(lblDate);
+        // shares [- amount per share]
+        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //
@@ -303,7 +308,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
         {
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
-            
+
             if (model().getSecurity() == null)
                 model().setSecurity(AccountTransactionModel.EMPTY_SECURITY);
         }

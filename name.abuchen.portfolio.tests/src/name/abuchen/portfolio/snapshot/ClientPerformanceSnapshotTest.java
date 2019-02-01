@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.List;
 
@@ -46,10 +47,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.JUNE, 1), CurrencyUnit.EUR, 50_00, null,
-                        AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.JUNE, 1, 0, 0), CurrencyUnit.EUR,
+                        50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -82,10 +83,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
-                        null, AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.DECEMBER, 31, 0, 0),
+                        CurrencyUnit.EUR, 50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -107,10 +108,10 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1000_00,
-                        null, AccountTransaction.Type.DEPOSIT));
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.DECEMBER, 31), CurrencyUnit.EUR, 50_00,
-                        null, AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR,
+                        1000_00, null, AccountTransaction.Type.DEPOSIT));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.DECEMBER, 31, 0, 0),
+                        CurrencyUnit.EUR, 50_00, null, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -137,13 +138,14 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1_00,
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(
+                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         Account account = new Account();
-        account.addTransaction(new AccountTransaction(LocalDate.of(2011, Month.JANUARY, 31), CurrencyUnit.EUR, 50_00,
-                        security, AccountTransaction.Type.INTEREST));
+        account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.JANUARY, 31, 0, 0), CurrencyUnit.EUR,
+                        50_00, security, AccountTransaction.Type.INTEREST));
         client.addAccount(account);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -170,8 +172,9 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction(LocalDate.of(2010, Month.JANUARY, 1), CurrencyUnit.EUR, 1_00,
-                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(
+                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -200,10 +203,12 @@ public class ClientPerformanceSnapshotTest
 
         Portfolio portfolio = new Portfolio();
         portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(new PortfolioTransaction("2010-01-01", CurrencyUnit.EUR, 1_00, security,
-                        Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
-        portfolio.addTransaction(new PortfolioTransaction("2011-01-15", CurrencyUnit.EUR, 99_00, security,
-                        Values.Share.factorize(1), PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+        portfolio.addTransaction(
+                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2011, Month.JANUARY, 15, 0, 0),
+                        CurrencyUnit.EUR, 99_00, security, Values.Share.factorize(1),
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -333,7 +338,7 @@ public class ClientPerformanceSnapshotTest
         // insert account transfer
 
         AccountTransferEntry entry = new AccountTransferEntry(usd, cad);
-        entry.setDate(LocalDate.parse("2015-01-10"));
+        entry.setDate(LocalDateTime.parse("2015-01-10T00:00"));
 
         AccountTransaction source = entry.getSourceTransaction();
         AccountTransaction target = entry.getTargetTransaction();
@@ -373,7 +378,7 @@ public class ClientPerformanceSnapshotTest
         Account account = new AccountBuilder().addTo(client);
 
         AccountTransaction dividend = new AccountTransaction();
-        dividend.setDate(LocalDate.parse("2011-03-01"));
+        dividend.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
         dividend.setType(AccountTransaction.Type.DIVIDENDS);
         dividend.setSecurity(security);
         dividend.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));
@@ -408,7 +413,7 @@ public class ClientPerformanceSnapshotTest
         Portfolio portfolio = new PortfolioBuilder().addTo(client);
 
         PortfolioTransaction delivery = new PortfolioTransaction();
-        delivery.setDate(LocalDate.parse("2011-03-01"));
+        delivery.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));
         delivery.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
         delivery.setSecurity(security);
         delivery.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 100_00));

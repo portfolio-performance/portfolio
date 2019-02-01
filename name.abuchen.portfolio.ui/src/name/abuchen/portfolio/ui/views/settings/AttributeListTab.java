@@ -7,6 +7,7 @@ import javax.inject.Inject;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -14,11 +15,8 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
@@ -27,15 +25,16 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
-import name.abuchen.portfolio.ui.views.settings.SettingsView.Tab;
+import name.abuchen.portfolio.ui.views.AbstractTabbedView;
 
-public class AttributeListTab implements Tab, ModificationListener
+public class AttributeListTab implements AbstractTabbedView.Tab, ModificationListener
 {
     @Inject
     private Client client;
@@ -44,12 +43,49 @@ public class AttributeListTab implements Tab, ModificationListener
     private IPreferenceStore preferences;
 
     private TableViewer tableViewer;
-    private ContextMenu contextMenuAdd;
 
     @Override
-    public CTabItem createTab(CTabFolder folder)
+    public String getTitle()
     {
-        Composite container = new Composite(folder, SWT.NONE);
+        return Messages.AttributeTypeTitle;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager manager)
+    {
+        manager.add(new DropDown(Messages.LabelNewFieldByType, Images.PLUS, SWT.NONE, menuListener -> {
+            menuListener.add(new LabelOnly(Messages.LabelNewFieldByType));
+
+            for (AttributeFieldType fieldType : AttributeFieldType.values())
+            {
+                menuListener.add(new Action(fieldType.toString())
+                {
+                    @Override
+                    public void run()
+                    {
+                        AttributeType attributeType = new AttributeType(UUID.randomUUID().toString());
+                        attributeType.setName(Messages.ColumnName);
+                        attributeType.setColumnLabel(Messages.ColumnColumnLabel);
+                        attributeType.setConverter(fieldType.getConverterClass());
+                        attributeType.setType(fieldType.getFieldClass());
+                        // only security supported currently
+                        attributeType.setTarget(Security.class);
+
+                        client.getSettings().addAttributeType(attributeType);
+                        tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
+                        client.touch();
+
+                        tableViewer.editElement(attributeType, 0);
+                    }
+                });
+            }
+        }));
+    }
+
+    @Override
+    public Composite createTab(Composite parent)
+    {
+        Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
@@ -71,12 +107,9 @@ public class AttributeListTab implements Tab, ModificationListener
         tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
         tableViewer.refresh();
 
-        new ContextMenu(tableViewer.getTable(), m -> fillContextMenu(m)).hook();
+        new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 
-        CTabItem item = new CTabItem(folder, SWT.NONE);
-        item.setText(Messages.AttributeTypeTitle);
-        item.setControl(container);
-        return item;
+        return container;
     }
 
     private void addColumns(ShowHideColumnHelper support)
@@ -153,7 +186,7 @@ public class AttributeListTab implements Tab, ModificationListener
                     settings.removeAttributeType(attributeType);
                     settings.addAttributeType(index - 1, attributeType);
                     tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
@@ -169,7 +202,7 @@ public class AttributeListTab implements Tab, ModificationListener
                     settings.removeAttributeType(attributeType);
                     settings.addAttributeType(index + 1, attributeType);
                     tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                    client.markDirty();
+                    client.touch();
                 }
             });
         }
@@ -193,7 +226,7 @@ public class AttributeListTab implements Tab, ModificationListener
                     settings.removeAttributeType(attribute);
                 }
 
-                client.markDirty();
+                client.touch();
                 tableViewer.setInput(settings.getAttributeTypes().toArray());
             }
         });
@@ -202,44 +235,6 @@ public class AttributeListTab implements Tab, ModificationListener
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        client.markDirty();
-    }
-
-    @Override
-    public void showAddMenu(Shell shell)
-    {
-        if (contextMenuAdd == null)
-            contextMenuAdd = new ContextMenu(tableViewer.getControl(), m -> fillAddMenu(m));
-
-        contextMenuAdd.getMenu().setVisible(true);
-    }
-
-    private void fillAddMenu(IMenuManager manager)
-    {
-        manager.add(new LabelOnly(Messages.LabelNewFieldByType));
-
-        for (AttributeFieldType fieldType : AttributeFieldType.values())
-        {
-            manager.add(new Action(fieldType.toString())
-            {
-                @Override
-                public void run()
-                {
-                    AttributeType attributeType = new AttributeType(UUID.randomUUID().toString());
-                    attributeType.setName(Messages.ColumnName);
-                    attributeType.setColumnLabel(Messages.ColumnColumnLabel);
-                    attributeType.setConverter(fieldType.getConverterClass());
-                    attributeType.setType(fieldType.getFieldClass());
-                    // only security supported currently
-                    attributeType.setTarget(Security.class);
-
-                    client.getSettings().addAttributeType(attributeType);
-                    tableViewer.setInput(client.getSettings().getAttributeTypes().toArray());
-                    client.markDirty();
-
-                    tableViewer.editElement(attributeType, 0);
-                }
-            });
-        }
+        client.touch();
     }
 }

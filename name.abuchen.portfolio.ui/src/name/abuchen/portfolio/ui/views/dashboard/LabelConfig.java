@@ -10,9 +10,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class LabelConfig implements WidgetConfig
 {
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
 
-    public LabelConfig(WidgetDelegate delegate)
+    public LabelConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
     }
@@ -24,19 +24,21 @@ public class LabelConfig implements WidgetConfig
 
         manager.add(new SimpleAction(Messages.MenuRenameLabel, a -> {
             InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameLabel,
-                            Messages.ColumnLable, delegate.getWidget().getLabel(), null);
+                            Messages.ColumnLabel, delegate.getWidget().getLabel(), null);
 
             if (dialog.open() != InputDialog.OK)
                 return;
 
             delegate.getWidget().setLabel(dialog.getValue());
-            delegate.getClient().markDirty();
+
+            delegate.update();
+            delegate.getClient().touch();
         }));
     }
 
     @Override
     public String getLabel()
     {
-        return Messages.ColumnLable + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
+        return Messages.ColumnLabel + ": " + delegate.getWidget().getLabel(); //$NON-NLS-1$
     }
 }

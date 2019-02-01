@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -67,19 +68,19 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         @Override
         public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<Exchange> getExchanges(Security subject, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -141,7 +142,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
             }
             catch (Exception e)
             {
-                Display.getDefault().asyncExec(() -> clearSampleQuotes());
+                Display.getDefault().asyncExec(() -> clearSampleQuotes()); // NOSONAR
 
                 PortfolioPlugin.log(e);
             }
@@ -169,7 +170,8 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()

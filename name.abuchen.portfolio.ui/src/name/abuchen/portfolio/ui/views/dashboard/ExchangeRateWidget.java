@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -21,7 +22,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 
-public class ExchangeRateWidget extends WidgetDelegate
+public class ExchangeRateWidget extends WidgetDelegate<Object>
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());
@@ -61,17 +62,25 @@ public class ExchangeRateWidget extends WidgetDelegate
                             formatter.format(rate.get().getTime())) : ""; //$NON-NLS-1$
         });
 
+        update(null);
+
         return container;
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    void update()
+    public Supplier<Object> getUpdateTask()
+    {
+        return () -> null;
+    }
+
+    @Override
+    public void update(Object data)
     {
         this.title.setText(getWidget().getLabel());
 

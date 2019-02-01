@@ -1,0 +1,55 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 512341234
+Kundennummer 4312341234
+Max Mustermann
+Herrn Abrechnungsnr. 63136911234
+Max Mustermann Datum 11.05.2018
+Strasse 5A
+12345 Stadt
+Ausschüttung aus Genussschein
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 1 CHOCOLADEF. LINDT & SPRUENGLI CH0010570767 (870503)
+INHABER-PART.SCH. SF 10
+Zahlbarkeitstag 11.05.2018 Ertrag pro St. 51,00 CHF
+Bestandsstichtag 07.05.2018 Herkunftsland Schweiz
+Ex-Tag 08.05.2018 Kupon-Nr. 023
+Zahlungszeitraum 01.01.2017 - 31.12.2017
+Devisenkurs EUR / CHF 1,1959
+Devisenkursdatum 11.05.2018
+Ausschüttung 51,00 CHF 42,65+ EUR
+Umrechnung in EUR 42,65 EUR
+Einbehaltene Quellensteuer 35 % auf 51,00 CHF 14,93- EUR
+Anrechenbare Quellensteuer 15 % auf 42,65 EUR 6,40 EUR
+Kapitalertragsteuerpflichtige Dividende 42,65 EUR
+Verrechneter Sparer-Pauschbetrag 4,51 - EUR
+Verrechnete anrechenbare ausländische Quellensteuer
+(Verhältnis 100/25) auf 9,54 EUR 38,16 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,02- EUR
+Ausmachender Betrag 27,72+ EUR
+20 % rückforderbare Quellensteuer 10,20 CHF
+Lagerstelle Clearstream Banking FFM (849000 / 4003)
+Den Betrag buchen wir mit Wertstellung 15.05.2018 zu Gunsten des Kontos 1012341234 (IBAN DE76 1234 0000 1234
+1234 01), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.05120103.0011109ER01
+
+Seite 2
+Depotnummer 512341234
+Kundennummer 4312341234
+Abrechnungsnr. 63136911234
+Datum 11.05.2018
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2018 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 4,51 42,03 0,02
+Ertrag 6,40
+0,00 0,00 4,51- 9,54- 0,02-
+Nachher 0,00 0,00 0,00 38,89 0,00
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.05120103.0011110ER01

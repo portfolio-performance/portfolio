@@ -3,7 +3,7 @@ package name.abuchen.portfolio.datatransfer.csv;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -32,21 +32,29 @@ import name.abuchen.portfolio.money.Money;
         super(client, Messages.CSVDefPortfolioTransactions);
 
         List<Field> fields = getFields();
-        fields.add(new DateField(Messages.CSVColumn_Date));
-        fields.add(new ISINField(Messages.CSVColumn_ISIN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_TickerSymbol).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_WKN).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_SecurityName).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Value));
-        fields.add(new Field(Messages.CSVColumn_TransactionCurrency).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Fees).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Taxes).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_GrossAmount).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_CurrencyGrossAmount).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_ExchangeRate).setOptional(true));
-        fields.add(new AmountField(Messages.CSVColumn_Shares));
-        fields.add(new EnumField<PortfolioTransaction.Type>(Messages.CSVColumn_Type, Type.class).setOptional(true));
-        fields.add(new Field(Messages.CSVColumn_Note).setOptional(true));
+        fields.add(new DateField("date", Messages.CSVColumn_Date)); //$NON-NLS-1$
+        fields.add(new Field("time", Messages.CSVColumn_Time).setOptional(true)); //$NON-NLS-1$
+        fields.add(new ISINField("isin", Messages.CSVColumn_ISIN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("ticker", Messages.CSVColumn_TickerSymbol).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("wkn", Messages.CSVColumn_WKN).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("name", Messages.CSVColumn_SecurityName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("value", Messages.CSVColumn_Value)); //$NON-NLS-1$
+        fields.add(new Field("currency", Messages.CSVColumn_TransactionCurrency).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("fees", Messages.CSVColumn_Fees).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("gross", Messages.CSVColumn_GrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("currencyGross", Messages.CSVColumn_CurrencyGrossAmount).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("exchangeRate", Messages.CSVColumn_ExchangeRate).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("shares", Messages.CSVColumn_Shares)); //$NON-NLS-1$
+        fields.add(new EnumField<PortfolioTransaction.Type>("type", Messages.CSVColumn_Type, Type.class) //$NON-NLS-1$
+                        .setOptional(true));
+        fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
+    }
+
+    @Override
+    public String getCode()
+    {
+        return "portfolio-transaction"; //$NON-NLS-1$
     }
 
     @Override
@@ -82,7 +90,7 @@ import name.abuchen.portfolio.money.Money;
         Type type = inferType(rawValues, field2column, amount);
 
         // determine remaining fields
-        LocalDate date = getDate(Messages.CSVColumn_Date, rawValues, field2column);
+        LocalDateTime date = getDate(Messages.CSVColumn_Date, Messages.CSVColumn_Time, rawValues, field2column);
         if (date == null)
             throw new ParseException(MessageFormat.format(Messages.CSVImportMissingField, Messages.CSVColumn_Date), 0);
 
@@ -116,7 +124,7 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createBuySell(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
                     throws ParseException
     {
         BuySellEntry entry = new BuySellEntry();
@@ -166,7 +174,7 @@ import name.abuchen.portfolio.money.Money;
         }
     }
 
-    private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDate date, String note,
+    private Item createTransfer(Security security, Money amount, Long fees, Long taxes, LocalDateTime date, String note,
                     Long shares, Unit grossAmount)
     {
         PortfolioTransferEntry entry = new PortfolioTransferEntry();
@@ -181,14 +189,14 @@ import name.abuchen.portfolio.money.Money;
     }
 
     private Item createDelivery(String[] rawValues, Map<String, Column> field2column, Type type, Security security,
-                    Money amount, Long fees, Long taxes, LocalDate date, String note, Long shares, Unit grossAmount)
+                    Money amount, Long fees, Long taxes, LocalDateTime date, String note, Long shares, Unit grossAmount)
                     throws ParseException
     {
         PortfolioTransaction t = new PortfolioTransaction();
 
         t.setType(type);
         t.setSecurity(security);
-        t.setDate(date);
+        t.setDateTime(date);
         t.setAmount(Math.abs(amount.getAmount()));
         t.setCurrencyCode(amount.getCurrencyCode());
         t.setShares(shares);

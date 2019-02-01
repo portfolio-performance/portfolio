@@ -6,7 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -38,7 +38,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testSanityCheckForBankName() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -65,7 +65,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -86,7 +86,7 @@ public class DeutscheBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 14_95L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 4_52)));
         assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 19_47)));
@@ -100,7 +100,7 @@ public class DeutscheBankPDFExtractorTest
         Security security = new Security("BASF", "DE000BASF111", null, null);
         client.addSecurity(security);
 
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client);
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -124,7 +124,7 @@ public class DeutscheBankPDFExtractorTest
         Security security = new Security("CISCO", "US17275R1023", null, null);
         client.addSecurity(security);
 
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(client);
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(client);
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -141,7 +141,7 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2014-12-15")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 64_88L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 8_71 + 47 + 13_07)));
         assertThat(transaction.getGrossValue(), is(Money.of(CurrencyUnit.EUR, 87_13)));
@@ -151,7 +151,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testErtragsgutschrift2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -177,7 +177,7 @@ public class DeutscheBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2015-03-24")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-03-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 16_17L)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(123)));
 
@@ -191,7 +191,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -215,7 +215,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(675.50))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10_50L)));
     }
@@ -223,7 +223,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -246,7 +246,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3524.98))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 11_38L)));
     }
@@ -254,7 +254,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -278,7 +278,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2074.71))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-04-08")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(122.94 + 6.76 + 1.23))));
@@ -289,7 +289,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf2() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -313,7 +313,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(453.66))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2015-01-30")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-01-30T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(8)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));
@@ -324,7 +324,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierVerkauf3() throws IOException
     {
-        DeutscheBankPDFExctractor extractor = new DeutscheBankPDFExctractor(new Client());
+        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
@@ -348,7 +348,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4753.16))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2017-02-20")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2017-02-20T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0))));

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.preferences;
 
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 import org.eclipse.jface.preference.StringFieldEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -23,6 +24,7 @@ public class APIKeysPreferencePage extends FieldEditorPreferencePage
         setDescription(Messages.PrefDescriptionAlphaVantage);
     }
 
+    @Override
     public void createFieldEditors()
     {
         Link link = new Link(getFieldEditorParent(), SWT.NONE);
@@ -39,5 +41,8 @@ public class APIKeysPreferencePage extends FieldEditorPreferencePage
 
         addField(new StringFieldEditor(UIConstants.Preferences.ALPHAVANTAGE_API_KEY, //
                         Messages.PrefAlphaVantageAPIKey, getFieldEditorParent()));
+
+        addField(new IntegerFieldEditor(UIConstants.Preferences.ALPHAVANTAGE_CALL_FREQUENCY_LIMIT,
+                        Messages.PrefAlphaVantageCallFrequencyLimit, getFieldEditorParent()));
     }
 }

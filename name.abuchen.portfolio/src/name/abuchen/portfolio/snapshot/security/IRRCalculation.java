@@ -19,24 +19,24 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
-        dates.add(t.getDate());
-        values.add(-t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
+        dates.add(t.getDateTime().toLocalDate());
+        values.add(-t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
     }
 
     @Override
     public void visit(CurrencyConverter converter, DividendFinalTransaction t)
     {
-        dates.add(t.getDate());
-        values.add(t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount() / Values.Amount.divider());
+        dates.add(t.getDateTime().toLocalDate());
+        values.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount() / Values.Amount.divider());
     }
 
     @Override
     public void visit(CurrencyConverter converter, DividendTransaction t)
     {
-        dates.add(t.getDate());
+        dates.add(t.getDateTime().toLocalDate());
 
         long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
-        long amount = t.getMonetaryAmount().with(converter.at(t.getDate())).getAmount();
+        long amount = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
 
         values.add((amount + taxes) / Values.Amount.divider());
     }
@@ -51,12 +51,12 @@ import name.abuchen.portfolio.money.Values;
                 // ignore tax and tax refunds when calculating the irr for a single security
                 break;
             case FEES:
-                dates.add(t.getDate());
-                values.add(-converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                dates.add(t.getDateTime().toLocalDate());
+                values.add(-converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
                 break;
             case FEES_REFUND:
-                dates.add(t.getDate());
-                values.add(converter.convert(t.getDate(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
+                dates.add(t.getDateTime().toLocalDate());
+                values.add(converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount() / Values.Amount.divider());
                 break;
             default:
         }
@@ -65,7 +65,7 @@ import name.abuchen.portfolio.money.Values;
     @Override
     public void visit(CurrencyConverter converter, PortfolioTransaction t)
     {
-        dates.add(t.getDate());
+        dates.add(t.getDateTime().toLocalDate());
         long taxes = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
         long amount = t.getMonetaryAmount(converter).getAmount();
         switch (t.getType())

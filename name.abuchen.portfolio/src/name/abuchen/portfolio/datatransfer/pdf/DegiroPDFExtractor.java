@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
@@ -20,9 +19,9 @@ import name.abuchen.portfolio.money.Money;
 public class DegiroPDFExtractor extends AbstractPDFExtractor
 {
 
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm", Locale.GERMANY); //$NON-NLS-1$
     
-    public DegiroPDFExtractor(Client client) throws IOException
+    public DegiroPDFExtractor(Client client)
     {
         super(client);
         addBankIdentifier("DEGIRO"); //$NON-NLS-1$
@@ -49,7 +48,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .match("(?<date>\\d+-\\d+-\\d{4}) \\d+:\\d+ Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*")
                         .assign((t, v) -> {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                t.setDate(asDate(v.get("date")));
+                                t.setDateTime(asDate(v.get("date")));
                                 t.setAmount(asAmount(v.get("amount")));
                         })
                         .wrap(t -> new TransactionItem(t)));
@@ -70,7 +69,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         })
                         
                         .section("date", "isin", "name", "shares", "currency", "amount")
-                        .match("(?<date>\\d+-\\d+-\\d{4}) \\d+:\\d+ (?<name>.*) (?<isin>[^ ]+) Kauf (?<shares>[.\\d]+[,\\d]*) zu je [.\\d]+[,\\d]* (?<currency>\\w{3}) -(?<amount>[.\\d]+,\\d{2}) .*")
+                        .match("(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>[^ ]+) Kauf (?<shares>[.\\d]+[,\\d]*) zu je [.\\d]+[,\\d]* (?<currency>\\w{3}) -(?<amount>[.\\d]+,\\d{2}) .*")
                         .assign((t, v) -> {
                                 t.setSecurity(getOrCreateSecurity(v));
                                 t.setDate(asDate(v.get("date")));
@@ -132,9 +131,10 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         
     }
     
-    LocalDate asDate(String value)
+    @Override
+    LocalDateTime asDate(String value)
     {
-        return LocalDate.parse(value, DATE_FORMAT);
+        return LocalDateTime.parse(value, DATE_FORMAT);
     }
 
     @Override

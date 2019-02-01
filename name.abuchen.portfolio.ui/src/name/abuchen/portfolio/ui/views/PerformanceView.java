@@ -6,19 +6,22 @@ import java.util.function.Function;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnPixelData;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -26,7 +29,6 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -46,24 +48,32 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 public class PerformanceView extends AbstractHistoricView
 {
     @Inject
+    private ESelectionService selectionService;
+
+    @Inject
     private ExchangeRateProviderFactory factory;
 
     private ClientFilterDropDown clientFilter;
+
+    private boolean preTax = false;
 
     private TreeViewer calculation;
     private StatementOfAssetsViewer snapshotStart;
@@ -81,14 +91,26 @@ public class PerformanceView extends AbstractHistoricView
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
 
-        this.clientFilter = new ClientFilterDropDown(toolBar, getClient(), getPreferenceStore(),
+        this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         PerformanceView.class.getSimpleName(), filter -> notifyModelUpdated());
 
-        new ExportDropDown(toolBar); // NOSONAR
+        toolBar.add(clientFilter);
+
+        toolBar.add(new ExportDropDown());
+
+        toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
+            SimpleAction action = new SimpleAction(Messages.LabelPreTax, a -> {
+                this.preTax = !this.preTax;
+                reportingPeriodUpdated();
+            });
+
+            action.setChecked(this.preTax);
+            manager.add(action);
+        }));
     }
 
     @Override
@@ -97,6 +119,10 @@ public class PerformanceView extends AbstractHistoricView
         ReportingPeriod period = getReportingPeriod();
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
+
+        if (preTax)
+            filteredClient = new WithoutTaxesFilter().filter(filteredClient);
+
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(filteredClient, converter, period);
 
         try
@@ -169,10 +195,14 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
+        ColumnViewerToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+
         final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
 
-        TreeViewerColumn column = new TreeViewerColumn(calculation, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnLable);
+        ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation", //$NON-NLS-1$
+                        getPreferenceStore(), calculation, layout);
+
+        Column column = new NameColumn("label", Messages.ColumnLabel, SWT.NONE, 350); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -229,10 +259,9 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(350));
+        support.addColumn(column);
 
-        column = new TreeViewerColumn(calculation, SWT.RIGHT);
-        column.getColumn().setText(Messages.ColumnValue);
+        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -259,13 +288,22 @@ public class PerformanceView extends AbstractHistoricView
                 return null;
             }
         });
+        support.addColumn(column);
 
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(80));
+        support.createColumns();
 
         calculation.getTree().setHeaderVisible(true);
         calculation.getTree().setLinesVisible(true);
 
         calculation.setContentProvider(new PerformanceContentProvider());
+
+        calculation.addSelectionChangedListener(event -> {
+            Object selection = ((IStructuredSelection) event.getSelection()).getFirstElement();
+            if (selection instanceof ClientPerformanceSnapshot.Position
+                            && ((ClientPerformanceSnapshot.Position) selection).getSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getClient(),
+                                ((ClientPerformanceSnapshot.Position) selection).getSecurity()));
+        });
 
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(title);
@@ -292,19 +330,27 @@ public class PerformanceView extends AbstractHistoricView
 
         TableViewer transactionViewer = new TableViewer(container, SWT.FULL_SELECTION);
 
+        transactionViewer.addSelectionChangedListener(event -> {
+            TransactionPair<?> tx = ((TransactionPair<?>) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement());
+            if (tx != null && tx.getTransaction().getSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), tx.getTransaction().getSecurity()));
+        });
+
         ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@2" + title, //$NON-NLS-1$
                         getPreferenceStore(), transactionViewer, layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDate()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()),
+                        SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 100);
@@ -569,7 +615,7 @@ public class PerformanceView extends AbstractHistoricView
 
         earningsByAccount = new TableViewer(container, SWT.FULL_SELECTION);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(PerformanceView.class.getSimpleName() + "@byaccounts2", //$NON-NLS-1$
                         getPreferenceStore(), earningsByAccount, layout);
 
         Column column = new Column(Messages.ColumnSource, SWT.LEFT, 400);
@@ -591,7 +637,34 @@ public class PerformanceView extends AbstractHistoricView
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnDividendPayment, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getDividends(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "dividends")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnInterest, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getInterest(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "interest")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnEarnings, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnEarnings_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -602,6 +675,32 @@ public class PerformanceView extends AbstractHistoricView
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "sum")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getFees(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "fees")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return Values.Money.format(item.getTaxes(), getClient().getBaseCurrency());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "taxes")); //$NON-NLS-1$
         support.addColumn(column);
 
         support.createColumns();
@@ -689,11 +788,12 @@ public class PerformanceView extends AbstractHistoricView
         }
     }
 
-    private final class ExportDropDown extends AbstractDropDown
+    private final class ExportDropDown extends DropDown implements IMenuListener
     {
-        private ExportDropDown(ToolBar toolBar)
+        private ExportDropDown()
         {
-            super(toolBar, Messages.MenuExportData, Images.EXPORT.image(), SWT.NONE);
+            super(Messages.MenuExportData, Images.EXPORT, SWT.NONE);
+            setMenuListener(this);
         }
 
         @Override

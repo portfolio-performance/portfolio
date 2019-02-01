@@ -2,14 +2,14 @@ package name.abuchen.portfolio.ui.handlers;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.PortfolioPart;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class SaveFileHandler
 {
@@ -28,6 +28,6 @@ public class SaveFileHandler
             return;
 
         // trigger part to save file
-        ((PortfolioPart) part.getObject()).save(part, shell);
+        ((PortfolioPart) part.getObject()).save(shell);
     }
 }

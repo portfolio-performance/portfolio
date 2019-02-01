@@ -34,7 +34,8 @@ public final class DataSeries
     public enum ClientDataSeries
     {
         TOTALS, INVESTED_CAPITAL, ABSOLUTE_INVESTED_CAPITAL, TRANSFERALS, TAXES, ABSOLUTE_DELTA, ABSOLUTE_DELTA_ALL_RECORDS, //
-        DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED;
+        DIVIDENDS, DIVIDENDS_ACCUMULATED, INTEREST, INTEREST_ACCUMULATED, DELTA_PERCENTAGE, INTEREST_CHARGE, INTEREST_CHARGE_ACCUMULATED, //
+        EARNINGS, EARNINGS_ACCUMULATED;
     }
 
     /**
@@ -43,14 +44,19 @@ public final class DataSeries
     public enum Type
     {
         CLIENT("Client-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
+        CLIENT_PRETAX("Client-PreTax-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
         SECURITY("Security", i -> ((Security) i).getUUID()), //$NON-NLS-1$
         SECURITY_BENCHMARK("[b]Security", i -> ((Security) i).getUUID()), //$NON-NLS-1$
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
+        ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         CONSUMER_PRICE_INDEX("[b]ConsumerPriceIndex", i -> ""), //$NON-NLS-1$ //$NON-NLS-2$
         CLASSIFICATION("Classification", i -> ((Classification) i).getId()), //$NON-NLS-1$
-        CLIENT_FILTER("ClientFilter", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        CLIENT_FILTER("ClientFilter", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        CLIENT_FILTER_PRETAX("ClientFilter-PreTax", i -> ((ClientFilterMenu.Item) i).getUUIDs().replaceAll(",", "")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         private final String label;
         private final Function<Object, String> uuidProvider;
@@ -68,6 +74,7 @@ public final class DataSeries
     }
 
     private Type type;
+    private Object group;
     private Object instance;
     private String label;
     private boolean isLineChart = true;
@@ -80,7 +87,13 @@ public final class DataSeries
 
     /* package */ DataSeries(Type type, Object instance, String label, RGB color)
     {
+        this(type, null, instance, label, color);
+    }
+
+    /* package */ DataSeries(Type type, Object group, Object instance, String label, RGB color)
+    {
         this.type = type;
+        this.group = group;
         this.instance = instance;
         this.label = label;
         this.color = color;
@@ -89,6 +102,11 @@ public final class DataSeries
     public Type getType()
     {
         return type;
+    }
+
+    public Object getGroup()
+    {
+        return group;
     }
 
     public Object getInstance()
@@ -115,7 +133,9 @@ public final class DataSeries
         if (instance instanceof Classification)
         {
             Classification parent = ((Classification) instance).getParent();
-            buf.append(" (").append(parent.getPathName(true)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+
+            if (parent.getParent() != null)
+                buf.append(" (").append(parent.getPathName(false)).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         if (isBenchmark())
@@ -182,13 +202,17 @@ public final class DataSeries
             case SECURITY_BENCHMARK:
                 return Images.SECURITY.image();
             case ACCOUNT:
+            case ACCOUNT_PRETAX:
                 return Images.ACCOUNT.image();
             case PORTFOLIO:
+            case PORTFOLIO_PRETAX:
             case PORTFOLIO_PLUS_ACCOUNT:
+            case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
                 return Images.PORTFOLIO.image();
             case CLASSIFICATION:
                 return Images.CATEGORY.image();
             case CLIENT_FILTER:
+            case CLIENT_FILTER_PRETAX:
                 return Images.FILTER_OFF.image();
             default:
                 return null;

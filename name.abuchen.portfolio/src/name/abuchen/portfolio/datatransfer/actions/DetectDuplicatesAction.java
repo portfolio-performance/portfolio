@@ -12,18 +12,10 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 
 public class DetectDuplicatesAction implements ImportAction
 {
-
-    @Override
-    public Status process(Security security)
-    {
-        return Status.OK_STATUS;
-    }
-
     @Override
     public Status process(AccountTransaction transaction, Account account)
     {
@@ -87,7 +79,7 @@ public class DetectDuplicatesAction implements ImportAction
 
     private boolean isPotentialDuplicate(Transaction subject, Transaction other)
     {
-        if (!other.getDate().equals(subject.getDate()))
+        if (!other.getDateTime().equals(subject.getDateTime()))
             return false;
 
         if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))

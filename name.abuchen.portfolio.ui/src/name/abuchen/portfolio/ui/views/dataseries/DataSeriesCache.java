@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,9 @@ import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
+import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 
@@ -65,7 +69,7 @@ public class DataSeriesCache
     private final Client client;
     private final CurrencyConverter converter;
 
-    private final Map<CacheKey, PerformanceIndex> cache = new HashMap<>();
+    private final Map<CacheKey, PerformanceIndex> cache = Collections.synchronizedMap(new HashMap<>());
 
     @Inject
     public DataSeriesCache(Client client, ExchangeRateProviderFactory factory)
@@ -89,7 +93,7 @@ public class DataSeriesCache
         CacheKey key = new CacheKey(uuid, reportingPeriod);
 
         // #computeIfAbsent leads to a ConcurrentMapModificdation b/c #calculate
-        // might call #lookup to calculcate other cache entries
+        // might call #lookup to calculate other cache entries
         PerformanceIndex result = cache.get(key);
         if (result != null)
             return result;
@@ -111,6 +115,10 @@ public class DataSeriesCache
                 case CLIENT:
                     return PerformanceIndex.forClient(client, converter, reportingPeriod, warnings);
 
+                case CLIENT_PRETAX:
+                    return PerformanceIndex.forClient(new WithoutTaxesFilter().filter(client), converter,
+                                    reportingPeriod, warnings);
+
                 case SECURITY:
                     return PerformanceIndex.forInvestment(client, converter, (Security) series.getInstance(),
                                     reportingPeriod, warnings);
@@ -124,13 +132,22 @@ public class DataSeriesCache
                     return PerformanceIndex.forPortfolio(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
+                case PORTFOLIO_PRETAX:
+                    return calculatePortfolioPretax(series, reportingPeriod, warnings);
+
                 case PORTFOLIO_PLUS_ACCOUNT:
                     return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
                                     reportingPeriod, warnings);
 
+                case PORTFOLIO_PLUS_ACCOUNT_PRETAX:
+                    return calculatePortfolioPlusAccountPretax(series, reportingPeriod, warnings);
+
                 case ACCOUNT:
                     Account account = (Account) series.getInstance();
                     return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
+
+                case ACCOUNT_PRETAX:
+                    return calculateAccountPretax(series, reportingPeriod, warnings);
 
                 case CLASSIFICATION:
                     Classification classification = (Classification) series.getInstance();
@@ -146,6 +163,12 @@ public class DataSeriesCache
                     return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,
                                     warnings);
 
+                case CLIENT_FILTER_PRETAX:
+                    ClientFilterMenu.Item pretax = (ClientFilterMenu.Item) series.getInstance();
+                    return PerformanceIndex.forClient(
+                                    new WithoutTaxesFilter().filter(pretax.getFilter().filter(client)), converter,
+                                    reportingPeriod, warnings);
+
                 default:
                     throw new IllegalArgumentException(series.getType().name());
             }
@@ -155,5 +178,38 @@ public class DataSeriesCache
             if (!warnings.isEmpty())
                 PortfolioPlugin.log(warnings);
         }
+    }
+
+    private PerformanceIndex calculatePortfolioPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Portfolio portfolio = filteredClient.getPortfolios().stream()
+                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forPortfolio(filteredClient, converter, portfolio, reportingPeriod, warnings);
+    }
+
+    private PerformanceIndex calculatePortfolioPlusAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Portfolio portfolio = filteredClient.getPortfolios().stream()
+                        .filter(p -> ((ReadOnlyPortfolio) p).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio, reportingPeriod, warnings);
+    }
+
+    private PerformanceIndex calculateAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+                    List<Exception> warnings)
+    {
+        Client filteredClient = new WithoutTaxesFilter().filter(client);
+        Account account = filteredClient.getAccounts().stream()
+                        .filter(a -> ((ReadOnlyAccount) a).getSource().equals(series.getInstance())).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        return PerformanceIndex.forAccount(client, converter, account, reportingPeriod, warnings);
     }
 }

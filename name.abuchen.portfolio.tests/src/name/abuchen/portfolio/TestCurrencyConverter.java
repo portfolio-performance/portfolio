@@ -15,7 +15,7 @@ import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
 {
-    private static ExchangeRateTimeSeriesImpl EUR_USD = null;
+    private static ExchangeRateTimeSeriesImpl EUR_USD = null; // NOSONAR
 
     static
     {
@@ -82,7 +82,7 @@ public class TestCurrencyConverter implements CurrencyConverter
         if (!currencyCode.equals(series.getBaseCurrency()))
             throw new MonetaryException();
 
-        return series.lookupRate(date).get();
+        return series.lookupRate(date).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

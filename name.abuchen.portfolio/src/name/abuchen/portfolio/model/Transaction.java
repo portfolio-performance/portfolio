@@ -3,7 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -95,6 +95,16 @@ public abstract class Transaction implements Annotated
             return exchangeRate;
         }
 
+        @Override
+        public String toString()
+        {
+            return String.format("%-17s %s %s %s", //$NON-NLS-1$
+                            type.name(), //
+                            amount.toString(), //
+                            (forex != null ? forex.toString() : "<no forex>"), //$NON-NLS-1$
+                            (exchangeRate != null ? exchangeRate.toString() : "<no exchange>") //$NON-NLS-1$
+            );
+        }
     }
 
     public static final class ByDate implements Comparator<Transaction>, Serializable
@@ -104,11 +114,11 @@ public abstract class Transaction implements Annotated
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t1.getDate().compareTo(t2.getDate());
+            return t1.getDateTime().compareTo(t2.getDateTime());
         }
     }
 
-    private LocalDate date;
+    private LocalDateTime date;
     private String currencyCode;
     private long amount;
 
@@ -122,12 +132,13 @@ public abstract class Transaction implements Annotated
     public Transaction()
     {}
 
-    public Transaction(LocalDate date, String currencyCode, long amount)
+    public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
         this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(LocalDate date, String currencyCode, long amount, Security security, long shares, String note)
+    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
+                    String note)
     {
         this.date = date;
         this.currencyCode = currencyCode;
@@ -137,12 +148,12 @@ public abstract class Transaction implements Annotated
         this.note = note;
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDateTime()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDateTime(LocalDateTime date)
     {
         this.date = date;
     }

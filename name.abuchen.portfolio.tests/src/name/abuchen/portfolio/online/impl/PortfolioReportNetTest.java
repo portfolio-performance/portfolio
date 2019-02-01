@@ -1,0 +1,88 @@
+package name.abuchen.portfolio.online.impl;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
+import org.junit.Test;
+
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.online.impl.PortfolioReportNet.OnlineItem;
+
+@SuppressWarnings("nls")
+public class PortfolioReportNetTest
+{
+    @Test
+    public void testUpdateSecurity() throws ParseException
+    {
+        JSONObject jsonObject = (JSONObject) JSONValue.parseWithException("{\n" + //
+                        "    \"isin\": \"DE0005190003\",\n" + //
+                        "    \"markets\": {\n" + //
+                        "        \"XFRA\": {\n" + //
+                        "            \"symbol\": \"BMW\"\n" + //
+                        "        },\n" + //
+                        "        \"XNAS\": {\n" + //
+                        "            \"symbol\": \"BAMXF\"\n" + //
+                        "        }\n" + //
+                        "    },\n" + //
+                        "    \"name\": \"BAY.MOTOREN WERKE AG ST\",\n" + //
+                        "    \"security_type\": \"share\",\n" + //
+                        "    \"uuid\": \"f9c39f31b1f443639e462cd8e22e3ce7\",\n" + //
+                        "    \"wkn\": \"519000\"\n" + //
+                        "}");
+
+        OnlineItem item = OnlineItem.from(jsonObject);
+
+        Security security = new Security();
+
+        item.applyTo(security);
+
+        assertValues(security);
+
+        assertThat(item.update(security), is(false));
+
+        security.setIsin("x");
+        assertThat(item.update(security), is(true));
+        assertValues(security);
+        assertThat(item.update(security), is(false));
+
+        security.setWkn("x");
+        assertThat(item.update(security), is(true));
+        assertValues(security);
+        assertThat(item.update(security), is(false));
+
+        security.getProperties().findAny().ifPresent(property -> security.removeProperty(property));
+        assertThat(item.update(security), is(true));
+        assertValues(security);
+        assertThat(item.update(security), is(false));
+
+        security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET, "XLSE", "x"));
+        assertThat(item.update(security), is(true));
+        assertValues(security);
+        assertThat(item.update(security), is(false));
+
+        security.getProperties().findAny().ifPresent(property -> {
+            security.removeProperty(property);
+            security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET, property.getName(), "x"));
+        });
+        assertThat(item.update(security), is(true));
+        assertValues(security);
+        assertThat(item.update(security), is(false));
+    }
+
+    private void assertValues(Security security)
+    {
+        assertThat(security.getIsin(), is("DE0005190003"));
+        assertThat(security.getWkn(), is("519000"));
+        assertThat(security.getName(), is("BAY.MOTOREN WERKE AG ST"));
+        assertThat(security.getOnlineId(), is("f9c39f31b1f443639e462cd8e22e3ce7"));
+        assertThat(security.getProperties().count(), is(2L));
+        assertThat(security.getProperties().sorted((r, l) -> r.getName().compareTo(l.getName()))
+                        .map(p -> p.getName() + "=" + p.getValue()).reduce((r, l) -> r + ";" + l).orElse(null),
+                        is("XFRA=BMW;XNAS=BAMXF"));
+    }
+
+}

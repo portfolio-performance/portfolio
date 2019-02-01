@@ -15,6 +15,7 @@ import javax.inject.Named;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.IValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
@@ -30,22 +31,31 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.DatePicker;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 public class InvestmentPlanDialog extends AbstractTransactionDialog
 {
     private Client client;
 
+    private final Class<? extends Transaction> planType;
+
     @Inject
-    public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
+    public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client,
+                    Class<? extends Transaction> planType)
     {
         super(parentShell);
         this.client = client;
-        setModel(new InvestmentPlanModel(client));
+        this.planType = planType;
+
+        setModel(new InvestmentPlanModel(client, planType));
     }
 
     private InvestmentPlanModel model()
@@ -62,37 +72,43 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // name
 
-        Label lblName = new Label(editArea, SWT.LEFT);
+        Label lblName = new Label(editArea, SWT.RIGHT);
         lblName.setText(Messages.ColumnName);
         Text valueName = new Text(editArea, SWT.BORDER);
-        IValidator validator = value -> {
-            String v = (String) value;
-            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                            : ValidationStatus.error(
-                                            MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
-        };
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName),
-                        BeanProperties.value(Properties.name.name()).observe(model),
-                        new UpdateValueStrategy().setAfterConvertValidator(validator), null);
+        IValidator<String> validator = v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                        : ValidationStatus.error(
+                                        MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
 
-        // security
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> nameTarget = WidgetProperties.text(SWT.Modify).observe(valueName);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> nameModel = BeanProperties.value(Properties.name.name()).observe(model);
+        context.bindValue(nameTarget, nameModel,
+                        new UpdateValueStrategy<String, String>().setAfterConvertValidator(validator), null);
 
-        ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
-        securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
-        securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
-        securities.bindCurrency(Properties.securityCurrencyCode.name());
+        // security + portfolio
 
-        // portfolio
+        ComboInput securities = null;
+        ComboInput portfolio = null;
+        if (planType == PortfolioTransaction.class)
+        {
+            portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
+            List<Portfolio> portfolios = including(client.getActivePortfolios(), model().getPortfolio());
+            portfolio.value.setInput(portfolios);
+            portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
 
-        ComboInput portfolio = new ComboInput(editArea, Messages.ColumnPortfolio);
-        portfolio.value.setInput(including(client.getActivePortfolios(), model().getPortfolio()));
-        portfolio.bindValue(Properties.portfolio.name(), Messages.MsgMissingPortfolio);
+            securities = new ComboInput(editArea, Messages.ColumnSecurity);
+            securities.value.setInput(including(client.getActiveSecurities(), model().getSecurity()));
+            securities.bindValue(Properties.security.name(), Messages.MsgMissingSecurity);
+            securities.bindCurrency(Properties.securityCurrencyCode.name());
+        }
 
         // account
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        accounts.add(0, InvestmentPlanModel.DELIVERY);
+        if (planType == PortfolioTransaction.class)
+            accounts = including(accounts, InvestmentPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         account.bindCurrency(Properties.accountCurrencyCode.name());
@@ -103,16 +119,20 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         labelAutoGenerate.setText(Messages.MsgCreateTransactionsAutomaticallyUponOpening);
 
         Button buttonAutoGenerate = new Button(editArea, SWT.CHECK);
-        context.bindValue(WidgetProperties.selection().observe(buttonAutoGenerate), //
-                        BeanProperties.value(Properties.autoGenerate.name()).observe(model));
+        IObservableValue<?> targetAutoGenerate = WidgetProperties.selection().observe(buttonAutoGenerate);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelAutoGenerate = BeanProperties.value(Properties.autoGenerate.name()).observe(model);
+        context.bindValue(targetAutoGenerate, modelAutoGenerate);
 
         // date
 
         Label lblDate = new Label(editArea, SWT.RIGHT);
         lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.start.name()).observe(model));
+        DatePicker valueDate = new DatePicker(editArea);
+        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelDate = BeanProperties.value(Properties.start.name()).observe(model);
+        context.bindValue(targetDate, modelDate);
 
         // interval
 
@@ -142,9 +162,13 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         // fees
 
-        Input fees = new Input(editArea, Messages.ColumnFees);
-        fees.bindValue(Properties.fees.name(), Messages.ColumnAmount, Values.Amount, false);
-        fees.bindCurrency(Properties.transactionCurrencyCode.name());
+        Input fees = null;
+        if (planType == PortfolioTransaction.class)
+        {
+            fees = new Input(editArea, Messages.ColumnFees);
+            fees.bindValue(Properties.fees.name(), Messages.ColumnAmount, Values.Amount, false);
+            fees.bindCurrency(Properties.transactionCurrencyCode.name());
+        }
 
         //
         // form layout
@@ -153,26 +177,34 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
         int amountWidth = amountWidth(amount.value);
         int currencyWidth = currencyWidth(amount.currency);
 
-        startingWith(valueName, lblName).width(3 * amountWidth)
-                        //
-                        .thenBelow(securities.value.getControl()).label(securities.label)
-                        .suffix(securities.currency, currencyWidth) //
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label) //
-                        .thenBelow(account.value.getControl()).label(account.label)
+        FormDataFactory factory = startingWith(valueName, lblName).width(3 * amountWidth);
+
+        if (portfolio != null)
+        {
+            factory = factory.thenBelow(portfolio.value.getControl()).label(portfolio.label)
+                            .thenBelow(securities.value.getControl()).label(securities.label)
+                            .suffix(securities.currency, currencyWidth);
+        }
+
+        factory = factory.thenBelow(account.value.getControl()).label(account.label)
                         .suffix(account.currency, currencyWidth) //
                         .thenBelow(labelAutoGenerate, 10) //
                         .thenBelow(valueDate.getControl(), 10).label(lblDate) //
                         .thenBelow(amount.value, 10).width(amountWidth).label(amount.label)
-                        .suffix(amount.currency, currencyWidth) //
-                        .thenBelow(fees.value).width(amountWidth).label(fees.label)
-                        .suffix(fees.currency, currencyWidth); //
+                        .suffix(amount.currency, currencyWidth);
+
+        if (fees != null)
+        {
+            factory.thenBelow(fees.value).width(amountWidth).label(fees.label).suffix(fees.currency, currencyWidth); //
+        }
 
         startingWith(labelAutoGenerate).thenLeft(buttonAutoGenerate);
-        
+
         startingWith(valueDate.getControl()).thenRight(interval.label).thenRight(interval.value.getControl());
 
-        int widest = widest(lblName, securities.label, portfolio.label, account.label, lblDate, interval.label,
-                        amount.label, fees.label);
+        int widest = widest(lblName, securities != null ? securities.label : null,
+                        portfolio != null ? portfolio.label : null, account.label, lblDate, interval.label,
+                        amount.label, fees != null ? fees.label : null);
         startingWith(lblName).width(widest);
 
         WarningMessages warnings = new WarningMessages(this);

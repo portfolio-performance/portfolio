@@ -13,11 +13,17 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
 
     private Account referenceAccount;
 
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
+    private List<PortfolioTransaction> transactions = new ArrayList<>();
 
     public Portfolio()
     {
         this.uuid = UUID.randomUUID().toString();
+    }
+
+    public Portfolio(String name)
+    {
+        this();
+        this.name = name;
     }
 
     public String getUUID()

@@ -8,6 +8,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,24 +34,25 @@ public class AccountPerformanceTaxRefundTestCase
     @Test
     public void testAccountPerformanceTaxRefund() throws IOException
     {
-        Client client = ClientFactory.load(SecurityTestCase.class
-                        .getResourceAsStream("account_performance_tax_refund.xml"));
+        Client client = ClientFactory
+                        .load(SecurityTestCase.class.getResourceAsStream("account_performance_tax_refund.xml"));
 
         Account account = client.getAccounts().get(0);
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"), LocalDate.parse("2014-12-06"));
+        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-06"),
+                        LocalDate.parse("2014-12-06"));
 
         AccountTransaction deposit = account.getTransactions().get(0);
 
         // no changes in holdings, ttwror must be:
         double startValue = deposit.getAmount();
-        double endValue = account.getCurrentAmount();
+        double endValue = account.getCurrentAmount(LocalDateTime.of(2016, 1, 1, 10, 00));
         double ttwror = (endValue / startValue) - 1;
 
         List<Exception> warnings = new ArrayList<>();
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex accountPerformance = PerformanceIndex.forAccount(client, converter, account, period, warnings);
         assertThat(warnings, empty());
-        
+
         double calculatedTtwror = accountPerformance.getFinalAccumulatedPercentage();
         assertThat(calculatedTtwror, closeTo(ttwror, 0.0001));
 

@@ -2,16 +2,15 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -22,12 +21,13 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
@@ -35,9 +35,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -53,7 +52,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 public class InvestmentPlanListView extends AbstractListView implements ModificationListener
 {
     private TableViewer plans;
-    private PortfolioTransactionsViewer transactions;
+    private TransactionsViewer transactions;
     private ShowHideColumnHelper planColumns;
 
     @Inject
@@ -64,7 +63,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     {
         return Messages.LabelInvestmentPlans;
     }
-    
+
     @Override
     protected int getSashStyle()
     {
@@ -74,55 +73,48 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     @Override
     public void notifyModelUpdated()
     {
+        plans.setInput(getClient().getPlans());
         plans.setSelection(plans.getSelection());
     }
 
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        InvestmentPlan plan = (InvestmentPlan) element;
-        if (plan.getAccount() != null && plan.getAccount().equals(InvestmentPlanModel.DELIVERY))
-            plan.setAccount(null);
-
         markDirty();
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         addNewInvestmentPlanButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addNewInvestmentPlanButton(ToolBar toolBar)
+    private void addNewInvestmentPlanButton(ToolBarManager toolBar)
     {
-        Action action = new OpenDialogAction(this, Messages.InvestmentPlanMenuCreate) //
-                        .type(InvestmentPlanDialog.class).onSuccess(d -> {
-                            markDirty();
-                            plans.setInput(getClient().getPlans());
-                        });
-        action.setImageDescriptor(Images.PLUS.descriptor());
-        action.setToolTipText(Messages.InvestmentPlanMenuCreate);
+        toolBar.add(new DropDown(Messages.InvestmentPlanMenuCreate, Images.PLUS, SWT.NONE, manager -> {
 
-        new ActionContributionItem(action).fill(toolBar, -1);
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeBuyDelivery) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(PortfolioTransaction.class));
+
+            manager.add(new OpenDialogAction(this, Messages.InvestmentPlanTypeDeposit) //
+                            .type(InvestmentPlanDialog.class) //
+                            .parameters(AccountTransaction.class));
+        }));
     }
 
-    private void addConfigButton(final ToolBar toolBar)
+    private void addConfigButton(final ToolBarManager toolBar)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, Images.CONFIG.image(), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                MenuManager m = new MenuManager(Messages.LabelInvestmentPlans);
-                planColumns.menuAboutToShow(m);
-                manager.add(m);
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
+            MenuManager m = new MenuManager(Messages.LabelInvestmentPlans);
+            planColumns.menuAboutToShow(m);
+            manager.add(m);
 
-                m = new MenuManager(Messages.LabelTransactions);
-                transactions.getColumnSupport().menuAboutToShow(m);
-                manager.add(m);
-            }
-        };
+            m = new MenuManager(Messages.LabelTransactions);
+            transactions.getColumnSupport().menuAboutToShow(m);
+            manager.add(m);
+        }));
     }
 
     @Override
@@ -151,9 +143,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
             if (plan != null)
-                transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+                transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
             else
-                transactions.setInput(null, null);
+                transactions.setInput(null, null, null);
 
             transactions.refresh();
         });
@@ -173,19 +165,18 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return ((InvestmentPlan) e).getSecurity().getName();
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return plan.getSecurity() != null ? plan.getSecurity().getName() : null;
             }
 
             @Override
-            public Image getImage(Object element)
+            public Image getImage(Object e)
             {
-                return Images.SECURITY.image();
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return (plan.getSecurity() != null ? Images.SECURITY.image() : null);
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
-        List<Security> securities = new ArrayList<>(getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-        new ListEditingSupport(InvestmentPlan.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnPortfolio, SWT.None, 120);
@@ -194,18 +185,19 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return ((InvestmentPlan) e).getPortfolio().getName();
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return plan.getPortfolio() != null ? plan.getPortfolio().getName()
+                                : Messages.InvestmentPlanOptionDeposit;
             }
 
             @Override
-            public Image getImage(Object element)
+            public Image getImage(Object e)
             {
-                return Images.PORTFOLIO.image();
+                InvestmentPlan plan = (InvestmentPlan) e;
+                return plan.getPortfolio() != null ? Images.PORTFOLIO.image() : null;
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this) //$NON-NLS-1$
-                        .attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAccount, SWT.None, 120);
@@ -226,10 +218,6 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
-        List<Account> accounts = new ArrayList<>();
-        accounts.add(InvestmentPlanModel.DELIVERY);
-        accounts.addAll(getClient().getAccounts());
-        new ListEditingSupport(InvestmentPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnStartDate, SWT.None, 80);
@@ -286,7 +274,6 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(InvestmentPlan.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAutoGenerate, SWT.LEFT, 80);
@@ -326,7 +313,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public void run()
             {
                 CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                List<PortfolioTransaction> latest = plan.generateTransactions(converter);
+                List<Transaction> latest = plan.generateTransactions(converter);
 
                 if (latest.isEmpty())
                 {
@@ -339,7 +326,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                     markDirty();
                     plans.refresh();
                     transactions.markTransactions(latest);
-                    transactions.setInput(plan.getPortfolio(), plan.getTransactions());
+                    transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
                 }
             }
         });
@@ -348,10 +335,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
         new OpenDialogAction(this, Messages.MenuEditInvestmentPlan) //
                         .type(InvestmentPlanDialog.class, d -> d.setPlan(plan)) //
-                        .onSuccess(d -> {
-                            markDirty();
-                            plans.setInput(getClient().getPlans());
-                        }).addTo(manager);
+                        .parameters(plan.getPlanType()).addTo(manager);
 
         manager.add(new Action(Messages.InvestmentPlanMenuDelete)
         {
@@ -362,7 +346,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                 markDirty();
 
                 plans.setInput(getClient().getPlans());
-                transactions.setInput(null, null);
+                transactions.setInput(null, null, null);
             }
         });
     }
@@ -370,7 +354,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     @Override
     protected void createBottomTable(Composite parent)
     {
-        transactions = new PortfolioTransactionsViewer(parent, this);
+        transactions = new TransactionsViewer(parent, this);
         transactions.setFullContextMenu(false);
 
         if (!getClient().getPlans().isEmpty())

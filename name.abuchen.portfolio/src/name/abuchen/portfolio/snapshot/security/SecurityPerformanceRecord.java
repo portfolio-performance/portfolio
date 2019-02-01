@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.math.Risk;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Attributable;
@@ -28,7 +31,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 {
     public enum Periodicity
     {
-        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, IRREGULAR;
+        UNKNOWN, NONE, INDEFINITE, ANNUAL, SEMIANNUAL, QUARTERLY, MONTHLY, IRREGULAR;
 
         private static final ResourceBundle RESOURCES = ResourceBundle
                         .getBundle("name.abuchen.portfolio.snapshot.labels"); //$NON-NLS-1$
@@ -40,6 +43,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         }
     }
 
+    private final Client client;
     private final Security security;
     private List<Transaction> transactions = new ArrayList<>();
 
@@ -89,9 +93,15 @@ public final class SecurityPerformanceRecord implements Adaptable
     private SecurityPrice quote;
 
     /**
-     * fifo cost of shares held {@link #calculateFifoCosts()}
+     * fifo cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money fifoCost;
+
+    /**
+     * moving average cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
+     */
+    private Money movingAverageCost;
 
     /**
      * fees paid
@@ -104,14 +114,19 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Money taxes;
 
     /**
-     * shares held {@link #calculateFifoCosts()}
+     * shares held {@link #calculateFifoAndMovingAverageCosts()}
      */
     private long sharesHeld;
 
     /**
-     * cost per shares held {@link #calculateFifoCosts()}
+     * cost per shares held {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Quote fifoCostPerSharesHeld;
+
+    /**
+     * cost per shares held {@link #calculateFifoAndMovingAverageCosts()}
+     */
+    private Quote movingAverageCostPerSharesHeld;
 
     /**
      * sum of all dividend payments {@link #calculateDividends()}
@@ -135,7 +150,13 @@ public final class SecurityPerformanceRecord implements Adaptable
     private Periodicity periodicity = Periodicity.UNKNOWN;
 
     /**
-     * market value - fifo cost of shares held {@link #calculateFifoCosts()}
+     * rate of return per year {@link #calculateDividends()}
+     */
+    private double rateOfReturnPerYear;
+    
+    /**
+     * market value - fifo cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money capitalGainsOnHoldings;
 
@@ -144,8 +165,20 @@ public final class SecurityPerformanceRecord implements Adaptable
      */
     private double capitalGainsOnHoldingsPercent;
 
-    /* package */ SecurityPerformanceRecord(Security security)
+    /**
+     * market value - moving average cost of shares held
+     * {@link #calculateFifoAndMovingAverageCosts()}
+     */
+    private Money capitalGainsOnHoldingsMovingAverage;
+
+    /**
+     * {@link capitalGainsOnHoldingsMovingAverage} in percent
+     */
+    private double capitalGainsOnHoldingsMovingAveragePercent;
+
+    /* package */ SecurityPerformanceRecord(Client client, Security security)
     {
+        this.client = client;
         this.security = security;
     }
 
@@ -224,6 +257,11 @@ public final class SecurityPerformanceRecord implements Adaptable
         return fifoCost;
     }
 
+    public Money getMovingAverageCost()
+    {
+        return movingAverageCost;
+    }
+
     public Money getCapitalGainsOnHoldings()
     {
         return capitalGainsOnHoldings;
@@ -232,6 +270,16 @@ public final class SecurityPerformanceRecord implements Adaptable
     public double getCapitalGainsOnHoldingsPercent()
     {
         return capitalGainsOnHoldingsPercent;
+    }
+
+    public Money getCapitalGainsOnHoldingsMovingAverage()
+    {
+        return capitalGainsOnHoldingsMovingAverage;
+    }
+
+    public double getCapitalGainsOnHoldingsMovingAveragePercent()
+    {
+        return capitalGainsOnHoldingsMovingAveragePercent;
     }
 
     public Money getFees()
@@ -252,6 +300,11 @@ public final class SecurityPerformanceRecord implements Adaptable
     public Quote getFifoCostPerSharesHeld()
     {
         return fifoCostPerSharesHeld;
+    }
+
+    public Quote getMovingAverageCostPerSharesHeld()
+    {
+        return movingAverageCostPerSharesHeld;
     }
 
     public Money getSumOfDividends()
@@ -278,10 +331,26 @@ public final class SecurityPerformanceRecord implements Adaptable
     {
         return periodicity.ordinal();
     }
+    
+    /**
+     * Gets the rate of return of dividends per year as a percentage of
+     * invested.
+     * 
+     * @return rate of return per year on success, else 0
+     */
+    public double getRateOfReturnPerYear()
+    {
+        return this.rateOfReturnPerYear;
+    }
 
     public double getTotalRateOfReturnDiv()
     {
         return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) fifoCost.getAmount() : 0;
+    }
+
+    public double getTotalRateOfReturnDivMovingAverage()
+    {
+        return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) movingAverageCost.getAmount() : 0;
     }
 
     public List<Transaction> getTransactions()
@@ -319,13 +388,20 @@ public final class SecurityPerformanceRecord implements Adaptable
 
         if (!transactions.isEmpty())
         {
+            calculateSharesHeld(converter, period);
             calculateMarketValue(converter, period);
             calculateIRR(converter);
             calculateTTWROR(client, converter, period);
             calculateDelta(converter);
-            calculateFifoCosts(converter);
+            calculateFifoAndMovingAverageCosts(converter);
             calculateDividends(converter);
+            calculatePeriodicity(converter);
         }
+    }
+
+    private void calculateSharesHeld(CurrencyConverter converter, ReportingPeriod period)
+    {
+        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions).getSharesHeld();
     }
 
     private void calculateMarketValue(CurrencyConverter converter, ReportingPeriod period)
@@ -333,7 +409,7 @@ public final class SecurityPerformanceRecord implements Adaptable
         MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
         for (Transaction t : transactions)
             if (t instanceof DividendFinalTransaction)
-                mv.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                mv.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
 
         this.marketValue = mv.toMoney();
         this.quote = security.getSecurityPrice(period.getEndDate());
@@ -341,7 +417,7 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateIRR(CurrencyConverter converter)
     {
-        this.irr = Calculation.perform(IRRCalculation.class, converter, transactions).getIRR();
+        this.irr = Calculation.perform(IRRCalculation.class, converter, security, transactions).getIRR();
     }
 
     private void calculateTTWROR(Client client, CurrencyConverter converter, ReportingPeriod period)
@@ -355,39 +431,66 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDelta(CurrencyConverter converter)
     {
-        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, transactions);
+        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, security, transactions);
         this.delta = calculation.getDelta();
         this.deltaPercent = calculation.getDeltaPercent();
     }
 
-    private void calculateFifoCosts(CurrencyConverter converter)
+    private void calculateFifoAndMovingAverageCosts(CurrencyConverter converter)
     {
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, transactions);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
         this.fifoCost = cost.getFifoCost();
-        this.sharesHeld = cost.getSharesHeld();
+        this.movingAverageCost = cost.getMovingAverageCost();
 
         Money netFifoCost = cost.getNetFifoCost();
         this.fifoCostPerSharesHeld = Quote.of(netFifoCost.getCurrencyCode(), Math.round(netFifoCost.getAmount()
                         * Values.Share.factor() * Values.Quote.factorToMoney() / (double) sharesHeld));
+        Money netMovingAverageCost = cost.getNetMovingAverageCost();
+        this.movingAverageCostPerSharesHeld = Quote.of(netMovingAverageCost.getCurrencyCode(),
+                        Math.round(netMovingAverageCost.getAmount() * Values.Share.factor()
+                                        * Values.Quote.factorToMoney() / (double) sharesHeld));
 
         this.fees = cost.getFees();
         this.taxes = cost.getTaxes();
 
         this.capitalGainsOnHoldings = marketValue.subtract(fifoCost);
+        this.capitalGainsOnHoldingsMovingAverage = marketValue.subtract(movingAverageCost);
 
         // avoid NaN for securities with no holdings
         if (marketValue.getAmount() == 0L && fifoCost.getAmount() == 0L)
             this.capitalGainsOnHoldingsPercent = 0d;
         else
             this.capitalGainsOnHoldingsPercent = ((double) marketValue.getAmount() / (double) fifoCost.getAmount()) - 1;
+        if (marketValue.getAmount() == 0L && movingAverageCost.getAmount() == 0L)
+            this.capitalGainsOnHoldingsMovingAveragePercent = 0d;
+        else
+            this.capitalGainsOnHoldingsMovingAveragePercent = ((double) marketValue.getAmount()
+                            / (double) movingAverageCost.getAmount()) - 1;
     }
 
     private void calculateDividends(CurrencyConverter converter)
     {
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security, transactions);
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
-        this.periodicity = dividends.getPeriodicity();
+        this.rateOfReturnPerYear = dividends.getRateOfReturnPerYear();
+    }
+
+    private void calculatePeriodicity(CurrencyConverter converter)
+    {
+        // periodicity is calculated by looking at all dividend transactions, so
+        // collect all of them instead of using just a fraction in the current filter
+        List<Transaction> allTransactions = security.getTransactions(client).stream()
+                        .filter(t -> t.getTransaction() instanceof AccountTransaction) //
+                        .filter(t -> {
+                            AccountTransaction.Type type = ((AccountTransaction) t.getTransaction()).getType();
+                            return type == Type.DIVIDENDS || type == Type.INTEREST;
+                        }) //
+                        .map(t -> DividendTransaction.from((AccountTransaction) t.getTransaction()))
+                        .collect(Collectors.toList());
+
+        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security, allTransactions);
+        this.periodicity = allDividends.getPeriodicity();
     }
 }

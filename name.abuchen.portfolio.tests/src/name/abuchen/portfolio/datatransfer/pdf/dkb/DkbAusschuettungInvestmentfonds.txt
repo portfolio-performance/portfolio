@@ -1,0 +1,40 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+10919 Berlin
+Depotnummer 123456789
+Kundennummer 0987654321
+Max Mustermann
+Herrn Abrechnungsnr. 12345678901Datum 31.05.2018
+Max Mustermann
+Hollander Strasse 71
+65558 Hirschberg
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 10 iShares Core MSCI World UCITS ETF USD IE00B4L5Y983 (A0RPWH)
+REGISTERED SHARES O.N.
+Zahlbarkeitstag 01.06.2018 Ausschüttung pro St. 0,395700000 EUR
+Bestandsstichtag 11.05.2018 Herkunftsland Irland
+Ex-Tag 12.05.2018
+Geschäftsjahr 01.01.2018 - 31.10.2018
+Ausschüttung 4,10+ EUR
+Kapitalertragsteuerpflichtiger Ertrag 4,10 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 4,10 EUR
+Kapitalertragsteuer 25 % auf 4,10 EUR 1,03- EUR
+Solidaritätszuschlag 5,5 % auf 1,03 EUR 0,05- EUR
+Ausmachender Betrag 3,02+ EUR
+Lagerstelle Clearstream Banking Lux (849133 / 64003)
+Den Betrag buchen wir mit Wertstellung 01.06.2018 zu Gunsten des Kontos 1234567890 (IBAN DE28 1234 4536 7890
+1234 56), BLZ 120 300 00 (BIC BYLADEM1001).
+Keine Steuerbescheinigung.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2018 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Ertrag 0,00 0,00 0,00 0,00 4,10
+Vorher 0,00 0,00 0,00 0,00 0,00
+Nachher 0,00 0,00 0,00 0,00 4,10
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Bitte ggf. Rückseite beachten.
+0883.04250100.0000725ER03

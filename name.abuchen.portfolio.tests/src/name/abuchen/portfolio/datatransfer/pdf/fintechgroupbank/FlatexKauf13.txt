@@ -1,0 +1,65 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+FinTech Group Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        04.01.2019
+0202272000001107749320
+Herr Auftragsdatum     02.01.2019n
+xxx xxx Schlusstag        03.01.2019
+xxx xxx Ausführungszeit   00:00 Uhr. 
+xxx xxx Valuta            08.01.2019
+Auftragsnummer    115130062/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  1010881562
+Depotinhaber      xxx xxx
+Nr.115130062/1 Kauf            COMS.-MSCI EM.M.T.U.ETF I (LU0635178014/ETF127)
+Ausgeführt             1,43414 St.      Kurswert                     52,50 EUR
+Kurs                 36,607300 EUR      Provision
+Devisenkurs                             Eigene Spesen
+Verwahrart     GS-Verwahrung           *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland
+                                        Bemessungs-
+                                        grundlage                     0,00 EUR
+Gewinn/Verlust            0,00 EUR    **Einbeh. Steuer                0,00 EUR
+                                        Endbetrag                   -52,50 EUR
+*   Enthalten sind folgende Gebühren    Courtage                      0,00 EUR
+                                        Tradinggebühr                 0,00 EUR
+                                        Regulierung                   0,00 EUR
+                                        Schlussnoten                  0,00 EUR
+                                        Sonstige                      0,00 EUR
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                    Kapitalertragsteuer               0,00 EUR
+                                    Solidaritätszuschlag              0,00 EUR
+                                    Kirchensteuer                     0,00 EUR
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1555928306.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                    gezahlter AA                  0,00 EUR
+Kurs                    36,6073 EUR     Kurswert                     52,50 EUR
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1010881555
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001107749320 0113202270000102
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000001107749320 0113202270000202

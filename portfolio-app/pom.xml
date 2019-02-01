@@ -1,31 +1,32 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<prerequisites>
-		<maven>3.0</maven>
-	</prerequisites>
-
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.28.5-SNAPSHOT</version>
+	<version>0.37.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>1.0.0</tycho-version>
-		<!-- jarsigner 1.4 does not support the certchain attribute (needed b/c 
-			the hardware token does not contain the whole certificate chain). Using the 
-			1.5-SNAPSHOT build which supports the argument since Aug 2017 -->
-		<jarsigner.plugin.version>1.5-SNAPSHOT</jarsigner.plugin.version>
+		<tycho-version>1.3.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
+		<sonar.organization>buchen-github</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
-		<sonar.jacoco.reportPath>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.jacoco.reportPaths>../portfolio-app/target/jacoco.exec</sonar.jacoco.reportPaths>
 		<argLine>-ea</argLine>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
+
+	<prerequisites>
+		<maven>3.0</maven>
+	</prerequisites>
 
 	<modules>
 		<module>../name.abuchen.portfolio</module>
@@ -37,38 +38,35 @@
 		<module>../portfolio-product</module>
 	</modules>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>portfolio-non-maven-dependencies</id>
-			<url>http://buchen.github.io/maven-repo</url>
-			<layout>default</layout>
-		</pluginRepository>
-	</pluginRepositories>
-
 	<repositories>
 		<repository>
 			<id>portfolio-non-maven-dependencies</id>
 			<url>http://buchen.github.io/maven-repo</url>
 		</repository>
 		<repository>
-			<id>eclipse-orbit</id>
+			<id>portfolio-jre</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20170307180635/repository</url>
+			<url>http://buchen.github.io/bundled-jre/8.30.0.1-patch1</url>
 		</repository>
 		<repository>
-			<id>eclipse-luna</id>
+			<id>eclipse-orbit</id>
 			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.6/R-4.6.3-201703010400</url>
+			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository</url>
+		</repository>
+		<repository>
+			<id>eclipse-2018-09</id>
+			<layout>p2</layout>
+			<url>http://download.eclipse.org/eclipse/updates/4.9/R-4.9-201809060745/</url>
 		</repository>
 		<repository>
 			<id>eclipse-babel</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/technology/babel/update-site/R0.14.1/neon</url>
+			<url>http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon</url>
 		</repository>
 		<repository>
 			<id>eclipse-nebula</id>
 			<layout>p2</layout>
-			<url>http://archive.eclipse.org/nebula/Q22016/release</url>
+			<url>http://download.eclipse.org/nebula/releases/2.0.1</url>
 		</repository>
 		<repository>
 			<id>com.springsource.repository.bundles.release</id>
@@ -133,7 +131,7 @@
 		<dependency>
 			<groupId>org.apache.pdfbox</groupId>
 			<artifactId>pdfbox</artifactId>
-			<version>1.8.13</version>
+			<version>1.8.16</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -150,6 +148,29 @@
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-enforcer-plugin</artifactId>
+				<version>3.0.0-M2</version>
+				<executions>
+					<execution>
+						<id>enforce-versions</id>
+						<goals>
+							<goal>enforce</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<requireMavenVersion>
+									<version>3.0</version>
+								</requireMavenVersion>
+								<requireJavaVersion>
+									<version>1.8</version>
+								</requireJavaVersion>
+							</rules>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
 				<groupId>org.eclipse.tycho</groupId>
 				<artifactId>tycho-maven-plugin</artifactId>
 				<version>${tycho-version}</version>
@@ -162,6 +183,15 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
+					<dependency-resolution>
+						<extraRequirements>
+							<requirement>
+								<type>eclipse-plugin</type>
+								<id>javax.annotation</id>
+								<versionRange>0.0.0</versionRange>
+							</requirement>
+						</extraRequirements>
+					</dependency-resolution>
 					<environments>
 						<environment>
 							<os>linux</os>
@@ -197,10 +227,23 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
-							<id>org.eclipse.osgi</id>
-							<restrictTo>
-								<version>3.11.3.v20170209-1843</version>
-							</restrictTo>
+							<id>org.eclipse.pde.ds.lib.nl_de</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.pde.ds.lib.nl_es</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_de</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_es</id>
+							<removeAll />
 						</filter>
 					</filters>
 				</configuration>
@@ -208,20 +251,20 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.7.6.201602180812</version>
+				<version>0.8.2</version>
 				<executions>
 					<execution>
 						<goals>
 							<goal>prepare-agent</goal>
 						</goals>
 						<configuration>
-							<destFile>${sonar.jacoco.reportPath}</destFile>
+							<destFile>${sonar.jacoco.reportPaths}</destFile>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
 			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
+				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
@@ -253,6 +296,9 @@
 					<groupId>org.eclipse.tycho</groupId>
 					<artifactId>tycho-surefire-plugin</artifactId>
 					<version>${tycho-version}</version>
+					<configuration>
+						<trimStackTrace>false</trimStackTrace>
+					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -268,9 +314,24 @@
 					</configuration>
 				</plugin>
 				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-packaging-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
+					<groupId>org.eclipse.tycho</groupId>
+					<artifactId>tycho-p2-publisher-plugin</artifactId>
+					<version>${tycho-version}</version>
+				</plugin>
+				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jarsigner-plugin</artifactId>
-					<version>${jarsigner.plugin.version}</version>
+					<version>3.0.0</version>
 					<executions>
 						<execution>
 							<id>sign</id>
@@ -331,14 +392,14 @@
 					</executions>
 				</plugin>
 				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
+					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.0.2</version>
+					<version>3.4.0.905</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
 					<artifactId>fix-info-plist-maven-plugin</artifactId>
-					<version>1.2</version>
+					<version>1.5</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>

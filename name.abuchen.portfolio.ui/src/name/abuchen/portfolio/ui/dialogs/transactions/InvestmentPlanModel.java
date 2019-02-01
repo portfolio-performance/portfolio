@@ -8,20 +8,23 @@ import org.eclipse.core.runtime.IStatus;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.ui.Messages;
 
 public class InvestmentPlanModel extends AbstractModel
 {
     public enum Properties
     {
-        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate;
+        calculationStatus, name, security, securityCurrencyCode, portfolio, account, accountCurrencyCode, start, interval, amount, fees, transactionCurrencyCode, autoGenerate; // NOSONAR
     }
 
     public static final Account DELIVERY = new Account(Messages.InvestmentPlanOptionDelivery);
+    private static final Portfolio DEPOSIT = new Portfolio(Messages.InvestmentPlanOptionDeposit);
 
     private final Client client;
 
@@ -33,18 +36,21 @@ public class InvestmentPlanModel extends AbstractModel
     private Account account;
 
     private boolean autoGenerate;
-    
+
     private LocalDate start = LocalDate.now();
 
     private int interval = 1;
     private long amount;
     private long fees;
-    
+
     private IStatus calculationStatus = ValidationStatus.ok();
 
-    public InvestmentPlanModel(Client client)
+    public InvestmentPlanModel(Client client, Class<? extends Transaction> planType)
     {
         this.client = client;
+        
+        if (planType == AccountTransaction.class)
+            portfolio = DEPOSIT;
     }
 
     @Override
@@ -56,7 +62,7 @@ public class InvestmentPlanModel extends AbstractModel
     @Override
     public void applyChanges()
     {
-        if (security == null)
+        if (security == null && !DEPOSIT.equals(portfolio))
             throw new UnsupportedOperationException(Messages.MsgMissingSecurity);
         if (portfolio == null)
             throw new UnsupportedOperationException(Messages.MsgMissingPortfolio);
@@ -72,8 +78,8 @@ public class InvestmentPlanModel extends AbstractModel
         }
 
         plan.setName(name);
-        plan.setSecurity(security);
-        plan.setPortfolio(portfolio);
+        plan.setSecurity(portfolio.equals(DEPOSIT) ? null : security);
+        plan.setPortfolio(portfolio.equals(DEPOSIT) ? null : portfolio);
         plan.setAccount(account.equals(DELIVERY) ? null : account);
         plan.setAutoGenerate(autoGenerate);
         plan.setStart(start);
@@ -99,7 +105,7 @@ public class InvestmentPlanModel extends AbstractModel
 
         this.name = plan.getName();
         this.security = plan.getSecurity();
-        this.portfolio = plan.getPortfolio();
+        this.portfolio = plan.getPortfolio() != null ? plan.getPortfolio() : DEPOSIT;
         this.account = plan.getAccount() != null ? plan.getAccount() : DELIVERY;
         this.autoGenerate = plan.isAutoGenerate();
         this.start = plan.getStart();
@@ -113,18 +119,25 @@ public class InvestmentPlanModel extends AbstractModel
     {
         return calculationStatus;
     }
-    
+
     private IStatus calculateStatus()
     {
+        if (account != null && account.equals(DELIVERY) && portfolio != null && portfolio.equals(DEPOSIT))
+            return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnPeer));
+
         if (name == null || name.trim().length() == 0)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
-        
+
+        if (security == null && portfolio != null && !portfolio.equals(DEPOSIT))
+            return ValidationStatus
+                            .error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.MsgMissingSecurity));
+
         if (amount == 0L)
             return ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnAmount));
-        
+
         return ValidationStatus.ok();
     }
-    
+
     public String getName()
     {
         return name;
@@ -132,9 +145,9 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setName(String name)
     {
-        firePropertyChange(Properties.name.name(), this.name, this.name = name);
+        firePropertyChange(Properties.name.name(), this.name, this.name = name); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Security getSecurity()
@@ -146,10 +159,12 @@ public class InvestmentPlanModel extends AbstractModel
     {
         String oldSecurityCurrency = getSecurityCurrencyCode();
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        firePropertyChange(Properties.security.name(), this.security, this.security = security);
+        firePropertyChange(Properties.security.name(), this.security, this.security = security); // NOSONAR
         firePropertyChange(Properties.securityCurrencyCode.name(), oldSecurityCurrency, getSecurityCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Portfolio getPortfolio()
@@ -160,9 +175,13 @@ public class InvestmentPlanModel extends AbstractModel
     public void setPortfolio(Portfolio portfolio)
     {
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio);
+        if (DEPOSIT.equals(portfolio))
+            firePropertyChange(Properties.security.name(), this.security, this.security = null); // NOSONAR
+        firePropertyChange(Properties.portfolio.name(), this.portfolio, this.portfolio = portfolio); // NOSONAR
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public Account getAccount()
@@ -174,12 +193,14 @@ public class InvestmentPlanModel extends AbstractModel
     {
         String oldAccountCurrency = getAccountCurrencyCode();
         String oldTransactionCurrency = getTransactionCurrencyCode();
-        firePropertyChange(Properties.account.name(), this.account, this.account = account);
+        firePropertyChange(Properties.account.name(), this.account, this.account = account); // NOSONAR
         firePropertyChange(Properties.accountCurrencyCode.name(), oldAccountCurrency, getAccountCurrencyCode());
         firePropertyChange(Properties.transactionCurrencyCode.name(), oldTransactionCurrency,
                         getTransactionCurrencyCode());
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
-    
+
     public boolean isAutoGenerate()
     {
         return autoGenerate;
@@ -187,7 +208,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setAutoGenerate(boolean autoGenerate)
     {
-        firePropertyChange(Properties.autoGenerate.name(), this.autoGenerate, this.autoGenerate = autoGenerate);
+        firePropertyChange(Properties.autoGenerate.name(), this.autoGenerate, this.autoGenerate = autoGenerate); // NOSONAR
     }
 
     public LocalDate getStart()
@@ -197,7 +218,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setStart(LocalDate start)
     {
-        firePropertyChange(Properties.start.name(), this.start, this.start = start);
+        firePropertyChange(Properties.start.name(), this.start, this.start = start); // NOSONAR
     }
 
     public int getInterval()
@@ -207,7 +228,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setInterval(int interval)
     {
-        firePropertyChange(Properties.interval.name(), this.interval, this.interval = interval);
+        firePropertyChange(Properties.interval.name(), this.interval, this.interval = interval); // NOSONAR
     }
 
     public long getAmount()
@@ -217,9 +238,9 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setAmount(long amount)
     {
-        firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount);
+        firePropertyChange(Properties.amount.name(), this.amount, this.amount = amount); // NOSONAR
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
-                        this.calculationStatus = calculateStatus());
+                        this.calculationStatus = calculateStatus()); // NOSONAR
     }
 
     public long getFees()
@@ -229,7 +250,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public void setFees(long fees)
     {
-        firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees);
+        firePropertyChange(Properties.fees.name(), this.fees, this.fees = fees); // NOSONAR
     }
 
     public String getSecurityCurrencyCode()
@@ -244,7 +265,7 @@ public class InvestmentPlanModel extends AbstractModel
 
     public String getReferenceAccountCurrencyCode()
     {
-        return portfolio != null ? portfolio.getReferenceAccount().getCurrencyCode() : ""; //$NON-NLS-1$
+        return portfolio != null && !DEPOSIT.equals(portfolio) ? portfolio.getReferenceAccount().getCurrencyCode() : ""; //$NON-NLS-1$
     }
 
     public String getTransactionCurrencyCode()

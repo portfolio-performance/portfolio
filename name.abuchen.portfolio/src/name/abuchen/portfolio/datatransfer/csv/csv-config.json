@@ -1,0 +1,243 @@
+[{
+    "label": "comdirect Musterdepot",
+    "target": "portfolio",
+	"delimiter": ";",
+    "encoding": "windows-1250",
+    "isFirstLineHeader": true,
+    "skipLines": 5,
+    "columns": [
+        {
+            "label": "Stück/Nom.",
+            "field": "shares",
+            "format":"0.000,00"
+        },
+        {
+            "label": "Bezeichnung",
+            "field": "name"
+        },
+        {
+            "field": "wkn",
+            "label": "WKN"
+        },
+        {
+            "label": "Typ"
+        },
+        {
+            "label": "Währung",
+            "field": "currency"
+        },
+        {
+            "label": "Akt. Kurs",
+            "field": "quote",
+            "format": "0.000,00"
+        },
+        {
+            "label": "Diff. abs."
+        },
+        {
+            "label": "Diff. %"
+        },
+        {
+            "label": "Wert in EUR"
+        },
+        {
+            "label": "Diff. abs."
+        },
+        {
+            "label": "Diff. %"
+        },
+        {
+            "label": "Datum",
+            "field": "date-quote",
+            "format": "dd.MM.yy"
+        },
+        {
+            "label": "Zeit"
+        },
+        {
+            "label": "Börse"
+        },
+        {
+            "label": "Kaufkurs in EUR"
+        },
+        {
+            "label": "Kaufdatum",
+            "field": "date",
+            "format": "dd.MM.yy"
+        },
+        {
+            "label": "Kaufwert in EUR",
+            "field": "value",
+            "format": "0.000,00"
+        },
+        {
+            "label": "Limit+"
+        },
+        {
+            "label": "Limit-"
+        }
+    ]
+},
+{
+    "label": "Consorsbank Watchlist",
+    "target": "portfolio",
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": false,
+    "skipLines": 1,
+    "columns": [
+        {
+            "label": "Anzahl",
+            "field": "shares",
+            "format": "0.000,00"
+        },
+        {
+            "label": "Kaufpreis"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Kaufsumme"
+        },
+        {
+            "field": "date",
+            "format": "dd.MM.yyyy",
+            "label": "Kaufdatum"
+        },
+        {
+            "field": "name",
+            "label": "Name"
+        },
+        {
+            "label": "Wert aktuell"
+        },
+        {
+            "label": "abs. Diff."
+        },
+        {
+            "label": "% Diff."
+        },
+        {
+            "label": "Kurs",
+            "field": "quote",
+            "format": "0.000,00"
+        },
+        {
+            "label": "abs. Diff. zum Vortag"
+        },
+        {
+            "label": "% zum Vortag"
+        },
+        {
+            "label": "Zeit"
+        },
+        {
+            "label": "Datum",
+            "field": "date-quote",
+            "format": "dd.MM.yyyy"
+        },
+        {
+            "field": "wkn",
+            "label": "WKN"
+        },
+        {
+            "label": "Börse"
+        },
+        {
+            "label": "Währung",
+            "field": "currency"
+        },
+        {
+            "label": "Spalte 17"
+        }
+    ]
+},
+{
+    "label": "Deutsche Bank Vermögensaufstellung",
+    "target": "portfolio",
+    "delimiter": ";",
+    "encoding": "windows-1250",
+    "isFirstLineHeader": true,
+    "skipLines": 0,
+    "columns": [
+        {
+            "label": "Bankleistungsnummer"
+        },
+        {
+            "field": "shares",
+            "format": "0.000,00",
+            "label": "Bestand"
+        },
+        {
+            "field": "name",
+            "label": "Bezeichnung"
+        },
+        {
+            "field": "wkn",
+            "label": "WKN"
+        },
+        {
+            "field": "isin",
+            "label": "ISIN"
+        },
+        {
+            "field": "currency",
+            "label": "Währung"
+        },
+        {
+            "label": "Hinweis Einstandskurs"
+        },
+        {
+            "label": "Einstandskurs"
+        },
+        {
+            "label": "Deviseneinstandskurs"
+        },
+        {
+            "label": "Kurs",
+            "field": "quote",
+            "format": "0.000,00"
+        },
+        {
+            "label": "Devisenkurs"
+        },
+        {
+            "label": "Gewinn/Verlust in EUR"
+        },
+        {
+            "label": "Gewinn/Verlust in %"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Marktwert in EUR inkl. Stückzinsen"
+        },
+        {
+            "label": "Stückzinsen in EUR"
+        },
+        {
+            "label": "Anteil in %"
+        },
+        {
+            "label": "Datum letzte Bewegung "
+        },
+        {
+            "label": "Struktur"
+        },
+        {
+            "label": "Land"
+        },
+        {
+            "label": "Branche/Sektoren"
+        },
+        {
+            "label": "Währung"
+        },
+        {
+            "label": "Risikoklasse"
+        },
+        {
+            "label": "Wirtschaftsraum (Detail)"
+        }
+    ]
+}]

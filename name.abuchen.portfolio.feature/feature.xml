@@ -2,7 +2,7 @@
 <feature
       id="name.abuchen.portfolio.feature"
       label="Portfolio Performance"
-      version="0.28.5.qualifier"
+      version="0.37.2.qualifier"
       provider-name="Andreas Buchen">
 
    <description url="http://buchen.github.io/portfolio/">
@@ -158,4 +158,5 @@ For purposes of the EPL, &quot;Program&quot; will mean the Content.
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
 </feature>

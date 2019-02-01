@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import javax.inject.Named;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;

@@ -41,10 +41,10 @@ public class DataSeriesSet
                 buildStatementOfAssetsDataSeries();
                 break;
             case PERFORMANCE:
-                buildPerformanceDataSeries(client, wheel);
+                buildPerformanceDataSeries(client, preferences, wheel);
                 break;
             case RETURN_VOLATILITY:
-                buildReturnVolatilitySeries(client, wheel);
+                buildReturnVolatilitySeries(client, preferences, wheel);
                 break;
             default:
                 throw new IllegalArgumentException(useCase.name());
@@ -115,28 +115,35 @@ public class DataSeriesSet
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST, Messages.LabelInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Colors.DARK_GREEN.getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_ACCUMULATED,
-                        Messages.LabelAccumulatedInterest,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Messages.LabelAccumulatedInterest, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE, Messages.LabelInterestCharge,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Colors.DARK_GREEN.getRGB());
         series.setLineChart(false);
         availableSeries.add(series);
 
         series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.INTEREST_CHARGE_ACCUMULATED,
-                        Messages.LabelAccumulatedInterestCharge,
-                        Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN).getRGB());
+                        Messages.LabelAccumulatedInterestCharge, Colors.DARK_GREEN.getRGB());
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS, Messages.LabelEarnings,
+                        Colors.DARK_GREEN.getRGB());
+        series.setLineChart(false);
+        availableSeries.add(series);
+
+        series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.EARNINGS_ACCUMULATED,
+                        Messages.LabelAccumulatedEarnings, Colors.DARK_GREEN.getRGB());
         availableSeries.add(series);
 
     }
 
-    private void buildPerformanceDataSeries(Client client, ColorWheel wheel)
+    private void buildPerformanceDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
@@ -156,62 +163,60 @@ public class DataSeriesSet
         availableSeries.add(series);
 
         // securities as benchmark
-        int index = 0;
         for (Security security : client.getSecurities())
         {
             series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
+                            wheel.next());
             series.setBenchmark(true);
             availableSeries.add(series);
         }
+
+        buildPreTaxDataSeries(client, preferences, wheel);
     }
 
-    private void buildReturnVolatilitySeries(Client client, ColorWheel wheel)
+    private void buildReturnVolatilitySeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
         // accumulated performance
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS,
                         Messages.PerformanceChartLabelEntirePortfolio, Colors.TOTALS.getRGB()));
 
         // securities as benchmark
-        int index = 0;
         for (Security security : client.getSecurities())
         {
             DataSeries series = new DataSeries(DataSeries.Type.SECURITY_BENCHMARK, security, security.getName(), //
-                            wheel.getRGB(index++));
+                            wheel.next());
 
             series.setBenchmark(true);
             availableSeries.add(series);
         }
+
+        buildPreTaxDataSeries(client, preferences, wheel);
     }
 
-    private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
+    private void buildPreTaxDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
     {
-        int index = client.getSecurities().size();
-
-        for (Security security : client.getSecurities())
-        {
-            // securites w/o currency code (e.g. a stock index) cannot be added
-            // as equity data series (only as benchmark)
-            if (security.getCurrencyCode() == null)
-                continue;
-
-            availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
-                            wheel.getRGB(index++)));
-        }
+        availableSeries.add(new DataSeries(DataSeries.Type.CLIENT_PRETAX, ClientDataSeries.TOTALS,
+                        Messages.PerformanceChartLabelEntirePortfolio + Messages.LabelSuffix_PreTax, wheel.next()));
 
         for (Portfolio portfolio : client.getPortfolios())
-            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
-                            wheel.getRGB(index++)));
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PRETAX, portfolio,
+                            portfolio.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
 
-        // portfolio + reference account
         for (Portfolio portfolio : client.getPortfolios())
-        {
-            DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
-                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                            wheel.getRGB(index++));
-            availableSeries.add(series);
-        }
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT_PRETAX, portfolio,
+                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName() //$NON-NLS-1$
+                                            + Messages.LabelSuffix_PreTax,
+                            wheel.next()));
 
+        for (Account account : client.getAccounts())
+            availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT_PRETAX, account,
+                            account.getName() + Messages.LabelSuffix_PreTax, wheel.next()));
+
+        addCustomClientFilters(client, preferences, true, wheel);
+    }
+
+    private void addCustomClientFilters(Client client, IPreferenceStore preferences, boolean isPreTax, ColorWheel wheel)
+    {
         // custom client filters
         ClientFilterMenu menu = new ClientFilterMenu(client, preferences);
 
@@ -221,16 +226,45 @@ public class DataSeriesSet
         Set<String> addedSeries = new HashSet<>();
         for (ClientFilterMenu.Item item : menu.getCustomItems())
         {
-            DataSeries series = new DataSeries(DataSeries.Type.CLIENT_FILTER, item, item.getLabel(),
-                            wheel.getRGB(index++));
+            DataSeries series = new DataSeries(
+                            isPreTax ? DataSeries.Type.CLIENT_FILTER_PRETAX : DataSeries.Type.CLIENT_FILTER, item,
+                            isPreTax ? item.getLabel() + Messages.LabelSuffix_PreTax : item.getLabel(), wheel.next());
 
             if (addedSeries.add(series.getUUID()))
                 availableSeries.add(series);
         }
+    }
+
+    private void buildCommonDataSeries(Client client, IPreferenceStore preferences, ColorWheel wheel)
+    {
+        for (Security security : client.getSecurities())
+        {
+            // securities w/o currency code (e.g. a stock index) cannot be added
+            // as equity data series (only as benchmark)
+            if (security.getCurrencyCode() == null)
+                continue;
+
+            availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
+                            wheel.next()));
+        }
+
+        for (Portfolio portfolio : client.getPortfolios())
+            availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
+                            wheel.next()));
+
+        // portfolio + reference account
+        for (Portfolio portfolio : client.getPortfolios())
+        {
+            DataSeries series = new DataSeries(DataSeries.Type.PORTFOLIO_PLUS_ACCOUNT, portfolio,
+                            portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
+                            wheel.next());
+            availableSeries.add(series);
+        }
+
+        addCustomClientFilters(client, preferences, false, wheel);
 
         for (Account account : client.getAccounts())
-            availableSeries.add(
-                            new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.getRGB(index++)));
+            availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.next()));
 
         for (Taxonomy taxonomy : client.getTaxonomies())
         {
@@ -242,7 +276,7 @@ public class DataSeriesSet
                     if (classification.getParent() == null)
                         return;
 
-                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, classification,
+                    availableSeries.add(new DataSeries(DataSeries.Type.CLASSIFICATION, taxonomy, classification,
                                     classification.getName(), Colors.toRGB(classification.getColor())));
                 }
             });

@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Stream;
 
 import org.junit.Test;
 
@@ -59,19 +60,20 @@ public class YahooFinanceQuoteFeedTest
         List<LatestSecurityPrice> prices = feed.getHistoricalQuotes(responseBody, new ArrayList<Exception>());
         Collections.sort(prices, new SecurityPrice.ByDate());
 
-        assertThat(prices.size(), is(2257));
+        assertThat(prices.size(), is(123));
 
-        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), //
-                        Values.Quote.factorize(29.35), //
-                        Values.Quote.factorize(29.35), //
-                        Values.Quote.factorize(29.35), //
+        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
+                        Values.Quote.factorize(188.55), //
+                        0, //
+                        0, //
                         0);
         assertThat(prices.get(0), equalTo(price));
 
-        price = new LatestSecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), Values.Quote.factorize(32.74), //
-                        Values.Quote.factorize(34.16), //
-                        Values.Quote.factorize(32.35), //
-                        10825200);
+        price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
+                        Values.Quote.factorize(188.3), //
+                        0, //
+                        0, //
+                        0);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
 
@@ -91,19 +93,20 @@ public class YahooFinanceQuoteFeedTest
         List<LatestSecurityPrice> prices = feed.getHistoricalQuotes(responseBody, new ArrayList<Exception>());
         Collections.sort(prices, new SecurityPrice.ByDate());
 
-        assertThat(prices.size(), is(2257));
+        assertThat(prices.size(), is(123));
 
-        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2003, Month.JANUARY, 1), //
-                        Values.Quote.factorize(22.55), //
-                        Values.Quote.factorize(29.35), //
-                        Values.Quote.factorize(29.35), //
+        LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.of(2017, Month.NOVEMBER, 27), //
+                        Values.Quote.factorize(180.344), //
+                        0, //
+                        0, //
                         0);
         assertThat(prices.get(0), equalTo(price));
 
-        price = new LatestSecurityPrice(LocalDate.of(2011, Month.SEPTEMBER, 22), Values.Quote.factorize(32.74), //
-                        Values.Quote.factorize(34.16), //
-                        Values.Quote.factorize(32.35), //
-                        10825200);
+        price = new LatestSecurityPrice(LocalDate.of(2018, Month.MAY, 25), //
+                        Values.Quote.factorize(188.3), //
+                        0, //
+                        0, //
+                        0);
         assertThat(prices.get(prices.size() - 1), equalTo(price));
     }
 
@@ -113,7 +116,7 @@ public class YahooFinanceQuoteFeedTest
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed()
         {
             @Override
-            protected void searchSymbols(List<Exchange> answer, String query) throws IOException
+            protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
             {
                 throw new IOException();
             }

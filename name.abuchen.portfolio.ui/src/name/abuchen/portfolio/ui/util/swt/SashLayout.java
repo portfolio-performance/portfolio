@@ -33,6 +33,13 @@ public class SashLayout extends Layout
         public void mouseExit(MouseEvent e)
         {
             host.setCursor(null);
+            divider.setVisible(false);
+        }
+
+        @Override
+        public void mouseEnter(MouseEvent e)
+        {
+            divider.setVisible(true);
         }
     }
 
@@ -52,17 +59,9 @@ public class SashLayout extends Layout
             }
             else
             {
-                try
-                {
-                    isLayoutUpdateInProgress = true;
-                    adjustSize(e.x, e.y);
-                    host.layout();
-                    host.update();
-                }
-                finally
-                {
-                    isLayoutUpdateInProgress = false;
-                }
+                adjustSize(e.x, e.y);
+                host.layout();
+                host.update();
             }
         }
 
@@ -98,6 +97,8 @@ public class SashLayout extends Layout
 
             host.layout();
             host.update();
+            
+            divider.setVisible(false);
         }
     }
 
@@ -119,8 +120,7 @@ public class SashLayout extends Layout
     private Label divider;
     private Rectangle sash = new Rectangle(0, 0, 1, 1);
 
-    boolean isDragging = false;
-    public boolean isLayoutUpdateInProgress = false;
+    private boolean isDragging = false;
 
     public SashLayout(final Composite host, int style)
     {
@@ -132,6 +132,7 @@ public class SashLayout extends Layout
 
         this.divider = new Label(host, SWT.NONE);
         this.divider.setImage(isHorizontal ? Images.HANDLE_NS.image() : Images.HANDLE_WE.image());
+        this.divider.setVisible(false);
 
         MouseTrackAdapter mouseTrackListener = new SashMouseTrackListener();
         host.addMouseTrackListener(mouseTrackListener);

@@ -6,7 +6,7 @@ import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,7 +18,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
-import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExctractor;
+import name.abuchen.portfolio.datatransfer.pdf.BankSLMPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -35,7 +35,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class BankSLMPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1481.10))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-06-21")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-06-21T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CHF", 1_10L)));
     }
@@ -70,7 +70,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Inland2() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -97,7 +97,7 @@ public class BankSLMPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(43412.10))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2016-02-10")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2016-02-10T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(3000)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", 32_40L + 3_50 + 176_20)));
@@ -106,7 +106,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testKauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -133,7 +133,7 @@ public class BankSLMPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(92658.45))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-09-03")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-09-03T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(17000)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CHF", 138_05L + 489_15L)));
     }
@@ -141,7 +141,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testVerkauf_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -168,7 +168,7 @@ public class BankSLMPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(142359.40))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-08-22")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-08-22T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(7798)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("CHF", 107_15L + 3_50L + 389_30L)));
@@ -177,7 +177,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testVerkauf_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -204,7 +204,7 @@ public class BankSLMPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(43180.00))));
-        assertThat(entry.getPortfolioTransaction().getDate(), is(LocalDate.parse("2013-01-24")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2013-01-24T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(11500)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of("CHF", 65_25L + 264_30L)));
     }
@@ -212,7 +212,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testDividende_Inland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -235,7 +235,7 @@ public class BankSLMPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-05-02")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-05-02T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", 18_20L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 9_80L)));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", 28_00L)));
@@ -245,7 +245,7 @@ public class BankSLMPDFExtractorTest
     @Test
     public void testDividende_Ausland1() throws IOException
     {
-        BankSLMPDFExctractor extractor = new BankSLMPDFExctractor(new Client());
+        BankSLMPDFExtractor extractor = new BankSLMPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<>();
 
@@ -268,7 +268,7 @@ public class BankSLMPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getDate(), is(LocalDate.parse("2016-07-05")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-07-05T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of("CHF", 3302_00L)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", 1415_14L)));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", 4717_14L)));

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.transactions;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -127,7 +128,7 @@ public class AccountTransactionModel extends AbstractModel
             account.addTransaction(t);
         }
 
-        t.setDate(date);
+        t.setDateTime(date.atStartOfDay());
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -219,7 +220,8 @@ public class AccountTransactionModel extends AbstractModel
             this.security = EMPTY_SECURITY;
 
         this.account = account;
-        this.date = transaction.getDate();
+        LocalDateTime transactionDate = transaction.getDateTime();
+        this.date = transactionDate.toLocalDate();
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -337,6 +339,11 @@ public class AccountTransactionModel extends AbstractModel
 
     private void updateExchangeRate()
     {
+        // do not auto-suggest exchange rates when editing an existing
+        // transaction
+        if (sourceTransaction != null)
+            return;
+
         if (getAccountCurrencyCode().equals(getSecurityCurrencyCode()))
         {
             setExchangeRate(BigDecimal.ONE);

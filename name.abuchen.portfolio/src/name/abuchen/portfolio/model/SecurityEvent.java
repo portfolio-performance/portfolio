@@ -11,6 +11,7 @@ public class SecurityEvent
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
+        @Override
         public String toString()
         {
             return RESOURCES.getString("event." + name()); //$NON-NLS-1$

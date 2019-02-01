@@ -3,7 +3,9 @@ package name.abuchen.portfolio.bootstrap;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -16,17 +18,17 @@ import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.MApplicationElement;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
 import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.Selector;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.emf.ecore.EObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
@@ -105,7 +107,7 @@ public class LifeCycleManager
         {
             logger.info(MessageFormat.format(
                             "Detected model change from version {0} to version {1}; clearing persisted state", //$NON-NLS-1$
-                            modelVersion.toString(), programVersion.toString()));
+                            modelVersion, programVersion));
             System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
         }
     }
@@ -162,7 +164,7 @@ public class LifeCycleManager
                 }
                 else
                 {
-                    exception.printStackTrace();
+                    exception.printStackTrace(); // NOSONAR
                 }
             }
 
@@ -178,7 +180,7 @@ public class LifeCycleManager
                 if (!"org.eclipse.swt.widgets.Control".equals(stackTrace[0].getClassName())) //$NON-NLS-1$
                     return false;
 
-                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$
+                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$ NOSONAR
                     return false;
 
                 return true;
@@ -202,10 +204,10 @@ public class LifeCycleManager
     }
 
     @PreSave
-    public void doPreSave(MApplication app, EPartService partService, EModelService modelService)
+    public void doPreSave(MApplication app, EModelService modelService)
     {
         saveModelVersion();
-        removePortfolioPartsWithoutPersistedFile(app, partService, modelService);
+        removePortfolioPartsWithoutPersistedFile(app, modelService);
     }
 
     private void saveModelVersion()
@@ -227,29 +229,59 @@ public class LifeCycleManager
         }
     }
 
-    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
-                    EModelService modelService)
+    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EModelService modelService)
     {
         List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE,
-                        new Selector()
-                        {
-                            @Override
-                            public boolean select(MApplicationElement element)
-                            {
-                                if (!"name.abuchen.portfolio.ui.part.portfolio".equals(element.getElementId())) //$NON-NLS-1$
-                                    return false;
-                                return element.getPersistedState().get("file") == null; //$NON-NLS-1$
-                            }
+                        element -> {
+                            if (!ModelConstants.PORTFOLIO_PART.equals(element.getElementId()))
+                                return false;
+                            return element.getPersistedState().get("file") == null; //$NON-NLS-1$
                         });
+
+        Set<MElementContainer<?>> parentsWithRemovedChildren = new HashSet<>();
 
         for (MPart part : parts)
         {
             MElementContainer<MUIElement> parent = part.getParent();
 
-            if (parent.getSelectedElement().equals(part))
+            if (part.equals(parent.getSelectedElement()))
                 parent.setSelectedElement(null);
 
             parent.getChildren().remove(part);
+            parentsWithRemovedChildren.add(parent);
+        }
+
+        for (MElementContainer<?> container : parentsWithRemovedChildren)
+        {
+            if (modelService.isLastEditorStack(container))
+                break;
+
+            if (container.getChildren().isEmpty())
+            {
+                MElementContainer<MUIElement> parent = container.getParent();
+                if (parent != null)
+                {
+                    container.setToBeRendered(false);
+
+                    if (container.equals(parent.getSelectedElement()))
+                        parent.setSelectedElement(null);
+                    parent.getChildren().remove(container);
+                }
+                else if (container instanceof MWindow)
+                {
+                    // Must be a Detached Window
+                    MUIElement eParent = (MUIElement) ((EObject) container).eContainer();
+                    if (eParent instanceof MPerspective)
+                    {
+                        ((MPerspective) eParent).getWindows().remove(container);
+                    }
+                    else if (eParent instanceof MWindow)
+                    {
+                        ((MWindow) eParent).getWindows().remove(container);
+                    }
+                }
+            }
+
         }
     }
 }

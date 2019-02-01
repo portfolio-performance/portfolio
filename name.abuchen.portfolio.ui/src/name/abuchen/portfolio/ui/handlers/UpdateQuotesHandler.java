@@ -11,7 +11,7 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 
 public class UpdateQuotesHandler
 {
@@ -29,6 +29,6 @@ public class UpdateQuotesHandler
         if (client == null)
             return;
 
-        new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.LATEST)).schedule();
+        new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
     }
 }

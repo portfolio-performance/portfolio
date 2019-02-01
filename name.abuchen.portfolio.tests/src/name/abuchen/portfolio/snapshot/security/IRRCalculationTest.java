@@ -2,7 +2,8 @@ package name.abuchen.portfolio.snapshot.security;
 
 import static org.junit.Assert.assertThat;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,25 +30,25 @@ public class IRRCalculationTest
 
         Security security = new Security();
 
-        tx.add(new PortfolioTransaction("2015-12-31", //
+        tx.add(new PortfolioTransaction(LocalDateTime.of(2015, Month.DECEMBER, 31, 0, 0), //
                         CurrencyUnit.EUR, Values.Amount.factorize(1000), //
                         security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, //
                         Values.Amount.factorize(10), 0));
 
         DividendTransaction t = new DividendTransaction();
-        t.setDate(LocalDate.parse("2016-06-01"));
+        t.setDateTime(LocalDateTime.parse("2016-06-01T00:00"));
         t.setSecurity(security);
         t.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100)));
         t.setShares(Values.Share.factorize(10));
         t.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50))));
         tx.add(t);
 
-        tx.add(new PortfolioTransaction("2016-12-31", //
+        tx.add(new PortfolioTransaction(LocalDateTime.of(2016, Month.DECEMBER, 31, 0, 0), //
                         CurrencyUnit.EUR, Values.Amount.factorize(1200), //
                         security, Values.Share.factorize(10), PortfolioTransaction.Type.SELL, //
                         Values.Amount.factorize(10), Values.Amount.factorize(30)));
 
-        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), tx);
+        IRRCalculation calculation = Calculation.perform(IRRCalculation.class, new TestCurrencyConverter(), security, tx);
 
         // Excel verification
         // 31.12.15 -1000

@@ -9,7 +9,7 @@ public class StringEditingSupport extends PropertyEditingSupport
         super(subjectType, attributeName);
 
         if (!String.class.isAssignableFrom(descriptor().getPropertyType()))
-            throw new RuntimeException(String.format("Property %s needs to be of type string", attributeName)); //$NON-NLS-1$
+            throw new IllegalArgumentException(String.format("Property %s needs to be of type string", attributeName)); //$NON-NLS-1$
     }
 
     public StringEditingSupport setMandatory(boolean isMandatory)

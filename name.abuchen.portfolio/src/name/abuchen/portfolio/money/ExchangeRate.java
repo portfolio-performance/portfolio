@@ -3,6 +3,7 @@ package name.abuchen.portfolio.money;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.Objects;
 
@@ -27,6 +28,11 @@ public class ExchangeRate implements Comparable<ExchangeRate>
         // empty constructor needed for xstream
     }
 
+    public ExchangeRate(LocalDateTime time, BigDecimal value)
+    {
+        this(Objects.requireNonNull(time).toLocalDate(), value);
+    }
+    
     public ExchangeRate(LocalDate time, BigDecimal value)
     {
         Objects.requireNonNull(time);
@@ -59,8 +65,7 @@ public class ExchangeRate implements Comparable<ExchangeRate>
 
     public ExchangeRate inverse()
     {
-        BigDecimal inverse = BigDecimal.ONE.divide(value, 10, BigDecimal.ROUND_HALF_DOWN);
-        return new ExchangeRate(time, inverse);
+        return new ExchangeRate(time, inverse(value));
     }
 
     @Override

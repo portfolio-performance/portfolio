@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -106,34 +107,39 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
+        client.getPlans().stream().forEach(plan -> plan.removeTransaction(transaction));
     }
 
-    public long getCurrentAmount()
+    public long getCurrentAmount(LocalDateTime date)
     {
-        return transactions.stream().mapToLong(t -> {
-            switch (t.getType())
-            {
-                case DEPOSIT:
-                case DIVIDENDS:
-                case INTEREST:
-                case SELL:
-                case TRANSFER_IN:
-                case TAX_REFUND:
-                case FEES_REFUND:
-                case LOST_REFUND:
-                    return t.getAmount();
-                case FEES:
-                case INTEREST_CHARGE:
-                case TAXES:
-                case REMOVAL:
-                case BUY:
-                case TRANSFER_OUT:
-                case LOST:
-                    return -t.getAmount();
-                default:
-                    throw new UnsupportedOperationException();
-            }
-        }).sum();
+        return transactions.stream() //
+                        .filter(t -> t.getDateTime().isBefore(date)) //
+                        .mapToLong(t -> {
+                            switch (t.getType())
+                            {
+                                case DEPOSIT:
+                                case DIVIDENDS:
+                                case INTEREST:
+                                case SELL:
+                                case TRANSFER_IN:
+                                case TAX_REFUND:
+                                case FEES_REFUND:
+                                    return t.getAmount();
+                                case LOST_REFUND:
+                                    return t.getAmount();
+                                case FEES:
+                                case INTEREST_CHARGE:
+                                case TAXES:
+                                case REMOVAL:
+                                case BUY:
+                                case TRANSFER_OUT:
+                                    return -t.getAmount();
+                                case LOST:
+                                    return -t.getAmount();
+                                default:
+                                    throw new UnsupportedOperationException();
+                            }
+                        }).sum();
     }
 
     @Override

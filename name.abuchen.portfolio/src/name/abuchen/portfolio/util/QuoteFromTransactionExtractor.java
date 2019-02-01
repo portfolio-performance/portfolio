@@ -55,7 +55,7 @@ public class QuoteFromTransactionExtractor
                 PortfolioTransaction pt = (PortfolioTransaction) t;
                 // get date and quote and build a price from it
                 Quote q = pt.getGrossPricePerShare();
-                LocalDate d = pt.getDate();
+                LocalDate d = pt.getDateTime().toLocalDate();
                 SecurityPrice price = new SecurityPrice(d, q.getAmount());
                 bChanges |= security.addPrice(price);
                 // remember the lates price

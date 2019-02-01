@@ -37,7 +37,7 @@ public class OpenFileHandler
             MPart part = partService.createPart(UIConstants.Part.PORTFOLIO);
             part.setLabel(new File(fileSelected).getName());
             part.setTooltip(fileSelected);
-            part.getPersistedState().put(UIConstants.File.PERSISTED_STATE_KEY, fileSelected);
+            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, fileSelected);
 
             if (activePart != null)
                 activePart.getParent().getChildren().add(part);

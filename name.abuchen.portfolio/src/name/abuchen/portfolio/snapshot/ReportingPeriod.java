@@ -11,6 +11,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public abstract class ReportingPeriod
 {
@@ -41,6 +42,8 @@ public abstract class ReportingPeriod
             return new SinceX(code);
         else if (type == YearX.CODE)
             return new YearX(code);
+        else if (type == CurrentMonth.CODE)
+            return new CurrentMonth(code);
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -48,7 +51,6 @@ public abstract class ReportingPeriod
 
         throw new IOException(code);
     }
-
 
     public final LocalDate getStartDate()
     {
@@ -62,7 +64,7 @@ public abstract class ReportingPeriod
 
     public final Predicate<Transaction> containsTransaction()
     {
-        return t -> t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate);
+        return t -> t.getDateTime().toLocalDate().isAfter(startDate) && !t.getDateTime().toLocalDate().isAfter(endDate);
     }
 
     public final Interval toInterval()
@@ -218,7 +220,7 @@ public abstract class ReportingPeriod
 
         /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
         {
-            TradeCalendar calendar = new TradeCalendar();
+            TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
 
             LocalDate date = start;
             int daysToGo = tradingDays;
@@ -230,7 +232,7 @@ public abstract class ReportingPeriod
 
                 date = date.minusDays(1);
             }
-            
+
             while (calendar.isHoliday(date))
                 date = date.minusDays(1);
 
@@ -246,8 +248,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays,
-                            tradingDays);
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
         }
     }
 
@@ -265,7 +266,7 @@ public abstract class ReportingPeriod
         {
             super(startDate, endDate);
         }
-        
+
         public FromXtoY(Interval interval)
         {
             super(interval.getStart(), interval.getEnd());
@@ -338,6 +339,33 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return String.valueOf(getEndDate().getYear());
+        }
+    }
+
+    public static class CurrentMonth extends ReportingPeriod
+    {
+        private static final char CODE = 'M';
+
+        /* package */ CurrentMonth(String code)
+        {
+            this();
+        }
+
+        public CurrentMonth()
+        {
+            super(LocalDate.now().withDayOfMonth(1).minusDays(1), LocalDate.now());
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentMonth;
         }
     }
 }

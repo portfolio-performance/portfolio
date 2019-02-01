@@ -23,6 +23,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Values;
 
 public class ClientPerformanceSnapshot
 {
@@ -215,7 +216,8 @@ public class ClientPerformanceSnapshot
     private void calculate()
     {
         categories.put(CategoryType.INITIAL_VALUE,
-                        new Category(String.format(Messages.ColumnInitialValue, snapshotStart.getTime()), "", //$NON-NLS-1$
+                        new Category(String.format(Messages.ColumnInitialValue,
+                                        Values.Date.format(snapshotStart.getTime())), "", //$NON-NLS-1$
                                         snapshotStart.getMonetaryAssets()));
 
         Money zero = Money.of(converter.getTermCurrency(), 0);
@@ -229,7 +231,8 @@ public class ClientPerformanceSnapshot
         categories.put(CategoryType.TRANSFERS, new Category(Messages.ColumnTransfers, "+", zero)); //$NON-NLS-1$
 
         categories.put(CategoryType.FINAL_VALUE,
-                        new Category(String.format(Messages.ColumnFinalValue, snapshotEnd.getTime()), "=", //$NON-NLS-1$
+                        new Category(String.format(Messages.ColumnFinalValue,
+                                        Values.Date.format(snapshotEnd.getTime())), "=", //$NON-NLS-1$
                                         snapshotEnd.getMonetaryAssets()));
 
         irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
@@ -258,12 +261,12 @@ public class ClientPerformanceSnapshot
                 case BUY:
                 case DELIVERY_INBOUND:
                 case TRANSFER_IN:
-                    valuation.get(t.getSecurity()).subtract(t.getGrossValue().with(converter.at(t.getDate())));
+                    valuation.get(t.getSecurity()).subtract(t.getGrossValue().with(converter.at(t.getDateTime())));
                     break;
                 case SELL:
                 case DELIVERY_OUTBOUND:
                 case TRANSFER_OUT:
-                    valuation.get(t.getSecurity()).add(t.getGrossValue().with(converter.at(t.getDate())));
+                    valuation.get(t.getSecurity()).add(t.getGrossValue().with(converter.at(t.getDateTime())));
                     break;
                 default:
                     throw new UnsupportedOperationException();
@@ -314,23 +317,23 @@ public class ClientPerformanceSnapshot
                         addEarningTransaction(account, t, mEarnings, mOtherEarnings, mTaxes, earningsBySecurity);
                         break;
                     case INTEREST_CHARGE:
-                        Money charged = t.getMonetaryAmount().with(converter.at(t.getDate()));
-                        mEarnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        Money charged = t.getMonetaryAmount().with(converter.at(t.getDateTime()));
+                        mEarnings.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         earnings.add(new TransactionPair<AccountTransaction>(account, t));
                         mOtherEarnings.subtract(charged);
                         break;
                     case DEPOSIT:
-                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case REMOVAL:
-                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case FEES:
-                        mFees.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mFees.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case FEES_REFUND:
-                        mFees.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mFees.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case LOST:
@@ -342,11 +345,11 @@ public class ClientPerformanceSnapshot
                         losts.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case TAXES:
-                        mTaxes.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mTaxes.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         taxes.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case TAX_REFUND:
-                        mTaxes.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mTaxes.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         taxes.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case BUY:
@@ -393,10 +396,10 @@ public class ClientPerformanceSnapshot
                 switch (t.getType())
                 {
                     case DELIVERY_INBOUND:
-                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mDeposits.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case DELIVERY_OUTBOUND:
-                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mRemovals.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case BUY:
                     case SELL:
@@ -436,8 +439,8 @@ public class ClientPerformanceSnapshot
     {
         this.earnings.add(new TransactionPair<AccountTransaction>(account, transaction));
 
-        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDate()));
-        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDate()));
+        Money tax = transaction.getUnitSum(Unit.Type.TAX, converter).with(converter.at(transaction.getDateTime()));
+        Money earned = transaction.getGrossValue().with(converter.at(transaction.getDateTime()));
 
         mEarnings.add(earned);
 
@@ -484,7 +487,7 @@ public class ClientPerformanceSnapshot
                     case SELL:
                     case FEES_REFUND:
                     case LOST_REFUND:
-                        value.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        value.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case REMOVAL:
                     case FEES:
@@ -492,7 +495,7 @@ public class ClientPerformanceSnapshot
                     case TAXES:
                     case BUY:
                     case LOST:
-                        value.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        value.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         break;
                     case TRANSFER_IN:
                         value.subtract(determineTransferAmount(t));
@@ -543,8 +546,8 @@ public class ClientPerformanceSnapshot
             return other.getMonetaryAmount();
 
         MutableMoney m = MutableMoney.of(converter.getTermCurrency());
-        m.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
-        m.add(other.getMonetaryAmount().with(converter.at(t.getDate())));
+        m.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        m.add(other.getMonetaryAmount().with(converter.at(t.getDateTime())));
         return m.divide(2).toMoney();
     }
 }

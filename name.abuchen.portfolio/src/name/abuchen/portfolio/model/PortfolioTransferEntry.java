@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class PortfolioTransferEntry implements CrossEntry, Annotated
 {
@@ -27,6 +27,16 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         this.portfolioTo = portfolioTo;
     }
 
+    public void setSourceTransaction(PortfolioTransaction transaction)
+    {
+        this.transactionFrom = transaction;
+    }
+
+    public void setTargetTransaction(PortfolioTransaction transaction)
+    {
+        this.transactionTo = transaction;
+    }
+
     public PortfolioTransaction getSourceTransaction()
     {
         return this.transactionFrom;
@@ -47,10 +57,20 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         this.portfolioTo = portfolio;
     }
 
-    public void setDate(LocalDate date)
+    public Portfolio getSourcePortfolio()
     {
-        this.transactionFrom.setDate(date);
-        this.transactionTo.setDate(date);
+        return this.portfolioFrom;
+    }
+
+    public Portfolio getTargetPortfolio()
+    {
+        return this.portfolioTo;
+    }
+
+    public void setDate(LocalDateTime date)
+    {
+        this.transactionFrom.setDateTime(date);
+        this.transactionTo.setDateTime(date);
     }
 
     public void setSecurity(Security security)
@@ -90,6 +110,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
         this.transactionTo.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         portfolioFrom.addTransaction(transactionFrom);
@@ -109,7 +130,7 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
 
     private void copyAttributesOver(PortfolioTransaction source, PortfolioTransaction target)
     {
-        target.setDate(source.getDate());
+        target.setDateTime(source.getDateTime());
         target.setSecurity(source.getSecurity());
         target.setShares(source.getShares());
         target.setNote(source.getNote());
@@ -124,6 +145,20 @@ public class PortfolioTransferEntry implements CrossEntry, Annotated
             return portfolioTo;
         else
             throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (!(owner instanceof Portfolio))
+            throw new IllegalArgumentException();
+
+        if (t.equals(transactionFrom) && !portfolioTo.equals(owner))
+            portfolioFrom = (Portfolio) owner;
+        else if (t.equals(transactionTo) && !portfolioFrom.equals(owner))
+            portfolioTo = (Portfolio) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override

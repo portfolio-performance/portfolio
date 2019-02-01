@@ -120,37 +120,35 @@ import name.abuchen.portfolio.util.Interval;
         {
             account.getTransactions() //
                             .stream() //
-                            .filter(t -> !t.getDate().isBefore(interval.getStart())
-                                            && !t.getDate().isAfter(interval.getEnd()))
+                            .filter(t -> !t.getDateTime().toLocalDate().isBefore(interval.getStart())
+                                            && !t.getDateTime().toLocalDate().isAfter(interval.getEnd()))
                             .forEach(t -> { // NOSONAR
+                                LocalDate d = t.getDateTime().toLocalDate();
                                 switch (t.getType())
                                 {
                                     case DEPOSIT:
-                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
-                                                        t.getDate());
+                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case REMOVAL:
-                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
-                                                        t.getDate());
+                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case TAXES:
-                                        addValue(taxes, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        addValue(taxes, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case TAX_REFUND:
-                                        addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
+                                        addValue(taxes, t.getCurrencyCode(), -t.getAmount(), interval, d);
                                         break;
                                     case DIVIDENDS:
                                         addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(),
-                                                        interval, t.getDate());
-                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                                        interval, d);
+                                        addValue(dividends, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case INTEREST:
-                                        addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, t.getDate());
+                                        addValue(interest, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case INTEREST_CHARGE:
-                                        addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, t.getDate());
-                                        addValue(interestCharge, t.getCurrencyCode(), t.getAmount(), interval,
-                                                        t.getDate());
+                                        addValue(interest, t.getCurrencyCode(), -t.getAmount(), interval, d);
+                                        addValue(interestCharge, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     default:
                                         // do nothing
@@ -164,23 +162,22 @@ import name.abuchen.portfolio.util.Interval;
         {
             portfolio.getTransactions() //
                             .stream() //
-                            .filter(t -> !t.getDate().isBefore(interval.getStart())
-                                            && !t.getDate().isAfter(interval.getEnd()))
+                            .filter(t -> !t.getDateTime().toLocalDate().isBefore(interval.getStart())
+                                            && !t.getDateTime().toLocalDate().isAfter(interval.getEnd()))
                             .forEach(t -> {
+                                LocalDate d = t.getDateTime().toLocalDate();
                                 // collect taxes
                                 addValue(taxes, t.getCurrencyCode(), t.getUnitSum(Unit.Type.TAX).getAmount(), //
-                                                interval, t.getDate());
+                                                interval, d);
 
                                 // collect transferals
                                 switch (t.getType())
                                 {
                                     case DELIVERY_INBOUND:
-                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
-                                                        t.getDate());
+                                        addValue(inboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     case DELIVERY_OUTBOUND:
-                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval,
-                                                        t.getDate());
+                                        addValue(outboundTransferals, t.getCurrencyCode(), t.getAmount(), interval, d);
                                         break;
                                     default:
                                         break;

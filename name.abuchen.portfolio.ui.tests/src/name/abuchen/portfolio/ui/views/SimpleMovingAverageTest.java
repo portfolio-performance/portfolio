@@ -15,8 +15,6 @@ import org.junit.Test;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.views.ChartLineSeriesAxes;
-import name.abuchen.portfolio.ui.views.SimpleMovingAverage;
 
 @SuppressWarnings("nls")
 public class SimpleMovingAverageTest
@@ -76,28 +74,6 @@ public class SimpleMovingAverageTest
         assertThat(SMALines, is(IsNull.notNullValue()));
         assertThat(SMALines.getValues().length, is(1));
         assertThat(SMALines.getValues()[0], is((1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10) / Values.Quote.divider() / 10));
-    }
-
-    @Test
-    public void testSecurityHasSparsePrice()
-    {
-        Security security = new Security();
-
-        LocalDate date = LocalDate.parse("2016-01-01");
-        for (int ii = 0; ii < 100; ii++)
-        {
-            security.addPrice(new SecurityPrice(date, Values.Quote.factorize(10)));
-            date = date.plusDays(1);
-        }
-
-        security.addPrice(new SecurityPrice(LocalDate.parse("2017-01-01"), Values.Quote.factorize(12)));
-        LocalDate tmp = LocalDate.parse("2016-01-01");
-        tmp = tmp.plusDays(99);
-        Date lastSMADate = java.sql.Date.valueOf(tmp);
-
-        ChartLineSeriesAxes SMALines = new SimpleMovingAverage(10, security, null).getSMA();
-        assertThat(SMALines.getDates(), is(IsNull.notNullValue()));
-        assertThat(SMALines.getDates()[SMALines.getDates().length - 1], is(lastSMADate));
     }
 
     @Test

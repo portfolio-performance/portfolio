@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -54,7 +55,23 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
         public boolean isApplicable()
         {
-            return pattern.matcher(System.getProperty(property)).matches();
+            if ("$bundle.list".equals(property)) //$NON-NLS-1$
+            {
+                for (Bundle bundle : PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles())
+                {
+                    if (pattern.matcher(bundle.getSymbolicName()).matches())
+                        return true;
+                }
+
+                return false;
+            }
+            else
+            {
+                String value = System.getProperty(property);
+                if (value == null)
+                    return false;
+                return pattern.matcher(value).matches();
+            }
         }
     }
 

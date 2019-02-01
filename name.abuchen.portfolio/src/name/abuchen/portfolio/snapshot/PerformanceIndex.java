@@ -7,11 +7,12 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 import java.util.function.ToLongBiFunction;
 
 import org.apache.commons.csv.CSVPrinter;
@@ -35,6 +36,7 @@ import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class PerformanceIndex
 {
@@ -109,9 +111,8 @@ public class PerformanceIndex
 
     public static PerformanceIndex forSecurity(PerformanceIndex clientIndex, Security security)
     {
-        SecurityIndex index = new SecurityIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
-                        clientIndex.getReportInterval());
-        index.calculate(clientIndex, security);
+        SecurityIndex index = new SecurityIndex(clientIndex, security);
+        index.calculate();
         return index;
     }
 
@@ -206,10 +207,10 @@ public class PerformanceIndex
             for (; startAt < totals.length; startAt++)
                 if (totals[startAt] != 0)
                     break;
-            
+
             if (startAt == totals.length)
                 startAt = totals.length - 1;
-            
+
             drawdown = new Drawdown(accumulated, dates, startAt);
         }
 
@@ -235,18 +236,28 @@ public class PerformanceIndex
      * <li>on weekends or public holidays</li>
      * </ul>
      */
-    private Predicate<Integer> filterReturnsForVolatilityCalculation()
+    private IntPredicate filterReturnsForVolatilityCalculation()
     {
-        TradeCalendar calendar = new TradeCalendar();
+        TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
         return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);
     }
 
-    public ClientPerformanceSnapshot getClientPerformanceSnapshot()
+    /**
+     * Returns the ClientPerformanceSnapshot if available. The snapshot is not
+     * available for benchmarks and the consumer price indices.
+     */
+    public Optional<ClientPerformanceSnapshot> getClientPerformanceSnapshot()
     {
         if (performanceSnapshot == null)
             performanceSnapshot = new ClientPerformanceSnapshot(client, converter, reportInterval);
 
-        return performanceSnapshot;
+        return Optional.of(performanceSnapshot);
+    }
+
+    public double getPerformanceIRR()
+    {
+        return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
     public long[] getTaxes()
@@ -275,7 +286,7 @@ public class PerformanceIndex
      */
     public long[] calculateAbsoluteInvestedCapital()
     {
-        ToLongBiFunction<Money, LocalDate> convertIfNecessary = (amount, date) -> {
+        ToLongBiFunction<Money, LocalDateTime> convertIfNecessary = (amount, date) -> {
             if (amount.getCurrencyCode().equals(getCurrencyConverter().getTermCurrency()))
                 return amount.getAmount();
             else
@@ -285,17 +296,19 @@ public class PerformanceIndex
         long startValue = 0;
         Interval interval = getActualInterval();
 
+        LocalDateTime intervalStart = interval.getStart().atStartOfDay();
+
         for (Account account : getClient().getAccounts())
             startValue += account.getTransactions() //
                             .stream() //
                             .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT
                                             || t.getType() == AccountTransaction.Type.REMOVAL)
-                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == AccountTransaction.Type.DEPOSIT)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else if (t.getType() == AccountTransaction.Type.REMOVAL)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else
                                     return 0;
                             }).sum();
@@ -305,12 +318,12 @@ public class PerformanceIndex
                             .stream() //
                             .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                             || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            .filter(t -> t.getDate().isBefore(interval.getStart())) //
+                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
-                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else if (t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDate());
+                                    return -convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
                                 else
                                     return 0;
                             }).sum();
@@ -387,7 +400,7 @@ public class PerformanceIndex
         exportTo(file, filterReturnsForVolatilityCalculation());
     }
 
-    private void exportTo(File file, Predicate<Integer> filter) throws IOException
+    private void exportTo(File file, IntPredicate filter) throws IOException
     {
         CSVStrategy strategy = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED, CSVStrategy.ESCAPE_DISABLED,
                         false, false, false, false);

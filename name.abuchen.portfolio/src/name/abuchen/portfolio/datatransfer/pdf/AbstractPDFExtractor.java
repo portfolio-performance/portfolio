@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,6 +25,10 @@ import name.abuchen.portfolio.money.Values;
 public abstract class AbstractPDFExtractor implements Extractor
 {
     private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
+                    Locale.GERMANY);
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
+                    Locale.GERMANY);
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
@@ -36,6 +41,11 @@ public abstract class AbstractPDFExtractor implements Extractor
     public AbstractPDFExtractor(Client client)
     {
         this.client = client;
+    }
+
+    public final Client getClient()
+    {
+        return client;
     }
 
     protected final void addDocumentTyp(DocumentType type)
@@ -59,32 +69,20 @@ public abstract class AbstractPDFExtractor implements Extractor
     }
 
     @Override
-    public String getFilterExtension()
-    {
-        return "*.pdf"; //$NON-NLS-1$
-    }
-
-    @Override
-    public List<Item> extract(List<Extractor.InputFile> files, List<Exception> errors)
+    public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {
         // careful: security cache makes extractor stateful
-        securityCache = new SecurityCache(client);
+        this.securityCache = securityCache;
 
         List<Item> results = new ArrayList<>();
-        for (Extractor.InputFile f : files)
-        {
-            if (!(f instanceof PDFInputFile))
-                throw new IllegalArgumentException();
 
-            PDFInputFile inputFile = (PDFInputFile) f;
+        if (!(inputFile instanceof PDFInputFile))
+            throw new IllegalArgumentException();
 
-            String text = inputFile.getText();
-            results.addAll(extract(inputFile.getFile().getName(), text, errors));
-        }
+        String text = ((PDFInputFile) inputFile).getText();
+        results.addAll(extract(inputFile.getFile().getName(), text, errors));
 
-        results.addAll(securityCache.createMissingSecurityItems(results));
-
-        securityCache = null;
+        this.securityCache = null;
 
         return results;
     }
@@ -100,7 +98,7 @@ public abstract class AbstractPDFExtractor implements Extractor
             if (items.isEmpty())
             {
                 errors.add(new UnsupportedOperationException(
-                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename)));
+                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, getLabel(), filename)));
             }
 
             for (Item item : items)
@@ -162,6 +160,10 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (name != null)
             name = name.trim();
 
+        String nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
+        if (nameRowTwo != null)
+            name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
+
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
             s.setCurrencyCode(asCurrencyCode(values.get("currency"))); //$NON-NLS-1$
@@ -220,8 +222,20 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
-    /* protected */LocalDate asDate(String value)
+    /* protected */LocalDateTime asDate(String value)
     {
-        return LocalDate.parse(value, DATE_FORMAT);
+        return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+    }
+
+    /* protected */LocalDateTime asDate(String date, String time)
+    {
+        try
+        {
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT); //$NON-NLS-1$
+        }
+        catch (Exception e)
+        {
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
+        }
     }
 }

@@ -1,0 +1,14 @@
+
+Consorsbank
+
+Nachträgliche Verlustverrechnung
+
+ ----------------------------------------------------------------------
+ Erstattung/Belastung (-) von Steuern
+ Anteil                             100,00%
+ KapSt Person 1                                 :                 0,00
+ SolZ  Person 1                                 :                 0,01-
+ KiSt  Person 1                                 :                 0,00
+ ======================================================================
+                                                                  0,00
+

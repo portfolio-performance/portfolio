@@ -7,7 +7,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 
-final class DashboardResources
+public final class DashboardResources
 {
     private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 

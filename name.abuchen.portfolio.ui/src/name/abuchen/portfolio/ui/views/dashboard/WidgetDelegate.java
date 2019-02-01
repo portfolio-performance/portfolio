@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import org.eclipse.swt.widgets.Composite;
@@ -10,7 +12,11 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 
-public abstract class WidgetDelegate
+/**
+ * Base UI class for a widget. <D> represents the data object which is
+ * calculated in the background and passed back into the {@link #update} method.
+ */
+public abstract class WidgetDelegate<D>
 {
     private final Dashboard.Widget widget;
     private final DashboardData data;
@@ -24,29 +30,35 @@ public abstract class WidgetDelegate
         addConfig(new LabelConfig(this));
     }
 
-    protected final void addConfig(WidgetConfig config)
+    public final void addConfig(WidgetConfig config)
     {
         this.config.add(config);
     }
 
-    protected Client getClient()
+    public Client getClient()
     {
         return data.getClient();
     }
 
-    protected Dashboard.Widget getWidget()
+    public Dashboard.Widget getWidget()
     {
         return widget;
     }
 
-    protected DashboardData getDashboardData()
+    public DashboardData getDashboardData()
     {
         return data;
     }
 
-    protected <C extends WidgetConfig> C get(Class<C> type)
+    public <C extends WidgetConfig> C get(Class<C> type)
     {
-        return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny().get());
+        return type.cast(config.stream().filter(c -> type.equals(c.getClass())).findAny()
+                        .orElseThrow(IllegalArgumentException::new));
+    }
+
+    public <C extends WidgetConfig> Optional<C> optionallyGet(Class<C> type)
+    {
+        return config.stream().filter(c -> type.equals(c.getClass())).findAny().map(type::cast);
     }
 
     public Stream<WidgetConfig> getWidgetConfigs()
@@ -54,13 +66,29 @@ public abstract class WidgetDelegate
         return config.stream();
     }
 
-    abstract Composite createControl(Composite parent, DashboardResources resources);
+    public abstract Composite createControl(Composite parent, DashboardResources resources);
 
-    abstract void update();
+    /**
+     * Immediately updates the widget with the data of the update task. Calls
+     * first {@link #getUpdateTask} and then {@link #update(D)}. Updates the
+     * result cache.
+     */
+    public final void update()
+    {
+        D result = getUpdateTask().get();
+
+        data.getResultCache().put(widget, result != null ? result : DashboardData.EMPTY_RESULT);
+
+        update(result);
+    }
+
+    public abstract Supplier<D> getUpdateTask();
+
+    public abstract void update(D data);
 
     /**
      * Returns the title control to which context menu and default tooltip are
      * attached.
      */
-    abstract Control getTitleControl();
+    public abstract Control getTitleControl();
 }

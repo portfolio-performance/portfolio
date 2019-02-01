@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
@@ -34,7 +36,9 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.Strings;
+import name.abuchen.portfolio.online.impl.variableurl.Factory;
+import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -80,7 +84,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         protected boolean matches(Element header)
         {
-            String text = header.text();
+            String text = TextUtil.strip(header.text());
             for (Pattern pattern : patterns)
             {
                 if (pattern.matcher(text).matches())
@@ -151,7 +155,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         @Override
         void setValue(Element value, LatestSecurityPrice price, String languageHint) throws ParseException
         {
-            String text = Strings.strip(value.text());
+            String text = TextUtil.strip(value.text());
             for (int ii = 0; ii < formatters.length; ii++)
             {
                 try
@@ -308,16 +312,35 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         }
 
-        List<LatestSecurityPrice> answer = cache.lookup(feedURL);
-        if (answer != null)
-            return answer;
+        VariableURL variableURL = Factory.fromString(feedURL);
+        variableURL.setSecurity(security);
 
-        answer = parseFromURL(feedURL, errors);
+        SortedSet<LatestSecurityPrice> newPricesByDate = new TreeSet<>(new SecurityPrice.ByDate());
+        long failedAttempts = 0;
+        long maxFailedAttempts = variableURL.getMaxFailedAttempts();
 
-        if (!answer.isEmpty())
-            cache.put(feedURL, answer);
+        for (String url : variableURL)
+        {
+            List<LatestSecurityPrice> answer = cache.lookup(url);
 
-        return answer;
+            if (answer == null)
+            {
+                answer = parseFromURL(url, errors);
+
+                if (!answer.isEmpty())
+                    cache.put(url, answer);
+            }
+
+            int sizeBefore = newPricesByDate.size();
+            newPricesByDate.addAll(answer);
+
+            if (newPricesByDate.size() > sizeBefore)
+                failedAttempts = 0;
+            else if (++failedAttempts > maxFailedAttempts)
+                break;
+        }
+
+        return new ArrayList<>(newPricesByDate);
     }
 
     @Override
@@ -337,21 +360,23 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(), errors);
+            return parse(escapedUrl,
+                            Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(),
+                            errors);
         }
         catch (URISyntaxException | IOException e)
         {
-            errors.add(e);
+            errors.add(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
         }
     }
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
-        return parse(Jsoup.parse(html), errors);
+        return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
-    private List<LatestSecurityPrice> parse(Document document, List<Exception> errors)
+    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -383,7 +408,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                     }
                     catch (Exception e)
                     {
-                        errors.add(e);
+                        errors.add(new IOException(url + '\n' + e.getMessage(), e));
                     }
                 }
 
@@ -394,7 +419,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
 
         return prices;
     }

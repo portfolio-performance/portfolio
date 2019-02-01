@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Map;
 import java.util.function.BiConsumer;
@@ -19,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 
 public class HelloBankPDFExtractor extends AbstractPDFExtractor
 {
-    public HelloBankPDFExtractor(Client client) throws IOException
+    public HelloBankPDFExtractor(Client client)
     {
         super(client);
 
@@ -289,7 +288,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Valuta (?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // FIXME should be fee (not tax) -> change once dividend
                         // transactions support fees
@@ -376,7 +375,7 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("date") //
                         .match("Kassatag: (?<date>\\d+.\\d+.\\d{4}+).*")
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
                         .match("steuerlicher Anschaffungswert: (?<amount>[\\d+,.-]*) (?<currency>\\w{3}+) *")

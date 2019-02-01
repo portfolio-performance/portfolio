@@ -3,27 +3,29 @@ package name.abuchen.portfolio.ui.views.dividends;
 import java.time.LocalDate;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
-/* package */ class StartYearSelectionDropDown extends AbstractDropDown
+/* package */ class StartYearSelectionDropDown extends DropDown implements IMenuListener
 {
     private DividendsViewModel model;
 
-    public StartYearSelectionDropDown(ToolBar toolBar, DividendsViewModel model)
+    public StartYearSelectionDropDown(DividendsViewModel model)
     {
-        super(toolBar, String.valueOf(model.getStartYear()));
+        super(createLabelTextForYear(model.getStartYear()));
         this.model = model;
+
+        setMenuListener(this);
     }
 
     @Override
@@ -41,7 +43,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 public void run()
                 {
                     model.updateWith(year);
-                    setLabel(String.valueOf(year));
+                    setLabel(createLabelTextForYear(year));
                 }
             };
             action.setChecked(year == model.getStartYear());
@@ -72,9 +74,14 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             {
                 int year = Integer.parseInt(dialog.getValue());
                 model.updateWith(year);
-                setLabel(String.valueOf(year));
+                setLabel(createLabelTextForYear(year));
             }
 
         }));
+    }
+
+    private static String createLabelTextForYear(int year)
+    {
+        return Messages.LabelSelectYearSince + " " + year; //$NON-NLS-1$
     }
 }
