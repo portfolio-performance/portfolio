@@ -40,7 +40,7 @@ mvn clean verify -Dtycho.disableP2Mirrors
 
 ### Eclipse Setup
 
-To develop, use the [Eclipse IDE](http://eclipse.org/downloads/) **Photon** release plus **Plug-in Development Environment (PDE)**. PDE homepage is http://www.eclipse.org/pde/ and it can be installed via Help/Install new Software. The link for the update site is mentioned in the docs.
+To develop, use the [Eclipse IDE](http://eclipse.org/downloads/) **Photon** (or newer up to 2018-09) release plus **Plug-in Development Environment (PDE)**. PDE homepage is http://www.eclipse.org/pde/ and it can be installed via Help/Install new Software. The link for the update site is mentioned in the docs.
 
 Optionally, install via the Eclipse Marketplace
 * infinitest
@@ -70,7 +70,7 @@ mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 * Open the portfolio-app project
 * Press F5 to refresh the view, otherwise you might not find the ide-target-platform
 * Open the ide-target-platform/portfolio-ide.target file with the Target Editor (this may take a while as it requires Internet access). If you just get an XML file, use right click and chose Open With
-* In the resulting editor, click on the "Set as Target Platform" link at the top right (this may also take a while)
+* In the resulting editor, click on the "Set as Active Target Platform" link at the top right (this may also take a while)
 
 ### Run Program
 
