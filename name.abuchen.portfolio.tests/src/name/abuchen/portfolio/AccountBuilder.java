@@ -83,7 +83,7 @@ public class AccountBuilder
         return transaction(Type.FEES_REFUND, date, amount);
     }
     
-    public AccountBuilder losts____(LocalDate date, long amount)
+    public AccountBuilder losts____(String date, long amount)
     {
         return transaction(Type.LOST, date, amount);
     }

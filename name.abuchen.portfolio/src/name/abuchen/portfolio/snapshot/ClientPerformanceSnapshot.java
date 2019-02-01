@@ -337,11 +337,11 @@ public class ClientPerformanceSnapshot
                         fees.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case LOST:
-                        mLosts.add(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mLosts.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         losts.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case LOST_REFUND:
-                        mLosts.subtract(t.getMonetaryAmount().with(converter.at(t.getDate())));
+                        mLosts.subtract(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
                         losts.add(new TransactionPair<AccountTransaction>(account, t));
                         break;
                     case TAXES:
