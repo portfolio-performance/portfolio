@@ -1,0 +1,40 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=58205100
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Fusion ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=58
+54321 Musterhausen 58205100 40654484 / 04.07.2017 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Frankfurt am Main, 04.07.2017
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Gagfah S.A. Actions nom. EO 1,25 LU0269583422
+Nominal Ex-Tag
+STK 12,000 04.07.2017
+Verwahrart
+Girosammelverwahrung
+Einbuchung:
+Gattungsbezeichnung ISIN
+Vonovia SE Inhaber-Teilrechte (Gagfah) DE000A2GS4R1
+Nominal
+STK 6,840
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIABFUSI/GDBVKAPU/000058/050717/002816
