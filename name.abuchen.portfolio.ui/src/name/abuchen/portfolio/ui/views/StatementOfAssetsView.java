@@ -109,6 +109,7 @@ public class StatementOfAssetsView extends AbstractFinanceView
 
         this.clientFilter = new ClientFilterDropDown(getClient(), getPreferenceStore(),
                         StatementOfAssetsView.class.getSimpleName(), filter -> notifyModelUpdated());
+        toolBar.add(clientFilter);
 
         Action export = new SimpleAction(null, action -> new TableViewerCSVExporter(assetViewer.getTableViewer())
                         .export(Messages.LabelStatementOfAssets + ".csv")); //$NON-NLS-1$
