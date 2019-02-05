@@ -127,6 +127,8 @@ public class PortfolioPart implements ClientInputListener
                             MessageFormat.format(Messages.MsgLoadingFile, clientInput.getFile().getName()), true,
                             false);
         }
+
+        clientInputFactory.incrementEditorCount(clientInput);
     }
 
     private void createContainerWithViews(Composite parent)
@@ -340,6 +342,8 @@ public class PortfolioPart implements ClientInputListener
     {
         this.clientInput.removeListener(this);
         this.clientInput.savePreferences();
+
+        clientInputFactory.decrementEditorCount(clientInput);
     }
 
     @Persist

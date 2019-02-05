@@ -1,9 +1,10 @@
 package name.abuchen.portfolio.ui.editor;
 
 import java.io.File;
-import java.lang.ref.WeakReference;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -20,7 +21,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 @Singleton
 public class ClientInputFactory
 {
-    private Set<WeakReference<ClientInput>> cache = new HashSet<>();
+    private Map<ClientInput, AtomicInteger> cache = new HashMap<>();
 
     @Inject
     private IEclipseContext context;
@@ -30,24 +31,15 @@ public class ClientInputFactory
 
     public synchronized ClientInput lookup(File clientFile)
     {
-        ClientInput clientInput = null;
+        Optional<ClientInput> input = cache.keySet().stream().filter(i -> clientFile.equals(i.getFile())).findAny();
 
-        for (WeakReference<ClientInput> ref : cache)
-        {
-            ClientInput candidate = ref.get();
-            if (candidate == null)
-                continue;
-            if (clientFile.equals(candidate.getFile()))
-                clientInput = candidate;
-        }
-
-        if (clientInput != null)
-            return clientInput;
+        if (input.isPresent())
+            return input.get();
 
         ClientInput answer = new ClientInput(clientFile.getName(), clientFile);
         ContextInjectionFactory.inject(answer, context);
 
-        cache.add(new WeakReference<>(answer));
+        cache.put(answer, new AtomicInteger());
 
         if (!ClientFactory.isEncrypted(clientFile))
             new LoadClientThread(answer, broker, new ProgressProvider(answer), null).start();
@@ -62,8 +54,21 @@ public class ClientInputFactory
         answer.setClient(client);
         answer.touch();
 
-        cache.add(new WeakReference<>(answer));
+        cache.put(answer, new AtomicInteger());
 
         return answer;
+    }
+
+    public synchronized void incrementEditorCount(ClientInput clientInput)
+    {
+        cache.computeIfAbsent(clientInput, i -> new AtomicInteger()).incrementAndGet();
+    }
+
+    public synchronized void decrementEditorCount(ClientInput clientInput)
+    {
+        int newCount = cache.computeIfAbsent(clientInput, i -> new AtomicInteger()).decrementAndGet();
+
+        if (newCount <= 0)
+            cache.remove(clientInput);
     }
 }
