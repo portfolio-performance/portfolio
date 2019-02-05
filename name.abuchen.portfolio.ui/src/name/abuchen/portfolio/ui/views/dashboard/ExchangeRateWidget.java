@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -57,7 +58,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
         InfoToolTip.attach(indicator, () -> {
             ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
             ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
-            Optional<ExchangeRate> rate = series.lookupRate(period.getEndDate());
+            Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
             return rate.isPresent() ? MessageFormat.format(Messages.TooltipDateOfExchangeRate,
                             formatter.format(rate.get().getTime())) : ""; //$NON-NLS-1$
         });
@@ -86,7 +87,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
 
         ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
         ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
-        Optional<ExchangeRate> rate = series.lookupRate(period.getEndDate());
+        Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
 
         this.indicator.setText(series.getLabel() + ' '
                         + (rate.isPresent() ? Values.ExchangeRate.format(rate.get().getValue()) : '-'));

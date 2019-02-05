@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
+import name.abuchen.portfolio.util.Interval;
 
 public class DashboardData
 {
@@ -153,13 +155,14 @@ public class DashboardData
 
     private Object doCalculate(Class<?> type, ReportingPeriod period)
     {
+        Interval interval = period.toInterval(LocalDate.now());
         if (type.equals(ClientPerformanceSnapshot.class))
         {
-            return new ClientPerformanceSnapshot(client, converter, period);
+            return new ClientPerformanceSnapshot(client, converter, interval);
         }
         else if (type.equals(PerformanceIndex.class))
         {
-            return PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
+            return PerformanceIndex.forClient(client, converter, interval, new ArrayList<Exception>());
         }
         else
         {
@@ -177,7 +180,7 @@ public class DashboardData
         return converter;
     }
 
-    public PerformanceIndex calculate(DataSeries dataSeries, ReportingPeriod reportingPeriod)
+    public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);
     }

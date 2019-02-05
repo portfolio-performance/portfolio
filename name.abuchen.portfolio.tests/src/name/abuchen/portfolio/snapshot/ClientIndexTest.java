@@ -29,6 +29,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class ClientIndexTest
@@ -63,18 +64,18 @@ public class ClientIndexTest
     {
         Client client = createClient();
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2011, Month.DECEMBER, 31), //
+        Interval period = Interval.of(LocalDate.of(2011, Month.DECEMBER, 31), //
                         LocalDate.of(2012, Month.JANUARY, 8));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
 
         assertNotNull(index);
 
-        assertThat(period.toInterval(), is(index.getReportInterval().toInterval()));
+        assertThat(period, is(index.getReportInterval()));
         assertThat(client, is(index.getClient()));
 
         LocalDate[] dates = index.getDates();
-        assertThat(dates.length, is(Dates.daysBetween(period.getStartDate(), period.getEndDate()) + 1));
+        assertThat(dates.length, is(Dates.daysBetween(period.getStart(), period.getEnd()) + 1));
 
         double[] delta = index.getDeltaPercentage();
         assertThat(delta[0], is(0d));
@@ -151,7 +152,7 @@ public class ClientIndexTest
 
         Client client = createClient(delta, transferals);
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
+        Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
@@ -173,7 +174,7 @@ public class ClientIndexTest
     {
         Client client = new Client();
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
+        Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
@@ -191,7 +192,7 @@ public class ClientIndexTest
                         .interest(LocalDateTime.of(2012, 01, 02, 0, 0), 100) //
                         .addTo(client);
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
+        Interval period = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 9));
 
         List<Exception> errors = new ArrayList<Exception>();
@@ -212,13 +213,13 @@ public class ClientIndexTest
     {
         Client client = createClient();
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(LocalDate.of(2011, Month.DECEMBER, 20), //
+        Interval period = Interval.of(LocalDate.of(2011, Month.DECEMBER, 20), //
                         LocalDate.of(2012, Month.JANUARY, 8));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
 
         assertThat(index.getFirstDataPoint().get(), is(LocalDate.of(2011, 12, 31)));
-        assertThat(index.getFirstDataPoint().get(), not(period.toInterval().getStart()));
+        assertThat(index.getFirstDataPoint().get(), not(period.getStart()));
     }
 
     @Test
@@ -251,7 +252,7 @@ public class ClientIndexTest
 
         portfolio.addTo(client);
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval period = Interval.of(startDate, endDate);
 
         List<Exception> warnings = new ArrayList<Exception>();
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -289,7 +290,7 @@ public class ClientIndexTest
                                         Values.Share.factorize(100), 100) //
                         .addTo(client);
 
-        ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval period = Interval.of(startDate, endDate);
 
         List<Exception> warnings = new ArrayList<Exception>();
         CurrencyConverter converter = new TestCurrencyConverter().with(CurrencyUnit.EUR);
@@ -318,7 +319,7 @@ public class ClientIndexTest
         {
             Client client = createClient();
 
-            ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY( //
+            Interval reportInterval = Interval.of( //
                             LocalDate.of(2011, Month.DECEMBER, 31), LocalDate.of(2012, Month.JANUARY, 8));
             CurrencyConverter converter = new TestCurrencyConverter();
             PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
@@ -354,7 +355,7 @@ public class ClientIndexTest
                         .deposit_("2012-01-10", 10000) //
                         .addTo(client);
 
-        ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
+        Interval reportInterval = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 10));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,
@@ -375,7 +376,7 @@ public class ClientIndexTest
                         .interest("2012-01-02", 1000) //
                         .addTo(client);
 
-        ReportingPeriod.FromXtoY reportInterval = new ReportingPeriod.FromXtoY(LocalDate.of(2012, Month.JANUARY, 1), //
+        Interval reportInterval = Interval.of(LocalDate.of(2012, Month.JANUARY, 1), //
                         LocalDate.of(2012, Month.JANUARY, 10));
         CurrencyConverter converter = new TestCurrencyConverter();
         PerformanceIndex index = PerformanceIndex.forClient(client, converter, reportInterval,

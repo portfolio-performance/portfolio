@@ -49,7 +49,6 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
 import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
@@ -84,6 +83,7 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.util.Interval;
 
 public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
@@ -1050,7 +1050,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     @Override
     public void reportingPeriodUpdated()
     {
-        ReportingPeriod period = dropDown.getSelectedPeriod();
+        Interval period = dropDown.getSelectedPeriod().toInterval(LocalDate.now());
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.filter(getClient());
         records.setInput(SecurityPerformanceSnapshot.create(filteredClient, converter, period).getRecords());

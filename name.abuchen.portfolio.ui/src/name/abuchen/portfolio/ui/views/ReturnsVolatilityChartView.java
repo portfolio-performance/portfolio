@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
+import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -45,6 +46,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
+import name.abuchen.portfolio.util.Interval;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
@@ -216,8 +218,10 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
-            PerformanceIndex index = cache.lookup(series, getReportingPeriod());
+            PerformanceIndex index = cache.lookup(series, interval);
             Volatility volatility = index.getVolatility();
 
             double r = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
@@ -265,7 +269,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
                 @Override
                 protected void writeToFile(File file) throws IOException
                 {
-                    PerformanceIndex index = cache.lookup(series, getReportingPeriod());
+                    PerformanceIndex index = cache.lookup(series, getReportingPeriod().toInterval(LocalDate.now()));
                     index.exportVolatilityData(file);
                 }
 

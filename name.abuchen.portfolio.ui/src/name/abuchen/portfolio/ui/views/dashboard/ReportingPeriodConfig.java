@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -16,6 +17,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.Interval;
 
 public class ReportingPeriodConfig implements WidgetConfig
 {
@@ -99,9 +101,11 @@ public class ReportingPeriodConfig implements WidgetConfig
         StringBuilder label = new StringBuilder();
         label.append(Messages.LabelReportingPeriod).append(": "); //$NON-NLS-1$
         label.append(getReportingPeriod().toString());
-        label.append(" (").append(formatter.format(getReportingPeriod().getStartDate())) //$NON-NLS-1$
+
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        label.append(" (").append(formatter.format(interval.getStart())) //$NON-NLS-1$
                         .append(" - ") //$NON-NLS-1$
-                        .append(formatter.format(getReportingPeriod().getEndDate())).append(")"); //$NON-NLS-1$
+                        .append(formatter.format(interval.getEnd())).append(")"); //$NON-NLS-1$
         if (reportingPeriod == null)
             label.append(" | ").append(Messages.LabelUsingDashboardDefaultReportingPeriod); //$NON-NLS-1$
         return label.toString();

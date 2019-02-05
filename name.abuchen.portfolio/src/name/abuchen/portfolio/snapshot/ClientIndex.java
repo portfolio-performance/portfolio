@@ -19,14 +19,14 @@ import name.abuchen.portfolio.util.Interval;
 
 /* package */class ClientIndex extends PerformanceIndex
 {
-    /* package */ ClientIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    /* package */ ClientIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
         super(client, converter, reportInterval);
     }
 
     /* package */void calculate(List<Exception> warnings)
     {
-        Interval interval = getReportInterval().toInterval();
+        Interval interval = getReportInterval();
 
         // the actual interval should not extend into the future
         if (interval.getEnd().isAfter(LocalDate.now()))

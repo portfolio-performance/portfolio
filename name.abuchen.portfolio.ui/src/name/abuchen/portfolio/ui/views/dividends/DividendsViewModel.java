@@ -18,8 +18,8 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.util.Interval;
 
 public class DividendsViewModel
 {
@@ -174,8 +174,8 @@ public class DividendsViewModel
             throw new IllegalArgumentException();
         this.noOfmonths = (now.getYear() - startYear) * 12 + now.getMonthValue();
 
-        Predicate<Transaction> predicate = new ReportingPeriod.FromXtoY(LocalDate.of(startYear - 1, Month.DECEMBER, 31),
-                        now).containsTransaction();
+        Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);
+        Predicate<Transaction> predicate = t -> interval.contains(t.getDateTime());
 
         Map<InvestmentVehicle, Line> vehicle2line = new HashMap<>();
 

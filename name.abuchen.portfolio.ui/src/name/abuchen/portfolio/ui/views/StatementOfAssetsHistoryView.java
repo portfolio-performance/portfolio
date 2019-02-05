@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -25,6 +27,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
+import name.abuchen.portfolio.util.Interval;
 
 public class StatementOfAssetsHistoryView extends AbstractHistoricView
 {
@@ -106,8 +109,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
         GridDataFactory.fillDefaults().grab(true, false).align(SWT.CENTER, SWT.FILL).applyTo(legend);
 
-        Lists.reverse(configurator.getSelectedDataSeries())
-                        .forEach(series -> seriesBuilder.build(series, getReportingPeriod()));
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> seriesBuilder.build(series, interval));
 
         return composite;
     }
@@ -152,8 +155,9 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
+            Interval interval = getReportingPeriod().toInterval(LocalDate.now());
             Lists.reverse(configurator.getSelectedDataSeries())
-                            .forEach(series -> seriesBuilder.build(series, getReportingPeriod()));
+                            .forEach(series -> seriesBuilder.build(series, interval));
 
             chart.adjustRange();
         }

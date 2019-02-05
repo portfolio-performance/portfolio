@@ -13,7 +13,7 @@ import name.abuchen.portfolio.util.Interval;
 
 /* package */class CPIIndex extends PerformanceIndex
 {
-    /* package */CPIIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    /* package */ CPIIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
         super(client, converter, reportInterval);
     }
@@ -24,12 +24,12 @@ import name.abuchen.portfolio.util.Interval;
         LocalDate firstDataPoint = clientIndex.getFirstDataPoint().orElse(actualInterval.getStart());
         Interval interval = Interval.of(firstDataPoint, actualInterval.getEnd());
 
-        List<ConsumerPriceIndex> cpiSeries = new ArrayList<ConsumerPriceIndex>(clientIndex.getClient()
+        List<ConsumerPriceIndex> cpiSeries = new ArrayList<>(clientIndex.getClient()
                         .getConsumerPriceIndices());
         Collections.sort(cpiSeries, new ConsumerPriceIndex.ByDate());
 
-        List<LocalDate> dates = new ArrayList<LocalDate>();
-        List<Double> accumulated = new ArrayList<Double>();
+        List<LocalDate> dates = new ArrayList<>();
+        List<Double> accumulated = new ArrayList<>();
 
         int baseline = -1;
 

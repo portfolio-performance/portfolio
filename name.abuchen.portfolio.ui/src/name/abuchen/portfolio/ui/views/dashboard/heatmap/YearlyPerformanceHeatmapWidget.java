@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -31,11 +32,13 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
     {
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
 
+        LocalDate now = LocalDate.now();
+
         // fill the table lines according to the supplied period
         // calculate the performance with a temporary reporting period
         // calculate the color interpolated between red and green with yellow as
         // the median
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval();
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(now);
 
         List<DataSeries> dataSeries = get(MultiDataSeriesConfig.class).getDataSeries();
 
@@ -63,7 +66,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             for (DataSeries series : dataSeries)
             {
                 PerformanceIndex performanceIndex = getDashboardData().calculate(series,
-                                new ReportingPeriod.YearX(year));
+                                new ReportingPeriod.YearX(year).toInterval(now));
                 row.addData(performanceIndex.getFinalAccumulatedPercentage());
             }
 
@@ -77,8 +80,7 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
             sum = new HeatmapModel.Row<>("\u03A3", HeatmapOrnament.SUM.toString()); //$NON-NLS-1$
             for (DataSeries series : dataSeries)
             {
-                PerformanceIndex performanceIndex = getDashboardData().calculate(series,
-                                new ReportingPeriod.FromXtoY(calcInterval));
+                PerformanceIndex performanceIndex = getDashboardData().calculate(series, calcInterval);
                 sum.addData(performanceIndex.getFinalAccumulatedPercentage());
             }
         }

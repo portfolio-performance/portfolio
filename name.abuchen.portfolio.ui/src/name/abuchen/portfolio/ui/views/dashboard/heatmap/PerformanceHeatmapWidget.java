@@ -6,7 +6,6 @@ import java.util.Arrays;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DataSeriesConfig;
@@ -34,7 +33,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         // calculate the performance with a temporary reporting period
         // calculate the color interpolated between red and green with yellow as
         // the median
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval();
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
         DataSeries dataSeries = get(DataSeriesConfig.class).getDataSeries();
 
@@ -45,8 +44,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
                                         : interval.getStart().withDayOfMonth(1).minusDays(1),
                         interval.getEnd().withDayOfMonth(interval.getEnd().lengthOfMonth()));
 
-        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries,
-                        new ReportingPeriod.FromXtoY(calcInterval));
+        PerformanceIndex performanceIndex = getDashboardData().calculate(dataSeries, calcInterval);
 
         Interval actualInterval = performanceIndex.getActualInterval();
 

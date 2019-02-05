@@ -29,12 +29,12 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
 import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class SecurityTaxAndFeeAccountTransactionsTestCase
@@ -45,8 +45,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
     private static Security adidas;
 
-    private static ReportingPeriod interval = new ReportingPeriod.FromXtoY(LocalDate.parse("2016-12-31"),
-                    LocalDate.parse("2017-01-31"));
+    private static Interval interval = Interval.of(LocalDate.parse("2016-12-31"), LocalDate.parse("2017-01-31"));
 
     @BeforeClass
     public static void prepare() throws IOException
@@ -147,7 +146,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
         // check balance is zero
 
-        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEndDate());
+        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEnd());
         assertThat(balance.getMonetaryAssets(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1456.5 * weight))));
         assertThat(balance.getAccounts().size(), is(1));
@@ -309,7 +308,7 @@ public class SecurityTaxAndFeeAccountTransactionsTestCase
 
         // check balance is zero
 
-        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEndDate());
+        ClientSnapshot balance = ClientSnapshot.create(filteredClient, converter, interval.getEnd());
         assertThat(balance.getMonetaryAssets(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1456.5))));
         assertThat(balance.getAccounts().size(), is(1));
         assertThat(balance.getAccounts().iterator().next().getFunds(), is(Money.of(CurrencyUnit.EUR, 0)));

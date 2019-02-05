@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
 
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesChartLegend;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
+import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceChartView extends AbstractHistoricView
 {
@@ -165,8 +167,9 @@ public class PerformanceChartView extends AbstractHistoricView
 
     private void setChartSeries()
     {
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
         Lists.reverse(picker.getSelectedDataSeries())
-                        .forEach(series -> seriesBuilder.build(series, getReportingPeriod(), aggregationPeriod));
+                        .forEach(series -> seriesBuilder.build(series, interval, aggregationPeriod));
     }
 
     private final class AggregationPeriodDropDown extends DropDown implements IMenuListener
@@ -253,7 +256,8 @@ public class PerformanceChartView extends AbstractHistoricView
                     @Override
                     protected void writeToFile(File file) throws IOException
                     {
-                        PerformanceIndex index = seriesBuilder.getCache().lookup(series, getReportingPeriod());
+                        PerformanceIndex index = seriesBuilder.getCache().lookup(series,
+                                        getReportingPeriod().toInterval(LocalDate.now()));
                         if (aggregationPeriod != null)
                             index = Aggregation.aggregate(index, aggregationPeriod);
                         index.exportTo(file);

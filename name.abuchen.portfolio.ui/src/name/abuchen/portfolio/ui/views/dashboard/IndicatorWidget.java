@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
@@ -10,9 +11,9 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.util.Interval;
 
 public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N>
 {
@@ -21,8 +22,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         private Widget widget;
         private DashboardData dashboardData;
         private Values<N> formatter;
-        private BiFunction<DataSeries, ReportingPeriod, N> provider;
-        private BiFunction<DataSeries, ReportingPeriod, String> tooltip;
+        private BiFunction<DataSeries, Interval, N> provider;
+        private BiFunction<DataSeries, Interval, String> tooltip;
         private boolean supportsBenchmarks = true;
         private boolean isValueColored = true;
 
@@ -38,13 +39,13 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
             return this;
         }
 
-        Builder<N> with(BiFunction<DataSeries, ReportingPeriod, N> provider)
+        Builder<N> with(BiFunction<DataSeries, Interval, N> provider)
         {
             this.provider = provider;
             return this;
         }
 
-        Builder<N> withTooltip(BiFunction<DataSeries, ReportingPeriod, String> tooltip)
+        Builder<N> withTooltip(BiFunction<DataSeries, Interval, String> tooltip)
         {
             this.tooltip = tooltip;
             return this;
@@ -77,8 +78,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     }
 
     private Values<N> formatter;
-    private BiFunction<DataSeries, ReportingPeriod, N> provider;
-    private BiFunction<DataSeries, ReportingPeriod, String> tooltip;
+    private BiFunction<DataSeries, Interval, N> provider;
+    private BiFunction<DataSeries, Interval, String> tooltip;
     private boolean isValueColored = true;
 
     public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
@@ -96,12 +97,12 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         this.formatter = formatter;
     }
 
-    void setProvider(BiFunction<DataSeries, ReportingPeriod, N> provider)
+    void setProvider(BiFunction<DataSeries, Interval, N> provider)
     {
         this.provider = provider;
     }
 
-    void setTooltip(BiFunction<DataSeries, ReportingPeriod, String> tooltip)
+    void setTooltip(BiFunction<DataSeries, Interval, String> tooltip)
     {
         this.tooltip = tooltip;
     }
@@ -118,7 +119,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
 
         if (tooltip != null)
             InfoToolTip.attach(indicator, () -> tooltip.apply(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod()));
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));
 
         return container;
     }
@@ -127,7 +128,7 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
     public Supplier<N> getUpdateTask()
     {
         return () -> provider.apply(get(DataSeriesConfig.class).getDataSeries(),
-                        get(ReportingPeriodConfig.class).getReportingPeriod());
+                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
     }
 
     @Override

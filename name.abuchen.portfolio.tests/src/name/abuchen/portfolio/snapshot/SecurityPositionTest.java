@@ -28,6 +28,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class SecurityPositionTest
@@ -274,7 +275,7 @@ public class SecurityPositionTest
         client.addPortfolio(p);
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, currencyConverter,
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2016-12-31"), LocalDate.parse("2017-02-01")));
+                        Interval.of(LocalDate.parse("2016-12-31"), LocalDate.parse("2017-02-01")));
 
         assertThat(snapshot.getRecords().size(), is(1));
 

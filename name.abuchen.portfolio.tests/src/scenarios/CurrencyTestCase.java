@@ -30,6 +30,7 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class CurrencyTestCase
@@ -125,7 +126,7 @@ public class CurrencyTestCase
 
         // must take the inverse of the exchange used within the transaction
         BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, BigDecimal.ROUND_HALF_DOWN);
-        
+
         assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),
                         is(Money.of("USD", Math.round(454_60 * rate.doubleValue()) + 571_90)));
 
@@ -147,7 +148,8 @@ public class CurrencyTestCase
     {
         ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-02"),
                         LocalDate.parse("2015-01-14"));
-        ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter, period);
+        ClientPerformanceSnapshot performance = new ClientPerformanceSnapshot(client, converter,
+                        period.toInterval(LocalDate.now()));
 
         // calculating the totals is tested with #testClientSnapshot
         assertThat(performance.getValue(CategoryType.INITIAL_VALUE), is(Money.of(CurrencyUnit.EUR, 4131_99)));
@@ -180,8 +182,7 @@ public class CurrencyTestCase
         assertThat(position.getPosition().getShares(), is(Values.Share.factorize(15)));
         assertThat(position.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, 454_60 + 471_05 + 498_45)));
 
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2014-12-31"),
-                        LocalDate.parse("2015-08-10"));
+        Interval period = Interval.of(LocalDate.parse("2014-12-31"), LocalDate.parse("2015-08-10"));
         SecurityPerformanceSnapshot performance = SecurityPerformanceSnapshot.create(client, converter, period);
         SecurityPerformanceRecord record = performance.getRecords().stream().filter(r -> r.getSecurity() == securityUSD)
                         .findAny().get();

@@ -18,7 +18,8 @@ public class PerformanceIndexTest
     {
         private PerformanceIndexStub(LocalDate[] dates, long[] totals, double[] delta)
         {
-            super(new Client(), new TestCurrencyConverter(), new ReportingPeriod.LastX(1, 0));
+            super(new Client(), new TestCurrencyConverter(),
+                            new ReportingPeriod.LastX(1, 0).toInterval(LocalDate.now()));
 
             this.dates = dates;
             this.totals = totals;

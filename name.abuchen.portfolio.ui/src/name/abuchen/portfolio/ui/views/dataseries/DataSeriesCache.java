@@ -18,12 +18,12 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyPortfolio;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.util.Interval;
 
 /**
  * Cache for calculation results of DataSeries.
@@ -33,9 +33,9 @@ public class DataSeriesCache
     private static class CacheKey
     {
         private final String uuid;
-        private final ReportingPeriod reportingPeriod;
+        private final Interval reportingPeriod;
 
-        CacheKey(String uuid, ReportingPeriod reportingPeriod)
+        CacheKey(String uuid, Interval reportingPeriod)
         {
             this.uuid = Objects.requireNonNull(uuid);
             this.reportingPeriod = Objects.requireNonNull(reportingPeriod);
@@ -83,7 +83,7 @@ public class DataSeriesCache
         this.cache.clear();
     }
 
-    public PerformanceIndex lookup(DataSeries series, ReportingPeriod reportingPeriod)
+    public PerformanceIndex lookup(DataSeries series, Interval reportingPeriod)
     {
         // Every data series is cached separately except the for the client. The
         // client data series are created out of the same PerformanceIndex
@@ -104,7 +104,7 @@ public class DataSeriesCache
         return result;
     }
 
-    private PerformanceIndex calculate(DataSeries series, ReportingPeriod reportingPeriod)
+    private PerformanceIndex calculate(DataSeries series, Interval reportingPeriod)
     {
         List<Exception> warnings = new ArrayList<>();
 
@@ -180,7 +180,7 @@ public class DataSeriesCache
         }
     }
 
-    private PerformanceIndex calculatePortfolioPretax(DataSeries series, ReportingPeriod reportingPeriod,
+    private PerformanceIndex calculatePortfolioPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
         Client filteredClient = new WithoutTaxesFilter().filter(client);
@@ -191,7 +191,7 @@ public class DataSeriesCache
         return PerformanceIndex.forPortfolio(filteredClient, converter, portfolio, reportingPeriod, warnings);
     }
 
-    private PerformanceIndex calculatePortfolioPlusAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+    private PerformanceIndex calculatePortfolioPlusAccountPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
         Client filteredClient = new WithoutTaxesFilter().filter(client);
@@ -202,7 +202,7 @@ public class DataSeriesCache
         return PerformanceIndex.forPortfolioPlusAccount(client, converter, portfolio, reportingPeriod, warnings);
     }
 
-    private PerformanceIndex calculateAccountPretax(DataSeries series, ReportingPeriod reportingPeriod,
+    private PerformanceIndex calculateAccountPretax(DataSeries series, Interval reportingPeriod,
                     List<Exception> warnings)
     {
         Client filteredClient = new WithoutTaxesFilter().filter(client);

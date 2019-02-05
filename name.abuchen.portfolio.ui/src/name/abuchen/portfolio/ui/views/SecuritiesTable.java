@@ -78,6 +78,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
+import name.abuchen.portfolio.util.Interval;
 
 public final class SecuritiesTable implements ModificationListener
 {
@@ -436,10 +437,13 @@ public final class SecuritiesTable implements ModificationListener
         List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
 
         BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+
+            Interval interval = option.toInterval(LocalDate.now());
+
             Security security = (Security) element;
 
-            SecurityPrice latest = security.getSecurityPrice(option.getEndDate());
-            SecurityPrice previous = security.getSecurityPrice(option.getStartDate());
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
 
             if (latest == null || previous == null)
                 return null;
@@ -447,7 +451,7 @@ public final class SecuritiesTable implements ModificationListener
             if (previous.getValue() == 0)
                 return null;
 
-            if (previous.getDate().isAfter(option.getStartDate()))
+            if (previous.getDate().isAfter(interval.getStart()))
                 return null;
 
             return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());

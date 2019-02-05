@@ -23,7 +23,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class ClientSecurityFilterTest
@@ -104,8 +104,7 @@ public class ClientSecurityFilterTest
 
         List<Exception> warnings = new ArrayList<>();
         TestCurrencyConverter converter = new TestCurrencyConverter();
-        ReportingPeriod interval = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-12-31"),
-                        LocalDate.parse("2017-01-31"));
+        Interval interval = Interval.of(LocalDate.parse("2015-12-31"), LocalDate.parse("2017-01-31"));
 
         PerformanceIndex all = PerformanceIndex.forClient(client, converter, interval, warnings);
         assertThat(warnings, empty());

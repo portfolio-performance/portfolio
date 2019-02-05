@@ -27,12 +27,12 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.Element;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.ElementValueProvider;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsViewer.StatementOfAssetsContentProvider;
+import name.abuchen.portfolio.util.Interval;
 
 /**
  * Problem: if the statement of assets is grouped by classification and one
@@ -50,7 +50,7 @@ public class IssuePerformanceIndicatorsWithPartialAssignmentTest
 {
     private static Client CLIENT;
 
-    private static ReportingPeriod REPORTING_PERIOD = new ReportingPeriod.FromXtoY(LocalDate.parse("2017-07-14"), //$NON-NLS-1$
+    private static Interval REPORTING_PERIOD = Interval.of(LocalDate.parse("2017-07-14"), //$NON-NLS-1$
                     LocalDate.parse("2018-07-14")); //$NON-NLS-1$
 
     private static ClientSnapshot SNAPSHOT;

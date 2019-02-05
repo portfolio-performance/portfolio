@@ -141,8 +141,8 @@ import name.abuchen.portfolio.util.Interval;
         if (prices.isEmpty())
             return 0d;
 
-        LocalDate start = getReportInterval().getStartDate();
-        LocalDate end = getReportInterval().getEndDate();
+        LocalDate start = getReportInterval().getStart();
+        LocalDate end = getReportInterval().getEnd();
 
         if (prices.get(0).getDate().isAfter(end))
             return 0d;

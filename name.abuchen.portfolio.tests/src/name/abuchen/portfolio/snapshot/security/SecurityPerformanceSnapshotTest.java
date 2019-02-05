@@ -18,8 +18,8 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class SecurityPerformanceSnapshotTest
@@ -38,7 +38,7 @@ public class SecurityPerformanceSnapshotTest
                         .addTo(client);
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01")));
+                        Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01")));
 
         assertThat(snapshot.getRecords(), hasSize(1));
 
@@ -66,8 +66,7 @@ public class SecurityPerformanceSnapshotTest
                         .sell(security, "2018-05-08", Values.Share.factorize(1), Values.Amount.factorize(0.989))
                         .addTo(client);
 
-        ReportingPeriod reportingPeriod = new ReportingPeriod.FromXtoY(LocalDate.parse("2018-04-01"),
-                        LocalDate.parse("2018-06-01"));
+        Interval reportingPeriod = Interval.of(LocalDate.parse("2018-04-01"), LocalDate.parse("2018-06-01"));
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
                         reportingPeriod);
 
@@ -87,7 +86,7 @@ public class SecurityPerformanceSnapshotTest
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.9))));
 
         SecurityPosition position = ClientSnapshot
-                        .create(client, new TestCurrencyConverter(), reportingPeriod.getEndDate())
+                        .create(client, new TestCurrencyConverter(), reportingPeriod.getEnd())
                         .getPositionsByVehicle().get(security).getPosition();
 
         assertThat(position.getFIFOPurchaseValue(), is(record.getFifoCost()));

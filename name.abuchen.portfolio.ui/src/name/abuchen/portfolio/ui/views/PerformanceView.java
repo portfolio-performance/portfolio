@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -46,7 +47,6 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.GroupEarningsByAccount;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.WithoutTaxesFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -61,6 +61,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceView extends AbstractHistoricView
 {
@@ -114,7 +115,7 @@ public class PerformanceView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        ReportingPeriod period = getReportingPeriod();
+        Interval period = getReportingPeriod().toInterval(LocalDate.now());
         CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
         Client filteredClient = clientFilter.getSelectedFilter().filter(getClient());
 

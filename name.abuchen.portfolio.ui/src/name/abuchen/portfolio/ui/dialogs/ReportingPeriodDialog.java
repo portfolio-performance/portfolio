@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
 
@@ -21,6 +22,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 public class ReportingPeriodDialog extends Dialog
 {
@@ -199,20 +201,22 @@ public class ReportingPeriodDialog extends Dialog
         else
             throw new IllegalArgumentException();
 
-        dateFrom.setSelection(template.getStartDate());
-        dateSince.setSelection(template.getStartDate());
+        Interval interval = template.toInterval(LocalDate.now());
 
-        dateTo.setSelection(template.getEndDate());
+        dateFrom.setSelection(interval.getStart());
+        dateSince.setSelection(interval.getStart());
 
-        Period p = Period.between(template.getStartDate(), template.getEndDate());
+        dateTo.setSelection(interval.getEnd());
+
+        Period p = Period.between(interval.getStart(), interval.getEnd());
         years.setSelection(p.getYears());
         months.setSelection(p.getMonths());
 
-        days.setSelection(Dates.daysBetween(template.getStartDate(), template.getEndDate()));
+        days.setSelection(Dates.daysBetween(interval.getStart(), interval.getEnd()));
 
-        tradingDays.setSelection(Dates.tradingDaysBetween(template.getStartDate(), template.getEndDate()));
+        tradingDays.setSelection(Dates.tradingDaysBetween(interval.getStart(), interval.getEnd()));
 
-        year.setSelection(template.getEndDate().getYear());
+        year.setSelection(interval.getEnd().getYear());
     }
 
     @Override

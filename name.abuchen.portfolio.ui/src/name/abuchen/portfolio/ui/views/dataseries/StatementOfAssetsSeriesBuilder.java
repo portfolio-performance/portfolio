@@ -5,9 +5,9 @@ import org.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.Interval;
 
 public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
 {
@@ -16,7 +16,7 @@ public class StatementOfAssetsSeriesBuilder extends AbstractChartSeriesBuilder
         super(chart, cache);
     }
 
-    public void build(DataSeries series, ReportingPeriod reportingPeriod)
+    public void build(DataSeries series, Interval reportingPeriod)
     {
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 

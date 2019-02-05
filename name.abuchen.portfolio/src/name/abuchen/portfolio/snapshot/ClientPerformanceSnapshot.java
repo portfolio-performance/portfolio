@@ -24,6 +24,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 
 public class ClientPerformanceSnapshot
 {
@@ -105,7 +106,7 @@ public class ClientPerformanceSnapshot
 
     private final Client client;
     private final CurrencyConverter converter;
-    private final ReportingPeriod period;
+    private final Interval period;
     private ClientSnapshot snapshotStart;
     private ClientSnapshot snapshotEnd;
 
@@ -117,16 +118,16 @@ public class ClientPerformanceSnapshot
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
-        this(client, converter, new ReportingPeriod.FromXtoY(startDate, endDate));
+        this(client, converter, Interval.of(startDate, endDate));
     }
 
-    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, ReportingPeriod period)
+    public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, Interval period)
     {
         this.client = client;
         this.converter = converter;
         this.period = period;
-        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStartDate());
-        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEndDate());
+        this.snapshotStart = ClientSnapshot.create(client, converter, period.getStart());
+        this.snapshotEnd = ClientSnapshot.create(client, converter, period.getEnd());
 
         calculate();
     }
@@ -245,7 +246,7 @@ public class ClientPerformanceSnapshot
 
         for (PortfolioTransaction t : snapshotStart.getJointPortfolio().getSource().getTransactions())
         {
-            if (!period.containsTransaction().test(t))
+            if (!period.contains(t.getDateTime()))
                 continue;
 
             switch (t.getType())
@@ -298,7 +299,7 @@ public class ClientPerformanceSnapshot
         {
             for (AccountTransaction t : account.getTransactions())
             {
-                if (!period.containsTransaction().test(t))
+                if (!period.contains(t.getDateTime()))
                     continue;
 
                 switch (t.getType())
@@ -351,7 +352,7 @@ public class ClientPerformanceSnapshot
         {
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
-                if (!period.containsTransaction().test(t))
+                if (!period.contains(t.getDateTime()))
                     continue;
 
                 Money unit = t.getUnitSum(Unit.Type.FEE, converter);
@@ -449,7 +450,7 @@ public class ClientPerformanceSnapshot
             // add and subtract transactions
             for (AccountTransaction t : snapshot.getAccount().getTransactions())
             {
-                if (!period.containsTransaction().test(t))
+                if (!period.contains(t.getDateTime()))
                     continue;
 
                 switch (t.getType())

@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
@@ -28,7 +29,8 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     {
         return () -> getDashboardData().getDataSeriesCache() //
                         .lookup(get(DataSeriesConfig.class).getDataSeries(),
-                                        get(ReportingPeriodConfig.class).getReportingPeriod());
+                                        get(ReportingPeriodConfig.class).getReportingPeriod()
+                                                        .toInterval(LocalDate.now()));
     }
 
     @Override
@@ -40,13 +42,13 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
         Interval maxDDDuration = drawdown.getMaxDrawdownDuration();
         indicator.setText(MessageFormat.format(Messages.LabelXDays, maxDDDuration.getDays()));
 
-        boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEndDate());
+        boolean isUntilEndOfPeriod = maxDDDuration.getEnd().equals(index.getReportInterval().getEnd());
         String maxDDSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                         : Messages.TooltipMaxDrawdownDurationFromXtoY;
 
         // recovery time
         Interval recoveryTime = drawdown.getLongestRecoveryTime();
-        isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEndDate());
+        isUntilEndOfPeriod = recoveryTime.getEnd().equals(index.getReportInterval().getEnd());
         String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                         : Messages.TooltipMaxDrawdownDurationFromXtoY;
 

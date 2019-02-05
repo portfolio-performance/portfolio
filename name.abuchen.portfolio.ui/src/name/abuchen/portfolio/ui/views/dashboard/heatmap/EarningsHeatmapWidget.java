@@ -107,7 +107,7 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
     {
         int numDashboardColumns = getDashboardData().getDashboard().getColumns().size();
 
-        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval();
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
         // adapt interval to include the first and last month fully
 

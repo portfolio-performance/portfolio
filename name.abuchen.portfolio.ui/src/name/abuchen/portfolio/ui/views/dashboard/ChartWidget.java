@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
@@ -39,6 +40,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
+import name.abuchen.portfolio.util.Interval;
 
 public class ChartWidget extends WidgetDelegate<Object>
 {
@@ -232,7 +234,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
 
-        series.forEach(s -> cache.lookup(s, reportingPeriod));
+        series.forEach(s -> cache.lookup(s, reportingPeriod.toInterval(LocalDate.now())));
 
         return () -> null;
     }
@@ -254,7 +256,8 @@ public class ChartWidget extends WidgetDelegate<Object>
             List<DataSeries> series = Lists.reverse(
                             new DataSeriesSerializer().fromString(dataSeriesSet, get(ChartConfig.class).getData()));
 
-            ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
+            Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
+                            .toInterval(LocalDate.now());
 
             switch (useCase)
             {
@@ -279,14 +282,14 @@ public class ChartWidget extends WidgetDelegate<Object>
         chart.redraw();
     }
 
-    private void buildAssetSeries(List<DataSeries> series, ReportingPeriod reportingPeriod)
+    private void buildAssetSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         StatementOfAssetsSeriesBuilder b1 = new StatementOfAssetsSeriesBuilder(chart,
                         getDashboardData().getDataSeriesCache());
         series.forEach(s -> b1.build(s, reportingPeriod));
     }
 
-    private void buildPerformanceSeries(List<DataSeries> series, ReportingPeriod reportingPeriod)
+    private void buildPerformanceSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         PerformanceChartSeriesBuilder b2 = new PerformanceChartSeriesBuilder(chart,
                         getDashboardData().getDataSeriesCache());

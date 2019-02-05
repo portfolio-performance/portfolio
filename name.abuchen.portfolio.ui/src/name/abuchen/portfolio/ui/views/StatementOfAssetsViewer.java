@@ -96,6 +96,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("restriction")
 public class StatementOfAssetsViewer
@@ -955,7 +956,7 @@ public class StatementOfAssetsViewer
 
         private List<Element> children = new ArrayList<>();
 
-        private Map<ReportingPeriod, SecurityPerformanceRecord> performance = new HashMap<>();
+        private Map<Interval, SecurityPerformanceRecord> performance = new HashMap<>();
 
         private Element(GroupByTaxonomy groupByTaxonomy, AssetCategory category, int sortOrder)
         {
@@ -997,17 +998,17 @@ public class StatementOfAssetsViewer
             return sortOrder;
         }
 
-        public void setPerformance(ReportingPeriod period, SecurityPerformanceRecord record)
+        public void setPerformance(Interval period, SecurityPerformanceRecord record)
         {
             performance.put(period, record);
         }
 
-        public SecurityPerformanceRecord getPerformance(ReportingPeriod period)
+        public SecurityPerformanceRecord getPerformance(Interval period)
         {
             return performance.get(period);
         }
 
-        public boolean isPerformanceCalculated(ReportingPeriod period)
+        public boolean isPerformanceCalculated(Interval period)
         {
             return performance.containsKey(period);
         }
@@ -1238,7 +1239,7 @@ public class StatementOfAssetsViewer
             this.collector = collector;
         }
 
-        public Object getValue(Element element, ReportingPeriod option)
+        public Object getValue(Element element, Interval option)
         {
             if (element.isSecurity())
             {
@@ -1303,7 +1304,7 @@ public class StatementOfAssetsViewer
             }
         }
 
-        private Object collectValue(Stream<Element> elements, ReportingPeriod option)
+        private Object collectValue(Stream<Element> elements, Interval option)
         {
             return collector.apply(elements.filter(Element::isSecurity) //
                             .map(child -> getValue(child, option)) //
@@ -1338,10 +1339,13 @@ public class StatementOfAssetsViewer
         {
             Element element = (Element) e;
 
-            if (element.isSecurity())
-                calculatePerformance(element, option);
+            // the period is calculated relative to the date of the snapshot
+            Interval interval = option.toInterval(getDate());
 
-            return valueProvider.getValue(element, option);
+            if (element.isSecurity())
+                calculatePerformance(element, interval);
+
+            return valueProvider.getValue(element, interval);
         }
 
         @Override
@@ -1431,7 +1435,7 @@ public class StatementOfAssetsViewer
             return v1.compareTo(v2);
         }
 
-        private void calculatePerformance(Element element, ReportingPeriod period)
+        private void calculatePerformance(Element element, Interval period)
         {
             // already calculated?
             if (element.isPerformanceCalculated(period))

@@ -17,9 +17,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 public class Issue672CapitalGainsIfSecurityIsTransferred
 {
@@ -31,7 +31,7 @@ public class Issue672CapitalGainsIfSecurityIsTransferred
 
         CurrencyConverter converter = new TestCurrencyConverter();
         Portfolio secondPortfolio = client.getPortfolios().get(1);
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2016-01-01"), //$NON-NLS-1$
+        Interval period = Interval.of(LocalDate.parse("2016-01-01"), //$NON-NLS-1$
                         LocalDate.parse("2017-01-01")); //$NON-NLS-1$
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, secondPortfolio,

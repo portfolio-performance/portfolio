@@ -5,10 +5,10 @@ import org.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;
+import name.abuchen.portfolio.util.Interval;
 
 public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
 {
@@ -17,7 +17,7 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         super(chart, cache);
     }
 
-    public void build(DataSeries series, ReportingPeriod reportingPeriod, Aggregation.Period aggregationPeriod)
+    public void build(DataSeries series, Interval reportingPeriod, Aggregation.Period aggregationPeriod)
     {
         PerformanceIndex index = getCache().lookup(series, reportingPeriod);
 

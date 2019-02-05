@@ -42,7 +42,7 @@ public class PerformanceIndex
 {
     private final Client client;
     private final CurrencyConverter converter;
-    private final ReportingPeriod reportInterval;
+    private final Interval reportInterval;
 
     protected LocalDate[] dates;
     protected long[] totals;
@@ -59,14 +59,14 @@ public class PerformanceIndex
     private Volatility volatility;
     private ClientPerformanceSnapshot performanceSnapshot;
 
-    /* package */ PerformanceIndex(Client client, CurrencyConverter converter, ReportingPeriod reportInterval)
+    /* package */ PerformanceIndex(Client client, CurrencyConverter converter, Interval reportInterval)
     {
         this.client = client;
         this.converter = converter;
         this.reportInterval = reportInterval;
     }
 
-    public static PerformanceIndex forClient(Client client, CurrencyConverter converter, ReportingPeriod reportInterval,
+    public static PerformanceIndex forClient(Client client, CurrencyConverter converter, Interval reportInterval,
                     List<Exception> warnings)
     {
         ClientIndex index = new ClientIndex(client, converter, reportInterval);
@@ -75,35 +75,35 @@ public class PerformanceIndex
     }
 
     public static PerformanceIndex forAccount(Client client, CurrencyConverter converter, Account account,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+                    Interval reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new PortfolioClientFilter(Collections.emptyList(), Arrays.asList(account)).filter(client);
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forPortfolio(Client client, CurrencyConverter converter, Portfolio portfolio,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+                    Interval reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new PortfolioClientFilter(portfolio).filter(client);
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forPortfolioPlusAccount(Client client, CurrencyConverter converter,
-                    Portfolio portfolio, ReportingPeriod reportInterval, List<Exception> warnings)
+                    Portfolio portfolio, Interval reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount()).filter(client);
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forClassification(Client client, CurrencyConverter converter,
-                    Classification classification, ReportingPeriod reportInterval, List<Exception> warnings)
+                    Classification classification, Interval reportInterval, List<Exception> warnings)
     {
         Client filteredClient = new ClientClassificationFilter(classification).filter(client);
         return PerformanceIndex.forClient(filteredClient, converter, reportInterval, warnings);
     }
 
     public static PerformanceIndex forInvestment(Client client, CurrencyConverter converter, Security security,
-                    ReportingPeriod reportInterval, List<Exception> warnings)
+                    Interval reportInterval, List<Exception> warnings)
     {
         Client filteredClient = new ClientSecurityFilter(security).filter(client);
         return forClient(filteredClient, converter, reportInterval, warnings);
@@ -130,7 +130,7 @@ public class PerformanceIndex
         return client;
     }
 
-    public ReportingPeriod getReportInterval()
+    public Interval getReportInterval()
     {
         return reportInterval;
     }

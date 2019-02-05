@@ -26,6 +26,7 @@ import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.util.Interval;
 
 public final class SecurityPerformanceRecord implements Adaptable
 {
@@ -382,16 +383,16 @@ public final class SecurityPerformanceRecord implements Adaptable
     }
 
     /* package */
-    void calculate(Client client, CurrencyConverter converter, ReportingPeriod period)
+    void calculate(Client client, CurrencyConverter converter, Interval interval)
     {
         Collections.sort(transactions, new TransactionComparator());
 
         if (!transactions.isEmpty())
         {
-            calculateSharesHeld(converter, period);
-            calculateMarketValue(converter, period);
+            calculateSharesHeld(converter);
+            calculateMarketValue(converter, interval);
             calculateIRR(converter);
-            calculateTTWROR(client, converter, period);
+            calculateTTWROR(client, converter, interval);
             calculateDelta(converter);
             calculateFifoAndMovingAverageCosts(converter);
             calculateDividends(converter);
@@ -399,12 +400,12 @@ public final class SecurityPerformanceRecord implements Adaptable
         }
     }
 
-    private void calculateSharesHeld(CurrencyConverter converter, ReportingPeriod period)
+    private void calculateSharesHeld(CurrencyConverter converter)
     {
         this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions).getSharesHeld();
     }
 
-    private void calculateMarketValue(CurrencyConverter converter, ReportingPeriod period)
+    private void calculateMarketValue(CurrencyConverter converter, Interval interval)
     {
         MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
         for (Transaction t : transactions)
@@ -412,7 +413,7 @@ public final class SecurityPerformanceRecord implements Adaptable
                 mv.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
 
         this.marketValue = mv.toMoney();
-        this.quote = security.getSecurityPrice(period.getEndDate());
+        this.quote = security.getSecurityPrice(interval.getEnd());
     }
 
     private void calculateIRR(CurrencyConverter converter)
@@ -420,9 +421,9 @@ public final class SecurityPerformanceRecord implements Adaptable
         this.irr = Calculation.perform(IRRCalculation.class, converter, security, transactions).getIRR();
     }
 
-    private void calculateTTWROR(Client client, CurrencyConverter converter, ReportingPeriod period)
+    private void calculateTTWROR(Client client, CurrencyConverter converter, Interval interval)
     {
-        PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, period,
+        PerformanceIndex index = PerformanceIndex.forInvestment(client, converter, security, interval,
                         new ArrayList<Exception>());
         this.twror = index.getFinalAccumulatedPercentage();
         this.drawdown = index.getDrawdown();

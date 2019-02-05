@@ -29,8 +29,8 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.filter.ClientClassificationFilter;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class ClassificationTestCase
@@ -41,7 +41,7 @@ public class ClassificationTestCase
 
     private static Security adidas;
 
-    private static ReportingPeriod interval = new ReportingPeriod.FromXtoY(LocalDate.parse("2011-12-31"),
+    private static Interval interval = Interval.of(LocalDate.parse("2011-12-31"),
                     LocalDate.parse("2012-01-31"));
 
     @BeforeClass

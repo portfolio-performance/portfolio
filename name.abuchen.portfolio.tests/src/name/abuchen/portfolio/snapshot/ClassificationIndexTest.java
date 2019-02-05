@@ -32,11 +32,12 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class ClassificationIndexTest
 {
-    private ReportingPeriod.FromXtoY period = new ReportingPeriod.FromXtoY( //
+    private Interval period = Interval.of( //
                     LocalDate.parse("2011-12-31"), LocalDate.parse("2012-01-08"));
 
     private Client createClient(int weight)
@@ -172,8 +173,7 @@ public class ClassificationIndexTest
                         .addTo(client);
 
         Account account = new AccountBuilder() //
-                        .deposit_("2014-01-01", Values.Amount.factorize(1000))
-                        .addTo(client);
+                        .deposit_("2014-01-01", Values.Amount.factorize(1000)).addTo(client);
 
         AccountTransaction t = new AccountTransaction();
         t.setType(AccountTransaction.Type.DIVIDENDS);
@@ -210,8 +210,7 @@ public class ClassificationIndexTest
         List<Exception> warnings = new ArrayList<Exception>();
 
         PerformanceIndex index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
-                        warnings);
+                        Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);
 
         assertThat(warnings.isEmpty(), is(true));
 
@@ -223,8 +222,7 @@ public class ClassificationIndexTest
         t.addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, Values.Amount.factorize(50))));
 
         index = PerformanceIndex.forClassification(client, new TestCurrencyConverter(), classification,
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")),
-                        warnings);
+                        Interval.of(LocalDate.parse("2015-01-01"), LocalDate.parse("2017-01-01")), warnings);
 
         // dividend payment 15% * quote change 10%
         assertThat(index.getFinalAccumulatedPercentage(), IsCloseTo.closeTo((1.15 * 1.1) - 1, 0.000000001d));

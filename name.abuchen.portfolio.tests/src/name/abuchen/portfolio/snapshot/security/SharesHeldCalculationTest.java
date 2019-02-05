@@ -12,7 +12,7 @@ import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.util.Interval;
 
 public class SharesHeldCalculationTest
 {
@@ -32,7 +32,7 @@ public class SharesHeldCalculationTest
                         .addTo(client);
 
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, new TestCurrencyConverter(),
-                        new ReportingPeriod.FromXtoY(LocalDate.parse("2018-02-01"), LocalDate.parse("2018-02-02"))); //$NON-NLS-1$ //$NON-NLS-2$
+                        Interval.of(LocalDate.parse("2018-02-01"), LocalDate.parse("2018-02-02"))); //$NON-NLS-1$ //$NON-NLS-2$
 
         assertThat(snapshot.getRecords().size(), is(1));
 

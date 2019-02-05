@@ -154,7 +154,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     {
         return () -> {
             PerformanceIndex index = getDashboardData().calculate(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod());
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
             return index.getClientPerformanceSnapshot().orElseThrow(IllegalArgumentException::new);
         };
     }
