@@ -24,6 +24,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
 import name.abuchen.portfolio.ui.views.dashboard.WidgetDelegate;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDelegate<HeatmapModel<N>>
 {
@@ -48,7 +49,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
+        title.setText(getWidget().getLabel() != null ? TextUtil.tooltip(getWidget().getLabel()) : ""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         table = new Composite(container, SWT.NONE);
@@ -124,7 +125,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
     @Override
     public void update(HeatmapModel<N> model)
     {
-        title.setText(getWidget().getLabel() != null ? getWidget().getLabel() : ""); //$NON-NLS-1$
+        title.setText(getWidget().getLabel() != null ? TextUtil.tooltip(getWidget().getLabel()) : ""); //$NON-NLS-1$
 
         for (Control child : table.getChildren())
             child.dispose();

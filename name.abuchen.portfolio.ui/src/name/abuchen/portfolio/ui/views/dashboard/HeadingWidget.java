@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class HeadingWidget extends WidgetDelegate<Object>
 {
@@ -33,7 +34,7 @@ public class HeadingWidget extends WidgetDelegate<Object>
         title = new Label(heading, SWT.NONE);
         title.setFont(resources.getBoldFont());
         title.setForeground(Colors.HEADINGS);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         return heading;
     }
@@ -54,6 +55,6 @@ public class HeadingWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object data)
     {
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
     }
 }
