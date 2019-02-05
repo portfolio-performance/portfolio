@@ -16,6 +16,8 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
 
 @Creatable
 @Singleton
@@ -28,6 +30,9 @@ public class ClientInputFactory
 
     @Inject
     private IEventBroker broker;
+
+    @Inject
+    private SelectionService selectionService;
 
     public synchronized ClientInput lookup(File clientFile)
     {
@@ -69,6 +74,13 @@ public class ClientInputFactory
         int newCount = cache.computeIfAbsent(clientInput, i -> new AtomicInteger()).decrementAndGet();
 
         if (newCount <= 0)
+        {
             cache.remove(clientInput);
+
+            SecuritySelection selection = selectionService.getSelection();
+
+            if (selection.getClient() == clientInput.getClient())
+                selectionService.setSelection(null);
+        }
     }
 }

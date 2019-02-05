@@ -10,7 +10,6 @@ import javax.inject.Named;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
-import org.eclipse.e4.ui.workbench.modeling.ESelectionService;
 import org.eclipse.jface.dialogs.PopupDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -30,6 +29,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public class OpenBookmarksHandler
@@ -104,9 +104,10 @@ public class OpenBookmarksHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, ESelectionService selectionService)
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService)
     {
 
+        System.err.println("selection serivce " + selectionService);
         Object object = selectionService.getSelection();
 
         if (!(object instanceof SecuritySelection))
