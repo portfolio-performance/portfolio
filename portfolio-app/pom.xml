@@ -13,6 +13,7 @@
 	<properties>
 		<tycho-version>1.3.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
+		<gpgsigner.skip>true</gpgsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
@@ -359,6 +360,11 @@
 						<certchain>${project.basedir}/../portfolio-app/certchain.txt</certchain>
 						<tsa>http://time.certum.pl/</tsa>
 					</configuration>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-gpg-plugin</artifactId>
+					<version>1.6</version>
 				</plugin>
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
