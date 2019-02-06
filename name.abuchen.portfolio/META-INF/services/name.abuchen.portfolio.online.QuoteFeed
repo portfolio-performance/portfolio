@@ -4,3 +4,4 @@ name.abuchen.portfolio.online.impl.YahooFinanceAdjustedCloseQuoteFeed
 name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed
 name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed
 name.abuchen.portfolio.online.impl.KrakenQuoteFeed
+name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed

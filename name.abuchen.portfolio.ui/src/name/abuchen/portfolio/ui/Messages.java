@@ -475,6 +475,7 @@ public class Messages extends NLS
     public static String LabelDoNotImport;
     public static String LabelEarnings;
     public static String LabelError;
+    public static String LabelEurostatRegion;
     public static String LabelExchange;
     public static String LabelExchangeRate;
     public static String LabelExchangeRates;
