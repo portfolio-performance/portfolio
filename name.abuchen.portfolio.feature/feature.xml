@@ -2,7 +2,7 @@
 <feature
       id="name.abuchen.portfolio.feature"
       label="Portfolio Performance"
-      version="0.37.2.qualifier"
+      version="0.38.0"
       provider-name="Andreas Buchen">
 
    <description url="http://buchen.github.io/portfolio/">
