@@ -82,6 +82,12 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         {
             return Collections.emptyList();
         }
+
+        @Override
+        public List<Exchange> getRegions(Security subject, List<Exception> errors)
+        {
+            return Collections.emptyList();
+        }
     }
 
     private class LoadLatestQuote extends Job

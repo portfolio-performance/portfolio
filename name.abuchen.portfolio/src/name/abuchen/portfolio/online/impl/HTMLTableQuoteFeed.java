@@ -578,4 +578,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             writer.println(Values.Quote.format(p.getHigh()));
         }
     }
+
+    @Override
+    public List<Exchange> getRegions(Security subject, List<Exception> errors)
+    {
+        return Collections.emptyList();
+    }
 }

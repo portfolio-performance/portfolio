@@ -307,4 +307,9 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    @Override
+    public List<Exchange> getRegions(Security subject, List<Exception> errors)
+    {
+        return Collections.emptyList();
+    }
 }

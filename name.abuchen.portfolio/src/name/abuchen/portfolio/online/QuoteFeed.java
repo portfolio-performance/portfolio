@@ -51,4 +51,6 @@ public interface QuoteFeed
     List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors);
 
     List<Exchange> getExchanges(Security subject, List<Exception> errors);
+
+    List<Exchange> getRegions(Security subject, List<Exception> errors);
 }

@@ -146,6 +146,7 @@ public class Messages extends NLS
     public static String LabelWithoutClassification;
     public static String LabelYahooFinance;
     public static String LabelYahooFinanceAdjustedClose;
+    public static String LabelEurostatHICP;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;
     public static String MsgCheckInvalidTransactionType;
@@ -163,6 +164,7 @@ public class Messages extends NLS
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
+    public static String MsgErrorDownloadEurostatHICP;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;
