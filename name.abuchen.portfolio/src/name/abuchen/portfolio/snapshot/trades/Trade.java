@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -27,6 +28,7 @@ public class Trade
     private Money entryValue;
     private Money exitValue;
     private long holdingPeriod;
+    private double irr;
 
     public Trade(Security security, long shares)
     {
@@ -70,6 +72,33 @@ public class Trade
                             .sum() / (double) shares);
         }
 
+        calculateIRR(converter);
+    }
+
+    private void calculateIRR(CurrencyConverter converter)
+    {
+        List<LocalDate> dates = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+
+        transactions.stream().forEach(t -> {
+            dates.add(t.getTransaction().getDateTime().toLocalDate());
+
+            double amount = t.getTransaction().getMonetaryAmount().with(converter.at(t.getTransaction().getDateTime()))
+                            .getAmount() / Values.Amount.divider();
+
+            if (t.getTransaction().getType().isPurchase())
+                amount = -amount;
+
+            values.add(amount);
+        });
+
+        if (end == null)
+        {
+            dates.add(LocalDate.now());
+            values.add(exitValue.getAmount() / Values.Amount.divider());
+        }
+
+        this.irr = IRR.calculate(dates, values);
     }
 
     public Security getSecurity()
@@ -125,5 +154,10 @@ public class Trade
     public long getHoldingPeriod()
     {
         return holdingPeriod;
+    }
+
+    public double getIRR()
+    {
+        return irr;
     }
 }

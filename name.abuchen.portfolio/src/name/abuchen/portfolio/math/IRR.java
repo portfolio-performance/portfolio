@@ -7,6 +7,10 @@ import name.abuchen.portfolio.math.NewtonGoalSeek.Function;
 
 public final class IRR
 {
+    private IRR()
+    {
+    }
+
     public static double calculate(List<LocalDate> dates, List<Double> values)
     {
         Function npv = new NPVFunction(dates, values);

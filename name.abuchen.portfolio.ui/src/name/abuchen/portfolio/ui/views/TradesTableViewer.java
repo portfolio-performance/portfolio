@@ -22,6 +22,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 
@@ -47,7 +48,7 @@ public class TradesTableViewer
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecuritiesPerformanceView.class.getSimpleName() + "@trades-beta", //$NON-NLS-1$
+                        SecuritiesPerformanceView.class.getSimpleName() + "@trades", //$NON-NLS-1$
                         view.getPreferenceStore(), trades, layout);
         createTradesColumns(support);
         support.createColumns();
@@ -177,6 +178,11 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getHoldingPeriod()));
         support.addColumn(column);
 
+        column = new Column("irr", Messages.ColumnIRR, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnIRR_MenuLabel);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getIRR()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getIRR()));
+        support.addColumn(column);
     }
 
     public void setInput(List<Trade> trades)
