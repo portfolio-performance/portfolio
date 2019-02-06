@@ -21,6 +21,7 @@ import name.abuchen.portfolio.ui.Images;
 public class DropDown extends ContributionItem
 {
     private String label;
+    private String toolTip;
     private Images image;
     private int style;
 
@@ -86,7 +87,7 @@ public class DropDown extends ContributionItem
 
         if (widget != null && !widget.isDisposed())
         {
-            if (image != null)
+            if (image != null && toolTip == null)
                 widget.setToolTipText(label);
 
             if (image == null || style == SWT.DROP_DOWN)
@@ -94,6 +95,19 @@ public class DropDown extends ContributionItem
 
             widget.getParent().getParent().layout();
         }
+    }
+
+    public final String getToolTip()
+    {
+        return toolTip;
+    }
+
+    public final void setToolTip(String toolTip)
+    {
+        this.toolTip = toolTip;
+
+        if (widget != null && !widget.isDisposed())
+            widget.setToolTipText(toolTip);
     }
 
     public Images getImage()
@@ -140,13 +154,14 @@ public class DropDown extends ContributionItem
         if (image != null)
         {
             ti.setImage(image.image());
-            ti.setToolTipText(label);
         }
 
         if (image == null || style == SWT.DROP_DOWN)
         {
             ti.setText(label);
         }
+
+        ti.setToolTipText(toolTip != null ? toolTip : label);
 
         ti.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> {
             if (e.detail == SWT.ARROW || defaultAction == null)

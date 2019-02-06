@@ -63,7 +63,6 @@ import name.abuchen.portfolio.snapshot.filter.ClientSecurityFilter;
 import name.abuchen.portfolio.snapshot.filter.ReadOnlyClient;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
@@ -335,9 +334,11 @@ public class SecuritiesChart
             {
                 chartConfig.add(ChartDetails.valueOf(key));
             }
-            catch (IllegalArgumentException e)
+            catch (IllegalArgumentException ignore)
             {
-                PortfolioPlugin.log(e);
+                // do not print exception to the log as it confuses users. The
+                // old SMA200 label has been renamed, nothing we can change
+                // anymore
             }
         }
     }

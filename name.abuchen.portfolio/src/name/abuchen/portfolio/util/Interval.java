@@ -6,6 +6,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 
+import name.abuchen.portfolio.money.Values;
+
 public final class Interval
 {
 
@@ -123,6 +125,6 @@ public final class Interval
     @Override
     public String toString()
     {
-        return start + " -> " + end; //$NON-NLS-1$
+        return Values.Date.format(start) + " - " + Values.Date.format(end); //$NON-NLS-1$
     }
 }
