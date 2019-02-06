@@ -79,7 +79,7 @@ public class ClientInputFactory
 
             SecuritySelection selection = selectionService.getSelection();
 
-            if (selection.getClient() == clientInput.getClient())
+            if (selection != null && selection.getClient() == clientInput.getClient())
                 selectionService.setSelection(null);
         }
     }
