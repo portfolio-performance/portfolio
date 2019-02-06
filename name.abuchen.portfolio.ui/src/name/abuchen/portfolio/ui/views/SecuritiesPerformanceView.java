@@ -84,6 +84,7 @@ import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
 {
@@ -349,7 +350,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // cost value - fifo
         column = new Column("pv", Messages.ColumnPurchaseValue, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchaseValue_Description);
+        column.setDescription(Messages.ColumnPurchaseValue_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -365,7 +368,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // cost value - moving average
         column = new Column("pvmvavg", Messages.ColumnPurchaseValueMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnPurchaseValueMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description);
+        column.setDescription(Messages.ColumnPurchaseValueMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -381,7 +386,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // cost value per share - fifo
         column = new Column("pp", Messages.ColumnPurchasePrice, SWT.RIGHT, 75); //$NON-NLS-1$
-        column.setDescription(Messages.ColumnPurchasePrice_Description);
+        column.setDescription(Messages.ColumnPurchasePrice_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -397,7 +404,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         // cost value per share - moving average
         column = new Column("ppmvavg", Messages.ColumnPurchasePriceMovingAverage, SWT.RIGHT, 75); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnPurchasePriceMovingAverage_MenuLabel);
-        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description);
+        column.setDescription(Messages.ColumnPurchasePriceMovingAverage_Description + TextUtil.PARAGRAPH_BREAK
+                        + Messages.DescriptionDataRelativeToReportingPeriod);
+        column.setImage(Images.INTERVAL);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -432,7 +441,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                                 Values.Date.format(record.getLatestSecurityPrice().getDate()));
             }
         });
-        column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCostPerSharesHeld")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityPerformanceRecord) e).getQuote()));
         recordColumns.addColumn(column);
 
         // market value

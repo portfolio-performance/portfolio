@@ -304,6 +304,7 @@ public class Messages extends NLS
     public static String CSVImportSeparatorTab;
     public static String CSVImportWizardDescription;
     public static String CSVImportWizardTitle;
+    public static String DescriptionDataRelativeToReportingPeriod;
     public static String DesktopAPIBrowserActionNotSupported;
     public static String DesktopAPIErrorOpeningURL;
     public static String DesktopAPIIllegalURL;

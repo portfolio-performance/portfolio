@@ -196,6 +196,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             tableColumn.setWidth(width);
             tableColumn.setData(Column.class.getName(), column);
 
+            if (column.getImage() != null)
+                tableColumn.setImage(column.getImage().image());
+
             if (option == null)
             {
                 tableColumn.setText(column.getLabel());
@@ -297,6 +300,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             treeColumn.setMoveable(true);
             treeColumn.setWidth(width);
             treeColumn.setData(Column.class.getName(), column);
+
+            if (column.getImage() != null)
+                treeColumn.setImage(column.getImage().image());
 
             if (option == null)
             {

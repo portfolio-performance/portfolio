@@ -7,6 +7,8 @@ import java.util.regex.Pattern;
 
 public final class TextUtil
 {
+    public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
+
     private TextUtil()
     {}
 

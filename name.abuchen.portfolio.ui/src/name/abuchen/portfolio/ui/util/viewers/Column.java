@@ -6,6 +6,8 @@ import java.util.List;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Images;
+
 public class Column
 {
     public interface Options<E>
@@ -47,6 +49,7 @@ public class Column
     private ColumnViewerSorter sorter;
     private Integer defaultSortDirection;
     private CellLabelProvider labelProvider;
+    private Images image;
 
     private Options<Object> options;
 
@@ -69,12 +72,12 @@ public class Column
         this.defaultWidth = defaultWidth;
     }
 
-                    /* package */String getId()
+    /* package */String getId()
     {
         return id;
     }
 
-                    /* package */void setId(String id)
+    /* package */void setId(String id)
     {
         this.id = id;
     }
@@ -110,6 +113,11 @@ public class Column
         this.labelProvider = labelProvider;
     }
 
+    public void setImage(Images image)
+    {
+        this.image = image;
+    }
+
     @SuppressWarnings("unchecked")
     public void setOptions(Options<?> options)
     {
@@ -136,37 +144,37 @@ public class Column
         this.editingSupport = editingSupport;
     }
 
-                    /* package */String getLabel()
+    /* package */String getLabel()
     {
         return label;
     }
 
-                    /* package */String getMenuLabel()
+    /* package */String getMenuLabel()
     {
         return menuLabel != null ? menuLabel : label;
     }
 
-                    /* package */String getDescription()
+    /* package */String getDescription()
     {
         return description;
     }
 
-                    /* package */int getStyle()
+    /* package */int getStyle()
     {
         return style;
     }
 
-                    /* package */int getDefaultWidth()
+    /* package */int getDefaultWidth()
     {
         return defaultWidth;
     }
 
-                    /* package */boolean isVisible()
+    /* package */boolean isVisible()
     {
         return isVisible;
     }
 
-                    /* package */boolean isRemovable()
+    /* package */boolean isRemovable()
     {
         return isRemovable;
     }
@@ -176,27 +184,32 @@ public class Column
         return sorter;
     }
 
-                    /* package */Integer getDefaultSortDirection()
+    /* package */Integer getDefaultSortDirection()
     {
         return defaultSortDirection;
     }
 
-                    /* package */CellLabelProvider getLabelProvider()
+    /* package */CellLabelProvider getLabelProvider()
     {
         return labelProvider;
     }
 
-                    /* package */boolean hasOptions()
+    /* package */Images getImage()
+    {
+        return image;
+    }
+
+    /* package */boolean hasOptions()
     {
         return options != null;
     }
 
-                    /* package */Options<Object> getOptions()
+    /* package */Options<Object> getOptions()
     {
         return options;
     }
 
-                    /* package */String getGroupLabel()
+    /* package */String getGroupLabel()
     {
         return groupLabel;
     }

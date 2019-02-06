@@ -63,6 +63,7 @@ public enum Images
     ADD("add.png"), //$NON-NLS-1$
     REMOVE("remove.png"), //$NON-NLS-1$
     CHEVRON("chevron.png"), //$NON-NLS-1$
+    INTERVAL("interval.png"), //$NON-NLS-1$
 
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$
