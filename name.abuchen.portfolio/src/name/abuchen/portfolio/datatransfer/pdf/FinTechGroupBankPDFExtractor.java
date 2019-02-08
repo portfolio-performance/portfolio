@@ -187,13 +187,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         
                         .oneOf(
                                         section -> section.attributes("amount", "currency") //
-                                        .match(" * Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
                                         }), 
                                         section -> section.attributes("amount", "currency") //
-                                        .match(" * Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
@@ -560,12 +560,19 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 t.setShares(asShares(v.get("shares")));
                             }
                         })
-
-                        .section("amount", "currency")
-                        .match(".* Endbetrag(\\s+)(?<currency>\\w{3}+)(\\s+)(?<amount>[\\d.]+,\\d+)").assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        .oneOf(
+                                        section -> section.attributes("amount", "currency") //
+                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        }), 
+                                        section -> section.attributes("amount", "currency") //
+                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                        }))
 
                         .section("fee", "currency").optional()
                         //

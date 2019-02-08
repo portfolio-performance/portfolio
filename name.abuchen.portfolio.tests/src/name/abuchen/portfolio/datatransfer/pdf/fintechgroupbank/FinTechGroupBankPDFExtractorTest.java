@@ -982,6 +982,31 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
+    public void testWertpapierVerkauf5() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf5.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        
+        List<PortfolioTransaction> tx = results.stream() //
+                        .filter(i -> i instanceof BuySellEntryItem)
+                        .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
+                        .collect(Collectors.toList());
+        
+        assertThat(tx.size(), is(1));
+        
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2019-02-06T00:00"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48)))))));
+    }
+    
+    @Test
     public void testWertpapierÜbertrag1() throws IOException
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
