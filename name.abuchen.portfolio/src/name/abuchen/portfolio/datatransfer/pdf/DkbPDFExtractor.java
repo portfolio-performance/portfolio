@@ -385,7 +385,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type = new DocumentType(documentTypeString, (context, lines) -> {
             Pattern pattern = Pattern
-                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)");
+                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)(.*)");
             for (String line : lines)
             {
                 Matcher m = pattern.matcher(line);
