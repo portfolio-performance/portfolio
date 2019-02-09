@@ -73,7 +73,7 @@ public class PDFImportAssistant
                     if (!items.isEmpty())
                     {
                         extracted = true;
-                        itemsByExtractor.put(extractor, items);
+                        itemsByExtractor.computeIfAbsent(extractor, e -> new ArrayList<Item>()).addAll(items);
                         break;
                     }
                 }
