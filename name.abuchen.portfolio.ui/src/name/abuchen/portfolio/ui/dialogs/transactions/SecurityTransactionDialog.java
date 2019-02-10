@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
+import org.eclipse.swt.layout.FormData;
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
@@ -187,11 +188,15 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
 
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
-        IObservableValue<?> targetObservable = WidgetProperties.text(SWT.Modify).observe(valueNote);
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+        FormData formData = new FormData();
+        formData.width = 450;
+        formData.height = 100;
+        valueNote.setLayoutData(formData);
+        IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
-        context.bindValue(targetObservable, noteObservable);
+        context.bindValue(targetNote, noteObservable);
 
         //
         // form layout

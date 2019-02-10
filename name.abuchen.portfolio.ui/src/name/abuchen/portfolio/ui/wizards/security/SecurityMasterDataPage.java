@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -7,6 +8,7 @@ import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -113,6 +115,11 @@ public class SecurityMasterDataPage extends AbstractPage
         deco.setImage(image);
         deco.show();
 
-        bindings.bindStringInput(container, Messages.ColumnNote, "note"); //$NON-NLS-1$
+        Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, SWT.DEFAULT); //$NON-NLS-1$
+        GridData gridData = new GridData();
+        gridData.widthHint = 450;
+        gridData.heightHint = 100;
+        valueNote.setLayoutData(gridData);
+
     }
 }

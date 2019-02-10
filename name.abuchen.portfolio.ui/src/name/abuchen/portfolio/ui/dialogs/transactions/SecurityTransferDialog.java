@@ -18,6 +18,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -132,11 +133,15 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
 
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+        FormData formData = new FormData();
+        formData.width = 450;
+        formData.height = 100;
+        valueNote.setLayoutData(formData);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
-        IObservableValue<?> modelNote = BeanProperties.value(Properties.note.name()).observe(model);
-        context.bindValue(targetNote, modelNote);
+        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(targetNote, noteObservable);
 
         //
         // form layout
