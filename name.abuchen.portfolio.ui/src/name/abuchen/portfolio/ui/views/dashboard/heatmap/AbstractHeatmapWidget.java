@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardResources;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
@@ -98,7 +99,7 @@ public abstract class AbstractHeatmapWidget<N extends Number> extends WidgetDele
         SimpleGridLayout layout = new SimpleGridLayout();
         layout.setNumColumns(model.getHeaderSize() + 1);
         layout.setNumRows((int) model.getRows().count() + 1);
-        layout.setRowHeight(table.getFont().getFontData()[0].getHeight() + 8);
+        layout.setRowHeight(SWTHelper.lineHeight(table) + 6);
 
         table.setLayout(layout);
         table.layout(true);
