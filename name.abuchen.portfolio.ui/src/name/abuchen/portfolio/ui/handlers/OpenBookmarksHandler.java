@@ -106,14 +106,10 @@ public class OpenBookmarksHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService)
     {
+        SecuritySelection selection = selectionService.getSelection();
 
-        System.err.println("selection serivce " + selectionService);
-        Object object = selectionService.getSelection();
-
-        if (!(object instanceof SecuritySelection))
+        if (selection == null)
             return;
-
-        SecuritySelection selection = (SecuritySelection) object;
 
         if (selection.getClient().getSettings().getBookmarks().isEmpty())
             return;
