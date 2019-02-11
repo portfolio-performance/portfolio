@@ -265,8 +265,10 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         this.addDocumentTyp(type);
 
         // Erträgnisgutschrift allein ist nicht gut hier, da es schon in der
-        // Kopfzeile steht..
-        Block block = new Block("Dividendengutschrift.*|Kupongutschrift.*|Erträgnisgutschrift.*(\\d+.\\d+.\\d{4})");
+        // Kopfzeile steht. In neuen Dokumenten steht "Erträgnisgutschrift"
+        // alleine auf einer Zeile
+        Block block = new Block(
+                        "Dividendengutschrift.*|Kupongutschrift.*|Erträgnisgutschrift.*(\\d+.\\d+.\\d{4})|Erträgnisgutschrift");
         type.addBlock(block);
 
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
