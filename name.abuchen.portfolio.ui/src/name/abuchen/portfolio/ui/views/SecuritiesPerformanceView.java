@@ -811,6 +811,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@bottom4", getPreferenceStore(), //$NON-NLS-1$

@@ -35,6 +35,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Properties;
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
@@ -147,9 +148,10 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         amount.bindCurrency(Properties.targetAccountCurrency.name());
 
         // note
+
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
@@ -176,7 +178,8 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .thenRight(amount.value).width(amountWidth) //
                         // note
                         .suffix(amount.currency, currencyWidth) //
-                        .thenBelow(valueNote).left(target.value.getControl()).right(amount.value).label(lblNote);
+                        .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
+                        .left(target.value.getControl()).right(amount.value).label(lblNote);
 
         int widest = widest(source.label, target.label, lblDate, fxAmount.label, lblNote);
         startingWith(source.label).width(widest);

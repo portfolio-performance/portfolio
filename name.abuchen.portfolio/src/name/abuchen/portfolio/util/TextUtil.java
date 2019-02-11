@@ -28,8 +28,13 @@ public final class TextUtil
             if (wrapped.length() > 0)
                 wrapped.append("\n"); //$NON-NLS-1$
 
-            String substring = raw.substring(m.start(), m.end());
-            wrapped.append(substring.replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+            String fragment = raw.substring(m.start(), m.end());
+
+            // if fragment includes a line-break, do not add another one
+            if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == '\n')
+                fragment = fragment.substring(0, fragment.length() - 1);
+
+            wrapped.append(fragment.replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         // remove added character needed to create a word boundary

@@ -49,6 +49,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Pr
 import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
@@ -192,7 +193,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
@@ -259,7 +260,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         }
 
         // note
-        forms.thenBelow(valueNote).left(accounts.value.getControl()).right(grossAmount.value).label(lblNote);
+        forms.thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3).left(accounts.value.getControl())
+                        .right(grossAmount.value).label(lblNote);
 
         //
         // hide / show exchange rate if necessary

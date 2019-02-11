@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.security;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
@@ -17,6 +18,7 @@ import org.eclipse.swt.widgets.Text;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public class SecurityMasterDataPage extends AbstractPage
 {
@@ -113,6 +115,9 @@ public class SecurityMasterDataPage extends AbstractPage
         deco.setImage(image);
         deco.show();
 
-        bindings.bindStringInput(container, Messages.ColumnNote, "note"); //$NON-NLS-1$
+        Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", //$NON-NLS-1$
+                        SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, SWT.DEFAULT);
+        GridDataFactory.fillDefaults().grab(true, false).hint(SWT.DEFAULT, SWTHelper.lineHeight(valueNote) * 4)
+                        .applyTo(valueNote);
     }
 }
