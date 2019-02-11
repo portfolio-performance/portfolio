@@ -73,6 +73,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_BvUYkBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help.updateproduct" label="%command.update.name" tooltip="%command.update.tooltip" command="_59FgcBiREeOR1rNFCzC82A">
           <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_PRn4cLdsEeO8D7SW8YS2SA" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_l5AcMC4xEemmmuRo8le1zg" elementId="name.abuchen.portfolio.ui.menu.help.changelog" label="%command.openbrowser.changelog.name" tooltip="%command.openbrowser.changelog.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_JLq4kC4yEemmmuRo8le1zg" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
+          <parameters xmi:id="_l5AcMS4xEemmmuRo8le1zg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://www.portfolio-performance.info/portfolio/versions.html"/>
+        </children>
         <children xsi:type="menu:MenuSeparator" xmi:id="_t8NhALdtEeO8D7SW8YS2SA" elementId="name.abuchen.portfolio.ui.menuseparator.11"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_7e784PPLEeOuTsL2OeJEvQ" elementId="name.abuchen.portfolio.ui.menu.help.welcome" label="%part.welcome" tooltip="%part.welcome.tooltip" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_E-53QPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.welcome"/>

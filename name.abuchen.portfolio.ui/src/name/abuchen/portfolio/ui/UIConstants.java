@@ -69,6 +69,7 @@ public interface UIConstants
         String SAMPLE_FILE = "name.abuchen.portfolio.ui.param.samplefile"; //$NON-NLS-1$
         String NAME = "name.abuchen.portfolio.ui.param.name"; //$NON-NLS-1$
         String VIEW_PARAMETER = "name.abuchen.portfolio.ui.param.viewparameter"; //$NON-NLS-1$
+        String URL = "name.abuchen.portfolio.ui.param.url"; //$NON-NLS-1$
     }
 
     interface Preferences // NOSONAR
