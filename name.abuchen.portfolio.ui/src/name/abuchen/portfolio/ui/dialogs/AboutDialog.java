@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.security.cert.X509Certificate;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -42,6 +43,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.util.BuildInfo;
 
 public class AboutDialog extends Dialog
 {
@@ -76,6 +78,7 @@ public class AboutDialog extends Dialog
     {
         String aboutText = MessageFormat.format(Messages.AboutText,
                         PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
+                        DateTimeFormatter.ofPattern("MMM YYYY").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
                         System.getProperty("osgi.os"), //$NON-NLS-1$
                         System.getProperty("osgi.arch")); //$NON-NLS-1$
 

@@ -14,7 +14,34 @@
 	<packaging>eclipse-plugin</packaging>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>./</directory>
+				<includes>
+					<include>build-info.properties</include>
+				</includes>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+
 		<plugins>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>buildnumber-maven-plugin</artifactId>
+				<version>1.4</version>
+				<executions>
+					<execution>
+						<phase>validate</phase>
+						<goals>
+							<goal>create-timestamp</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<timestampPropertyName>maven.build.timestamp</timestampPropertyName>
+					<timestampFormat>yyyy-MM-dd'T'HH:mm:ss</timestampFormat>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jarsigner-plugin</artifactId>

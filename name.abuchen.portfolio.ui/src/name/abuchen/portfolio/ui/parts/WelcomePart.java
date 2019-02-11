@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.parts;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +39,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.util.BuildInfo;
 
 @SuppressWarnings("restriction")
 public class WelcomePart
@@ -100,7 +102,9 @@ public class WelcomePart
         GridDataFactory.fillDefaults().span(2, 1).applyTo(title);
 
         Label version = new Label(actions, SWT.NONE);
-        version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString());
+        version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString() + " (" //$NON-NLS-1$
+                        + DateTimeFormatter.ofPattern("MMM YYYY").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
+                        + ")"); //$NON-NLS-1$
         GridDataFactory.fillDefaults().span(2, 1).applyTo(version);
 
         Composite links = new Composite(actions, SWT.NONE);
