@@ -34,6 +34,7 @@ public class HeadingWidget extends WidgetDelegate<Object>
         title = new Label(heading, SWT.NONE);
         title.setFont(resources.getBoldFont());
         title.setForeground(Colors.HEADINGS);
+        title.setBackground(heading.getBackground());
         title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         return heading;

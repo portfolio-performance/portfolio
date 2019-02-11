@@ -192,6 +192,7 @@ public class ChartWidget extends WidgetDelegate<Object>
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
+        title.setBackground(container.getBackground());
         title.setText(getWidget().getLabel());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 

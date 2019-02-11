@@ -80,6 +80,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
 
         title = new Label(container, SWT.NONE);
         title.setText(getWidget().getLabel());
+        title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, title.getFont().getFontData()[0].getHeight() + 10)
                         .grab(true, false).applyTo(title);
 
@@ -123,8 +124,11 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         for (int ii = 0; ii < size; ii++)
         {
             signs[ii] = new Label(container, SWT.NONE);
+            signs[ii].setBackground(container.getBackground());
             labels[ii] = new Label(container, SWT.NONE);
+            labels[ii].setBackground(container.getBackground());
             values[ii] = new Label(container, SWT.RIGHT);
+            values[ii].setBackground(container.getBackground());
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(values[ii]);
 
             if (ii == 0 || ii == size - 1) // first and last line

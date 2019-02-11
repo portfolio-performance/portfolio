@@ -31,10 +31,12 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     
         title = new Label(container, SWT.NONE);
         title.setText(getWidget().getLabel());
+        title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
     
         indicator = new Label(container, SWT.NONE);
         indicator.setFont(resources.getKpiFont());
+        indicator.setBackground(container.getBackground());
         indicator.setText(""); //$NON-NLS-1$
         GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
     

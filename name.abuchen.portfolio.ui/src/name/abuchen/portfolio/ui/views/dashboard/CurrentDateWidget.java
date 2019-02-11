@@ -35,6 +35,7 @@ public class CurrentDateWidget extends WidgetDelegate<Object>
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
+        title.setBackground(container.getBackground());
         title.setText(getWidget().getLabel());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
