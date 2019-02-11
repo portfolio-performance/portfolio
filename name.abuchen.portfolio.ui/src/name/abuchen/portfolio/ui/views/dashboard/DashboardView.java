@@ -12,6 +12,7 @@ import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
@@ -27,6 +28,7 @@ import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -34,9 +36,11 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -196,6 +200,7 @@ public class DashboardView extends AbstractHistoricView
     private UISynchronize sync;
 
     private DashboardResources resources;
+    private ScrolledComposite scrolledComposite;
     private Composite container;
 
     private Dashboard dashboard;
@@ -311,15 +316,42 @@ public class DashboardView extends AbstractHistoricView
                             return newDashboard;
                         });
 
-        container = new Composite(parent, SWT.NONE);
+        scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+
+        container = new Composite(scrolledComposite, SWT.NONE);
         container.setBackground(Colors.WHITE);
 
         selectDashboard(dashboard);
 
+        scrolledComposite.setContent(container);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
+
+        // resize listener
+        ControlListener listener = ControlListener.controlResizedAdapter(e -> updateScrolledCompositeMinSize());
+        parent.getParent().addControlListener(listener);
+        scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
+
         container.addDisposeListener(e -> preferences.setValue(SELECTED_DASHBOARD_KEY,
                         getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
 
-        return container;
+        return scrolledComposite;
+    }
+
+    private void updateScrolledCompositeMinSize()
+    {
+        Rectangle clientArea = scrolledComposite.getParent().getParent().getClientArea();
+        Point size = container.computeSize(clientArea.width, SWT.DEFAULT);
+
+        // On windows only, we do not have an overlay scrollbar and hence have
+        // to reduce the visible area to make room for the vertical scrollbar
+        if (Platform.OS_WIN32.equals(Platform.getOS()) && size.y > clientArea.height)
+        {
+            int width = clientArea.width - scrolledComposite.getVerticalBar().getSize().x;
+            size = container.computeSize(width, SWT.DEFAULT);
+        }
+
+        scrolledComposite.setMinSize(size);
     }
 
     private void buildColumns()
@@ -344,7 +376,7 @@ public class DashboardView extends AbstractHistoricView
         // *all* context menus attached to nested composites are always shown.
         Composite filler = new Composite(columnControl, SWT.NONE);
         filler.setBackground(columnControl.getBackground());
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(filler);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 10).grab(true, true).applyTo(filler);
         columnControl.setData(FILLER_KEY, filler);
 
         new ContextMenu(filler, manager -> columnMenuAboutToShow(manager, column, columnControl)).hook();
@@ -447,7 +479,8 @@ public class DashboardView extends AbstractHistoricView
 
             composite.dispose();
             parent.layout();
-            markDirty();
+            updateScrolledCompositeMinSize();
+            getClient().touch();
         }));
     }
 
@@ -520,6 +553,8 @@ public class DashboardView extends AbstractHistoricView
             }
         }
 
+        updateScrolledCompositeMinSize();
+
         if (!tasks.isEmpty())
         {
             new AbstractClientJob(getClient(), Messages.MsgUpdatingDashboardData)
@@ -542,16 +577,19 @@ public class DashboardView extends AbstractHistoricView
                         }
                     }
 
-                    sync.asyncExec(() -> data.entrySet().stream()
-                                    .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
-                                    .forEach(entry -> {
-                                        entry.getKey().update(entry.getValue());
+                    sync.asyncExec(() -> {
+                        data.entrySet().stream().filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
+                                        .forEach(entry -> {
+                                            entry.getKey().update(entry.getValue());
 
-                                        if (entry.getValue() == null)
-                                            currentCache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
-                                        else
-                                            currentCache.put(entry.getKey().getWidget(), entry.getValue());
-                                    }));
+                                            if (entry.getValue() == null)
+                                                currentCache.put(entry.getKey().getWidget(),
+                                                                DashboardData.EMPTY_RESULT);
+                                            else
+                                                currentCache.put(entry.getKey().getWidget(), entry.getValue());
+                                        });
+                        updateScrolledCompositeMinSize();
+                    });
 
                     return Status.OK_STATUS;
                 }
@@ -577,6 +615,7 @@ public class DashboardView extends AbstractHistoricView
                         .equalWidth(true).spacing(10, 10).applyTo(container);
 
         container.layout(true);
+        updateScrolledCompositeMinSize();
 
         updateWidgets();
     }
@@ -594,7 +633,7 @@ public class DashboardView extends AbstractHistoricView
         newDashboard.setName(dialog.getValue());
 
         getClient().addDashboard(newDashboard);
-        markDirty();
+        getClient().touch();
 
         selectDashboard(newDashboard);
     }
@@ -608,7 +647,7 @@ public class DashboardView extends AbstractHistoricView
             return;
 
         board.setName(dialog.getValue());
-        markDirty();
+        getClient().touch();
         updateTitle(board.getName());
 
         recreateDashboardToolItems();
@@ -617,14 +656,14 @@ public class DashboardView extends AbstractHistoricView
     private void deleteDashboard(Dashboard board)
     {
         getClient().removeDashboard(board);
-        markDirty();
+        getClient().touch();
 
         recreateDashboardToolItems();
 
         selectDashboard(getClient().getDashboards().findFirst().orElseGet(() -> {
             Dashboard newDashboard = createDefaultDashboard();
             getClient().addDashboard(newDashboard);
-            markDirty();
+            getClient().touch();
             return newDashboard;
         }));
     }
@@ -633,7 +672,7 @@ public class DashboardView extends AbstractHistoricView
     {
         getClient().removeDashboard(board);
         getClient().addDashboard(0, board);
-        markDirty();
+        getClient().touch();
 
         recreateDashboardToolItems();
     }
@@ -649,9 +688,10 @@ public class DashboardView extends AbstractHistoricView
 
         WidgetDelegate<?> delegate = buildDelegate(columnControl, widgetType, widget);
 
-        markDirty();
+        getClient().touch();
         delegate.update();
         columnControl.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void createNewColumn()
@@ -665,6 +705,7 @@ public class DashboardView extends AbstractHistoricView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void createNewColumn(Dashboard.Column referenceColumn, Composite referenceColumnControl, int position)
@@ -687,6 +728,7 @@ public class DashboardView extends AbstractHistoricView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void duplicateColumn(Dashboard.Column column, Composite columnControl)
@@ -711,6 +753,7 @@ public class DashboardView extends AbstractHistoricView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
 
         updateWidgets();
     }
@@ -727,6 +770,7 @@ public class DashboardView extends AbstractHistoricView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private Dashboard createDefaultDashboard()
