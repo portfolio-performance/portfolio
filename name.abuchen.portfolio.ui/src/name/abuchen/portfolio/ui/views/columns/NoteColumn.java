@@ -18,7 +18,12 @@ public class NoteColumn extends Column
 {
     public NoteColumn()
     {
-        super("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        this("note"); //$NON-NLS-1$
+    }
+
+    public NoteColumn(String id)
+    {
+        super(id, Messages.ColumnNote, SWT.LEFT, 22);
 
         setLabelProvider(new ColumnLabelProvider()
         {

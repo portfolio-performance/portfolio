@@ -33,6 +33,7 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class TransactionsTab implements DividendsTab
 {
@@ -210,6 +211,12 @@ public class TransactionsTab implements DividendsTab
             {
                 String note = ((TransactionPair<?>) element).getTransaction().getNote();
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                return TextUtil.wordwrap(getText(e));
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getNote()).attachTo(column);

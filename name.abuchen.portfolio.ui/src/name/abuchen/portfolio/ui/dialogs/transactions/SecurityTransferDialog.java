@@ -18,7 +18,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
@@ -32,6 +31,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferModel.Properties;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public class SecurityTransferDialog extends AbstractTransactionDialog
 {
@@ -134,10 +134,6 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-        FormData formData = new FormData();
-        formData.width = 450;
-        formData.height = 100;
-        valueNote.setLayoutData(formData);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
@@ -162,8 +158,8 @@ public class SecurityTransferDialog extends AbstractTransactionDialog
                         .width(currencyWidth).thenRight(amount.label).thenRight(amount.value).width(amountWidth)
                         .thenRight(amount.currency).width(currencyWidth);
 
-        startingWith(shares.value).thenBelow(valueNote).left(securities.value.getControl()).right(amount.value)
-                        .label(lblNote);
+        startingWith(shares.value).thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
+                        .left(securities.value.getControl()).right(amount.value).label(lblNote);
 
         int widest = widest(securities.label, source.label, target.label, dateTime.label, shares.label, lblNote);
         startingWith(securities.label).width(widest);

@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.util;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Drawable;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -14,7 +15,8 @@ public final class SWTHelper
     public static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 
     private SWTHelper()
-    {}
+    {
+    }
 
     /**
      * Returns the widest control. Used when layouting dialogs.
@@ -84,6 +86,18 @@ public final class SWTHelper
     }
 
     /**
+     * Returns the number of pixels needed to render one character.
+     */
+    public static int lineHeight(Control drawable)
+    {
+        GC gc = new GC(drawable);
+        gc.setFont(drawable.getFont());
+        FontMetrics fontMetrics = gc.getFontMetrics();
+        gc.dispose();
+        return fontMetrics.getHeight();
+    }
+
+    /**
      * Returns the width needed to display a currency.
      */
     public static int amountWidth(Drawable drawable)
@@ -138,7 +152,7 @@ public final class SWTHelper
         for (Label label : labels)
             label.setText(EMPTY_LABEL);
     }
-    
+
     public static int getPackedWidth(Control item)
     {
         item.pack();

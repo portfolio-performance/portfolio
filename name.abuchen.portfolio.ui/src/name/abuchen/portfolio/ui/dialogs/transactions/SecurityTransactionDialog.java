@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs.transactions;
 
-import org.eclipse.swt.layout.FormData;
 import static name.abuchen.portfolio.ui.util.FormDataFactory.startingWith;
 import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
@@ -37,6 +36,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractSecurityTransactionModel.Properties;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 @SuppressWarnings("restriction")
 public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -189,10 +189,6 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
         Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-        FormData formData = new FormData();
-        formData.width = 450;
-        formData.height = 100;
-        valueNote.setLayoutData(formData);
         IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
         @SuppressWarnings("unchecked")
         IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
@@ -234,7 +230,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         // total
                         .thenBelow(total.value).width(width).label(total.label).suffix(total.currency)
                         // note
-                        .thenBelow(valueNote).left(securities.value.getControl()).right(total.value).label(lblNote);
+                        .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
+                        .left(securities.value.getControl()).right(total.value).label(lblNote);
 
         startingWith(fees.value).thenLeft(plusForexFees).thenLeft(forexFees.currency).width(currencyWidth)
                         .thenLeft(forexFees.value).width(width).thenLeft(forexFees.label);

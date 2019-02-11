@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 public final class TransactionsViewer implements ModificationListener
 {
@@ -335,6 +336,12 @@ public final class TransactionsViewer implements ModificationListener
             {
                 String note = ((Transaction) e).getNote();
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                return TextUtil.wordwrap(getText(e));
             }
         });
         ColumnViewerSorter.create(Transaction.class, "note").attachTo(column); //$NON-NLS-1$
