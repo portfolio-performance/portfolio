@@ -770,7 +770,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
             // removing a non-existing preference is a no-op so call the Core
             // API directly
             getStorePreferences().remove(name);
-            if (oldValue != defaultValue)
+            if (oldValue != defaultValue) // NOSONAR
             {
                 dirty = true;
                 firePropertyChangeEvent(name, oldValue, defaultValue);

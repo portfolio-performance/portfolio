@@ -434,7 +434,10 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
     {
         configManager.removeUserSpecificConfiguration(config);
 
-        if (config.getLabel() == currentConfigLabel)
+        // reread columns if the current configuration is deleted. There might
+        // be multiple configurations with the same name. It must be the same
+        // label.
+        if (config.getLabel() == currentConfigLabel) // NOSONAR
             onRereadColumns();
     }
 

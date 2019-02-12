@@ -43,7 +43,7 @@ public class ECBExchangeRateProvider implements ExchangeRateProvider
     private static final String FILE_STORAGE = "ecb_exchange_rates.xml"; //$NON-NLS-1$
     private static final String FILE_SUMMARY = "ecb_exchange_rates_summary.xml"; //$NON-NLS-1$
 
-    private volatile XStream xstream;
+    private volatile XStream xstream; // NOSONAR
     private ECBData data = new ECBData();
 
     public ECBExchangeRateProvider()

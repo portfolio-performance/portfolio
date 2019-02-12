@@ -8,7 +8,7 @@ import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.text.ParseException;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -57,8 +57,8 @@ import name.abuchen.portfolio.util.Dates;
         Feeds f = Feeds.HISTORIC;
         if (data.getLastModified() != 0)
         {
-            LocalDate lastModified = LocalDate.from(Instant.ofEpochMilli(data.getLastModified()).atZone(
-                            ZoneId.systemDefault()));
+            LocalDate lastModified = LocalDate
+                            .from(Instant.ofEpochMilli(data.getLastModified()).atZone(ZoneId.systemDefault()));
             int days = Dates.daysBetween(lastModified, LocalDate.now());
 
             if (days <= 1)
@@ -73,7 +73,7 @@ import name.abuchen.portfolio.util.Dates;
         InputStream input = null;
         HttpURLConnection connection = null;
 
-        try
+        try // NOSONAR
         {
             URL feedUrl = new URI(SOURCE_URL + f.getXmlFileName()).toURL();
 
@@ -88,20 +88,17 @@ import name.abuchen.portfolio.util.Dates;
             input = connection.getInputStream();
 
             XMLInputFactory factory = XMLInputFactory.newInstance();
-            XMLStreamReader reader = factory.createXMLStreamReader(new InputStreamReader(input, "UTF-8")); //$NON-NLS-1$
+
+            factory.setProperty(XMLInputFactory.IS_SUPPORTING_EXTERNAL_ENTITIES, Boolean.FALSE);
+            factory.setProperty(XMLInputFactory.SUPPORT_DTD, Boolean.FALSE);
+
+            XMLStreamReader reader = factory
+                            .createXMLStreamReader(new InputStreamReader(input, StandardCharsets.UTF_8));
             readCubes(provider, data, reader);
             data.setDirty(true);
             data.setLastModified(lastModified);
         }
-        catch (XMLStreamException e)
-        {
-            throw new IOException(e);
-        }
-        catch (URISyntaxException e)
-        {
-            throw new IOException(e);
-        }
-        catch (ParseException e)
+        catch (XMLStreamException | URISyntaxException e)
         {
             throw new IOException(e);
         }
@@ -113,7 +110,9 @@ import name.abuchen.portfolio.util.Dates;
                     input.close();
             }
             catch (IOException ignore)
-            {}
+            {
+                // ignore exception on closing stream
+            }
 
             if (connection != null)
                 connection.disconnect();
@@ -121,16 +120,16 @@ import name.abuchen.portfolio.util.Dates;
     }
 
     private void readCubes(ExchangeRateProvider provider, ECBData data, XMLStreamReader reader)
-                    throws XMLStreamException, ParseException
+                    throws XMLStreamException
     {
         // lookup map by term currency
-        Map<String, ExchangeRateTimeSeriesImpl> currency2series = new HashMap<String, ExchangeRateTimeSeriesImpl>();
+        Map<String, ExchangeRateTimeSeriesImpl> currency2series = new HashMap<>();
         for (ExchangeRateTimeSeriesImpl series : data.getSeries())
             currency2series.put(series.getTermCurrency(), series);
 
         LocalDate currentDate = null;
 
-        while (reader.hasNext())
+        while (reader.hasNext()) // NOSONAR readability
         {
             int event = reader.next();
 
@@ -144,7 +143,7 @@ import name.abuchen.portfolio.util.Dates;
             String termCurrency = reader.getAttributeValue(null, "currency"); //$NON-NLS-1$
             if (termCurrency != null)
             {
-                ExchangeRateTimeSeriesImpl series = currency2series.get(termCurrency);
+                ExchangeRateTimeSeriesImpl series = currency2series.get(termCurrency); // NOSONAR
                 if (series == null)
                 {
                     series = new ExchangeRateTimeSeriesImpl();

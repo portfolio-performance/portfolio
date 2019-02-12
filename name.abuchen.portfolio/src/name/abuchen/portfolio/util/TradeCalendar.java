@@ -65,7 +65,7 @@ public class TradeCalendar implements Comparable<TradeCalendar>
 
     public boolean isHoliday(LocalDate date)
     {
-        if (getCode() == EMPTY_CODE)
+        if (EMPTY_CODE.equals(getCode()))
             return true;
         if (WEEKEND.contains(date.getDayOfWeek()))
             return true;
