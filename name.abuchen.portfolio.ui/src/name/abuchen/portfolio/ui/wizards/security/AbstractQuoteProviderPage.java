@@ -64,6 +64,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private final EditSecurityModel model;
     private final BindingHelper bindings;
 
+    // used to identify if the ticker has been changed on another page
+    @SuppressWarnings("unused")
+    private String tickerSymbol;
+
     private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<>();
     private Map<QuoteFeed, List<Exchange>> cacheRegions = new HashMap<>();
 
