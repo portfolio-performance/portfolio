@@ -340,7 +340,21 @@ public class DashboardView extends AbstractHistoricView
 
     private void updateScrolledCompositeMinSize()
     {
-        Rectangle clientArea = scrolledComposite.getParent().getParent().getClientArea();
+        // because this method can be called *after* calculating data in the
+        // background, all widgets can already be disposed
+
+        if (scrolledComposite.isDisposed())
+            return;
+
+        Composite parent = scrolledComposite.getParent();
+        if (parent.isDisposed())
+            return;
+
+        Composite grandparent = parent.getParent();
+        if (grandparent.isDisposed())
+            return;
+
+        Rectangle clientArea = grandparent.getClientArea();
         Point size = container.computeSize(clientArea.width, SWT.DEFAULT);
 
         // On windows only, we do not have an overlay scrollbar and hence have
@@ -578,7 +592,8 @@ public class DashboardView extends AbstractHistoricView
                     }
 
                     sync.asyncExec(() -> {
-                        data.entrySet().stream().filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
+                        data.entrySet().stream() //
+                                        .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
                                         .forEach(entry -> {
                                             entry.getKey().update(entry.getValue());
 
