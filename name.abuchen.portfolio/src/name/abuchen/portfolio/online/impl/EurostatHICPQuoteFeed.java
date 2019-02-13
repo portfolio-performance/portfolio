@@ -31,6 +31,7 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.TradeCalendar;
 
@@ -64,20 +65,9 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             return false;
         }
 
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, LocalDate.now(), errors);
+        getHistoricalQuotes(security, LocalDate.now(), errors);
 
-        if (prices.isEmpty())
-        {
-            return false;
-        }
-        else
-        {
-            LatestSecurityPrice price = prices.get(prices.size() - 1);
-            if (price.getValue() != 0)
-                security.setLatest(price);
-
-            return true;
-        }
+        return false;
     }
 
     @Override
@@ -132,6 +122,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                 if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
                     throw new IOException(objectURL.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
 
+                // the periods are 4th JSON hierarchy level @ dimensions > time > category > index
                 String body = EntityUtils.toString(response.getEntity());
                 JSONObject eurostatJSON = (JSONObject) JSONValue.parse(body);
                 JSONObject eurostatValue = (JSONObject) eurostatJSON.get("value"); //$NON-NLS-1$
@@ -144,7 +135,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                 // The key of the hicpValues is linked to hicpPeriods value
                 // parameter
                 // {230=100.2, 110=85.4, 231=100.1, 111=85.4, 232=100.2, ...
-                HashMap<String, Double> hicpValues = new HashMap<String, Double>();
+                HashMap<String, Long> hicpValues = new HashMap<String, Long>();
                 for (Object key : eurostatValue.keySet())
                     hicpValues.put(key.toString(), parseIndex(eurostatValue.get(key).toString()));
 
@@ -162,13 +153,8 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                     String pricePeriod = hicpPeriods.get(Integer.toString(ii));
                     LocalDate periodDateStart = LocalDate.of(Integer.parseInt(pricePeriod.substring(0, 4)),
                                     Integer.parseInt(pricePeriod.substring(5, 7)), 1);
-                    LocalDate periodDateEnd = periodDateStart.withDayOfMonth(periodDateStart.lengthOfMonth());
 
-                    Long inflationRate = (long) ((hicpValues.get(Integer.toString(ii))
-                                    / hicpValues.get(Integer.toString(ii - 12))) * 1000000 - 1000000);
-
-                    prices.add(new LatestSecurityPrice(periodDateStart, inflationRate));
-                    prices.add(new LatestSecurityPrice(periodDateEnd, inflationRate));
+                    security.addPrice(new SecurityPrice(periodDateStart, hicpValues.get(Integer.toString(ii))));
                 }
                 return prices;
             }
@@ -217,13 +203,13 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return new YahooSymbolSearch().search(query);
     }
 
-    private Double parseIndex(String text) throws IOException
+    private Long parseIndex(String text) throws IOException
     {
         try
         {
             DecimalFormat fmt = new DecimalFormat("0.##", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
             Number q = fmt.parse(text);
-            return (q.doubleValue() * 10000);
+            return (long) (q.doubleValue() * Values.Quote.divider());
         }
         catch (ParseException e)
         {
