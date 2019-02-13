@@ -94,7 +94,8 @@ import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
-import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
@@ -610,8 +611,19 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return null;
 
                 SecurityPrice previous = (SecurityPrice) all.get(index - 1);
-                int days = Dates.daysBetween(previous.getDate(), current.getDate());
-                return days > 3 ? Colors.WARNING : null;
+
+                Security security = (Security) prices.getData(Security.class.toString());
+                TradeCalendar calendar = TradeCalendarManager.getInstance(security);
+
+                boolean hasMissing = false;
+                LocalDate date = current.getDate().minusDays(1);
+                while (!hasMissing && date.isAfter(previous.getDate()))
+                {
+                    hasMissing = !calendar.isHoliday(date);
+                    date = date.minusDays(1);
+                }
+
+                return hasMissing ? Colors.WARNING : null;
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
