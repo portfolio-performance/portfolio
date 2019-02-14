@@ -164,6 +164,7 @@ public class Messages extends NLS
     public static String MsgDeltaWithoutAssets;
     public static String MsgErrorDecrypting;
     public static String MsgErrorDownloadYahoo;
+    public static String MsgErrorDownloadEurostatHICP;
     public static String MsgErrorDuplicateISIN;
     public static String MsgErrorDuplicateName;
     public static String MsgErrorDuplicateTicker;
