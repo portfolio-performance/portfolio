@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import name.abuchen.portfolio.Messages;
@@ -53,4 +54,9 @@ public final class ManualQuoteFeed implements QuoteFeed
         return null;
     }
 
+    @Override
+    public List<Exchange> getRegions(Security subject, List<Exception> errors)
+    {
+        return Collections.emptyList();
+    }
 }

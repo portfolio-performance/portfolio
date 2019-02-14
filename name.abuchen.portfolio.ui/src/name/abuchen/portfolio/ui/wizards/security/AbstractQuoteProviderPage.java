@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
@@ -45,6 +44,33 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
+
+    private static final String YAHOO = "YAHOO"; //$NON-NLS-1$
+    private static final String EUROSTATHICP = "EUROSTATHICP"; //$NON-NLS-1$
+    private static final String HTML = "HTML"; //$NON-NLS-1$
+
+    private ComboViewer comboProvider;
+
+    private Group grpQuoteFeed;
+    private Label labelDetailData;
+
+    private ComboViewer comboExchange;
+    private ComboViewer comboRegion;
+    private Text textFeedURL;
+    private Text textTicker;
+
+    private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
+
+    private final EditSecurityModel model;
+    private final BindingHelper bindings;
+
+    // used to identify if the ticker has been changed on another page
+    @SuppressWarnings("unused")
+    private String tickerSymbol;
+
+    private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<>();
+    private Map<QuoteFeed, List<Exchange>> cacheRegions = new HashMap<>();
+
     private class LoadExchangesJob extends Job
     {
         public LoadExchangesJob()
@@ -64,6 +90,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
                 List<Exception> errors = new ArrayList<>();
                 cacheExchanges.put(feed, feed.getExchanges(s, errors));
+                cacheRegions.put(feed, feed.getRegions(s, errors));
 
                 PortfolioPlugin.log(errors);
 
@@ -81,6 +108,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     if (feed != null && feed.getId() != null)
                     {
                         List<Exchange> exchanges = cacheExchanges.get(feed);
+                        List<Exchange> regions = cacheRegions.get(feed);
                         if (comboExchange != null)
                         {
                             comboExchange.setSelection(StructuredSelection.EMPTY);
@@ -104,12 +132,36 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                                 showSampleQuotes(feed, (Exchange) ((StructuredSelection) comboExchange.getSelection())
                                                 .getFirstElement());
                         }
-                        else
+                        else if (comboRegion != null)
                         {
-                            if (exchanges == null || exchanges.isEmpty())
+                            comboRegion.setSelection(StructuredSelection.EMPTY);
+
+                            if (regions != null)
                             {
-                                showSampleQuotes(feed, null);
+                                comboRegion.setInput(regions);
+
+                                // if ticker symbol matches any of the
+                                // exchanges, select this exchange in the
+                                // combo list
+                                regions.stream() //
+                                                .filter(e -> e.getId().equals(model.getTickerSymbol().toUpperCase())) //
+                                                .findAny() //
+                                                .ifPresent(e -> comboRegion.setSelection(new StructuredSelection(e)));
                             }
+
+                            if (comboRegion.getSelection().isEmpty())
+                                clearSampleQuotes();
+                            else
+                                showSampleQuotes(feed, (Exchange) ((StructuredSelection) comboRegion.getSelection())
+                                                .getFirstElement());
+                        }
+                        else if (exchanges == null || exchanges.isEmpty())
+                        {
+                            showSampleQuotes(feed, null);
+                        }
+                        else if (regions == null || regions.isEmpty())
+                        {
+                            showSampleQuotes(feed, null);
                         }
                     }
 
@@ -120,28 +172,6 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             return Status.OK_STATUS;
         }
     }
-
-    private static final String YAHOO = "YAHOO"; //$NON-NLS-1$
-    private static final String HTML = "HTML"; //$NON-NLS-1$
-
-    private ComboViewer comboProvider;
-
-    private Group grpQuoteFeed;
-    private Label labelDetailData;
-    
-    private ComboViewer comboExchange;
-    private Text textFeedURL;
-    private Text textTicker;
-    
-    private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
-
-    private final EditSecurityModel model;
-    private final BindingHelper bindings;
-
-    // used to identify if the ticker has been changed on another page
-    private String tickerSymbol;
-
-    private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<>();
 
     protected AbstractQuoteProviderPage(EditSecurityModel model, BindingHelper bindings)
     {
@@ -179,25 +209,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     @Override
     public void beforePage()
     {
-        if (!Objects.equals(tickerSymbol, model.getTickerSymbol()))
+        this.tickerSymbol = model.getTickerSymbol();
+
+        // clear caches
+        cacheExchanges = new HashMap<>();
+        reinitCaches();
+
+        new LoadExchangesJob().schedule();
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+
+        if (feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
         {
-            this.tickerSymbol = model.getTickerSymbol();
-
-            // clear caches
-            cacheExchanges = new HashMap<>();
-            reinitCaches();
-
-            new LoadExchangesJob().schedule();
-
-            QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
-
-            if (feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
-            {
-                if (getFeedURL() == null || getFeedURL().length() == 0)
-                    clearSampleQuotes();
-                else
-                    showSampleQuotes(feed, null);
-            }
+            if (getFeedURL() == null || getFeedURL().length() == 0)
+                clearSampleQuotes();
+            else
+                showSampleQuotes(feed, null);
         }
     }
 
@@ -214,6 +241,16 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             {
                 model.setTickerSymbol(exchange.getId());
                 tickerSymbol = exchange.getId();
+                setFeedURL(null);
+            }
+        }
+        else if (comboRegion != null && feed.getId() != null && feed.getId().startsWith(EUROSTATHICP))
+        {
+            Exchange region = (Exchange) ((IStructuredSelection) comboRegion.getSelection()).getFirstElement();
+            if (region != null)
+            {
+                model.setTickerSymbol(region.getId().toUpperCase());
+                tickerSymbol = region.getId().toUpperCase();
                 setFeedURL(null);
             }
         }
@@ -296,7 +333,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void createDetailDataWidgets(QuoteFeed feed)
     {
-        boolean dropDown = feed != null && feed.getId() != null && feed.getId().startsWith(YAHOO);
+        boolean dropDownYahoo = feed != null && feed.getId() != null && feed.getId().startsWith(YAHOO);
+        boolean dropDownEurostatHICP = feed != null && feed.getId() != null && feed.getId().startsWith(EUROSTATHICP);
         boolean feedURL = feed != null && feed.getId() != null && feed.getId().equals(HTMLTableQuoteFeed.ID);
         boolean needsTicker = feed != null && feed.getId() != null && feed.getId().equals(AlphavantageQuoteFeed.ID);
 
@@ -305,22 +343,28 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textFeedURL.dispose();
             textFeedURL = null;
         }
-        
+
         if (comboExchange != null)
         {
             comboExchange.getControl().dispose();
             comboExchange = null;
         }
-        
+
+        if (comboRegion != null)
+        {
+            comboRegion.getControl().dispose();
+            comboRegion = null;
+        }
+
         if (textTicker != null)
         {
             textTicker.dispose();
             textTicker = null;
-            
+
             model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
-        
-        if (dropDown)
+
+        if (dropDownYahoo)
         {
             labelDetailData.setText(Messages.LabelExchange);
 
@@ -339,6 +383,25 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             comboExchange.addSelectionChangedListener(this::onExchangeChanged);
         }
+        else if (dropDownEurostatHICP)
+        {
+            labelDetailData.setText(Messages.LabelEurostatRegion);
+
+            comboRegion = new ComboViewer(grpQuoteFeed, SWT.READ_ONLY);
+            comboRegion.setContentProvider(ArrayContentProvider.getInstance());
+            comboRegion.setLabelProvider(new LabelProvider()
+            {
+                @Override
+                public String getText(Object element)
+                {
+                    Exchange region = (Exchange) element;
+                    return MessageFormat.format("{0} ({1})", region.getId().toUpperCase(), region.getName()); //$NON-NLS-1$
+                }
+            });
+            GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboRegion.getControl());
+
+            comboRegion.addSelectionChangedListener(this::onRegionChanged);
+        }
         else if (feedURL)
         {
             labelDetailData.setText(Messages.EditWizardQuoteFeedLabelFeedURL);
@@ -351,15 +414,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         else if (needsTicker)
         {
             labelDetailData.setText(Messages.ColumnTicker);
-            
+
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
-            
+
             IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
             @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
             bindings.getBindingContext().bindValue(observeText, observable);
-            
+
             model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
         else
@@ -382,13 +445,21 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && feed.getId().startsWith(YAHOO))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
             ArrayList<Exchange> input = new ArrayList<>();
             input.add(exchange);
             comboExchange.setInput(input);
             comboExchange.setSelection(new StructuredSelection(exchange));
+        }
+        else if (feed != null && feed.getId() != null && feed.getId().startsWith(EUROSTATHICP))
+        {
+            Exchange region = new Exchange(model.getTickerSymbol().toUpperCase(), model.getTickerSymbol());
+            ArrayList<Exchange> input = new ArrayList<>();
+            input.add(region);
+            comboRegion.setInput(input);
+            comboRegion.setSelection(new StructuredSelection(region));
         }
         else if (textFeedURL != null)
         {
@@ -406,9 +477,21 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 previousExchangeId = exchange.getId();
         }
 
+        String previousRegionId = null;
+        if (comboRegion != null)
+        {
+            Exchange region = (Exchange) ((IStructuredSelection) comboRegion.getSelection()).getFirstElement();
+            if (region != null)
+                previousRegionId = region.getId();
+        }
+
         if (previousExchangeId == null && model.getTickerSymbol() != null)
         {
             previousExchangeId = model.getTickerSymbol();
+        }
+        else if (previousRegionId == null && model.getTickerSymbol() != null)
+        {
+            previousRegionId = model.getTickerSymbol();
         }
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) event.getSelection()).getFirstElement();
@@ -440,6 +523,34 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 comboExchange.setSelection(null);
 
             setStatus(exchangeSelected ? null : MessageFormat.format(Messages.MsgErrorExchangeMissing, getTitle()));
+        }
+        else if (comboRegion != null)
+        {
+            List<Exchange> regions = cacheRegions.get(feed);
+            comboRegion.setInput(regions);
+
+            // select exchange if other provider supports same exchange id
+            // (yahoo close vs. yahoo adjusted close)
+            boolean regionSelected = false;
+            if (regions != null && previousRegionId != null)
+            {
+                for (Exchange e : regions)
+                {
+                    if (e.getId().equals(previousRegionId))
+                    {
+                        comboRegion.setSelection(new StructuredSelection(e));
+                        regionSelected = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!regionSelected)
+                comboRegion.setSelection(null);
+
+            // setStatus(regionSelected ? null :
+            // MessageFormat.format(Messages.MsgErrorExchangeMissing,
+            // getTitle()));
         }
         else if (textFeedURL != null)
         {
@@ -481,6 +592,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }
     }
 
+    private void onRegionChanged(SelectionChangedEvent event)
+    {
+        Exchange region = (Exchange) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        setStatus(null);
+
+        if (region == null)
+        {
+            clearSampleQuotes();
+        }
+        else
+        {
+            QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+            showSampleQuotes(feed, region);
+        }
+    }
+
     private void onFeedURLChanged()
     {
         setFeedURL(textFeedURL.getText());
@@ -499,7 +626,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             setStatus(null);
         }
     }
-    
+
     private void onTickerSymbolChanged()
     {
         boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();

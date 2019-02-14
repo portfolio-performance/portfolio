@@ -448,4 +448,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     {
         return new YahooSymbolSearch().search(query);
     }
+
+    @Override
+    public List<Exchange> getRegions(Security subject, List<Exception> errors)
+    {
+        return Collections.emptyList();
+    }
 }
