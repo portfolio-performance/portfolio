@@ -15,6 +15,7 @@ import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
+import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.REMEMBERANCE_OF_PRESIDENT_FORD;
 import static name.abuchen.portfolio.util.HolidayName.SECOND_CHRISTMAS_DAY;
 import static name.abuchen.portfolio.util.HolidayName.THANKSGIVING;
@@ -50,6 +51,7 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).validFrom(2017).validTo(2017));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
