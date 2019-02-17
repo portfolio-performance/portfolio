@@ -3,21 +3,17 @@ package name.abuchen.portfolio.online.impl;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.StringTokenizer;
 
 import org.apache.http.HttpStatus;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -26,7 +22,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -37,8 +32,6 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.Dates;
-import name.abuchen.portfolio.util.TradeCalendar;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
 {
@@ -70,12 +63,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     @Override
     public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
     {
-        LocalDate quoteStartDate = LocalDate.MIN;
-
-        if (!security.getPrices().isEmpty())
-            quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
-
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, quoteStartDate, errors);
+        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, errors);
 
         boolean isUpdated = false;
         for (SecurityPrice p : quotes)
@@ -92,8 +80,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
-        security.setCalendar(TradeCalendar.EMPTY_CODE);
-        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
+        return internalGetQuotes(LatestSecurityPrice.class, security, errors);
     }
 
     @Override
@@ -107,13 +94,12 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     {
         List<Exchange> answer = new ArrayList<>();
 
-        String eurostatHICPRegions = "AT;BE;BG;CH;CY;CZ;DE;DK;EA;EE;EL;ES;EU;FI;FR;HR;HU;IE;IS;IT;LT;LU;LV;MK;MT;NL;NO;PL;PT;RO;RS;SE;SI;SK;TR;UK;US"; //$NON-NLS-1$
-
-        StringTokenizer st = new StringTokenizer(eurostatHICPRegions, ";"); //$NON-NLS-1$
-        while (st.hasMoreTokens())
+        Enumeration<String> enumeration = EurostatHICPLabels.getKeys();
+        while (enumeration.hasMoreElements())
         {
-            String hicpRegion = st.nextToken();
-            answer.add(new Exchange(hicpRegion, EurostatHICPLabels.getString("region." + hicpRegion))); //$NON-NLS-1$
+            String key = enumeration.nextElement();
+            String hicpRegion = key.substring("region.".length()); //$NON-NLS-1$
+            answer.add(new Exchange(hicpRegion, EurostatHICPLabels.getString(key)));
         }
 
         Collections.sort(answer, (r, l) -> r.getName().compareTo(l.getName()));
@@ -121,7 +107,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return answer;
     }
 
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, LocalDate startDate,
+    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security,
                     List<Exception> errors)
     {
         if (security.getTickerSymbol() == null)
@@ -132,7 +118,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
         try (CloseableHttpClient client = HttpClients.createSystem())
         {
-            String responseBody = requestData(security, startDate);
+            String responseBody = requestData(security);
             return extractQuotes(klass, responseBody, errors);
         }
         catch (IOException e)
@@ -144,7 +130,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
-    private String requestData(Security security, LocalDate startDate) throws IOException
+    private String requestData(Security security) throws IOException
     {
         try (CloseableHttpClient client = HttpClients.createSystem())
         {
@@ -183,7 +169,8 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             if (responseData == null)
                 throw new IOException("responseBody"); //$NON-NLS-1$
 
-            // the periods are 4th JSON hierarchy level @ dimensions > time > category > index
+            // the periods are 4th JSON hierarchy level @ dimensions > time >
+            // category > index
             JSONObject eurostatValue = (JSONObject) responseData.get("value"); //$NON-NLS-1$
             JSONObject eurostatDimension = (JSONObject) responseData.get("dimension"); //$NON-NLS-1$
             JSONObject eurostatTime = (JSONObject) eurostatDimension.get("time"); //$NON-NLS-1$
@@ -194,21 +181,21 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             // The key of the hicpValues is linked to hicpPeriods value
             // parameter
             // {230=100.2, 110=85.4, 231=100.1, 111=85.4, 232=100.2, ...
-            HashMap<String, Double> hicpValues = new HashMap<String, Double>();
+            HashMap<String, Double> hicpValues = new HashMap<>();
             for (Object key : eurostatValue.keySet())
                 hicpValues.put(key.toString(), parseIndex(eurostatValue.get(key).toString()));
 
             // EUROSTAT periods
-            HashMap<String, String> hicpPeriods = new HashMap<String, String>();
+            HashMap<String, String> hicpPeriods = new HashMap<>();
             for (Object key : eurostatIndex.keySet())
                 hicpPeriods.put(eurostatIndex.get(key).toString(), key.toString());
 
-            for (int ii = 12; ii < hicpPeriods.size(); ii++)
+            for (int ii = 0; ii < hicpPeriods.size(); ii++)
             {
                 String pricePeriod = hicpPeriods.get(Integer.toString(ii));
                 LocalDate ts = LocalDate.of(Integer.parseInt(pricePeriod.substring(0, 4)),
-                                Integer.parseInt(pricePeriod.substring(5, 7)), 1);;
-                Double q = (Double) hicpValues.get(Integer.toString(ii));
+                                Integer.parseInt(pricePeriod.substring(5, 7)), 1);
+                Double q = hicpValues.get(Integer.toString(ii));
 
                 if (ts != null && q != null)
                 {
