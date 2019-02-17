@@ -51,7 +51,6 @@ public class TradeCalendarManager
         tc.add(easter(GOOD_FRIDAY, -2));
         tc.add(easter(EASTER_MONDAY, 1));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
-        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).validFrom(2017).validTo(2017));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
@@ -64,6 +63,7 @@ public class TradeCalendarManager
         tc.add(easter(WHIT_MONDAY, 50));
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(fixed(UNIFICATION_GERMANY, Month.OCTOBER, 3).validFrom(1990));
+        tc.add(fixed(REFORMATION_DAY, Month.OCTOBER, 31).validFrom(2017).validTo(2017));
         tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
