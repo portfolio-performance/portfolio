@@ -25,7 +25,6 @@ import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -233,11 +232,12 @@ public class ChartWidget extends WidgetDelegate<Object>
         List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
                         get(ChartConfig.class).getData());
 
-        ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
-        series.forEach(s -> cache.lookup(s, reportingPeriod.toInterval(LocalDate.now())));
-
-        return () -> null;
+        return () -> {
+            series.forEach(s -> cache.lookup(s, interval));
+            return null;
+        };
     }
 
     @Override
