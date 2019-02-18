@@ -580,6 +580,7 @@ public class Messages extends NLS
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
     public static String LabelStatementOfAssetsHoldings;
+    public static String LabelSuffix_HICP;
     public static String LabelSuffix_PreTax;
     public static String LabelTaxonomies;
     public static String LabelTaxonomyTemplates;
@@ -835,6 +836,7 @@ public class Messages extends NLS
     public static String SecurityMenuImportCSV;
     public static String SecurityMenuImportHTML;
     public static String SecurityMenuNewExchangeRate;
+    public static String SecurityMenuNewHICP;
     public static String SecurityMenuNewSecurity;
     public static String SecurityMenuQuotes;
     public static String SecurityMenuRemoveFromWatchlist;
