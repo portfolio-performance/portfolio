@@ -197,7 +197,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                                 Integer.parseInt(pricePeriod.substring(5, 7)), 1);
                 Double q = hicpValues.get(Integer.toString(ii));
 
-                if (ts != null && q != null)
+                if (q != null)
                 {
                     T price = klass.newInstance();
                     price.setDate(ts);
