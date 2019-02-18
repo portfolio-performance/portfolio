@@ -259,6 +259,12 @@ public class PerformanceIndex
         return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceIRR)
                         .orElseThrow(IllegalArgumentException::new);
     }
+    
+    public double getPerformanceInflationAdjustedIRR()
+    {
+        return getClientPerformanceSnapshot().map(ClientPerformanceSnapshot::getPerformanceInflationAdustedIRR)
+                        .orElseThrow(IllegalArgumentException::new);
+    }
 
     public long[] getTaxes()
     {

@@ -47,6 +47,13 @@ public enum WidgetFactory
                                     .with((ds, period) -> data.calculate(ds, period).getPerformanceIRR()) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+    
+    INFLATION_ADJUSTD_IRR(Messages.LabelInflationAdjustedIRR, Messages.ClientEditorLabelPerformance, //
+                    (widget, data) -> IndicatorWidget.<Double>create(widget, data) //
+                                    .with(Values.Percent2) //
+                                    .with((ds, period) -> data.calculate(ds, period).getPerformanceInflationAdjustedIRR()) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
 
     ABSOLUTE_CHANGE(Messages.LabelAbsoluteChange, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //

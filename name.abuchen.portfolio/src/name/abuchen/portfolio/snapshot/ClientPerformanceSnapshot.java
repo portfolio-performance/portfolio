@@ -115,6 +115,7 @@ public class ClientPerformanceSnapshot
     private final List<TransactionPair<?>> fees = new ArrayList<>();
     private final List<TransactionPair<?>> taxes = new ArrayList<>();
     private double irr;
+    private double inflationAdjustedIrr;
 
     public ClientPerformanceSnapshot(Client client, CurrencyConverter converter, LocalDate startDate, LocalDate endDate)
     {
@@ -181,6 +182,11 @@ public class ClientPerformanceSnapshot
     {
         return irr;
     }
+    
+    public double getPerformanceInflationAdustedIRR()
+    {
+        return inflationAdjustedIrr;
+    }
 
     public Money getAbsoluteDelta()
     {
@@ -228,7 +234,9 @@ public class ClientPerformanceSnapshot
                                         Values.Date.format(snapshotEnd.getTime())), "=", //$NON-NLS-1$
                                         snapshotEnd.getMonetaryAssets()));
 
-        irr = ClientIRRYield.create(client, snapshotStart, snapshotEnd).getIrr();
+        ClientIRRYield irrYield = ClientIRRYield.create(client, snapshotStart, snapshotEnd);
+        irr = irrYield.getIrr();
+        inflationAdjustedIrr = irrYield.getInflationAdjustedIrr();
 
         addCapitalGains();
         addEarnings();
