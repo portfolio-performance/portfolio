@@ -34,6 +34,8 @@ import name.abuchen.portfolio.ui.UIConstants;
             Client client = ClientFactory.load(clientInput.getFile(), password, progressProvider.createMonitor());
 
             Display.getDefault().asyncExec(() -> clientInput.setClient(client));
+
+            clientInput.createBackupAfterOpen();
         }
         catch (FileNotFoundException exception)
         {

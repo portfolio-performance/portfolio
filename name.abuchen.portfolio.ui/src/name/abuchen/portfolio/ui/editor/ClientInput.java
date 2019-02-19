@@ -236,6 +236,12 @@ public class ClientInput
         }
     }
 
+    public void createBackupAfterOpen()
+    {
+        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+            createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
+    }
+
     private void createBackup(File file, String suffix)
     {
         try
