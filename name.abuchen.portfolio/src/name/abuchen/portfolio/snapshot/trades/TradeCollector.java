@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot.trades;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -125,13 +127,12 @@ public class TradeCollector
             }
             else if (sharesToDistribute < candidate.getTransaction().getShares())
             {
-                newTrade.getTransactions().add(
-                                split(candidate, (Portfolio) pair.getOwner(),
-                                                sharesToDistribute / (double) candidate.getTransaction().getShares()));
+                newTrade.getTransactions().add(split(candidate, (Portfolio) pair.getOwner(),
+                                sharesToDistribute / (double) candidate.getTransaction().getShares()));
                 open.set(open.indexOf(candidate),
                                 split(candidate, (Portfolio) pair.getOwner(),
                                                 (candidate.getTransaction().getShares() - sharesToDistribute)
-                                                / (double) candidate.getTransaction().getShares()));
+                                                                / (double) candidate.getTransaction().getShares()));
 
                 sharesToDistribute = 0;
             }
@@ -179,9 +180,8 @@ public class TradeCollector
             {
                 long remainingShares = candidate.getTransaction().getShares() - sharesToTransfer;
 
-                positions.set(positions.indexOf(candidate),
-                                split(candidate, outbound,
-                                                remainingShares / (double) candidate.getTransaction().getShares()));
+                positions.set(positions.indexOf(candidate), split(candidate, outbound,
+                                remainingShares / (double) candidate.getTransaction().getShares()));
                 target.add(split(candidate, inbound,
                                 sharesToTransfer / (double) candidate.getTransaction().getShares()));
 
@@ -249,16 +249,22 @@ public class TradeCollector
     private void copyUnits(Transaction source, Transaction target, double weight)
     {
         source.getUnits().forEach(unit -> {
+            Money newAmount = Money.of(unit.getAmount().getCurrencyCode(),
+                            Math.round(unit.getAmount().getAmount() * weight));
             if (unit.getForex() == null)
-                target.addUnit(new Unit(unit.getType(), Money.of(unit.getAmount().getCurrencyCode(),
-                                Math.round(unit.getAmount().getAmount() * weight))));
+            {
+                target.addUnit(new Unit(unit.getType(), newAmount));
+            }
             else
-                target.addUnit(new Unit(unit.getType(), //
-                                Money.of(unit.getAmount().getCurrencyCode(),
-                                                Math.round(unit.getAmount().getAmount() * weight)),
-                                Money.of(unit.getForex().getCurrencyCode(),
-                                                Math.round(unit.getForex().getAmount() * weight)),
-                                unit.getExchangeRate()));
+            {
+                // calculate forex amount using the exchange rate to avoid
+                // rounding errors to be reported
+
+                Money newForex = Money.of(unit.getForex().getCurrencyCode(), BigDecimal.valueOf(newAmount.getAmount())
+                                .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN).longValue());
+
+                target.addUnit(new Unit(unit.getType(), newAmount, newForex, unit.getExchangeRate()));
+            }
         });
     }
 
