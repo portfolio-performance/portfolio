@@ -241,7 +241,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                 Math.round(accountMoneyValue.doubleValue()));
                                 // replace BRUTTO (which is in foreign currency)
                                 // with the value in transaction currency
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, accountMoney, currentMonetaryAmount,
                                                 inverseRate);
 
@@ -544,7 +544,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("Brutto in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> {
                             BigDecimal rate = asExchangeRate(v.get("exchangeRate"));
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN);
+                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
 
                             type.getCurrentContext().put("exchangeRate", inverseRate.toPlainString());
 
@@ -573,7 +573,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                                 Money txTax = Money.of(t.getCurrencyCode(),
                                                 BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
-                                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue());
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
                                 t.addUnit(new Unit(Unit.Type.TAX, txTax));
 

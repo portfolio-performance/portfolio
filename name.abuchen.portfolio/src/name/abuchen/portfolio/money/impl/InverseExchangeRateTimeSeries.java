@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collections;
@@ -68,7 +69,7 @@ public class InverseExchangeRateTimeSeries implements ExchangeRateTimeSeries
 
         if (answer.isPresent())
         {
-            BigDecimal reverse = BigDecimal.ONE.divide(answer.get().getValue(), 10, BigDecimal.ROUND_HALF_DOWN);
+            BigDecimal reverse = BigDecimal.ONE.divide(answer.get().getValue(), 10, RoundingMode.HALF_DOWN);
             return Optional.of(new ExchangeRate(answer.get().getTime(), reverse));
         }
         else

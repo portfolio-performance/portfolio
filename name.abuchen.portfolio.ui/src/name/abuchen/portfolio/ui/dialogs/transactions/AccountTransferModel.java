@@ -296,12 +296,12 @@ public class AccountTransferModel extends AbstractModel
 
     public BigDecimal getInverseExchangeRate()
     {
-        return BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+        return BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
     }
 
     public void setInverseExchangeRate(BigDecimal rate)
     {
-        setExchangeRate(BigDecimal.ONE.divide(rate, 10, BigDecimal.ROUND_HALF_DOWN));
+        setExchangeRate(BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN));
     }
 
     public long getAmount()

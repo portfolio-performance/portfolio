@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -117,10 +118,8 @@ public class PortfolioTransaction extends Transaction
             BigDecimal exchangeRate = grossValue.isPresent() ? grossValue.get().getExchangeRate()
                             : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
 
-            return Money.of(converter.getTermCurrency(),
-                            BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN)
-                                            .multiply(BigDecimal.valueOf(getAmount()))
-                                            .setScale(0, BigDecimal.ROUND_HALF_DOWN).longValue());
+            return Money.of(converter.getTermCurrency(), BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                            .multiply(BigDecimal.valueOf(getAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue());
         }
         else
         {
@@ -220,7 +219,7 @@ public class PortfolioTransaction extends Transaction
     @Override
     public String toString()
     {
-        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTime()), type.name(), getCurrencyCode(), //$NON-NLS-1$
-                        Values.Amount.format(getAmount()), getSecurity().getName());
+        return String.format("%s %-17s %s %9s %s", Values.DateTime.format(this.getDateTime()), type.name(), //$NON-NLS-1$
+                        getCurrencyCode(), Values.Amount.format(getAmount()), getSecurity().getName());
     }
 }

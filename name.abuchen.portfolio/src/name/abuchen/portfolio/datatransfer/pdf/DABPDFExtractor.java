@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -86,7 +87,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             t.setMonetaryAmount(amount);
 
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                                            asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
 
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
@@ -162,7 +163,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             t.setMonetaryAmount(amount);
 
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                                            asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
 
                             Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
@@ -240,7 +241,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
 
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
-                                            BigDecimal.ROUND_HALF_DOWN);
+                                            RoundingMode.HALF_DOWN);
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")),
                                             Math.round(t.getAmount() / exchangeRate.doubleValue()));
                             Unit unit = new Unit(Unit.Type.GROSS_VALUE, t.getMonetaryAmount(), forex, exchangeRate);
@@ -258,7 +259,7 @@ public class DABPDFExtractor extends AbstractPDFExtractor
                         .match("Devisenkurs: (?<localCurrency>\\w{3}+)/(?<forexCurrency>\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)")
                         .assign((t, v) -> {
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate")).setScale(10,
-                                            BigDecimal.ROUND_HALF_DOWN);
+                                            RoundingMode.HALF_DOWN);
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
                             Money localAmount = Money.of(v.get("localCurrency"), Math.round(forex.getAmount()
                                             / Double.parseDouble(v.get("exchangeRate").replace(',', '.'))));

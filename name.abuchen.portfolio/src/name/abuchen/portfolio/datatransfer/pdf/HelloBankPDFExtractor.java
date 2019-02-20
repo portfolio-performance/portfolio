@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
@@ -91,13 +92,13 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                             long gross = asAmount(v.get("gross"));
                             String currency = asCurrencyCode(v.get("currency"));
                             BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10,
-                                            BigDecimal.ROUND_HALF_UP);
+                                            RoundingMode.HALF_UP);
 
                             PortfolioTransaction tx = t.getPortfolioTransaction();
                             if (currency.equals(tx.getSecurity().getCurrencyCode()))
                             {
                                 long convertedGross = BigDecimal.valueOf(gross).multiply(exchangeRate)
-                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                                .setScale(0, RoundingMode.HALF_UP).longValue();
 
                                 tx.addUnit(new Unit(Unit.Type.GROSS_VALUE,
                                                 Money.of(tx.getCurrencyCode(), convertedGross),
@@ -178,26 +179,26 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                             long tax = asAmount(v.get("tax"));
                             String currency = asCurrencyCode(v.get("currency"));
                             BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10,
-                                            BigDecimal.ROUND_HALF_UP);
+                                            RoundingMode.HALF_UP);
 
                             PortfolioTransaction tx = t.getPortfolioTransaction();
                             if (currency.equals(tx.getSecurity().getCurrencyCode()))
                             {
                                 long convertedGross = BigDecimal.valueOf(gross).multiply(exchangeRate)
-                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                                .setScale(0, RoundingMode.HALF_UP).longValue();
                                 tx.addUnit(new Unit(Unit.Type.GROSS_VALUE,
                                                 Money.of(tx.getCurrencyCode(), convertedGross),
                                                 Money.of(currency, gross), exchangeRate));
 
                                 long convertedTax = BigDecimal.valueOf(tax).multiply(exchangeRate)
-                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                                .setScale(0, RoundingMode.HALF_UP).longValue();
                                 tx.addUnit(new Unit(Unit.Type.TAX, Money.of(tx.getCurrencyCode(), convertedTax),
                                                 Money.of(currency, tax), exchangeRate));
                             }
                             else
                             {
                                 long convertedTax = BigDecimal.valueOf(tax).multiply(exchangeRate)
-                                                .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                                .setScale(0, RoundingMode.HALF_UP).longValue();
                                 tx.addUnit(new Unit(Unit.Type.TAX, Money.of(tx.getCurrencyCode(), convertedTax)));
                             }
                         })
@@ -244,19 +245,19 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                 if (exchangeRateString != null)
                 {
                     BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(exchangeRateString), 10,
-                                    BigDecimal.ROUND_HALF_UP);
+                                    RoundingMode.HALF_UP);
 
                     if (currency.equals(t.getSecurity().getCurrencyCode()))
                     {
                         long convertedTax = BigDecimal.valueOf(tax).multiply(exchangeRate)
-                                        .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                        .setScale(0, RoundingMode.HALF_UP).longValue();
                         t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), convertedTax),
                                         Money.of(currency, tax), exchangeRate));
                     }
                     else
                     {
                         long convertedTax = BigDecimal.valueOf(tax).multiply(exchangeRate)
-                                        .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                        .setScale(0, RoundingMode.HALF_UP).longValue();
                         t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), convertedTax)));
                     }
                 }
@@ -334,10 +335,10 @@ public class HelloBankPDFExtractor extends AbstractPDFExtractor
                                 if (exchangeRateString != null)
                                 {
                                     BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(exchangeRateString),
-                                                    10, BigDecimal.ROUND_HALF_UP);
+                                                    10, RoundingMode.HALF_UP);
 
                                     long convertedGross = BigDecimal.valueOf(gross).multiply(exchangeRate)
-                                                    .setScale(0, BigDecimal.ROUND_HALF_UP).longValue();
+                                                    .setScale(0, RoundingMode.HALF_UP).longValue();
                                     t.addUnit(new Unit(Unit.Type.GROSS_VALUE,
                                                     Money.of(t.getCurrencyCode(), convertedGross),
                                                     Money.of(currency, gross), exchangeRate));

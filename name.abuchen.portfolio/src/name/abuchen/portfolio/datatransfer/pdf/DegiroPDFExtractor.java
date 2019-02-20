@@ -94,7 +94,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                 t.setMonetaryAmount(accountMoney); // in EUR 
                                 
                                 // replace BRUTTO (which is in foreign currency) with the value in transaction currency
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, accountMoney, currentMonetaryAmount, inverseRate);
                                 t.getPortfolioTransaction().addUnit(grossValue);
                             

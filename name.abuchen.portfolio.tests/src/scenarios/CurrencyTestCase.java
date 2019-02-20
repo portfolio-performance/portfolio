@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import org.hamcrest.number.IsCloseTo;
@@ -125,7 +126,7 @@ public class CurrencyTestCase
         // the one in EUR account and the one in USD account
 
         // must take the inverse of the exchange used within the transaction
-        BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, BigDecimal.ROUND_HALF_DOWN);
+        BigDecimal rate = BigDecimal.ONE.divide(BigDecimal.valueOf(0.8237), 10, RoundingMode.HALF_DOWN);
 
         assertThat(equityUSD.getPosition().getFIFOPurchaseValue(),
                         is(Money.of("USD", Math.round(454_60 * rate.doubleValue()) + 571_90)));

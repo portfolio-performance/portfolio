@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -199,15 +200,16 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
                 if (q != null)
                 {
-                    T price = klass.newInstance();
+                    T price = klass.getDeclaredConstructor().newInstance();
                     price.setDate(ts);
                     price.setValue(Values.Quote.factorize(q));
                     answer.add(price);
                 }
             }
         }
-        catch (IOException | InstantiationException | IllegalAccessException | NumberFormatException
-                        | IndexOutOfBoundsException e)
+        catch (IOException | InstantiationException | IllegalAccessException | IndexOutOfBoundsException
+                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                        | SecurityException e)
         {
             errors.add(e);
         }

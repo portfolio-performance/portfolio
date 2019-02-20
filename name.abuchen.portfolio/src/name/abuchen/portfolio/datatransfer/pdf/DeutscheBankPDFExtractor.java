@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -18,7 +19,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
     public DeutscheBankPDFExtractor(Client client)
     {
         super(client);
-        
+
         addBankIdentifier("Deutsche Bank"); //$NON-NLS-1$
         addBankIdentifier("DB Privat- und Firmenkundenbank AG"); //$NON-NLS-1$
 
@@ -143,7 +144,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .optional().match("Provision.*(?<currency>\\w{3}+) -(?<provision>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
-                        
+
                         .section("charges", "currency") //
                         .optional().match("Fremde Spesen und Auslagen (?<currency>\\w{3}+) -(?<charges>[\\d.]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
@@ -223,7 +224,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                             asAmount(v.get("grossValue")));
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forexSum")));
                             BigDecimal exchangeRate = BigDecimal.ONE.divide( //
-                                            asExchangeRate(v.get("exchangeRate")), 10, BigDecimal.ROUND_HALF_DOWN);
+                                            asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                             Unit unit = new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate);
 
                             // add gross value unit only if currency code of

@@ -5,6 +5,7 @@ import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -25,8 +26,8 @@ public class AEDExchangeRateProviderTest
         assertThat(usd_aed.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(new BigDecimal("3.6725")));
 
         ExchangeRateTimeSeries aed_usd = factory.getTimeSeries("AED", "USD");
-        assertThat(aed_usd.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(
-                        BigDecimal.ONE.divide(new BigDecimal("3.6725"), 10, BigDecimal.ROUND_HALF_DOWN)));
+        assertThat(aed_usd.lookupRate(LocalDate.now()).get().getValue(),
+                        comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("3.6725"), 10, RoundingMode.HALF_DOWN)));
 
         // EUR -> USD -> AED
         // default value EUR -> USD is 1.0836

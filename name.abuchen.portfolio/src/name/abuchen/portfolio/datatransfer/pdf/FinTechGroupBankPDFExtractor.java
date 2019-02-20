@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -184,20 +185,18 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .section("shares") //
                         .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-                        
-                        .oneOf(
-                                        section -> section.attributes("amount", "currency") //
+
+                        .oneOf(section -> section.attributes("amount", "currency") //
                                         .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
-                                        }), 
-                                        section -> section.attributes("amount", "currency") //
-                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                        }))
+                                        }), section -> section.attributes("amount", "currency") //
+                                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         .section("fee", "currency").optional() //
                         .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
@@ -454,13 +453,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // inverse exchange rate (in EUR/Fx)
                                 BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                BigDecimal.ROUND_HALF_DOWN);
+                                                RoundingMode.HALF_DOWN);
 
                                 // get gross amount and calculate equivalent in
                                 // EUR
                                 Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
                                 BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
-                                                .divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
                                 Money mAmountGrossFxInEUR = Money.of(currencyCode, amountGrossFxInEUR.longValue());
                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
                                                 inverseRate));
@@ -488,13 +487,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // inverse exchange rate (in EUR/Fx)
                                 BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                BigDecimal.ROUND_HALF_DOWN);
+                                                RoundingMode.HALF_DOWN);
 
                                 // get foreign taxes and calculate equivalent in
                                 // EUR
                                 Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("amountFx")));
                                 BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate,
-                                                10, BigDecimal.ROUND_HALF_DOWN);
+                                                10, RoundingMode.HALF_DOWN);
                                 Money mTaxesFxInEUR = Money.of(currencyCode, taxesFxInEUR.longValue());
                                 t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
                             }
@@ -559,20 +558,17 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-                        })
-                        .oneOf(
-                                        section -> section.attributes("amount", "currency") //
+                        }).oneOf(section -> section.attributes("amount", "currency") //
                                         .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
                                         .assign((t, v) -> {
                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                             t.setAmount(asAmount(v.get("amount")));
-                                        }), 
-                                        section -> section.attributes("amount", "currency") //
-                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                        }))
+                                        }), section -> section.attributes("amount", "currency") //
+                                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }))
 
                         .section("fee", "currency").optional()
                         //

@@ -7,6 +7,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -72,7 +73,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(640 / 9.308))));
         assertThat(grossValueUnit.getForex(), is(Money.of("NOK", Values.Amount.factorize(640))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.308), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.308), 10, RoundingMode.HALF_UP)));
 
         assertThat(grossValueUnit.getAmount().getAmount() - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
                         is(transaction.getMonetaryAmount().getAmount()));
@@ -150,7 +151,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(20.35 / 1.0942))));
         assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(20.35))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.0942), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.0942), 10, RoundingMode.HALF_UP)));
 
         assertThat(grossValueUnit.getAmount().getAmount() - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
                         is(transaction.getMonetaryAmount().getAmount()));
@@ -232,7 +233,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(214.28 / 1.1805))));
         assertThat(grossValueUnit.getForex(), is(Money.of("USD", Values.Amount.factorize(214.28))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.1805), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.1805), 10, RoundingMode.HALF_UP)));
 
         assertThat(grossValueUnit.getAmount().getAmount() - transaction.getUnitSum(Unit.Type.TAX).getAmount(),
                         is(transaction.getMonetaryAmount().getAmount()));
@@ -279,7 +280,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(1092.14))));
         assertThat(grossValueUnit.getForex(), is(Money.of("NOK", Values.Amount.factorize(10360))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.486), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(9.486), 10, RoundingMode.HALF_UP)));
     }
 
     @Test
@@ -359,7 +360,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(1305.95))));
         assertThat(grossValueUnit.getForex(), is(Money.of("GBP", Values.Amount.factorize(1100))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(0.8423), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(0.8423), 10, RoundingMode.HALF_UP)));
     }
 
     @Test
@@ -406,7 +407,7 @@ public class HelloBankPDFExtractorTest
         assertThat(grossValueUnit.getAmount(), is(Money.of("EUR", Values.Amount.factorize(5000 / 1.5181))));
         assertThat(grossValueUnit.getForex(), is(Money.of("AUD", Values.Amount.factorize(5000))));
         assertThat(grossValueUnit.getExchangeRate(),
-                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.5181), 10, BigDecimal.ROUND_HALF_UP)));
+                        is(BigDecimal.ONE.divide(BigDecimal.valueOf(1.5181), 10, RoundingMode.HALF_UP)));
 
         assertThat(grossValueUnit.getAmount().getAmount() - tx.getUnitSum(Unit.Type.TAX).getAmount()
                         - tx.getUnitSum(Unit.Type.FEE).getAmount(), is(tx.getMonetaryAmount().getAmount()));

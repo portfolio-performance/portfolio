@@ -9,7 +9,7 @@ import name.abuchen.portfolio.model.Security;
 
 public class SecurityTransfer extends ByteArrayTransfer
 {
-    private static final String TYPE_NAME = "local-security-transfer-format" + (new Long(System.currentTimeMillis())).toString(); //$NON-NLS-1$;
+    private static final String TYPE_NAME = "local-security-transfer-format" + (Long.valueOf(System.currentTimeMillis())).toString(); //$NON-NLS-1$;
 
     private static final int TYPEID = registerType(TYPE_NAME);
 

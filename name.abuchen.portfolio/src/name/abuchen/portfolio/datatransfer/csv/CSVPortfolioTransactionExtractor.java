@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.datatransfer.csv;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDateTime;
@@ -167,7 +168,7 @@ import name.abuchen.portfolio.money.Money;
             Money forex = Money.of(transaction.getSecurity().getCurrencyCode(), Math
                             .round(exchangeRate.multiply(BigDecimal.valueOf(grossValue.getAmount())).doubleValue()));
 
-            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, BigDecimal.ROUND_HALF_DOWN);
+            exchangeRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
             transaction.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue, forex, exchangeRate));
 

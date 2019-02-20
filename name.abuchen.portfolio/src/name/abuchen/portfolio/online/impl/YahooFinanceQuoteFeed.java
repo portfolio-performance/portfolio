@@ -7,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -300,15 +301,16 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
                 if (ts != null && q != null)
                 {
-                    T price = klass.newInstance();
+                    T price = klass.getDeclaredConstructor().newInstance();
                     price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
                     price.setValue(Values.Quote.factorize(q));
                     answer.add(price);
                 }
             }
         }
-        catch (IOException | InstantiationException | IllegalAccessException | NumberFormatException
-                        | IndexOutOfBoundsException e)
+        catch (IOException | InstantiationException | IllegalAccessException | IndexOutOfBoundsException
+                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
+                        | SecurityException e)
         {
             errors.add(e);
         }

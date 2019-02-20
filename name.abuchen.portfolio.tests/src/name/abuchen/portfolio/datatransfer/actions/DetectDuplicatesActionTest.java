@@ -35,9 +35,8 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount")
-                        .before((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
-                                        is(Code.WARNING)))
+        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount").before(
+                        (name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.WARNING)))
                         .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
                         .run();
     }
@@ -126,8 +125,8 @@ public class DetectDuplicatesActionTest
 
         private void check(PropertyDescriptor change) throws Exception
         {
-            T instance = type.newInstance();
-            T other = type.newInstance();
+            T instance = type.getDeclaredConstructor().newInstance();
+            T other = type.getDeclaredConstructor().newInstance();
 
             for (PropertyDescriptor p : properties)
             {

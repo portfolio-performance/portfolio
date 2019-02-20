@@ -5,6 +5,7 @@ import static org.hamcrest.number.OrderingComparison.comparesEqualTo;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import org.junit.Test;
@@ -27,8 +28,8 @@ public class GBXExchangeRateProviderTest
 
         // inverse of default EUR -> GBP
         ExchangeRateTimeSeries gbx_eur = factory.getTimeSeries("GBX", "EUR");
-        assertThat(gbx_eur.lookupRate(LocalDate.now()).get().getValue(), comparesEqualTo(
-                        BigDecimal.ONE.divide(new BigDecimal("72.666"), 12, BigDecimal.ROUND_HALF_DOWN)));
+        assertThat(gbx_eur.lookupRate(LocalDate.now()).get().getValue(),
+                        comparesEqualTo(BigDecimal.ONE.divide(new BigDecimal("72.666"), 12, RoundingMode.HALF_DOWN)));
 
         // GBX -> GBP
         ExchangeRateTimeSeries gbx_gbp = factory.getTimeSeries("GBX", "GBP");

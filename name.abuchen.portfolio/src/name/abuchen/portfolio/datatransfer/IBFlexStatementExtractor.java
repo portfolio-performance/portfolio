@@ -430,7 +430,7 @@ public class IBFlexStatementExtractor implements Extractor
                 {
                     fxRateToBase = new BigDecimal(1);
                 }
-                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, BigDecimal.ROUND_HALF_DOWN);
+                BigDecimal inverseRate = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
 
                 BigDecimal baseCurrencyMoney = BigDecimal.valueOf(amount.doubleValue() * Values.Amount.factor())
                                 .divide(inverseRate, RoundingMode.HALF_DOWN);

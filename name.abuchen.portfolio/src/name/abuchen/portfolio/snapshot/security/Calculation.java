@@ -17,8 +17,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
      * Finish up all calculations.
      */
     public void finish()
-    {}
-    
+    {
+    }
+
     /**
      * Gets the underlying {@link Security}.
      * 
@@ -28,7 +29,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         return this.security;
     }
-    
+
     /**
      * Sets the underlying {@link Security}.
      * 
@@ -39,7 +40,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         this.security = security;
     }
-    
+
     public String getTermCurrency()
     {
         return termCurrency;
@@ -51,19 +52,24 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     }
 
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
-    {}
+    {
+    }
 
     public void visit(CurrencyConverter converter, DividendFinalTransaction t)
-    {}
+    {
+    }
 
     public void visit(CurrencyConverter converter, DividendTransaction t)
-    {}
+    {
+    }
 
     public void visit(CurrencyConverter converter, PortfolioTransaction t)
-    {}
+    {
+    }
 
     public void visit(CurrencyConverter converter, AccountTransaction t)
-    {}
+    {
+    }
 
     public final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
     {
@@ -89,7 +95,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
         try
         {
-            T thing = type.newInstance();
+            T thing = type.getDeclaredConstructor().newInstance();
             thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
             thing.visitAll(converter, transactions);

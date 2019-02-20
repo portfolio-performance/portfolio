@@ -8,7 +8,7 @@ import org.eclipse.swt.dnd.TransferData;
 public class TaxonomyNodeTransfer extends ByteArrayTransfer
 {
     private static final String TYPE_NAME = "local-taxonomy-node-transfer-format" //$NON-NLS-1$
-                    + (new Long(System.currentTimeMillis())).toString();
+                    + (Long.valueOf(System.currentTimeMillis())).toString();
 
     private static final int TYPEID = registerType(TYPE_NAME);
 
