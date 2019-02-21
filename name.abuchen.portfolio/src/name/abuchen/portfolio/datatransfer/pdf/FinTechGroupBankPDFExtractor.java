@@ -49,11 +49,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Nr.(\\d*)/(\\d*) *Kauf.*");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        })
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
 
                         .section("wkn", "isin", "name")
                         .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
@@ -99,11 +101,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        })
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
 
                         .section("wkn", "isin", "name")
                         .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
@@ -169,11 +173,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        })
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
 
                         .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
@@ -186,12 +192,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .oneOf(section -> section.attributes("amount", "currency") //
-                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        }), section -> section.attributes("amount", "currency") //
+                        .oneOf( //
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        section -> section.attributes("amount", "currency") //
                                                         .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -270,11 +278,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // 01.01. 01.01. xyz 123,45+
         Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+.berweisung[ ]+[\\d.-]+,\\d+[+-]");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DEPOSIT);
-            return t;
-        })
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DEPOSIT);
+                            return t;
+                        })
 
                         .section("valuta", "amount", "sign")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+.berweisung[ ]+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
@@ -304,12 +314,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // fees for foreign dividends, subtract value from account
         block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+[\\d.-]+,\\d+[-]");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.FEES);
-            return t;
-        }).section("valuta", "amount").match(
-                        "\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.FEES);
+                            return t;
+                        })
+
+                        .section("valuta", "amount")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+(?<amount>[\\d.-]+,\\d+)[-]")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             String date = v.get("valuta");
@@ -340,7 +354,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type2.addBlock(block);
         type3.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
-                        //
+
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DIVIDENDS);
@@ -407,7 +421,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         type.addBlock(block);
 
         block.set(new Transaction<AccountTransaction>()
-                        //
+
                         .subject(() -> {
                             AccountTransaction t = new AccountTransaction();
                             t.setType(AccountTransaction.Type.DIVIDENDS);
@@ -532,11 +546,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        })
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
 
                         .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
@@ -558,12 +574,16 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             {
                                 t.setShares(asShares(v.get("shares")));
                             }
-                        }).oneOf(section -> section.attributes("amount", "currency") //
-                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
-                                        .assign((t, v) -> {
-                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                                            t.setAmount(asAmount(v.get("amount")));
-                                        }), section -> section.attributes("amount", "currency") //
+                        })
+
+                        .oneOf( //
+                                        section -> section.attributes("amount", "currency") //
+                                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                        }),
+                                        section -> section.attributes("amount", "currency") //
                                                         .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -606,11 +626,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Depoteingang .*");
         type.addBlock(block);
-        block.set(new Transaction<PortfolioTransaction>().subject(() -> {
-            PortfolioTransaction entry = new PortfolioTransaction();
-            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
-            return entry;
-        })
+        block.set(new Transaction<PortfolioTransaction>()
+
+                        .subject(() -> {
+                            PortfolioTransaction entry = new PortfolioTransaction();
+                            entry.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                            return entry;
+                        })
+
                         // Datum : 16.03.2015
                         .section("date").match("Datum(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
@@ -662,11 +685,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Depotausgang(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        }).section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("isin", "name").match("Depotausgang *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
@@ -736,11 +763,15 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Bestandsausbuchung(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        }).section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("date").match("Fälligkeitstag(\\s*):(\\s+)(?<date>\\d+.\\d+.\\d{4})(.*)") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("isin", "name").match("Bestandsausbuchung *(?<name>.*) *\\((?<isin>[^/]*)\\)") //
@@ -770,31 +801,29 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                         })
 
-                        .section().optional().match("(.*)Bestand haben wir wertlos ausgebucht(.*)").assign((t, v) -> {
+                        .section().optional() //
+                        .match("(.*)Bestand haben wir wertlos ausgebucht(.*)").assign((t, v) -> {
                             t.setCurrencyCode(t.getAccountTransaction().getSecurity().getCurrencyCode());
                             t.setAmount(0L);
                             t.getPortfolioTransaction().setType(PortfolioTransaction.Type.TRANSFER_OUT);
                             t.setType(PortfolioTransaction.Type.TRANSFER_OUT);
                         })
 
-                        .section("fee", "currency").optional()
-                        //
+                        .section("fee", "currency").optional() //
                         .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("fee", "currency").optional()
-                        //
+                        .section("fee", "currency").optional() //
                         .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("fee", "currency").optional()
-                        //
+                        .section("fee", "currency").optional() //
                         .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
@@ -820,11 +849,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("Kundennummer(.*)");
         type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.SELL);
-            return entry;
-        })
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
 
                         // WKN ISIN Wertpapierbezeichnung Anzahl
                         // SG0WRD DE000SG0WRD3 SG EFF. TURBOL ZS 83,00
@@ -912,11 +943,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Zinsabschluss[ ]+(.*)");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
-            return t;
-        })
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.INTEREST_CHARGE);
+                            return t;
+                        })
 
                         .section("valuta", "amount")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Zinsabschluss[ ]+(\\d+.\\d+.\\d{4})(\\s+)-(\\s+)(\\d+.\\d+.\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+[+-])")
@@ -964,11 +997,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         Block block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Steuertopfoptimierung[ ]+(.*)");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAX_REFUND);
+                            return t;
+                        })
 
                         .section("valuta", "amount", "sign")
                         .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Steuertopfoptimierung[ ]+(\\d{4})(\\s+)(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
@@ -1004,11 +1039,13 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         // optional: Steuererstattung
         Block block = new Block("Nr.(\\d*)/(\\d*) *Verkauf.*");
         type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction entry = new AccountTransaction();
-            entry.setType(AccountTransaction.Type.TAX_REFUND);
-            return entry;
-        })
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAX_REFUND);
+                            return entry;
+                        })
 
                         .section("taxreturn").optional()
                         .match(".* \\*\\*Einbeh. Steuer *: *(?<taxreturn>-[\\d.]+,\\d+) (?<currency>\\w{3}+)")
