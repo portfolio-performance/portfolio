@@ -455,6 +455,7 @@ public class PortfolioPart implements ClientInputListener
         viewContext.set(IPreferenceStore.class, this.clientInput.getPreferenceStore());
         viewContext.set(PortfolioPart.class, this);
         viewContext.set(ExchangeRateProviderFactory.class, this.clientInput.getExchangeRateProviderFacory());
+        viewContext.set(PartPersistedState.class, new PartPersistedState(part.getPersistedState()));
 
         if (parameter != null)
             viewContext.set(UIConstants.Parameter.VIEW_PARAMETER, parameter);

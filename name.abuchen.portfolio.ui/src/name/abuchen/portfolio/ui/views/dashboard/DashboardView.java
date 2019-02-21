@@ -24,7 +24,6 @@ import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
@@ -50,6 +49,7 @@ import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.PartPersistedState;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
@@ -194,7 +194,7 @@ public class DashboardView extends AbstractHistoricView
     private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
 
     @Inject
-    private IPreferenceStore preferences;
+    private PartPersistedState persistedState;
 
     @Inject
     private UISynchronize sync;
@@ -304,7 +304,7 @@ public class DashboardView extends AbstractHistoricView
         dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
 
-        int indexOfSelectedDashboard = Math.max(0, preferences.getInt(SELECTED_DASHBOARD_KEY));
+        int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));
 
         dashboard = getClient().getDashboards() //
                         .skip(indexOfSelectedDashboard) //
@@ -332,7 +332,7 @@ public class DashboardView extends AbstractHistoricView
         parent.getParent().addControlListener(listener);
         scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
 
-        container.addDisposeListener(e -> preferences.setValue(SELECTED_DASHBOARD_KEY,
+        container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
                         getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
 
         return scrolledComposite;
