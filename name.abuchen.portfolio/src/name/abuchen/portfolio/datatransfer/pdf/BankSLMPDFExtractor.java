@@ -1,11 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
 import java.util.List;
-import java.util.Locale;
 import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -17,12 +13,9 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 
-public class BankSLMPDFExtractor extends AbstractPDFExtractor
+public class BankSLMPDFExtractor extends SwissBasedPDFExtractor
 {
-    private final DecimalFormat swissNumberFormat;
-
     public BankSLMPDFExtractor(Client client)
     {
         super(client);
@@ -33,12 +26,6 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
         addBuyTransaction();
         addSellTransaction();
         addDividendTransaction();
-
-        swissNumberFormat = (DecimalFormat) DecimalFormat.getInstance(new Locale("de", "CH")); //$NON-NLS-1$ //$NON-NLS-2$
-        DecimalFormatSymbols decimalFormatSymbols = new DecimalFormatSymbols();
-        decimalFormatSymbols.setDecimalSeparator('.');
-        decimalFormatSymbols.setGroupingSeparator('\'');
-        swissNumberFormat.setDecimalFormatSymbols(decimalFormatSymbols);
     }
 
     @SuppressWarnings("nls")
@@ -275,43 +262,6 @@ public class BankSLMPDFExtractor extends AbstractPDFExtractor
     public String getLabel()
     {
         return "Bank SLM"; //$NON-NLS-1$
-    }
-
-    @Override
-    protected long asAmount(String value)
-    {
-        return asValue(value, Values.Amount);
-    }
-
-    @Override
-    protected long asShares(String value)
-    {
-        return asValue(value, Values.Share);
-    }
-
-    protected long asValue(String value, Values<Long> valueType)
-    {
-        try
-        {
-            return Math.abs(Math.round(swissNumberFormat.parse(value).doubleValue() * valueType.factor()));
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
-    }
-
-    @Override
-    protected BigDecimal asExchangeRate(String value)
-    {
-        try
-        {
-            return BigDecimal.valueOf(swissNumberFormat.parse(value).doubleValue());
-        }
-        catch (ParseException e)
-        {
-            throw new IllegalArgumentException(e);
-        }
     }
 
 }

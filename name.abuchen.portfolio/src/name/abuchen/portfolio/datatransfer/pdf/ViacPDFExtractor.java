@@ -1,0 +1,97 @@
+package name.abuchen.portfolio.datatransfer.pdf;
+
+import java.math.BigDecimal;
+
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.money.Money;
+
+public class ViacPDFExtractor extends SwissBasedPDFExtractor
+{
+    public ViacPDFExtractor(Client client)
+    {
+        super(client);
+
+        addBankIdentifier("Terzo"); //$NON-NLS-1$
+
+        addBuyTransaction();
+    }
+
+    @SuppressWarnings("nls")
+    private void addBuyTransaction()
+    {
+        DocumentType type = new DocumentType("Börsenabrechnung - Kauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Börsenabrechnung - Kauf");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
+                        .section("isin", "name", "currency", "shares") //
+                        .find("Order: Kauf") //
+                        .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
+                        .match("ISIN: (?<isin>\\S*)") //
+                        .match("Kurs: (?<currency>\\w{3}+) .*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Verrechneter Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("tax", "currency").optional() //
+                        .match("Stempelsteuer (?<currency>\\w{3}+) (?<tax>[\\d+,.]*)") //
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            if (tax.getCurrencyCode().equals(t.getAccountTransaction().getCurrencyCode()))
+                                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
+
+                        })
+
+                        .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
+                        .match("Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d+,.]*)")
+                        .match("Umrechnungskurs CHF/USD (?<exchangeRate>[\\d+,.]*) (?<currency>\\w{3}+) (?<amount>[\\d+,.]*)")
+                        .assign((t, v) -> {
+
+                            Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            Money gross = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
+                            // only add gross value with forex if the security
+                            // is actually denoted in the foreign currency
+                            // (often users actually have the quotes in their
+                            // home country currency)
+                            if (forex.getCurrencyCode()
+                                            .equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                            {
+                                t.getPortfolioTransaction()
+                                                .addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
+                            }
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+    }
+
+    @Override
+    public String getLabel()
+    {
+        return "VIAC"; //$NON-NLS-1$
+    }
+}

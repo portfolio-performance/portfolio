@@ -43,6 +43,7 @@ public class PDFImportAssistant
         extractors.add(new SBrokerPDFExtractor(client));
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
+        extractors.add(new ViacPDFExtractor(client));
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)
