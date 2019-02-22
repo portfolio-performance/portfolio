@@ -57,6 +57,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
                                         formatter.format(maxDDDuration.getEnd()))
                         + "\n\n" //$NON-NLS-1$
                         + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
+                        + "\n" //$NON-NLS-1$
                         + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
                                         formatter.format(recoveryTime.getEnd())));
     }

@@ -20,7 +20,7 @@ public final class InfoToolTip extends ToolTip
 
     private InfoToolTip(Control control, Supplier<String> message)
     {
-        super(control, ToolTip.NO_RECREATE, false);
+        super(control, ToolTip.RECREATE, false);
         this.control = control;
         this.message = message;
     }
