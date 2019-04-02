@@ -96,6 +96,12 @@ public abstract class TaxonomyNode implements Adaptable
             else
                 return super.adapt(type);
         }
+        
+        @Override
+        public String toString()
+        {
+            return getName();
+        }
     }
 
     /* protected */static class AssignmentNode extends TaxonomyNode
