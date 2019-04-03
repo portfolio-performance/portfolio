@@ -26,30 +26,30 @@ public final class UpdateCPIJob extends AbstractClientJob
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        monitor.beginTask(Messages.JobLabelUpdateCPI, 1);
-
-        CPIFeed feed = new DestatisCPIFeed();
-
-        List<IStatus> errors = new ArrayList<IStatus>();
-
-        try
-        {
-            List<ConsumerPriceIndex> prices = feed.getConsumerPriceIndices();
-            boolean isDirty = getClient().setConsumerPriceIndices(prices);
-
-            if (isDirty)
-                getClient().markDirty();
-        }
-        catch (IOException e)
-        {
-            errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
-
-        if (!errors.isEmpty())
-        {
-            PortfolioPlugin.log(new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, errors.toArray(new IStatus[0]),
-                            Messages.JobMsgErrorUpdatingIndices, null));
-        }
+//        monitor.beginTask(Messages.JobLabelUpdateCPI, 1);
+//
+//        CPIFeed feed = new DestatisCPIFeed();
+//
+//        List<IStatus> errors = new ArrayList<IStatus>();
+//
+//        try
+//        {
+//            List<ConsumerPriceIndex> prices = feed.getConsumerPriceIndices();
+//            boolean isDirty = getClient().setConsumerPriceIndices(prices);
+//
+//            if (isDirty)
+//                getClient().markDirty();
+//        }
+//        catch (IOException e)
+//        {
+//            errors.add(new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+//        }
+//
+//        if (!errors.isEmpty())
+//        {
+//            PortfolioPlugin.log(new MultiStatus(PortfolioPlugin.PLUGIN_ID, -1, errors.toArray(new IStatus[0]),
+//                            Messages.JobMsgErrorUpdatingIndices, null));
+//        }
 
         return Status.OK_STATUS;
     }
