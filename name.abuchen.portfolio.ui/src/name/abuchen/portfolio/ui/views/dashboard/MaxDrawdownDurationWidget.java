@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Supplier;
 
+import org.eclipse.swt.widgets.Composite;
+
 import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -19,18 +21,34 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG)
                     .withZone(ZoneId.systemDefault());
 
+    private String toolTip = ""; //$NON-NLS-1$
+
     public MaxDrawdownDurationWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData, true);
+    }
+
+    public String getToolTip()
+    {
+        return toolTip;
+    }
+
+    @Override
+    public Composite createControl(Composite parent, DashboardResources resources)
+    {
+        Composite composite = super.createControl(parent, resources);
+
+        InfoToolTip.attach(indicator, () -> getToolTip());
+
+        return composite;
     }
 
     @Override
     public Supplier<PerformanceIndex> getUpdateTask()
     {
         return () -> getDashboardData().getDataSeriesCache() //
-                        .lookup(get(DataSeriesConfig.class).getDataSeries(),
-                                        get(ReportingPeriodConfig.class).getReportingPeriod()
-                                                        .toInterval(LocalDate.now()));
+                        .lookup(get(DataSeriesConfig.class).getDataSeries(), get(ReportingPeriodConfig.class)
+                                        .getReportingPeriod().toInterval(LocalDate.now()));
     }
 
     @Override
@@ -52,13 +70,14 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
         String recoveryTimeSupplement = isUntilEndOfPeriod ? Messages.TooltipMaxDrawdownDurationEndOfPeriod
                         : Messages.TooltipMaxDrawdownDurationFromXtoY;
 
-        InfoToolTip.attach(indicator, Messages.TooltipMaxDrawdownDuration + "\n\n" //$NON-NLS-1$
+        this.toolTip = Messages.TooltipMaxDrawdownDuration + "\n\n" //$NON-NLS-1$
                         + MessageFormat.format(maxDDSupplement, formatter.format(maxDDDuration.getStart()),
                                         formatter.format(maxDDDuration.getEnd()))
                         + "\n\n" //$NON-NLS-1$
                         + MessageFormat.format(Messages.TooltipMaxDurationLowToHigh, recoveryTime.getDays())
+                        + "\n" //$NON-NLS-1$
                         + MessageFormat.format(recoveryTimeSupplement, formatter.format(recoveryTime.getStart()),
-                                        formatter.format(recoveryTime.getEnd())));
+                                        formatter.format(recoveryTime.getEnd()));
     }
 
 }
