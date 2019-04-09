@@ -224,6 +224,26 @@ public class OnvistaPDFExtractorTest
 
         return security;
     }
+    
+    private Security assertSecurityUmtauschZiel2(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("LU1900068328"));
+        assertThat(security.getName(), is("MUL-Lyx.MSCI AC As.Paci.e.Jap. Act. au Port. EUR Acc. oN"));
+
+        return security;
+    }
+
+    private Security assertSecurityUmtauschOriginal2(Item item)
+    {
+        Security security = ((SecurityItem) item).getSecurity();
+        assertThat(security.getIsin(), is("FR0010312124"));
+        assertThat(security.getName(), is("Lyxor MSCI AC As.Pa.x Ja.U.ETF Act. au Port. Acc o.N."));
+
+        return security;
+    }
 
     private Security assertSecurityZwangsabfindung(List<Item> results)
     {
@@ -1004,8 +1024,6 @@ public class OnvistaPDFExtractorTest
         assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2015-11-23T00:00")));
         assertThat(entry2.getShares(), is(Values.Share.factorize(28)));
-        assertThat(entry2.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
-        assertThat(entry2.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
 
         // check Steuerbuchung
         Item itemTax = results.stream() //
@@ -1017,6 +1035,72 @@ public class OnvistaPDFExtractorTest
         assertThat(entryTax.getType(), is(AccountTransaction.Type.TAXES));
         assertThat(entryTax.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.86))));
         assertThat(entryTax.getDateTime(), is(is(LocalDateTime.parse("2015-11-23T00:00"))));
+    }
+    
+    @Test
+    public void testUmtauschFonds2() throws IOException
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaUmtauschFonds2.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+
+        // check security
+        Security security = assertSecurityUmtauschZiel2(results);
+
+        // check transaction (target security, in)
+        Optional<Item> item = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+                        .findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
+        PortfolioTransaction transaction = (PortfolioTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1.9315)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+
+        // check security (original)
+        assertSecurityUmtauschOriginal2(
+                        results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1));
+
+        Item targetItem = results.stream() //
+                        .filter(i -> i.getSubject() instanceof PortfolioTransaction)
+                        .filter(i -> ((PortfolioTransaction) i.getSubject())
+                                        .getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                        .findFirst().get();
+
+        // check transaction (original security, out)
+        PortfolioTransaction entry2 = (PortfolioTransaction) targetItem.getSubject();
+        assertThat(entry2.getType(), is(PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+        assertThat(entry2.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry2.getDateTime(), is(LocalDateTime.parse("2019-02-22T00:00")));
+        assertThat(entry2.getShares(), is(Values.Share.factorize(1.9315)));
+
+        // check Steuerbuchung
+        Item itemTax = results.stream() //
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> ((AccountTransaction) i.getSubject()).getType() == AccountTransaction.Type.TAXES)
+                        .findFirst().get();
+
+        AccountTransaction entryTax = (AccountTransaction) itemTax.getSubject();
+        assertThat(entryTax.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(entryTax.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.27))));
+        assertThat(entryTax.getDateTime(), is(is(LocalDateTime.parse("2019-02-22T00:00"))));
+        assertThat(entryTax.getCurrencyCode(), is(CurrencyUnit.EUR));
+        //assertThat(entryTax.getUnit(Type.TAX).get().getForex().getCurrencyCode(), is(CurrencyUnit.USD));
+        //assertThat(entryTax.getUnit(Type.TAX).get().getForex().getAmount(), is(Values.Amount.factorize(0.30)));
     }
 
     @Test

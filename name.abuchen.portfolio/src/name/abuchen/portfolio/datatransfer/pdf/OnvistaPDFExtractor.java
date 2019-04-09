@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -623,7 +625,20 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addExchangeTransaction()
     {
-        DocumentType type = new DocumentType("Umtausch");
+        
+        // variant if only one date exits in document, then remember it here...
+        final DocumentType type = new DocumentType("Umtausch", (context, lines) -> {
+            Pattern pDate = Pattern.compile("^(?<contextDate>\\d+\\.\\d+\\.\\d{4}+) [\\d+].*");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pDate.matcher(line);
+                if (m.matches())
+                {
+                    context.put("contextDate", m.group(1));
+                }
+            }
+        });
         this.addDocumentTyp(type);
 
         Block block = new Block("(Aus|Ein)buchung:(.*)");
@@ -665,19 +680,12 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("date") //
-                        .find("(.*)(Schlusstag|Ex-Tag|Wert Konto-Nr.*)").match("(.*)(^|\\s+)(?<date>\\d+.\\d+.\\d{4}+)") //
-                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-
-                        .section("currency", "amount").optional()
-                        // Wert Betrag zu Ihren Gunsten
-                        // EUR 0,00
-                        // oder
-                        // Wert Konto-Nr. Betrag zu Ihren Lasten
-                        // 23.11.2015 172306238 EUR 12,86
-                        .find("(.*)(Schlusstag|Ex-Tag|Wert Konto-Nr.*|Wert Betrag zu Ihren.*)")
-                        .match("(^|\\s+)(\\d+\\.\\d+\\.\\d{4}+)?(\\s)?(\\d+)?(\\s)?(?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.setAmount(asAmount(v.get("amount"))))
+                        .section("date").optional() //
+                        .find("(.*)(Schlusstag|Ex-Tag|Wert Konto-Nr.*)")
+                        .match("(.*)(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                        })
 
                         .section("notation", "shares") //
                         .find("Nominal(.*)")
@@ -694,11 +702,15 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                 t.setShares(asShares(v.get("shares")));
                             }
                             t.setCurrencyCode(asCurrencyCode(t.getSecurity().getCurrencyCode()));
+                            if (t.getDateTime() == null)
+                            {
+                                t.setDateTime(asDate(type.getCurrentContext().get("contextDate")));
+                                
+                            }
                         })
 
                         .wrap(TransactionItem::new);
 
-        addTaxesSectionsTransaction(pdfTransaction);
         addTaxBlock(type);
     }
 
@@ -1435,28 +1447,29 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("tax").optional()
+                        .section("tax", "currency").optional()
                         .match("^Kapitalertragsteuer (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
                         })
 
-                        .section("soli").optional()
+                        .section("soli", "currency").optional()
                         .match("^Solidaritätszuschlag (?<currency>\\w{3}+) (?<soli>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("soli")));
                         })
 
-                        .section("kirchenst").optional()
+                        .section("kirchenst", "currency").optional()
                         .match("^Kirchensteuer (?<currency>\\w{3}+) (?<kirchenst>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(t.getAmount() + asAmount(v.get("kirchenst")));
                         })
 
-                        .section("date", "currency").optional()
+
+                        .section("date", "currency").optional() //entweder...
                         .find("Wert(\\s+)Konto-Nr.(\\s+)Betrag zu Ihren Lasten(\\s*)$")
                         // Wert Konto-Nr. Betrag zu Ihren Lasten
                         // 23.11.2015 172306238 EUR 12,86
@@ -1466,6 +1479,33 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             v.put("isin", type.getCurrentContext().get("isin"));
                             t.setSecurity(getOrCreateSecurity(v));
+                                
+                        })
+                        .section("date", "currency", "exchangeRate", "amountSum").optional() //oder
+                        .find("Wert(\\s+)Konto-Nr.(\\s+)(Devisenkurs\\s+)Betrag zu Ihren Lasten(\\s*)$")
+                        //Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+                        //22.02.2019 356238049 EUR/USD 1,13375 EUR 0,27
+                        .match("(^|\\s+)(?<date>\\d+\\.\\d+\\.\\d{4}+)(\\s)(\\d+)(\\s)(\\w{3}+\\/\\w{3}+ )(?<exchangeRate>[\\d,]+)[\\s]?(?<currency>\\w{3}+) (?<amountSum>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> {
+                            v.put("isin", type.getCurrentContext().get("isin"));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDateTime(asDate(v.get("date")));
+                            String currencyCodeFx = t.getCurrencyCode();
+                            if (t.getSecurity().getCurrencyCode().equalsIgnoreCase(currencyCodeFx))
+                            {
+                                Money mTaxesFx = Money.of(currencyCodeFx, t.getAmount());
+                                Money mTaxesFxInEUR = Money.of(asCurrencyCode(v.get("currency")),
+                                                asAmount(v.get("amountSum")));
+                                BigDecimal inverseRate = BigDecimal.valueOf(asAmount(v.get("amountSum")))
+                                                .divide(BigDecimal.valueOf(t.getAmount()), 10, RoundingMode.HALF_DOWN);
+                                t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
+                                t.setAmount(asAmount(v.get("amountSum")));
+                            }
+                            else
+                            {
+                                t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                t.setAmount(asAmount(v.get("amountSum")));
+                            }
                         })
 
                         .wrap(TransactionItem::new));
