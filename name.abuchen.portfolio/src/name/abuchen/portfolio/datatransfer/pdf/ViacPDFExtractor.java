@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -20,6 +21,8 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addBankIdentifier("Terzo"); //$NON-NLS-1$
 
         addBuyTransaction();
+        addInterestTransaction();
+        addFeeTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -87,6 +90,61 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                         })
 
                         .wrap(BuySellEntryItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addInterestTransaction()
+    {
+        DocumentType type = new DocumentType("Zins");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Zins");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.INTEREST);
+                            return transaction;
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .find("Zins") //
+                        .match("Am (?<date>\\d+.\\d+.\\d{4}+) haben wir Ihrem Konto gutgeschrieben:") //
+                        .match("Zinsgutschrift: (?<currency>\\w{3}+) (?<amount>[\\d+,.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeeTransaction()
+    {
+        DocumentType type = new DocumentType("Belastung");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Belastung");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.FEES);
+                            return transaction;
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .find("Belastung") //
+                        .match("Verrechneter Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+,.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        .wrap(TransactionItem::new));
     }
 
     @Override
