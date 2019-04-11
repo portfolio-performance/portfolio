@@ -440,6 +440,7 @@ public class Messages extends NLS
     public static String LabelChartDetailIndicatorBollingerBandsLower;
     public static String LabelChartDetailIndicatorBollingerBandsUpper;
     public static String LabelChartDetailMovingAverage;
+    public static String LabelChartDetailMovingAverage_50days;
     public static String LabelChartDetailMovingAverage_5days;
     public static String LabelChartDetailMovingAverage_20days;
     public static String LabelChartDetailMovingAverage_30days;
