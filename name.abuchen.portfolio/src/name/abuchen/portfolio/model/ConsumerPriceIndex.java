@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.model;
 
 import java.util.Comparator;
+import java.util.List;
 
 public class ConsumerPriceIndex
 {
@@ -49,6 +50,14 @@ public class ConsumerPriceIndex
     public void setIndex(int index)
     {
         this.index = index;
+    }
+    
+    public static ConsumerPriceIndex findByDate(List<ConsumerPriceIndex> indexes, int year, int month) 
+    {
+        return indexes.stream()
+                        .filter(i -> i.getYear() == year && i.getMonth() == month)
+                        .findAny()
+                        .orElse(null);
     }
 
     @Override

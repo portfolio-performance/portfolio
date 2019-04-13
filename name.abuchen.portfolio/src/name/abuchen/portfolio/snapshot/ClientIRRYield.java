@@ -10,6 +10,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
@@ -28,25 +29,73 @@ public class ClientIRRYield
         collectPortfolioTransactions(client, interval, transactions);
         Collections.sort(transactions, new Transaction.ByDate());
 
-        List<LocalDate> dates = new ArrayList<>();
-        List<Double> values = new ArrayList<>();
+        ArrayList<LocalDate> dates = new ArrayList<>();
+        ArrayList<Double> values = new ArrayList<>();
         collectDatesAndValues(interval, snapshotStart, snapshotEnd, transactions, dates, values);
 
         double irr = IRR.calculate(dates, values);
+        
+        // collect consumer prices indices in order to calculate the inflation adjusted time series
+        List<ConsumerPriceIndex> cpi_data = client.getConsumerPriceIndices();   
+        
+        List<Integer> indexes = new ArrayList<>();
+        for (LocalDate date : dates) 
+        {
+            int year = date.getYear();
+            int month = date.getMonthValue();
+            ConsumerPriceIndex cpi = null;
+            
+            // search for last provided consumer price index
+            while (cpi == null && !cpi_data.isEmpty() && year >= cpi_data.get(0).getYear()) 
+            {
+                cpi = ConsumerPriceIndex.findByDate(cpi_data, year, month);
+                
+                month--;
+                if (month < 1) 
+                {
+                    year--;
+                    month = 12;
+                }
+            }
+            
+            if (cpi != null) 
+            {
+                indexes.add(cpi.getIndex());
+            }
+            else 
+            {
+                indexes.add(0); // no previous consumer price index found -> zero produce an inflationAdjustedIrr of NaN
+            }
+        }
+        
+        // scale values according to its spending power
+        for (int i = 0; i < values.size(); i++) 
+        {
+            values.set(i, values.get(i) / (double)indexes.get(i));
+        }
+        
+        double inflationAdjustedIrr = IRR.calculate(dates, values);
 
-        return new ClientIRRYield(irr);
+        return new ClientIRRYield(irr, inflationAdjustedIrr);
     }
 
     private double irr;
+    private double inflationAdjustedIrr;
 
-    private ClientIRRYield(double irr)
+    private ClientIRRYield(double irr, double inflationAdjustedIrr)
     {
         this.irr = irr;
+        this.inflationAdjustedIrr = inflationAdjustedIrr;
     }
 
     public double getIrr()
     {
         return irr;
+    }
+    
+    public double getInflationAdjustedIrr() 
+    {
+        return inflationAdjustedIrr;
     }
 
     private static void collectPortfolioTransactions(Client client, Interval interval, List<Transaction> transactions)
