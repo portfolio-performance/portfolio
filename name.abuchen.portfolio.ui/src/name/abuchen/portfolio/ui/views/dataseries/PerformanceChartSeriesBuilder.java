@@ -25,16 +25,6 @@ public class PerformanceChartSeriesBuilder extends AbstractChartSeriesBuilder
         {
             addClient(series, index, aggregationPeriod);
         }
-        else if (series.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
-        {
-            if (index.getDates().length > 0
-                            && (aggregationPeriod == null || aggregationPeriod != Aggregation.Period.YEARLY))
-            {
-                ILineSeries lineSeries = getChart().addDateSeries(index.getDates(), index.getAccumulatedPercentage(),
-                                series.getLabel());
-                configure(series, lineSeries);
-            }
-        }
         else
         {
             if (aggregationPeriod != null)

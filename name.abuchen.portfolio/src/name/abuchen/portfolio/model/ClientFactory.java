@@ -566,6 +566,8 @@ public class ClientFactory
             case 38:
                 // added security exchange calendar
                 // added onlineId to security
+            case 39:
+                // removed consumer price indices
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

@@ -8,12 +8,10 @@ import java.util.Set;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ConsumerPriceIndex;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
@@ -153,13 +151,6 @@ public class DataSeriesSet
                         Messages.LabelAggregationDaily,
                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
-        availableSeries.add(series);
-
-        // consumer price index
-        series = new DataSeries(DataSeries.Type.CONSUMER_PRICE_INDEX, ConsumerPriceIndex.class,
-                        Messages.LabelConsumerPriceIndex, Colors.CPI.getRGB());
-        series.setBenchmark(true);
-        series.setLineStyle(LineStyle.DASHDOTDOT);
         availableSeries.add(series);
 
         // securities as benchmark

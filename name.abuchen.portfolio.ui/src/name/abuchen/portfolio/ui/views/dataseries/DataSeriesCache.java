@@ -154,10 +154,6 @@ public class DataSeriesCache
                     return PerformanceIndex.forClassification(client, converter, classification, reportingPeriod,
                                     warnings);
 
-                case CONSUMER_PRICE_INDEX:
-                    return PerformanceIndex.forConsumerPriceIndex(
-                                    lookup(new DataSeries(DataSeries.Type.CLIENT, null, null, null), reportingPeriod));
-
                 case CLIENT_FILTER:
                     ClientFilterMenu.Item item = (ClientFilterMenu.Item) series.getInstance();
                     return PerformanceIndex.forClient(item.getFilter().filter(client), converter, reportingPeriod,

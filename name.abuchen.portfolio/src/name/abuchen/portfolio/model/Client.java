@@ -23,7 +23,7 @@ public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
 
-    public static final int CURRENT_VERSION = 39;
+    public static final int CURRENT_VERSION = 40;
     public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
     private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
@@ -46,6 +46,7 @@ public class Client
     private List<Watchlist> watchlists;
 
     // keep typo -> xstream deserialization
+    @Deprecated
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
     private List<Account> accounts = new ArrayList<>();
@@ -237,46 +238,10 @@ public class Client
         return watchlists;
     }
 
-    public List<ConsumerPriceIndex> getConsumerPriceIndices()
+    @Deprecated
+    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
     {
-        return Collections.unmodifiableList(consumerPriceIndeces);
-    }
-
-    /**
-     * Sets the consumer price indices.
-     * 
-     * @return true if the indices are modified.
-     */
-    public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
-    {
-        if (indices == null)
-            throw new IllegalArgumentException();
-
-        List<ConsumerPriceIndex> newValues = new ArrayList<>(indices);
-        Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
-
-        if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
-        {
-            // only assign list if indices have actually changed because UI
-            // elements keep a reference which is not updated if no 'dirty'
-            // event is fired
-            this.consumerPriceIndeces = newValues;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void addConsumerPriceIndex(ConsumerPriceIndex record)
-    {
-        consumerPriceIndeces.add(record);
-    }
-
-    public void removeConsumerPriceIndex(ConsumerPriceIndex record)
-    {
-        consumerPriceIndeces.remove(record);
+        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
     }
 
     public void addAccount(Account account)

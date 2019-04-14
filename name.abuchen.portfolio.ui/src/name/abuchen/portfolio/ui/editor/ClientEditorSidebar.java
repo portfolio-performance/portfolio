@@ -489,8 +489,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
     private void createMiscSection(Sidebar sidebar)
     {
         Entry section = new Entry(sidebar, Messages.ClientEditorLabelGeneralData);
-        new Entry(section, Messages.LabelConsumerPriceIndex,
-                        e -> editor.activateView("ConsumerPriceIndexList", e.getId())); //$NON-NLS-1$
         new Entry(section, Messages.LabelCurrencies, e -> editor.activateView("currency.Currency", e.getId())); //$NON-NLS-1$
         new Entry(section, Messages.LabelSettings, e -> editor.activateView("settings.Settings", e.getId())); //$NON-NLS-1$
 

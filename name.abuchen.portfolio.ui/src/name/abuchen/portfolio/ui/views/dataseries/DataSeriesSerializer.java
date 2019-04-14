@@ -24,11 +24,9 @@ public class DataSeriesSerializer
             load(set, config, series);
 
         if (series.isEmpty())
-            set.getAvailableSeries().stream()
-                            .filter(s -> s.getType() == DataSeries.Type.CLIENT
-                                            && (s.getInstance() == ClientDataSeries.TOTALS
-                                                            || s.getInstance() == ClientDataSeries.TRANSFERALS)
-                                            || s.getType() == DataSeries.Type.CONSUMER_PRICE_INDEX)
+            set.getAvailableSeries().stream().filter(
+                            s -> s.getType() == DataSeries.Type.CLIENT && (s.getInstance() == ClientDataSeries.TOTALS
+                                            || s.getInstance() == ClientDataSeries.TRANSFERALS))
                             .forEach(series::add);
 
         return series;

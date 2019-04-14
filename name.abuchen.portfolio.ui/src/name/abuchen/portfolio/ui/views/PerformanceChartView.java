@@ -240,9 +240,7 @@ public class PerformanceChartView extends AbstractHistoricView
                 }
             });
 
-            picker.getSelectedDataSeries().stream() //
-                            .filter(ds -> ds.getType() != DataSeries.Type.CONSUMER_PRICE_INDEX)
-                            .forEach(ds -> addMenu(manager, ds));
+            picker.getSelectedDataSeries().stream().forEach(ds -> addMenu(manager, ds));
 
             manager.add(new Separator());
             chart.exportMenuAboutToShow(manager, getTitle());

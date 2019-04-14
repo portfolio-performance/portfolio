@@ -116,14 +116,6 @@ public class PerformanceIndex
         return index;
     }
 
-    public static PerformanceIndex forConsumerPriceIndex(PerformanceIndex clientIndex)
-    {
-        CPIIndex index = new CPIIndex(clientIndex.getClient(), clientIndex.getCurrencyConverter(),
-                        clientIndex.getReportInterval());
-        index.calculate(clientIndex);
-        return index;
-    }
-
     /* package */
     Client getClient()
     {

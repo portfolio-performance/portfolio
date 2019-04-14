@@ -44,7 +44,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
-import name.abuchen.portfolio.ui.jobs.UpdateCPIJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.wizards.client.ClientMigrationDialog;
 
@@ -423,8 +422,6 @@ public class ClientInput
             job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
             job.schedule(sixHours);
             regularJobs.add(job);
-
-            new UpdateCPIJob(client).schedule(1000);
 
             new SyncOnlineSecuritiesJob(client).schedule(2000);
         }
