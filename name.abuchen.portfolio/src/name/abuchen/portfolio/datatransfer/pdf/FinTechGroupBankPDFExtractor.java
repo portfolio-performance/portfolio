@@ -26,6 +26,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("biw AG"); //$NON-NLS-1$
         addBankIdentifier("FinTech Group Bank AG"); //$NON-NLS-1$
+        addBankIdentifier("flatex Bank AG"); //$NON-NLS-1$
 
         addBuySellTransaction();
         addBuyTransaction();
@@ -171,7 +172,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Kauf Fonds/Zertifikate");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
+        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*| *flatex Bank AG");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -180,69 +181,85 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             entry.setType(PortfolioTransaction.Type.BUY);
                             return entry;
                         })
+                        
+                        .section("time").optional()
+                        .match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+) Uhr.*") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("time", v.get("time"));
+                        })
 
-                        .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .section("date")
+                        .match(".*[Schlusstag|Handelstag][\\s:]*(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                            {
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
 
                         .section("wkn", "isin", "name")
                         .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
+                        .match("^Ausgeführt[\\s:]*(?<shares>[\\.\\d]+(,\\d*)?) *St\\..*") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .oneOf( //
                                         section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag *(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
+                                                        .match(".* Endbetrag[\\s:]*(?<currency>\\w{3}+) *(?<amount>[\\d.-]+,\\d+)") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                                        .match(".* Endbetrag[\\s:]*(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
                         .section("fee", "currency").optional() //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .match(".* Provision[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match(".* Provision *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
+                        .match(".* Provision[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .match(".* Eigene Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match(".* Eigene Spesen *(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
+                        .match(".* Eigene Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .match(".* \\*Fremde Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("fee", "currency").optional() //
-                        .match(".* \\*Fremde Spesen *(?<fee>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
+                        .match(".* \\*Fremde Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
