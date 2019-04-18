@@ -4,7 +4,8 @@ A simple tool to calculate the overall performance of an investment portfolio.
 
 See http://www.portfolio-performance.info for more details.
 
-[![Build Status](https://travis-ci.org/buchen/portfolio.svg?branch=master)](https://travis-ci.org/buchen/portfolio) [ ![Download](https://api.bintray.com/packages/buchen/downloads/portfolio-performance/images/download.svg) ](https://bintray.com/buchen/downloads/portfolio-performance/_latestVersion)
+[![Build Status](https://travis-ci.org/buchen/portfolio.svg?branch=master)](https://travis-ci.org/buchen/portfolio) [![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbuchen%2Fportfolio.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbuchen%2Fportfolio?ref=badge_shield)
+[ ![Download](https://api.bintray.com/packages/buchen/downloads/portfolio-performance/images/download.svg) ](https://bintray.com/buchen/downloads/portfolio-performance/_latestVersion)
 
 [![LOC](https://sonarcloud.io/api/project_badges/measure?project=name.abuchen.portfolio%3Aportfolio-app&metric=ncloc)](https://sonarcloud.io/dashboard?id=name.abuchen.portfolio%3Aportfolio-app) [![Bugs](https://sonarcloud.io/api/project_badges/measure?project=name.abuchen.portfolio%3Aportfolio-app&metric=bugs)](https://sonarcloud.io/project/issues?id=name.abuchen.portfolio%3Aportfolio-app&resolved=false&types=BUG) [![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=name.abuchen.portfolio%3Aportfolio-app&metric=vulnerabilities)](https://sonarcloud.io/project/issues?id=name.abuchen.portfolio%3Aportfolio-app&resolved=false&types=VULNERABILITY) [![Code Coverage](https://sonarcloud.io/api/project_badges/measure?project=name.abuchen.portfolio%3Aportfolio-app&metric=coverage)](https://sonarcloud.io/component_measures?id=name.abuchen.portfolio%3Aportfolio-app&metric=Coverage)
 
@@ -80,3 +81,6 @@ Run the application and the tests with the launch configurations stored in ~/por
 
 Eclipse Public License
 http://www.eclipse.org/legal/epl-v10.html
+
+
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbuchen%2Fportfolio.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbuchen%2Fportfolio?ref=badge_large)
