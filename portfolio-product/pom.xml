@@ -31,6 +31,9 @@
 					<profileProperties>
 						<macosx-bundled>true</macosx-bundled>
 					</profileProperties>
+					<extraArtifactRepositoryProperties>
+						<p2.statsURI>https://www.portfolio-report.net/api/stats/update</p2.statsURI>
+					</extraArtifactRepositoryProperties>
 				</configuration>
 			</plugin>
 			<plugin>
