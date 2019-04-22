@@ -444,6 +444,7 @@ public class DashboardView extends AbstractHistoricView
     private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
     {
         WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
+        inject(delegate);
 
         Composite element = delegate.createControl(columnControl, resources);
         element.setData(widget);

@@ -417,6 +417,7 @@ public class Messages extends NLS
     public static String LabelAggregationDaily;
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
+    public static String LabelAllTrades;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelBenchmarks;
@@ -591,6 +592,8 @@ public class Messages extends NLS
     public static String LabelToolTipTransactionSummary;
     public static String LabelTotalSum;
     public static String LabelTotalValuePercent;
+    public static String LabelTrades;
+    public static String LabelTradesBasicStatistics;
     public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelTransfer;

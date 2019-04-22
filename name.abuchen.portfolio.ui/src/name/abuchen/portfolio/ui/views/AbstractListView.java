@@ -10,7 +10,7 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 
-/* package */abstract class AbstractListView extends AbstractFinanceView
+public abstract class AbstractListView extends AbstractFinanceView
 {
     private final String identifier = getClass().getSimpleName() + "-newsash"; //$NON-NLS-1$
 

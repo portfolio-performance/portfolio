@@ -38,7 +38,7 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
     {
         Composite composite = super.createControl(parent, resources);
 
-        InfoToolTip.attach(indicator, () -> getToolTip());
+        InfoToolTip.attach(indicator, this::getToolTip);
 
         return composite;
     }

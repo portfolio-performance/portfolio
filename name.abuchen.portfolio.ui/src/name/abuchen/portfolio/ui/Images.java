@@ -71,6 +71,7 @@ public enum Images
     VIEW("view.png"), //$NON-NLS-1$
     VIEW_SELECTED("view_selected.png"), //$NON-NLS-1$
     VIEW_PLUS("view_plus.png"), //$NON-NLS-1$
+    VIEW_SHARE("view_share.png"), //$NON-NLS-1$
 
     TEXT("text.png"), //$NON-NLS-1$
 

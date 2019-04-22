@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 
 import name.abuchen.portfolio.math.IRR;
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -16,7 +18,7 @@ import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
 
-public class Trade
+public class Trade implements Adaptable
 {
     private Security security;
     private LocalDateTime start;
@@ -159,5 +161,14 @@ public class Trade
     public double getIRR()
     {
         return irr;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Named.class)
+            return type.cast(security);
+        else
+            return null;
     }
 }

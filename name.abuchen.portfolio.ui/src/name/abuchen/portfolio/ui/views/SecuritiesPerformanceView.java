@@ -828,7 +828,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabTrades);
         trades = new TradesTableViewer(this);
-        item.setControl(trades.createViewControl(folder));
+        item.setControl(trades.createViewControl(folder, TradesTableViewer.ViewMode.SINGLE_SECURITY));
 
         folder.setSelection(0);
 

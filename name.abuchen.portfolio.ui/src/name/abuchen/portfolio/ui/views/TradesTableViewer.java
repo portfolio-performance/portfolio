@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -27,9 +29,15 @@ import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
 
 public class TradesTableViewer
 {
+    public enum ViewMode
+    {
+        SINGLE_SECURITY, MULTIPLE_SECURITES
+    }
+
     private AbstractFinanceView view;
 
     private TableViewer trades;
@@ -39,7 +47,7 @@ public class TradesTableViewer
         this.view = view;
     }
 
-    public Control createViewControl(Composite parent)
+    public Control createViewControl(Composite parent, ViewMode viewMode)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
@@ -50,9 +58,9 @@ public class TradesTableViewer
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(
-                        SecuritiesPerformanceView.class.getSimpleName() + "@trades", //$NON-NLS-1$
+                        SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
                         view.getPreferenceStore(), trades, layout);
-        createTradesColumns(support);
+        createTradesColumns(support, viewMode);
         support.createColumns();
 
         trades.getTable().setHeaderVisible(true);
@@ -62,8 +70,11 @@ public class TradesTableViewer
         return container;
     }
 
-    private void createTradesColumns(ShowHideColumnHelper support)
+    private void createTradesColumns(ShowHideColumnHelper support, ViewMode viewMode)
     {
+        if (viewMode == ViewMode.MULTIPLE_SECURITES)
+            support.addColumn(new NameColumn());
+
         Column column = new Column("start", Messages.ColumnStartDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -93,7 +104,10 @@ public class TradesTableViewer
                 return ((Trade) e).getEnd().isPresent() ? null : Colors.WARNING;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getEnd().get()));
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            Optional<LocalDateTime> date = ((Trade) e).getEnd();
+            return date.isPresent() ? date.get() : null;
+        }));
         support.addColumn(column);
 
         column = new Column("tx", Messages.ColumnNumberOfTransactions, SWT.RIGHT, 80); //$NON-NLS-1$
