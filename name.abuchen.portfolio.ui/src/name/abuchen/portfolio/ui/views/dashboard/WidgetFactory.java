@@ -58,6 +58,24 @@ public enum WidgetFactory
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
+    
+    RATIO("Ratio", Messages.LabelStatementOfAssets, //
+                    (widget, data) -> MultiIndicatorWidget.<Double>create(widget, data) //
+                    .forSeries(2)
+                    .with(Values.Percent2) //
+                    .with((dsList, period) -> {
+                        
+                        PerformanceIndex index = data.calculate(dsList.get(0), period);
+                        int length = index.getTotals().length;
+                        long numerator = index.getTotals()[length - 1];
+                        
+                        index = data.calculate(dsList.get(1), period);
+                        length = index.getTotals().length;
+                        long denominator = index.getTotals()[length - 1];
+                                                
+                        return (double) numerator / denominator;
+                    }) //
+                    .build()),
 
     DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
