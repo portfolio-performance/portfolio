@@ -81,10 +81,24 @@ public class PerformanceIndex
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 
+    public static PerformanceIndex forAllAccounts(Client client, CurrencyConverter converter,
+                    Interval reportInterval, List<Exception> warnings)
+    {
+        Client pseudoClient = new PortfolioClientFilter(Collections.emptyList(), client.getAccounts()).filter(client);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
+    }
+
     public static PerformanceIndex forPortfolio(Client client, CurrencyConverter converter, Portfolio portfolio,
                     Interval reportInterval, List<Exception> warnings)
     {
         Client pseudoClient = new PortfolioClientFilter(portfolio).filter(client);
+        return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
+    }
+
+    public static PerformanceIndex forAllPortfolios(Client client, CurrencyConverter converter,
+                    Interval reportInterval, List<Exception> warnings)
+    {
+        Client pseudoClient = new PortfolioClientFilter(client.getActivePortfolios(), Collections.emptyList()).filter(client);
         return PerformanceIndex.forClient(pseudoClient, converter, reportInterval, warnings);
     }
 

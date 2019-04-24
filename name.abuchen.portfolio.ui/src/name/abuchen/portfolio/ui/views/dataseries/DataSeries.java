@@ -49,8 +49,10 @@ public final class DataSeries
         SECURITY_BENCHMARK("[b]Security", i -> ((Security) i).getUUID()), //$NON-NLS-1$
         ACCOUNT("Account", i -> ((Account) i).getUUID()), //$NON-NLS-1$
         ACCOUNT_PRETAX("Account-PreTax", i -> ((Account) i).getUUID()), //$NON-NLS-1$
+        ACCOUNTS_TOTAL("Accounts-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
         PORTFOLIO("Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PRETAX("Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
+        PORTFOLIOS_TOTAL("Portfolios-", i -> ((ClientDataSeries) i).name().toLowerCase(Locale.US)), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT("[+]Portfolio", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         PORTFOLIO_PLUS_ACCOUNT_PRETAX("[+]Portfolio-PreTax", i -> ((Portfolio) i).getUUID()), //$NON-NLS-1$
         CLASSIFICATION("Classification", i -> ((Classification) i).getId()), //$NON-NLS-1$
@@ -201,9 +203,11 @@ public final class DataSeries
             case SECURITY_BENCHMARK:
                 return Images.SECURITY.image();
             case ACCOUNT:
+            case ACCOUNTS_TOTAL:
             case ACCOUNT_PRETAX:
                 return Images.ACCOUNT.image();
             case PORTFOLIO:
+            case PORTFOLIOS_TOTAL:
             case PORTFOLIO_PRETAX:
             case PORTFOLIO_PLUS_ACCOUNT:
             case PORTFOLIO_PLUS_ACCOUNT_PRETAX:

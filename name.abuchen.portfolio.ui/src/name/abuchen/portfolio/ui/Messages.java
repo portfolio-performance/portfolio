@@ -782,6 +782,8 @@ public class Messages extends NLS
     public static String PDFImportDebugAuthor;
     public static String PDFImportErrorParsingDocument;
     public static String PerformanceChartLabelEntirePortfolio;
+    public static String PerformanceChartLabelTotalAccounts;
+    public static String PerformanceChartLabelTotalPortfolios;
     public static String PerformanceChartLabelCPI;
     public static String PerformanceHeatmapToolTip;
     public static String PerformanceRelevantTransactionsFooter;

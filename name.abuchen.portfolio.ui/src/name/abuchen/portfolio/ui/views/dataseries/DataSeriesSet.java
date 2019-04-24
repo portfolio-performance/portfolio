@@ -73,7 +73,7 @@ public class DataSeriesSet
     {
         availableSeries.add(new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TOTALS, Messages.LabelTotalSum,
                         Colors.TOTALS.getRGB()));
-
+        
         DataSeries series = new DataSeries(DataSeries.Type.CLIENT, ClientDataSeries.TRANSFERALS,
                         Messages.LabelTransferals, Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY).getRGB());
         series.setLineChart(false);
@@ -238,7 +238,8 @@ public class DataSeriesSet
             availableSeries.add(new DataSeries(DataSeries.Type.SECURITY, security, security.getName(), //
                             wheel.next()));
         }
-
+        
+        // portfolios
         for (Portfolio portfolio : client.getPortfolios())
             availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIO, portfolio, portfolio.getName(), //
                             wheel.next()));
@@ -251,12 +252,19 @@ public class DataSeriesSet
                             wheel.next());
             availableSeries.add(series);
         }
-
+        
+        // sum of portfolios
+        availableSeries.add(new DataSeries(DataSeries.Type.PORTFOLIOS_TOTAL, ClientDataSeries.TOTALS, Messages.PerformanceChartLabelTotalPortfolios, wheel.next()));
+        
         addCustomClientFilters(client, preferences, false, wheel);
 
+        // accounts
         for (Account account : client.getAccounts())
             availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNT, account, account.getName(), wheel.next()));
 
+        // sum of accounts
+        availableSeries.add(new DataSeries(DataSeries.Type.ACCOUNTS_TOTAL, ClientDataSeries.TOTALS, Messages.PerformanceChartLabelTotalAccounts, wheel.next()));
+        
         for (Taxonomy taxonomy : client.getTaxonomies())
         {
             taxonomy.foreach(new Taxonomy.Visitor()

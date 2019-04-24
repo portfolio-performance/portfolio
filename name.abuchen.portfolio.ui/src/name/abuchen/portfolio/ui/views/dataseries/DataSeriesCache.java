@@ -134,6 +134,9 @@ public class DataSeriesCache
 
                 case PORTFOLIO_PRETAX:
                     return calculatePortfolioPretax(series, reportingPeriod, warnings);
+                    
+                case PORTFOLIOS_TOTAL:
+                    return PerformanceIndex.forAllPortfolios(client, converter, reportingPeriod, warnings);
 
                 case PORTFOLIO_PLUS_ACCOUNT:
                     return PerformanceIndex.forPortfolioPlusAccount(client, converter, (Portfolio) series.getInstance(),
@@ -148,6 +151,9 @@ public class DataSeriesCache
 
                 case ACCOUNT_PRETAX:
                     return calculateAccountPretax(series, reportingPeriod, warnings);
+                                        
+                case ACCOUNTS_TOTAL:
+                    return PerformanceIndex.forAllAccounts(client, converter, reportingPeriod, warnings);
 
                 case CLASSIFICATION:
                     Classification classification = (Classification) series.getInstance();
