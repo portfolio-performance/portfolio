@@ -20,9 +20,37 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
         addBankIdentifier("Terzo"); //$NON-NLS-1$
 
+        addDepositTransaction();
         addBuyTransaction();
         addInterestTransaction();
         addFeeTransaction();
+    }
+
+    @SuppressWarnings("nls")
+    private void addDepositTransaction()
+    {
+        DocumentType type = new DocumentType("Einzahlung 3a");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Einzahlung 3a");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DEPOSIT);
+                            return transaction;
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .find("Einzahlung 3a") //
+                        .match("Gutschrift: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
