@@ -220,7 +220,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
         assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50.30)));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-12-03T13:59")));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(10)));
@@ -1072,6 +1072,31 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48)))))));
+    }
+    
+    @Test
+    public void testWertpapierVerkauf6() throws IOException
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf6.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        
+        List<PortfolioTransaction> tx = results.stream() //
+                        .filter(i -> i instanceof BuySellEntryItem)
+                        .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
+                        .collect(Collectors.toList());
+        
+        assertThat(tx.size(), is(1));
+        
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2019-04-09T00:00"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52)))))));
     }
     
     @Test

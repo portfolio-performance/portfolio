@@ -63,7 +63,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+\\.\\d+\\.\\d{4}+), \\d+:\\d+ Uhr")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+\\.\\d+\\.\\d{4}+), \\d+:\\d+.+")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setDate(asDate(v.get("date")));
@@ -115,7 +115,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setDate(asDate(v.get("date")));
@@ -183,7 +183,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
                         
                         .section("time").optional()
-                        .match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+) Uhr.*") //
+                        .match(".*Ausführungszeit[\\s:]*(?<time>\\d+:\\d+).+") //
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
@@ -1076,7 +1076,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+ Uhr")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
                             t.setDateTime(asDate(v.get("date")));
