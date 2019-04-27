@@ -157,17 +157,23 @@ public class MultiIndicatorWidget<N extends Number> extends AbstractIndicatorWid
 
     @Override
     public void update(N value)
-    {
-//        if (titleProvider != null)
-//            getWidget().setLabel(titleProvider.apply(
-//                        getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).collect(Collectors.toList()),
-//                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));        
-        
-        title.setText(getWidget().getLabel());      
+    {   
+        super.update(value);
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
             indicator.setForeground(Display.getDefault()
                             .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));
     }    
+    
+    @Override
+    public void updateLabel()
+    { 
+        if (titleProvider != null)
+            getWidget().setLabel(titleProvider.apply(
+                            getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).collect(Collectors.toList()),
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));  
+        else
+            super.updateLabel();
+    }
 }

@@ -52,4 +52,11 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     {
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
     }
+    
+    @Override    
+    public void updateLabel()
+    {       
+        String label = WidgetFactory.valueOf(getWidget().getType()).getLabel() + ", " + get(DataSeriesConfig.class).getDataSeries().getLabel(); //$NON-NLS-1$
+        getWidget().setLabel(label);
+    }
 }

@@ -90,6 +90,15 @@ public abstract class WidgetDelegate<D>
     public abstract Supplier<D> getUpdateTask();
 
     public abstract void update(D data);
+    
+    /**
+     * Call to update the label of the widget
+     */
+    public void updateLabel()
+    {
+        // get default label of the widget
+        getWidget().setLabel(WidgetFactory.valueOf(getWidget().getType()).getLabel());        
+    }
 
     /**
      * Returns the title control to which context menu and default tooltip are
