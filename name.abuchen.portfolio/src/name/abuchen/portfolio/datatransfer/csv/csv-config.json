@@ -79,6 +79,64 @@
     ]
 },
 {
+    "label": "comdirect Depotumsätze (Persönlicher Bereich)",
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "skipLines": 0,
+    "target": "portfolio-transaction",
+    "columns": [
+        {
+            "field": "date",
+            "format": "dd.MM.yyyy",
+            "label": "﻿Datum"
+        },
+        {
+            "field": "type",
+            "format": "BUY=Kauf;SELL=Verkauf;TRANSFER_IN=Umbuchung (Eingang);TRANSFER_OUT=Umbuchung (Ausgang);DELIVERY_INBOUND=Einlieferung;DELIVERY_OUTBOUND=Auslieferung",
+            "label": "Art"
+        },
+        {
+            "field": "name",
+            "label": "Bezeichnung"
+        },
+        {
+            "field": "wkn",
+            "label": "WKN"
+        },
+        {
+            "field": "isin",
+            "label": "ISIN"
+        },
+        {
+            "field": "shares",
+            "format": "0.000,00",
+            "label": "Menge"
+        },
+        {
+            "label": "Mengeneinheit"
+        },
+        {
+            "label": "Kurs"
+        },
+        {
+            "label": "Kurswährung"
+        },
+        {
+            "label": "Devisenkurs"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Kurswert"
+        },
+        {
+            "field": "currency",
+            "label": "Kurswertwährung"
+        }
+    ]
+},
+{
     "label": "Consorsbank Watchlist",
     "target": "portfolio",
     "delimiter": ";",
