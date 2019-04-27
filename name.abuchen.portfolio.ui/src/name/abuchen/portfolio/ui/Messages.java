@@ -479,6 +479,7 @@ public class Messages extends NLS
     public static String LabelDateXToY;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDelta;
+    public static String LabelDenominator;    
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;
@@ -517,6 +518,7 @@ public class Messages extends NLS
     public static String LabelNo;
     public static String LabelNoName;
     public static String LabelNotAvailable;
+    public static String LabelNumerator;    
     public static String LabelNumberDataSeries;
     public static String LabelOneOfX;
     public static String LabelOpenTrade;
@@ -536,6 +538,7 @@ public class Messages extends NLS
     public static String LabelQuote;
     public static String LabelQuoteFeed;
     public static String LabelQuoteFeedProvider;
+    public static String LabelRatio;
     public static String LabelRefresh;
     public static String LabelReportingAddPeriod;
     public static String LabelReportingDialogDays;

@@ -83,7 +83,10 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
 
     public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
     {
-        super(widget, dashboardData, supportsBenchmarks);
+        super(widget, dashboardData);
+
+        addConfig(DataSeriesConfig.create(this).withBenchmarkDataSeries(supportsBenchmarks).build());
+        addConfig(new ReportingPeriodConfig(this));
     }
 
     public static <N extends Number> Builder<N> create(Widget widget, DashboardData dashboardData)

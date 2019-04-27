@@ -66,7 +66,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         super(widget, dashboardData);
 
         addConfig(new ReportingPeriodConfig(this));
-        addConfig(new DataSeriesConfig(this, false));
+        addConfig(DataSeriesConfig.create(this).withBenchmarkDataSeries(false).build());
         addConfig(new LayoutConfig(this));
     }
 

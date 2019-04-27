@@ -21,7 +21,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
         addConfig(new ColorSchemaConfig(this));
         addConfig(new HeatmapOrnamentConfig(this));
-        addConfig(new DataSeriesConfig(this, true));
+        addConfig(DataSeriesConfig.create(this).withBenchmarkDataSeries(true).build());
     }
 
     @Override

@@ -25,7 +25,10 @@ public class MaxDrawdownDurationWidget extends AbstractIndicatorWidget<Performan
 
     public MaxDrawdownDurationWidget(Widget widget, DashboardData dashboardData)
     {
-        super(widget, dashboardData, true);
+        super(widget, dashboardData);
+
+        addConfig(DataSeriesConfig.create(this).withBenchmarkDataSeries(true).build());
+        addConfig(new ReportingPeriodConfig(this));
     }
 
     public String getToolTip()

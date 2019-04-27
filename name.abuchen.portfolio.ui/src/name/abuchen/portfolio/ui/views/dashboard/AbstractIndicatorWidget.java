@@ -15,12 +15,9 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     protected Label title;
     protected Label indicator;
 
-    public AbstractIndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
+    public AbstractIndicatorWidget(Widget widget, DashboardData dashboardData)
     {
         super(widget, dashboardData);
-
-        addConfig(new DataSeriesConfig(this, supportsBenchmarks));
-        addConfig(new ReportingPeriodConfig(this));
     }
 
     @Override

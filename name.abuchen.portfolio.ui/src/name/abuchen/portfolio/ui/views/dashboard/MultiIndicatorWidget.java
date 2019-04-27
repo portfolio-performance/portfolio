@@ -1,48 +1,46 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
-
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
 
-public class MultiIndicatorWidget<N extends Number> extends WidgetDelegate<N>
+public class MultiIndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N>
 {
     public static class Builder<N extends Number>
     {
         private Widget widget;
         private DashboardData dashboardData;
-        private int numSeries;
         private Values<N> formatter;
+        private List<Function<MultiIndicatorWidget<N>, DataSeriesConfig>> datasSeriesProviderSet = new ArrayList<>();
         private BiFunction<List<DataSeries>, Interval, N> provider;
-        private BiFunction<List<DataSeries>, Interval, String> tooltip;
-        private boolean supportsBenchmarks = true;
+        private BiFunction<List<DataSeries>, Interval, String> tooltip;    
+        private BiFunction<List<DataSeries>, Interval, String> title;
         private boolean isValueColored = true;
-
+        
         public Builder(Widget widget, DashboardData dashboardData)
         {
             this.widget = widget;
             this.dashboardData = dashboardData;
         }
 
-        Builder<N> forSeries(int number)
+        Builder<N> withDataSeries(Function<MultiIndicatorWidget<N>, DataSeriesConfig> datasSeriesProvider)
         {
-            this.numSeries = number;
+            this.datasSeriesProviderSet.add(datasSeriesProvider);
             return this;
         }
 
@@ -64,15 +62,15 @@ public class MultiIndicatorWidget<N extends Number> extends WidgetDelegate<N>
             return this;
         }
 
-        Builder<N> withBenchmarkDataSeries(boolean supportsBenchmarks)
-        {
-            this.supportsBenchmarks = supportsBenchmarks;
-            return this;
-        }
-
         Builder<N> withColoredValues(boolean isValueColored)
         {
             this.isValueColored = isValueColored;
+            return this;
+        }
+        
+        Builder<N> withTitle(BiFunction<List<DataSeries>, Interval, String> title)
+        {
+            this.title = title;
             return this;
         }
 
@@ -80,41 +78,30 @@ public class MultiIndicatorWidget<N extends Number> extends WidgetDelegate<N>
         {
             Objects.requireNonNull(formatter);
             Objects.requireNonNull(provider);
+            Objects.requireNonNull(datasSeriesProviderSet);
 
-            MultiIndicatorWidget<N> multiIndicatorWidget = new MultiIndicatorWidget<>(widget, dashboardData, numSeries,
-                            supportsBenchmarks);
+            MultiIndicatorWidget<N> multiIndicatorWidget = new MultiIndicatorWidget<>(widget, dashboardData, datasSeriesProviderSet);
             multiIndicatorWidget.setFormatter(formatter);
             multiIndicatorWidget.setProvider(provider);
             multiIndicatorWidget.setTooltip(tooltip);
             multiIndicatorWidget.setValueColored(isValueColored);
+            multiIndicatorWidget.setTitle(title);
             return multiIndicatorWidget;
         }
     }
 
-    protected Label title;
-    protected Label indicator;
-
     private Values<N> formatter;
     private BiFunction<List<DataSeries>, Interval, N> provider;
     private BiFunction<List<DataSeries>, Interval, String> tooltip;
+    private BiFunction<List<DataSeries>, Interval, String> titleProvider;
     private boolean isValueColored = true;
 
-    public MultiIndicatorWidget(Widget widget, DashboardData dashboardData, int amount, boolean supportsBenchmarks)
+    public MultiIndicatorWidget(Widget widget, DashboardData dashboardData, List<Function<MultiIndicatorWidget<N>, DataSeriesConfig>> datasSeriesProviderSet)
     {
         super(widget, dashboardData);
-
-        for (int aa = 0; aa < amount; aa++)
-        {
-            addConfig(new DataSeriesConfig(this, supportsBenchmarks));
-        }
-
+        
+        datasSeriesProviderSet.forEach(p -> addConfig(p.apply(this)));
         addConfig(new ReportingPeriodConfig(this));
-    }
-
-    @Override
-    public Control getTitleControl()
-    {
-        return title;
     }
 
     public static <N extends Number> Builder<N> create(Widget widget, DashboardData dashboardData)
@@ -142,28 +129,19 @@ public class MultiIndicatorWidget<N extends Number> extends WidgetDelegate<N>
         this.isValueColored = isValueColored;
     }
 
+    void setTitle(BiFunction<List<DataSeries>, Interval, String> title)
+    {
+        this.titleProvider = title;
+    }
+
     @Override
     public Composite createControl(Composite parent, DashboardResources resources)
     {
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setBackground(parent.getBackground());
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
-
-        title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
-        title.setBackground(container.getBackground());
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
-
-        indicator = new Label(container, SWT.NONE);
-        indicator.setFont(resources.getKpiFont());
-        indicator.setBackground(container.getBackground());
-        indicator.setText(""); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(indicator);
-
+        Composite container = super.createControl(parent, resources);
+        
         if (tooltip != null)
             InfoToolTip.attach(indicator, () -> tooltip.apply(
-                            getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries)
-                                            .collect(Collectors.toList()),
+                            getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).collect(Collectors.toList()),
                             get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));
 
         return container;
@@ -173,19 +151,23 @@ public class MultiIndicatorWidget<N extends Number> extends WidgetDelegate<N>
     public Supplier<N> getUpdateTask()
     {
         return () -> provider.apply(
-                        getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries)
-                                        .collect(Collectors.toList()),
+                        getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).collect(Collectors.toList()),
                         get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
     }
 
     @Override
     public void update(N value)
     {
-        title.setText(getWidget().getLabel());
+//        if (titleProvider != null)
+//            getWidget().setLabel(titleProvider.apply(
+//                        getAll(DataSeriesConfig.class).map(DataSeriesConfig::getDataSeries).collect(Collectors.toList()),
+//                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));        
+        
+        title.setText(getWidget().getLabel());      
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
             indicator.setForeground(Display.getDefault()
                             .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));
-    }
+    }    
 }

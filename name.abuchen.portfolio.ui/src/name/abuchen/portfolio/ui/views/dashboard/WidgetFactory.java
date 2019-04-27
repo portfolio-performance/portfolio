@@ -59,12 +59,22 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
     
-    RATIO("Ratio", Messages.LabelStatementOfAssets, //
+    RATIO(Messages.LabelRatio, Messages.LabelStatementOfAssets, //
                     (widget, data) -> MultiIndicatorWidget.<Double>create(widget, data) //
-                    .forSeries(2)
+                    .withDataSeries(delegate -> DataSeriesConfig.create(delegate)
+                                    .withGroupName(Messages.LabelNumerator)
+                                    .withDefaultDataSeries(DataSeries.Type.ACCOUNTS_TOTAL)
+                                    .withBenchmarkDataSeries(false)
+                                    .build())                    
+                    .withDataSeries(delegate -> DataSeriesConfig.create(delegate)
+                                    .withGroupName(Messages.LabelDenominator)
+                                    .withDefaultDataSeries(DataSeries.Type.PORTFOLIOS_TOTAL)
+                                    .withBenchmarkDataSeries(false)
+                                    .build())
+                    .withTitle((dsList, period) -> 
+                        Messages.LabelRatio + ": " + dsList.get(0).getLabel() + " / " + dsList.get(1).getLabel()) //$NON-NLS-1$ //$NON-NLS-2$
                     .with(Values.Percent2) //
-                    .with((dsList, period) -> {
-                        
+                    .with((dsList, period) -> {                        
                         PerformanceIndex index = data.calculate(dsList.get(0), period);
                         int length = index.getTotals().length;
                         long numerator = index.getTotals()[length - 1];
