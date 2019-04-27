@@ -20,6 +20,7 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class CSVExtractor implements Extractor
 {
@@ -36,7 +37,7 @@ public abstract class CSVExtractor implements Extractor
         throw new UnsupportedOperationException();
     }
 
-    protected String getText(String name, String[] rawValues, Map<String, Column> field2column)
+    protected final String getText(String name, String[] rawValues, Map<String, Column> field2column)
     {
         Column column = field2column.get(name);
         if (column == null)
@@ -51,7 +52,7 @@ public abstract class CSVExtractor implements Extractor
         return value != null && value.trim().length() == 0 ? null : value;
     }
 
-    protected String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
+    protected final String getISIN(String name, String[] rawValues, Map<String, Column> field2column)
     {
         Column column = field2column.get(name);
         if (column == null)
@@ -76,17 +77,20 @@ public abstract class CSVExtractor implements Extractor
         return value.length() == 0 ? null : value;
     }
 
-    protected Long getAmount(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
+    protected final Long getAmount(String name, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
     {
         return getValue(name, rawValues, field2column, Values.Amount);
     }
 
-    protected Long getQuote(String name, String[] rawValues, Map<String, Column> field2column) throws ParseException
+    protected final Long getQuote(String name, String[] rawValues, Map<String, Column> field2column)
+                    throws ParseException
     {
         return getValue(name, rawValues, field2column, Values.Quote);
     }
 
-    protected Long getValue(String name, String[] rawValues, Map<String, Column> field2column, Values<Long> values)
+    protected final Long getValue(String name, String[] rawValues, Map<String, Column> field2column,
+                    Values<Long> values)
                     throws ParseException
     {
         String value = getText(name, rawValues, field2column);
@@ -95,7 +99,8 @@ public abstract class CSVExtractor implements Extractor
 
         try
         {
-            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            Number num = (Number) field2column.get(name).getFormat().getFormat()
+                            .parseObject(TextUtil.stripNonNumberCharacters(value));
             return Long.valueOf((long) Math.round(num.doubleValue() * values.factor()));
         }
         catch (ParseException e)
@@ -107,7 +112,7 @@ public abstract class CSVExtractor implements Extractor
 
     }
 
-    protected LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
+    protected final LocalDateTime getDate(String dateColumn, String timeColumn, String[] rawValues,
                     Map<String, Column> field2column) throws ParseException
     {
         String dateValue = getText(dateColumn, rawValues, field2column);
@@ -167,12 +172,10 @@ public abstract class CSVExtractor implements Extractor
     protected final Long getShares(String name, String[] rawValues, Map<String, Column> field2column)
                     throws ParseException
     {
-        String value = getText(name, rawValues, field2column);
+        Long value = getValue(name, rawValues, field2column, Values.Share);
         if (value == null)
             return null;
-
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return Math.round(Math.abs(num.doubleValue()) * Values.Share.factor());
+        return Math.abs(value);
     }
 
     @SuppressWarnings("unchecked")

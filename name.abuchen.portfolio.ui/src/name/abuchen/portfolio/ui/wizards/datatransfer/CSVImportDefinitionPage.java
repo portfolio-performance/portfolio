@@ -697,7 +697,7 @@ public class CSVImportDefinitionPage extends AbstractWizardPage
                     String text = getColumnText(element, columnIndex);
                     if (text != null && !text.isEmpty())
                     {
-                        column.getFormat().getFormat().parseObject(text);
+                        column.getFormat().getFormat().parseObject(TextUtil.stripNonNumberCharacters(text));
                         return GREEN;
                     }
                 }

@@ -42,7 +42,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "DELIVERY_INBOUND", "Notiz" }),
@@ -80,7 +80,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-01", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "100", "EUR", "11", "10", "", "", "", "1,2", "TRANSFER_IN", "Notiz" }),
@@ -120,7 +120,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-02", "10:00", "DE0007164600", "SAP.DE", "",
                                         "SAP SE", "100", "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
@@ -159,7 +159,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "SAP.DE", "", "SAP SE",
                                         "-100", "EUR", "", "12", "110", "USD", "0,9091", "1,9", "SELL", "Notiz" }),
@@ -196,7 +196,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-02", "12:00", "", "SAP.DE", "", "SAP SE",
                                         "-100", "EUR", "11", "", "", "", "", "1,9", "", "Notiz" }),
@@ -254,7 +254,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2013-01-02", "", "DE0007164600", "", "", "SAP SE", "",
                                         "EUR", "11", "", "", "", "", "1,9", "BUY", "Notiz" }),
@@ -275,7 +275,7 @@ public class CSVPortfolioTransactionExtractorTest
 
         CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
         List<Item> results = extractor.extract(0,
                         Arrays.<String[]>asList(new String[] { "2015-09-15", "XX:XX", "LU0419741177", "", "", "", "56",
                                         "EUR", "0,14", "", "", "USD", "1,1194", "-0,701124", "BUY", "Notiz" }),
@@ -297,4 +297,30 @@ public class CSVPortfolioTransactionExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getForex(),
                         is(Money.of(security.getCurrencyCode(), Values.Amount.factorize(62.53))));
     }
+
+    @Test
+    public void testPlusSignInShares()
+    {
+        Client client = new Client();
+
+        CSVExtractor extractor = new CSVPortfolioTransactionExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(0,
+                        Arrays.<String[]>asList((String[]) new String[] { "2013-01-02", "", "IE00B4L5Y983", "", "",
+                                        "ISHSIII-CORE MSCI WLD DLA", "99,97", "EUR", "", "", "", "", "", "+ 1,978",
+                                        "BUY", "Notiz" }),
+                        buildField2Column(extractor), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        BuySellEntry entry = (BuySellEntry) results.get(0).getSubject();
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("EUR", Values.Amount.factorize(99.97))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1.978)));
+    }
+
 }
