@@ -74,7 +74,14 @@ mvn clean install -Dgenerate-target-platform=true -Dtycho.disableP2Mirrors
 
 ### Run Program
 
-Run the application and the tests with the launch configurations stored in ~/portfolio-app/eclipse folder (right-click "Run As").
+To launch Portfolio Performance
+* Open the portfolio-product project
+* Open the name.abuchen.portfolio.product file
+* In the resulting editor, click on the "Launch an Eclipse application" link
+
+:warning: The launch configuration needs an update when bundles are added and removed. If the program does not start, try selecting "Add required plug-ins" in the launch configuration dialog or re-create the configuration by clicking "Launch an Eclipse application" again.
+	
+To run the unit tests, checkout the launch configurations stored in ~/portfolio-app/eclipse folder (right-click "Run As").
 
 ## License
 
