@@ -1,0 +1,20 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Max
+Mustermann
+Musterstr. 2
+54321 Musterhausen
+Benutzername: ***zft
+Transaktionsübersicht von 01-04-2019 bis 01-04-2019
+Datum Uhrzeit Produkt ISIN Börse Anzahl Kurs Wert inLokalwährun Wert
+Wechselkur
+s Gebühr Gesamt
+01-04-2019 15:35 DEUTSCHE BANK AG NA O.N DE0005140008 XET -136 EUR 7,45 EUR 1.013,20 EUR 1.013,20 EUR -2,26 EUR 1.010,94
+01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
+01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 118 EUR 7,353 EUR -867,65 EUR -867,65 EUR -2,23 EUR -869,88
+DEGIRO B.V. T +49 69 365 065 457 DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Kontoauszug 2019-04-01
+registriert.
