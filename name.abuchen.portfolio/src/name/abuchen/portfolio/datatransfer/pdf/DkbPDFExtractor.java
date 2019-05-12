@@ -35,10 +35,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addInvestmentEarningTransaction();
         addRemoveTransaction();
         addTransferOutTransaction();
+        addEarning27KstgTransaction();
         addParticipationcertificateEarningTransaction();
         addParticipationcertificateRefundTransaction();
         addInvestmentPayoutTransaction();
-        addBuyTransactionFundsSavingsPlan();
     }
 
     @Override
@@ -368,6 +368,45 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new));
     }
 
+    private void addEarning27KstgTransaction()
+    {
+        DocumentType type = new DocumentType("Ertragsgutschrift nach § 27 KStG");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Ertragsgutschrift nach § 27 KStG");
+        type.addBlock(block);
+        Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
+        pdfTransaction.subject(() -> {
+            AccountTransaction transaction = new AccountTransaction();
+            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+            return transaction;
+        });
+        block.set(pdfTransaction);
+        pdfTransaction.section("shares", "name", "nameContinued", "isin", "wkn") //
+                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
+                        .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
+                        .match("(?<nameContinued>.*)") //
+                        .assign((t, v) -> {
+                            t.setShares(asShares(v.get("shares")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("date", "amount")
+                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?)(.*) (?<currency>\\w{3}+)")
+                        .match("(^Lagerstelle) (.*)")
+                        .match("(^Den Betrag buchen wir mit Wertstellung) (?<date>\\d+.\\d+.\\d{4}+) zu Gunsten des Kontos (.*)")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new);
+
+        addTaxesSectionsTransaction(type, pdfTransaction);
+        addFeesSectionsTransaction(pdfTransaction);
+    }
+    
     private void addParticipationcertificateEarningTransaction()
     {
         addTransaction("Genussschein", "Ausschüttung aus Genussschein", AccountTransaction.Type.DIVIDENDS);
@@ -443,56 +482,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
-    }
-    
-    private void addBuyTransactionFundsSavingsPlan()
-    {   
-        final DocumentType type = new DocumentType("Halbjahresabrechnung Sparplan", (context, lines) -> {
-            Pattern pSecurity = Pattern.compile("(?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$");
-            Pattern pCurrency = Pattern.compile("^(?<currency>\\w{3}+) in .*$");
-            // read the current context here
-            for (String line : lines)
-            {
-                Matcher m = pSecurity.matcher(line);
-                if (m.matches())
-                {
-                    context.put("isin", m.group("isin"));
-                    context.put("wkn", m.group("wkn"));
-                    context.put("name", m.group("name"));
-                }
-                m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group("currency"));
-                }
-            }
-        });
-        this.addDocumentTyp(type);
-
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        
-        Block blockTransaction = new Block("Kauf [\\d,]+ .*");
-        type.addBlock(blockTransaction);
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
-        blockTransaction.set(pdfTransaction);
-        pdfTransaction.section("amount", "shares", "date")
-                        .match("^Kauf (?<amount>[\\d,]+) [\\d]{2,10}\\/.* (?<shares>[\\d,]+) (?<date>\\d+.\\d+.\\d{4}+) .*")
-                        .assign((t, v) -> {
-                            Map<String, String> context = type.getCurrentContext();
-                            t.setSecurity(getOrCreateSecurity(context));
-                            t.setDate(asDate(v.get("date")));
-                            t.setShares(asShares(v.get("shares")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                        })
-
-                        .wrap(BuySellEntryItem::new);
-
-
     }
 
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(DocumentType documentType, T pdfTransaction)
