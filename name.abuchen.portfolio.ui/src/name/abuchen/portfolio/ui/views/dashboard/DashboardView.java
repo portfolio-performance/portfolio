@@ -397,11 +397,18 @@ public class DashboardView extends AbstractHistoricView
 
         for (Dashboard.Widget widget : column.getWidgets())
         {
-            WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
-            if (factory == null)
-                continue;
+            try
+            {
+                WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
+                if (factory == null)
+                    continue;
 
-            buildDelegate(columnControl, factory, widget);
+                buildDelegate(columnControl, factory, widget);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // do nothing -> just skip the unknown widget type
+            }
         }
 
         return columnControl;
