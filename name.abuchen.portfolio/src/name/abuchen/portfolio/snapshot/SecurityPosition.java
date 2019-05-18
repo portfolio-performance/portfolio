@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -355,10 +357,35 @@ public class SecurityPosition
                     long splitForex = Math.round(
                                     u.getForex().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
 
-                    t2.addUnit(new Unit(u.getType(), //
-                                    Money.of(u.getAmount().getCurrencyCode(), splitAmount),
-                                    Money.of(u.getForex().getCurrencyCode(), splitForex), //
-                                    u.getExchangeRate()));
+                    try
+                    {
+                        t2.addUnit(new Unit(u.getType(), //
+                                        Money.of(u.getAmount().getCurrencyCode(), splitAmount),
+                                        Money.of(u.getForex().getCurrencyCode(), splitForex), //
+                                        u.getExchangeRate()));
+                    }
+                    catch (IllegalArgumentException e)
+                    {
+                        // issue: splitting the transaction unit can lead to
+                        // rounding errors in such a way that AMOUNT x EXCHANGE
+                        // RATE != FOREX AMOUNT.
+
+                        // fix: calculate forex value using the exchange rate
+
+                        // because the exchange rate typically has "only" 4
+                        // decimal digits, let's continue to use the simple
+                        // division for all those values for which it works
+
+                        splitForex = BigDecimal.ONE.divide(u.getExchangeRate(), 10, RoundingMode.HALF_UP)
+                                        .multiply(BigDecimal.valueOf(splitAmount)).setScale(0, RoundingMode.HALF_UP)
+                                        .longValue();
+
+                        t2.addUnit(new Unit(u.getType(), //
+                                        Money.of(u.getAmount().getCurrencyCode(), splitAmount),
+                                        Money.of(u.getForex().getCurrencyCode(), splitForex), //
+                                        u.getExchangeRate()));
+
+                    }
                 }
             });
 
