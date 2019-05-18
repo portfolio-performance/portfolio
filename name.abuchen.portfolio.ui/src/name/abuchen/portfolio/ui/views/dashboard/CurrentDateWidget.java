@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class CurrentDateWidget extends WidgetDelegate<Object>
 {
@@ -36,7 +37,7 @@ public class CurrentDateWidget extends WidgetDelegate<Object>
 
         title = new Label(container, SWT.NONE);
         title.setBackground(container.getBackground());
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         update(null);
@@ -59,6 +60,6 @@ public class CurrentDateWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object data)
     {
-        this.title.setText(getWidget().getLabel() + ' ' + formatter.format(LocalDate.now()));
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()) + ' ' + formatter.format(LocalDate.now()));
     }
 }

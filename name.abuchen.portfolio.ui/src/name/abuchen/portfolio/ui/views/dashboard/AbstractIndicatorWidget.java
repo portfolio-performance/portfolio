@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
 {
@@ -30,7 +31,7 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
     
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
     
@@ -52,6 +53,6 @@ public abstract class AbstractIndicatorWidget<D> extends WidgetDelegate<D>
     @Override
     public void update(D data)
     {
-        this.title.setText(getWidget().getLabel());
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
     }
 }

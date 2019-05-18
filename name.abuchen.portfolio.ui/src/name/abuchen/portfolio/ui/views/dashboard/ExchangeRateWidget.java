@@ -22,6 +22,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ExchangeRateWidget extends WidgetDelegate<Object>
 {
@@ -47,7 +48,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
         GridLayoutFactory.fillDefaults().numColumns(1).margins(5, 5).applyTo(container);
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
@@ -85,7 +86,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object data)
     {
-        this.title.setText(getWidget().getLabel());
+        this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         ReportingPeriod period = get(ReportingPeriodConfig.class).getReportingPeriod();
         ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();

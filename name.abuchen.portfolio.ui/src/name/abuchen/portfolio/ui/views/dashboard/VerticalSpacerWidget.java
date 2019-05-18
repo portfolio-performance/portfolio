@@ -23,6 +23,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class VerticalSpacerWidget extends WidgetDelegate<Object>
 {
@@ -119,7 +120,7 @@ public class VerticalSpacerWidget extends WidgetDelegate<Object>
         GridLayoutFactory.fillDefaults().applyTo(container);
 
         title = new Label(container, SWT.CENTER);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setForeground(container.getBackground());
         title.setBackground(container.getBackground());
 
@@ -165,7 +166,7 @@ public class VerticalSpacerWidget extends WidgetDelegate<Object>
         int newHeight = get(SpacerConfig.class).getHeight();
 
         data.heightHint = newHeight;
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         if (oldHeight != newHeight)
         {

@@ -40,6 +40,7 @@ import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class ChartWidget extends WidgetDelegate<Object>
 {
@@ -192,7 +193,7 @@ public class ChartWidget extends WidgetDelegate<Object>
 
         title = new Label(container, SWT.NONE);
         title.setBackground(container.getBackground());
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new TimelineChart(container);
@@ -243,7 +244,7 @@ public class ChartWidget extends WidgetDelegate<Object>
     @Override
     public void update(Object object)
     {
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         try
         {

@@ -23,6 +23,7 @@ import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerformanceSnapshot>
 {
@@ -79,7 +80,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         title.setBackground(container.getBackground());
         GridDataFactory.fillDefaults().span(3, 1).hint(SWT.DEFAULT, title.getFont().getFontData()[0].getHeight() + 10)
                         .grab(true, false).applyTo(title);
@@ -180,7 +181,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
             container.getParent().getParent().layout(true);
         }
 
-        title.setText(getWidget().getLabel());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         switch (layout)
         {
