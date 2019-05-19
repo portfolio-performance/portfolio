@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.function.ToDoubleFunction;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -32,7 +33,6 @@ import org.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 
-import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -50,9 +50,37 @@ import name.abuchen.portfolio.util.Interval;
 
 public class ReturnsVolatilityChartView extends AbstractHistoricView
 {
+    private enum RiskMetric
+    {
+        VOLATILITY(Messages.LabelVolatility, index -> index.getVolatility().getStandardDeviation()), //
+        SEMIVOLATILITY(Messages.LabelSemiVolatility, index -> index.getVolatility().getSemiDeviation());
+
+        private String label;
+        private ToDoubleFunction<PerformanceIndex> riskFunction;
+
+        private RiskMetric(String label, ToDoubleFunction<PerformanceIndex> riskFunction)
+        {
+            this.label = label;
+            this.riskFunction = riskFunction;
+        }
+
+        public double getRisk(PerformanceIndex index)
+        {
+            return riskFunction.applyAsDouble(index);
+        }
+
+        @Override
+        public String toString()
+        {
+            return label;
+        }
+    }
+
     private static final String KEY_USE_IRR = ReturnsVolatilityChartView.class.getSimpleName() + "-use-irr"; //$NON-NLS-1$
+    private static final String KEY_RISK_METRIC = ReturnsVolatilityChartView.class.getSimpleName() + "-risk-metric"; //$NON-NLS-1$
 
     private boolean useIRR = false;
+    private RiskMetric riskMetric = RiskMetric.VOLATILITY;
 
     private ScatterChart chart;
     private LocalResourceManager resources;
@@ -64,12 +92,26 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
     public void construct()
     {
         this.useIRR = getPreferenceStore().getBoolean(KEY_USE_IRR);
+
+        String riskMetricKey = getPreferenceStore().getString(KEY_RISK_METRIC);
+        if (riskMetricKey != null && !riskMetricKey.isEmpty())
+        {
+            try
+            {
+                this.riskMetric = RiskMetric.valueOf(riskMetricKey);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // unknown risk metric type; continue to use the default one
+            }
+        }
     }
 
     @PreDestroy
     public void destroy()
     {
         getPreferenceStore().setValue(KEY_USE_IRR, this.useIRR);
+        getPreferenceStore().setValue(KEY_RISK_METRIC, riskMetric.name());
     }
 
     @Override
@@ -108,8 +150,25 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
             });
             irr.setChecked(this.useIRR);
             manager.add(irr);
-            manager.add(new Separator());
 
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.LabelRiskMetric));
+
+            for (RiskMetric metric : RiskMetric.values())
+            {
+                Action action = new SimpleAction(metric.toString(), a -> {
+                    this.riskMetric = metric;
+
+                    IAxis yAxis = chart.getAxisSet().getXAxis(0);
+                    yAxis.getTitle().setText(metric.toString());
+
+                    reportingPeriodUpdated();
+                });
+                action.setChecked(this.riskMetric == metric);
+                manager.add(action);
+            }
+
+            manager.add(new Separator());
             manager.add(new LabelOnly(Messages.LabelDataSeries));
             configurator.configMenuAboutToShow(manager);
         }));
@@ -129,7 +188,7 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
         chart.getTitle().setVisible(false);
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
-        xAxis.getTitle().setText(Messages.LabelVolatility);
+        xAxis.getTitle().setText(this.riskMetric.toString());
         xAxis.getTick().setFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -222,12 +281,12 @@ public class ReturnsVolatilityChartView extends AbstractHistoricView
 
         Lists.reverse(configurator.getSelectedDataSeries()).forEach(series -> {
             PerformanceIndex index = cache.lookup(series, interval);
-            Volatility volatility = index.getVolatility();
 
-            double r = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
+            double risk = this.riskMetric.getRisk(index);
+            double retrn = this.useIRR ? index.getPerformanceIRR() : index.getFinalAccumulatedPercentage();
 
-            ILineSeries lineSeries = chart.addScatterSeries(new double[] { volatility.getStandardDeviation() },
-                            new double[] { r }, series.getLabel());
+            ILineSeries lineSeries = chart.addScatterSeries(new double[] { risk }, new double[] { retrn },
+                            series.getLabel());
 
             Color color = resources.createColor(series.getColor());
             lineSeries.setLineColor(color);
