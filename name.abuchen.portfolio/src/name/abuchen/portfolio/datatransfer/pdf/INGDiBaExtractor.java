@@ -445,6 +445,14 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
                         else
                             t.addUnit(new Unit(Unit.Type.TAX, Money.of(currencyTx, asAmount(v.get("taxTx")))));
+                    })
+                    // Quellensteuer ohne Fremdwährung
+                    .section("tax", "currency") //
+                    .optional() //
+                    .match("QuSt \\d+,\\d+ % (?<currency>\\w{3}+) (?<tax>[\\d.,]*)")
+                    .assign((t, v) -> {
+                        String currency = asCurrencyCode(v.get("currency"));
+                        t.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, asAmount(v.get("tax")))));
                     });
 
     }
