@@ -82,11 +82,6 @@
 	</repositories>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.htmlparser</groupId>
-			<artifactId>com.springsource.org.htmlparser</artifactId>
-			<version>1.6.0</version>
-		</dependency>
 		<!-- the original XML stream bundle imports sun.misc - too annoying to 
 			create a framework bundle to make it work. Apache has the import optional -->
 		<dependency>
