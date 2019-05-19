@@ -5,12 +5,11 @@ import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.util.Interval;
@@ -139,7 +138,6 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
-            indicator.setForeground(Display.getDefault()
-                            .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));
+            indicator.setForeground(value.doubleValue() < 0 ? Colors.DARK_RED : Colors.DARK_GREEN);
     }
 }
