@@ -239,20 +239,35 @@ public final class CSVImporter
         }
     }
 
+    private static class DateFieldFormat extends FieldFormat
+    {
+        public DateFieldFormat(String label, String pattern)
+        {
+            super(pattern, label, new SimpleDateFormat(pattern));
+        }
+
+        public DateFieldFormat(String label, String pattern, Locale locale)
+        {
+            super(pattern + ";" + locale.toString(), label, new SimpleDateFormat(pattern, locale)); //$NON-NLS-1$
+        }
+    }
+
     public static class DateField extends CSVImporter.Field
     {
-        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList(
-                        new FieldFormat(Messages.CSVFormatYYYYMMDD, new SimpleDateFormat("yyyy-MM-dd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatISO, new SimpleDateFormat("yyyyMMdd")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY, new SimpleDateFormat("dd.MM.yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYY, new SimpleDateFormat("dd.MM.yy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYYYY1, new SimpleDateFormat("dd/MM/yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMYY1, new SimpleDateFormat("dd/MM/yy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatMMDDYYYY1, new SimpleDateFormat("MM/dd/yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatMMDDYY1, new SimpleDateFormat("MM/dd/yy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatMMDDYY, new SimpleDateFormat("MM-dd-yy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatMMDDYYYY, new SimpleDateFormat("MM-dd-yyyy")), //$NON-NLS-1$
-                        new FieldFormat(Messages.CSVFormatDDMMMYYYY, new SimpleDateFormat("dd-MMM-yyyy")) //$NON-NLS-1$
+        private static final List<FieldFormat> FORMATS = Collections.unmodifiableList(Arrays.asList( //
+                        new DateFieldFormat(Messages.CSVFormatYYYYMMDD, "yyyy-MM-dd"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatISO, "yyyyMMdd"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMYYYY, "dd.MM.yyyy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMYY, "dd.MM.yy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMYYYY1, "dd/MM/yyyy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMYY1, "dd/MM/yy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatMMDDYYYY1, "MM/dd/yyyy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatMMDDYY1, "MM/dd/yy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatMMDDYY, "MM-dd-yy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatMMDDYYYY, "MM-dd-yyyy"), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMMYYYY, "dd-MMM-yyyy"), // NOSONAR //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_German, "dd-MMM-yyyy", Locale.GERMAN), //$NON-NLS-1$
+                        new DateFieldFormat(Messages.CSVFormatDDMMMYYYY_English, "dd-MMM-yyyy", Locale.US) //$NON-NLS-1$
         ));
 
         /* package */ DateField(String code, String name)
@@ -299,7 +314,7 @@ public final class CSVImporter
         @Override
         public String formatToText(FieldFormat fieldFormat)
         {
-            return ((SimpleDateFormat) fieldFormat.getFormat()).toPattern();
+            return fieldFormat.getCode();
         }
 
         @Override
@@ -307,7 +322,7 @@ public final class CSVImporter
         {
             for (FieldFormat format : getAvailableFieldFormats())
             {
-                if (((SimpleDateFormat) format.getFormat()).toPattern().equals(text))
+                if (format.getCode().equals(text))
                     return format;
             }
 
