@@ -231,7 +231,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendengutschrift");
+        Block block = new Block("Dividendengutschrift|Ertragsgutschrift.*");
         type.addBlock(block);
         Transaction<AccountTransaction> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
