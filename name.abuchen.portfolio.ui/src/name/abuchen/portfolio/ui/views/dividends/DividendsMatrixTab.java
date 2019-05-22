@@ -4,6 +4,8 @@ import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
+import java.util.function.ToLongFunction;
 
 import javax.inject.Inject;
 
@@ -111,7 +113,7 @@ public class DividendsMatrixTab implements DividendsTab
         tableViewer.addSelectionChangedListener(event -> {
             InvestmentVehicle vehicle = ((DividendsViewModel.Line) ((IStructuredSelection) event.getSelection())
                             .getFirstElement()).getVehicle();
-            if (vehicle != null && vehicle instanceof Security)
+            if (vehicle instanceof Security)
                 selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
         });
 
@@ -175,7 +177,15 @@ public class DividendsMatrixTab implements DividendsTab
             }
         });
 
-        ColumnViewerSorter.create((o1, o2) -> {
+        createSorter((l1, l2) -> l1.getVehicle().getName().compareToIgnoreCase(l2.getVehicle().getName()))
+                        .attachTo(records, column, isSorted);
+
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+    }
+
+    protected ColumnViewerSorter createSorter(Comparator<DividendsViewModel.Line> comparator)
+    {
+        return ColumnViewerSorter.create((o1, o2) -> {
             int direction = ColumnViewerSorter.SortingContext.getSortDirection();
 
             DividendsViewModel.Line line1 = (DividendsViewModel.Line) o1;
@@ -186,12 +196,8 @@ public class DividendsMatrixTab implements DividendsTab
             if (line2.getVehicle() == null)
                 return direction == SWT.DOWN ? -1 : 1;
 
-            String n1 = line1.getVehicle().getName();
-            String n2 = line2.getVehicle().getName();
-            return n1.compareToIgnoreCase(n2);
-        }).attachTo(records, column, isSorted);
-
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+            return comparator.compare(line1, line2);
+        });
     }
 
     private void createMonthColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
@@ -222,11 +228,31 @@ public class DividendsMatrixTab implements DividendsTab
                 return vehicle != null ? null : boldFont;
             }
         });
+
+        createSorter((l1, l2) -> Long.compare(l1.getValue(index), l2.getValue(index))).attachTo(records, column);
+
         layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
     protected void createSumColumn(TableViewer records, TableColumnLayout layout)
     {
+        ToLongFunction<DividendsViewModel.Line> valueFunction = line -> {
+            if (showOnlyOneYear)
+            {
+                int noOfMonths = Math.min(12, line.getNoOfMonths());
+
+                long sum = 0;
+                for (int ii = 0; ii < noOfMonths; ii++)
+                    sum += line.getValue(ii);
+
+                return sum;
+            }
+            else
+            {
+                return line.getSum();
+            }
+        };
+
         TableViewerColumn column;
         column = new TableViewerColumn(records, SWT.RIGHT);
         column.getColumn().setText(Messages.ColumnSum);
@@ -236,21 +262,7 @@ public class DividendsMatrixTab implements DividendsTab
             public String getText(Object element)
             {
                 DividendsViewModel.Line line = (DividendsViewModel.Line) element;
-
-                if (showOnlyOneYear)
-                {
-                    int noOfMonths = Math.min(12, line.getNoOfMonths());
-
-                    long sum = 0;
-                    for (int ii = 0; ii < noOfMonths; ii++)
-                        sum += line.getValue(ii);
-
-                    return Values.Amount.formatNonZero(sum);
-                }
-                else
-                {
-                    return Values.Amount.formatNonZero(line.getSum());
-                }
+                return Values.Amount.formatNonZero(valueFunction.applyAsLong(line));
             }
 
             @Override
@@ -259,6 +271,10 @@ public class DividendsMatrixTab implements DividendsTab
                 return boldFont;
             }
         });
+
+        createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
+                        .attachTo(records, column);
+
         layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dividends;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
+import java.util.function.ToLongFunction;
 
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -103,6 +104,13 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
     private void createQuarterColumn(TableViewer records, TableColumnLayout layout, int quarterBeginIndex,
                     int quarterEndIndex, String columnCaption)
     {
+        ToLongFunction<DividendsViewModel.Line> valueFunction = line -> {
+            long value = 0;
+            for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
+                value += line.getValue(i);
+            return value;
+        };
+
         TableViewerColumn column = new TableViewerColumn(records, SWT.RIGHT);
         column.getColumn().setText(columnCaption);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -111,13 +119,7 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
             public String getText(Object element)
             {
                 Line line = (DividendsViewModel.Line) element;
-
-                long value = 0;
-                for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
-                {
-                    value += line.getValue(i);
-                }
-
+                long value = valueFunction.applyAsLong(line);
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(value) : Values.Amount.format(value);
             }
 
@@ -135,6 +137,10 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
                 return vehicle != null ? null : boldFont;
             }
         });
+
+        createSorter((l1, l2) -> Long.compare(valueFunction.applyAsLong(l1), valueFunction.applyAsLong(l2)))
+                        .attachTo(records, column);
+
         layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
     }
 
