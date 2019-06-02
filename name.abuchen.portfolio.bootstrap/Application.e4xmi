@@ -126,6 +126,7 @@
   <handlers xmi:id="_1vwOoGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.handler.closeFileHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.CloseFileHandler" command="_nzlOsGzxEeapdeFYfst3DA"/>
   <handlers xmi:id="_STacIHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.handler.forceClearPersistedStateHandler" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ForceClearPersistedStateHandler" command="_aOrCgHJzEeaMJYqdyBIeUw"/>
   <handlers xmi:id="_9nve4Bk-EeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.ui.handler.openBookmarksMenu" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenBookmarksHandler" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
+  <handlers xmi:id="_sVgXsIUnEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.handler.openCommandPalettePopup" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenCommandPaletteHandler" command="_xMacQIUnEemwCoP93IFEYw"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -137,6 +138,7 @@
     <bindings xmi:id="_w7HC4LEBEeefXq-wtldCQQ" elementId="" keySequence="M1+I P" command="_pgC00EYREeSRXYVe298mXg"/>
     <bindings xmi:id="_jcQwwLEEEeefXq-wtldCQQ" elementId="" keySequence="M1+I C" command="_GgTyQBhXEeOR1rNFCzC82A"/>
     <bindings xmi:id="_HdGacBk_EeiQOJdQgYCbNA" elementId="" keySequence="M1+B" command="_3ylCUBk-EeiQOJdQgYCbNA"/>
+    <bindings xmi:id="_3vDC0IUnEemwCoP93IFEYw" elementId="" keySequence="M1+G" command="_xMacQIUnEemwCoP93IFEYw"/>
   </bindingTables>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_7d8q4RjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.window" name="In Windows">
@@ -189,6 +191,7 @@
   <commands xmi:id="_nzlOsGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.command.closeFile" commandName="closeFileCommand"/>
   <commands xmi:id="_aOrCgHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.command.forceClearPersistedState" commandName="forceClearPersistedStateCommand"/>
   <commands xmi:id="_3ylCUBk-EeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.ui.command.openBookmarksMenu" commandName="openBookmarksMenu"/>
+  <commands xmi:id="_xMacQIUnEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.command.openCommandPalettePopup" commandName="openCommandPalettePopup"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

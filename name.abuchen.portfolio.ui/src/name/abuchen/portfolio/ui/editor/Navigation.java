@@ -52,7 +52,12 @@ public final class Navigation
 {
     public enum Tag
     {
-        HIDE, DEFAULT_VIEW;
+        /** item is hidden in the sidebar navigation */
+        HIDE,
+        /** item has a view class attached */
+        VIEW,
+        /** the initial view to be opened */
+        DEFAULT_VIEW;
     }
 
     public static class Item
@@ -84,6 +89,9 @@ public final class Navigation
             this.label = label;
             this.image = image;
             this.viewClass = viewClass;
+
+            if (viewClass != null)
+                addTag(Tag.VIEW);
         }
 
         public String getLabel()

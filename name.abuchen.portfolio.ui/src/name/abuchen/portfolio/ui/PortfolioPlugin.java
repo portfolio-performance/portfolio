@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.util.List;
@@ -10,6 +12,8 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.InstanceScope;
+import org.eclipse.jface.dialogs.DialogSettings;
+import org.eclipse.jface.dialogs.IDialogSettings;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
@@ -26,11 +30,12 @@ public class PortfolioPlugin implements BundleActivator
 
     private Bundle bundle;
     private IPreferenceStore preferenceStore;
+    private IDialogSettings dialogSettings;
 
     public PortfolioPlugin()
     {
         super();
-        instance = this;
+        instance = this; // NOSONAR bundle is singleton
     }
 
     @Override
@@ -48,6 +53,8 @@ public class PortfolioPlugin implements BundleActivator
     {
         if (preferenceStore != null && preferenceStore.needsSaving())
             ((ScopedPreferenceStore) preferenceStore).save();
+
+        saveDialogSettings();
 
         Job.getJobManager().cancel(null);
     }
@@ -91,6 +98,50 @@ public class PortfolioPlugin implements BundleActivator
     public IPath getStateLocation()
     {
         return Platform.getStateLocation(bundle);
+    }
+
+    public IDialogSettings getDialogSettings()
+    {
+        if (dialogSettings == null)
+            loadDialogSettings();
+
+        return dialogSettings;
+    }
+
+    private File getSettingsFile()
+    {
+        return new File(getStateLocation().toFile(), "dialog_settings.xml"); //$NON-NLS-1$
+    }
+
+    private void loadDialogSettings()
+    {
+        try
+        {
+            dialogSettings = new DialogSettings("PP"); //$NON-NLS-1$
+
+            File file = getSettingsFile();
+            if (file.exists())
+                dialogSettings.load(file.getAbsolutePath());
+        }
+        catch (IOException e)
+        {
+            log(e);
+        }
+    }
+
+    private void saveDialogSettings()
+    {
+        if (dialogSettings == null)
+            return;
+
+        try
+        {
+            dialogSettings.save(getSettingsFile().getAbsolutePath());
+        }
+        catch (IOException e)
+        {
+            log(e);
+        }
     }
 
     public static PortfolioPlugin getDefault()
