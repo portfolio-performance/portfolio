@@ -1254,11 +1254,11 @@ public class OnvistaPDFExtractorTest
     }
     
     @Test
-    public void testRegistrierungsgebuehr() throws IOException
+    public void testRegistrierungsgebuehr()
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "OnvistaRegistrierungsgebuehr.txt"), errors);
@@ -1271,15 +1271,14 @@ public class OnvistaPDFExtractorTest
 
         // check transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
         assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
         assertThat(transaction.getSecurity(), is(security));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-07-24T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.89))));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0)));
     }
 
     @Test

@@ -1075,13 +1075,9 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
-                        .assign((t, v) -> {
-                            t.setShares(asShares(v.get("shares")));
-                            t.setDateTime(asDate(v.get("date")));
-
-                        })
+                        .section("date")
+                        .match("^davon ausgef\\. *: ([.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(t -> {
                             if (t.getCurrencyCode() != null && t.getAmount() != 0)

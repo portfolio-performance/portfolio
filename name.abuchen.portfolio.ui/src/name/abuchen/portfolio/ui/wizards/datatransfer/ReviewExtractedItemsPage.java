@@ -45,6 +45,7 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
+import name.abuchen.portfolio.datatransfer.actions.CheckSecurityRelatedValuesAction;
 import name.abuchen.portfolio.datatransfer.actions.CheckValidTypesAction;
 import name.abuchen.portfolio.datatransfer.actions.DetectDuplicatesAction;
 import name.abuchen.portfolio.datatransfer.actions.MarkNonImportableAction;
@@ -593,6 +594,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         List<ImportAction> actions = new ArrayList<>();
         actions.add(new CheckValidTypesAction());
+        actions.add(new CheckSecurityRelatedValuesAction());
         actions.add(new DetectDuplicatesAction());
         actions.add(new CheckCurrenciesAction());
         actions.add(new MarkNonImportableAction());

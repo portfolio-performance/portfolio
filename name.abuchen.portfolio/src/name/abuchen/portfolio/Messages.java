@@ -152,6 +152,7 @@ public class Messages extends NLS
     public static String LabelExchangeRateSeriesBasedOnSecurity;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;
+    public static String MsgCheckDividendsMustHaveASecurity;
     public static String MsgCheckInvalidTransactionType;
     public static String MsgCheckGrossValueUnitMissing;
     public static String MsgCheckGrossValueUnitNotValid;
@@ -161,6 +162,8 @@ public class Messages extends NLS
     public static String MsgCheckTaxAndFeesTooHigh;
     public static String MsgCheckTransactionCurrencyDoesNotMatchAccount;
     public static String MsgCheckTransactionMustNotHaveGrossAmount;
+    public static String MsgCheckTransactionTypeCannotHaveASecurity;
+    public static String MsgCheckTransactionTypeCannotHaveShares;
     public static String MsgCheckUnitForexMismatch;
     public static String MsgCheckUnitForexNotValid;
     public static String MsgCheckUnsupportedCurrency;

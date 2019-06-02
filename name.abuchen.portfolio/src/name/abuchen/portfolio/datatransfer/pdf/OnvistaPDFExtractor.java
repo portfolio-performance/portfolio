@@ -892,24 +892,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         // Vonovia SE Namens-Aktien o.N. DE000A1ML7J1
                         .match("(?<name>.*?) (?<isin>[^ ]\\S*)$") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        // Nominal Schlusstag
-                        //STK 6,000 22.07.2017
-                        .section("notation", "shares")
-                        .find("Nominal(.*)")
-                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d{3,})?)(.*)")
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !"STK".equalsIgnoreCase(notation))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares(asShares(v.get("shares")) / 100);
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                        })
                         
                         //Registrierungsgebühr EUR 0,75-
                         //Dt. Umsatzsteuer EUR 0,14-
