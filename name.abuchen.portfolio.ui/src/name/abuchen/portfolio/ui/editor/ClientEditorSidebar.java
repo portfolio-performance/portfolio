@@ -26,7 +26,6 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
 {
     private PortfolioPart editor;
 
-    private ScrolledComposite scrolledComposite;
     private Sidebar<Navigation.Item> sidebar;
 
     public ClientEditorSidebar(PortfolioPart editor)
@@ -36,8 +35,6 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
 
     public Control createSidebarControl(Composite parent)
     {
-        scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
-
         Sidebar.Model<Navigation.Item> model = new Sidebar.Model<Navigation.Item>()
         {
             @Override
@@ -83,6 +80,8 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
                 return item.getContextMenu();
             }
         };
+
+        ScrolledComposite scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
 
         sidebar = new Sidebar<>(scrolledComposite, model);
 
