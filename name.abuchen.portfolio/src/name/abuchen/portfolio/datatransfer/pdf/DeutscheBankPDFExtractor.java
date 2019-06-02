@@ -50,12 +50,10 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .match("^.{15}(?<name>.*)$") //
                         .match("^WKN (?<wkn>[^ ]*) (.*)$") //
                         .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)") //
+                        .match("^WKN [^ ]* Nominal ST (?<shares>[\\d.]+(,\\d+)?)") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -84,7 +82,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(BuySellEntryItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -111,7 +109,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .match("^WKN [^ ]* Nominal ST (?<shares>\\d+(,\\d+)?)")
+                        .match("^WKN [^ ]* Nominal ST (?<shares>[\\d.]+(,\\d+)?)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -162,7 +160,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(BuySellEntryItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -183,13 +181,13 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("wkn", "isin", "name", "currency") //
                         .find("Stück WKN ISIN") //
-                        .match("(\\d+,\\d*) (?<wkn>\\S*) (?<isin>\\S*)") //
+                        .match("([\\d.]+,\\d*) (?<wkn>\\S*) (?<isin>\\S*)") //
                         .match("^(?<name>.*)$") //
                         .match("Bruttoertrag ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
-                        .match("(?<shares>\\d+,\\d*) (\\S*) (\\S*)")
+                        .match("(?<shares>[\\d.]+,\\d*) (\\S*) (\\S*)")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .section("date", "amount", "currency")
@@ -240,7 +238,7 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.TAX, taxes));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(TransactionItem::new));
     }
 
     @Override
