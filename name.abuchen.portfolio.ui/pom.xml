@@ -15,6 +15,7 @@
 	
 	<properties>
 		<sonar.exclusions>**/Messages.java,**/kommer.xml,**/dax.xml</sonar.exclusions>
+		<sonar.coverage.jacoco.xmlReportPaths>../name.abuchen.portfolio.ui.tests/target/site/jacoco-aggregate/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
 
 	<build>
