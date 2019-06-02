@@ -70,7 +70,7 @@ public class TradesWidget extends WidgetDelegate<TradeDetailsView.Input>
             @Override
             public void linkActivated(HyperlinkEvent e)
             {
-                part.activateView("trades.TradeDetails", null, getUpdateTask().get()); //$NON-NLS-1$
+                part.activateView(TradeDetailsView.class, getUpdateTask().get());
             }
         });
 

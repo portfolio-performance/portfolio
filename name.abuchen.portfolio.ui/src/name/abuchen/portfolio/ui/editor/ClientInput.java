@@ -57,6 +57,8 @@ public class ClientInput
     private File clientFile;
     private Client client;
 
+    private Navigation navigation;
+
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
     private LinkedList<ReportingPeriod> reportingPeriods;
@@ -134,6 +136,11 @@ public class ClientInput
     public File getFile()
     {
         return clientFile;
+    }
+
+    public Navigation getNavigation()
+    {
+        return navigation;
     }
 
     public ExchangeRateProviderFactory getExchangeRateProviderFacory()
@@ -443,6 +450,8 @@ public class ClientInput
         c2.set(Client.class, client);
         this.exchangeRateProviderFacory = ContextInjectionFactory //
                         .make(ExchangeRateProviderFactory.class, this.context, c2);
+
+        this.navigation = new Navigation(client);
 
         client.addPropertyChangeListener(event -> {
 

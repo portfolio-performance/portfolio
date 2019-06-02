@@ -12,6 +12,10 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 /* package */class MenuHelper
 {
+    private MenuHelper()
+    {
+    }
+
     /* package */static boolean isClientPartActive(MPart part)
     {
         // issue: on Linux, the menu must always be active because activation

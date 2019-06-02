@@ -20,6 +20,10 @@ public final class Colors
 
     private static final ColorRegistry REGISTRY = new ColorRegistry();
 
+    public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
+    public static final Color ICON_BLUE = getColor(14, 110, 142);
+    public static final Color ICON_GREEN = getColor(154, 193, 85);
+
     public static final Color TOTALS = getColor(0, 0, 0);
 
     public static final Color CASH = getColor(196, 55, 194);

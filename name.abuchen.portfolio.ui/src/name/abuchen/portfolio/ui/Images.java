@@ -134,4 +134,9 @@ public enum Images
         }
         return image;
     }
+
+    public String getImageURI()
+    {
+        return "platform:/plugin/" + PortfolioPlugin.PLUGIN_ID + "/icons/" + file; //$NON-NLS-1$ //$NON-NLS-2$
+    }
 }

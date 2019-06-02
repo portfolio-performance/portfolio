@@ -78,24 +78,28 @@ public class TradeDetailsView extends AbstractFinanceView
     @Override
     protected void addButtons(ToolBarManager toolBarManager)
     {
-        DropDown dropDown = new DropDown(input.getInterval().toString(), Images.FILTER_ON, SWT.NONE);
+        boolean hasPreselectedTrades = input != null;
+        if (hasPreselectedTrades)
+        {
+            DropDown dropDown = new DropDown(input.getInterval().toString(), Images.FILTER_ON, SWT.NONE);
 
-        dropDown.setMenuListener(manager -> {
-            manager.add(new SimpleAction(input.getInterval().toString(), a -> {
-                table.setInput(input.getTrades());
-                dropDown.setImage(Images.FILTER_ON);
-            }));
+            dropDown.setMenuListener(manager -> {
+                manager.add(new SimpleAction(input.getInterval().toString(), a -> {
+                    table.setInput(input.getTrades());
+                    dropDown.setImage(Images.FILTER_ON);
+                }));
 
-            manager.add(new SimpleAction(Messages.LabelAllTrades, a -> {
-                TradeCollector collector = new TradeCollector(getClient(), converter);
-                List<Trade> trades = new ArrayList<>();
-                getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
-                table.setInput(trades);
-                dropDown.setImage(Images.FILTER_OFF);
-            }));
-        });
+                manager.add(new SimpleAction(Messages.LabelAllTrades, a -> {
+                    TradeCollector collector = new TradeCollector(getClient(), converter);
+                    List<Trade> trades = new ArrayList<>();
+                    getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
+                    table.setInput(trades);
+                    dropDown.setImage(Images.FILTER_OFF);
+                }));
+            });
 
-        toolBarManager.add(dropDown);
+            toolBarManager.add(dropDown);
+        }
 
         super.addButtons(toolBarManager);
     }
@@ -106,7 +110,19 @@ public class TradeDetailsView extends AbstractFinanceView
         table = new TradesTableViewer(this);
 
         Control control = table.createViewControl(parent, TradesTableViewer.ViewMode.MULTIPLE_SECURITES);
-        table.setInput(input.getTrades());
+
+        boolean hasPreselectedTrades = input != null;
+        if (hasPreselectedTrades)
+        {
+            table.setInput(input.getTrades());
+        }
+        else
+        {
+            TradeCollector collector = new TradeCollector(getClient(), converter);
+            List<Trade> trades = new ArrayList<>();
+            getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
+            table.setInput(trades);
+        }
 
         return control;
     }

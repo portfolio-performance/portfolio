@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.LinkedList;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -21,6 +23,8 @@ import org.eclipse.e4.ui.di.Persist;
 import org.eclipse.e4.ui.model.application.ui.MDirtyable;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -47,7 +51,9 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.Navigation.Item;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.views.ExceptionView;
@@ -56,10 +62,12 @@ public class PortfolioPart implements ClientInputListener
 {
     private ClientInput clientInput;
     private ReportingPeriod selectedPeriod;
+    private Navigation.Item selectedItem;
 
     private Composite container;
     private ProgressBar progressBar;
     private PageBook book;
+    private ClientEditorSidebar sidebar;
     private AbstractFinanceView view;
 
     private Control focus;
@@ -139,11 +147,12 @@ public class PortfolioPart implements ClientInputListener
         Composite navigationBar = new Composite(sash, SWT.NONE);
         GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).margins(0, 0).applyTo(navigationBar);
 
-        ClientEditorSidebar sidebar = new ClientEditorSidebar(this);
+        this.sidebar = new ClientEditorSidebar(this);
         Control control = sidebar.createSidebarControl(navigationBar);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(control);
 
-        sashLayout.addQuickNavigation(sidebar::menuAboutToShow);
+        sashLayout.addQuickNavigation(
+                        menuManager -> addToNavigationMenu(menuManager, 0, clientInput.getNavigation().getRoots()));
 
         Composite divider = new Composite(navigationBar, SWT.NONE);
         divider.setBackground(Colors.SIDEBAR_BORDER);
@@ -173,9 +182,41 @@ public class PortfolioPart implements ClientInputListener
         sash.addDisposeListener(e -> part.getPersistedState().put(sashIdentifier,
                         String.valueOf(((SashLayoutData) navigationBar.getLayoutData()).getSize())));
 
-        sidebar.selectDefaultView();
+        // open previously selected view (or default view, if none was selected)
+
+        Optional<Navigation.Item> item = clientInput.getNavigation()
+                        .findByIdentifier(part.getPersistedState().get(UIConstants.PersistedState.VIEW));
+
+        if (!item.isPresent())
+            item = clientInput.getNavigation().findAll(Navigation.Tag.DEFAULT_VIEW).findAny();
+
+        item.ifPresent(this::activateView);
 
         focus = book;
+    }
+
+    private void addToNavigationMenu(IMenuManager menuManager, int depth, Stream<Item> items)
+    {
+        items.forEach(item -> {
+
+            if (item.getViewClass() == null)
+            {
+                MenuManager subMenu = new MenuManager(item.getLabel());
+                menuManager.add(subMenu);
+
+                addToNavigationMenu(subMenu, depth + 1, item.getChildren());
+            }
+            else
+            {
+                String label = depth > 1 ? "- " + item.getLabel() : item.getLabel(); //$NON-NLS-1$
+                SimpleAction menuAction = new SimpleAction(label, a -> activateView(item));
+                if (item.getImage() != null)
+                    menuAction.setImageDescriptor(item.getImage().descriptor());
+                menuManager.add(menuAction);
+
+                addToNavigationMenu(menuManager, depth + 1, item.getChildren());
+            }
+        });
     }
 
     /**
@@ -336,6 +377,11 @@ public class PortfolioPart implements ClientInputListener
     @PreDestroy
     public void destroy()
     {
+        Navigation navigation = getClientInput().getNavigation();
+        if (navigation != null)
+            part.getPersistedState().put(UIConstants.PersistedState.VIEW,
+                            selectedItem != null ? navigation.getIdentifier(selectedItem) : ""); //$NON-NLS-1$
+
         this.clientInput.removeListener(this);
         this.clientInput.savePreferences();
 
@@ -403,47 +449,40 @@ public class PortfolioPart implements ClientInputListener
         part.getPersistedState().put(UIConstants.PersistedState.REPORTING_PERIOD, selectedPeriod.getCode());
     }
 
-    public String getSelectedViewId()
-    {
-        return part.getPersistedState().get(UIConstants.PersistedState.VIEW);
-    }
-
-    public void setSelectedViewId(String viewId)
-    {
-        part.getPersistedState().put(UIConstants.PersistedState.VIEW, viewId);
-    }
-
     /* package */ void markDirty()
     {
         clientInput.markDirty();
     }
 
-    public void activateView(String target, String id)
+    public void activateView(Class<? extends AbstractFinanceView> view, Object parameter)
     {
-        this.activateView(target, id, null);
+        getClientInput().getNavigation().findAll(i -> view.equals(i.getViewClass())).findAny()
+                        .ifPresent(item -> activateView(item, parameter));
     }
 
-    @SuppressWarnings("unchecked")
-    public void activateView(String target, String id, Object parameter)
+    public void activateView(Navigation.Item item)
     {
+        activateView(item, item.getParameter());
+    }
+
+    public void activateView(Navigation.Item item, Object parameter)
+    {
+        if (item.getViewClass() == null)
+            return;
+
         disposeView();
 
         try
         {
-            Class<?> clazz = getClass().getClassLoader()
-                            .loadClass("name.abuchen.portfolio.ui.views." + target + "View"); //$NON-NLS-1$ //$NON-NLS-2$
-            if (clazz == null)
-                return;
+            createView(item.getViewClass(), parameter);
 
-            createView((Class<AbstractFinanceView>) clazz, parameter);
+            this.selectedItem = item;
 
-            if (id != null)
-                setSelectedViewId(id);
+            this.sidebar.select(item);
         }
         catch (Exception e)
         {
             PortfolioPlugin.log(e);
-
             createView(ExceptionView.class, e);
         }
     }

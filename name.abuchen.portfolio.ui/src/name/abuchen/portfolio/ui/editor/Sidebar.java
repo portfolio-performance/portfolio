@@ -2,20 +2,27 @@ package name.abuchen.portfolio.ui.editor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -28,223 +35,29 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.util.Colors;
 
-public final class Sidebar extends Composite
+public final class Sidebar<I> extends Composite
 {
-    public static final class Entry
+    public interface Model<I>
     {
-        private String id;
-        private Sidebar bar;
-        private Item item;
-        private EntryAction action;
-        private Images image;
+        Stream<I> getElements();
 
-        public Entry(Sidebar sidebar, String label)
-        {
-            id = label;
-            bar = sidebar;
-            item = bar.createItem(bar.entries.size(), this, label, 0);
-        }
+        Stream<I> getChildren(I item);
 
-        public Entry(Entry parent, String label)
-        {
-            this.id = parent.getId() + label;
-            this.bar = parent.bar;
+        String getLabel(I item);
 
-            int index = this.bar.entries.indexOf(parent) + 1;
-            for (; index < this.bar.entries.size(); index++)
-                if (bar.entries.get(index).item.indent == parent.item.indent)
-                    break;
+        Optional<Images> getImage(I item);
 
-            item = bar.createItem(index, this, label, parent.item.indent + STEP);
-        }
+        void select(I item);
 
-        public Entry(Entry parent, String label, EntryAction action)
-        {
-            this(parent, label, action, null);
-        }
+        IMenuListener getActionMenu(I item);
 
-        public Entry(Entry parent, String label, EntryAction action, Images image)
-        {
-            this(parent, label);
-            setAction(action, image);
-        }
-
-        public String getId()
-        {
-            return id;
-        }
-
-        public void setAction(EntryAction action, Images image)
-        {
-            this.action = action;
-            this.image = image;
-            if (image != null)
-                this.item.setImage(image.image());
-        }
-
-        public EntryAction getAction()
-        {
-            return action;
-        }
-
-        public Images getImage()
-        {
-            return image;
-        }
-
-        public void setContextMenu(MenuListener listener)
-        {
-            item.addContextMenu(listener);
-        }
-
-        public void addDropSupport(int operations, Transfer[] transferTypes, final DropTargetListener listener)
-        {
-            DropTarget dropTarget = new DropTarget(item, operations);
-            dropTarget.setTransfer(transferTypes);
-            dropTarget.addDropListener(new DropTargetListener()
-            {
-                @Override
-                public void dropAccept(DropTargetEvent event)
-                {
-                    listener.dropAccept(event);
-                }
-
-                @Override
-                public void drop(DropTargetEvent event)
-                {
-                    listener.drop(event);
-                }
-
-                @Override
-                public void dragOver(DropTargetEvent event)
-                {
-                    listener.dragOver(event);
-                }
-
-                @Override
-                public void dragOperationChanged(DropTargetEvent event)
-                {
-                    listener.dragOperationChanged(event);
-                }
-
-                @Override
-                public void dragLeave(DropTargetEvent event)
-                {
-                    listener.dragLeave(event);
-                    item.setIsDragTarget(false);
-                    item.redraw();
-                }
-
-                @Override
-                public void dragEnter(DropTargetEvent event)
-                {
-                    listener.dragEnter(event);
-                    item.setIsDragTarget(true);
-                    item.redraw();
-                }
-            });
-        }
-
-        /**
-         * Finds either the neighbor above (SWT.ARROW_DOWN) or below
-         * (SWT.ARROW_UP) the current entry.
-         */
-        public Entry findNeighbor(int direction)
-        {
-            int index = bar.entries.indexOf(this);
-
-            if (direction == SWT.ARROW_DOWN)
-                return index + 1 < bar.entries.size() ? bar.entries.get(index + 1) : null;
-            else if (direction == SWT.ARROW_UP)
-                return index > 0 ? bar.entries.get(index - 1) : null;
-
-            return null;
-        }
-
-        public boolean isSelectable()
-        {
-            return item != null && item.indent > 0 && action != null;
-        }
-
-        public void setLabel(String label)
-        {
-            item.text = label;
-            item.redraw();
-        }
-
-        public String getLabel()
-        {
-            return item.text;
-        }
-
-        public int getIndent()
-        {
-            return item.indent;
-        }
-
-        public void dispose()
-        {
-            Entry down = findNeighbor(SWT.ARROW_DOWN);
-
-            if (down != null)
-            {
-                FormData data = (FormData) down.item.getLayoutData();
-
-                Entry up = findNeighbor(SWT.ARROW_UP);
-                if (up != null)
-                    data.top = new FormAttachment(up.item, down.item.indent == 0 ? 20 : 0);
-                else
-                    data.top = new FormAttachment(0, 5);
-            }
-
-            bar.entries.remove(this);
-
-            if (bar.selection == this)
-                bar.selection = null;
-
-            item.dispose();
-
-            bar.layout();
-        }
-
-        public void select()
-        {
-            bar.select(this);
-        }
-
-        /**
-         * Moves the current item one up. Requires the composite to re-layout
-         * afterwards.
-         */
-        public void moveUp()
-        {
-            int index = bar.entries.indexOf(this);
-            if (index == 0)
-                throw new IllegalArgumentException();
-
-            bar.entries.remove(index);
-            bar.entries.add(index - 1, this);
-
-            for (int ii = index - 1; ii <= index + 1 && ii < bar.entries.size(); ii++)
-                bar.setLayoutData(ii, bar.entries.get(ii).item);
-        }
-    }
-
-    public interface MenuListener
-    {
-        void menuAboutToShow(Entry entry, IMenuManager manager);
-    }
-
-    public interface EntryAction
-    {
-        void run(Entry entry);
+        IMenuListener getContextMenu(I item);
     }
 
     public static final int STEP = 10;
@@ -253,52 +66,134 @@ public final class Sidebar extends Composite
     private Font boldFont;
     private Font sectionFont;
 
+    private final Model<I> model;
+
     private List<Entry> entries = new ArrayList<>();
 
     private Entry selection = null;
+    private Entry focus = null;
 
-    public Sidebar(Composite parent, int style)
+    public Sidebar(Composite parent, Model<I> model)
     {
         super(parent, SWT.NONE);
+        this.model = model;
 
         setBackground(Colors.getColor(249, 250, 250));
         setLayout(new FormLayout());
 
         createColorsAndFonts(parent);
         registerListeners();
+
+        rebuild();
     }
 
-    public void select(Entry entry)
+    public void rebuild()
     {
-        Entry oldSelection = selection;
-        selection = entry;
+        List<Entry> existingList = new ArrayList<>(entries);
+        List<Entry> targetList = new ArrayList<>();
 
-        if (oldSelection != null && oldSelection.item != null)
-            oldSelection.item.redraw();
+        model.getElements().forEach(item -> build(0, item, existingList, targetList));
 
-        if (selection.item != null)
-            selection.item.redraw();
+        existingList.forEach(Entry::dispose);
 
-        entry.action.run(entry);
+        this.entries = targetList;
     }
 
-    public Entry selectById(String id)
+    private void build(int indent, I item, List<Entry> existingList, List<Entry> targetList)
     {
-        for (Entry entry : entries)
+        Entry entry = existingList.stream().filter(i -> item.equals(i.getSubject())).findAny()
+                        .orElseGet(() -> new Entry(this, item));
+
+        entry.setIndent(indent);
+
+        IMenuListener contextMenu = model.getContextMenu(item);
+        if (contextMenu != null)
+            entry.addContextMenu(contextMenu);
+
+        FormData data = new FormData();
+        data.left = new FormAttachment(0);
+        data.right = new FormAttachment(100);
+        int offset = indent == 0 ? 20 : 0;
+        data.top = targetList.isEmpty() ? new FormAttachment(0, 5)
+                        : new FormAttachment(targetList.get(targetList.size() - 1), offset);
+        entry.setLayoutData(data);
+
+        existingList.remove(entry);
+        targetList.add(entry);
+
+        model.getChildren(item).forEach(child -> build(indent + STEP, child, existingList, targetList));
+    }
+
+    public void select(I subject)
+    {
+        Entry previous = selection;
+
+        if (subject == null)
+            selection = null;
+        else
+            selection = entries.stream().filter(e -> e.getSubject().equals(subject)).findAny().orElse(null);
+
+        if (previous != null)
+            previous.redraw();
+        if (selection != null)
+            selection.redraw();
+    }
+
+    public void addDropSupport(I subject, int operations, Transfer[] transferTypes, DropTargetListener listener)
+    {
+        Optional<Entry> entry = entries.stream().filter(e -> e.getSubject().equals(subject)).findAny();
+        if (!entry.isPresent())
+            return;
+
+        Entry target = entry.get();
+
+        if (target.getData(DND.DROP_TARGET_KEY) != null)
+            return;
+
+        DropTarget dropTarget = new DropTarget(target, operations);
+        dropTarget.setTransfer(transferTypes);
+        dropTarget.addDropListener(new DropTargetListener()
         {
-            if (id.equals(entry.getId()))
+            @Override
+            public void dropAccept(DropTargetEvent event)
             {
-                select(entry);
-                return entry;
+                listener.dropAccept(event);
             }
-        }
 
-        return null;
-    }
+            @Override
+            public void drop(DropTargetEvent event)
+            {
+                listener.drop(event);
+            }
 
-    public List<Entry> getEntries()
-    {
-        return entries;
+            @Override
+            public void dragOver(DropTargetEvent event)
+            {
+                listener.dragOver(event);
+            }
+
+            @Override
+            public void dragOperationChanged(DropTargetEvent event)
+            {
+                listener.dragOperationChanged(event);
+            }
+
+            @Override
+            public void dragLeave(DropTargetEvent event)
+            {
+                listener.dragLeave(event);
+                target.setIsDragTarget(false);
+                target.redraw();
+            }
+
+            @Override
+            public void dragEnter(DropTargetEvent event)
+            {
+                listener.dragEnter(event);
+                target.setIsDragTarget(true);
+                target.redraw();
+            }
+        });
     }
 
     //
@@ -311,7 +206,26 @@ public final class Sidebar extends Composite
 
         addKeyListener(KeyListener.keyPressedAdapter(Sidebar.this::keyPressed));
 
-        addTraverseListener(Sidebar.this::keyTraversed);
+        addTraverseListener(event -> event.doit = true);
+
+        addFocusListener(new FocusListener()
+        {
+            @Override
+            public void focusLost(FocusEvent e)
+            {
+                Entry previous = focus;
+                focus = null;
+                if (previous != null)
+                    previous.redraw();
+            }
+
+            @Override
+            public void focusGained(FocusEvent e)
+            {
+                focus = selection != null ? selection : entries.get(0);
+                focus.redraw();
+            }
+        });
     }
 
     private void widgetDisposed()
@@ -323,32 +237,30 @@ public final class Sidebar extends Composite
 
     private void keyPressed(KeyEvent e)
     {
-        if (selection != null && (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN))
+        if (focus != null && (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN))
         {
-            Entry entry = selection.findNeighbor(e.keyCode);
-            while (entry != null && !entry.isSelectable())
-                entry = entry.findNeighbor(e.keyCode);
+            int pos = this.entries.indexOf(focus);
+            pos = pos + (e.keyCode == SWT.ARROW_UP ? -1 : 1);
 
-            if (entry != null)
-                select(entry);
+            if (pos >= 0 && pos < entries.size())
+            {
+                Entry previous = focus;
+
+                focus = entries.get(pos);
+
+                previous.redraw();
+                focus.redraw();
+            }
+        }
+        else if (focus != null && e.keyCode == SWT.SPACE)
+        {
+            model.select(focus.getSubject());
         }
         else
         {
             e.doit = false;
         }
     }
-
-    private void keyTraversed(TraverseEvent e)
-    {
-        if (e.detail == SWT.TRAVERSE_TAB_NEXT || e.detail == SWT.TRAVERSE_TAB_PREVIOUS)
-        {
-            e.doit = true;
-        }
-    }
-
-    //
-    // item implementation
-    //
 
     private void createColorsAndFonts(Composite parent)
     {
@@ -364,118 +276,55 @@ public final class Sidebar extends Composite
         sectionFont = new Font(Display.getDefault(), fontData);
     }
 
-    private Item createItem(int index, Entry entry, String label, int indent)
-    {
-        entries.add(index, entry);
-
-        Item l = new Item(this, entry);
-        l.setText(label);
-        l.setIndent(indent);
-
-        setLayoutData(index, l);
-
-        if (index + 1 < entries.size())
-        {
-            // cannot use #setLayoutData because entry has no item reference yet
-            Item item = entries.get(index + 1).item;
-            FormData data = (FormData) item.getLayoutData();
-            data.top = new FormAttachment(l, item.indent == 0 ? 20 : 0);
-        }
-
-        this.setTabList(new Control[0]);
-
-        return l;
-    }
-
-    private void setLayoutData(int index, Item item)
-    {
-        FormData data = new FormData();
-        data.left = new FormAttachment(0);
-        data.right = new FormAttachment(100);
-        int indent = item.indent == 0 ? 20 : 0;
-        data.top = index == 0 ? new FormAttachment(0, 5) : new FormAttachment(entries.get(index - 1).item, indent);
-        item.setLayoutData(data);
-    }
-
     //
     // item widget
     //
 
-    private class Item extends Canvas // NOSONAR
+    private class Entry extends Canvas // NOSONAR
     {
         private static final int MARGIN_X = 6;
         private static final int MARGIN_Y = 4;
 
-        private final Entry entry;
+        private final I subject;
 
         private int indent;
-        private String text;
-        private Image image;
 
+        private Image image;
         private Menu contextMenu;
+        private Menu actionMenu;
 
         private boolean isDragTarget;
 
-        public Item(Composite parent, Entry entry)
+        public Entry(Composite parent, I subject)
         {
             super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS);
-            this.entry = entry;
+            this.subject = Objects.requireNonNull(subject);
 
-            addDisposeListener(e -> Item.this.widgetDisposed());
+            this.image = model.getImage(subject).map(Images::image).orElse(null);
+            if (this.image == null && model.getActionMenu(subject) != null)
+                this.image = Images.PLUS.image();
 
-            addPaintListener(Item.this::paintControl);
-
-            addKeyListener(KeyListener.keyPressedAdapter(e -> {
-                if (e.keyCode == SWT.ARROW_UP || e.keyCode == SWT.ARROW_DOWN)
-                    Sidebar.this.keyPressed(e);
-                else
-                    e.doit = false;
-            }));
-
-            addMouseListener(MouseListener.mouseDownAdapter(event -> {
-                if (event.button == 1)
-                {
-                    if (indent > 0)
-                    {
-                        Sidebar.this.select(Item.this.entry);
-                    }
-                    else if (indent == 0 && Item.this.entry.action != null)
-                    {
-                        boolean doIt = true;
-
-                        if (image != null)
-                        {
-                            Rectangle clientArea = getClientArea();
-                            Rectangle imgBounds = image.getBounds();
-
-                            doIt = (event.x >= clientArea.width - imgBounds.width - MARGIN_X)
-                                            && (event.x <= clientArea.width - MARGIN_X);
-                        }
-
-                        if (doIt)
-                            action(Item.this.entry);
-                    }
-                }
-            }));
+            addDisposeListener(Entry.this::handleDispose);
+            addPaintListener(Entry.this::handlePaint);
+            addMouseListener(MouseListener.mouseDownAdapter(Entry.this::handleMouseDown));
         }
 
-        public void addContextMenu(final MenuListener listener)
+        public I getSubject()
+        {
+            return subject;
+        }
+
+        public void addContextMenu(IMenuListener listener)
         {
             if (contextMenu != null)
                 contextMenu.dispose();
 
             MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
             menuMgr.setRemoveAllWhenShown(true);
-            menuMgr.addMenuListener(m -> listener.menuAboutToShow(Item.this.entry, m));
+            menuMgr.addMenuListener(listener);
 
             contextMenu = menuMgr.createContextMenu(this);
             setMenu(contextMenu);
-        }
-
-        private void widgetDisposed()
-        {
-            if (contextMenu != null)
-                contextMenu.dispose();
         }
 
         public void setIsDragTarget(boolean isDragTarget)
@@ -488,20 +337,54 @@ public final class Sidebar extends Composite
             this.indent = indent;
         }
 
-        public void setText(String text)
+        private void showMenu(IMenuListener listener)
         {
-            this.text = text;
+            if (actionMenu != null)
+                actionMenu.dispose();
+
+            MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
+            menuMgr.setRemoveAllWhenShown(true);
+            menuMgr.addMenuListener(listener);
+
+            actionMenu = menuMgr.createContextMenu(this);
+            actionMenu.setVisible(true);
         }
 
-        public void setImage(Image image)
+        private void handleDispose(DisposeEvent event) // NOSONAR
         {
-            this.image = image;
+            if (contextMenu != null)
+                contextMenu.dispose();
+            if (actionMenu != null)
+                actionMenu.dispose();
         }
 
-        private void action(Entry entry)
+        private void handleMouseDown(MouseEvent event)
         {
-            if (entry.action != null)
-                entry.action.run(entry);
+            if (event.button == 1)
+            {
+                IMenuListener action = model.getActionMenu(subject);
+                if (action != null)
+                {
+                    boolean doIt = true;
+
+                    if (image != null)
+                    {
+                        Rectangle clientArea = getClientArea();
+                        Rectangle imgBounds = image.getBounds();
+
+                        doIt = (event.x >= clientArea.width - imgBounds.width - MARGIN_X)
+                                        && (event.x <= clientArea.width - MARGIN_X);
+                    }
+
+                    if (doIt)
+                    {
+                        showMenu(action);
+                        return;
+                    }
+                }
+
+                model.select(subject);
+            }
         }
 
         @Override
@@ -509,10 +392,13 @@ public final class Sidebar extends Composite
         {
             int width = 0;
             int height = 0;
-            if (text != null)
+
+            String label = model.getLabel(subject);
+
+            if (label != null)
             {
                 GC gc = new GC(this);
-                Point extent = gc.stringExtent(text);
+                Point extent = gc.stringExtent(label);
                 gc.dispose();
                 width += extent.x;
                 height = Math.max(height, extent.y);
@@ -524,7 +410,7 @@ public final class Sidebar extends Composite
             return new Point(width + (2 * MARGIN_X) + indent, height + (2 * MARGIN_Y));
         }
 
-        private void paintControl(PaintEvent e)
+        private void handlePaint(PaintEvent e)
         {
             GC gc = e.gc;
 
@@ -533,7 +419,9 @@ public final class Sidebar extends Composite
 
             Rectangle bounds = getClientArea();
 
-            if (Sidebar.this.selection != null && this == Sidebar.this.selection.item)
+            boolean hasFocus = Objects.equals(focus, this);
+
+            if (Objects.equals(Sidebar.this.selection, this))
             {
                 gc.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
                 gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
@@ -553,17 +441,19 @@ public final class Sidebar extends Composite
                 }
                 else
                 {
-                    gc.setForeground(isDragTarget ? Colors.BLACK : Colors.SIDEBAR_TEXT);
+                    gc.setForeground(isDragTarget ? Colors.ICON_ORANGE : Colors.SIDEBAR_TEXT);
                     gc.setFont(sectionFont);
                 }
             }
+
+            String label = model.getLabel(subject);
 
             int x = bounds.x + MARGIN_X + indent;
             if (image != null)
             {
                 Rectangle imgBounds = image.getBounds();
                 // center image relative to text
-                int offset = (imgBounds.height - gc.stringExtent(text).y) / 2;
+                int offset = (imgBounds.height - gc.stringExtent(label).y) / 2;
 
                 if (indent == 0)
                 {
@@ -576,7 +466,14 @@ public final class Sidebar extends Composite
                 }
             }
 
-            gc.drawText(text, x, bounds.y + MARGIN_Y, true);
+            gc.drawText(label, x, bounds.y + MARGIN_Y, true);
+
+            if (hasFocus)
+            {
+                Point extent = gc.textExtent(label);
+                gc.drawLine(x - 1, bounds.y + MARGIN_Y + extent.y - 1, x + extent.x - 1,
+                                bounds.y + MARGIN_Y + extent.y - 1);
+            }
 
             gc.setBackground(oldBackground);
             gc.setForeground(oldForeground);
