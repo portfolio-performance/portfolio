@@ -103,14 +103,10 @@ public class AccountTransaction extends Transaction
      */
     public long getGrossValueAmount()
     {
-        // at the moment, only dividend transaction support taxes
-        if (!(this.type == Type.DIVIDENDS || this.type == Type.INTEREST || this.type == Type.INTEREST_CHARGE))
-            throw new UnsupportedOperationException();
-
         long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount)).getAmount();
 
-        return getAmount() + taxes;
+        return getAmount() + (type.isCredit() ? taxes : -taxes);
     }
 
     /**
