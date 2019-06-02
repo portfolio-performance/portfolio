@@ -103,6 +103,13 @@ public class SecurityBasedExchangeRateProvider implements ExchangeRateProvider
             return new ExchangeRate(price.getDate(), BigDecimal.valueOf(price.getValue() / Values.Quote.divider()));
         }
 
+        @Override
+        public String getLabel()
+        {
+            return MessageFormat.format(Messages.LabelExchangeRateSeriesBasedOnSecurity,
+                            ExchangeRateTimeSeries.super.getLabel(), security.getName());
+        }
+
     }
 
     @Override
