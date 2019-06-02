@@ -54,6 +54,7 @@ public class EmbeddedBrowser
                 functions.accept(browser);
 
             browser.setText(loadHTML(htmlpage));
+            browser.addTraverseListener(event -> event.doit = true);
 
             Menu menu = new Menu(browser);
             browser.setMenu(menu);
