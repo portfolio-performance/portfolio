@@ -16,28 +16,29 @@ import org.eclipse.jface.viewers.TreeViewerEditor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 
-import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.model.Client;
 
 public abstract class ColumnEditingSupport
 {
+    @FunctionalInterface
     public interface ModificationListener
     {
         void onModified(Object element, Object newValue, Object oldValue);
     }
 
-    public static class MarkDirtyListener implements ModificationListener
+    public static class TouchClientListener implements ModificationListener
     {
-        private final AbstractFinanceView view;
+        private final Client client;
 
-        public MarkDirtyListener(AbstractFinanceView view)
+        public TouchClientListener(Client client)
         {
-            this.view = view;
+            this.client = client;
         }
 
         @Override
         public void onModified(Object element, Object newValue, Object oldValue)
         {
-            view.markDirty();
+            client.touch();
         }
     }
 

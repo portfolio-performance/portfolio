@@ -72,7 +72,7 @@ import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
@@ -346,6 +346,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // security name
         column = new NameColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         recordColumns.addColumn(column);
 
         // cost value - fifo
@@ -489,13 +490,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // isin
         column = new IsinColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this));
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setVisible(false);
         recordColumns.addColumn(column);
 
         // note
         column = new NoteColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this));
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setVisible(false);
         recordColumns.addColumn(column);
     }

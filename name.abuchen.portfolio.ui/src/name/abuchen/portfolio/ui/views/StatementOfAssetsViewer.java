@@ -83,7 +83,7 @@ import name.abuchen.portfolio.ui.util.AttributeComparator;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.MarkDirtyListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
@@ -239,7 +239,7 @@ public class StatementOfAssetsViewer
                 return !isUnassignedCategory ? super.canEdit(element) : false;
             }
 
-        }.setMandatory(true).addListener(new MarkDirtyListener(this.owner)));
+        }.setMandatory(true).addListener(new TouchClientListener(client)));
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
@@ -273,7 +273,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new IsinColumn("3"); //$NON-NLS-1$
-        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+        column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);
         support.addColumn(column);
@@ -488,7 +488,7 @@ public class StatementOfAssetsViewer
         support.addColumn(column);
 
         column = new NoteColumn();
-        column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+        column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
@@ -661,7 +661,7 @@ public class StatementOfAssetsViewer
                             column.setVisible(false);
                             if (column.getSorter() != null)
                                 column.getSorter().wrap(ElementComparator::new);
-                            column.getEditingSupport().addListener(new MarkDirtyListener(this.owner));
+                            column.getEditingSupport().addListener(new TouchClientListener(client));
                             support.addColumn(column);
                         });
     }
