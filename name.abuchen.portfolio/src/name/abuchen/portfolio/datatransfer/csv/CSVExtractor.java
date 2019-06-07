@@ -138,13 +138,13 @@ public abstract class CSVExtractor implements Extractor
         String timeValue = getText(timeColumn, rawValues, field2column);
         if (timeValue != null)
         {
-            int p = timeValue.indexOf(':');
-            if (p > 0)
+            String[] timeToks = timeValue.split(":"); //$NON-NLS-1$
+            if (timeToks.length > 1)
             {
                 try
                 {
-                    int hour = Integer.parseInt(timeValue.substring(0, p));
-                    int minute = Integer.parseInt(timeValue.substring(p + 1));
+                    int hour = Integer.parseInt(timeToks[0]);
+                    int minute = Integer.parseInt(timeToks[1]);
 
                     result = result.withHour(hour).withMinute(minute);
                 }
