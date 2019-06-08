@@ -34,6 +34,7 @@
 
    <features>
       <feature id="name.abuchen.portfolio.feature"/>
+      <feature id="name.abuchen.portfolio.dependencies.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>

@@ -29,6 +29,7 @@
 	</prerequisites>
 
 	<modules>
+		<module>../portfolio-target-definition</module>
 		<module>../name.abuchen.portfolio</module>
 		<module>../name.abuchen.portfolio.tests</module>
 		<module>../name.abuchen.portfolio.ui</module>
@@ -40,105 +41,11 @@
 
 	<repositories>
 		<repository>
-			<id>portfolio-non-maven-dependencies</id>
-			<url>http://buchen.github.io/maven-repo</url>
-		</repository>
-		<repository>
 			<id>portfolio-jre</id>
 			<layout>p2</layout>
 			<url>http://buchen.github.io/bundled-jre/8.30.0.1-patch1</url>
 		</repository>
-		<repository>
-			<id>eclipse-orbit</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository</url>
-		</repository>
-		<repository>
-			<id>eclipse-2018-09</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/eclipse/updates/4.9/R-4.9-201809060745/</url>
-		</repository>
-		<repository>
-			<id>eclipse-babel</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon</url>
-		</repository>
-		<repository>
-			<id>eclipse-nebula</id>
-			<layout>p2</layout>
-			<url>http://download.eclipse.org/nebula/releases/2.0.1</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.release</id>
-			<name>SpringSource Enterprise Bundle Repository - SpringSource Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/release</url>
-		</repository>
-		<repository>
-			<id>com.springsource.repository.bundles.external</id>
-			<name>SpringSource Enterprise Bundle Repository - External Bundle Releases</name>
-			<url>http://repository.springsource.com/maven/bundles/external</url>
-		</repository>
 	</repositories>
-
-	<dependencies>
-		<!-- the original XML stream bundle imports sun.misc - too annoying to 
-			create a framework bundle to make it work. Apache has the import optional -->
-		<dependency>
-			<groupId>org.apache.servicemix.bundles</groupId>
-			<artifactId>org.apache.servicemix.bundles.xstream</artifactId>
-			<version>1.4.8_1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.servicemix.bundles</groupId>
-			<artifactId>org.apache.servicemix.bundles.xpp3</artifactId>
-			<version>1.1.4c_7</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>com.springsource.org.apache.commons.csv</artifactId>
-			<version>1.0.0.BUILD-20080106</version>
-		</dependency>
-		<dependency>
-			<groupId>org.swtchart</groupId>
-			<artifactId>org.swtchart</artifactId>
-			<version>0.10.0</version>
-		</dependency>
-		<dependency>
-			<groupId>de.engehausen</groupId>
-			<artifactId>de.engehausen.treemap</artifactId>
-			<version>0.0.4</version>
-		</dependency>
-		<dependency>
-			<groupId>de.engehausen</groupId>
-			<artifactId>de.engehausen.treemap.swt</artifactId>
-			<version>0.0.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jsoup</groupId>
-			<artifactId>jsoup</artifactId>
-			<version>1.8.3</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.json-simple</groupId>
-			<artifactId>json-simple</artifactId>
-			<version>1.1.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.pdfbox</groupId>
-			<artifactId>pdfbox</artifactId>
-			<version>1.8.16</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-lang3</artifactId>
-			<version>3.4</version>
-		</dependency>
-		<dependency>
-			<groupId>com.google.guava</groupId>
-			<artifactId>guava</artifactId>
-			<version>27.1-jre</version>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -178,6 +85,13 @@
 				<configuration>
 					<resolver>p2</resolver>
 					<pomDependencies>consider</pomDependencies>
+					<target>
+						<artifact>
+							<groupId>name.abuchen.portfolio</groupId>
+							<artifactId>portfolio-target-definition</artifactId>
+							<version>${project.version}</version>
+						</artifact>
+					</target>
 					<dependency-resolution>
 						<extraRequirements>
 							<requirement>
@@ -399,63 +313,4 @@
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>generate-target-platform</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>generate-target-platform</name>
-					<value>true</value>
-				</property>
-			</activation>
-			<build>
-				<plugins>
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-dependency-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-dependencies</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-dependencies</goal>
-								</goals>
-								<inherited>false</inherited>
-								<configuration>
-									<outputDirectory>${basedir}/ide-target-platform/bundles</outputDirectory>
-									<overWriteReleases>false</overWriteReleases>
-									<overWriteSnapshots>false</overWriteSnapshots>
-									<overWriteIfNewer>true</overWriteIfNewer>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-					<plugin>
-						<artifactId>maven-resources-plugin</artifactId>
-						<executions>
-							<execution>
-								<id>copy-resources</id>
-								<phase>package</phase>
-								<goals>
-									<goal>copy-resources</goal>
-								</goals>
-								<inherited>false</inherited>
-								<configuration>
-									<outputDirectory>${basedir}/ide-target-platform</outputDirectory>
-									<resources>
-										<resource>
-											<directory>${basedir}/template</directory>
-											<filtering>true</filtering>
-										</resource>
-									</resources>
-								</configuration>
-							</execution>
-						</executions>
-					</plugin>
-				</plugins>
-			</build>
-		</profile>
-	</profiles>
 </project>
