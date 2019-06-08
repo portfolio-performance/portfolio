@@ -238,6 +238,14 @@ public abstract class TaxonomyNode implements Adaptable
         return parent == null;
     }
 
+    public TaxonomyNode getRoot()
+    {
+        if(parent == null){
+            return this;
+        }
+        return parent.getRoot();
+    }
+    
     public List<TaxonomyNode> getChildren()
     {
         return children;

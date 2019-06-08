@@ -201,6 +201,7 @@ public class Messages extends NLS
     public static String ColumnNote;
     public static String ColumnNumberOfTransactions;
     public static String ColumnOffsetAccount;
+    public static String ColumnPctOfTotal;
     public static String ColumnPeer;
     public static String ColumnPerShare;
     public static String ColumnPerShare_Description;
