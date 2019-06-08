@@ -408,6 +408,7 @@ public class Messages extends NLS
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
     public static String LabelAccounts;
+    public static String LabelAccountTransfer;
     public static String LabelAccumulatedDividends;
     public static String LabelAccumulatedEarnings;
     public static String LabelAccumulatedInterest;
@@ -507,6 +508,8 @@ public class Messages extends NLS
     public static String LabelNewClassification;
     public static String LabelNewFieldByType;
     public static String LabelNewTaxonomy;
+    public static String LabelNewTransaction;
+    public static String LabelNewTransactionForSecurity;
     public static String LabelNo;
     public static String LabelNoName;
     public static String LabelNotAvailable;

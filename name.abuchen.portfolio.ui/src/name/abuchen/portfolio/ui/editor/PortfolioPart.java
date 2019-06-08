@@ -421,6 +421,11 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getReportingPeriods();
     }
 
+    public Optional<AbstractFinanceView> getCurrentView()
+    {
+        return Optional.ofNullable(view);
+    }
+
     public ReportingPeriod getSelectedPeriod()
     {
         if (selectedPeriod != null)
