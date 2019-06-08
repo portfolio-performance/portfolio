@@ -48,7 +48,8 @@ public class NoteColumn extends Column
             @Override
             public String getToolTipText(Object e)
             {
-                return TextUtil.wordwrap(getText(e));
+                String note = getText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
 
         });
