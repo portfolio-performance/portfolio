@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.ui.dialogs.palette;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,17 +19,25 @@ public class NavigationElements
     {
         private final PortfolioPart part;
         private final Navigation.Item item;
+        private final String subtitle;
 
-        public NavigationElement(PortfolioPart part, Item item)
+        public NavigationElement(PortfolioPart part, Item item, String subtitle)
         {
             this.part = part;
             this.item = item;
+            this.subtitle = subtitle;
         }
 
         @Override
         public String getTitel()
         {
             return item.getLabel();
+        }
+
+        @Override
+        public String getSubtitle()
+        {
+            return subtitle;
         }
 
         @Override
@@ -53,7 +63,29 @@ public class NavigationElements
         if (navigation == null)
             return Collections.emptyList();
 
-        return navigation.findAll(Tag.VIEW).map(item -> new NavigationElement(part, item)).collect(Collectors.toList());
+        List<Element> elements = new ArrayList<>();
+
+        navigation.getRoots().forEach(item -> addElement(elements, part, new ArrayList<>(Arrays.asList(item))));
+
+        return elements;
+    }
+
+    private static void addElement(List<Element> elements, PortfolioPart part, List<Item> path)
+    {
+        Item leaf = path.get(path.size() - 1);
+
+        if (leaf.contains(Tag.VIEW))
+        {
+            String subtitle = String.join(" -> ", path.subList(0, path.size() - 1).stream() //$NON-NLS-1$
+                            .map(Item::getLabel).collect(Collectors.toList()));
+            elements.add(new NavigationElement(part, leaf, subtitle));
+        }
+
+        leaf.getChildren().forEach(child -> {
+            path.add(child);
+            addElement(elements, part, path);
+            path.remove(child);
+        });
     }
 
 }
