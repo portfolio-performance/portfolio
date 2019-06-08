@@ -62,8 +62,11 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_h53pUGzxEeapdeFYfst3DA" elementId="name.abuchen.portfolio.ui.menu.file.close" label="%command.close.name" tooltip="%command.close.tooltip" command="_nzlOsGzxEeapdeFYfst3DA"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_GSo5UBi9EeO8gYEHAOvLsA" elementId="name.abuchen.portfolio.ui.menu.file.quit" label="%command.quit.name" tooltip="%command.quit.tooltip" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
       </children>
-      <children xsi:type="menu:Menu" xmi:id="_y4b2QH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.ui.menu.view" label="Ansicht">
-        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_3P_sYH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.2" label="Ansicht" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ViewNavigationMenuContribution"/>
+      <children xsi:type="menu:Menu" xmi:id="_y4b2QH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.ui.menu.view" label="%menu.view.label">
+        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_3P_sYH0xEemaIIhNHihfSA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.2" label="%menu.view.label" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ViewNavigationMenuContribution"/>
+      </children>
+      <children xsi:type="menu:Menu" xmi:id="_U9no4InVEemwCoP93IFEYw" elementId="name.abuchen.portfolio.ui.menu.transactions" label="%menu.transactions.label">
+        <children xsi:type="menu:DynamicMenuContribution" xmi:id="_dcfSoInVEemwCoP93IFEYw" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.3" label="%menu.transactions.label" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.NewTransactionMenuContribution"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_k0rOMBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online" label="%menu.online.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_szYKIBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.online.updatequotes" label="%command.updateQuotes.name" tooltip="%command.updateQuotes.tooltip" command="_tukxoBiQEeOR1rNFCzC82A"/>
