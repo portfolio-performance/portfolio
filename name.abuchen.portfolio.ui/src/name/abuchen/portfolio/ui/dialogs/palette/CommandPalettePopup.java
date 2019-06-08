@@ -117,7 +117,7 @@ public class CommandPalettePopup extends PopupDialog
 
     public CommandPalettePopup(PortfolioPart part)
     {
-        super(Display.getDefault().getActiveShell(), SWT.RESIZE, true, true, false, true, true, null,
+        super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);
 
         elements.addAll(NavigationElements.createFor(part));
