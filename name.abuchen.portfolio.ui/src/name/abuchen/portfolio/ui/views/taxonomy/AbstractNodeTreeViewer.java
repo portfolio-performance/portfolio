@@ -524,6 +524,28 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         });
         support.addColumn(column);
 
+        // Column which shows percentage of this asset class in relationship to total assets  
+        column = new Column("amGV%", Messages.ColumnPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide amount in this asset class by amount of total assets (root of asset class tree)
+                long actual = node.getActual().getAmount();
+                long total = node.getRoot().getActual().getAmount();
+
+                if (total == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format((double) actual / (double) total);
+            }
+        });
+        support.addColumn(column);
+        
+        
         column = new Column("act", Messages.ColumnActualValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {

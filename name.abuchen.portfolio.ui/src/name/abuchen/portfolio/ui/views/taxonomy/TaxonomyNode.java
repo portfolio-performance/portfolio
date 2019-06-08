@@ -96,7 +96,7 @@ public abstract class TaxonomyNode implements Adaptable
             else
                 return super.adapt(type);
         }
-        
+
         @Override
         public String toString()
         {
@@ -236,6 +236,11 @@ public abstract class TaxonomyNode implements Adaptable
     public boolean isRoot()
     {
         return parent == null;
+    }
+
+    public TaxonomyNode getRoot()
+    {
+        return parent == null ? this : parent.getRoot();
     }
 
     public List<TaxonomyNode> getChildren()
