@@ -6,14 +6,17 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
+import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.ElementProvider;
 import name.abuchen.portfolio.ui.editor.Navigation;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
 import name.abuchen.portfolio.ui.editor.Navigation.Tag;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
-public class NavigationElements
+/* package */ class NavigationElements implements ElementProvider
 {
     private static class NavigationElement implements Element
     {
@@ -53,11 +56,11 @@ public class NavigationElements
         }
     }
 
-    private NavigationElements()
-    {
-    }
+    @Inject
+    private PortfolioPart part;
 
-    public static List<Element> createFor(PortfolioPart part)
+    @Override
+    public List<Element> getElements()
     {
         Navigation navigation = part.getClientInput().getNavigation();
         if (navigation == null)
@@ -70,7 +73,7 @@ public class NavigationElements
         return elements;
     }
 
-    private static void addElement(List<Element> elements, PortfolioPart part, List<Item> path)
+    private void addElement(List<Element> elements, PortfolioPart part, List<Item> path)
     {
         Item leaf = path.get(path.size() - 1);
 

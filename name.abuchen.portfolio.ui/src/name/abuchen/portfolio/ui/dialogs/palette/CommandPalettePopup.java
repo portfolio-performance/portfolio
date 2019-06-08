@@ -7,7 +7,11 @@ import java.util.Objects;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -64,6 +68,11 @@ public class CommandPalettePopup extends PopupDialog
         default void execute()
         {
         }
+    }
+
+    public interface ElementProvider
+    {
+        List<Element> getElements();
     }
 
     private static class Item
@@ -137,12 +146,18 @@ public class CommandPalettePopup extends PopupDialog
 
     private TextLayout textLayout;
 
-    public CommandPalettePopup(PortfolioPart part)
+    @Inject
+    public CommandPalettePopup(IEclipseContext context, PortfolioPart part)
     {
         super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);
 
-        elements.addAll(NavigationElements.createFor(part));
+        List<Class<? extends ElementProvider>> provider = new ArrayList<>();
+        provider.add(NavigationElements.class);
+        provider.add(BookmarkElements.class);
+
+        for (Class<? extends ElementProvider> clazz : provider)
+            elements.addAll(ContextInjectionFactory.make(clazz, context).getElements());
 
         Collections.sort(elements, (r, l) -> r.getTitel().compareTo(l.getTitel()));
 
@@ -373,7 +388,7 @@ public class CommandPalettePopup extends PopupDialog
         // second: search subtitle (but add only if not yet found)
         this.elements.stream().filter(e -> e.getSubtitle() != null && filterPattern.matcher(e.getSubtitle()).matches())
                         .filter(e -> !result.contains(e)).forEach(result::add);
-        
+
         return result.stream().map(Item::new).collect(Collectors.toList());
     }
 }
