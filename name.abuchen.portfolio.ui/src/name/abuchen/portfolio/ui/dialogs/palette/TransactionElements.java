@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.dialogs.palette;
 import java.util.ArrayList;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -30,10 +31,10 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
     {
         private final Class<? extends AbstractTransactionDialog> dialog;
         private final Object transaction;
-        private final SecuritySelection selection;
+        private final Optional<SecuritySelection> selection;
 
         public AccountTransactionElement(Class<? extends AbstractTransactionDialog> dialog, Object transaction,
-                        SecuritySelection selection)
+                        Optional<SecuritySelection> selection)
         {
             this.dialog = dialog;
             this.transaction = transaction;
@@ -49,17 +50,14 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
         @Override
         public String getSubtitle()
         {
-            return hasSecurity()
+            return selection.isPresent() && hasSecurity()
                             ? MessageFormat.format(Messages.LabelNewTransactionForSecurity,
-                                            selection.getSecurity().getName())
+                                            selection.get().getSecurity().getName())
                             : Messages.LabelNewTransaction;
         }
 
         private boolean hasSecurity()
         {
-            if (selection == null)
-                return false;
-
             if (transaction instanceof PortfolioTransaction.Type)
                 return true;
 
@@ -84,8 +82,8 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
                 if (Enum.class.isAssignableFrom(transaction.getClass()))
                     action.parameters(transaction);
 
-                if (selection != null)
-                    action.with(selection.getSecurity());
+                if (selection.isPresent())
+                    action.with(selection.get().getSecurity());
 
                 action.run();
             });
@@ -101,7 +99,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
     @Override
     public List<Element> getElements()
     {
-        SecuritySelection selection = selectionService.getSelection();
+        Optional<SecuritySelection> selection = selectionService.getSelection(part.getClient());
 
         List<Element> elements = new ArrayList<>();
 

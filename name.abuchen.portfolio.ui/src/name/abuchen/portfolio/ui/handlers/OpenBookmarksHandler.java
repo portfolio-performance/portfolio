@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -28,6 +29,8 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
@@ -106,22 +109,26 @@ public class OpenBookmarksHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService)
     {
-        SecuritySelection selection = selectionService.getSelection();
-
-        if (selection == null)
+        Client client = MenuHelper.getActiveClient(part);
+        if (client == null)
+            return;
+        if (client.getSettings().getBookmarks().isEmpty())
             return;
 
-        if (selection.getClient().getSettings().getBookmarks().isEmpty())
+        Optional<SecuritySelection> selection = selectionService.getSelection(client);
+        if (!selection.isPresent())
             return;
 
-        List<Bookmark> bookmarks = selection.getClient().getSettings().getBookmarks().stream()
-                        .filter(b -> !b.isSeparator()).collect(Collectors.toList());
+        Security security = selection.get().getSecurity();
+
+        List<Bookmark> bookmarks = client.getSettings().getBookmarks().stream().filter(b -> !b.isSeparator())
+                        .collect(Collectors.toList());
 
         BookmarkPopup<Bookmark> popup = new BookmarkPopup<>(shell, //
-                        selection.getSecurity().getName(), //
+                        security.getName(), //
                         bookmarks, //
                         Bookmark::getLabel, //
-                        bm -> DesktopAPI.browse(bm.constructURL(selection.getClient(), selection.getSecurity())));
+                        bm -> DesktopAPI.browse(bm.constructURL(client, security)));
         popup.open();
     }
 }

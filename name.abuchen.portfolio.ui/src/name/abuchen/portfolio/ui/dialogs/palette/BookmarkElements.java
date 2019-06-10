@@ -2,11 +2,13 @@ package name.abuchen.portfolio.ui.dialogs.palette;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.palette.CommandPalettePopup.Element;
@@ -54,19 +56,22 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
     }
 
     @Inject
+    private Client client;
+
+    @Inject
     private SelectionService selectionService;
 
     @Override
     public List<Element> getElements()
     {
-        SecuritySelection selection = selectionService.getSelection();
+        Optional<SecuritySelection> selection = selectionService.getSelection(client);
 
-        if (selection == null)
+        if (!selection.isPresent())
             return Collections.emptyList();
 
-        return selection.getClient().getSettings().getBookmarks().stream() //
+        return client.getSettings().getBookmarks().stream() //
                         .filter(b -> !b.isSeparator()) //
-                        .map(b -> new BookmarkElement(b, selection)) //
+                        .map(b -> new BookmarkElement(b, selection.get())) //
                         .collect(Collectors.toList());
     }
 }

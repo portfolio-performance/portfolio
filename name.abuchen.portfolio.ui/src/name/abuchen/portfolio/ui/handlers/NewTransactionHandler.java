@@ -7,7 +7,6 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AbstractTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
-import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 
 public class NewTransactionHandler
@@ -30,9 +29,7 @@ public class NewTransactionHandler
             if (Enum.class.isAssignableFrom(transaction.getClass()))
                 action.parameters(transaction);
 
-            SecuritySelection selection = selectionService.getSelection();
-            if (selection != null)
-                action.with(selection.getSecurity());
+            selectionService.getSelection(part.getClient()).ifPresent(s -> action.with(s.getSecurity()));
 
             action.run();
         });

@@ -16,7 +16,6 @@ import org.eclipse.e4.core.services.events.IEventBroker;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 
 @Creatable
@@ -77,10 +76,7 @@ public class ClientInputFactory
         {
             cache.remove(clientInput);
 
-            SecuritySelection selection = selectionService.getSelection();
-
-            if (selection != null && selection.getClient() == clientInput.getClient())
-                selectionService.setSelection(null);
+            selectionService.getSelection(clientInput.getClient()).ifPresent(s -> selectionService.setSelection(null));
         }
     }
 }

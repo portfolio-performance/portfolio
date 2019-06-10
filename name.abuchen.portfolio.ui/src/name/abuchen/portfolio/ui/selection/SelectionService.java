@@ -1,8 +1,12 @@
 package name.abuchen.portfolio.ui.selection;
 
+import java.util.Optional;
+
 import javax.inject.Singleton;
 
 import org.eclipse.e4.core.di.annotations.Creatable;
+
+import name.abuchen.portfolio.model.Client;
 
 @Creatable
 @Singleton
@@ -10,9 +14,12 @@ public class SelectionService
 {
     private SecuritySelection selection;
 
-    public SecuritySelection getSelection()
+    public Optional<SecuritySelection> getSelection(Client client)
     {
-        return selection;
+        if (selection == null || client == null || !client.equals(selection.getClient()))
+            return Optional.empty();
+
+        return Optional.of(selection);
     }
 
     public void setSelection(SecuritySelection selection)
