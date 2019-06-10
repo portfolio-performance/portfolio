@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.TableViewer;
@@ -41,14 +42,7 @@ public final class ColumnViewerSorter
         private static final String OPTION = "option"; //$NON-NLS-1$
         private static final String DIRECTION = "direction"; //$NON-NLS-1$
 
-        private static final ThreadLocal<Map<String, Object>> MAP = new ThreadLocal<Map<String, Object>>()
-        {
-            @Override
-            protected Map<String, Object> initialValue()
-            {
-                return new HashMap<>();
-            }
-        };
+        private static final ThreadLocal<Map<String, Object>> MAP = ThreadLocal.withInitial(HashMap::new);
 
         private SortingContext()
         {}
@@ -395,7 +389,7 @@ public final class ColumnViewerSorter
         return new ColumnViewerSorter((Comparator<Object>) comparator);
     }
 
-    public ColumnViewerSorter wrap(Function<Comparator<Object>, Comparator<Object>> provider)
+    public ColumnViewerSorter wrap(UnaryOperator<Comparator<Object>> provider)
     {
         this.comparator = provider.apply(this.comparator);
         return this;

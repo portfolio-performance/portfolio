@@ -421,6 +421,7 @@ public class Messages extends NLS
     public static String LabelAllFiles;
     public static String LabelAllSecurities;
     public static String LabelAllTrades;
+    public static String LabelAllTransactions;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
     public static String LabelBenchmarks;

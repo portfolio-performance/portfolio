@@ -27,7 +27,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
@@ -143,9 +143,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
             if (plan != null)
-                transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
+                transactions.setInput(plan.getTransactions(getClient()));
             else
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
 
             transactions.refresh();
         });
@@ -313,7 +313,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public void run()
             {
                 CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                List<Transaction> latest = plan.generateTransactions(converter);
+                List<TransactionPair<?>> latest = plan.generateTransactions(converter);
 
                 if (latest.isEmpty())
                 {
@@ -326,7 +326,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                     markDirty();
                     plans.refresh();
                     transactions.markTransactions(latest);
-                    transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
+                    transactions.setInput(plan.getTransactions(getClient()));
                 }
             }
         });
@@ -346,7 +346,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                 markDirty();
 
                 plans.setInput(getClient().getPlans());
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
             }
         });
     }
@@ -355,6 +355,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     protected void createBottomTable(Composite parent)
     {
         transactions = new TransactionsViewer(parent, this);
+        inject(transactions);
         transactions.setFullContextMenu(false);
 
         if (!getClient().getPlans().isEmpty())

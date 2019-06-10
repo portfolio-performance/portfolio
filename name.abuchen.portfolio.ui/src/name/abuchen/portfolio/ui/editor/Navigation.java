@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AccountListView;
+import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
 import name.abuchen.portfolio.ui.views.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
@@ -402,6 +403,10 @@ public final class Navigation
         masterData.add(new Item(Messages.LabelAccounts, Images.ACCOUNT, AccountListView.class));
         masterData.add(new Item(Messages.LabelPortfolios, Images.PORTFOLIO, PortfolioListView.class));
         masterData.add(new Item(Messages.LabelInvestmentPlans, Images.INVESTMENTPLAN, InvestmentPlanListView.class));
+
+        Item allTransactions = new Item(Messages.LabelAllTransactions, AllTransactionsView.class);
+        allTransactions.addTag(Tag.HIDE);
+        masterData.add(allTransactions);
     }
 
     private void createPerformanceSection()

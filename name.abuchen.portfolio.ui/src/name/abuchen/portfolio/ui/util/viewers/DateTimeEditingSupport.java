@@ -39,7 +39,8 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
         super(subjectType, attributeName);
 
         if (!LocalDateTime.class.isAssignableFrom(descriptor().getPropertyType()))
-            throw new RuntimeException(String.format("Property %s needs to be of type LocalDateTime", attributeName)); //$NON-NLS-1$
+            throw new IllegalArgumentException(
+                            String.format("Property %s needs to be of type LocalDateTime", attributeName)); //$NON-NLS-1$
     }
 
     @Override

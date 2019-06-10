@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -28,6 +29,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
@@ -235,7 +237,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
             if (portfolio != null)
             {
-                transactions.setInput(null, portfolio, portfolio.getTransactions());
+                transactions.setInput(portfolio.getTransactions().stream().map(t -> new TransactionPair<>(portfolio, t))
+                                .collect(Collectors.toList()));
                 transactions.refresh();
                 CurrencyConverter converter = new CurrencyConverterImpl(factory,
                                 portfolio.getReferenceAccount().getCurrencyCode());
@@ -243,7 +246,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             }
             else
             {
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
                 transactions.refresh();
                 statementOfAssets.setInput((PortfolioSnapshot) null);
             }
@@ -298,6 +301,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.TabTransactions);
         transactions = new TransactionsViewer(folder, this);
+        inject(transactions);
         item.setControl(transactions.getControl());
 
         folder.setSelection(0);

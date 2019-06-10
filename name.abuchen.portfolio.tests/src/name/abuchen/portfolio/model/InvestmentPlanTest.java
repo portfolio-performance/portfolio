@@ -76,10 +76,10 @@ public class InvestmentPlanTest
                         .collect(Collectors.toList())
                         .forEach(t -> investmentPlan.removeTransaction((PortfolioTransaction) t));
 
-        List<Transaction> newlyGenerated = investmentPlan.generateTransactions(new TestCurrencyConverter());
+        List<TransactionPair<?>> newlyGenerated = investmentPlan.generateTransactions(new TestCurrencyConverter());
         assertThat(newlyGenerated.isEmpty(), is(false));
-        assertThat(newlyGenerated.get(0), instanceOf(PortfolioTransaction.class));
-        assertThat(newlyGenerated.get(0).getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
+        assertThat(newlyGenerated.get(0).getTransaction(), instanceOf(PortfolioTransaction.class));
+        assertThat(newlyGenerated.get(0).getTransaction().getDateTime(), is(LocalDateTime.parse("2016-05-31T00:00")));
     }
 
     @Test

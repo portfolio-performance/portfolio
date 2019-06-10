@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.util.Comparator;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * A pair of transaction owner (account or portfolio) and a transaction.
@@ -40,6 +41,30 @@ public class TransactionPair<T extends Transaction> implements Adaptable
     }
 
     /**
+     * Returns this if it wraps an AccountTransaction.
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<TransactionPair<AccountTransaction>> withAccountTransaction()
+    {
+        if (transaction instanceof AccountTransaction)
+            return Optional.of((TransactionPair<AccountTransaction>) this);
+        else
+            return Optional.empty();
+    }
+
+    /**
+     * Returns this if it wraps an PortfolioTransaction.
+     */
+    @SuppressWarnings("unchecked")
+    public Optional<TransactionPair<PortfolioTransaction>> withPortfolioTransaction()
+    {
+        if (transaction instanceof PortfolioTransaction)
+            return Optional.of((TransactionPair<PortfolioTransaction>) this);
+        else
+            return Optional.empty();
+    }
+
+    /**
      * Deletes the transaction from the transaction owner, e.g. the portfolio or
      * account.
      */
@@ -53,7 +78,33 @@ public class TransactionPair<T extends Transaction> implements Adaptable
     {
         if (type == Annotated.class)
             return type.cast(transaction);
+        else if (type == Transaction.class)
+            return type.cast(transaction);
         else
             return null;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((owner == null) ? 0 : owner.hashCode());
+        result = prime * result + ((transaction == null) ? 0 : transaction.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        TransactionPair<?> other = (TransactionPair<?>) obj;
+        return owner.equals(other.owner) && transaction.equals(other.transaction);
     }
 }
