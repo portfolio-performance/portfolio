@@ -590,7 +590,7 @@ public final class SecuritiesTable implements ModificationListener
         });
         column.setSorter(ColumnViewerSorter.create(element -> {
             List<SecurityPrice> prices = ((Security) element).getPrices();
-            return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
+            return prices.isEmpty() ? null : prices.get(0).getDate();
         }));
         support.addColumn(column);
 
