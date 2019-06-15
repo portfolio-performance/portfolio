@@ -263,6 +263,7 @@ public class Messages extends NLS
     public static String ColumnUpdatedShares;
     public static String ColumnValue;
     public static String ColumnVolume;
+    public static String ColumnVolumeOfSecurityDeposits;
     public static String ColumnWeight;
     public static String ColumnWeight_Description;
     public static String ColumnWKN;

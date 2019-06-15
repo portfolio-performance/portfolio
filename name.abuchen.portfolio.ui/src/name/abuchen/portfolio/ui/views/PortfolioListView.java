@@ -16,6 +16,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -33,6 +34,7 @@ import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -92,7 +94,11 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     {
         // actions from the security context menu (buy, sell, ...) call
         // #notifyModelUpdated when adding new transactions
-        portfolios.setSelection(portfolios.getSelection());
+        ISelection selection = portfolios.getSelection();
+
+        setInput();
+
+        portfolios.setSelection(selection);
     }
 
     @Override
@@ -132,14 +138,13 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             portfolios.editElement(portfolio, 0);
         };
 
-        toolBar.add(new DropDown(Messages.MenuCreatePortfolioOrTransaction, Images.PLUS, SWT.NONE,
-                        manager -> {
-                            manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
-                            manager.add(new Separator());
+        toolBar.add(new DropDown(Messages.MenuCreatePortfolioOrTransaction, Images.PLUS, SWT.NONE, manager -> {
+            manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
+            manager.add(new Separator());
 
-                            Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
-                            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
-                        }));
+            Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
+            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
+        }));
     }
 
     private void addFilterButton(ToolBarManager toolBar)
@@ -205,7 +210,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnReferenceAccount, SWT.None, 160);
+        column = new Column("1", Messages.ColumnReferenceAccount, SWT.None, 160); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -218,6 +223,20 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         ColumnViewerSorter.create(Portfolio.class, "referenceAccount").attachTo(column); //$NON-NLS-1$
         new ListEditingSupport(Portfolio.class, "referenceAccount", getClient().getAccounts()) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
+        portfolioColumns.addColumn(column);
+
+        column = new NameColumn("volume", Messages.ColumnVolumeOfSecurityDeposits, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+
+            @Override
+            public String getText(Object element)
+            {
+                PortfolioSnapshot snapshot = PortfolioSnapshot.create((Portfolio) element, converter, LocalDate.now());
+                return Values.Money.format(snapshot.getValue(), getClient().getBaseCurrency());
+            }
+        });
         portfolioColumns.addColumn(column);
 
         column = new NoteColumn();
