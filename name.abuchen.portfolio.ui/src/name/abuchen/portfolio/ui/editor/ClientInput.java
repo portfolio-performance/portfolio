@@ -30,6 +30,7 @@ import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceStore;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
@@ -166,23 +167,25 @@ public class ClientInput
             return;
         }
 
-        try
-        {
-            if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
-                createBackup(clientFile, "backup"); //$NON-NLS-1$
+        BusyIndicator.showWhile(shell.getDisplay(), () -> {
+            try
+            {
+                if (preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+                    createBackup(clientFile, "backup"); //$NON-NLS-1$
 
-            ClientFactory.save(client, clientFile, null, null);
-            storePreferences(false);
+                ClientFactory.save(client, clientFile, null, null);
+                storePreferences(false);
 
-            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-            setDirty(false, false);
-            listeners.forEach(ClientInputListener::onSaved);
-        }
-        catch (IOException e)
-        {
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
+                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
+                setDirty(false, false);
+                listeners.forEach(ClientInputListener::onSaved);
+            }
+            catch (IOException e)
+            {
+                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            }
+        });
     }
 
     public void doSaveAs(Shell shell, String extension, String encryptionMethod) // NOSONAR
@@ -222,24 +225,27 @@ public class ClientInput
             password = pwdDialog.getPassword().toCharArray();
         }
 
-        try
-        {
-            clientFile = localFile;
-            label = localFile.getName();
+        clientFile = localFile;
+        label = localFile.getName();
+        char[] pwd = password;
 
-            ClientFactory.save(client, clientFile, encryptionMethod, password);
-            storePreferences(true);
+        BusyIndicator.showWhile(shell.getDisplay(), () -> {
+            try
+            {
+                ClientFactory.save(client, clientFile, encryptionMethod, pwd);
+                storePreferences(true);
 
-            broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
-            setDirty(false, false);
-            listeners.forEach(ClientInputListener::onSaved);
-        }
-        catch (IOException e)
-        {
-            PortfolioPlugin.log(e);
-            ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                            new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
-        }
+                broker.post(UIConstants.Event.File.SAVED, clientFile.getAbsolutePath());
+                setDirty(false, false);
+                listeners.forEach(ClientInputListener::onSaved);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+                ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            }
+        });
     }
 
     public void createBackupAfterOpen()
