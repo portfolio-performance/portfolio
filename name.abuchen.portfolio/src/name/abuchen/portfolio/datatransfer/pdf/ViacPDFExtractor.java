@@ -56,10 +56,10 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
     @SuppressWarnings("nls")
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("Börsenabrechnung - Kauf");
+        DocumentType type = new DocumentType("abrechnung - Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Börsenabrechnung - Kauf");
+        Block block = new Block("B.rsenabrechnung - Kauf");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -98,7 +98,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .section("forex", "forexCurrency", "amount", "currency", "exchangeRate").optional() //
                         .match("Betrag (?<forexCurrency>\\w{3}+) (?<forex>[\\d+',.]*)")
-                        .match("Umrechnungskurs CHF/USD (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
+                        .match("Umrechnungskurs CHF/\\w{3}+ (?<exchangeRate>[\\d+',.]*) (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)")
                         .assign((t, v) -> {
 
                             Money forex = Money.of(asCurrencyCode(v.get("forexCurrency")), asAmount(v.get("forex")));
