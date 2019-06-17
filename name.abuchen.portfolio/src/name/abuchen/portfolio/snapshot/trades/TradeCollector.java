@@ -260,8 +260,10 @@ public class TradeCollector
                 // calculate forex amount using the exchange rate to avoid
                 // rounding errors to be reported
 
-                Money newForex = Money.of(unit.getForex().getCurrencyCode(), BigDecimal.valueOf(newAmount.getAmount())
-                                .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN).longValue());
+                Money newForex = Money.of(unit.getForex().getCurrencyCode(),
+                                BigDecimal.valueOf(newAmount.getAmount())
+                                                .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
+                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
                 target.addUnit(new Unit(unit.getType(), newAmount, newForex, unit.getExchangeRate()));
             }
