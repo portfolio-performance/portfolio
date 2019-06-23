@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.bootstrap;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -23,12 +26,15 @@ import org.eclipse.e4.ui.model.application.ui.MUIElement;
 import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.workbench.IModelResourceHandler;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
 import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
@@ -39,7 +45,6 @@ import org.osgi.service.prefs.BackingStoreException;
 public class LifeCycleManager
 {
     private static final String MODEL_VERSION = "model.version"; //$NON-NLS-1$
-    private static final String FORCE_CLEAR_PERSISTED_STATE = "model.forceClearPersistedState"; //$NON-NLS-1$
 
     @Inject
     @Preference(nodePath = "name.abuchen.portfolio.bootstrap")
@@ -114,18 +119,22 @@ public class LifeCycleManager
 
     private void checkForRequestToClearPersistedState()
     {
-        boolean forceClearPersistedState = Boolean
-                        .parseBoolean(preferences.get(FORCE_CLEAR_PERSISTED_STATE, Boolean.FALSE.toString()));
+        boolean forceClearPersistedState = Boolean.parseBoolean(
+                        preferences.get(ModelConstants.FORCE_CLEAR_PERSISTED_STATE, Boolean.FALSE.toString()));
 
         if (forceClearPersistedState)
         {
             logger.info(MessageFormat.format("Clearing persisted state due to ''{0}=true''", //$NON-NLS-1$
-                            FORCE_CLEAR_PERSISTED_STATE));
+                            ModelConstants.FORCE_CLEAR_PERSISTED_STATE));
             System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
+
+            // set as system property so that the ResourceWindowStateProcessor
+            // does not attempt to merge parts of the old model into the new one
+            System.setProperty(ModelConstants.FORCE_CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
 
             try
             {
-                preferences.remove(FORCE_CLEAR_PERSISTED_STATE);
+                preferences.remove(ModelConstants.FORCE_CLEAR_PERSISTED_STATE);
                 preferences.flush();
             }
             catch (BackingStoreException e)
@@ -204,10 +213,11 @@ public class LifeCycleManager
     }
 
     @PreSave
-    public void doPreSave(MApplication app, EModelService modelService)
+    public void doPreSave(MApplication app, EModelService modelService, IModelResourceHandler handler)
     {
         saveModelVersion();
         removePortfolioPartsWithoutPersistedFile(app, modelService);
+        saveCopyOfApplicationModel(app, handler);
     }
 
     private void saveModelVersion()
@@ -283,5 +293,34 @@ public class LifeCycleManager
             }
 
         }
+    }
+
+    /**
+     * Save a copy of the application model so that the
+     * {@link MergeOldLayoutIntoCurrentApplicationModelProcessor} can merge the
+     * layout back if the application has been updated.
+     */
+    private void saveCopyOfApplicationModel(MApplication app, IModelResourceHandler handler)
+    {
+        MApplication appCopy = (MApplication) EcoreUtil.copy((EObject) app);
+        Resource resource = handler.createResourceWithApp(appCopy);
+
+        File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
+                        ModelConstants.E4XMICOPY_FILENAME);
+
+        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+        {
+            resource.save(out, null);
+        }
+        catch (IOException e)
+        {
+            // nothing to do: if no copy of the application model exist when
+            // clearing the persisted state (for example after an upgrade), then
+            // the user has to start with an empty layout
+            logger.error(e);
+        }
+
+        resource.unload();
+        resource.getResourceSet().getResources().remove(resource);
     }
 }
