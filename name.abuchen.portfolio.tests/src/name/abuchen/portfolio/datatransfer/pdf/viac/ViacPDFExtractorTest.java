@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.hamcrest.number.IsCloseTo;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -334,5 +335,71 @@ public class ViacPDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(150.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-15T00:00")));
+    }
+
+    @Test
+    public void testDividend01()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CH0030849654"));
+        assertThat(security.getName(), is("CSIF Pacific ex Japan"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(0.04))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.242)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.04))));
+    }
+
+    @Test
+    public void testDividend02()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CH0030849613"));
+        assertThat(security.getName(), is("CSIF Canada"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(0.15))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.176)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-21T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(0.15))));
+        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("CAD", Values.Amount.factorize(0.20))));
+        assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.7466, 0.000001));
     }
 }

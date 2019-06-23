@@ -1,0 +1,28 @@
+PDF Author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragsnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Nummer
+PLZ Ort
+Basel, 21.05.2019
+Dividendenausschuttung
+Wir haben fÃ¼r Sie folgende AusschÃ¼ttung verbucht:
+Dividendenart: Ordentliche Dividende
+0.242 Ant CSIF Pacific ex Japan
+ISIN: CH0030849654
+Ausschuttung: CHF 0.18
+Betrag CHF 0.04
+ 
+Gutgeschriebener Betrag: Valuta 21.05.2019 CHF 0.04
+S. E. & O.
+Freundliche GrÃ¼sse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
+
