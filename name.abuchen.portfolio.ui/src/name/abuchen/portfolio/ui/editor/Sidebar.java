@@ -390,24 +390,18 @@ public final class Sidebar<I> extends Composite
         @Override
         public Point computeSize(int wHint, int hHint, boolean changed)
         {
-            int width = 0;
             int height = 0;
 
             String label = model.getLabel(subject);
-
             if (label != null)
             {
                 GC gc = new GC(this);
                 Point extent = gc.stringExtent(label);
                 gc.dispose();
-                width += extent.x;
                 height = Math.max(height, extent.y);
             }
-            if (image != null)
-            {
-                width += image.getBounds().width + 5;
-            }
-            return new Point(width + (2 * MARGIN_X) + indent, height + (2 * MARGIN_Y));
+
+            return new Point(wHint, height + (2 * MARGIN_Y));
         }
 
         private void handlePaint(PaintEvent e)
@@ -449,6 +443,8 @@ public final class Sidebar<I> extends Composite
             String label = model.getLabel(subject);
 
             int x = bounds.x + MARGIN_X + indent;
+            int width = bounds.width;
+
             if (image != null)
             {
                 Rectangle imgBounds = image.getBounds();
@@ -458,6 +454,7 @@ public final class Sidebar<I> extends Composite
                 if (indent == 0)
                 {
                     gc.drawImage(image, bounds.width - imgBounds.width - MARGIN_X, bounds.y + MARGIN_Y - offset);
+                    width = width - imgBounds.width - MARGIN_X - 1;
                 }
                 else
                 {
@@ -465,6 +462,8 @@ public final class Sidebar<I> extends Composite
                     x += imgBounds.width + 5;
                 }
             }
+
+            gc.setClipping(new Rectangle(bounds.x, bounds.y, width, bounds.height));
 
             gc.drawText(label, x, bounds.y + MARGIN_Y, true);
 
@@ -474,6 +473,8 @@ public final class Sidebar<I> extends Composite
                 gc.drawLine(x - 1, bounds.y + MARGIN_Y + extent.y - 1, x + extent.x - 1,
                                 bounds.y + MARGIN_Y + extent.y - 1);
             }
+
+            gc.setClipping((Rectangle) null);
 
             gc.setBackground(oldBackground);
             gc.setForeground(oldForeground);
