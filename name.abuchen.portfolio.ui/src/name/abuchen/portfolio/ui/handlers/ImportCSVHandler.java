@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Named;
 
@@ -10,7 +11,6 @@ import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
-import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
@@ -40,10 +40,10 @@ public class ImportCSVHandler
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, //
                     IEclipseContext context, //
                     CSVConfigManager configManager,
-                    @Optional @Named("name.abuchen.portfolio.ui.param.name") String index)
+                    @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        Optional<Client> client = MenuHelper.getActiveClient(part);
+        if (!client.isPresent())
             return;
 
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
@@ -57,7 +57,7 @@ public class ImportCSVHandler
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
         IPreferenceStore preferences = portfolioPart.getPreferenceStore();
 
-        CSVImportWizard wizard = new CSVImportWizard(client, preferences, new File(fileName));
+        CSVImportWizard wizard = new CSVImportWizard(client.get(), preferences, new File(fileName));
         ContextInjectionFactory.inject(wizard, context);
 
         if (index != null)

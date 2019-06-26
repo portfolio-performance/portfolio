@@ -42,10 +42,11 @@ public class ImportIBHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport(part, shell, client));
+    }
 
+    private void runImport(MPart part, Shell shell, Client client)
+    {
         try
         {
             Extractor extractor = new IBFlexStatementExtractor(client);

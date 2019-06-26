@@ -9,8 +9,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.e4.ui.workbench.modeling.EPartService;
 
-import name.abuchen.portfolio.model.Client;
-
 public class CloseFileHandler
 {
     @CanExecute
@@ -22,8 +20,7 @@ public class CloseFileHandler
     @Execute
     public void execute(@Optional @Named(IServiceConstants.ACTIVE_PART) MPart activePart, EPartService partService)
     {
-        Client client = MenuHelper.getActiveClient(activePart);
-        if (client == null)
+        if (!MenuHelper.isClientPartActive(activePart))
             return;
 
         if (partService.savePart(activePart, true))

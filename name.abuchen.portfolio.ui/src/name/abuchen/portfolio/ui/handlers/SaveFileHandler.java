@@ -8,7 +8,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class SaveFileHandler
@@ -23,8 +22,7 @@ public class SaveFileHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        if (!MenuHelper.isClientPartActive(part))
             return;
 
         // trigger part to save file

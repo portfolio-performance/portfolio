@@ -22,7 +22,6 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -43,8 +42,7 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.EXTENSION) String extension,
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        if (!MenuHelper.isClientPartActive(part))
             return;
 
         if (extension == null)

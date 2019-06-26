@@ -24,7 +24,6 @@ import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
-import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
 public class NewTransactionMenuContribution
@@ -37,10 +36,6 @@ public class NewTransactionMenuContribution
                     IEclipseContext context)
     {
         if (!MenuHelper.isClientPartActive(part))
-            return;
-
-        ClientInput clientInput = MenuHelper.getActiveClientInput(part);
-        if (clientInput == null)
             return;
 
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();

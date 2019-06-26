@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -29,14 +30,13 @@ public class ViewNavigationMenuContribution
         if (!MenuHelper.isClientPartActive(part))
             return;
 
-        ClientInput clientInput = MenuHelper.getActiveClientInput(part);
-        if (clientInput == null)
+        Optional<ClientInput> clientInput = MenuHelper.getActiveClientInput(part);
+        if (!clientInput.isPresent())
             return;
 
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
 
-        clientInput.getNavigation().getRoots()
-                        .forEach(item -> addMenuItem(0, item, menuItems, portfolioPart));
+        clientInput.get().getNavigation().getRoots().forEach(item -> addMenuItem(0, item, menuItems, portfolioPart));
     }
 
     private void addMenuItem(int depth, Navigation.Item item, List<MMenuElement> menuItems, PortfolioPart part)

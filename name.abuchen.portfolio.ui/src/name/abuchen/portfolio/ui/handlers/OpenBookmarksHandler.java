@@ -109,9 +109,11 @@ public class OpenBookmarksHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
+        MenuHelper.getActiveClient(part).ifPresent(client -> openPopup(shell, selectionService, client));
+    }
+
+    private void openPopup(Shell shell, SelectionService selectionService, Client client)
+    {
         if (client.getSettings().getBookmarks().isEmpty())
             return;
 
