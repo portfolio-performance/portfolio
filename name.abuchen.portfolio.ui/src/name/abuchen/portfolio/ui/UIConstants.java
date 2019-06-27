@@ -41,11 +41,23 @@ public interface UIConstants
         String ENCRYPTED_EXTENSION = "portfolio"; //$NON-NLS-1$
     }
 
+    /**
+     * State persisted for portfolio parts in application model
+     */
     interface PersistedState // NOSONAR
     {
         String FILENAME = "file"; //$NON-NLS-1$
         String REPORTING_PERIOD = "reporting-period"; //$NON-NLS-1$
+
+        /**
+         * Last view displayed before the part was destroyed
+         */
         String VIEW = "view"; //$NON-NLS-1$
+
+        /**
+         * View to open initially after restoring part (if set)
+         */
+        String INITIAL_VIEW = "initial-view"; //$NON-NLS-1$
     }
 
     /**
