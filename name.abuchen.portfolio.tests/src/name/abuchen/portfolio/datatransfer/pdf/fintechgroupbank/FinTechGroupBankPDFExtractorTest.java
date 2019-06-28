@@ -1098,7 +1098,32 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52)))))));
     }
-    
+
+    @Test
+    public void testWertpapierVerkauf7()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf7.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        List<PortfolioTransaction> tx = results.stream() //
+                        .filter(i -> i instanceof BuySellEntryItem)
+                        .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
+                        .collect(Collectors.toList());
+
+        assertThat(tx.size(), is(1));
+
+        assertThat(tx, hasItem(allOf( //
+                        hasProperty("dateTime", is(LocalDateTime.parse("2019-06-20T00:00"))), //
+                        hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
+                        hasProperty("monetaryAmount",
+                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81)))))));
+    }
+
     @Test
     public void testWertpapierÜbertrag1() throws IOException
     {

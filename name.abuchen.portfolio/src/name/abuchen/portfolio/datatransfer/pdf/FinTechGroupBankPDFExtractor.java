@@ -561,7 +561,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block(" *FinTech Group Bank AG*| *biw AG*");
+        Block block = new Block(".*Auftragsdatum.*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>()
 
@@ -571,7 +571,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date").match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .section("date").optional() //
+                        .match(".*Schlusstag *(?<date>\\d+.\\d+.\\d{4}).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+
+                        .section("date").optional() //
+                        .match(".*Handelstag *(?<date>\\d+.\\d+.\\d{4}).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("wkn", "isin", "name")
@@ -579,7 +584,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares", "notation")
-                        .match("^Ausgeführt *(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+).*") //
+                        .match("^Ausgeführt[ :]*(?<shares>[\\.\\d]+(,\\d*)?) *(?<notation>St\\.|\\w{3}+).*") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("St."))
@@ -601,7 +606,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }),
                                         section -> section.attributes("amount", "currency") //
-                                                        .match(".* Endbetrag *(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
+                                                        .match(".* Endbetrag[ :]*(?<amount>[\\d.-]+,\\d+)\\s(?<currency>\\w{3}+)") //
                                                         .assign((t, v) -> {
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
