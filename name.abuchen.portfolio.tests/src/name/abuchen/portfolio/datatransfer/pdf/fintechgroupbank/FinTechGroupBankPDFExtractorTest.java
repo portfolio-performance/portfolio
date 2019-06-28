@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.hasProperty;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,11 +40,11 @@ public class FinTechGroupBankPDFExtractorTest
 {
 
     @Test
-    public void testWertpapierKauf() throws IOException
+    public void testWertpapierKauf()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf.txt"), errors);
 
@@ -72,7 +71,7 @@ public class FinTechGroupBankPDFExtractorTest
     private Security assertFirstSecurity(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0005194062"));
         assertThat(security.getWkn(), is("519406"));
         assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
@@ -84,8 +83,7 @@ public class FinTechGroupBankPDFExtractorTest
     private void assertFirstTransaction(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -156,11 +154,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testGutschriftsBelastungsanzeige() throws IOException
+    public void testGutschriftsBelastungsanzeige()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FlatexGutschriftsBelastungsanzeige.txt"), errors);
@@ -173,14 +171,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0008474503"));
         assertThat(security.getName(), is("DEKAFONDS CF"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
-        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
+        PortfolioTransaction entry = (PortfolioTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -190,11 +188,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf2() throws IOException
+    public void testWertpapierKauf2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf2.txt"), errors);
 
@@ -206,15 +204,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("LU0392495023"));
         assertThat(security.getWkn(), is("ETF114"));
         assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -227,11 +224,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf3() throws IOException
+    public void testWertpapierKauf3()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf3.txt"), errors);
 
@@ -243,15 +240,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B2QWCY14"));
         assertThat(security.getWkn(), is("A0Q1YY"));
         assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
-                        //
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
-                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+                        .map(BuySellEntry::getPortfolioTransaction).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
@@ -262,11 +259,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf4() throws IOException
+    public void testWertpapierKauf4()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf4.txt"), errors);
 
@@ -278,15 +275,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("LU0392494992"));
         assertThat(security.getWkn(), is("ETF113"));
         assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
-                        //
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
-                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+                        .map(BuySellEntry::getPortfolioTransaction).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
@@ -297,10 +294,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf6() throws IOException
+    public void testWertpapierKauf6()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf6.txt"), errors);
 
@@ -312,15 +309,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B2NPKV68"));
         assertThat(security.getWkn(), is("A0NECU"));
         assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
-                        //
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
-                        .map(b -> b.getPortfolioTransaction()).findAny().get();
+                        .map(BuySellEntry::getPortfolioTransaction).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
 
         assertThat(transaction.getType(), is(PortfolioTransaction.Type.BUY));
 
@@ -331,10 +328,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierKauf7() throws IOException
+    public void testWertpapierKauf7()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf7.txt"), errors);
 
@@ -356,10 +353,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf8() throws IOException
+    public void testWertpapierKauf8()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf8.txt"), errors);
 
@@ -381,11 +378,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf9Sammelabrechnung() throws IOException
+    public void testWertpapierKauf9Sammelabrechnung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf9Sammelabrechnung.txt"), errors);
 
@@ -397,15 +394,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000A1MECS1"));
         assertThat(security.getWkn(), is("A1MECS"));
         assertThat(security.getName(), is("SOURCE PHY.MRKT.ETC00 XAU"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -418,11 +414,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierKauf10() throws IOException
+    public void testWertpapierKauf10()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf10.txt"), errors);
 
@@ -432,15 +428,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("LU0274211480"));
         assertThat(security.getWkn(), is("DBX1DA"));
         assertThat(security.getName(), is("DB X-TRACK.DAX ETF(DR)1C"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -453,11 +448,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf11() throws IOException
+    public void testWertpapierKauf11()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf11.txt"), errors);
 
@@ -467,15 +462,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B6YX5D40"));
         assertThat(security.getWkn(), is("A1JKS0"));
         assertThat(security.getName(), is("SPDR S+P US DIV.ARIST.ETF"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -488,11 +482,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf12() throws IOException
+    public void testWertpapierKauf12()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf12.txt"), errors);
 
@@ -502,15 +496,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0001234567"));
         assertThat(security.getWkn(), is("DS5WKN"));
         assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -523,11 +516,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierKauf13() throws IOException
+    public void testWertpapierKauf13()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf13.txt"), errors);
 
@@ -537,15 +530,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("LU0635178014"));
         assertThat(security.getWkn(), is("ETF127"));
         assertThat(security.getName(), is("COMS.-MSCI EM.M.T.U.ETF I"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -558,11 +550,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKauf14() throws IOException
+    public void testWertpapierKauf14()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf14.txt"), errors);
 
@@ -572,15 +564,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00BF2B0K52"));
         assertThat(security.getWkn(), is("A2DTF1"));
         assertThat(security.getName(), is("FRAN.LIB.Q EM EQ.UC.DLA"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -593,11 +584,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierKauf15_Fonds2019() throws IOException
+    public void testWertpapierKauf15_Fonds2019() // NOSONAR
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf15_Fonds2019.txt"), errors);
 
@@ -607,15 +598,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00BKM4GZ66"));
         assertThat(security.getWkn(), is("A111X9"));
         assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -628,11 +618,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug() throws IOException
+    public void testKontoauszug()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug.txt"), errors);
 
@@ -642,8 +632,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-29T00:00")));
@@ -652,11 +642,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testKontoauszug2() throws IOException
+    public void testKontoauszug2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKontoauszug2.txt"), errors);
 
@@ -666,8 +656,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-01-26T00:00")));
@@ -675,11 +665,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testErtragsgutschrift() throws IOException
+    public void testErtragsgutschrift()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift.txt"),
                         errors);
@@ -691,7 +681,7 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0008402215"));
         assertThat(security.getWkn(), is("840221"));
         assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
@@ -699,8 +689,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -710,11 +700,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testErtragsgutschrift2() throws IOException
+    public void testErtragsgutschrift2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift2.txt"),
                         errors);
@@ -725,15 +715,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("AB1234"));
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -743,11 +733,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testErtragsgutschrift3() throws IOException
+    public void testErtragsgutschrift3()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift3.txt"),
                         errors);
@@ -758,15 +748,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0006335003"));
         assertThat(security.getWkn(), is("633500"));
         assertThat(security.getName(), is("KRONES AG O.N."));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -778,11 +768,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testErtragsgutschrift4_Fonds2019() throws IOException
+    public void testErtragsgutschrift4_Fonds2019() // NOSONAR
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift4_Fonds2019.txt"),
                         errors);
@@ -793,15 +783,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("IE00B945VV12"));
         assertThat(security.getWkn(), is("A1T8FS"));
         assertThat(security.getName(), is("VANG.FTSE DEV.EU.UETF EOD"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -811,11 +801,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testDividendeAusland() throws IOException
+    public void testDividendeAusland()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland1.txt"), errors);
@@ -826,15 +816,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("US8552441094"));
         assertThat(security.getWkn(), is("884437"));
         assertThat(security.getName(), is("STARBUCKS CORP."));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -846,11 +836,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testDividendeAusland2() throws IOException
+    public void testDividendeAusland2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland2.txt"), errors);
@@ -861,15 +851,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("GB00B03MLX29"));
         assertThat(security.getWkn(), is("A0D94M"));
         assertThat(security.getName(), is("ROYAL DUTCH SHELL A EO-07"));
         
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -881,11 +871,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testZinsgutschriftInland() throws IOException
+    public void testZinsgutschriftInland()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexZinsgutschriftInland.txt"),
                         errors);
@@ -896,15 +886,15 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("AB1234"));
         assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
@@ -914,11 +904,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf() throws IOException
+    public void testWertpapierVerkauf()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf.txt"), errors);
 
@@ -930,15 +920,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getWkn(), is("US9RGR"));
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -951,11 +940,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf2() throws IOException
+    public void testWertpapierVerkauf2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf2.txt"), errors);
 
@@ -967,15 +956,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("LU0323578657"));
         assertThat(security.getWkn(), is("A0M430"));
         assertThat(security.getName(), is("FLOSSB.V.STORCH-MUL.OPP.R"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -988,11 +976,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf3() throws IOException
+    public void testWertpapierVerkauf3()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf3.txt"), errors);
 
@@ -1004,15 +992,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE0009807008"));
         assertThat(security.getWkn(), is("980700"));
         assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -1025,10 +1012,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierVerkauf4() throws IOException
+    public void testWertpapierVerkauf4()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf4.txt"), errors);
 
@@ -1050,10 +1037,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierVerkauf5() throws IOException
+    public void testWertpapierVerkauf5()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf5.txt"), errors);
 
@@ -1075,10 +1062,10 @@ public class FinTechGroupBankPDFExtractorTest
     }
     
     @Test
-    public void testWertpapierVerkauf6() throws IOException
+    public void testWertpapierVerkauf6()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkauf6.txt"), errors);
 
@@ -1125,11 +1112,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierÜbertrag1() throws IOException
+    public void testWertpapierÜbertrag1() // NOSONAR
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang1.txt"),
                         errors);
@@ -1142,14 +1129,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
-        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
+        PortfolioTransaction entry = (PortfolioTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -1159,11 +1146,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierÜbertrag2() throws IOException
+    public void testWertpapierÜbertrag2() // NOSONAR
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepoteingang2.txt"),
                         errors);
@@ -1176,14 +1163,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000US9RGR9"));
         assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(PortfolioTransaction.class));
-        PortfolioTransaction entry = (PortfolioTransaction) item.get().getSubject();
+        PortfolioTransaction entry = (PortfolioTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(entry.getType(), is(PortfolioTransaction.Type.DELIVERY_INBOUND));
 
@@ -1193,11 +1180,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierAusgang() throws IOException
+    public void testWertpapierAusgang()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang.txt"), errors);
 
@@ -1209,14 +1196,13 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000CM31SV9"));
         assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -1228,11 +1214,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierAusgang2() throws IOException
+    public void testWertpapierAusgang2()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexDepotausgang2.txt"),
                         errors);
@@ -1245,14 +1231,13 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000CK1Q3N7"));
         assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -1263,11 +1248,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierBestandsausbuchung() throws IOException
+    public void testWertpapierBestandsausbuchung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung.txt"),
                         errors);
@@ -1294,7 +1279,7 @@ public class FinTechGroupBankPDFExtractorTest
     private Security assertFirstSecurityBestandsausbuchung(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000CB81KN1"));
         assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
@@ -1305,8 +1290,7 @@ public class FinTechGroupBankPDFExtractorTest
     private void assertFirstTransactionBestandsausbuchung(Optional<Item> item)
     {
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.TRANSFER_OUT));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
@@ -1363,11 +1347,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierBestandsausbuchungNeuesFormat() throws IOException
+    public void testWertpapierBestandsausbuchungNeuesFormat()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexBestandsausbuchung2.txt"),
                         errors);
@@ -1380,15 +1364,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000SG0WRD3"));
         assertThat(security.getWkn(), is("SG0WRD"));
         assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -1399,11 +1382,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testZinsBelastung() throws IOException
+    public void testZinsBelastung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexZinsBelastung.txt"),
                         errors);
@@ -1413,8 +1396,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.INTEREST_CHARGE));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2010-12-31T00:00")));
@@ -1423,11 +1406,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkaufSteuererstattung() throws IOException
+    public void testWertpapierVerkaufSteuererstattung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor
                         .extract(PDFInputFile.loadTestCase(getClass(), "FlatexVerkaufSteuererstattung.txt"), errors);
@@ -1440,15 +1423,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000SKWM021"));
         assertThat(security.getWkn(), is("SKWM02"));
         assertThat(security.getName(), is("SKW STAHL-METAL.HLDG.NA"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
@@ -1462,8 +1444,6 @@ public class FinTechGroupBankPDFExtractorTest
         // check Steuererstattung
         Item itemTaxReturn = results.stream().filter(i -> i instanceof TransactionItem).collect(Collectors.toList())
                         .get(0);
-        // Optional<Item> itemTaxReturn = results.stream().filter(i -> i
-        // instanceof TransactionItem).findFirst();
 
         AccountTransaction entryTaxReturn = (AccountTransaction) itemTaxReturn.getSubject();
         assertThat(entryTaxReturn.getType(), is(AccountTransaction.Type.TAX_REFUND));
@@ -1472,11 +1452,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierKaufVerkaufSteuererstattung() throws IOException
+    public void testWertpapierKaufVerkaufSteuererstattung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "FlatexKaufVerkaufSteuererstattung.txt"), errors);
@@ -1490,15 +1470,14 @@ public class FinTechGroupBankPDFExtractorTest
         // security
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.get()).getSecurity();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000VN4LAU4"));
         assertThat(security.getWkn(), is("VN4LAU"));
         assertThat(security.getName(), is("VONT.FINL PR CALL17 DAX"));
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
@@ -1518,7 +1497,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(security.getName(), is("VONT.FINL PR PUT17 DAX"));
 
         item2 = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList()).get(1);
-        assertThat(item2.getSubject(), instanceOf(BuySellEntry.class));
         entry = (BuySellEntry) item2.getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -1532,7 +1510,6 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check Verkäufe
         item2 = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList()).get(2);
-        assertThat(item2.getSubject(), instanceOf(BuySellEntry.class));
         entry = (BuySellEntry) item2.getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1545,7 +1522,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
 
         item2 = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList()).get(3);
-        assertThat(item2.getSubject(), instanceOf(BuySellEntry.class));
         entry = (BuySellEntry) item2.getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
@@ -1568,11 +1544,11 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
-    public void testSteuertopfoptimierung() throws IOException
+    public void testSteuertopfoptimierung()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<Exception>();
+        List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexSteuertopfoptimierung.txt"),
                         errors);
@@ -1582,8 +1558,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
-        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
 
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
