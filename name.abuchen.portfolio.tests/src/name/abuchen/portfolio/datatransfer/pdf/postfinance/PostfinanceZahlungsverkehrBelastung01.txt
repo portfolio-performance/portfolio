@@ -1,0 +1,22 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 04.02.2019
+Zahlungsverkehr - Belastung Unsere Referenz: 162985202 
+Gemäss Ihrem Auftrag haben wir folgende Buchung zu Lasten Ihres Kontos vorgenommen:
+Kontonummer 99999900
+Valutadatum 06.02.2019
+Betrag belastet USD 3'050.00
+Wechselkurs 1.01068
+Betrag CHF 3'082.58
+Total CHF 3'082.58
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-18.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

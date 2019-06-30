@@ -3,7 +3,9 @@ package name.abuchen.portfolio.datatransfer.pdf.postfinance;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +17,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.PostfinancePDFExtractor;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -254,7 +258,7 @@ public class PostfinancePDFExtractorTest
     }
     
     @Test
-    public void testFees01()
+    public void testJahresgebuhr01()
     {
         Client client = new Client();
 
@@ -276,5 +280,67 @@ public class PostfinancePDFExtractorTest
                         is(Money.of("CHF", Values.Amount.factorize(90.00))));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
+    }
+
+    @Test
+    public void testZahlungsverkehrBelastung01()
+    {
+        Client client = new Client();
+        
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZahlungsverkehrBelastung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF", "USD");
+
+        AccountTransferItem transaction = (AccountTransferItem) results.stream().filter(i -> i instanceof AccountTransferItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new); 
+        
+        assertThat(transaction.getDate(), is(LocalDateTime.parse("2019-02-06T00:00")));
+        
+        AccountTransferEntry entry = (AccountTransferEntry)transaction.getSubject();
+        assertThat(entry.getSourceTransaction().getCurrencyCode(), is("CHF"));
+        assertThat(entry.getTargetTransaction().getCurrencyCode(), is("USD"));
+        assertThat(entry.getSourceTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(entry.getTargetTransaction().getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(entry.getSourceTransaction().getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(3082.58))));
+        assertThat(entry.getTargetTransaction().getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(3050.00))));
+        assertTrue(entry.getSourceTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent());
+        assertThat(entry.getSourceTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate(), is(BigDecimal.valueOf(1.01068)));
+    }
+    
+    @Test
+    public void testZahlungsverkehrGutschrift01()
+    {
+        Client client = new Client();
+        
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceZahlungsverkehrGutschrift01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF", "USD");
+
+        AccountTransferItem transaction = (AccountTransferItem) results.stream().filter(i -> i instanceof AccountTransferItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new); 
+        
+        assertThat(transaction.getDate(), is(LocalDateTime.parse("2019-02-06T00:00")));
+        
+        AccountTransferEntry entry = (AccountTransferEntry)transaction.getSubject();
+        assertThat(entry.getSourceTransaction().getCurrencyCode(), is("CHF"));
+        assertThat(entry.getTargetTransaction().getCurrencyCode(), is("USD"));
+        assertThat(entry.getSourceTransaction().getType(), is(AccountTransaction.Type.TRANSFER_OUT));
+        assertThat(entry.getTargetTransaction().getType(), is(AccountTransaction.Type.TRANSFER_IN));
+        assertThat(entry.getSourceTransaction().getMonetaryAmount(), is(Money.of("CHF", Values.Amount.factorize(3082.58))));
+        assertThat(entry.getTargetTransaction().getMonetaryAmount(), is(Money.of("USD", Values.Amount.factorize(3050.00))));
+        assertTrue(entry.getSourceTransaction().getUnit(Unit.Type.GROSS_VALUE).isPresent());
+        assertThat(entry.getSourceTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate(), is(BigDecimal.valueOf(1.01068)));
     }
 }
