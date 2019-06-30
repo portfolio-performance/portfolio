@@ -2,7 +2,6 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 
-import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -25,6 +24,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
         addBuyTransaction();
         addSellTransaction();
         addDividendsTransaction();
+        addFeeTransaction();
     }
     
     @SuppressWarnings("nls")
@@ -231,6 +231,34 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                                 t.addUnit(unit);
                         })
                         
+                        .wrap(TransactionItem::new));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addFeeTransaction()
+    {
+        DocumentType type = new DocumentType("Jahresgebühr");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Jahresgebühr (.*)$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.FEES);
+                            return transaction;
+                        })
+
+                        .section("date", "amount", "currency")
+                        .find("^Jahresgebühr (.*)")
+                        .match("^Valutadatum (?<date>\\d+.\\d+.\\d{4}+)$")
+                        .match("^Betrag belastet (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
                         .wrap(TransactionItem::new));
     }
 

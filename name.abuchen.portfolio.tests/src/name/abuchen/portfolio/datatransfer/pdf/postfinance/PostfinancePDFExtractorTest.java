@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
@@ -252,5 +251,30 @@ public class PostfinancePDFExtractorTest
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(19.75))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
+    }
+    
+    @Test
+    public void testFees01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceJahresgebuhr01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.FEES));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(90.00))));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-01-03T00:00")));
     }
 }
