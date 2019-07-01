@@ -215,7 +215,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         })
                         
                         .section("date")
-                        .match("^Valutadatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
+                        .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                         })
@@ -275,7 +275,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         })
                         
                         .section("date")
-                        .match("^Valutadatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
+                        .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
                         })

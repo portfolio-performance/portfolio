@@ -219,7 +219,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("EUR", Values.Amount.factorize(20.93))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(60)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-06-05T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-02T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("EUR", Values.Amount.factorize(3.69))));
         assertThat(transaction.getGrossValue(), is(Money.of("EUR", Values.Amount.factorize(24.62))));
@@ -251,7 +251,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(36.69))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(34)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-08T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-09-06T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(19.75))));
         assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(56.44))));
@@ -283,7 +283,7 @@ public class PostfinancePDFExtractorTest
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(26.60))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-03T00:00")));
     }
     
     @Test
