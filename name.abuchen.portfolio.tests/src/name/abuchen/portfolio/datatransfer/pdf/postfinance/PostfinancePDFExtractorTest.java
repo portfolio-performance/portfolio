@@ -258,6 +258,35 @@ public class PostfinancePDFExtractorTest
     }
     
     @Test
+    public void testKapitalgewinn01()
+    {
+        Client client = new Client();
+
+        PostfinancePDFExtractor extractor = new PostfinancePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "PostfinanceKapitalgewinn01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("CH0019396990"));
+        assertThat(security.getName(), is("YPSOMED HLDG"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(26.60))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(19)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-05T00:00")));
+    }
+    
+    @Test
     public void testJahresgebuhr01()
     {
         Client client = new Client();

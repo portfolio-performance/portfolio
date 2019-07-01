@@ -25,6 +25,7 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
         addBuyTransaction();
         addSellTransaction();
         addDividendsTransaction();
+        addCapitalGainTransaction();
         addFeeTransaction();
         addAccountTransferTransaction();
     }
@@ -231,6 +232,60 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             Unit unit = new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax));
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
+                        })
+                        
+                        .wrap(TransactionItem::new));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addCapitalGainTransaction()
+    {
+        DocumentType type = new DocumentType("Kapitalgewinn");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Kapitalgewinn Unsere Referenz(.*)$");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
+                        })
+                        
+                        // There are two kinds of dividend exports
+                        // 1st:
+                        // ISIN: <isin>
+                        // <name> NKN: 2560588 <shares>
+                        .section("name", "isin", "shares").optional()
+                        .match("^ISIN: (?<isin>\\S*)$")
+                        .match("^(?<name>.*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                        
+                        // 2nd:
+                        // <name> ISIN: <isin>NKN: 3291273 <shares>
+                        .section("name", "isin", "shares").optional()
+                        .match("^(?<name>.*) ISIN: (?<isin>\\S*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                        
+                        .section("date")
+                        .match("^Valutadatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+                        
+                        .section("currency", "amount")
+                        .match("^Total (?<currency>\\w{3}+) (?<amount>[\\d+',.]*)$")
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.getSecurity().setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
                         
                         .wrap(TransactionItem::new));
