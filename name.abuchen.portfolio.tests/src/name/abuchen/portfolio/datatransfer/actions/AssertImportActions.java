@@ -28,11 +28,6 @@ public class AssertImportActions
             this.secondaryAccount.setCurrencyCode(currency);
             this.secondaryPortfolio = new Portfolio();
         }
-        
-        public TestContext(String firstCurrency, String secondCurrency) {
-            this(firstCurrency);
-            this.secondaryAccount.setCurrencyCode(secondCurrency);
-        }
 
         @Override
         public Account getAccount()
@@ -77,9 +72,5 @@ public class AssertImportActions
     public void check(List<Extractor.Item> items, String currencyCode)
     {
         check(items, new TestContext(currencyCode));
-    }
-    
-    public void check(List<Extractor.Item> items, String firstCurrencyCode, String secondCurrencyCode) {
-        check(items, new TestContext(firstCurrencyCode, secondCurrencyCode));
     }
 }

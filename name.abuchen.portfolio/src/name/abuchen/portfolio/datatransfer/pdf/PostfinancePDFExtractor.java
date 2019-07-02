@@ -6,7 +6,6 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -20,14 +19,13 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
     {
         super(client);
 
-        addBankIdentifier("PostFinance");
+        addBankIdentifier("PostFinance"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
         addDividendsTransaction();
         addCapitalGainTransaction();
         addFeeTransaction();
-        addAccountTransferTransaction();
     }
     
     @SuppressWarnings("nls")
@@ -193,26 +191,27 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             return transaction;
                         })
                         
-                        // There are two kinds of dividend exports
-                        // 1st:
-                        // ISIN: <isin>
-                        // <name> NKN: 2560588 <shares>
-                        .section("name", "isin", "shares").optional()
-                        .match("^ISIN: (?<isin>\\S*)$")
-                        .match("^(?<name>.*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
-                        
-                        // 2nd:
-                        // <name> ISIN: <isin>NKN: 3291273 <shares>
-                        .section("name", "isin", "shares").optional()
-                        .match("^(?<name>.*) ISIN: (?<isin>\\S*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
+                        .oneOf(
+                                        // There are two kinds of dividend exports
+                                        // 1st:
+                                        // ISIN: <isin>
+                                        // <name> NKN: 2560588 <shares>
+                                        section -> section.attributes("name", "isin", "shares")
+                                        .match("^ISIN: (?<isin>\\S*)$")
+                                        .match("^(?<name>.*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                                        .assign((t, v) -> {
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                            t.setShares(asShares(v.get("shares")));
+                                        }),
+                                        // 2nd:
+                                        // <name> ISIN: <isin>NKN: 3291273 <shares>
+                                        section -> section.attributes("name", "isin", "shares")
+                                        .match("^(?<name>.*) ISIN: (?<isin>\\S*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                                        .assign((t, v) -> {
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                            t.setShares(asShares(v.get("shares")));
+                                        })
+                        )
                         
                         .section("date")
                         .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
@@ -253,26 +252,27 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                             return transaction;
                         })
                         
-                        // There are two kinds of dividend exports
-                        // 1st:
-                        // ISIN: <isin>
-                        // <name> NKN: 2560588 <shares>
-                        .section("name", "isin", "shares").optional()
-                        .match("^ISIN: (?<isin>\\S*)$")
-                        .match("^(?<name>.*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
-                        
-                        // 2nd:
-                        // <name> ISIN: <isin>NKN: 3291273 <shares>
-                        .section("name", "isin", "shares").optional()
-                        .match("^(?<name>.*) ISIN: (?<isin>\\S*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                            t.setShares(asShares(v.get("shares")));
-                        })
+                        .oneOf(
+                                        // There are two kinds of dividend exports
+                                        // 1st:
+                                        // ISIN: <isin>
+                                        // <name> NKN: 2560588 <shares>
+                                        section -> section.attributes("name", "isin", "shares")
+                                        .match("^ISIN: (?<isin>\\S*)$")
+                                        .match("^(?<name>.*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                                        .assign((t, v) -> {
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                            t.setShares(asShares(v.get("shares")));
+                                        }),
+                                        // 2nd:
+                                        // <name> ISIN: <isin>NKN: 3291273 <shares>
+                                        section -> section.attributes("name", "isin", "shares")
+                                        .match("^(?<name>.*) ISIN: (?<isin>\\S*)NKN: [\\d+]* (?<shares>[\\d+',.]*)$")
+                                        .assign((t, v) -> {
+                                            t.setSecurity(getOrCreateSecurity(v));
+                                            t.setShares(asShares(v.get("shares")));
+                                        })
+                        )
                         
                         .section("date")
                         .match("^Ausführungsdatum (?<date>\\d+\\.\\d+\\.\\d{4})$")
@@ -318,74 +318,11 @@ public class PostfinancePDFExtractor extends SwissBasedPDFExtractor
                         })
                         .wrap(TransactionItem::new));
     }
-    
-    @SuppressWarnings("nls")
-    private void addAccountTransferTransaction()
-    {
-        DocumentType type = new DocumentType("Zahlungsverkehr");
-        
-        this.addDocumentTyp(type);
-
-        Block block = new Block("^Zahlungsverkehr (.*)$");
-        type.addBlock(block);
-        
-
-        block.set(new Transaction<AccountTransferEntry>()
-                        
-
-                        .subject(() -> {
-                            return new AccountTransferEntry();
-                        })
-                        
-                        .section("date", "amountTo", "currencyTo", "exchangeRate", "amountFrom", "currencyFrom").optional()
-                        .find("^Zahlungsverkehr (.*)")
-                        .match("^Valutadatum (?<date>\\d+.\\d+.\\d{4}+)$")
-                        .match("^Betrag belastet (?<currencyTo>\\w{3}+) (?<amountTo>[\\d+',.]*)$")
-                        .match("^Wechselkurs (?<exchangeRate>[\\d+',.]*)$")
-                        .match("^Total (?<currencyFrom>\\w{3}+) (?<amountFrom>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.getSourceTransaction().setDateTime(asDate(v.get("date")));
-                            t.getSourceTransaction().setCurrencyCode(asCurrencyCode(v.get("currencyFrom")));
-                            t.getSourceTransaction().setAmount(asAmount(v.get("amountFrom")));
-                            
-                            Money forex = Money.of(asCurrencyCode(v.get("currencyTo")), asAmount(v.get("amountTo")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            Money gross = Money.of(asCurrencyCode(v.get("currencyFrom")), asAmount(v.get("amountFrom"))); 
-                            t.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
-                            
-                            t.getTargetTransaction().setDateTime(asDate(v.get("date")));
-                            t.getTargetTransaction().setCurrencyCode(asCurrencyCode(v.get("currencyTo")));
-                            t.getTargetTransaction().setAmount(asAmount(v.get("amountTo")));
-                        })
-                        
-                        .section("date", "amountFrom", "currencyFrom", "exchangeRate", "amountTo", "currencyTo").optional()
-                        .find("^Zahlungsverkehr (.*)")
-                        .match("^Valutadatum (?<date>\\d+.\\d+.\\d{4}+)$")
-                        .match("^Gutgeschriebener Betrag (?<currencyFrom>\\w{3}+) (?<amountFrom>[\\d+',.]*)$")
-                        .match("^Wechselkurs (?<exchangeRate>[\\d+',.]*)$")
-                        .match("^Total (?<currencyTo>\\w{3}+) (?<amountTo>[\\d+',.]*)$")
-                        .assign((t, v) -> {
-                            t.getSourceTransaction().setDateTime(asDate(v.get("date")));
-                            t.getSourceTransaction().setCurrencyCode(asCurrencyCode(v.get("currencyFrom")));
-                            t.getSourceTransaction().setAmount(asAmount(v.get("amountFrom")));
-                            
-                            Money forex = Money.of(asCurrencyCode(v.get("currencyTo")), asAmount(v.get("amountTo")));
-                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
-                            Money gross = Money.of(asCurrencyCode(v.get("currencyFrom")), asAmount(v.get("amountFrom"))); 
-                            t.getSourceTransaction().addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
-                            
-                            t.getTargetTransaction().setDateTime(asDate(v.get("date")));
-                            t.getTargetTransaction().setCurrencyCode(asCurrencyCode(v.get("currencyTo")));
-                            t.getTargetTransaction().setAmount(asAmount(v.get("amountTo")));
-                        })
-                        
-                        .wrap(t -> new AccountTransferItem(t, true)));
-    }
 
     @Override
     public String getLabel()
     {
-        return "PostFinance";
+        return "PostFinance"; //$NON-NLS-1$
     }
 
 }
