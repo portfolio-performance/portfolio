@@ -19,6 +19,12 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
     /* package */static boolean isClientPartActive(MPart part)
     {
+        // issue: on unity desktop, the enablement of menu items is only checked
+        // once at the start. Therefore we always enable all menu items
+        // regardless whether a file is open
+        if (UnityDesktopHelper.isUnity())
+            return true;
+
         // issue: check for the availability of Client, not ClientInput, because
         // if the part is open, but the Client not yet decrypted, menus still
         // must be deactivated
@@ -34,13 +40,21 @@ import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
     /* package */static Optional<ClientInput> getActiveClientInput(MPart part)
     {
+        return getActiveClientInput(part, true);
+    }
+
+    /* package */static Optional<ClientInput> getActiveClientInput(MPart part, boolean showWarning)
+    {
         if (part == null || !(part.getObject() instanceof PortfolioPart)
                         || ((PortfolioPart) part.getObject()).getClient() == null)
         {
-            // as the menu is always active on Linux, show a dialog why nothing
-            // happens when choosing the menu
-            MessageDialog.openWarning(Display.getDefault().getActiveShell(), Messages.MsgNoFileOpen,
-                            Messages.MsgNoFileOpenText);
+            if (showWarning)
+            {
+                // as the menu is always active on Linux, show a dialog why
+                // nothing happens when choosing the menu
+                MessageDialog.openWarning(Display.getDefault().getActiveShell(), Messages.MsgNoFileOpen,
+                                Messages.MsgNoFileOpenText);
+            }
             return Optional.empty();
         }
 

@@ -20,7 +20,7 @@ public class CloseFileHandler
     @Execute
     public void execute(@Optional @Named(IServiceConstants.ACTIVE_PART) MPart activePart, EPartService partService)
     {
-        if (!MenuHelper.isClientPartActive(activePart))
+        if (!MenuHelper.getActiveClientInput(activePart).isPresent())
             return;
 
         if (partService.savePart(activePart, true))

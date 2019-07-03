@@ -27,10 +27,7 @@ public class ViewNavigationMenuContribution
     @AboutToShow
     public void aboutToShow(@Named(IServiceConstants.ACTIVE_PART) MPart part, List<MMenuElement> menuItems)
     {
-        if (!MenuHelper.isClientPartActive(part))
-            return;
-
-        Optional<ClientInput> clientInput = MenuHelper.getActiveClientInput(part);
+        Optional<ClientInput> clientInput = MenuHelper.getActiveClientInput(part, false);
         if (!clientInput.isPresent())
             return;
 

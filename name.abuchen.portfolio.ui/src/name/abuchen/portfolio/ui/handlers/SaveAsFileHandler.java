@@ -42,7 +42,7 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.EXTENSION) String extension,
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
-        if (!MenuHelper.isClientPartActive(part))
+        if (!MenuHelper.getActiveClientInput(part).isPresent())
             return;
 
         if (extension == null)

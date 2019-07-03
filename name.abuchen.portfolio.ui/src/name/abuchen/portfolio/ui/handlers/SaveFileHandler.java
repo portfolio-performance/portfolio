@@ -22,10 +22,6 @@ public class SaveFileHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        if (!MenuHelper.isClientPartActive(part))
-            return;
-
-        // trigger part to save file
-        ((PortfolioPart) part.getObject()).save(shell);
+        MenuHelper.getActiveClientInput(part).ifPresent(c -> ((PortfolioPart) part.getObject()).save(shell));
     }
 }

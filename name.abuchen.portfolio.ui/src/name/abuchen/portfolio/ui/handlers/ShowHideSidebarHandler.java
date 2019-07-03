@@ -34,16 +34,12 @@ public class ShowHideSidebarHandler
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part)
     {
-        Optional<SashLayout> sash = findChildWithSash(part);
-        if (!sash.isPresent())
-            return;
-
-        sash.get().flip();
+        findChildWithSash(part).ifPresent(SashLayout::flip);
     }
 
     private Optional<SashLayout> findChildWithSash(MPart part)
     {
-        if (!MenuHelper.isClientPartActive(part))
+        if (!MenuHelper.getActiveClientInput(part, false).isPresent())
             return Optional.empty();
 
         Object widget = part.getWidget();

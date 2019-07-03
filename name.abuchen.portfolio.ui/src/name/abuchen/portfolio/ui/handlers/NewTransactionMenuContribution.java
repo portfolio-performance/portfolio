@@ -35,7 +35,7 @@ public class NewTransactionMenuContribution
     public void aboutToShow(@Named(IServiceConstants.ACTIVE_PART) MPart part, List<MMenuElement> items,
                     IEclipseContext context)
     {
-        if (!MenuHelper.isClientPartActive(part))
+        if (!MenuHelper.getActiveClientInput(part, false).isPresent())
             return;
 
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();

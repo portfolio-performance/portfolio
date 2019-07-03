@@ -22,7 +22,7 @@ public class SetCurrentViewAsInitialViewHandler
     @CanExecute
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part, MMenuItem menuItem)
     {
-        if (!MenuHelper.isClientPartActive(part))
+        if (!MenuHelper.getActiveClientInput(part, false).isPresent())
             return false;
 
         PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
