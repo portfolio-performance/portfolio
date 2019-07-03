@@ -302,25 +302,33 @@ public class LifeCycleManager
      */
     private void saveCopyOfApplicationModel(MApplication app, IModelResourceHandler handler)
     {
-        MApplication appCopy = (MApplication) EcoreUtil.copy((EObject) app);
-        Resource resource = handler.createResourceWithApp(appCopy);
-
-        File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
-                        ModelConstants.E4XMICOPY_FILENAME);
-
-        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+        try
         {
-            resource.save(out, null);
+            MApplication appCopy = (MApplication) EcoreUtil.copy((EObject) app);
+            Resource resource = handler.createResourceWithApp(appCopy);
+
+            File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
+                            ModelConstants.E4XMICOPY_FILENAME);
+
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+            {
+                resource.save(out, null);
+            }
+            catch (IOException e)
+            {
+                // nothing to do: if no copy of the application model exist when
+                // clearing the persisted state (for example after an upgrade),
+                // then the user has to start with an empty layout
+                logger.error(e);
+            }
+
+            resource.unload();
+            resource.getResourceSet().getResources().remove(resource);
         }
-        catch (IOException e)
+        catch (IllegalArgumentException e)
         {
-            // nothing to do: if no copy of the application model exist when
-            // clearing the persisted state (for example after an upgrade), then
-            // the user has to start with an empty layout
+            // error while copying application model
             logger.error(e);
         }
-
-        resource.unload();
-        resource.getResourceSet().getResources().remove(resource);
     }
 }
