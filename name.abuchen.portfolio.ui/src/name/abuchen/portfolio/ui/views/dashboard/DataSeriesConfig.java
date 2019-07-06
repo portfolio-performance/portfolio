@@ -22,7 +22,7 @@ public class DataSeriesConfig implements WidgetConfig
     {
         private WidgetDelegate<?> delegate;
         private String groupName = Messages.LabelDataSeries;
-        private DataSeries.Type defaultDataSeriesType = DataSeries.Type.CLIENT;
+        private String uuid;
         private boolean supportsBenchmarks = true;
 
         public Builder(WidgetDelegate<?> delegate)
@@ -36,9 +36,17 @@ public class DataSeriesConfig implements WidgetConfig
             return this;
         }
 
+        public Builder withDataSeries(String uuid)
+        {
+            this.uuid = uuid;
+            return this;
+        }
+
         public Builder withDefaultDataSeries(DataSeries.Type type)
         {
-            this.defaultDataSeriesType = type;
+            this.uuid = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
+                            .filter(ds -> ds.getType().equals(type)).findAny().map(s -> s.getUUID())
+                            .orElseThrow(IllegalArgumentException::new);
             return this;
         }
 
@@ -47,13 +55,15 @@ public class DataSeriesConfig implements WidgetConfig
             this.supportsBenchmarks = supportsBenchmarks;
             return this;
         }
-        
+
         public DataSeriesConfig build()
         {
             Objects.requireNonNull(groupName);
-            Objects.requireNonNull(defaultDataSeriesType);
+            
+            if(uuid == null || uuid.isEmpty())
+                withDefaultDataSeries(DataSeries.Type.CLIENT);
 
-            DataSeriesConfig config = new DataSeriesConfig(delegate, defaultDataSeriesType);
+            DataSeriesConfig config = new DataSeriesConfig(delegate, uuid);
             config.setGroupName(groupName);
             config.setBenchmarkDataSeries(supportsBenchmarks);
             return config;
@@ -65,38 +75,46 @@ public class DataSeriesConfig implements WidgetConfig
     private DataSeries dataSeries;
     private boolean supportsBenchmarks = true;
 
-    public DataSeriesConfig(WidgetDelegate<?> delegate, DataSeries.Type defaultDataSeriesType)
+    public DataSeriesConfig(WidgetDelegate<?> delegate, String uuid)
     {
         this.delegate = delegate;
 
-        String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.DATA_SERIES.name());
-        if (uuid != null && !uuid.isEmpty())
+        String configUUID = delegate.getWidget().getConfiguration().get(Dashboard.Config.DATA_SERIES.name());
+        if (configUUID != null && !configUUID.isEmpty())
+            dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(configUUID);
+        if (dataSeries == null)
             dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
-        if (dataSeries == null)        
-            dataSeries = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
-                .filter(ds -> ds.getType().equals(defaultDataSeriesType)).findAny()
-                .orElseThrow(IllegalArgumentException::new);
     }
-    
+
     public static Builder create(WidgetDelegate<?> delegate)
     {
         return new DataSeriesConfig.Builder(delegate);
     }
-    
-    void setGroupName(String groupName)
+
+    public void setGroupName(String groupName)
     {
         this.groupName = groupName;
     }
+    
+    public String getGroupName()
+    {
+        return groupName;
+    }
 
-    void setBenchmarkDataSeries(boolean supportsBenchmarks)
+    public void setBenchmarkDataSeries(boolean supportsBenchmarks)
     {
         this.supportsBenchmarks = supportsBenchmarks;
+    }
+    
+    public boolean getSupportsBenchmarkDataSeries()
+    {
+        return supportsBenchmarks;
     }
 
     public DataSeries getDataSeries()
     {
         return dataSeries;
-    }
+    }    
 
     @Override
     public void menuAboutToShow(IMenuManager manager)
