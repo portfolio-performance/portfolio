@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import org.eclipse.swt.SWT;
 import org.swtchart.ILineSeries;

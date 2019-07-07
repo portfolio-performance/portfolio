@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,16 +18,16 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
-import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class DividendsChartTab extends AbstractChartTab
+public class EarningsChartTab extends AbstractChartTab
 {
     private class DividendChartToolTip extends TimelineChartToolTip
     {
-        private DividendsViewModel model;
+        private EarningsViewModel model;
 
-        public DividendChartToolTip(Chart chart, DividendsViewModel model)
+        public DividendChartToolTip(Chart chart, EarningsViewModel model)
         {
             super(chart);
 
@@ -110,7 +110,7 @@ public class DividendsChartTab extends AbstractChartTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelDividendsPerMonth;
+        return Messages.LabelEarningsPerMonth;
     }
 
     @Override

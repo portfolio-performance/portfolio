@@ -44,7 +44,7 @@ import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.currency.CurrencyView;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
-import name.abuchen.portfolio.ui.views.dividends.DividendsView;
+import name.abuchen.portfolio.ui.views.earnings.EarningsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
@@ -428,7 +428,7 @@ public final class Navigation
         performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class));
         performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
-        performance.add(new Item(Messages.LabelDividends, DividendsView.class));
+        performance.add(new Item(Messages.ColumnEarnings, EarningsView.class));
 
         Item allTrades = new Item(Messages.LabelTrades, TradeDetailsView.class);
         allTrades.addTag(Tag.HIDE);

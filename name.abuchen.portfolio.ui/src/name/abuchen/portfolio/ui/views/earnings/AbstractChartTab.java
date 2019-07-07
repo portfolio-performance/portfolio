@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.text.DateFormatSymbols;
 import java.util.Arrays;
@@ -21,7 +21,7 @@ import org.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
-public abstract class AbstractChartTab implements DividendsTab
+public abstract class AbstractChartTab implements EarningsTab
 {
     private static final int[][] FIVE_COLORS = new int[][] { //
                     new int[] { 114, 124, 201 }, //
@@ -43,7 +43,7 @@ public abstract class AbstractChartTab implements DividendsTab
                     new int[] { 23, 190, 207 } }; //
 
     @Inject
-    protected DividendsViewModel model;
+    protected EarningsViewModel model;
 
     private LocalResourceManager resources;
     private Chart chart;

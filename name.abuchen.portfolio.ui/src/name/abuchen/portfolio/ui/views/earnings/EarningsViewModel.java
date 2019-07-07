@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -23,7 +23,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
 
-public class DividendsViewModel
+public class EarningsViewModel
 {
     public enum Mode
     {
@@ -100,7 +100,7 @@ public class DividendsViewModel
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
 
-    public DividendsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
+    public EarningsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
     {
         this.converter = converter;
         this.client = client;
@@ -108,13 +108,13 @@ public class DividendsViewModel
         this.clientFilter = new ClientFilterMenu(client, preferences, filter -> recalculate());
 
         String selection = preferences
-                        .getString(DividendsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
+                        .getString(EarningsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX);
         if (selection != null)
             this.clientFilter.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
                             .ifPresent(this.clientFilter::select);
 
         this.clientFilter.addListener(filter -> preferences.putValue(
-                        DividendsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
+                        EarningsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 

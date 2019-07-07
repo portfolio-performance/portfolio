@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 
@@ -26,12 +26,12 @@ import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 
-public class DividendsView extends AbstractFinanceView
+public class EarningsView extends AbstractFinanceView
 {
-    private static final String KEY_TAB = DividendsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
-    private static final String KEY_YEAR = DividendsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
-    private static final String KEY_MODE = DividendsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
-    private static final String KEY_USE_GROSS_VALUE = DividendsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
+    private static final String KEY_TAB = EarningsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
+    private static final String KEY_YEAR = EarningsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
+    private static final String KEY_MODE = EarningsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
+    private static final String KEY_USE_GROSS_VALUE = EarningsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
 
     @Inject
     private Client client;
@@ -42,7 +42,7 @@ public class DividendsView extends AbstractFinanceView
     @Inject
     private ExchangeRateProviderFactory factory;
 
-    private DividendsViewModel model;
+    private EarningsViewModel model;
 
     private CTabFolder folder;
 
@@ -50,20 +50,20 @@ public class DividendsView extends AbstractFinanceView
     public void setupModel()
     {
         CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
-        model = new DividendsViewModel(preferences, converter, client);
+        model = new EarningsViewModel(preferences, converter, client);
 
         int year = preferences.getInt(KEY_YEAR);
         LocalDate now = LocalDate.now();
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
 
-        DividendsViewModel.Mode mode = DividendsViewModel.Mode.ALL;
+        EarningsViewModel.Mode mode = EarningsViewModel.Mode.ALL;
         String prefMode = preferences.getString(KEY_MODE);
         if (prefMode != null && !prefMode.isEmpty())
         {
             try
             {
-                mode = DividendsViewModel.Mode.valueOf(prefMode);
+                mode = EarningsViewModel.Mode.valueOf(prefMode);
             }
             catch (Exception ignore)
             {
@@ -99,7 +99,7 @@ public class DividendsView extends AbstractFinanceView
     {
         ActionContributionItem dividends = new ActionContributionItem( //
                         new SimpleAction(Messages.LabelDividends, SWT.RADIO, a -> {
-                            model.setMode(DividendsViewModel.Mode.DIVIDENDS);
+                            model.setMode(EarningsViewModel.Mode.DIVIDENDS);
                             updateIcons(toolBarManager);
                         }));
         dividends.setMode(ActionContributionItem.MODE_FORCE_TEXT);
@@ -107,7 +107,7 @@ public class DividendsView extends AbstractFinanceView
 
         ActionContributionItem interest = new ActionContributionItem( //
                         new SimpleAction(Messages.LabelInterest, SWT.RADIO, a -> {
-                            model.setMode(DividendsViewModel.Mode.INTEREST);
+                            model.setMode(EarningsViewModel.Mode.INTEREST);
                             updateIcons(toolBarManager);
                         }));
         interest.setMode(ActionContributionItem.MODE_FORCE_TEXT);
@@ -115,7 +115,7 @@ public class DividendsView extends AbstractFinanceView
 
         ActionContributionItem all = new ActionContributionItem( //
                         new SimpleAction(Messages.LabelEarnings, SWT.RADIO, a -> {
-                            model.setMode(DividendsViewModel.Mode.ALL);
+                            model.setMode(EarningsViewModel.Mode.ALL);
                             updateIcons(toolBarManager);
                         }));
         all.setMode(ActionContributionItem.MODE_FORCE_TEXT);
@@ -151,7 +151,7 @@ public class DividendsView extends AbstractFinanceView
             final int itemCount = folder.getItemCount();
             for (int ii = 0; ii < itemCount; ii++)
             {
-                DividendsTab tab = (DividendsTab) folder.getItem(ii).getData();
+                EarningsTab tab = (EarningsTab) folder.getItem(ii).getData();
                 if (tab != null)
                     tab.addExportActions(manager);
             }
@@ -163,7 +163,7 @@ public class DividendsView extends AbstractFinanceView
             action.setChecked(model.usesGrossValue());
             manager.add(action);
 
-            DividendsTab tab = (DividendsTab) folder.getSelection().getData();
+            EarningsTab tab = (EarningsTab) folder.getSelection().getData();
             if (tab != null)
             {
                 manager.add(new Separator());
@@ -177,12 +177,12 @@ public class DividendsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, Images.VIEW_TABLE, DividendsMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, DividendsQuarterMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, DividendsYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, DividendsChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, DividendsPerQuarterChartTab.class);
-        createTab(folder, Images.VIEW_BARCHART, DividendsPerYearChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, EarningsChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, EarningsPerQuarterChartTab.class);
+        createTab(folder, Images.VIEW_BARCHART, EarningsPerYearChartTab.class);
         createTab(folder, Images.VIEW_LINECHART, AccumulatedDividendsChartTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
@@ -195,9 +195,9 @@ public class DividendsView extends AbstractFinanceView
         return folder;
     }
 
-    private void createTab(CTabFolder folder, Images image, Class<? extends DividendsTab> tabClass)
+    private void createTab(CTabFolder folder, Images image, Class<? extends EarningsTab> tabClass)
     {
-        DividendsTab tab = this.make(tabClass, model);
+        EarningsTab tab = this.make(tabClass, model);
         Control control = tab.createControl(folder);
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(tab.getLabel());

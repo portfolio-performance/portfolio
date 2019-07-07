@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,23 +17,23 @@ import org.eclipse.swt.graphics.Font;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class DividendsYearMatrixTab extends DividendsMatrixTab
+public class EarningsYearMatrixTab extends EarningsMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
     @Override
     public String getLabel()
     {
-        return Messages.LabelDividendsByYearAndVehicle;
+        return Messages.LabelEarningsByYearAndVehicle;
     }
 
     @Override
     public void addConfigActions(IMenuManager manager)
     {
-        // do not add config option from divident / month tab
+        // do not add configuration option from earnings / month tab
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DividendsYearMatrixTab extends DividendsMatrixTab
 
     private void createYearColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
     {
-        ToLongFunction<DividendsViewModel.Line> valueFunction = line -> {
+        ToLongFunction<EarningsViewModel.Line> valueFunction = line -> {
             long value = 0;
             for (int ii = index; ii < index + 12 && ii < line.getNoOfMonths(); ii++)
                 value += line.getValue(ii);
@@ -67,7 +67,7 @@ public class DividendsYearMatrixTab extends DividendsMatrixTab
             @Override
             public String getText(Object element)
             {
-                Line line = (DividendsViewModel.Line) element;
+                Line line = (EarningsViewModel.Line) element;
                 long value = valueFunction.applyAsLong(line);
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(value) : Values.Amount.format(value);
             }
@@ -75,14 +75,14 @@ public class DividendsYearMatrixTab extends DividendsMatrixTab
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 return vehicle != null ? null : boldFont;
             }
         });

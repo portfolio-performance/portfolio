@@ -482,6 +482,13 @@ public class Messages extends NLS
     public static String LabelDoImport;
     public static String LabelDoNotImport;
     public static String LabelEarnings;
+    public static String LabelEarningsByMonthAndVehicle;
+    public static String LabelEarningsByQuarterAndVehicle;
+    public static String LabelEarningsByYearAndVehicle;
+    public static String LabelEarningsPerMonth;
+    public static String LabelEarningsPerQuarter;
+    public static String LabelEarningsPerYear;
+    public static String LabelEarningsSelectStartYear;
     public static String LabelError;
     public static String LabelEurostatRegion;
     public static String LabelExchange;
@@ -568,13 +575,6 @@ public class Messages extends NLS
     public static String LabelShowOnlyOneYear;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
-    public static String LabelDividendsByMonthAndVehicle;
-    public static String LabelDividendsByQuarterAndVehicle;
-    public static String LabelDividendsByYearAndVehicle;
-    public static String LabelDividendsPerMonth;
-    public static String LabelDividendsPerQuarter;
-    public static String LabelDividendsPerYear;
-    public static String LabelDividendsSelectStartYear;
     public static String LabelGreenWhiteRed;
     public static String LabelGreenYellowRed;
     public static String LabelGross;

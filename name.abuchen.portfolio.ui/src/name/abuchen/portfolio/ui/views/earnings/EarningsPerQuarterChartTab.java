@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -21,19 +21,19 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
-import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class DividendsPerQuarterChartTab extends AbstractChartTab
+public class EarningsPerQuarterChartTab extends AbstractChartTab
 {
 
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
     private class DividendPerQuarterToolTip extends TimelineChartToolTip
     {
-        private DividendsViewModel model;
+        private EarningsViewModel model;
 
-        public DividendPerQuarterToolTip(Chart chart, DividendsViewModel model)
+        public DividendPerQuarterToolTip(Chart chart, EarningsViewModel model)
         {
             super(chart);
 
@@ -126,7 +126,7 @@ public class DividendsPerQuarterChartTab extends AbstractChartTab
     @Override
     public String getLabel()
     {
-        return Messages.LabelDividendsPerQuarter;
+        return Messages.LabelEarningsPerQuarter;
     }
 
     @Override

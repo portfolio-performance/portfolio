@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.ui.views.dividends;
+package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
 import java.time.Month;
@@ -17,17 +17,17 @@ import org.eclipse.swt.graphics.Font;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.views.dividends.DividendsViewModel.Line;
+import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class DividendsQuarterMatrixTab extends DividendsMatrixTab
+public class EarningsQuarterMatrixTab extends EarningsMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
     @Override
     public String getLabel()
     {
-        return Messages.LabelDividendsByQuarterAndVehicle;
+        return Messages.LabelEarningsByQuarterAndVehicle;
     }
 
     @Override
@@ -104,7 +104,7 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
     private void createQuarterColumn(TableViewer records, TableColumnLayout layout, int quarterBeginIndex,
                     int quarterEndIndex, String columnCaption)
     {
-        ToLongFunction<DividendsViewModel.Line> valueFunction = line -> {
+        ToLongFunction<EarningsViewModel.Line> valueFunction = line -> {
             long value = 0;
             for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
                 value += line.getValue(i);
@@ -118,7 +118,7 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
             @Override
             public String getText(Object element)
             {
-                Line line = (DividendsViewModel.Line) element;
+                Line line = (EarningsViewModel.Line) element;
                 long value = valueFunction.applyAsLong(line);
                 return line.getVehicle() != null ? Values.Amount.formatNonZero(value) : Values.Amount.format(value);
             }
@@ -126,14 +126,14 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 return TextUtil.tooltip(vehicle != null ? vehicle.getName() : null);
             }
 
             @Override
             public Font getFont(Object element)
             {
-                InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
+                InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 return vehicle != null ? null : boldFont;
             }
         });
