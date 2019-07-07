@@ -145,7 +145,7 @@
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
     <bindings xmi:id="_C46kcBi9EeO8gYEHAOvLsA" elementId="" keySequence="M1+Q" command="_1mco0Bi8EeO8gYEHAOvLsA"/>
   </bindingTables>
-  <bindingTables xmi:id="_XLRuABoEEeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.bootstrap.bindingtable.0" bindingContext="_KwZhsBoEEeiQOJdQgYCbNA">
+  <bindingTables xmi:id="_XLRuABoEEeiQOJdQgYCbNA" elementId="" bindingContext="_KwZhsBoEEeiQOJdQgYCbNA">
     <bindings xmi:id="__2J6oPeCEeO4R-HvWULnnw" elementId="" keySequence="M1+S" command="_rzHrcPOjEeOHHf_SGgPLVA"/>
     <bindings xmi:id="_LS-jQPeDEeO4R-HvWULnnw" elementId="" keySequence="M1+U K" command="_tukxoBiQEeOR1rNFCzC82A"/>
     <bindings xmi:id="_w7HC4LEBEeefXq-wtldCQQ" elementId="" keySequence="M1+I P" command="_pgC00EYREeSRXYVe298mXg"/>
@@ -154,6 +154,7 @@
     <bindings xmi:id="_3vDC0IUnEemwCoP93IFEYw" elementId="" keySequence="M1+G" command="_xMacQIUnEemwCoP93IFEYw"/>
     <bindings xmi:id="_3fTasJowEemdcMPaSHoNPw" elementId="" keySequence="M1+K" command="_kGDGEJl3EemdcMPaSHoNPw"/>
   </bindingTables>
+  <bindingTables xmi:id="_mbUm4KBzEemgtous_Qs3nA" elementId="" bindingContext="_7d8q4hjAEeO8gYEHAOvLsA"/>
   <rootContext xmi:id="_7d8q4BjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.dialogAndWindow" name="In Dialog and Windows">
     <children xmi:id="_7d8q4RjAEeO8gYEHAOvLsA" elementId="org.eclipse.ui.contexts.window" name="In Windows">
       <children xmi:id="_KwZhsBoEEeiQOJdQgYCbNA" elementId="name.abuchen.portfolio.file" name="In Portfolio Performance File"/>
