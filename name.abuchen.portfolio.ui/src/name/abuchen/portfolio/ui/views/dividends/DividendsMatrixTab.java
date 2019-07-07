@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
@@ -129,7 +130,7 @@ public class DividendsMatrixTab implements DividendsTab
 
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
-        createSecurityColumn(records, layout, true);
+        createVehicleColumn(records, layout, true);
 
         // create monthly columns
         LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
@@ -146,10 +147,10 @@ public class DividendsMatrixTab implements DividendsTab
 
         // add security name at the end of the matrix table again because the
         // first column is most likely not visible anymore
-        createSecurityColumn(records, layout, false);
+        createVehicleColumn(records, layout, false);
     }
 
-    protected void createSecurityColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
+    protected void createVehicleColumn(TableViewer records, TableColumnLayout layout, boolean isSorted)
     {
         TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
@@ -159,7 +160,12 @@ public class DividendsMatrixTab implements DividendsTab
             public Image getImage(Object element)
             {
                 InvestmentVehicle vehicle = ((DividendsViewModel.Line) element).getVehicle();
-                return vehicle != null ? Images.SECURITY.image() : null;
+                if (vehicle instanceof Account)
+                    return Images.ACCOUNT.image();
+                else if (vehicle instanceof Security)
+                    return Images.SECURITY.image();
+                else
+                    return null;
             }
 
             @Override

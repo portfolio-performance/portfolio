@@ -6,6 +6,8 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -28,6 +30,7 @@ public class DividendsView extends AbstractFinanceView
 {
     private static final String KEY_TAB = DividendsView.class.getSimpleName() + "-tab"; //$NON-NLS-1$
     private static final String KEY_YEAR = DividendsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
+    private static final String KEY_MODE = DividendsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
     private static final String KEY_USE_GROSS_VALUE = DividendsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
 
     @Inject
@@ -53,13 +56,28 @@ public class DividendsView extends AbstractFinanceView
         LocalDate now = LocalDate.now();
         if (year < 1900 || year > now.getYear())
             year = now.getYear() - 2;
-        model.updateWith(year);
+
+        DividendsViewModel.Mode mode = DividendsViewModel.Mode.ALL;
+        String prefMode = preferences.getString(KEY_MODE);
+        if (prefMode != null && !prefMode.isEmpty())
+        {
+            try
+            {
+                mode = DividendsViewModel.Mode.valueOf(prefMode);
+            }
+            catch (Exception ignore)
+            {
+                // use default mode
+            }
+        }
 
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
-        model.setUseGrossValue(useGrossValue);
+
+        model.configure(year, mode, useGrossValue);
 
         model.addUpdateListener(() -> {
             preferences.setValue(KEY_YEAR, model.getStartYear());
+            preferences.setValue(KEY_MODE, model.getMode().name());
             preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
         });
     }
@@ -74,6 +92,47 @@ public class DividendsView extends AbstractFinanceView
     protected String getDefaultTitle()
     {
         return Messages.LabelDividends;
+    }
+
+    @Override
+    protected void addViewButtons(ToolBarManager toolBarManager)
+    {
+        ActionContributionItem dividends = new ActionContributionItem( //
+                        new SimpleAction(Messages.LabelDividends, SWT.RADIO, a -> {
+                            model.setMode(DividendsViewModel.Mode.DIVIDENDS);
+                            updateIcons(toolBarManager);
+                        }));
+        dividends.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+        toolBarManager.add(dividends);
+
+        ActionContributionItem interest = new ActionContributionItem( //
+                        new SimpleAction(Messages.LabelInterest, SWT.RADIO, a -> {
+                            model.setMode(DividendsViewModel.Mode.INTEREST);
+                            updateIcons(toolBarManager);
+                        }));
+        interest.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+        toolBarManager.add(interest);
+
+        ActionContributionItem all = new ActionContributionItem( //
+                        new SimpleAction(Messages.LabelEarnings, SWT.RADIO, a -> {
+                            model.setMode(DividendsViewModel.Mode.ALL);
+                            updateIcons(toolBarManager);
+                        }));
+        all.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+        toolBarManager.add(all);
+
+        updateIcons(toolBarManager);
+    }
+
+    private void updateIcons(ToolBarManager toolBarManager)
+    {
+        int index = 0;
+        for (IContributionItem item : toolBarManager.getItems())
+        {
+            Images image = index == model.getMode().ordinal() ? Images.VIEW_SELECTED : Images.VIEW;
+            ((ActionContributionItem) item).getAction().setImageDescriptor(image.descriptor());
+            index++;
+        }
     }
 
     @Override

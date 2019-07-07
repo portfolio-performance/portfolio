@@ -3,9 +3,11 @@ package name.abuchen.portfolio.ui.views.dividends;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -23,6 +25,26 @@ import name.abuchen.portfolio.util.Interval;
 
 public class DividendsViewModel
 {
+    public enum Mode
+    {
+        DIVIDENDS(AccountTransaction.Type.DIVIDENDS), //
+        INTEREST(AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE), //
+        ALL(AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
+                        AccountTransaction.Type.INTEREST_CHARGE);
+
+        private Set<AccountTransaction.Type> types;
+
+        private Mode(AccountTransaction.Type first, AccountTransaction.Type... rest)
+        {
+            this.types = EnumSet.of(first, rest);
+        }
+
+        public boolean isIncluded(AccountTransaction transaction)
+        {
+            return this.types.contains(transaction.getType());
+        }
+    }
+
     @FunctionalInterface
     public interface UpdateListener
     {
@@ -75,6 +97,7 @@ public class DividendsViewModel
     private Line sum;
     private List<TransactionPair<AccountTransaction>> transactions;
 
+    private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
 
     public DividendsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
@@ -93,6 +116,15 @@ public class DividendsViewModel
         this.clientFilter.addListener(filter -> preferences.putValue(
                         DividendsViewModel.class.getSimpleName() + ClientFilterMenu.PREF_KEY_POSTFIX,
                         this.clientFilter.getSelectedItem().getUUIDs()));
+    }
+
+    public void configure(int startYear, Mode mode, boolean useGrossValue)
+    {
+        this.startYear = startYear;
+        this.mode = mode;
+        this.useGrossValue = useGrossValue;
+
+        recalculate();
     }
 
     /* package */Client getClient()
@@ -125,6 +157,17 @@ public class DividendsViewModel
         return sum;
     }
 
+    public Mode getMode()
+    {
+        return mode;
+    }
+
+    public void setMode(Mode mode)
+    {
+        this.mode = mode;
+        recalculate();
+    }
+
     public boolean usesGrossValue()
     {
         return useGrossValue;
@@ -133,8 +176,7 @@ public class DividendsViewModel
     public void setUseGrossValue(boolean useGrossValue)
     {
         this.useGrossValue = useGrossValue;
-        calculate();
-        fireUpdateChange();
+        recalculate();
     }
 
     /**
@@ -156,8 +198,7 @@ public class DividendsViewModel
     public void updateWith(int year)
     {
         this.startYear = year;
-        calculate();
-        fireUpdateChange();
+        recalculate();
     }
 
     public void recalculate()
@@ -186,9 +227,9 @@ public class DividendsViewModel
 
         for (Account account : filteredClient.getAccounts())
         {
-            for (AccountTransaction t : account.getTransactions())
+            for (AccountTransaction t : account.getTransactions()) // NOSONAR
             {
-                if (t.getType() != AccountTransaction.Type.DIVIDENDS)
+                if (!mode.isIncluded(t))
                     continue;
 
                 if (!predicate.test(t))
@@ -198,9 +239,13 @@ public class DividendsViewModel
 
                 Money dividendValue = useGrossValue ? t.getGrossValue() : t.getMonetaryAmount();
                 long value = dividendValue.with(converter.at(t.getDateTime())).getAmount();
+                if (t.getType().isDebit())
+                    value *= -1;
+
                 int index = (t.getDateTime().getYear() - startYear) * 12 + t.getDateTime().getMonthValue() - 1;
 
-                Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));
+                InvestmentVehicle vehicle = t.getSecurity() != null ? t.getSecurity() : account;
+                Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, noOfmonths));
                 line.values[index] += value;
                 line.sum += value;
 

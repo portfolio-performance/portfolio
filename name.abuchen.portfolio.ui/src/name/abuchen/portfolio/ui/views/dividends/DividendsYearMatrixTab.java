@@ -39,7 +39,7 @@ public class DividendsYearMatrixTab extends DividendsMatrixTab
     @Override
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
-        createSecurityColumn(records, layout, true);
+        createVehicleColumn(records, layout, true);
 
         LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
         for (int index = 0; index < model.getNoOfMonths(); index += 12)

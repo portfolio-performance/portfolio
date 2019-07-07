@@ -39,7 +39,7 @@ public class DividendsQuarterMatrixTab extends DividendsMatrixTab
     @Override
     protected void createColumns(TableViewer records, TableColumnLayout layout)
     {
-        createSecurityColumn(records, layout, true);
+        createVehicleColumn(records, layout, true);
 
         createQuarterColumns(records, layout);
 
