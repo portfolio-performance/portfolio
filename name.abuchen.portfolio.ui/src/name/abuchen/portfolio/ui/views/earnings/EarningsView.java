@@ -183,7 +183,7 @@ public class EarningsView extends AbstractFinanceView
         createTab(folder, Images.VIEW_BARCHART, EarningsChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerQuarterChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, AccumulatedDividendsChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, AccumulatedEarningsChartTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
