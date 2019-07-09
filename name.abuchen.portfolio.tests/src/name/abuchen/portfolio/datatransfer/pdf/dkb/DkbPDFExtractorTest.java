@@ -140,6 +140,18 @@ public class DkbPDFExtractorTest
 
         return security;
     }
+    
+    private Security assertSecurityErtragsgutschriftDividendeFremdwaehrung2(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("JP3414750004"));
+        assertThat(security.getWkn(), is("471496"));
+        assertThat(security.getName(), is("SEIKO EPSON CORP. REGISTERED SHARES O.N."));
+
+        return security;
+    }
 
     private Security assertSecurityErtragsgutschriftDividendeQuellensteuern(List<Item> results)
     {
@@ -358,6 +370,38 @@ public class DkbPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2015-02-23T00:00")));
         assertThat(transaction.getAmount(), is(779L));
         assertThat(transaction.getShares(), is(Values.Share.factorize(53)));
+    }
+    
+    @Test
+    public void testErtragsgutschriftDividendeFremdwaehrung2() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "DkbErtragsgutschriftDividendeFremdwaehrung2.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = assertSecurityErtragsgutschriftDividendeFremdwaehrung2(results);
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-07-01T00:00")));
+        assertThat(transaction.getAmount(), is(13358L));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(715)));
+        
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(46.59))));
     }
 
     @Test
