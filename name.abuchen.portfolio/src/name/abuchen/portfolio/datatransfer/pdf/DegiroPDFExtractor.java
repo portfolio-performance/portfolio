@@ -38,6 +38,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
         // 02-08-2017 00:00 Einzahlung EUR 350,00 EUR 350,00
         // 01-02-2019 11:44 01-02-2019 Einzahlung EUR 0,01 EUR 0,01
+        // 22-02-2019 18:40 22-02-2019 SOFORT Einzahlung EUR 27,00 EUR 44,89
         Block blockDeposit = new Block("^.* Einzahlung .*$");
         type.addBlock(blockDeposit);
         blockDeposit.set(new Transaction<AccountTransaction>().subject(() -> {
@@ -47,7 +48,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("date", "currency", "amount")
-                        .match("(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*")
+                        .match("(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(SOFORT )?Einzahlung (?<currency>\\w{3}) (?<amount>[\\d.]+,\\d{2}) .*")
                         .assign((t, v) -> {
                                 t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                 t.setDateTime(asDate(v.get("date")));
@@ -114,6 +115,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         // 30-06-2017 00:00 Einrichtung von EUR -2,50 EUR 1.116,79
         // Handelsmodalitäten
         // 2017
+        //03-07-2019 11:47 30-06-2019 Einrichtung von Handelsmodalitäten 2019 (New York Stock EUR -0,54 EUR 22,16
         Block blockTrademodalities = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ (\\d+-\\d+-\\d{4} )?.*Einrichtung von .*$");
         type.addBlock(blockTrademodalities);
         blockTrademodalities.set(new Transaction<AccountTransaction>().subject(() -> {
@@ -121,14 +123,23 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
             t.setType(AccountTransaction.Type.FEES);
             return t;
         })
-
-                        .section("date", "currency", "amount")
-                        .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?.*Einrichtung von (?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}).*$")
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setDateTime(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        
+                        .oneOf(
+                                        section -> section.attributes("date", "currency", "amount").match(
+                                        "^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?.*Einrichtung von (?<currency>\\w{3}) -?(?<amount>[\\d.]+,\\d{2}).*$")
+                                        .assign((t, v) -> {
+                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                            t.setDateTime(asDate(v.get("date")));
+                                            t.setAmount(asAmount(v.get("amount")));
+                                        }),
+                                        section -> section.attributes("date", "currency", "amount").match(
+                                                        "^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?.*Einrichtung von Handelsmodalit.* (?<currency>\\w{3}) -(?<amount>[\\d.]+,\\d{2}).*$")
+                                                        .assign((t, v) -> {
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                            t.setDateTime(asDate(v.get("date")));
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                        })
+                              )
 
                         .wrap(t -> new TransactionItem(t)));
         
