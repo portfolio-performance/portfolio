@@ -96,6 +96,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         support.addColumn(column);
         
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDeltaPercentRelative_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
