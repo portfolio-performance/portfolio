@@ -37,7 +37,7 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
 
         Color oldForeground = event.gc.getForeground();
 
-        Rectangle bounds = getBounds(event.widget, event.index);
+        Rectangle bounds = getBounds(event.item, event.index);
 
         int center = bounds.width / 2;
 
