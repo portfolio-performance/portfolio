@@ -38,6 +38,14 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     private boolean categoryEnabled = false;
     private boolean reverseLabels = false;
 
+    /**
+     * If given, the tool tip is shown only for dates that are present in the
+     * given data series id. That is primarily used for the quote chart because
+     * for weekends there are no data points and the tool tip would start
+     * flickering.
+     */
+    private String showToolTipOnlyForDatesInThisDataSeries = null;
+
     private Set<String> excludeFromTooltip = new HashSet<>();
 
     public TimelineChartToolTip(Chart chart)
@@ -68,9 +76,17 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     /**
      * Add a series id which is not displayed in the tool tip.
      */
-    public void addSeriesExclude(String id)
+    public void addSeriesExclude(String seriesId)
     {
-        this.excludeFromTooltip.add(id);
+        this.excludeFromTooltip.add(seriesId);
+    }
+
+    /**
+     * Sets data series for which to show tool tips only.
+     */
+    public void showToolTipOnlyForDatesInDataSeries(String seriesId)
+    {
+        this.showToolTipOnlyForDatesInThisDataSeries = seriesId;
     }
 
     private List<BiConsumer<Composite, Object>> extraInfoProvider = new ArrayList<>();
@@ -114,11 +130,13 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
 
-        ISeries[] allSeries = getChart().getSeriesSet().getSeries();
-        if (allSeries.length == 0)
-            return null;
+        if (showToolTipOnlyForDatesInThisDataSeries == null)
+            return cal.getTime();
 
-        ISeries timeSeries = allSeries[0];
+        ISeries timeSeries = getChart().getSeriesSet().getSeries(showToolTipOnlyForDatesInThisDataSeries);
+        if (timeSeries == null)
+            return cal.getTime();
+
         int line = Arrays.binarySearch(timeSeries.getXDateSeries(), cal.getTime());
 
         if (line >= 0)

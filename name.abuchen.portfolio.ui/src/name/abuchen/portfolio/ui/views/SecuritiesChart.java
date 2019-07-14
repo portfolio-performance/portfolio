@@ -235,6 +235,8 @@ public class SecuritiesChart
     {
         TimelineChartToolTip toolTip = chart.getToolTip();
 
+        toolTip.showToolTipOnlyForDatesInDataSeries(Messages.ColumnQuote);
+
         toolTip.setValueFormat(new DecimalFormat(Values.Quote.pattern()));
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Positive"); //$NON-NLS-1$
         toolTip.addSeriesExclude(Messages.LabelChartDetailChartDevelopment + "Negative"); //$NON-NLS-1$
