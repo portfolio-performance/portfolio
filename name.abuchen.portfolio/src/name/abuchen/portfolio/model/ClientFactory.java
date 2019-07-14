@@ -568,6 +568,8 @@ public class ClientFactory
                 // added onlineId to security
             case 39:
                 // removed consumer price indices
+            case 40:
+                // added attributes to account and portfolio
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

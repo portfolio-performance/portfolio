@@ -67,6 +67,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
@@ -274,6 +275,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
+        addAttributeColumns(accountColumns);
+
         accountColumns.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
@@ -284,6 +287,19 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts.refresh();
 
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
+    }
+
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Account.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void fillAccountsContextMenu(IMenuManager manager) // NOSONAR

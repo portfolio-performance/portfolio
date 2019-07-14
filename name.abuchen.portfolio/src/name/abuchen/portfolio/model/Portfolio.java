@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
+public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>, Attributable
 {
     private String uuid;
     private String name;
@@ -14,6 +14,8 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     private Account referenceAccount;
 
     private List<PortfolioTransaction> transactions = new ArrayList<>();
+
+    private Attributes attributes;
 
     public Portfolio()
     {
@@ -79,6 +81,20 @@ public class Portfolio implements Named, TransactionOwner<PortfolioTransaction>
     public void setReferenceAccount(Account referenceAccount)
     {
         this.referenceAccount = referenceAccount;
+    }
+
+    @Override
+    public Attributes getAttributes()
+    {
+        if (attributes == null)
+            attributes = new Attributes();
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        this.attributes = attributes;
     }
 
     @Override

@@ -17,6 +17,10 @@ public class SettingsView extends AbstractTabbedView<AbstractTabbedView.Tab>
     @Override
     protected List<AbstractTabbedView.Tab> createTabs()
     {
-        return Arrays.asList(make(BookmarksListTab.class), make(AttributeListTab.class));
+        return Arrays.asList(make(BookmarksListTab.class), //
+                        make(AttributeListTab.class, AttributeListTab.Mode.SECURITY),
+                        make(AttributeListTab.class, AttributeListTab.Mode.ACCOUNT),
+                        make(AttributeListTab.class, AttributeListTab.Mode.PORTFOLIO),
+                        make(AttributeListTab.class, AttributeListTab.Mode.INVESTMENT_PLAN));
     }
 }

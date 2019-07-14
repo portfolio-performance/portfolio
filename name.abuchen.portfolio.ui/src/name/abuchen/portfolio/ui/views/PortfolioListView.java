@@ -47,6 +47,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -243,6 +244,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 
+        addAttributeColumns(portfolioColumns);
+
         portfolioColumns.createColumns();
 
         portfolios.getTable().setHeaderVisible(true);
@@ -272,6 +275,19 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         });
 
         hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
+    }
+
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Portfolio.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void fillPortfolioContextMenu(IMenuManager manager)
