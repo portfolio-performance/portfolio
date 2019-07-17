@@ -735,6 +735,7 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
+    public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;

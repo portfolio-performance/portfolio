@@ -23,6 +23,7 @@ import com.ibm.icu.text.MessageFormat;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
@@ -103,15 +104,25 @@ public class TradesWidget extends WidgetDelegate<TradeDetailsView.Input>
             TradeCollector collector = new TradeCollector(getClient(), getDashboardData().getCurrencyConverter());
 
             List<Trade> trades = new ArrayList<>();
+            List<TradeCollectorException> errors = new ArrayList<>();
 
-            getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
+            getClient().getSecurities().forEach(s -> {
+                try
+                {
+                    trades.addAll(collector.collect(s));
+                }
+                catch (TradeCollectorException error)
+                {
+                    errors.add(error);
+                }
+            });
 
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
 
             List<Trade> filteredTrades = trades.stream().filter(t -> t.getEnd().isPresent())
                             .filter(t -> interval.contains(t.getEnd().get())).collect(Collectors.toList());
 
-            return new TradeDetailsView.Input(interval, filteredTrades);
+            return new TradeDetailsView.Input(interval, filteredTrades, errors);
         };
     }
 }

@@ -33,7 +33,7 @@ public class TradeCollectorTest2
     }
 
     @Test
-    public void testSplitOfUnitWithForex()
+    public void testSplitOfUnitWithForex() throws TradeCollectorException
     {
         TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
 

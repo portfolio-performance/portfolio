@@ -2,22 +2,28 @@ package name.abuchen.portfolio.ui.views.trades;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.e4.core.di.annotations.Optional;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -33,11 +39,13 @@ public class TradeDetailsView extends AbstractFinanceView
     {
         private final Interval interval;
         private final List<Trade> trades;
+        private final List<TradeCollectorException> errors;
 
-        public Input(Interval interval, List<Trade> trades)
+        public Input(Interval interval, List<Trade> trades, List<TradeCollectorException> errors)
         {
             this.interval = interval;
             this.trades = trades;
+            this.errors = errors;
         }
 
         public Interval getInterval()
@@ -49,7 +57,14 @@ public class TradeDetailsView extends AbstractFinanceView
         {
             return trades;
         }
+
+        public List<TradeCollectorException> getErrors()
+        {
+            return errors;
+        }
     }
+
+    private static final String ID_WARNING_TOOL_ITEM = "warning"; //$NON-NLS-1$
 
     private Input input;
 
@@ -85,15 +100,12 @@ public class TradeDetailsView extends AbstractFinanceView
 
             dropDown.setMenuListener(manager -> {
                 manager.add(new SimpleAction(input.getInterval().toString(), a -> {
-                    table.setInput(input.getTrades());
+                    updateFrom(input);
                     dropDown.setImage(Images.FILTER_ON);
                 }));
 
                 manager.add(new SimpleAction(Messages.LabelAllTrades, a -> {
-                    TradeCollector collector = new TradeCollector(getClient(), converter);
-                    List<Trade> trades = new ArrayList<>();
-                    getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
-                    table.setInput(trades);
+                    updateFrom(collectAllTrades());
                     dropDown.setImage(Images.FILTER_OFF);
                 }));
             });
@@ -111,19 +123,54 @@ public class TradeDetailsView extends AbstractFinanceView
 
         Control control = table.createViewControl(parent, TradesTableViewer.ViewMode.MULTIPLE_SECURITES);
 
-        boolean hasPreselectedTrades = input != null;
-        if (hasPreselectedTrades)
+        updateFrom(input != null ? input : collectAllTrades());
+
+        return control;
+    }
+
+    private void updateFrom(Input data)
+    {
+        table.setInput(data.getTrades());
+
+        ToolBarManager toolBar = getToolBarManager();
+
+        if (!data.getErrors().isEmpty())
         {
-            table.setInput(input.getTrades());
+            if (toolBar.find(ID_WARNING_TOOL_ITEM) == null)
+            {
+                Action warning = new SimpleAction(Messages.MsgErrorTradeCollectionWithErrors,
+                                Images.ERROR_NOTICE.descriptor(),
+                                a -> MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                                data.getErrors().stream().map(TradeCollectorException::getMessage)
+                                                                .collect(Collectors.joining("\n\n")))); //$NON-NLS-1$
+                warning.setId(ID_WARNING_TOOL_ITEM);
+                toolBar.insert(0, new ActionContributionItem(warning));
+                toolBar.update(true);
+            }
         }
         else
         {
-            TradeCollector collector = new TradeCollector(getClient(), converter);
-            List<Trade> trades = new ArrayList<>();
-            getClient().getSecurities().forEach(s -> trades.addAll(collector.collect(s)));
-            table.setInput(trades);
+            if (toolBar.remove(ID_WARNING_TOOL_ITEM) != null)
+                toolBar.update(true);
         }
+    }
 
-        return control;
+    private Input collectAllTrades()
+    {
+        TradeCollector collector = new TradeCollector(getClient(), converter);
+        List<Trade> trades = new ArrayList<>();
+        List<TradeCollectorException> errors = new ArrayList<>();
+        getClient().getSecurities().forEach(s -> {
+            try
+            {
+                trades.addAll(collector.collect(s));
+            }
+            catch (TradeCollectorException e)
+            {
+                errors.add(e);
+            }
+        });
+
+        return new Input(null, trades, errors);
     }
 }

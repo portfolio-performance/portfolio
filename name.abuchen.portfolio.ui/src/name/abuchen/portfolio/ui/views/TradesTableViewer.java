@@ -17,6 +17,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.ui.Images;
@@ -129,14 +130,8 @@ public class TradesTableViewer
             @Override
             public String getToolTipText(Object e)
             {
-                Trade t = (Trade) e;
-                return String.join("\n", //$NON-NLS-1$
-                                t.getTransactions().stream().map(tx -> String.format("%s %10s Stk. %-10s %s  %s", //$NON-NLS-1$
-                                                Values.DateTime.format(tx.getTransaction().getDateTime()),
-                                                Values.Share.format(tx.getTransaction().getShares()), //
-                                                tx.getTransaction().getType(),
-                                                Values.Money.format(tx.getTransaction().getMonetaryAmount()),
-                                                tx.getOwner().toString())).collect(Collectors.toList()));
+                return ((Trade) e).getTransactions().stream().map(TransactionPair::toString)
+                                .collect(Collectors.joining("\n")); //$NON-NLS-1$
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getTransactions().size()));

@@ -31,7 +31,7 @@ public class TradeCollectorTest
     }
 
     @Test
-    public void testPartialOutboundDeliveryIncludingTransfers()
+    public void testPartialOutboundDeliveryIncludingTransfers() throws TradeCollectorException
     {
         TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
 
@@ -45,7 +45,8 @@ public class TradeCollectorTest
         Trade firstTrade = trades.get(0);
 
         assertThat(firstTrade.getStart(), is(LocalDateTime.parse("2012-01-02T00:00")));
-        assertThat(firstTrade.getEnd().get(), is(LocalDateTime.parse("2012-01-13T00:00")));
+        assertThat(firstTrade.getEnd().orElseThrow(IllegalArgumentException::new),
+                        is(LocalDateTime.parse("2012-01-13T00:00")));
         assertThat(firstTrade.getHoldingPeriod(), is(11L));
         assertThat(firstTrade.getProfitLoss(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1605 - 737.81))));
 
@@ -56,7 +57,7 @@ public class TradeCollectorTest
     }
 
     @Test
-    public void testCompletedTrade()
+    public void testCompletedTrade() throws TradeCollectorException
     {
         TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
 
@@ -70,14 +71,15 @@ public class TradeCollectorTest
         Trade firstTrade = trades.get(0);
 
         assertThat(firstTrade.getStart(), is(LocalDateTime.parse("2012-01-01T00:00")));
-        assertThat(firstTrade.getEnd().get(), is(LocalDateTime.parse("2012-01-10T00:00")));
+        assertThat(firstTrade.getEnd().orElseThrow(IllegalArgumentException::new),
+                        is(LocalDateTime.parse("2012-01-10T00:00")));
         assertThat(firstTrade.getHoldingPeriod(), is(9L));
         assertThat(firstTrade.getProfitLoss(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(688.36 - 1019.80))));
     }
 
     @Test
-    public void testPartialTransferOutOfMultiplePurchases()
+    public void testPartialTransferOutOfMultiplePurchases() throws TradeCollectorException
     {
         // Linde has 2 open trades because there are 2 holdings each in a
         // separate securities account
@@ -106,7 +108,7 @@ public class TradeCollectorTest
     }
 
     @Test
-    public void testPurchaseWithMultipleSells()
+    public void testPurchaseWithMultipleSells() throws TradeCollectorException
     {
         TradeCollector collector = new TradeCollector(client, new TestCurrencyConverter());
 

@@ -5,6 +5,8 @@ import java.util.Comparator;
 import java.util.Objects;
 import java.util.Optional;
 
+import name.abuchen.portfolio.money.Values;
+
 /**
  * A pair of transaction owner (account or portfolio) and a transaction.
  */
@@ -106,5 +108,26 @@ public class TransactionPair<T extends Transaction> implements Adaptable
 
         TransactionPair<?> other = (TransactionPair<?>) obj;
         return owner.equals(other.owner) && transaction.equals(other.transaction);
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.format("%s %10s Stk. %-10s %s  %s", //$NON-NLS-1$
+                        Values.DateTime.format(transaction.getDateTime()), //
+                        Values.Share.format(transaction.getShares()), //
+                        getTypeString(), //
+                        Values.Money.format(transaction.getMonetaryAmount()), //
+                        owner.toString());
+    }
+
+    private String getTypeString()
+    {
+        if (transaction instanceof AccountTransaction)
+            return ((AccountTransaction) transaction).getType().toString();
+        else if (transaction instanceof PortfolioTransaction)
+            return ((PortfolioTransaction) transaction).getType().toString();
+        else
+            return ""; //$NON-NLS-1$
     }
 }
