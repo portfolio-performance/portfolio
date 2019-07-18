@@ -21,13 +21,13 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsPerQuarterChartTab extends AbstractChartTab
+public class EarningsPerMonthChartTab extends AbstractChartTab
 {
-    private class DividendPerQuarterChartToolTip extends TimelineChartToolTip
+    private class DividendPerMonthChartToolTip extends TimelineChartToolTip
     {
         private EarningsViewModel model;
 
-        public DividendPerQuarterChartToolTip(Chart chart, EarningsViewModel model)
+        public DividendPerMonthChartToolTip(Chart chart, EarningsViewModel model)
         {
             super(chart);
 
@@ -37,22 +37,21 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
         @Override
         protected void createComposite(Composite parent)
         {
-            int quarter = (Integer) getFocusedObject();
+            int month = (Integer) getFocusedObject();
             int totalNoOfMonths = model.getNoOfMonths();
 
             List<Line> lines = model.getLines().stream() //
                             .filter(line -> {
-                                for (int index = 0; index < totalNoOfMonths; index += 1) {
-                                    if ((line.getValue(index) != 0L) && (((int)(index % 12) / 3) == quarter))
+                                for (int index = month; index < totalNoOfMonths; index += 12)
+                                    if (line.getValue(index) != 0L)
                                         return true;
-                                }
                                 return false;
-                            }).sorted((l1, l2) -> l1.getVehicle().getName() // sort
-                                                                            // alphabetically
+                            })
+                            .sorted((l1, l2) -> l1.getVehicle().getName()
                                             .compareToIgnoreCase(l2.getVehicle().getName()))
                             .collect(Collectors.toList());
-            
-            int noOfYears = (totalNoOfMonths / 12) + (totalNoOfMonths % 12 > quarter * 3 ? 1 : 0);
+
+            int noOfYears = (totalNoOfMonths / 12) + (totalNoOfMonths % 12 > month ? 1 : 0);
 
             final Composite container = new Composite(parent, SWT.NONE);
             container.setBackgroundMode(SWT.INHERIT_FORCE);
@@ -82,15 +81,11 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 l.setForeground(foregroundColor);
                 l.setText(TextUtil.tooltip(line.getVehicle().getName()));
 
-                for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
+                for (int m = month; m < totalNoOfMonths; m += 12)
                 {
-                    int mLimit = m + 3;
-                    long value = 0;
-                    for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
-                        value += line.getValue(mQuarter);
                     l = new Label(container, SWT.RIGHT);
                     l.setForeground(foregroundColor);
-                    l.setText(Values.Amount.format(value));
+                    l.setText(Values.Amount.format(line.getValue(m)));
                     GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
                 }
             });
@@ -99,50 +94,35 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
             l.setForeground(foregroundColor);
             l.setText(Messages.ColumnSum);
 
-            for (int m = quarter * 3; m < totalNoOfMonths; m += 12)
+            for (int m = month; m < totalNoOfMonths; m += 12)
             {
-                int mLimit = m + 3;
-                long value = 0;
-                for (int mQuarter = m; mQuarter < mLimit && mQuarter < totalNoOfMonths; mQuarter += 1)
-                    value += model.getSum().getValue(mQuarter);
                 l = new Label(container, SWT.RIGHT);
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
                 l.setBackground(color);
                 l.setForeground(Colors.getTextColor(color));
-                l.setText(Values.Amount.format(value));
+                l.setText(Values.Amount.format(model.getSum().getValue(m)));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(l);
             }
+
         }
     }
 
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsPerQuarter;
+        return Messages.LabelEarningsPerMonth;
     }
 
     @Override
     protected void attachTooltipTo(Chart chart)
     {
-        DividendPerQuarterChartToolTip toolTip = new DividendPerQuarterChartToolTip(chart, model);
+        DividendPerMonthChartToolTip toolTip = new DividendPerMonthChartToolTip(chart, model);
         toolTip.enableCategory(true);
-    }
-
-    private void updateCategorySeries()
-    {
-        String[] labels = new String[4];
-        for (int ii = 0; ii < 4; ii++)
-        {
-            String label = String.format("Q%d", ii + 1); //$NON-NLS-1$
-            labels[ii] = label;
-        }
-        getChart().getAxisSet().getXAxis(0).setCategorySeries(labels);
     }
 
     @Override
     protected void createSeries()
     {
-        updateCategorySeries();
         for (int index = 0; index < model.getNoOfMonths(); index += 12)
         {
             int year = model.getStartYear() + (index / 12);
@@ -152,9 +132,7 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
 
             double[] series = new double[Math.min(12, model.getNoOfMonths() - index)];
             for (int ii = 0; ii < series.length; ii++)
-            {
-                series[(int)ii / 3] = series[ii / 3] + model.getSum().getValue(index + ii) / Values.Amount.divider();
-            }
+                series[ii] = model.getSum().getValue(index + ii) / Values.Amount.divider();
             barSeries.setYSeries(series);
 
             barSeries.setBarColor(getColor(year));

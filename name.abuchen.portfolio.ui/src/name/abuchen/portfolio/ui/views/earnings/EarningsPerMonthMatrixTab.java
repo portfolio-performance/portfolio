@@ -44,7 +44,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsMatrixTab implements EarningsTab
+public class EarningsPerMonthMatrixTab implements EarningsTab
 {
     @Inject
     private SelectionService selectionService;
@@ -112,13 +112,10 @@ public class EarningsMatrixTab implements EarningsTab
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         tableViewer.addSelectionChangedListener(event -> {
-            IStructuredSelection selection = event.getStructuredSelection();
-            if (!selection.isEmpty())
-            {
-                InvestmentVehicle vehicle = ((EarningsViewModel.Line) selection.getFirstElement()).getVehicle();
-                if (vehicle instanceof Security)
-                    selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
-            }
+            InvestmentVehicle vehicle = ((EarningsViewModel.Line) ((IStructuredSelection) event.getSelection())
+                            .getFirstElement()).getVehicle();
+            if (vehicle instanceof Security)
+                selectionService.setSelection(new SecuritySelection(model.getClient(), (Security) vehicle));
         });
 
         tableViewer.setInput(model.getAllLines());

@@ -165,13 +165,13 @@ public class EarningsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, Images.VIEW_TABLE, EarningsMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsQuarterMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, EarningsChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerMonthMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, EarningsPerMonthChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerQuarterChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, AccumulatedEarningsChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, EarningsAccumulatedChartTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);
