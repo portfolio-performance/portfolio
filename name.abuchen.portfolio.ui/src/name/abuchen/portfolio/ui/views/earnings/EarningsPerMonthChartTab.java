@@ -21,13 +21,13 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsChartTab extends AbstractChartTab
+public class EarningsPerMonthChartTab extends AbstractChartTab
 {
-    private class DividendChartToolTip extends TimelineChartToolTip
+    private class DividendPerMonthChartToolTip extends TimelineChartToolTip
     {
         private EarningsViewModel model;
 
-        public DividendChartToolTip(Chart chart, EarningsViewModel model)
+        public DividendPerMonthChartToolTip(Chart chart, EarningsViewModel model)
         {
             super(chart);
 
@@ -116,7 +116,7 @@ public class EarningsChartTab extends AbstractChartTab
     @Override
     protected void attachTooltipTo(Chart chart)
     {
-        DividendChartToolTip toolTip = new DividendChartToolTip(chart, model);
+        DividendPerMonthChartToolTip toolTip = new DividendPerMonthChartToolTip(chart, model);
         toolTip.enableCategory(true);
     }
 

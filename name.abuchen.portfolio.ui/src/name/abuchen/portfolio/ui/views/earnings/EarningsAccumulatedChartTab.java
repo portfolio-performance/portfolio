@@ -8,7 +8,7 @@ import org.swtchart.ISeries.SeriesType;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 
-public class AccumulatedEarningsChartTab extends AbstractChartTab
+public class EarningsAccumulatedChartTab extends AbstractChartTab
 {
     @Override
     public String getLabel()

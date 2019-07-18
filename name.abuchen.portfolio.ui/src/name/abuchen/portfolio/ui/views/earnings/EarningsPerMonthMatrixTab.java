@@ -44,7 +44,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsMatrixTab implements EarningsTab
+public class EarningsPerMonthMatrixTab implements EarningsTab
 {
     @Inject
     private SelectionService selectionService;
