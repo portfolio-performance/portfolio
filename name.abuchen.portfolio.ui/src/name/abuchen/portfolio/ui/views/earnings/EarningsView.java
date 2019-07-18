@@ -91,35 +91,23 @@ public class EarningsView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelDividends;
+        return model.getMode().getLabel();
     }
 
     @Override
     protected void addViewButtons(ToolBarManager toolBarManager)
     {
-        ActionContributionItem dividends = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelDividends, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.DIVIDENDS);
-                            updateIcons(toolBarManager);
-                        }));
-        dividends.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(dividends);
-
-        ActionContributionItem interest = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelInterest, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.INTEREST);
-                            updateIcons(toolBarManager);
-                        }));
-        interest.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(interest);
-
-        ActionContributionItem all = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelEarnings, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.ALL);
-                            updateIcons(toolBarManager);
-                        }));
-        all.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(all);
+        for (EarningsViewModel.Mode mode : EarningsViewModel.Mode.values())
+        {
+            ActionContributionItem item = new ActionContributionItem( //
+                            new SimpleAction(mode.getLabel(), a -> {
+                                model.setMode(mode);
+                                updateIcons(toolBarManager);
+                                updateTitle(model.getMode().getLabel());
+                            }));
+            item.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+            toolBarManager.add(item);
+        }
 
         updateIcons(toolBarManager);
     }
