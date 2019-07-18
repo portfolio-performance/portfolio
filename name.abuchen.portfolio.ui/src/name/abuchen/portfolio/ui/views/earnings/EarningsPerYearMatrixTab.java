@@ -20,20 +20,20 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Line;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class EarningsQuarterMatrixTab extends EarningsMatrixTab
+public class EarningsPerYearMatrixTab extends EarningsPerMonthMatrixTab
 {
     private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy"); //$NON-NLS-1$
 
     @Override
     public String getLabel()
     {
-        return Messages.LabelEarningsByQuarterAndVehicle;
+        return Messages.LabelEarningsByYearAndVehicle;
     }
 
     @Override
     public void addConfigActions(IMenuManager manager)
     {
-        // do not add config option from divident / month tab
+        // do not add configuration option from earnings / month tab
     }
 
     @Override
@@ -41,78 +41,27 @@ public class EarningsQuarterMatrixTab extends EarningsMatrixTab
     {
         createVehicleColumn(records, layout, true);
 
-        createQuarterColumns(records, layout);
+        LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
+        for (int index = 0; index < model.getNoOfMonths(); index += 12)
+        {
+            createYearColumn(records, layout, date, index);
+            date = date.plusYears(1);
+        }
 
         createSumColumn(records, layout);
     }
 
-    private void createQuarterColumns(TableViewer records, TableColumnLayout layout)
-    {
-        LocalDate date = LocalDate.of(model.getStartYear(), Month.JANUARY, 1);
-
-        int nMonths = model.getNoOfMonths();
-
-        /*
-         * The number of month in a quarter. While most people will know this, I
-         * prefer named variables over the occurrence of magic numbers in the
-         * code.
-         */
-        int monthInQuarter = 3;
-
-        // How many quarters we are about to display. We show every started
-        // quarter, hence the Math.ceil
-        int nQuarters = (int) Math.ceil((double) nMonths / (double) monthInQuarter);
-
-        int quarterBeginIndex = 0;
-        int quarterEndIndex = Math.min(monthInQuarter, nMonths);
-
-        for (int quarter = 0; quarter < nQuarters; quarter++)
-        {
-            // the fifth total quarter is the first quarter in the corresponding
-            // year
-            int quarterWithinYear = (quarter % 4) + 1;
-
-            // The caption looks like "Q<quarter within the year> <year>"
-            String columnCaption = String.format("Q%d %s", quarterWithinYear, formatter.format(date)); //$NON-NLS-1$
-
-            createQuarterColumn(records, layout, quarterBeginIndex, quarterEndIndex, columnCaption);
-
-            // Starting from here, we make sure to step into the next quarter
-            quarterBeginIndex = Math.min(quarterBeginIndex + monthInQuarter, nMonths);
-            quarterEndIndex = Math.min(quarterEndIndex + monthInQuarter, nMonths);
-
-            // every four quarters we need to switch to the next year
-            if (quarterWithinYear == 4)
-            {
-                date = date.plusYears(1);
-            }
-        }
-
-    }
-
-    /**
-     * @brief Creates a column collecting quarter-wise dividends. The quarter is
-     *        specified by the start and end position within the values array of
-     *        the Line within the DividendsViewModel.
-     * @param quarterBeginIndex
-     *            The start index of the quarter
-     * @param quarterEndIndex
-     *            The end index of the quarter
-     * @param columnCaption
-     *            The caption used for the column
-     */
-    private void createQuarterColumn(TableViewer records, TableColumnLayout layout, int quarterBeginIndex,
-                    int quarterEndIndex, String columnCaption)
+    private void createYearColumn(TableViewer records, TableColumnLayout layout, LocalDate start, int index)
     {
         ToLongFunction<EarningsViewModel.Line> valueFunction = line -> {
             long value = 0;
-            for (int i = quarterBeginIndex; i < quarterEndIndex; i++)
-                value += line.getValue(i);
+            for (int ii = index; ii < index + 12 && ii < line.getNoOfMonths(); ii++)
+                value += line.getValue(ii);
             return value;
         };
 
         TableViewerColumn column = new TableViewerColumn(records, SWT.RIGHT);
-        column.getColumn().setText(columnCaption);
+        column.getColumn().setText(formatter.format(start));
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
