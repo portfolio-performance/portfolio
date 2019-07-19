@@ -204,7 +204,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         //
 
         int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        taxes.label, total.label, lblNote);
+                        taxes.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
         if (securities != null)
@@ -279,7 +279,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
