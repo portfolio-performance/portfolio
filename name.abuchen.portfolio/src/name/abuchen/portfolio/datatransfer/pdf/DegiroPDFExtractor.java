@@ -179,13 +179,21 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Transaktionsübersicht");
         this.addDocumentTyp(type);
         
+        DocumentType typeNL = new DocumentType("Transacties");
+        this.addDocumentTyp(typeNL);
+
         Block blockBuy = new Block("^\\d+-\\d+-\\d{4} \\d+:\\d+ .* \\w{12}+ .* \\w{3}+ .*[.\\d]+,\\d{2}$");
         type.addBlock(blockBuy);
-        blockBuy.set(new Transaction<BuySellEntry>().subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        })
+        typeNL.addBlock(blockBuy);
+
+        blockBuy.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+
                         .oneOf(
                             // 07-02-2019 12:22 ODX2 C11200.00 08FEB19 DE000C25KFN9 ERX 1 EUR 30,00 EUR -150,00 EUR -150,00 EUR -0,90 EUR -150,90
                             // 01-04-2019 15:35 DEUTSCHE BANK AG NA O.N DE0005140008 XET -136 EUR 7,45 EUR 1.013,20 EUR 1.013,20 EUR -2,26 EUR 1.010,94
