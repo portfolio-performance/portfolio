@@ -1,0 +1,18 @@
+PDF-auteur: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Dhr. Name
+street 1
+1234ab Town
+Netherlands
+Gebruikersnaam: *********ers
+(134567)
+Transacties van 20-06-2019 t/m 20-07-2019
+Datum Tijd Product ISIN Exchange Aantal Koers Lokalewaarde Waarde Wisselkoers Kosten Totaal
+09-07-2019 15:30 MCDONALD'S CORPORATION US5801351017 NSY 4 USD 211,99 USD -847,96 EUR -757,32 1,1197 EUR -0,51 EUR -757,83
+09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
+05-07-2019 20:52 IRON MOUNTAIN INCORPOR US46284V1017 NSY 20 USD 31,60 USD -632,00 EUR -563,79 1,121 EUR -0,57 EUR -564,36
+DEGIRO B.V. T +31 20 535 34 96 DEGIRO B.V. is als
+Amstelplein 1 E klanten@degiro.nl beleggingsonderneming geregistreerd
+1096 HA Amsterdam I www.degiro.nl bij de Autoriteit Financiële Markten. Pagina 1 / 1
+Rekeningoverzicht 2019-07-20
