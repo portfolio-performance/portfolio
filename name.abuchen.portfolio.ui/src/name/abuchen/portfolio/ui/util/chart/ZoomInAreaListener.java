@@ -1,15 +1,15 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Tracker;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.Range;
+
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class ZoomInAreaListener implements Listener
 {

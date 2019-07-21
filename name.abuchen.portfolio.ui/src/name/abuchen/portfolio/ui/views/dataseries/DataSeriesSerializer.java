@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries.ClientDataSeries;

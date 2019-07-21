@@ -20,11 +20,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;

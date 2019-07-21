@@ -36,14 +36,14 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Layout;
 import org.eclipse.swt.widgets.Menu;
-import org.swtchart.IAxis;
-import org.swtchart.ILegend;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
-import org.swtchart.LineStyle;
-import org.swtchart.Range;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ILegend;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
+import org.eclipse.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.LineStyle;
+import org.eclipse.swtchart.Range;
 
 import com.ibm.icu.text.MessageFormat;
 

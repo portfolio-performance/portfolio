@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.swtchart.LineStyle;
+import org.eclipse.swtchart.LineStyle;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.SimpleAction;

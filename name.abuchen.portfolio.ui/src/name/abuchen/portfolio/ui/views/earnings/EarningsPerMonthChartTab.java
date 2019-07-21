@@ -10,9 +10,9 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
-import org.swtchart.Chart;
-import org.swtchart.IBarSeries;
-import org.swtchart.ISeries.SeriesType;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;

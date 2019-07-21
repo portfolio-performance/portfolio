@@ -25,11 +25,11 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.IAxis;
-import org.swtchart.ICustomPaintListener;
-import org.swtchart.ILineSeries;
-import org.swtchart.IPlotArea;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.ICustomPaintListener;
+import org.eclipse.swtchart.ILineSeries;
+import org.eclipse.swtchart.IPlotArea;
+import org.eclipse.swtchart.ISeries;
 
 import com.google.common.collect.Lists;
 

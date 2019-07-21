@@ -12,8 +12,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;

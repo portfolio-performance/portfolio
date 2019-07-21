@@ -14,10 +14,10 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.IAxis.Position;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.IAxis.Position;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 

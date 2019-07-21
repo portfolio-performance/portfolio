@@ -1,11 +1,15 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.Range;
 
 public final class ChartUtil
 {
+    private ChartUtil()
+    {
+    }
+
     public static void addMargins(Chart chart, double zoomRatio)
     {
         for (IAxis axis : chart.getAxisSet().getAxes())

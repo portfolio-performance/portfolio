@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.ISeries;
+import org.eclipse.swtchart.ISeries;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
@@ -25,7 +25,7 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
 {
     private final TimelineChart chart;
 
-    private Set<String> discontinousSeries = new HashSet<String>();
+    private Set<String> discontinousSeries = new HashSet<>();
 
     private DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
     private NumberFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$

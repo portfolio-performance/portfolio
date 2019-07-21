@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views.dataseries;
 
-import org.swtchart.IBarSeries;
-import org.swtchart.ILineSeries;
+import org.eclipse.swtchart.IBarSeries;
+import org.eclipse.swtchart.ILineSeries;
 
 import name.abuchen.portfolio.snapshot.Aggregation;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;

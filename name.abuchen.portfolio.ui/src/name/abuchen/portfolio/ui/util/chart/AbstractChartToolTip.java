@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.swtchart.Chart;
+import org.eclipse.swtchart.Chart;
 
 public abstract class AbstractChartToolTip implements Listener
 {

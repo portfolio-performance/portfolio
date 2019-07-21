@@ -3,13 +3,13 @@ package name.abuchen.portfolio.ui.util.chart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
-import org.swtchart.Chart;
-import org.swtchart.IAxis;
-import org.swtchart.Range;
+import org.eclipse.swtchart.Chart;
+import org.eclipse.swtchart.IAxis;
+import org.eclipse.swtchart.Range;
 
 public class ZoomMouseWheelListener implements Listener
 {
-    private final static double ZOOM_RATIO = 0.1;
+    private static final double ZOOM_RATIO = 0.1;
 
     public static void attachTo(Chart chart)
     {
