@@ -195,13 +195,57 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .oneOf(
+                        // @formatter:off
+
+                            // 08-02-2019 13:27 ODX2 C11000.00 08FEB19 DE000C25KFE8 ERX -3 EUR 0,00 EUR 0,00 EUR 0,00 EUR 0,00
+                            // 09-07-2019 14:08 VANGUARD FTSE AW IE00B3RBWM25 EAM 3 EUR 77,10 EUR -231,30 EUR -231,30 EUR -231,30
+
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"
+                                                // quote
+                                                + " \\w{3} [-.,\\d]*"
+                                                 // gross value transaction currency
+                                                + " \\w{3} [-.,\\d]*"
+                                                // gross value account currency
+                                                + " \\w{3} [-.,\\d]*"
+                                                // total amount
+                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$")
+                                .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    if (v.get("shares").startsWith("-"))
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(
+                                                        v.get("shares").replaceFirst("-", "")));
+                                    }
+                                    else
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                    t.setAmount(asAmount(v.get("amount")));
+                            }),
+
                             // 07-02-2019 12:22 ODX2 C11200.00 08FEB19 DE000C25KFN9 ERX 1 EUR 30,00 EUR -150,00 EUR -150,00 EUR -0,90 EUR -150,90
                             // 01-04-2019 15:35 DEUTSCHE BANK AG NA O.N DE0005140008 XET -136 EUR 7,45 EUR 1.013,20 EUR 1.013,20 EUR -2,26 EUR 1.010,94
                             // 01-04-2019 12:20 DEUTSCHE BANK AG NA O.N DE0005140008 XET 18 EUR 7,353 EUR -132,35 EUR -132,35 EUR -0,03 EUR -132,38
-                            // 08-02-2019 13:27 ODX2 C11000.00 08FEB19 DE000C25KFE8 ERX -3 EUR 0,00 EUR 0,00 EUR 0,00 EUR 0,00
-                            section -> section.attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*) .* \\w{3} -?[.\\d]+,\\d{2} (?<currencyFee>\\w{3}) (?<fee>-?[.\\d]+,\\d{2}) (?<currency>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
-                            .assign((t, v) -> {
+
+                            section -> section
+                                .attributes("date", "name", "isin", "shares", "currencyFee", "fee", "currency", "amount")
+                                .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"
+                                                // quote
+                                                + " \\w{3} [-.,\\d]*"
+                                                // gross value transaction currency
+                                                + " \\w{3} [-.,\\d]*"
+                                                // gross value local currency
+                                                + " \\w{3} [-.,\\d]*"
+                                                // fees
+                                                + " (?<currencyFee>\\w{3}) -?(?<fee>[.,\\d]*)"
+                                                // total amount
+                                                + " (?<currency>\\w{3}) -?(?<amount>[.,\\d]*)$")
+                                .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
                                     if (v.get("shares").startsWith("-")) 
@@ -217,12 +261,19 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                     t.setAmount(asAmount(v.get("amount")));  
                                     Money feeAmount = Money.of(asCurrencyCode(v.get("currencyFee")), asAmount(v.get("fee")));
                                     t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, feeAmount));
+                            }),
 
-                        }),
                             //26-04-2019 17:52 TESLA MOTORS INC. - C US88160R1014 NDQ 2 USD 240,00 USD -480,00 EUR -430,69 1,1145 EUR -0,51 EUR -431,20
                             //29-04-2019 16:11 TESLA MOTORS INC. - C US88160R1014 NDQ -3 USD 240,00 USD 720,00 EUR 645,04 1,1162 EUR -0,51 EUR 644,53
+
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
-                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*) \\w{3} -?[.\\d]+,\\d{2} (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).* \\w{3} -?[.\\d]+,\\d{2} (?<exchangeRate>[.\\d]+,\\d{1,6}) (?<currencyFee>\\w{3}) (?<fee>-?[.\\d]+,\\d{2}) (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
+                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"
+                                            + " \\w{3} -?[.\\d]+,\\d{2}"
+                                            + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*"
+                                            + " \\w{3} -?[.\\d]+,\\d{2}"
+                                            + " (?<exchangeRate>[.\\d]+,\\d{1,6})"
+                                            + " (?<currencyFee>\\w{3}) (?<fee>-?[.\\d]+,\\d{2})"
+                                            + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
                             .assign((t, v) -> {
                                     t.setSecurity(getOrCreateSecurity(v));
                                     t.setDate(asDate(v.get("date")));
@@ -255,8 +306,9 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
                                         t.getPortfolioTransaction().addUnit(grossValue);
                                     }
-    
                             })
+
+                            // @formatter:on
                         )
 
                         .wrap(t -> new BuySellEntryItem(t)));
