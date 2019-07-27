@@ -32,8 +32,8 @@
 		<repository location="http://download.eclipse.org/nebula/releases/2.0.1"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.0.0"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.0.0"/>
+		<repository location="https://buchen.github.io/portfolio-deps/1.1.0"/>
+		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.1.0"/>
 	</location>
 </locations>
 </target>

@@ -181,6 +181,11 @@ public final class TransactionsViewer implements ModificationListener
         return tableViewer.getControl().getParent();
     }
 
+    public TableViewer getTableViewer()
+    {
+        return tableViewer;
+    }
+
     public void markTransactions(List<TransactionPair<?>> transactions)
     {
         marked.addAll(transactions);
