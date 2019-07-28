@@ -20,7 +20,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class DocumentType
     {
         private String mustInclude;
-        private String mustExclude;
 
         private List<Block> blocks = new ArrayList<>();
         private Map<String, String> context = new HashMap<>();
@@ -39,18 +38,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public boolean matches(String text)
         {
-            if (!text.contains(mustInclude))
-                return false;
-
-            if (mustExclude != null)
-                return !text.contains(mustExclude);
-
-            return true;
-        }
-
-        public void setMustExclude(String mustExclude)
-        {
-            this.mustExclude = mustExclude;
+            return text.contains(mustInclude);
         }
 
         public void addBlock(Block block)
