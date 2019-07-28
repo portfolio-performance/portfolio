@@ -5,12 +5,14 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.views.dashboard.ClientFilterConfig;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardData;
 import name.abuchen.portfolio.ui.views.dashboard.EnumBasedConfig;
 import name.abuchen.portfolio.ui.views.dashboard.ReportingPeriodConfig;
@@ -98,6 +100,7 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
     {
         super(widget, data);
 
+        addConfig(new ClientFilterConfig(this));
         addConfig(new EarningsConfig(this));
         addConfig(new GrossNetConfig(this));
     }
@@ -138,9 +141,13 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
         GrossNetType grossNet = get(GrossNetConfig.class).getValue();
 
         // iterate over transactions and add to model
-        getDashboardData().getClient().getAccounts().stream() //
+
+        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter()
+                        .filter(getDashboardData().getClient());
+
+        filteredClient.getAccounts().stream() //
                         .flatMap(a -> a.getTransactions().stream()) //
-                        .filter(t -> type.isIncluded(t)) //
+                        .filter(type::isIncluded) //
                         .filter(t -> calcInterval.contains(t.getDateTime())).forEach(t -> {
                             int row = t.getDateTime().getYear() - startYear;
                             int col = t.getDateTime().getMonth().getValue() - 1;

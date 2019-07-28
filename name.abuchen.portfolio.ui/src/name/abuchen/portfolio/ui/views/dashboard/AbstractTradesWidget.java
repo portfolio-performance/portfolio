@@ -18,14 +18,15 @@ import org.eclipse.ui.forms.events.HyperlinkAdapter;
 import org.eclipse.ui.forms.events.HyperlinkEvent;
 import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.swt.StyledLabel;
-import name.abuchen.portfolio.ui.views.dataseries.CacheKey;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView.Input;
 import name.abuchen.portfolio.util.Interval;
@@ -43,6 +44,7 @@ import name.abuchen.portfolio.util.TextUtil;
     {
         super(widget, data);
 
+        addConfig(new ClientFilterConfig(this));
         addConfig(new ReportingPeriodConfig(this));
     }
 
@@ -88,11 +90,12 @@ import name.abuchen.portfolio.util.TextUtil;
     public Supplier<TradeDetailsView.Input> getUpdateTask()
     {
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-        CacheKey key = new CacheKey(TradeCollector.class, interval);
+        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
+        CacheKey key = new CacheKey(TradeCollector.class, filteredClient, interval);
 
         return () -> (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key, k -> {
 
-            TradeCollector collector = new TradeCollector(getClient(), getDashboardData().getCurrencyConverter());
+            TradeCollector collector = new TradeCollector(filteredClient, getDashboardData().getCurrencyConverter());
 
             List<Trade> trades = new ArrayList<>();
             List<TradeCollectorException> errors = new ArrayList<>();
