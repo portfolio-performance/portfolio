@@ -19,7 +19,7 @@ public class JClient
     private static final Gson GSON = new GsonBuilder() //
                     .registerTypeAdapter(LocalDate.class, new LocalDateSerializer())
                     .registerTypeAdapter(LocalTime.class, new LocalTimeSerializer())
-                    .setFieldNamingPolicy(FieldNamingPolicy.LOWER_CASE_WITH_DASHES).create();
+                    .setFieldNamingPolicy(FieldNamingPolicy.IDENTITY).create();
 
     private int version = 1;
 

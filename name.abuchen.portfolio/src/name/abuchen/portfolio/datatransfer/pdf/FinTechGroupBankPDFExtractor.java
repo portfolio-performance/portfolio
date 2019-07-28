@@ -45,7 +45,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuySellTransaction()
     {
-        DocumentType type = new DocumentType("Sammelabrechnung (Wertpapierkauf/-verkauf)");
+        DocumentType type = new DocumentType("Sammelabrechnung \\(Wertpapierkauf/-verkauf\\)");
         this.addDocumentTyp(type);
 
         Block block = new Block("Nr.(\\d*)/(\\d*) *Kauf.*");

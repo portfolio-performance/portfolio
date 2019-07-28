@@ -23,66 +23,9 @@ public class DeutscheBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("Deutsche Bank"); //$NON-NLS-1$
         addBankIdentifier("DB Privat- und Firmenkundenbank AG"); //$NON-NLS-1$
 
-        addBuyTransaction();
         addSellTransaction();
         addDividendTransaction("Ertragsgutschrift"); //$NON-NLS-1$
         addDividendTransaction("Dividendengutschrift"); //$NON-NLS-1$
-    }
-
-    @SuppressWarnings("nls")
-    private void addBuyTransaction()
-    {
-        DocumentType type = new DocumentType("Kauf von Wertpapieren");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Abrechnung: Kauf von Wertpapieren");
-        type.addBlock(block);
-        block.set(new Transaction<BuySellEntry>()
-
-                        .subject(() -> {
-                            BuySellEntry entry = new BuySellEntry();
-                            entry.setType(PortfolioTransaction.Type.BUY);
-                            return entry;
-                        })
-
-                        .section("wkn", "isin", "name", "currency")
-                        .find("Filialnummer Depotnummer Wertpapierbezeichnung Seite") //
-                        .match("^.{15}(?<name>.*)$") //
-                        .match("^WKN (?<wkn>[^ ]*) (.*)$") //
-                        .match("^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$") //
-                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
-
-                        .section("shares") //
-                        .match("^WKN [^ ]* Nominal ST (?<shares>[\\d.]+(,\\d+)?)") //
-                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
-
-                        .section("date", "amount", "currency")
-                        .match("Buchung auf Kontonummer [\\d ]* mit Wertstellung (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(v.get("currency"));
-                        })
-
-                        .section("provision", "currency") //
-                        .optional()
-                        .match("Provision( \\([0-9,]* %\\))? (?<currency>\\w{3}+) (?<provision>[\\d.]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("provision"))))))
-
-                        .section("additional", "currency") //
-                        .optional()
-                        .match("Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) (?<additional>[\\d.]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("additional"))))))
-
-                        .section("xetra", "currency") //
-                        .optional() //
-                        .match("XETRA-Kosten (?<currency>\\w{3}+) (?<xetra>[\\d.]+,\\d+)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, //
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("xetra"))))))
-
-                        .wrap(BuySellEntryItem::new));
     }
 
     @SuppressWarnings("nls")

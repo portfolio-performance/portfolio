@@ -47,6 +47,8 @@ public class PDFImportAssistant
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new SutorPDFExtractor(client));
+
+        extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

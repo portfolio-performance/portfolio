@@ -19,11 +19,16 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 {
     /* package */static class DocumentType
     {
-        private String mustInclude;
+        private List<Pattern> mustInclude = new ArrayList<>();
 
         private List<Block> blocks = new ArrayList<>();
         private Map<String, String> context = new HashMap<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
+
+        public DocumentType(List<Pattern> mustInclude)
+        {
+            this.mustInclude.addAll(mustInclude);
+        }
 
         public DocumentType(String mustInclude)
         {
@@ -32,13 +37,19 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
         public DocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
         {
-            this.mustInclude = mustInclude;
+            this.mustInclude.add(Pattern.compile(mustInclude));
             this.contextProvider = contextProvider;
         }
 
         public boolean matches(String text)
         {
-            return text.contains(mustInclude);
+            for (Pattern pattern : mustInclude)
+            {
+                if (!pattern.matcher(text).find())
+                    return false;
+            }
+
+            return true;
         }
 
         public void addBlock(Block block)
@@ -92,11 +103,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             {
                 contextProvider.accept(context, lines);
             }
-        }
-
-        public String getMustInclude()
-        {
-            return mustInclude;
         }
     }
 

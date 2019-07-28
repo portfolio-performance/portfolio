@@ -19,6 +19,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
+import name.abuchen.portfolio.datatransfer.pdf.JSONPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -221,7 +222,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf()
     {
-        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+        JSONPDFExtractor extractor = new JSONPDFExtractor(new Client(), "deutsche-bank-purchase.json");
 
         List<Exception> errors = new ArrayList<>();
 
@@ -245,7 +246,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(675.50))));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10_50L)));
     }
@@ -253,7 +254,7 @@ public class DeutscheBankPDFExtractorTest
     @Test
     public void testWertpapierKauf2()
     {
-        DeutscheBankPDFExtractor extractor = new DeutscheBankPDFExtractor(new Client());
+        JSONPDFExtractor extractor = new JSONPDFExtractor(new Client(), "deutsche-bank-purchase.json");
 
         List<Exception> errors = new ArrayList<>();
 
@@ -276,7 +277,7 @@ public class DeutscheBankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3524.98))));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 11_38L)));
     }
