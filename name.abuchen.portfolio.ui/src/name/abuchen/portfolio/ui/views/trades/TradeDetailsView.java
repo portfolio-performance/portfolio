@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.views.TradesTableViewer;
 import name.abuchen.portfolio.util.Interval;
 
@@ -112,6 +113,12 @@ public class TradeDetailsView extends AbstractFinanceView
 
             toolBarManager.add(dropDown);
         }
+
+        toolBarManager.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
+            manager.add(new SimpleAction(Messages.LabelTrades + " (CSV)", //$NON-NLS-1$
+                            a -> new TableViewerCSVExporter(table.getTableViewer())
+                                            .export(Messages.LabelTrades + ".csv"))); //$NON-NLS-1$
+        }));
 
         super.addButtons(toolBarManager);
     }

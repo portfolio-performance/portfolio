@@ -206,4 +206,9 @@ public class TradesTableViewer
     {
         this.trades.setInput(trades);
     }
+
+    public TableViewer getTableViewer()
+    {
+        return trades;
+    }
 }
