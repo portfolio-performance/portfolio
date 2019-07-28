@@ -30,6 +30,7 @@ import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -166,6 +167,9 @@ public class AllTransactionsView extends AbstractFinanceView
 
         List<Function<TransactionPair<?>, Object>> searchLabels = new ArrayList<>();
         searchLabels.add(tx -> tx.getTransaction().getSecurity());
+        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getIsin).orElse(null));
+        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getWkn).orElse(null));
+        searchLabels.add(tx -> tx.getTransaction().getOptionalSecurity().map(Security::getTickerSymbol).orElse(null));
         searchLabels.add(TransactionPair::getOwner);
         searchLabels.add(tx -> tx.getTransaction().getCrossEntry() != null
                         ? tx.getTransaction().getCrossEntry().getCrossOwner(tx.getTransaction())

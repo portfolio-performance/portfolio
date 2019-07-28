@@ -189,7 +189,7 @@ public class Column
         return defaultSortDirection;
     }
 
-    /* package */CellLabelProvider getLabelProvider()
+    public CellLabelProvider getLabelProvider()
     {
         return labelProvider;
     }

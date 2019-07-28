@@ -95,7 +95,9 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("restriction")
@@ -243,36 +245,18 @@ public class StatementOfAssetsViewer
         column.getSorter().wrap(ElementComparator::new);
         support.addColumn(column);
 
-        column = new Column("2", Messages.ColumnTicker, SWT.None, 60); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? element.getSecurity().getTickerSymbol() : null;
-            }
-        });
-        column.setComparator(new ElementComparator(new AttributeComparator(
-                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getTickerSymbol() : null)));
-        support.addColumn(column);
-
-        column = new Column("12", Messages.ColumnWKN, SWT.None, 60); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                Element element = (Element) e;
-                return element.isSecurity() ? element.getSecurity().getWkn() : null;
-            }
-        });
-        column.setComparator(new ElementComparator(new AttributeComparator(
-                        e -> ((Element) e).isSecurity() ? ((Element) e).getSecurity().getWkn() : null)));
+        column = new IsinColumn("3"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(new TouchClientListener(client));
+        column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);
         support.addColumn(column);
 
-        column = new IsinColumn("3"); //$NON-NLS-1$
+        column = new SymbolColumn("2"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(new TouchClientListener(client));
+        column.getSorter().wrap(ElementComparator::new);
+        support.addColumn(column);
+
+        column = new WknColumn("12"); //$NON-NLS-1$
         column.getEditingSupport().addListener(new TouchClientListener(client));
         column.getSorter().wrap(ElementComparator::new);
         column.setVisible(false);

@@ -85,6 +85,8 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -505,6 +507,18 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // isin
         column = new IsinColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // ticker
+        column = new SymbolColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // wkn
+        column = new WknColumn();
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setVisible(false);
         recordColumns.addColumn(column);

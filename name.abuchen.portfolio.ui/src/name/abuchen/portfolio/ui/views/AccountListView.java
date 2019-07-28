@@ -70,9 +70,12 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountListView extends AbstractListView implements ModificationListener
 {
@@ -484,6 +487,21 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
+        transactionsColumns.addColumn(column);
+
+        column = new IsinColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new SymbolColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new WknColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
         column = new Column("5", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
