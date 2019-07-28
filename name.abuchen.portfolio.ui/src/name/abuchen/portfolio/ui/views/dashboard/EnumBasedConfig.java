@@ -90,7 +90,7 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
             }
 
             delegate.getWidget().getConfiguration().put(configurationKey.name(),
-                            String.join(",", values.stream().map(E::name).collect(Collectors.toList()))); //$NON-NLS-1$
+                            values.stream().map(E::name).collect(Collectors.joining(","))); //$NON-NLS-1$
 
             delegate.update();
             delegate.getClient().touch();
@@ -102,7 +102,7 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return label + ": " + String.join(", ", values.stream().map(E::toString).collect(Collectors.toList())); //$NON-NLS-1$ //$NON-NLS-2$
+        return label + ": " + values.stream().map(E::toString).collect(Collectors.joining(", ")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public E getValue()

@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
@@ -30,42 +29,6 @@ import name.abuchen.portfolio.util.Interval;
  */
 public class DataSeriesCache
 {
-    private static class CacheKey
-    {
-        private final String uuid;
-        private final Interval reportingPeriod;
-
-        CacheKey(String uuid, Interval reportingPeriod)
-        {
-            this.uuid = Objects.requireNonNull(uuid);
-            this.reportingPeriod = Objects.requireNonNull(reportingPeriod);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(uuid, reportingPeriod);
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-
-            CacheKey other = (CacheKey) obj;
-            if (!uuid.equals(other.uuid))
-                return false;
-            if (!reportingPeriod.equals(other.reportingPeriod))
-                return false;
-            return true;
-        }
-    }
-
     private final Client client;
     private final CurrencyConverter converter;
 
