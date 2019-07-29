@@ -113,6 +113,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
             PDFParser.Section<JTransaction> sec = tx.section(attributes.toArray(new String[0]));
 
+            if (section.isOptional())
+                sec.optional();
+
             for (String regexp : section.getPattern())
                 sec.match(regexp);
 

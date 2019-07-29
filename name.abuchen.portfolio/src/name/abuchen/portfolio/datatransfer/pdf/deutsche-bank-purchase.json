@@ -37,7 +37,7 @@
 				},
 				{
 					"context": "UNIT",
-					"optional": true,
+					"isOptional": true,
 					"pattern": [
 						"Provision( \\([0-9,]* %\\))? (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)"
 					],
@@ -47,7 +47,7 @@
 				},
 				{
 					"context": "UNIT",
-					"optional": true,
+					"isOptional": true,
 					"pattern": [
 						"Weitere Provision der Bank bei der börslichen Orderausführung (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)"
 					],
@@ -57,7 +57,7 @@
 				},
 				{
 					"context": "UNIT",
-					"optional": true,
+					"isOptional": true,
 					"pattern": [
 						"XETRA-Kosten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)"
 					],
