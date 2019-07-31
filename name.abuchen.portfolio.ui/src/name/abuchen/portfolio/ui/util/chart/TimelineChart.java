@@ -25,7 +25,6 @@ import org.eclipse.swtchart.IBarSeries;
 import org.eclipse.swtchart.ICustomPaintListener;
 import org.eclipse.swtchart.ILineSeries;
 import org.eclipse.swtchart.ILineSeries.PlotSymbolType;
-import org.eclipse.swtchart.IPlotArea;
 import org.eclipse.swtchart.ISeries.SeriesType;
 import org.eclipse.swtchart.LineStyle;
 import org.eclipse.swtchart.Range;
@@ -104,7 +103,7 @@ public class TimelineChart extends Chart // NOSONAR
         y2Axis.getGrid().setStyle(LineStyle.NONE);
         y2Axis.setPosition(Position.Primary);
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
@@ -119,7 +118,7 @@ public class TimelineChart extends Chart // NOSONAR
             }
         });
 
-        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        getPlotArea().addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent eventNonTradingDay)
@@ -134,14 +133,14 @@ public class TimelineChart extends Chart // NOSONAR
             }
         });
 
-        getPlotArea().addPaintListener(this::paintMarkerLines);
+        getPlotArea().addCustomPaintListener(this::paintMarkerLines);
 
         toolTip = new TimelineChartToolTip(this);
 
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
-        getPlotArea().addTraverseListener(event -> event.doit = true);
+        getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }

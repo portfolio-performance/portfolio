@@ -14,7 +14,7 @@ public class ZoomMouseWheelListener implements Listener
     public static void attachTo(Chart chart)
     {
         Listener listener = new ZoomMouseWheelListener(chart);
-        chart.getPlotArea().addListener(SWT.MouseWheel, listener);
+        chart.getPlotArea().getControl().addListener(SWT.MouseWheel, listener);
     }
 
     private final Chart chart;

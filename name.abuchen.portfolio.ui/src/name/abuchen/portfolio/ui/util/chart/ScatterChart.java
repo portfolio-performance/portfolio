@@ -42,7 +42,7 @@ public class ScatterChart extends Chart
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
-        getPlotArea().addTraverseListener(event -> event.doit = true);
+        getPlotArea().getControl().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }

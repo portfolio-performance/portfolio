@@ -181,7 +181,6 @@ public class SecuritiesChart
                     ChartDetails.SCALING_LINEAR);
 
     private List<PaintListener> customPaintListeners = new ArrayList<>();
-    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
     private List<Transaction> customTooltipEvents = new ArrayList<>();
 
     private int swtAntialias = SWT.ON;
@@ -196,8 +195,7 @@ public class SecuritiesChart
         chart = new TimelineChart(parent);
         chart.getTitle().setText("..."); //$NON-NLS-1$
 
-        chart.getPlotArea().addPaintListener(event -> customPaintListeners.forEach(l -> l.paintControl(event)));
-        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addCustomPaintListener(e -> customPaintListeners.forEach(l -> l.paintControl(e)));
 
         setupTooltip();
 
@@ -520,7 +518,6 @@ public class SecuritiesChart
             chart.clearMarkerLines();
             chart.clearNonTradingDayMarker();
             customPaintListeners.clear();
-            customBehindPaintListener.clear();
             customTooltipEvents.clear();
 
             if (security == null || security.getPrices().isEmpty())

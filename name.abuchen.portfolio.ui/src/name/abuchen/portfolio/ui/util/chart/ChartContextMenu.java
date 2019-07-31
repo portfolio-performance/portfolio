@@ -37,9 +37,9 @@ import name.abuchen.portfolio.util.TextUtil;
         menuMgr.addMenuListener(manager -> configMenuAboutToShow(manager));
 
         contextMenu = menuMgr.createContextMenu(chart);
-        chart.getPlotArea().setMenu(contextMenu);
+        chart.getPlotArea().getControl().setMenu(contextMenu);
 
-        chart.getPlotArea().addDisposeListener(e -> dispose());
+        chart.getPlotArea().getControl().addDisposeListener(e -> dispose());
     }
 
     private void configMenuAboutToShow(IMenuManager manager)

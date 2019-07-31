@@ -18,7 +18,7 @@ public class MovePlotKeyListener implements Listener
     public static void attachTo(Chart chart)
     {
         Listener listener = new MovePlotKeyListener(chart);
-        chart.getPlotArea().addListener(SWT.KeyDown, listener);
+        chart.getPlotArea().getControl().addListener(SWT.KeyDown, listener);
     }
 
     @Override
