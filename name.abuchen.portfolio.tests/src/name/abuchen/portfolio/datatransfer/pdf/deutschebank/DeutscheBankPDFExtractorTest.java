@@ -19,7 +19,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.DeutscheBankPDFExtractor;
-import name.abuchen.portfolio.datatransfer.pdf.JSONPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -217,69 +216,6 @@ public class DeutscheBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-05-31T00:00")));
         assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(297.61))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(1014)));
-    }
-
-    @Test
-    public void testWertpapierKauf()
-    {
-        JSONPDFExtractor extractor = new JSONPDFExtractor(new Client(), "deutsche-bank-purchase.json");
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DeutscheBankKauf.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        // check security
-        assertSecurity(results);
-
-        // check buy sell transaction
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(675.50))));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(19)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 10_50L)));
-    }
-
-    @Test
-    public void testWertpapierKauf2()
-    {
-        JSONPDFExtractor extractor = new JSONPDFExtractor(new Client(), "deutsche-bank-purchase.json");
-
-        List<Exception> errors = new ArrayList<>();
-
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DeutscheBankKauf2.txt"), errors);
-
-        assertThat(errors, empty());
-        assertThat(results.size(), is(2));
-        new AssertImportActions().check(results, CurrencyUnit.EUR);
-
-        assertSecurity(results);
-
-        // check buy sell transaction
-        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
-        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
-
-        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
-        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
-
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3524.98))));
-        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2015-04-02T09:04")));
-        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(36)));
-        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 11_38L)));
     }
 
     @Test

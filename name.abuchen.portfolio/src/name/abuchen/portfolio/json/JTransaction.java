@@ -175,6 +175,11 @@ public class JTransaction
         units.add(unit);
     }
 
+    public String toJson()
+    {
+        return JClient.GSON.toJson(this);
+    }
+
     @SuppressWarnings("unchecked")
     public static JTransaction from(TransactionPair<?> transaction)
     {

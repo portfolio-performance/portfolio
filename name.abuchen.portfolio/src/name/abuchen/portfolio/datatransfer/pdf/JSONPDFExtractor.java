@@ -237,7 +237,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         t.getUnits().forEach(unit -> entry.getPortfolioTransaction().addUnit(new Transaction.Unit(unit.getType(),
                         Money.of(t.getCurrency(), Values.Amount.factorize(unit.getAmount())))));
 
-        return new BuySellEntryItem(entry);
+        BuySellEntryItem item = new BuySellEntryItem(entry);
+        item.setData(t);
+        return item;
     }
 
     @Override

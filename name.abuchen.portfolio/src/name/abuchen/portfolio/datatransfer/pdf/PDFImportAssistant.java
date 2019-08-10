@@ -1,11 +1,15 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -105,4 +109,38 @@ public class PDFImportAssistant
 
         return itemsByExtractor;
     }
+
+    public List<Item> runWithPlainText(File file, List<Exception> errors) throws FileNotFoundException
+    {
+        String extractedText = null;
+        try (Scanner scanner = new Scanner(file, StandardCharsets.UTF_8.name()))
+        {
+            extractedText = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+        }
+        PDFInputFile inputFile = new PDFInputFile(file, extractedText);
+
+        SecurityCache securityCache = new SecurityCache(client);
+
+        List<Item> items = null;
+        for (Extractor extractor : extractors)
+        {
+            items = extractor.extract(securityCache, inputFile, errors);
+            if (!items.isEmpty())
+                break;
+        }
+
+        if (items == null || items.isEmpty())
+            return Collections.emptyList();
+
+        // we extracted items; remove all errors from all other extractors that
+        // did not find any transactions in this text
+        errors.removeIf(e -> e instanceof UnsupportedOperationException);
+
+        Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
+        itemsByExtractor.put(extractors.get(0), items);
+        securityCache.addMissingSecurityItems(itemsByExtractor);
+
+        return items;
+    }
+
 }

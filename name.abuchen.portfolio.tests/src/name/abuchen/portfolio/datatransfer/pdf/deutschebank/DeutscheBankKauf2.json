@@ -1,0 +1,32 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2015-04-02",
+			"time": "09:04",
+			"currency": "EUR",
+			"amount": 3524.98,
+			"shares": 36,
+			"security": {
+				"name": "BASF SE",
+				"isin": "DE000BASF111",
+				"wkn": "BASF11"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 8.78
+				},
+				{
+					"type": "FEE",
+					"amount": 2.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.6
+				}
+			]
+		}
+	]
+}

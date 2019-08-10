@@ -25,7 +25,7 @@ public class PDFInputFile extends Extractor.InputFile
         super(file);
     }
 
-    private PDFInputFile(File file, String extractedText)
+    public PDFInputFile(File file, String extractedText)
     {
         this(file);
         this.text = extractedText;
