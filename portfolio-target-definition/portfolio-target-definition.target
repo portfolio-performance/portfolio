@@ -26,6 +26,7 @@
 		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/"/>
 		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20180815020001"/>
 		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20180815020001"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20180815020001"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201804281520"/>
