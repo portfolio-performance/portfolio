@@ -6,6 +6,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -293,8 +294,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                             Money.of(t.getCurrencyCode(), partialAmountDividend),
                                             Money.of(currencyCodeFx, asAmount(v.get("amountFx"))), inverseRate));
 
-                            context.put("partialAmountDividend", String.valueOf(partialAmountDividend));
-                            
                             Security security = getOrCreateSecurity(v);
                             security.setCurrencyCode(currencyCodeFx);
                             t.setSecurity(security);
@@ -324,14 +323,6 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), taxesFxInEUR), mTaxesFx,
                                                 inverseRate));
-
-                                long amountDifferenceForTax = Long.valueOf(context.get("partialAmountDividend"))
-                                                - t.getAmount() - taxesFxInEUR;
-                                if (amountDifferenceForTax != 0L)
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(t.getCurrencyCode()),
-                                                    -amountDifferenceForTax)));
-                                }
                             }
                         })
                         
@@ -340,11 +331,7 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                         .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (\\d+-\\d+-\\d{4} )?(.*) (\\w{12}+) ADR/GDR Weitergabegebühr (?<currencyFee>\\w{3}) -?(?<feeFx>[\\d.]+,\\d{2}) .*$")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
-                            
-                            //Workaround: If FEE exists, remove correction TAX entry from above section again...
-                            Unit unitToRemoveAgain = t.getUnits().filter(u -> u.getType() == Unit.Type.TAX && u.getAmount().getAmount() < 0L).findAny().get();
-                            t.removeUnit(unitToRemoveAgain);
-                            
+
                             BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
                             BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
                                             RoundingMode.HALF_DOWN);
@@ -360,7 +347,55 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                             t.addUnit(new Unit(Unit.Type.FEE, Money.of(t.getCurrencyCode(), feesFxInEUR), mFeesFx, inverseRate));
                         })
 
-                        .wrap(t -> new TransactionItem(t)));
+                        .wrap(t -> {
+
+                            // check if there is a delta between the gross
+                            // amount and the sum of fees and taxs
+
+                            Optional<Unit> grossValue = t.getUnit(Unit.Type.GROSS_VALUE);
+                            if (grossValue.isPresent())
+                            {
+                                long net = t.getAmount();
+                                long gross = grossValue.get().getAmount().getAmount();
+
+                                long feesAndTaxes = t.getUnits().filter(
+                                                u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                                                .mapToLong(u -> u.getAmount().getAmount()).sum();
+
+                                long delta = gross - feesAndTaxes - net;
+
+                                if (delta != 0)
+                                {
+                                    // pick the first unit and make it fit; see
+                                    // discussion
+                                    // https://github.com/buchen/portfolio/pull/1198
+
+                                    Unit unit = t.getUnits().filter(
+                                                    u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
+                                                    .filter(u -> u.getExchangeRate() != null)
+                                                    .findFirst().orElseThrow(IllegalArgumentException::new);
+
+                                    t.removeUnit(unit);
+
+                                    long amountPlusDelta = unit.getAmount().getAmount() + delta;
+                                    long forexPlusDelta = BigDecimal.ONE
+                                                    .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
+                                                    .multiply(BigDecimal.valueOf(amountPlusDelta))
+                                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+                                    Unit newUnit = new Unit(unit.getType(),
+                                                    Money.of(unit.getAmount().getCurrencyCode(),
+                                                                    amountPlusDelta),
+                                                    Money.of(unit.getForex().getCurrencyCode(),
+                                                                    forexPlusDelta),
+                                                    unit.getExchangeRate());
+
+                                    t.addUnit(newUnit);
+                                }
+                            }
+
+                            return new TransactionItem(t);
+                        }));
         
     }
     
