@@ -11,12 +11,16 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
@@ -34,12 +38,16 @@ import name.abuchen.portfolio.ui.util.Colors;
  * <ul>
  * <li>green</li>
  * <li>red</li>
+ * <li>strong</li>
+ * <li>em</li>
  * </ul>
  */
 public class StyledLabel extends Canvas // NOSONAR
 {
     private TextLayout textLayout;
     private SAXParserFactory spf;
+
+    private LocalResourceManager resourceManager = new LocalResourceManager(JFaceResources.getResources());
 
     public StyledLabel(Composite parent, int style)
     {
@@ -96,6 +104,10 @@ public class StyledLabel extends Canvas // NOSONAR
                         styleRanges.add(new StyleRange(pos, plainText.length() - pos, Colors.DARK_RED, null));
                     else if ("green".equals(qName)) //$NON-NLS-1$
                         styleRanges.add(new StyleRange(pos, plainText.length() - pos, Colors.DARK_GREEN, null));
+                    else if ("strong".equals(qName)) //$NON-NLS-1$
+                        styleRanges.add(new StyleRange(pos, plainText.length() - pos, null, null, SWT.BOLD));
+                    else if ("em".equals(qName)) //$NON-NLS-1$
+                        styleRanges.add(new StyleRange(pos, plainText.length() - pos, null, null, SWT.ITALIC));
 
                     pos = -1;
                 }
@@ -111,7 +123,18 @@ public class StyledLabel extends Canvas // NOSONAR
                             .getBytes(StandardCharsets.UTF_8)), handler);
 
             this.textLayout.setText(plainText.toString());
-            styleRanges.forEach(r -> this.textLayout.setStyle(r, r.start, r.start + r.length));
+            styleRanges.forEach(r -> {
+                if (r.fontStyle != SWT.NORMAL)
+                {
+                    Font font = resourceManager
+                                    .createFont(FontDescriptor.createFrom(textLayout.getFont()).setStyle(r.fontStyle));
+                    textLayout.setStyle(new TextStyle(font, r.foreground, r.background), r.start, r.start + r.length);
+                }
+                else
+                {
+                    textLayout.setStyle(r, r.start, r.start + r.length);
+                }
+            });
         }
         catch (ParserConfigurationException | SAXException | IOException e)
         {
