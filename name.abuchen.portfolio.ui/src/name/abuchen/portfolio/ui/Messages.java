@@ -361,10 +361,13 @@ public class Messages extends NLS
     public static String ImportWizardPasteSourceTitle;
     public static String ImportWizardReviewDescription;
     public static String ImportWizardReviewTitle;
+    public static String IntroChangeLanguageInPreferences;
     public static String IntroLabelActions;
     public static String IntroLabelHelp;
     public static String IntroLabelRecentlyUsedFiles;
     public static String IntroLabelSamples;
+    public static String IntroLabelTranslation;
+    public static String IntroLabelTranslationInfo;
     public static String IntroNewFile;
     public static String IntroNewFileText;
     public static String IntroOpenDaxSample;
