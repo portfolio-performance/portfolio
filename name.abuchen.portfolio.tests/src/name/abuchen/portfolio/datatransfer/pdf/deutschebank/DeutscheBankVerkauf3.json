@@ -1,0 +1,32 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "SALE",
+			"date": "2017-02-16",
+			"time": "15:28",
+			"currency": "EUR",
+			"amount": 4753.16,
+			"shares": 100.0,
+			"security": {
+				"name": "BASF SE",
+				"isin": "DE000BASF111",
+				"wkn": "BASF11"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 11.94
+				},
+				{
+					"type": "FEE",
+					"amount": 5.4
+				},
+				{
+					"type": "FEE",
+					"amount": 3.5
+				}
+			]
+		}
+	]
+}

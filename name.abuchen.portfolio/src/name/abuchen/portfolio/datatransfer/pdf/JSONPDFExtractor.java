@@ -181,7 +181,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         try
         {
             NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
-            return Optional.of(numberFormat.parse(value).doubleValue());
+            return Optional.of(Math.abs(numberFormat.parse(value).doubleValue()));
         }
         catch (ParseException e)
         {

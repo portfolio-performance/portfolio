@@ -1,0 +1,44 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "SALE",
+			"date": "2015-04-02",
+			"time": "09:04",
+			"currency": "EUR",
+			"amount": 2074.71,
+			"shares": 61.0,
+			"security": {
+				"name": "BASF SE",
+				"isin": "DE000BASF111",
+				"wkn": "BASF11"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 122.94
+				},
+				{
+					"type": "TAX",
+					"amount": 6.76
+				},
+				{
+					"type": "TAX",
+					"amount": 1.23
+				},
+				{
+					"type": "FEE",
+					"amount": 7.9
+				},
+				{
+					"type": "FEE",
+					"amount": 2.0
+				},
+				{
+					"type": "FEE",
+					"amount": 0.6
+				}
+			]
+		}
+	]
+}

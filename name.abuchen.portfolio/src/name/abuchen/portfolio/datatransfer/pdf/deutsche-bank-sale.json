@@ -1,0 +1,111 @@
+{
+	"version": 1,
+	"name": "Deutsche Bank - Verkaufbuchungen",
+	"locale": "de",
+	"pattern": [
+		"Deutsche Bank|DB Privat- und Firmenkundenbank AG",
+		"Verkauf von Wertpapieren"
+	],
+	"transactions": [
+		{
+			"type": "SALE",
+			"startWith": "Abrechnung: Verkauf von Wertpapieren",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Filialnummer Depotnummer Wertpapierbezeichnung Seite",
+						"^.{15}(?<name>.*)$",
+						"^WKN (?<wkn>[^ ]*) (.*)$",
+						"^ISIN (?<isin>[^ ]*) Kurs (?<currency>\\w{3}+) (.*)$"
+					]
+				},
+				{
+					"pattern": [
+						"^WKN [^ ]* Nominal ST (?<shares>[\\d.]+(,\\d+)?)"
+					]
+				},
+				{
+					"pattern": [
+						"Buchung auf Kontonummer [\\d ]* mit Wertstellung \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)"
+					]
+				},
+				{
+					"pattern": [
+						"Belegnummer .* Schlusstag/-zeit .* (?<date>\\d+.\\d+.\\d{4}+) / (?<time>\\d+:\\d+)"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kapitalertragsteuer (?<currency>\\w{3}+) (?<amount>[\\d.-]+,\\d+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Solidaritätszuschlag auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<amount>[\\d.-]+,\\d+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kirchensteuer auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<amount>[\\d.-]+,\\d+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Provision.*(?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Fremde Spesen und Auslagen (?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Weitere Provision der Bank bei der börslichen Orderausf.*hrung (?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"XETRA-Kosten (?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		}
+	]
+}
