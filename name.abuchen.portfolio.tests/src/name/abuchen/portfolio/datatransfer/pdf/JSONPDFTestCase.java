@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,9 +34,9 @@ public class JSONPDFTestCase
     public static final String EXT_TXT = ".txt"; //$NON-NLS-1$
 
     @Parameters(name = "{index}: {0}")
-    public static Collection<Object[]> getFiles() throws IOException
+    public static Collection<Object[]> getFiles() throws IOException, URISyntaxException
     {
-        String testDir = JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+        String testDir = Paths.get(JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();;
         Collection<Object[]> params = new ArrayList<>();
 
         // look up test cases in such a way that it works in the Eclipse IDE,
