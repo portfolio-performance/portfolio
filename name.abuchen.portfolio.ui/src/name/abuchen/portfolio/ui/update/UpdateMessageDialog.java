@@ -27,6 +27,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.update.NewVersion.ConditionalMessage;
 import name.abuchen.portfolio.ui.update.NewVersion.Release;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
 /* package */class UpdateMessageDialog extends MessageDialog
 {
@@ -47,6 +48,7 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
         GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
         GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
 
+        createHeader(container);
         createText(container);
 
         checkOnUpdate = new Button(container, SWT.CHECK);
@@ -67,11 +69,29 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
         return container;
     }
 
+    private void createHeader(Composite container)
+    {
+        if (newVersion.getHeader() == null)
+            return;
+
+        try
+        {
+            StyledLabel label = new StyledLabel(container, SWT.WRAP);
+            GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.END).applyTo(label);
+            label.setText(newVersion.getHeader());
+        }
+        catch (IllegalArgumentException ignore)
+        {
+            // display dialog even if test cannot be parsed
+            PortfolioPlugin.log(ignore);
+        }
+    }
+
     private void createText(Composite container)
     {
         StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
 
-        List<StyleRange> ranges = new ArrayList<StyleRange>();
+        List<StyleRange> ranges = new ArrayList<>();
 
         StringBuilder buffer = new StringBuilder();
         if (newVersion.requiresNewJavaVersion())
@@ -91,7 +111,9 @@ import name.abuchen.portfolio.ui.update.NewVersion.Release;
 
         text.setText(buffer.toString());
         text.setStyleRanges(ranges.toArray(new StyleRange[0]));
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
+
+        GridDataFactory.fillDefaults().hint(convertHorizontalDLUsToPixels(400), convertVerticalDLUsToPixels(100))
+                        .applyTo(text);
     }
 
     private void appendReleases(StringBuilder buffer, List<StyleRange> styles)

@@ -47,6 +47,7 @@ public final class UpdateHelper
     }
 
     private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
+    private static final String HEADER = "header"; //$NON-NLS-1$
 
     private final IWorkbench workbench;
     private final EPartService partService;
@@ -247,6 +248,13 @@ public final class UpdateHelper
                 history = update.replacement.getProperty(VERSION_HISTORY, null);
             if (history != null)
                 v.setVersionHistory(history);
+
+            // header
+            String header = update.replacement.getProperty(HEADER + "_" + Locale.getDefault().getLanguage(), null); //$NON-NLS-1$
+            if (header == null)
+                header = update.replacement.getProperty(HEADER, null);
+            if (header != null)
+                v.setHeader(header);
 
             return v;
         }

@@ -115,6 +115,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
     private String version;
     private String minimumJavaVersionRequired;
+    private String header;
     private List<Release> releases = new ArrayList<>();
 
     public NewVersion(String version)
@@ -125,6 +126,16 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     public String getVersion()
     {
         return version;
+    }
+
+    public String getHeader()
+    {
+        return header;
+    }
+
+    public void setHeader(String header)
+    {
+        this.header = header;
     }
 
     public void setVersionHistory(String history)
