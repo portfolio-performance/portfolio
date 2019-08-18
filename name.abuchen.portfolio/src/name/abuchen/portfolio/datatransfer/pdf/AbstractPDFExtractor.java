@@ -6,7 +6,9 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -225,6 +227,22 @@ public abstract class AbstractPDFExtractor implements Extractor
     /* protected */LocalDateTime asDate(String value)
     {
         return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+    }
+
+    /* protected */LocalTime asTime(String value)
+    {
+        LocalTime time = null;
+
+        try
+        {
+            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm")); //$NON-NLS-1$
+        }
+        catch (DateTimeParseException e)
+        {
+            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm:ss")); //$NON-NLS-1$
+        }
+
+        return time.withSecond(0);
     }
 
     /* protected */LocalDateTime asDate(String date, String time)

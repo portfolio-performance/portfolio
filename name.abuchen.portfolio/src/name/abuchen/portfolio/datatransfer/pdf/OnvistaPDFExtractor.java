@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalTime;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -84,17 +85,25 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("date", "time", "amount", "currency") //
-                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)").match("Handelszeit (?<time>\\d+:\\d+)(.*)")
+                        .section("date", "amount", "currency") //
+                        .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)") //
                         .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
                         // 14.01.2015 172306238 EUR 59,55
                         // Wert Konto-Nr. Betrag zu Ihren Lasten
                         // 01.06.2011 172306238 EUR 6,40
                         .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date"), v.get("time")));
+                            t.setDate(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .section("time") //
+                        .optional() //
+                        .match("Handelszeit (?<time>\\d+:\\d+)(.*)") //
+                        .assign((t, v) -> {
+                            LocalTime time = asTime(v.get("time"));
+                            t.setDate(t.getPortfolioTransaction().getDateTime().with(time));
                         })
 
                         .wrap(BuySellEntryItem::new);
