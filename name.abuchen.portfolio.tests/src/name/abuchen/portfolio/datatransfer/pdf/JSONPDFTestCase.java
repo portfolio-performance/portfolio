@@ -36,13 +36,13 @@ public class JSONPDFTestCase
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getFiles() throws IOException, URISyntaxException
     {
-        String testDir = Paths.get(JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI()).toString();;
+        Path testDir = Paths.get(JSONPDFTestCase.class.getProtectionDomain().getCodeSource().getLocation().toURI());
         Collection<Object[]> params = new ArrayList<>();
 
         // look up test cases in such a way that it works in the Eclipse IDE,
         // with Infinitest, and on the Maven command line
 
-        try (Stream<Path> fileWalker = Files.walk(Paths.get(testDir), 10))
+        try (Stream<Path> fileWalker = Files.walk(testDir, 10))
         {
             fileWalker.filter(p -> p.toString().endsWith(EXT_JSON)).filter(p -> p.toString().contains("/classes/")) //$NON-NLS-1$
                             .map(p -> {
