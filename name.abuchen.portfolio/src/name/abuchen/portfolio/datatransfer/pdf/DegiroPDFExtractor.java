@@ -492,10 +492,12 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
 
                             //26-04-2019 17:52 TESLA MOTORS INC. - C US88160R1014 NDQ 2 USD 240,00 USD -480,00 EUR -430,69 1,1145 EUR -0,51 EUR -431,20
                             //29-04-2019 16:11 TESLA MOTORS INC. - C US88160R1014 NDQ -3 USD 240,00 USD 720,00 EUR 645,04 1,1162 EUR -0,51 EUR 644,53
+                            //06-08-2019 20:20 WILLIAMS-SONOMA INC. US9699041011 NSY 1 USD 64,695 USD -64,70 EUR -57,85 1,1184 EUR -0,50 EUR -58,35
+                            //23-07-2019 15:30 RIO TINTO PLC COMMON S US7672041008 NSY -3 USD 61,04 USD 183,12 EUR 163,83 1,1177 EUR -0,51 EUR 163,32
 
                             section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyFee", "fee", "currencyAccount", "amount")
                             .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"
-                                            + " \\w{3} -?[.\\d]+,\\d{2}"
+                                            + " \\w{3} -?[.\\d]+,\\d{2,3}"
                                             + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*"
                                             + " \\w{3} -?[.\\d]+,\\d{2}"
                                             + " (?<exchangeRate>[.\\d]+,\\d{1,6})"
@@ -527,7 +529,48 @@ public class DegiroPDFExtractor extends AbstractPDFExtractor
                                         if (t.getPortfolioTransaction().getType() == PortfolioTransaction.Type.BUY)
                                         {
                                             amount = amount.subtract(feeAmount);
+                                        } 
+                                        else 
+                                        {
+                                            amount = amount.add(feeAmount);
                                         }
+                                        BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
+                                        Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
+                                        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
+                                        t.getPortfolioTransaction().addUnit(grossValue);
+                                    }
+                            }),
+                            
+                            //22-07-2019 19:16 LPL FINANCIAL HOLDINGS US50212V1008 NDQ -1 USD 85,73 USD 85,73 EUR 76,42 1,1218 EUR 76,42
+                            
+                            section -> section.attributes("date", "name", "isin", "shares", "currency", "amountFx", "exchangeRate", "currencyAccount", "amount")
+                            .match("^(?<date>\\d+-\\d+-\\d{4} \\d+:\\d+) (?<name>.*) (?<isin>\\w{12}+) \\w{3} (?<shares>[-]?[.\\d]+[,\\d]*)"
+                                            + " \\w{3} -?[.\\d]+,\\d{2,3}"
+                                            + " (?<currency>\\w{3}) -?(?<amountFx>[.\\d]+,\\d{2}).*"
+                                            + " \\w{3} -?[.\\d]+,\\d{2}"
+                                            + " (?<exchangeRate>[.\\d]+,\\d{1,6})"
+                                            + " (?<currencyAccount>\\w{3}) -?(?<amount>[.\\d]+,\\d{2})$")
+                            .assign((t, v) -> {
+                                    t.setSecurity(getOrCreateSecurity(v));
+                                    t.setDate(asDate(v.get("date")));
+                                    if (v.get("shares").startsWith("-")) 
+                                    {
+                                        t.setType(PortfolioTransaction.Type.SELL);
+                                        t.setShares(asShares(v.get("shares").replaceFirst("-", "")));
+                                    } 
+                                    else 
+                                    {
+                                        t.setShares(asShares(v.get("shares")));
+                                    }
+                                    t.setCurrencyCode(asCurrencyCode(v.get("currencyAccount")));
+                                    t.setAmount(asAmount(v.get("amount")));  
+                                    
+                                    long amountFx = asAmount(v.get("amountFx"));
+                                    String currencyFx = asCurrencyCode(v.get("currency"));
+
+                                    if (currencyFx.equals(t.getPortfolioTransaction().getSecurity().getCurrencyCode()))
+                                    {
+                                        Money amount = Money.of(asCurrencyCode(v.get("currencyAccount")), asAmount(v.get("amount")));
                                         BigDecimal exchangeRate = BigDecimal.ONE.divide(asExchangeRate(v.get("exchangeRate")), 10, RoundingMode.HALF_DOWN);
                                         Money forex = Money.of(asCurrencyCode(v.get("currency")), amountFx);
                                         Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, forex, exchangeRate);
