@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -46,7 +47,8 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         try (InputStreamReader in = new InputStreamReader(
-                        this.getClass().getResourceAsStream("/name/abuchen/portfolio/datatransfer/pdf/" + resource))) //$NON-NLS-1$
+                        this.getClass().getResourceAsStream("/name/abuchen/portfolio/datatransfer/pdf/" + resource), //$NON-NLS-1$
+                        StandardCharsets.UTF_8))
         {
             definition = new Gson().fromJson(in, JPDFExtractorDefinition.class);
 
