@@ -653,6 +653,45 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKaufAktien3() // Aktien
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "OnvistaKaufAktien3.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).map(Item::getSecurity).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+
+        assertThat(security.getName(), is("Cisco Systems Inc. Registered Shares DL-,001"));
+        assertThat(security.getIsin(), is("US17275R1023"));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1536.13))));
+
+        Unit grossValue = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1677.20))));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-08-19T15:30")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(35)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize((11.03 + 5.51) / 1.1026))));
+    }
+
+    @Test
     public void testWertpapierKaufSparplanMitSteuerausgleich() throws IOException // Aktien
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());

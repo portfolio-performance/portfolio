@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalTime;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -64,14 +66,16 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         });
 
         block.set(pdfTransaction);
-        pdfTransaction.section("name", "isin") //
+        pdfTransaction.section("name", "isin", "currency") //
                         .find("Gattungsbezeichnung ISIN") //
                         .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
+                        .find("Nominal Kurs") //
+                        .match("^\\w{3} ([\\d,.]*) (?<currency>\\w{3}) ([\\d,.]*)") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("notation", "shares") //
                         .find("Nominal Kurs") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{3,})?)(.*)") //
+                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d,.]*) (?<currency>\\w{3}) ([\\d,.]*)") //
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !notation.equalsIgnoreCase("STK"))
@@ -85,18 +89,9 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("date", "amount", "currency") //
+                        .section("date") //
                         .match("Handelstag (?<date>\\d+.\\d+.\\d{4}+) (.*)") //
-                        .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
-                        // 14.01.2015 172306238 EUR 59,55
-                        // Wert Konto-Nr. Betrag zu Ihren Lasten
-                        // 01.06.2011 172306238 EUR 6,40
-                        .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
 
                         .section("time") //
                         .optional() //
@@ -105,6 +100,54 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                             LocalTime time = asTime(v.get("time"));
                             t.setDate(t.getPortfolioTransaction().getDateTime().with(time));
                         })
+
+                        .oneOf( //
+                                        section -> section.attributes("amount", "currency")
+                                                        .find("Wert(\\s+)Konto-Nr. Betrag zu Ihren Lasten(\\s*)$")
+                                                        // @formatter:off
+                                                        // 14.01.2015 172306238 EUR 59,55
+                                                        // Wert Konto-Nr. Betrag zu Ihren Lasten
+                                                        // 01.06.2011 172306238 EUR 6,40
+                                                        // @formatter:on
+                                                        .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
+                                                        .assign((t, v) -> {
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                                                        }),
+
+                                        section -> section.attributes("amount", "currency", "forex", "exchangeRate")
+                                                        .find("Wert(\\s+)Konto-Nr. Devisenkurs Betrag zu Ihren Lasten(\\s*)$")
+                                                        .match("(\\d+.\\d+.\\d{4}+) (\\d{6,12}) .../(?<forex>\\w{3}+) (?<exchangeRate>[\\d,.]*) (?<currency>\\w{3}+) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)$")
+                                                        .assign((t, v) -> {
+
+                                                            t.setAmount(asAmount(v.get("amount")));
+                                                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+
+                                                            String forex = asCurrencyCode(v.get("forex"));
+                                                            if (t.getPortfolioTransaction().getSecurity()
+                                                                            .getCurrencyCode().equals(forex))
+                                                            {
+                                                                BigDecimal exchangeRate = asExchangeRate(
+                                                                                v.get("exchangeRate"));
+                                                                BigDecimal reverseRate = BigDecimal.ONE.divide(
+                                                                                exchangeRate, 10,
+                                                                                RoundingMode.HALF_DOWN);
+
+                                                                long fxAmount = exchangeRate.multiply(BigDecimal
+                                                                                .valueOf(t.getPortfolioTransaction()
+                                                                                                .getAmount()))
+                                                                                .setScale(0, RoundingMode.HALF_DOWN)
+                                                                                .longValue();
+
+                                                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                                                                t.getPortfolioTransaction()
+                                                                                                .getMonetaryAmount(),
+                                                                                Money.of(forex, fxAmount),
+                                                                                reverseRate);
+
+                                                                t.getPortfolioTransaction().addUnit(grossValue);
+                                                            }
+                                                        }))
 
                         .wrap(BuySellEntryItem::new);
 
@@ -1339,32 +1382,64 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
     private void addFeesSectionsTransaction(Transaction<BuySellEntry> pdfTransaction)
     {
-        pdfTransaction.section("brokerage").optional()
-                        .match("(^.*)(Orderprovision) (\\w{3}+) (?<brokerage>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("brokerage"))))))
+        BiConsumer<BuySellEntry, Map<String, String>> feeProcessor = (t, v) -> {
+            String currency = asCurrencyCode(v.get("currency"));
 
-                        .section("stockfees").optional()
-                        .match("(^.*) (B\\Drsengeb\\Dhr) (\\w{3}+) (?<stockfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("stockfees"))))))
+            if (t.getPortfolioTransaction().getCurrencyCode().equals(currency))
+            {
+                t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+            }
+            else
+            {
+                Optional<Unit> grossValue = t.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE);
+                if (grossValue.isPresent() && grossValue.get().getForex().getCurrencyCode().equals(currency))
+                {
+                    Unit gv = grossValue.get();
 
-                        .section("stockfees2").optional()
-                        .match("(^.*) (Handelsplatzgeb\\Dhr) (\\w{3}+) (?<stockfees2>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("stockfees2"))))))
+                    Money forex = Money.of(currency, asAmount(v.get("fee")));
+                    Money amount = Money.of(t.getPortfolioTransaction().getCurrencyCode(),
+                                    gv.getExchangeRate().multiply(BigDecimal.valueOf(forex.getAmount()))
+                                                    .setScale(0, RoundingMode.HALF_DOWN).longValue());
 
-                        .section("agent").optional()
-                        .match("(^.*)(Maklercourtage)(\\s+)(\\w{3}+) (?<agent>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
-                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("agent"))))));
+                    t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, amount, forex, gv.getExchangeRate()));
 
+                    // update gross value (fees are calculated *after* gross)
+
+                    t.getPortfolioTransaction().removeUnit(gv);
+
+                    Unit newGrossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                    Money.of(gv.getAmount().getCurrencyCode(),
+                                                    gv.getAmount().getAmount() - amount.getAmount()),
+                                    Money.of(gv.getForex().getCurrencyCode(),
+                                                    gv.getForex().getAmount() - forex.getAmount()),
+                                    gv.getExchangeRate());
+
+                    t.getPortfolioTransaction().addUnit(newGrossValue);
+                }
+            }
+        };
+
+        pdfTransaction //
+                        .section("fee", "currency") //
+                        .optional()
+                        .match("(^.*)(Orderprovision) (?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign(feeProcessor)
+
+                        .section("fee", "currency") //
+                        .optional()
+                        .match("(^.*) (B\\Drsengeb\\Dhr) (?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign(feeProcessor)
+
+                        .section("fee", "currency") //
+                        .optional()
+                        .match("(^.*) (Handelsplatzgeb\\Dhr) (?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign(feeProcessor)
+
+                        .section("fee", "currency") //
+                        .optional()
+                        .match("(^.*)(Maklercourtage)(\\s+)(?<currency>\\w{3}) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-)")
+                        .assign(feeProcessor);
     }
 
     private void addTaxReturnTransaction()
