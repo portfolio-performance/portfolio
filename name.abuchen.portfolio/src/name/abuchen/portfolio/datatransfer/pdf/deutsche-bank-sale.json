@@ -31,8 +31,15 @@
 					]
 				},
 				{
+					"isOptional": true,
 					"pattern": [
 						"Belegnummer .* Schlusstag/-zeit .* (?<date>\\d+.\\d+.\\d{4}+) / (?<time>\\d+:\\d+)"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"Belegnummer .* Schlusstag (?<date>\\d+.\\d+.\\d{4}+)"
 					]
 				},
 				{
