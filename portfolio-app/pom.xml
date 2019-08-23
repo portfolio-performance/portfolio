@@ -5,13 +5,13 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.40.1-SNAPSHOT</version>
+	<version>0.41.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
 
 	<properties>
-		<tycho-version>1.3.0</tycho-version>
+		<tycho-version>1.4.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
@@ -25,7 +25,7 @@
 	</properties>
 
 	<prerequisites>
-		<maven>3.0</maven>
+		<maven>3.5.2</maven>
 	</prerequisites>
 
 	<modules>
@@ -62,7 +62,7 @@
 						<configuration>
 							<rules>
 								<requireMavenVersion>
-									<version>3.0</version>
+									<version>3.5.2</version>
 								</requireMavenVersion>
 								<requireJavaVersion>
 									<version>1.8</version>
@@ -146,12 +146,22 @@
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
+							<id>org.eclipse.pde.ds.lib.nl_nl</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_de</id>
 							<removeAll />
 						</filter>
 						<filter>
 							<type>eclipse-plugin</type>
 							<id>org.eclipse.e4.ui.swt.gtk.nl_es</id>
+							<removeAll />
+						</filter>
+						<filter>
+							<type>eclipse-plugin</type>
+							<id>org.eclipse.e4.ui.swt.gtk.nl_nl</id>
 							<removeAll />
 						</filter>
 					</filters>
@@ -176,7 +186,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-resources-plugin</artifactId>
-					<version>2.7</version>
+					<version>3.1.0</version>
 					<configuration>
 						<encoding>UTF-8</encoding>
 					</configuration>
@@ -184,7 +194,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>2.10</version>
+					<version>3.1.1</version>
 				</plugin>
 				<plugin>
 					<groupId>org.eclipse.tycho</groupId>
@@ -262,7 +272,7 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>findbugs-maven-plugin</artifactId>
-					<version>2.5.5</version>
+					<version>3.0.5</version>
 					<configuration>
 						<findbugsXmlOutput>true</findbugsXmlOutput>
 						<findbugsXmlWithMessages>true</findbugsXmlWithMessages>
@@ -272,7 +282,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
-					<version>2.17</version>
+					<version>3.1.0</version>
 					<executions>
 						<execution>
 							<id>validate</id>
@@ -293,7 +303,7 @@
 				<plugin>
 					<groupId>org.sonarsource.scanner.maven</groupId>
 					<artifactId>sonar-maven-plugin</artifactId>
-					<version>3.4.0.905</version>
+					<version>3.6.0.1398</version>
 				</plugin>
 				<plugin>
 					<groupId>name.abuchen</groupId>
@@ -303,12 +313,12 @@
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>exec-maven-plugin</artifactId>
-					<version>1.5.0</version>
+					<version>1.6.0</version>
 				</plugin>
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>0.8.3</version>
+					<version>0.8.4</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>

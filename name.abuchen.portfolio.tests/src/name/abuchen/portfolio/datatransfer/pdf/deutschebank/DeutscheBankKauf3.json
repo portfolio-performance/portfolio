@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2019-08-20",
+			"currency": "EUR",
+			"amount": 300,
+			"shares": 5.5791,
+			"security": {
+				"name": "COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1",
+				"isin": "LU0392494562",
+				"wkn": "ETF110"
+			}
+		}
+	]
+}

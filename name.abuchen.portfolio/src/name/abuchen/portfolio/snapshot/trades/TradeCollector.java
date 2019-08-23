@@ -2,12 +2,14 @@ package name.abuchen.portfolio.snapshot.trades;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
@@ -19,6 +21,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
 
 public class TradeCollector
 {
@@ -31,7 +34,7 @@ public class TradeCollector
         this.converter = converter;
     }
 
-    public List<Trade> collect(Security security)
+    public List<Trade> collect(Security security) throws TradeCollectorException
     {
         List<TransactionPair<?>> transactions = security.getTransactions(client);
 
@@ -100,14 +103,15 @@ public class TradeCollector
     }
 
     private Trade createNewTradeFromSell(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
-                    TransactionPair<PortfolioTransaction> pair)
+                    TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
         Trade newTrade = new Trade(pair.getTransaction().getSecurity(), pair.getTransaction().getShares());
 
         List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 
         if (open == null || open.isEmpty())
-            throw new IllegalArgumentException();
+            throw new TradeCollectorException(MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForSell,
+                            pair.getTransaction().getSecurity(), pair.getOwner(), pair));
 
         long sharesToDistribute = pair.getTransaction().getShares();
 
@@ -139,7 +143,11 @@ public class TradeCollector
         }
 
         if (sharesToDistribute > 0)
-            throw new IllegalArgumentException();
+        {
+            throw new TradeCollectorException(MessageFormat.format(
+                            Messages.MsgErrorTradeCollector_MissingHoldingsForSell, pair.getTransaction().getSecurity(),
+                            pair.getOwner(), Values.Share.format(sharesToDistribute), pair));
+        }
 
         newTrade.getTransactions().add(pair);
         newTrade.setEnd(pair.getTransaction().getDateTime());
@@ -148,7 +156,7 @@ public class TradeCollector
     }
 
     private void moveOpenTransaction(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
-                    TransactionPair<PortfolioTransaction> pair)
+                    TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
         PortfolioTransferEntry transfer = (PortfolioTransferEntry) pair.getTransaction().getCrossEntry();
         Portfolio outbound = (Portfolio) transfer.getOwner(transfer.getSourceTransaction());
@@ -161,7 +169,9 @@ public class TradeCollector
 
         List<TransactionPair<PortfolioTransaction>> positions = openTransactions.get(outbound);
         if (positions == null || positions.isEmpty())
-            throw new IllegalArgumentException();
+            throw new TradeCollectorException(
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_NoHoldingsForTransfer,
+                                            pair.getTransaction().getSecurity(), outbound, inbound, pair));
 
         long sharesToTransfer = pair.getTransaction().getShares();
 
@@ -190,8 +200,12 @@ public class TradeCollector
         }
 
         if (sharesToTransfer > 0)
-            throw new IllegalArgumentException();
-
+        {
+            throw new TradeCollectorException(
+                            MessageFormat.format(Messages.MsgErrorTradeCollector_MissingHoldingsForTransfer,
+                                            pair.getTransaction().getSecurity(), outbound, inbound,
+                                            Values.Share.format(sharesToTransfer), pair));
+        }
     }
 
     private TransactionPair<PortfolioTransaction> split(TransactionPair<PortfolioTransaction> candidate,

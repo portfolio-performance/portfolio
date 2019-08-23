@@ -20,6 +20,7 @@ import name.abuchen.portfolio.money.Money;
 public class DkbPDFExtractor extends AbstractPDFExtractor
 {
     private static final String EXCHANGE_RATE = "exchangeRate"; //$NON-NLS-1$
+    private static final String FLAG_WITHHOLDING_TAX_FOUND  = "exchangeRate"; //$NON-NLS-1$
 
     public DkbPDFExtractor(Client client)
     {
@@ -228,7 +229,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("Dividendengutschrift");
+        DocumentType type = createDocumentType("Dividendengutschrift");
+        //DocumentType type = new DocumentType("Dividendengutschrift");
         this.addDocumentTyp(type);
 
         Block block = new Block("Dividendengutschrift|Ertragsgutschrift.*");
@@ -386,16 +388,7 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
     private void addTransaction(String documentTypeString, String blockMarkerString,
                     AccountTransaction.Type transactiontype)
     {
-        DocumentType type = new DocumentType(documentTypeString, (context, lines) -> {
-            Pattern pattern = Pattern
-                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)(.*)");
-            for (String line : lines)
-            {
-                Matcher m = pattern.matcher(line);
-                if (m.matches())
-                    context.put(EXCHANGE_RATE, m.group("exchangeRate"));
-            }
-        });
+        DocumentType type = createDocumentType(documentTypeString);
         this.addDocumentTyp(type);
 
         Block block = new Block(blockMarkerString);
@@ -409,7 +402,8 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         });
         block.set(pdfTransaction);
 
-        pdfTransaction.oneOf(section -> section.attributes("shares", "name", "isin", "wkn", "currency")
+        pdfTransaction.oneOf(
+                        section -> section.attributes("shares", "name", "isin", "wkn", "currency")
                         .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
                         .match("(^St\\Dck) (?<shares>[\\d,.]*) (?<name>.*)$") //
                         .match(".*") //
@@ -443,6 +437,21 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
         addTaxesSectionsTransaction(type, pdfTransaction);
         addFeesSectionsTransaction(pdfTransaction);
+    }
+
+    private DocumentType createDocumentType(String documentTypeString)
+    {
+        DocumentType type = new DocumentType(documentTypeString, (context, lines) -> {
+            Pattern pattern = Pattern
+                            .compile("Devisenkurs (?<term>\\w{3}+) / (?<base>\\w{3}+) (?<exchangeRate>[\\d,.]*)(.*)");
+            for (String line : lines)
+            {
+                Matcher m = pattern.matcher(line);
+                if (m.matches())
+                    context.put(EXCHANGE_RATE, m.group("exchangeRate"));
+            }
+        });
+        return type;
     }
     
     private void addBuyTransactionFundsSavingsPlan()
@@ -509,34 +518,60 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
                         .match("^Kirchensteuer (.*) (\\w{3}+) (?<kirchenst>[\\d.-]+,\\d+)(-) (?<currency>\\w{3}+)")
                         .assign((t, v) -> addTax(documentType, t, v, "kirchenst"))
 
-                        .section("quellenst", "currency").optional()
-                        .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenst>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> addTax(documentType, t, v, "quellenst"))
+                        .section("quellensteinbeh", "currency").optional()
+                        .match("^Einbehaltene Quellensteuer(.*) (\\w{3}+) (?<quellensteinbeh>[\\d.]+,\\d+)(-) (?<currency>\\w{3}+)")
+                        .assign((t, v) ->  {
+                            documentType.getCurrentContext().put(FLAG_WITHHOLDING_TAX_FOUND, "true");
+                            addTax(documentType, t, v, "quellensteinbeh");
+                        })
+                        
+                        .section("quellenstanr", "currency").optional()
+                        .match("^Anrechenbare Quellensteuer(.*) (\\w{3}+) (?<quellenstanr>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> addTax(documentType, t, v, "quellenstanr"))
 
                         .section("quellenstrueck", "currency").optional()
                         .match("^(.*)ckforderbare Quellensteuer (?<quellenstrueck>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> addTax(documentType, t, v, "quellenstrueck"));
-
     }
 
     private void addTax(DocumentType documentType, Object t, Map<String, String> v, String taxtype)
     {
-        name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
-
-        String currency = asCurrencyCode(v.get("currency"));
-        long amount = asAmount(v.get(taxtype));
-
-        if (!currency.equals(tx.getCurrencyCode()) && documentType.getCurrentContext().containsKey(EXCHANGE_RATE))
+        // Wenn es 'Einbehaltene Quellensteuer' gibt, dann die weiteren
+        // Quellensteuer-Arten nicht berücksichtigen.
+        // Die Berechnung der Gesamt-Quellensteuer anhand der anrechenbaren- und
+        // der rückforderbaren Steuer kann ansonsten zu Rundungsfehlern führen.
+        if (checkWithholdingTax(documentType, taxtype))
         {
-            BigDecimal rate = BigDecimal.ONE.divide( //
-                            asExchangeRate(documentType.getCurrentContext().get(EXCHANGE_RATE)), 10,
-                            RoundingMode.HALF_DOWN);
 
-            currency = tx.getCurrencyCode();
-            amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_UP).longValue();
+            name.abuchen.portfolio.model.Transaction tx = getTransaction(t);
+
+            String currency = asCurrencyCode(v.get("currency"));
+            long amount = asAmount(v.get(taxtype));
+
+            if (!currency.equals(tx.getCurrencyCode()) && documentType.getCurrentContext().containsKey(EXCHANGE_RATE))
+            {
+                BigDecimal rate = BigDecimal.ONE.divide( //
+                                asExchangeRate(documentType.getCurrentContext().get(EXCHANGE_RATE)), 10,
+                                RoundingMode.HALF_DOWN);
+
+                currency = tx.getCurrencyCode();
+                amount = rate.multiply(BigDecimal.valueOf(amount)).setScale(0, RoundingMode.HALF_DOWN).longValue();
+            }
+
+            tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
         }
-
-        tx.addUnit(new Unit(Unit.Type.TAX, Money.of(currency, amount)));
+    }
+    
+    private boolean checkWithholdingTax(DocumentType documentType, String taxtype)
+    {
+        if (Boolean.valueOf(documentType.getCurrentContext().get(FLAG_WITHHOLDING_TAX_FOUND)))
+        {
+            if ("quellenstanr".equalsIgnoreCase(taxtype) || ("quellenstrueck".equalsIgnoreCase(taxtype)))
+            { 
+                return false; 
+            }
+        }
+        return true;
     }
 
     private <T extends Transaction<?>> void addFeesSectionsTransaction(T pdfTransaction)

@@ -1,6 +1,7 @@
 sudo: false
 language: java
 install: true
+dist: trusty
 
 addons:
   sonarcloud:

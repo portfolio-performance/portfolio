@@ -186,6 +186,10 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorParseErrorWithGivenPattern;
     public static String MsgErrorsConvertingValue;
+    public static String MsgErrorTradeCollector_MissingHoldingsForSell;
+    public static String MsgErrorTradeCollector_MissingHoldingsForTransfer;
+    public static String MsgErrorTradeCollector_NoHoldingsForSell;
+    public static String MsgErrorTradeCollector_NoHoldingsForTransfer;
     public static String MsgErrorTransactionTypeNotSupported;
     public static String MsgErrorUnexpectedStatusCode;
     public static String MsgErrorUnexpectedZipEntry;

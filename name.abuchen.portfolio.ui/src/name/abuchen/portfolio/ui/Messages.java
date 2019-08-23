@@ -125,7 +125,9 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformance_Option;
     public static String ColumnAutoGenerate;
     public static String ColumnDeltaPercent;
+    public static String ColumnDeltaPercentIndicator;
     public static String ColumnDeltaPercentRelative;
+    public static String ColumnDeltaPercentRelative_Description;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
     public static String ColumnDesiredAllocation;
@@ -359,10 +361,13 @@ public class Messages extends NLS
     public static String ImportWizardPasteSourceTitle;
     public static String ImportWizardReviewDescription;
     public static String ImportWizardReviewTitle;
+    public static String IntroChangeLanguageInPreferences;
     public static String IntroLabelActions;
     public static String IntroLabelHelp;
     public static String IntroLabelRecentlyUsedFiles;
     public static String IntroLabelSamples;
+    public static String IntroLabelTranslation;
+    public static String IntroLabelTranslationInfo;
     public static String IntroNewFile;
     public static String IntroNewFileText;
     public static String IntroOpenDaxSample;
@@ -462,6 +467,7 @@ public class Messages extends NLS
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
+    public static String LabelClientFilter;
     public static String LabelClientFilterNew;
     public static String LabelClose;
     public static String LabelColorSchema;
@@ -568,6 +574,7 @@ public class Messages extends NLS
     public static String LabelSecurityCalendarToolTip;
     public static String LabelSecurityCalendarProvince;
     public static String LabelSecurityCalendarProvinceToolTip;
+    public static String LabelSelectedTransactions;
     public static String LabelSelectYear;
     public static String LabelSelectYearSince;
     public static String LabelSemiVolatility;
@@ -604,6 +611,7 @@ public class Messages extends NLS
     public static String LabelTotalValuePercent;
     public static String LabelTrades;
     public static String LabelTradesBasicStatistics;
+    public static String LabelTradesProfitLoss;
     public static String LabelTransactions;
     public static String LabelTransferals;
     public static String LabelTransfer;
@@ -733,6 +741,7 @@ public class Messages extends NLS
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
+    public static String MsgErrorTradeCollectionWithErrors;
     public static String MsgErrorUpdating;
     public static String MsgIncorrectConvertedSubTotal;
     public static String MsgIncorrectSubTotal;

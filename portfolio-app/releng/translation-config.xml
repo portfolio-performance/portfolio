@@ -3,6 +3,7 @@
 	<languages>
 		<string>de</string>
 		<string>es</string>
+		<string>nl</string>
 	</languages>
 	<artifacts>
 		<artifact>
@@ -19,6 +20,11 @@
 			<context>core.exchanges</context>
 			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl</path>
 			<filename>exchange-labels</filename>
+		</artifact>
+		<artifact>
+			<context>core.hicp</context>
+			<path>name.abuchen.portfolio/src/name/abuchen/portfolio/online/impl</path>
+			<filename>eurostathicp-labels</filename>
 		</artifact>
 		<artifact>
 			<context>core.aggregation</context>

@@ -15,13 +15,15 @@ import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
-public class InvestmentPlan implements Named, Adaptable
+public class InvestmentPlan implements Named, Adaptable, Attributable
 {
     private String name;
     private String note;
     private Security security;
     private Portfolio portfolio;
     private Account account;
+
+    private Attributes attributes;
 
     /**
      * Indicates whether the transactions of this investment plan are
@@ -164,6 +166,20 @@ public class InvestmentPlan implements Named, Adaptable
     public void setFees(long fees)
     {
         this.fees = fees;
+    }
+
+    @Override
+    public Attributes getAttributes()
+    {
+        if (attributes == null)
+            attributes = new Attributes();
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        this.attributes = attributes;
     }
 
     public List<Transaction> getTransactions()

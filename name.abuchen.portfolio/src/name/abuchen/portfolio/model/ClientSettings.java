@@ -159,6 +159,11 @@ public class ClientSettings
         attributeTypes.add(index, type);
     }
 
+    public int getAttributeTypeIndexOf(AttributeType type)
+    {
+        return attributeTypes.indexOf(type);
+    }
+
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());

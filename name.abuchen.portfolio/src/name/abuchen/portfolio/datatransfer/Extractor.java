@@ -49,6 +49,12 @@ public interface Extractor
 
     public abstract static class Item
     {
+        /**
+         * Store arbitrary data with the extracted item. Currently to pass the
+         * JSON structure of the transaction to the test cases
+         */
+        private Object data;
+
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
@@ -68,6 +74,16 @@ public interface Extractor
         }
 
         public abstract Status apply(ImportAction action, Context context);
+
+        public Object getData()
+        {
+            return data;
+        }
+
+        public void setData(Object data)
+        {
+            this.data = data;
+        }
     }
 
     /**

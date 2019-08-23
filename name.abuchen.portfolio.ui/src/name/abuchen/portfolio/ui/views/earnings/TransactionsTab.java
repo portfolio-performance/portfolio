@@ -137,8 +137,10 @@ public class TransactionsTab implements EarningsTab
                 return security != null ? Images.SECURITY.image() : null;
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getSecurity().getName())
-                        .attachTo(column);
+        ColumnViewerSorter.create(e -> {
+            Security s = ((TransactionPair<?>) e).getTransaction().getSecurity();
+            return s != null ? s.getName() : null;
+        }).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);

@@ -55,8 +55,10 @@ import name.abuchen.portfolio.snapshot.security.DividendTransaction;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
@@ -83,6 +85,8 @@ import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -289,9 +293,22 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 transactions.refresh();
                 chart.updateChart(record.getSecurity());
                 Client filteredClient = clientFilter.filter(getClient());
-                CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                trades.setInput(new TradeCollector(filteredClient, converter).collect(record.getSecurity()));
                 latest.setInput(record.getSecurity());
+
+                try
+                {
+                    CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+                    trades.setInput(new TradeCollector(filteredClient, converter).collect(record.getSecurity()));
+                }
+                catch (TradeCollectorException e)
+                {
+                    // for now: do not show any trades (or rather: remove the
+                    // existing trades from the previous security). Need to
+                    // think of a better way to show the error message in the
+                    // GUI
+                    PortfolioPlugin.log(e);
+                    trades.setInput(null);
+                }
             }
             else
             {
@@ -490,6 +507,18 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
         // isin
         column = new IsinColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // ticker
+        column = new SymbolColumn();
+        column.getEditingSupport().addListener(new TouchClientListener(getClient()));
+        column.setVisible(false);
+        recordColumns.addColumn(column);
+
+        // wkn
+        column = new WknColumn();
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         column.setVisible(false);
         recordColumns.addColumn(column);

@@ -284,7 +284,15 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 180819
+            if (element.hasAttribute("tradeTime"))
+            {
+                transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+            }
+            else
+            {
+                transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
+            }
 
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));

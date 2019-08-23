@@ -91,35 +91,23 @@ public class EarningsView extends AbstractFinanceView
     @Override
     protected String getDefaultTitle()
     {
-        return Messages.LabelDividends;
+        return model.getMode().getLabel();
     }
 
     @Override
     protected void addViewButtons(ToolBarManager toolBarManager)
     {
-        ActionContributionItem dividends = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelDividends, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.DIVIDENDS);
-                            updateIcons(toolBarManager);
-                        }));
-        dividends.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(dividends);
-
-        ActionContributionItem interest = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelInterest, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.INTEREST);
-                            updateIcons(toolBarManager);
-                        }));
-        interest.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(interest);
-
-        ActionContributionItem all = new ActionContributionItem( //
-                        new SimpleAction(Messages.LabelEarnings, SWT.RADIO, a -> {
-                            model.setMode(EarningsViewModel.Mode.ALL);
-                            updateIcons(toolBarManager);
-                        }));
-        all.setMode(ActionContributionItem.MODE_FORCE_TEXT);
-        toolBarManager.add(all);
+        for (EarningsViewModel.Mode mode : EarningsViewModel.Mode.values())
+        {
+            ActionContributionItem item = new ActionContributionItem( //
+                            new SimpleAction(mode.getLabel(), a -> {
+                                model.setMode(mode);
+                                updateIcons(toolBarManager);
+                                updateTitle(model.getMode().getLabel());
+                            }));
+            item.setMode(ActionContributionItem.MODE_FORCE_TEXT);
+            toolBarManager.add(item);
+        }
 
         updateIcons(toolBarManager);
     }
@@ -177,13 +165,13 @@ public class EarningsView extends AbstractFinanceView
     {
         folder = new CTabFolder(parent, SWT.BORDER);
 
-        createTab(folder, Images.VIEW_TABLE, EarningsMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsQuarterMatrixTab.class);
-        createTab(folder, Images.VIEW_TABLE, EarningsYearMatrixTab.class);
-        createTab(folder, Images.VIEW_BARCHART, EarningsChartTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerMonthMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerQuarterMatrixTab.class);
+        createTab(folder, Images.VIEW_TABLE, EarningsPerYearMatrixTab.class);
+        createTab(folder, Images.VIEW_BARCHART, EarningsPerMonthChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerQuarterChartTab.class);
         createTab(folder, Images.VIEW_BARCHART, EarningsPerYearChartTab.class);
-        createTab(folder, Images.VIEW_LINECHART, AccumulatedEarningsChartTab.class);
+        createTab(folder, Images.VIEW_LINECHART, EarningsAccumulatedChartTab.class);
         createTab(folder, Images.VIEW_TABLE, TransactionsTab.class);
 
         int tab = preferences.getInt(KEY_TAB);

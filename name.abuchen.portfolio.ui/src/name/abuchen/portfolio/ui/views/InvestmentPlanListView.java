@@ -46,6 +46,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
@@ -132,6 +133,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                         getPreferenceStore(), plans, layout);
 
         addColumns(planColumns);
+        addAttributeColumns(planColumns);
 
         planColumns.createColumns();
         plans.getTable().setHeaderVisible(true);
@@ -299,6 +301,19 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         column.getEditingSupport().addListener(this);
         column.setVisible(false);
         support.addColumn(column);
+    }
+
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(InvestmentPlan.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void fillPlansContextMenu(IMenuManager manager)

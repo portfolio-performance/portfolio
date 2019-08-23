@@ -69,6 +69,9 @@ import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.TextUtil;
 
 public final class TransactionsViewer implements ModificationListener
@@ -80,6 +83,11 @@ public final class TransactionsViewer implements ModificationListener
         public TransactionLabelProvider(Function<Transaction, String> label)
         {
             this.label = Objects.requireNonNull(label);
+        }
+
+        public TransactionLabelProvider(ColumnLabelProvider labelProvider)
+        {
+            this.label = labelProvider::getText;
         }
 
         @Override
@@ -181,6 +189,11 @@ public final class TransactionsViewer implements ModificationListener
         return tableViewer.getControl().getParent();
     }
 
+    public TableViewer getTableViewer()
+    {
+        return tableViewer;
+    }
+
     public void markTransactions(List<TransactionPair<?>> transactions)
     {
         marked.addAll(transactions);
@@ -266,6 +279,24 @@ public final class TransactionsViewer implements ModificationListener
             Security s = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return s != null ? s.getName() : null;
         }).attachTo(column);
+        support.addColumn(column);
+
+        column = new IsinColumn();
+        column.setVisible(false);
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.getEditingSupport().addListener(this);
+        support.addColumn(column);
+
+        column = new SymbolColumn();
+        column.setVisible(false);
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.getEditingSupport().addListener(this);
+        support.addColumn(column);
+
+        column = new WknColumn();
+        column.setVisible(false);
+        column.setLabelProvider(new TransactionLabelProvider((ColumnLabelProvider) column.getLabelProvider()));
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
         column = new Column("3", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$

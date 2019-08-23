@@ -96,6 +96,9 @@ public final class Sidebar<I> extends Composite
 
         existingList.forEach(Entry::dispose);
 
+        if (selection != null && selection.isDisposed())
+            selection = null;
+
         this.entries = targetList;
     }
 
@@ -133,7 +136,7 @@ public final class Sidebar<I> extends Composite
         else
             selection = entries.stream().filter(e -> e.getSubject().equals(subject)).findAny().orElse(null);
 
-        if (previous != null)
+        if (previous != null && !previous.isDisposed())
             previous.redraw();
         if (selection != null)
             selection.redraw();
