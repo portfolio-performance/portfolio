@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 /* package */class NewVersion
@@ -136,6 +138,25 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     public void setHeader(String header)
     {
         this.header = header;
+    }
+
+    public String get32BitWarning()
+    {
+        // check only possible on windows
+        if (!Platform.OS_WIN32.equals(Platform.getOS()))
+            return null;
+
+        // is already running 64bit
+        if (Platform.ARCH_X86_64.equals(Platform.getOSArch()))
+            return null;
+
+        // check for special env variable
+        // https://stackoverflow.com/questions/1856565/how-do-you-determine-32-or-64-bit-architecture-of-windows-using-java/2269242#2269242
+        boolean is64bit = System.getenv("ProgramFiles(x86)") != null; //$NON-NLS-1$
+        if (!is64bit)
+            return null;
+
+        return Messages.MsgUpdateRunning32BitOn64BitOS;
     }
 
     public void setVersionHistory(String history)
