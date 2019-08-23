@@ -42,7 +42,7 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
-    private abstract static class Column
+    protected abstract static class Column
     {
         static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
         {
@@ -131,14 +131,20 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class DateColumn extends Column
+    protected static class DateColumn extends Column
     {
         private DateTimeFormatter[] formatters;
 
         @SuppressWarnings("nls")
         public DateColumn()
         {
-            super(new String[] { "Datum.*", "Date.*" });
+            this(new String[] { "Datum.*", "Date.*" });
+        }
+
+        @SuppressWarnings("nls")
+        public DateColumn(String[] patterns)
+        {
+            super(patterns);
 
             formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("y-M-d"),
                             DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
@@ -174,13 +180,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class CloseColumn extends Column
+    protected static class CloseColumn extends Column
     {
         @SuppressWarnings("nls")
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
                             "akt. Kurs" });
+        }
+
+        public CloseColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -190,12 +201,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class HighColumn extends Column
+    protected static class HighColumn extends Column
     {
         @SuppressWarnings("nls")
         public HighColumn()
         {
             super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*" });
+        }
+
+        public HighColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -208,12 +224,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class LowColumn extends Column
+    protected static class LowColumn extends Column
     {
         @SuppressWarnings("nls")
         public LowColumn()
         {
             super(new String[] { "Tief.*", "Tagestief.*", "Low.*" });
+        }
+
+        public LowColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -471,10 +492,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return rowIndex;
     }
 
+    protected Column[] getColumns()
+    {
+        return COLUMNS;
+    }
+
     private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<>();
-        for (Column column : COLUMNS)
+        for (Column column : getColumns())
             available.add(column);
 
         for (int ii = 0; ii < row.size(); ii++)
