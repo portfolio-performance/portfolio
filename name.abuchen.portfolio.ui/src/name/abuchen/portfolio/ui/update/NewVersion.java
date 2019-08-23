@@ -216,6 +216,18 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
         if (minimumJavaVersionRequired == null)
             return false;
 
+        // if the Java runtime is bundled with PP, then do not check for new
+        // Java version required
+
+        Bundle[] bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
+        for (int ii = 0; ii < bundles.length; ii++)
+        {
+            if (bundles[ii].getSymbolicName().startsWith("name.abuchen.zulu.jre")) //$NON-NLS-1$
+                return false;
+        }
+
+        // otherwise check if runtime supports specified version
+
         double current = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
         double required = Double.parseDouble(minimumJavaVersionRequired);
 
