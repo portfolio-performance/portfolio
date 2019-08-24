@@ -70,8 +70,7 @@ public class StyledLabel extends Canvas // NOSONAR
         private LinkedList<Tag> stack = new LinkedList<>();
 
         @Override
-        public void startElement(String uri, String localName, String qName, Attributes attributes)
-                        throws SAXException
+        public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException
         {
             if (!"text".equals(qName)) //$NON-NLS-1$
             {
@@ -103,23 +102,19 @@ public class StyledLabel extends Canvas // NOSONAR
 
             if ("red".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_RED,
-                                null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_RED, null));
             }
             else if ("green".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_GREEN,
-                                null));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, Colors.DARK_GREEN, null));
             }
             else if ("strong".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, null, null,
-                                SWT.BOLD));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, null, null, SWT.BOLD));
             }
             else if ("em".equals(qName)) //$NON-NLS-1$
             {
-                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, null, null,
-                                SWT.ITALIC));
+                styleRanges.add(new StyleRange(tag.start, plainText.length() - tag.start, null, null, SWT.ITALIC));
             }
             else if ("a".equals(qName)) //$NON-NLS-1$
             {
@@ -194,15 +189,19 @@ public class StyledLabel extends Canvas // NOSONAR
 
             this.textLayout.setText(handler.getPlainText());
             handler.getStyleRanges().forEach(r -> {
+
+                // TextLayout#setStyle : start and end offsets are "inclusive"
+
                 if (r.fontStyle != SWT.NORMAL)
                 {
                     Font font = resourceManager
                                     .createFont(FontDescriptor.createFrom(textLayout.getFont()).setStyle(r.fontStyle));
-                    textLayout.setStyle(new TextStyle(font, r.foreground, r.background), r.start, r.start + r.length);
+                    textLayout.setStyle(new TextStyle(font, r.foreground, r.background), r.start,
+                                    r.start + r.length - 1);
                 }
                 else
                 {
-                    textLayout.setStyle(r, r.start, r.start + r.length);
+                    textLayout.setStyle(r, r.start, r.start + r.length - 1);
                 }
             });
         }
