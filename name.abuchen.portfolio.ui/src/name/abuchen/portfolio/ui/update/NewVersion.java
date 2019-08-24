@@ -6,9 +6,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
 
+import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Version;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 /* package */class NewVersion
@@ -138,6 +140,25 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
         this.header = header;
     }
 
+    public String get32BitWarning()
+    {
+        // check only possible on windows
+        if (!Platform.OS_WIN32.equals(Platform.getOS()))
+            return null;
+
+        // is already running 64bit
+        if (Platform.ARCH_X86_64.equals(Platform.getOSArch()))
+            return null;
+
+        // check for special env variable
+        // https://stackoverflow.com/questions/1856565/how-do-you-determine-32-or-64-bit-architecture-of-windows-using-java/2269242#2269242
+        boolean is64bit = System.getenv("ProgramFiles(x86)") != null; //$NON-NLS-1$
+        if (!is64bit)
+            return null;
+
+        return Messages.MsgUpdateRunning32BitOn64BitOS;
+    }
+
     public void setVersionHistory(String history)
     {
         if (history == null)
@@ -215,6 +236,18 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     {
         if (minimumJavaVersionRequired == null)
             return false;
+
+        // if the Java runtime is bundled with PP, then do not check for new
+        // Java version required
+
+        Bundle[] bundles = PortfolioPlugin.getDefault().getBundle().getBundleContext().getBundles();
+        for (int ii = 0; ii < bundles.length; ii++)
+        {
+            if (bundles[ii].getSymbolicName().startsWith("name.abuchen.zulu.jre")) //$NON-NLS-1$
+                return false;
+        }
+
+        // otherwise check if runtime supports specified version
 
         double current = Double.parseDouble(System.getProperty("java.specification.version")); //$NON-NLS-1$
         double required = Double.parseDouble(minimumJavaVersionRequired);
