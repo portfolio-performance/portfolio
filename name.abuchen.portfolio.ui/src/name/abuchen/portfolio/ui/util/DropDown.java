@@ -17,6 +17,7 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.eclipse.swt.widgets.ToolItem;
 
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class DropDown extends ContributionItem
 {
@@ -88,10 +89,10 @@ public class DropDown extends ContributionItem
         if (widget != null && !widget.isDisposed())
         {
             if (image != null && toolTip == null)
-                widget.setToolTipText(label);
+                widget.setToolTipText(TextUtil.tooltip(label));
 
             if (image == null || style == SWT.DROP_DOWN)
-                widget.setText(label);
+                widget.setText(TextUtil.tooltip(label));
 
             widget.getParent().getParent().layout();
         }
@@ -107,7 +108,7 @@ public class DropDown extends ContributionItem
         this.toolTip = toolTip;
 
         if (widget != null && !widget.isDisposed())
-            widget.setToolTipText(toolTip);
+            widget.setToolTipText(TextUtil.tooltip(toolTip));
     }
 
     public Images getImage()
@@ -158,7 +159,7 @@ public class DropDown extends ContributionItem
 
         if (image == null || style == SWT.DROP_DOWN)
         {
-            ti.setText(label);
+            ti.setText(TextUtil.tooltip(label));
         }
 
         ti.setToolTipText(toolTip != null ? toolTip : label);
