@@ -254,4 +254,9 @@ public abstract class AbstractFinanceView
     {
         ContextInjectionFactory.inject(object, context);
     }
+
+    public <T> T getFromContext(Class<T> clazz)
+    {
+        return context.get(clazz);
+    }
 }
