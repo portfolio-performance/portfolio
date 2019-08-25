@@ -8,7 +8,7 @@ fi
 
 BASE=$(pwd)/../../portfolio-product/target/repository
 
-rm -R updatesite
+rm -rf updatesite
 mkdir updatesite
 mkdir updatesite/portfolio
 cp -R ${BASE}/* updatesite/portfolio
@@ -17,7 +17,21 @@ sed -i -e 's/css\/styles.css/portfolio\/css\/styles.css/g' updatesite/index.html
 sed -i -e 's/images\/pp_16.gif/portfolio\/images\/pp_16.gif/g' updatesite/index.html
 sed -i -e "s/<body>/<body><!-- ${PCK_VERSION} -->/g" updatesite/index.html
 
+cd updatesite
 
-firebase use --add pp-update-site-firebase
-firebase target:apply hosting updatesite pp-update-site-firebase
-firebase deploy
+cat >CNAME <<EOF
+updates.portfolio-performance.info
+EOF
+
+git init
+git add -A
+git commit -m "Version ${PCK_VERSION}"
+git branch -m master gh-pages
+git remote add origin https://github.com/buchen/portfolio-updatesite.git
+
+read -p "Force push to Github? " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]
+then
+   git push --force --set-upstream origin gh-pages
+fi
