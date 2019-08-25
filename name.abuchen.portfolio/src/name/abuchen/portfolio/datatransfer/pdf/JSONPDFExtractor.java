@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -14,11 +15,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -236,12 +239,74 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
         entry.setSecurity(getOrCreateSecurity(values));
 
-        t.getUnits().forEach(unit -> entry.getPortfolioTransaction().addUnit(new Transaction.Unit(unit.getType(),
-                        Money.of(t.getCurrency(), Values.Amount.factorize(unit.getAmount())))));
+        t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull)
+                        .forEach(u -> entry.getPortfolioTransaction().addUnit(u));
 
         BuySellEntryItem item = new BuySellEntryItem(entry);
         item.setData(t);
         return item;
+    }
+
+    private Transaction.Unit convertToUnit(JTransaction jtx, JTransactionUnit junit)
+    {
+        if (junit.getAmount() == 0d)
+            return null;
+
+        Money amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
+
+        if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE
+                        && (junit.getFxAmount() == null || junit.getFxAmount() == 0d))
+            return new Transaction.Unit(junit.getType(), amount);
+
+        // check currency
+        if (Strings.isNullOrEmpty(junit.getFxCurrency()))
+            return null;
+
+        String fxCurrency = asCurrencyCode(junit.getFxCurrency());
+
+        if (jtx.getCurrency().equals(fxCurrency))
+        {
+            return junit.getType() != Transaction.Unit.Type.GROSS_VALUE ? new Transaction.Unit(junit.getType(), amount)
+                            : null;
+        }
+
+        // check forex amount
+
+        long forexAmount = junit.getFxAmount() != null ? Values.Amount.factorize(junit.getFxAmount()) : 0;
+
+        if (forexAmount != 0L)
+        {
+            Money forex = Money.of(fxCurrency, forexAmount);
+
+            BigDecimal fxRateToBase = junit.getFxRateToBase();
+            if (fxRateToBase == null)
+            {
+                fxRateToBase = BigDecimal.valueOf(amount.getAmount()) //
+                                .divide(BigDecimal.valueOf(forex.getAmount()), 10, RoundingMode.HALF_DOWN);
+            }
+            else
+            {
+                fxRateToBase = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
+            }
+
+            return new Transaction.Unit(junit.getType(), amount, forex, fxRateToBase);
+        }
+        else if (junit.getFxRateToBase() != null)
+        {
+            // of course this depends heavily on the quotation of the exchange
+            // rate in the PDF document, but European PDF documents will most
+            // likely use indirect quotation
+            BigDecimal fxRateToBase = BigDecimal.ONE.divide(junit.getFxRateToBase(), 10, RoundingMode.HALF_DOWN);
+
+            forexAmount = BigDecimal.valueOf(amount.getAmount()).multiply(fxRateToBase)
+                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
+
+            return new Transaction.Unit(junit.getType(), amount, Money.of(fxCurrency, forexAmount), fxRateToBase);
+        }
+        else
+        {
+            return null;
+        }
     }
 
     @Override

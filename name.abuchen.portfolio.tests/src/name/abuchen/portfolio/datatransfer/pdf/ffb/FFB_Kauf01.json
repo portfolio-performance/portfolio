@@ -1,0 +1,48 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2019-04-16",
+			"currency": "EUR",
+			"amount": 1.77,
+			"shares": 0.045,
+			"security": {
+				"name": "UBS Msci Pacific exJap.U ETF A",
+				"isin": "LU0446734526",
+				"wkn": "A0X97T"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 1.77,
+					"fxAmount": 1.99,
+					"fxCurrency" : "USD",
+					"fxRateToBase" : 1.125168
+				},
+				{
+					"type": "FEE",
+					"amount": 0.0
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2019-05-01",
+			"currency": "EUR",
+			"amount": 0.96,
+			"shares": 0.009,
+			"security": {
+				"name": "ISHS Gbl.Corp.Bd.EU Hgd.U.ETF",
+				"isin": "IE00B9M6SJ31",
+				"wkn": "A1W02Q"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.0
+				}
+			]
+		}
+	]
+}
