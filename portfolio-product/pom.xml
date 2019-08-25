@@ -50,7 +50,6 @@
 				</executions>
 				<configuration>
 					<formats>
-						<macosx>tar.gz</macosx>
 						<linux>tar.gz</linux>
 					</formats>
 					<products>
@@ -178,6 +177,31 @@
 								</goals>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.6.0</version>
+						<executions>
+							<execution>
+								<id>sign-macos-distro</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>${project.basedir}/signing/codesign-macos-product.sh</executable>
+									<arguments>
+										<argument>${project.basedir}</argument>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
+									</arguments>
+								</configuration>
+							</execution>
+						</executions>
+						<configuration>
+							<skip>${applesigner.skip}</skip>
+							<workingDirectory>/tmp</workingDirectory>
+						</configuration>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

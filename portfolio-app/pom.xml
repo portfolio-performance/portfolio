@@ -14,6 +14,7 @@
 		<tycho-version>1.4.0</tycho-version>
 		<jarsigner.skip>true</jarsigner.skip>
 		<gpgsigner.skip>true</gpgsigner.skip>
+		<applesigner.skip>true</applesigner.skip>
 		<sonar.skippedModules>name.abuchen.portfolio.feature</sonar.skippedModules>
 		<sonar.exclusions>**/Messages.java</sonar.exclusions>
 		<sonar.organization>buchen-github</sonar.organization>
