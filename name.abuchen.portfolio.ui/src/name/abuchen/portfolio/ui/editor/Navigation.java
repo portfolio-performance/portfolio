@@ -428,7 +428,7 @@ public final class Navigation
         performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class));
         performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
-        performance.add(new Item(Messages.ColumnEarnings, EarningsView.class));
+        performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class));
 
         Item allTrades = new Item(Messages.LabelTrades, TradeDetailsView.class);
         allTrades.addTag(Tag.HIDE);

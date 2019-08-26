@@ -25,6 +25,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsView extends AbstractFinanceView
 {
@@ -100,7 +101,7 @@ public class EarningsView extends AbstractFinanceView
         for (EarningsViewModel.Mode mode : EarningsViewModel.Mode.values())
         {
             ActionContributionItem item = new ActionContributionItem( //
-                            new SimpleAction(mode.getLabel(), a -> {
+                            new SimpleAction(TextUtil.tooltip(mode.getLabel()), a -> {
                                 model.setMode(mode);
                                 updateIcons(toolBarManager);
                                 updateTitle(model.getMode().getLabel());
