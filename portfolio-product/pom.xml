@@ -191,17 +191,68 @@
 								</goals>
 								<configuration>
 									<executable>${project.basedir}/signing/codesign-macos-product.sh</executable>
+									<workingDirectory>/tmp</workingDirectory>
 									<arguments>
 										<argument>${project.basedir}</argument>
 										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
 									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-dmg-distro</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>create-dmg</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>rename-dmg</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>mv</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
 								</configuration>
 							</execution>
 						</executions>
-						<configuration>
-							<skip>${applesigner.skip}</skip>
-							<workingDirectory>/tmp</workingDirectory>
-						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-dmg</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
+											<type>dmg</type>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
 					</plugin>
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
