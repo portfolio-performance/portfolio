@@ -206,6 +206,7 @@
 									<goal>exec</goal>
 								</goals>
 								<configuration>
+									<!-- install from https://github.com/sindresorhus/create-dmg -->
 									<executable>create-dmg</executable>
 									<workingDirectory>${project.build.directory}/products</workingDirectory>
 									<arguments>
