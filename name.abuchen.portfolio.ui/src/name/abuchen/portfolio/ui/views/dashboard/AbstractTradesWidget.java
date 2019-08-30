@@ -20,6 +20,7 @@ import org.eclipse.ui.forms.widgets.ImageHyperlink;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard.Widget;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.trades.Trade;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
 import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
@@ -90,11 +91,12 @@ import name.abuchen.portfolio.util.TextUtil;
     public Supplier<TradeDetailsView.Input> getUpdateTask()
     {
         Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-        Client filteredClient = get(ClientFilterConfig.class).getSelectedFilter().filter(getClient());
-        CacheKey key = new CacheKey(TradeCollector.class, filteredClient, interval);
+        ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
+        CacheKey key = new CacheKey(TradeCollector.class, clientFilter, interval);
 
         return () -> (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key, k -> {
 
+            Client filteredClient = clientFilter.filter(getClient());
             TradeCollector collector = new TradeCollector(filteredClient, getDashboardData().getCurrencyConverter());
 
             List<Trade> trades = new ArrayList<>();

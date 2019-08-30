@@ -78,7 +78,7 @@ public final class ClientFilterMenu implements IMenuListener
         this.client = client;
         this.preferences = preferences;
 
-        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", c -> c); //$NON-NLS-1$
+        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", ClientFilter.NO_FILTER); //$NON-NLS-1$
         defaultItems.add(selectedItem);
 
         client.getActivePortfolios().forEach(portfolio -> {
