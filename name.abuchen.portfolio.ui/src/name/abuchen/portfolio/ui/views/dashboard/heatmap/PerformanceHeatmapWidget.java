@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.Arrays;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -59,13 +60,14 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
         // add header
         addMonthlyHeader(model, numDashboardColumns, showSum, showStandardDeviation);
 
-        for (Integer year : actualInterval.iterYears())
+        for (Year year : actualInterval.getYears())
         {
-            String label = numDashboardColumns > 2 ? String.valueOf(year % 100) : String.valueOf(year);
+            String label = numDashboardColumns > 2 ? String.valueOf(year.getValue() % 100) : String.valueOf(year);
             HeatmapModel.Row<Double> row = new HeatmapModel.Row<>(label);
 
             // monthly data
-            for (LocalDate month = LocalDate.of(year, 1, 1); month.getYear() == year; month = month.plusMonths(1))
+            for (LocalDate month = LocalDate.of(year.getValue(), 1, 1); month.getYear() == year
+                            .getValue(); month = month.plusMonths(1))
             {
                 if (actualInterval.contains(month))
                     row.addData(getPerformanceFor(performanceIndex, month));
@@ -75,7 +77,7 @@ public class PerformanceHeatmapWidget extends AbstractHeatmapWidget<Double>
 
             // sum
             if (showSum)
-                row.addData(getSumPerformance(performanceIndex, LocalDate.of(year, 1, 1)));
+                row.addData(getSumPerformance(performanceIndex, LocalDate.of(year.getValue(), 1, 1)));
 
             if (showStandardDeviation)
                 row.addData(standardDeviation(row.getDataSubList(0, 12)));

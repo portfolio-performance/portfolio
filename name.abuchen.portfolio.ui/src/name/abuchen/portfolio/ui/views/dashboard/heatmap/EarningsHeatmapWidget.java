@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -126,12 +127,13 @@ public class EarningsHeatmapWidget extends AbstractHeatmapWidget<Long>
         int startYear = calcInterval.getStart().plusDays(1).getYear();
 
         // prepare data
-        for (Integer year : calcInterval.iterYears())
+        for (Year year : calcInterval.getYears())
         {
-            String label = numDashboardColumns > 2 ? String.valueOf(year % 100) : String.valueOf(year);
+            String label = numDashboardColumns > 2 ? String.valueOf(year.getValue() % 100) : String.valueOf(year);
             HeatmapModel.Row<Long> row = new HeatmapModel.Row<>(label);
 
-            for (LocalDate month = LocalDate.of(year, 1, 1); month.getYear() == year; month = month.plusMonths(1))
+            for (LocalDate month = LocalDate.of(year.getValue(), 1, 1); month.getYear() == year
+                            .getValue(); month = month.plusMonths(1))
                 row.addData(calcInterval.contains(month) ? 0L : null);
             model.addRow(row);
         }
