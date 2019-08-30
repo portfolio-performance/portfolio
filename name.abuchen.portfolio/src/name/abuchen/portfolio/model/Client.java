@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -405,6 +406,31 @@ public class Client
     /* package */void clearProperties()
     {
         properties.clear();
+    }
+
+    /**
+     * Returns all transactions. Transactions are "de-duplicated", i.e. the list
+     * only includes the PortfolioTransaction of buy and sell transactions and
+     * it includes only the outbound transactions of cash or security transfers.
+     */
+    public List<TransactionPair<?>> getAllTransactions()
+    {
+        List<TransactionPair<?>> transactions = new ArrayList<>();
+
+        for (Portfolio portfolio : portfolios)
+            portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+                            .map(t -> new TransactionPair<>(portfolio, t)).forEach(transactions::add);
+
+        EnumSet<AccountTransaction.Type> exclude = EnumSet.of(AccountTransaction.Type.TRANSFER_IN,
+                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL);
+
+        for (Account account : accounts)
+        {
+            account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
+                            .map(t -> new TransactionPair<>(account, t)).forEach(transactions::add);
+        }
+
+        return transactions;
     }
 
     /* package */

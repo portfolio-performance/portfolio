@@ -7,7 +7,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.EnumSet;
 import java.util.List;
 import java.util.function.Function;
 
@@ -26,9 +25,7 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.json.JClient;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -50,22 +47,7 @@ public class AllTransactionsView extends AbstractFinanceView
     @Override
     public void notifyModelUpdated()
     {
-        List<TransactionPair<?>> transactions = new ArrayList<>();
-
-        for (Portfolio portfolio : getClient().getPortfolios())
-            portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
-                            .map(t -> new TransactionPair<>(portfolio, t)).forEach(transactions::add);
-
-        EnumSet<AccountTransaction.Type> exclude = EnumSet.of(AccountTransaction.Type.TRANSFER_IN,
-                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL);
-
-        for (Account account : getClient().getAccounts())
-        {
-            account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
-                            .map(t -> new TransactionPair<>(account, t)).forEach(transactions::add);
-        }
-
-        table.setInput(transactions);
+        table.setInput(getClient().getAllTransactions());
     }
 
     @Override
