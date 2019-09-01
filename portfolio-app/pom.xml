@@ -25,6 +25,19 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
+	<dependencies>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcprov-jdk15on</artifactId>
+			<version>1.62</version>
+		</dependency>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcmail-jdk15</artifactId>
+			<version>1.46</version>
+		</dependency>
+	</dependencies>
+
 	<prerequisites>
 		<maven>3.5.2</maven>
 	</prerequisites>

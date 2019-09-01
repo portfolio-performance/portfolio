@@ -38,6 +38,7 @@ Import-Package: com.google.common.base;version="27.1.0",
  org.apache.commons.lang3;version="3.4.0",
  org.apache.pdfbox.pdmodel;version="1.8.7",
  org.apache.pdfbox.util;version="1.8.7",
+ org.bouncycastle;version="1.59.0",
  org.eclipse.e4.core.di.annotations,
  org.eclipse.e4.core.di.extensions;version="0.15.0",
  org.eclipse.osgi.util;version="1.1.0",
@@ -51,6 +52,7 @@ Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime;bundle-version="3.7.0",
  org.apache.httpcomponents.httpclient;bundle-version="4.3.6",
- org.apache.httpcomponents.httpcore;bundle-version="4.3.3"
+ org.apache.httpcomponents.httpcore;bundle-version="4.3.3",
+ org.apache.pdfbox
 Automatic-Module-Name: name.abuchen.portfolio
 Eclipse-ExtensibleAPI: true

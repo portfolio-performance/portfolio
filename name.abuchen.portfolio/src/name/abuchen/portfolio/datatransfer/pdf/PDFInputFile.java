@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.pdfbox.exceptions.CryptographyException;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDDocumentInformation;
 import org.apache.pdfbox.util.PDFTextStripper;
@@ -73,12 +74,22 @@ public class PDFInputFile extends Extractor.InputFile
     {
         try (PDDocument document = PDDocument.load(getFile()))
         {
+            boolean isProtected = document.isEncrypted();
+            if (isProtected)
+            {
+                document.decrypt(""); //$NON-NLS-1$
+                document.setAllSecurityToBeRemoved(true);
+            }
             PDDocumentInformation pdd = document.getDocumentInformation();
             author = pdd.getAuthor() == null ? "" : pdd.getAuthor(); //$NON-NLS-1$
 
             PDFTextStripper textStripper = new PDFTextStripper();
             textStripper.setSortByPosition(true);
             text = textStripper.getText(document);
+        }
+        catch (CryptographyException e)
+        {
+            throw new IOException(e);
         }
     }
 }
