@@ -38,6 +38,7 @@ import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
@@ -129,11 +130,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private Group grpQuoteFeed;
     private Label labelDetailData;
-    
+
     private ComboViewer comboExchange;
     private Text textFeedURL;
     private Text textTicker;
-    
+
     private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
 
     private final EditSecurityModel model;
@@ -300,7 +301,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         boolean dropDown = feed != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID));
-        boolean feedURL = feed != null && feed.getId() != null && feed.getId().equals(HTMLTableQuoteFeed.ID);
+        boolean feedURL = feed != null && feed.getId() != null
+                        && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID));
         boolean needsTicker = feed != null && feed.getId() != null && feed.getId().equals(AlphavantageQuoteFeed.ID);
 
         if (textFeedURL != null)
@@ -308,21 +310,21 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textFeedURL.dispose();
             textFeedURL = null;
         }
-        
+
         if (comboExchange != null)
         {
             comboExchange.getControl().dispose();
             comboExchange = null;
         }
-        
+
         if (textTicker != null)
         {
             textTicker.dispose();
             textTicker = null;
-            
+
             model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
-        
+
         if (dropDown)
         {
             labelDetailData.setText(Messages.LabelExchange);
@@ -354,15 +356,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         else if (needsTicker)
         {
             labelDetailData.setText(Messages.ColumnTicker);
-            
+
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
-            
+
             IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
             @SuppressWarnings("unchecked")
             IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
             bindings.getBindingContext().bindValue(observeText, observable);
-            
+
             model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
         else
@@ -503,7 +505,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             setStatus(null);
         }
     }
-    
+
     private void onTickerSymbolChanged()
     {
         boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
