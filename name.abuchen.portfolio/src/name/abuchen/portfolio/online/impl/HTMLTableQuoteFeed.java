@@ -388,14 +388,23 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    protected String getUserAgent()
+    {
+        return OnlineHelper.getUserAgent();
+    }
+
+    protected boolean isIgnoreContentType()
+    {
+        return false;
+    }
+
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
             String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl,
-                            Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(),
-                            errors);
+            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent())
+                            .ignoreContentType(isIgnoreContentType()).timeout(30000).get(), errors);
         }
         catch (URISyntaxException | IOException e)
         {
@@ -582,12 +591,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         PrintWriter writer = new PrintWriter(System.out); // NOSONAR
         for (String arg : args)
             if (arg.charAt(0) != '#')
-                doLoad(arg, writer);
+                new HTMLTableQuoteFeed().doLoad(arg, writer);
         writer.flush();
     }
 
     @SuppressWarnings("nls")
-    private static void doLoad(String source, PrintWriter writer) throws IOException
+    protected void doLoad(String source, PrintWriter writer) throws IOException
     {
         writer.println("--------");
         writer.println(source);
@@ -598,7 +607,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         if (source.startsWith("http"))
         {
-            prices = new HTMLTableQuoteFeed().parseFromURL(source, errors);
+            prices = parseFromURL(source, errors);
         }
         else
         {
