@@ -110,6 +110,7 @@ public class Messages extends NLS
     public static String IssueTransactionMissingCurrencyCode;
     public static String IssuePortfolioTransactionWithoutSecurity;
     public static String LabelAssetAllocation;
+    public static String LabelCreditSuisseHTMLTable;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
     public static String LabelEuropeanCentralBank;
@@ -232,5 +233,6 @@ public class Messages extends NLS
     }
 
     private Messages()
-    {}
+    {
+    }
 }
