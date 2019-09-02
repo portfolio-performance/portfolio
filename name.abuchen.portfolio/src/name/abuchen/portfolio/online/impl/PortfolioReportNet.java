@@ -225,8 +225,8 @@ public class PortfolioReportNet
             URL searchUrl = uriBuilder.build().toURL();
 
             URLConnection con = searchUrl.openConnection();
-            con.setConnectTimeout(500);
-            con.setReadTimeout(2000);
+            con.setConnectTimeout(1000);
+            con.setReadTimeout(5000);
 
             return readItems(con);
         }
@@ -245,7 +245,7 @@ public class PortfolioReportNet
 
             HttpURLConnection con = (HttpURLConnection) objectUrl.openConnection();
             con.setConnectTimeout(1000);
-            con.setReadTimeout(2000);
+            con.setReadTimeout(5000);
 
             con.setRequestProperty("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
                             + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
