@@ -2,8 +2,6 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
@@ -16,13 +14,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -33,6 +26,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.util.HttpClient;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
 {
@@ -133,28 +127,24 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
     private String requestData(Security security) throws IOException
     {
-        try (CloseableHttpClient client = HttpClients.createSystem())
+        
+        try (HttpClient httpClient = new HttpClient())
         {
-            URIBuilder uriBuilder = new URIBuilder().setScheme("http").setHost(EUROSTAT_HOST) //$NON-NLS-1$
-                            .setPath(EUROSTAT_PAGE);
-            uriBuilder.addParameter("filterNonGeo", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("precision", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("geo", security.getTickerSymbol().toUpperCase()); //$NON-NLS-1$
-            uriBuilder.addParameter("unit", "I15"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("unitLabel", "code"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("coicop", "CP00"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("groupedIndicators", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            uriBuilder.addParameter("shortLabel", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            URL objectURL = uriBuilder.build().toURL();
-            try (CloseableHttpResponse response = client.execute(new HttpGet(objectURL.toString())))
-            {
-                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                    throw new IOException(objectURL.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
-
-                return EntityUtils.toString(response.getEntity());
-            }
+            httpClient.setURIScheme("http"); //$NON-NLS-1$
+            httpClient.setURIHost(EUROSTAT_HOST);
+            httpClient.setURIPath(EUROSTAT_PAGE);
+            httpClient.setURIBuilder();
+            httpClient.getURIBuilder().addParameter("filterNonGeo", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("precision", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("geo", security.getTickerSymbol().toUpperCase()); //$NON-NLS-1$
+            httpClient.getURIBuilder().addParameter("unit", "I15"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("unitLabel", "code"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("coicop", "CP00"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("groupedIndicators", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+            httpClient.getURIBuilder().addParameter("shortLabel", "1"); //$NON-NLS-1$ //$NON-NLS-2$
+            return httpClient.requestData();
         }
-        catch (URISyntaxException e)
+        catch (Exception e)
         {
             return null;
         }

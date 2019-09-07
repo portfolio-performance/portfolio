@@ -1,10 +1,11 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,6 +28,7 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.util.HttpClient;
 
 public class PortfolioReportNet
 {
@@ -209,30 +211,28 @@ public class PortfolioReportNet
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        try
+        try (HttpClient httpClient = new HttpClient())
         {
-            URIBuilder uriBuilder = new URIBuilder().setScheme("https").setHost(HOST) //$NON-NLS-1$
-                            .setPath("/api/securities/search/" + query); //$NON-NLS-1$
+
+            httpClient.setURIScheme("https"); //$NON-NLS-1$
+            httpClient.setURIHost(HOST);
+            httpClient.setURIPath("/api/securities/search/" + query); //$NON-NLS-1$
+            httpClient.setURIBuilder();
 
             if (type != null)
             {
                 if (type == SecuritySearchProvider.Type.SHARE)
-                    uriBuilder.addParameter("type", TYPE_SHARE); //$NON-NLS-1$
+                    httpClient.getURIBuilder().addParameter("type", TYPE_SHARE); //$NON-NLS-1$
                 else if (type == SecuritySearchProvider.Type.BOND)
-                    uriBuilder.addParameter("type", TYPE_BOND); //$NON-NLS-1$
+                    httpClient.getURIBuilder().addParameter("type", TYPE_BOND); //$NON-NLS-1$
             }
 
-            URL searchUrl = uriBuilder.build().toURL();
-
-            URLConnection con = searchUrl.openConnection();
-            con.setConnectTimeout(1000);
-            con.setReadTimeout(5000);
-
+            InputStream con = new ByteArrayInputStream(httpClient.requestData().getBytes());
             return readItems(con);
         }
-        catch (URISyntaxException e)
+        catch (Exception e)
         {
-            throw new IOException(e);
+            return null;
         }
     }
 
@@ -275,11 +275,11 @@ public class PortfolioReportNet
         }
     }
 
-    private List<ResultItem> readItems(URLConnection con) throws IOException
+    private List<ResultItem> readItems(InputStream con) throws IOException
     {
         List<ResultItem> onlineItems = new ArrayList<>();
 
-        try (Scanner scanner = new Scanner(con.getInputStream(), StandardCharsets.UTF_8.name()))
+        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
         {
             String body = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 

@@ -2,7 +2,9 @@ package name.abuchen.portfolio.online.impl;
 
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -26,6 +28,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.HttpClient;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 
 public class AlphavantageQuoteFeed implements QuoteFeed
@@ -98,22 +101,19 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
 
-        String wknUrl = MessageFormat.format("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY" //$NON-NLS-1$
+        String wknUrl = MessageFormat.format("/query?function=TIME_SERIES_INTRADAY" //$NON-NLS-1$
                         + "&symbol={0}&interval=1min&apikey={1}&datatype=csv&outputsize=compact", //$NON-NLS-1$
                         security.getTickerSymbol(), apiKey);
 
-        try
+        try (HttpClient httpClient = new HttpClient())
         {
-            URL obj = new URL(wknUrl);
-            HttpURLConnection con = (HttpURLConnection) obj.openConnection();
-            con.setConnectTimeout(1000);
-            con.setReadTimeout(20000);
+            httpClient.setURIScheme("https"); //$NON-NLS-1$
+            httpClient.setURIHost("www.alphavantage.co"); //$NON-NLS-1$
+            httpClient.setURIPath(wknUrl);
 
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK)
-                throw new IOException(wknUrl + " --> " + responseCode); //$NON-NLS-1$
+            InputStream con = new ByteArrayInputStream(httpClient.requestData().getBytes());
 
-            try (Scanner scanner = new Scanner(con.getInputStream(), StandardCharsets.UTF_8.name()))
+            try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
             {
                 String body = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
@@ -152,7 +152,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             }
 
         }
-        catch (IOException | ParseException e)
+        catch (Exception e)
         {
             errors.add(e);
             return false;
