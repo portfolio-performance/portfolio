@@ -26,7 +26,8 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.HttpClient;
+import name.abuchen.portfolio.util.webaccess.WebAccess;
+import name.abuchen.portfolio.util.webaccess.WebAccessParameter;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
 {
@@ -127,27 +128,18 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
     private String requestData(Security security) throws IOException
     {
-        
-        try (HttpClient httpClient = new HttpClient())
-        {
-            httpClient.setURIScheme("http"); //$NON-NLS-1$
-            httpClient.setURIHost(EUROSTAT_HOST);
-            httpClient.setURIPath(EUROSTAT_PAGE);
-            httpClient.setURIBuilder();
-            httpClient.getURIBuilder().addParameter("filterNonGeo", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("precision", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("geo", security.getTickerSymbol().toUpperCase()); //$NON-NLS-1$
-            httpClient.getURIBuilder().addParameter("unit", "I15"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("unitLabel", "code"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("coicop", "CP00"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("groupedIndicators", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            httpClient.getURIBuilder().addParameter("shortLabel", "1"); //$NON-NLS-1$ //$NON-NLS-2$
-            return httpClient.requestData();
-        }
-        catch (Exception e)
-        {
-            return null;
-        }
+
+        WebAccess webAccess = WebAccess.builder().document("http", EUROSTAT_HOST, EUROSTAT_PAGE)//$NON-NLS-1$
+                        .withParameter(WebAccessParameter.builder().addParameter("filterNonGeo", "1")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("precision", "1")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("geo", //$NON-NLS-1$
+                                        security.getTickerSymbol().toUpperCase())).withParameter(WebAccessParameter.builder().addParameter("unit", "I15")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("unitLabel", "code")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("coicop", "CP00")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("groupedIndicators", "1")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .withParameter(WebAccessParameter.builder().addParameter("shortLabel", "1")) //$NON-NLS-1$ //$NON-NLS-2$
+                        .build();
+        return webAccess.getDocument();
     }
 
     private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)

@@ -3,9 +3,6 @@ package name.abuchen.portfolio.online.impl;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,7 +14,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -28,7 +24,9 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.HttpClient;
+import name.abuchen.portfolio.util.webaccess.WebAccess;
+import name.abuchen.portfolio.util.webaccess.WebAccessHeader;
+import name.abuchen.portfolio.util.webaccess.WebAccessParameter;
 
 public class PortfolioReportNet
 {
@@ -211,68 +209,48 @@ public class PortfolioReportNet
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        try (HttpClient httpClient = new HttpClient())
+        WebAccess webAccess;
+        // return webAccess.getDocument();
+
+        if (type != null)
         {
-
-            httpClient.setURIScheme("https"); //$NON-NLS-1$
-            httpClient.setURIHost(HOST);
-            httpClient.setURIPath("/api/securities/search/" + query); //$NON-NLS-1$
-            httpClient.setURIBuilder();
-
-            if (type != null)
-            {
-                if (type == SecuritySearchProvider.Type.SHARE)
-                    httpClient.getURIBuilder().addParameter("type", TYPE_SHARE); //$NON-NLS-1$
-                else if (type == SecuritySearchProvider.Type.BOND)
-                    httpClient.getURIBuilder().addParameter("type", TYPE_BOND); //$NON-NLS-1$
-            }
-
-            InputStream con = new ByteArrayInputStream(httpClient.requestData().getBytes());
-            return readItems(con);
+            webAccess = WebAccess.builder().document("https", HOST, "/api/securities/search/" + query)//$NON-NLS-1$ //$NON-NLS-2$
+                            .withParameter(WebAccessParameter.builder().addParameter("type", //$NON-NLS-1$
+                                            type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND))
+                            .build();
         }
-        catch (Exception e)
+        else
         {
-            return null;
+            webAccess = WebAccess.builder().document("https", HOST, "/api/securities/search/" + query)//$NON-NLS-1$ //$NON-NLS-2$
+                            .build();
         }
+
+        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
+        return readItems(con);
     }
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
-        try
+        WebAccess webAccess = WebAccess.builder().document("https", HOST, "/api/securities/" + onlineId)//$NON-NLS-1$ //$NON-NLS-2$
+                        .withHeader(WebAccessHeader.builder().addHeaders("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
+                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString()))
+                        .withHeader(WebAccessHeader.builder().addHeaders("X-Reason", "periodic update")) //$NON-NLS-1$//$NON-NLS-2$
+                        .withHeader(WebAccessHeader.builder().addHeaders("Content-Type", //$NON-NLS-1$
+                                        "application/json;chartset=UTF-8")) //$NON-NLS-1$
+                        .build();
+
+        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
+        Optional<ResultItem> onlineItem = Optional.empty();
+        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
         {
-            URL objectUrl = new URIBuilder().setScheme("https").setHost(HOST).setPath("/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
-                            .build().toURL();
+            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
 
-            HttpURLConnection con = (HttpURLConnection) objectUrl.openConnection();
-            con.setConnectTimeout(1000);
-            con.setReadTimeout(5000);
-
-            con.setRequestProperty("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
-                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
-            con.setRequestProperty("X-Reason", "periodic update"); //$NON-NLS-1$ //$NON-NLS-2$
-            con.setRequestProperty("Content-Type", "application/json;chartset=UTF-8"); //$NON-NLS-1$ //$NON-NLS-2$
-
-            Optional<ResultItem> onlineItem = Optional.empty();
-
-            int responseCode = con.getResponseCode();
-            if (responseCode != HttpURLConnection.HTTP_OK)
-                throw new IOException(objectUrl + " --> " + responseCode); //$NON-NLS-1$
-
-            try (Scanner scanner = new Scanner(con.getInputStream(), StandardCharsets.UTF_8.name()))
-            {
-                String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-
-                JSONObject response = (JSONObject) JSONValue.parse(html);
-                if (response != null)
-                    onlineItem = Optional.of(OnlineItem.from(response));
-            }
-
-            return onlineItem;
+            JSONObject response = (JSONObject) JSONValue.parse(html);
+            if (response != null)
+                onlineItem = Optional.of(OnlineItem.from(response));
         }
-        catch (URISyntaxException e)
-        {
-            throw new IOException(e);
-        }
+
+        return onlineItem;
     }
 
     private List<ResultItem> readItems(InputStream con) throws IOException
