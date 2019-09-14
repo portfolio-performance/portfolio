@@ -19,6 +19,7 @@ import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
 import org.swtchart.ISeries;
 
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
 public abstract class AbstractChartTab implements EarningsTab
@@ -73,6 +74,7 @@ public abstract class AbstractChartTab implements EarningsTab
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setVisible(false);
         xAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+        xAxis.getTitle().setText(Messages.ColumnMonth);
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
         yAxis.getTitle().setVisible(false);

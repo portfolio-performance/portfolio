@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -26,13 +28,15 @@ import org.swtchart.IBarSeries;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries;
 
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
-    private String dateFormat = "%tF"; //$NON-NLS-1$
+    private Function<Object, String> xAxisFormat;
+
     private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
 
     private boolean categoryEnabled = false;
@@ -63,9 +67,9 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         this.reverseLabels = reverseLabels;
     }
 
-    public void setDateFormat(String dateFormat)
+    public void setXAxisFormat(Function<Object, String> format)
     {
-        this.dateFormat = dateFormat;
+        this.xAxisFormat = format;
     }
 
     public void setValueFormat(DecimalFormat valueFormat)
@@ -178,13 +182,11 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Label left = new Label(data, SWT.NONE);
         left.setForeground(foregroundColor);
-        left.setText(Messages.ColumnDate);
+        left.setText(categoryEnabled ? getChart().getAxisSet().getXAxis(0).getTitle().getText() : Messages.ColumnDate);
 
         Label right = new Label(data, SWT.NONE);
         right.setForeground(foregroundColor);
-        right.setText(categoryEnabled
-                        ? getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) getFocusedObject()]
-                        : String.format(dateFormat, getFocusedObject()));
+        right.setText(formatXAxisData(getFocusedObject()));
 
         ISeries[] allSeries = getChart().getSeriesSet().getSeries();
         if (reverseLabels)
@@ -229,6 +231,18 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Object focus = getFocusedObject();
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+    }
+
+    private String formatXAxisData(Object obj)
+    {
+        if (xAxisFormat != null)
+            return xAxisFormat.apply(obj);
+        else if (categoryEnabled && obj instanceof Integer)
+            return getChart().getAxisSet().getXAxis(0).getCategorySeries()[(Integer) obj];
+        else if (obj instanceof Date)
+            return Values.Date.format(((Date) obj).toInstant().atZone(ZoneId.systemDefault()).toLocalDate());
+        else
+            return String.valueOf(obj);
     }
 
 }
