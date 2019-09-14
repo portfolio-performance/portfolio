@@ -8,6 +8,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Function;
 
 import name.abuchen.portfolio.money.Values;
 
@@ -66,16 +67,7 @@ public final class Interval
      */
     public List<Year> getYears()
     {
-        List<Year> answer = new ArrayList<>();
-
-        LocalDate index = start.plusDays(1);
-        while (!index.isAfter(end))
-        {
-            answer.add(Year.from(index));
-            index = index.plusYears(1);
-        }
-
-        return answer;
+        return collect(Year::from);
     }
 
     /**
@@ -85,13 +77,25 @@ public final class Interval
      */
     public List<YearMonth> getYearMonths()
     {
-        List<YearMonth> answer = new ArrayList<>();
+        return collect(YearMonth::from);
+    }
 
-        LocalDate index = start.plusDays(1);
+    private <T> List<T> collect(Function<LocalDate, T> collector)
+    {
+        List<T> answer = new ArrayList<>();
+
+        T lastItem = null;
+
+        LocalDate index = start.plusDays(1); // first day not in range
         while (!index.isAfter(end))
         {
-            answer.add(YearMonth.from(index));
-            index = index.plusMonths(1);
+            T item = collector.apply(index);
+            if (!item.equals(lastItem))
+            {
+                answer.add(item);
+                lastItem = item;
+            }
+            index = index.plusDays(1);
         }
 
         return answer;

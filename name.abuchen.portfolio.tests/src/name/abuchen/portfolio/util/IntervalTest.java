@@ -26,6 +26,14 @@ public class IntervalTest
         interval = Interval.of(LocalDate.parse("2018-12-31"), LocalDate.parse("2019-12-31"));
         assertThat(interval.getYears().size(), is(1));
 
+        // 2 years
+        interval = Interval.of(LocalDate.parse("2017-12-31"), LocalDate.parse("2019-12-31"));
+        assertThat(interval.getYears().size(), is(2));
+
+        // 2 years
+        interval = Interval.of(LocalDate.parse("2017-02-01"), LocalDate.parse("2019-02-01"));
+        assertThat(interval.getYears().size(), is(3));
+
         // full year + 1 day
         interval = Interval.of(LocalDate.parse("2018-12-30"), LocalDate.parse("2019-12-31"));
         assertThat(interval.getYears().size(), is(2));
@@ -47,5 +55,8 @@ public class IntervalTest
         // full year
         interval = Interval.of(LocalDate.parse("2018-12-31"), LocalDate.parse("2019-12-31"));
         assertThat(interval.getYearMonths().size(), is(12));
+
+        interval = Interval.of(LocalDate.parse("2017-09-14"), LocalDate.parse("2019-09-14"));
+        assertThat(interval.getYearMonths().size(), is(25));
     }
 }
