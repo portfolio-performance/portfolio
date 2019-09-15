@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -112,7 +110,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
             return Collections.emptyList();
         }
 
-        try (CloseableHttpClient client = HttpClients.createSystem())
+        try
         {
             String responseBody = requestData(security);
             return extractQuotes(klass, responseBody, errors);
@@ -133,7 +131,8 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
                         .withParameter(WebAccessParameter.builder().addParameter("filterNonGeo", "1")) //$NON-NLS-1$ //$NON-NLS-2$
                         .withParameter(WebAccessParameter.builder().addParameter("precision", "1")) //$NON-NLS-1$ //$NON-NLS-2$
                         .withParameter(WebAccessParameter.builder().addParameter("geo", //$NON-NLS-1$
-                                        security.getTickerSymbol().toUpperCase())).withParameter(WebAccessParameter.builder().addParameter("unit", "I15")) //$NON-NLS-1$ //$NON-NLS-2$
+                                        security.getTickerSymbol().toUpperCase()))
+                        .withParameter(WebAccessParameter.builder().addParameter("unit", "I15")) //$NON-NLS-1$ //$NON-NLS-2$
                         .withParameter(WebAccessParameter.builder().addParameter("unitLabel", "code")) //$NON-NLS-1$ //$NON-NLS-2$
                         .withParameter(WebAccessParameter.builder().addParameter("coicop", "CP00")) //$NON-NLS-1$ //$NON-NLS-2$
                         .withParameter(WebAccessParameter.builder().addParameter("groupedIndicators", "1")) //$NON-NLS-1$ //$NON-NLS-2$
