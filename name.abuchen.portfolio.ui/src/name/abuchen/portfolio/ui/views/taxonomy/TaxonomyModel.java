@@ -118,6 +118,7 @@ public final class TaxonomyModel
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
 
         this.attachedModels.add(new RecalculateTargetsAttachedModel());
+        this.attachedModels.add(new ExpectedReturnsAttachedModel());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
                         Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());

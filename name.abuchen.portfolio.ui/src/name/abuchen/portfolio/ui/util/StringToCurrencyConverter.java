@@ -19,11 +19,24 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
     public StringToCurrencyConverter(Values<?> type)
     {
+        this(type, false);
+    }
+
+    public StringToCurrencyConverter(Values<?> type, boolean acceptNegativeValues)
+    {
         this.factor = type.factor();
 
+        StringBuilder patternString = new StringBuilder();
+        patternString.append("^("); //$NON-NLS-1$
+
+        if (acceptNegativeValues)
+            patternString.append("-?"); //$NON-NLS-1$
+
         DecimalFormatSymbols symbols = new DecimalFormatSymbols();
-        pattern = Pattern.compile("^([\\d" + symbols.getGroupingSeparator() + "]*)(" //$NON-NLS-1$ //$NON-NLS-2$
-                        + symbols.getDecimalSeparator() + "(\\d*))?$"); //$NON-NLS-1$
+        patternString.append("[\\d").append(symbols.getGroupingSeparator()).append("]*)(") //$NON-NLS-1$ //$NON-NLS-2$
+                        .append(symbols.getDecimalSeparator()).append("(\\d*))?$"); //$NON-NLS-1$
+
+        pattern = Pattern.compile(patternString.toString());
         full = new DecimalFormat("#,###"); //$NON-NLS-1$
     }
 
@@ -67,6 +80,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
         String strBefore = m.group(1);
         Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
+        boolean isNegative = strBefore.contains("-"); //$NON-NLS-1$
 
         String strAfter = m.group(3);
         long after = 0;
@@ -83,6 +97,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
                 after *= 10;
         }
 
-        return before.longValue() * factor + after;
+        // For negative numbers: subtract decimal digits instead of adding them
+        return before.longValue() * factor + (isNegative ? -after : after);
     }
 }
