@@ -155,6 +155,12 @@ public class Messages extends NLS
     public static String ColumnEntryValue;
     public static String ColumnErrorMessages;
     public static String ColumnExchangeRate;
+    public static String ColumnExpectedReturn;
+    public static String ColumnExpectedReturn_MenuLabel;
+    public static String ColumnExpectedReturn_Description;
+    public static String ColumnExpectedReturn_Tooltip_NotInUse;
+    public static String ColumnExpectedReturn_Tooltip_InUse;
+    public static String ColumnExpectedReturn_Tooltip_TotalPortfolioReturn;
     public static String ColumnExDate;
     public static String ColumnExitValue;
     public static String ColumnFeedURLHistoric;

@@ -24,9 +24,13 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
+import org.eclipse.jface.viewers.StyledCellLabelProvider;
+import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
@@ -37,7 +41,10 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -333,6 +340,16 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         onModified(element, newValue, oldValue);
     }
 
+    // Method that is triggered when the user modifies a value in the "expected returns" column
+    public void onERModified(Object element, Object newValue, Object oldValue)
+    {
+        TaxonomyNode node = (TaxonomyNode) element;
+        // Trigger recalculation of affected expected returns, in the model
+        getModel().recalcExpectedReturns(node);
+    
+        onModified(element, newValue, oldValue);
+    }
+
     @Override
     public void configMenuAboutToShow(IMenuManager manager)
     {
@@ -557,7 +574,87 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             }
         });
         support.addColumn(column);
+        
+        addExpectedReturnsColumn(support);
     }
+
+    // Adds a column where you can enter your expected return for this asset class (or security)
+    private void addExpectedReturnsColumn(ShowHideColumnHelper support)
+    {
+        Column column = new Column("expectedReturn", Messages.ColumnExpectedReturn, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnExpectedReturn_MenuLabel);
+        column.setDescription(Messages.ColumnExpectedReturn_Description);
+        column.setLabelProvider(new StyledCellLabelProvider()
+        {
+            private  Styler strikeoutStyler = new Styler()
+            {
+                @Override
+                public void applyStyles(TextStyle textStyle)
+                {
+                    textStyle.strikeout = true;
+                    textStyle.foreground = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+                }
+            };
+
+            @Override
+            public void update(final ViewerCell cell) {
+                TaxonomyNode node = (TaxonomyNode) cell.getElement();
+
+                String erText = Values.Percent_ER.format(node.getExpectedReturn());
+                // If node is not in use, print percentage in grey and strikethrough
+                StyledString styledString = new StyledString(erText, node.isERinUse() ? null : strikeoutStyler);
+                cell.setText(styledString.getString());
+                cell.setStyleRanges(styledString.getStyleRanges());
+
+                // Print overall portfolio performance in bold
+                // Is it acceptable here to identify this node by its name? Some example portfolios (DAX) don't seem to have "Asset Allocation".
+                if (node.getName().equals("Asset Allocation")) {
+                    // Set font to bold
+                    FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
+                    fontData.setStyle(SWT.BOLD);
+                    cell.setFont(new Font(Display.getDefault(), fontData));
+                }
+            }
+
+            // This will still be used (for the CSV export)
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                String prefix = ((node.isERinUse() ? "" : "(unused) "));
+                return prefix + Values.Percent_ER.format(node.getExpectedReturn());
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                String text = node.isERinUse() ? Messages.ColumnExpectedReturn_Tooltip_InUse : Messages.ColumnExpectedReturn_Tooltip_NotInUse;
+                if (node.getName().equals("Asset Allocation")) {
+                    text = Messages.ColumnExpectedReturn_Tooltip_TotalPortfolioReturn;
+                }
+                if (text == null)
+                    return null;
+
+                return text;
+            }
+
+        });
+
+        new ValueEditingSupport(TaxonomyNode.class, "expectedReturn", Values.Percent_ER)
+        {
+              // canEdit() not implemented because both assignments and securities can be edited.
+        }.addListener(this::onERModified).attachTo(column);
+
+        column.setSorter(null);
+        // Should the row be visible by default, or does it have to be manually added by the user?
+        column.setVisible(false);
+        support.addColumn(column);
+
+        // Initial calculation of overall portfolio expected return. Calculate all expected returns from root downwards
+        getModel().calcFullERTree(getModel().getVirtualRootNode());
+    }
+
 
     protected void addAdditionalColumns(ShowHideColumnHelper support) // NOSONAR
     {

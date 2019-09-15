@@ -53,6 +53,31 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public int getExpectedReturn()
+        {
+            return classification.getExpectedReturn();
+        }
+
+        @Override
+        public void setExpectedReturn(int expectedReturn)
+        {
+            classification.setExpectedReturn(expectedReturn);
+        }
+
+        @Override
+        public boolean isERinUse()
+        {
+            return classification.isERinUse();
+        }
+
+        @Override
+        public void setERinUse(boolean isERInUse)
+        {
+            classification.setERinUse(isERInUse);
+        }
+
+        
+        @Override
         public int getRank()
         {
             return classification.getRank();
@@ -145,6 +170,30 @@ public abstract class TaxonomyNode implements Adaptable
         public void setWeight(int weight)
         {
             assignment.setWeight(weight);
+        }
+
+        @Override
+        public int getExpectedReturn()
+        {
+            return assignment.getExpectedReturn();
+        }
+
+        @Override
+        public void setExpectedReturn(int expectedReturn)
+        {
+            assignment.setExpectedReturn(expectedReturn);
+        }
+
+        @Override
+        public boolean isERinUse()
+        {
+            return assignment.isERinUse();
+        }
+
+        @Override
+        public void setERinUse(boolean isERInUse)
+        {
+            assignment.setERinUse(isERInUse);
         }
 
         @Override
@@ -312,6 +361,14 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract int getWeight();
 
     public abstract void setWeight(int weight);
+    
+    public abstract int getExpectedReturn();
+
+    public abstract void setExpectedReturn(int expectedReturn);
+
+    public abstract boolean isERinUse();
+
+    public abstract void setERinUse(boolean eRinUse);
 
     public abstract int getRank();
 

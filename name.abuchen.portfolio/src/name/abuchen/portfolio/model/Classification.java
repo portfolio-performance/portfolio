@@ -18,6 +18,8 @@ public class Classification implements Named
         private InvestmentVehicle investmentVehicle;
         private int weight;
         private int rank;
+        private int expectedReturn;  // Users' estimation of expected return of this asset class / category.
+        boolean ERinUse = true; // Whether this expected return is currently used for the calculation of overall portfolio return
 
         public Assignment()
         {
@@ -43,6 +45,26 @@ public class Classification implements Named
         public void setWeight(int weight)
         {
             this.weight = weight;
+        }
+
+        public int getExpectedReturn()
+        {
+            return expectedReturn;
+        }
+
+        public void setExpectedReturn(int expectedReturn)
+        {
+            this.expectedReturn = expectedReturn;
+        }
+
+        public boolean isERinUse()
+        {
+            return ERinUse;
+        }
+
+        public void setERinUse(boolean isERInUse)
+        {
+            ERinUse = isERInUse;
         }
 
         public InvestmentVehicle getInvestmentVehicle()
@@ -79,6 +101,8 @@ public class Classification implements Named
 
     private int weight;
     private int rank;
+    private int expectedReturn;  // Users' estimation of expected return of this asset class / category
+    boolean ERinUse = true; // Whether this expected return is currently used for the calculation of overall portfolio return
 
 
     public Classification()
@@ -107,6 +131,8 @@ public class Classification implements Named
         }
 
         this.weight = ONE_HUNDRED_PERCENT;
+        this.expectedReturn = 0;
+        this.ERinUse = false;
     }
 
     public Classification(Classification parent, String id, String name)
@@ -209,6 +235,26 @@ public class Classification implements Named
     public void setWeight(int weight)
     {
         this.weight = weight;
+    }
+
+    public int getExpectedReturn()
+    {
+        return expectedReturn;
+    }
+
+    public void setExpectedReturn(int expectedReturn)
+    {
+        this.expectedReturn = expectedReturn;
+    }
+
+    public boolean isERinUse()
+    {
+        return ERinUse;
+    }
+
+    public void setERinUse(boolean isERInUse)
+    {
+        ERinUse = isERInUse;
     }
 
     public int getRank()
