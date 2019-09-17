@@ -20,12 +20,14 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.TreeColumnLayout;
+import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.StyledCellLabelProvider;
 import org.eclipse.jface.viewers.StyledString;
+import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.jface.viewers.StyledString.Styler;
 import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -48,6 +50,7 @@ import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -67,7 +70,9 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -641,10 +646,22 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         });
 
-        new ValueEditingSupport(TaxonomyNode.class, "expectedReturn", Values.Percent_ER)
+        ValueEditingSupport vesER = new ValueEditingSupport(TaxonomyNode.class, "expectedReturn", Values.Percent_ER)
         {
-              // canEdit() not implemented because both assignments and securities can be edited.
-        }.addListener(this::onERModified).attachTo(column);
+            @Override
+            public CellEditor createEditor(Composite composite)
+            {
+                TextCellEditor textEditor = new TextCellEditor(composite);
+                ((Text) textEditor.getControl()).setTextLimit(20);
+                // 'true' in NumberVerifyListener() to allow negative values - it's the year 2019 and we need negative interest rates
+                ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
+                return textEditor;
+            }
+
+        };
+        vesER.addListener(this::onERModified).attachTo(column);
+        // Experimental - Currently calling an experimental constructor to allow negative numbers
+        vesER.setStringToLong(new StringToCurrencyConverter(Values.Percent_ER, true));
 
         column.setSorter(null);
         // Should the row be visible by default, or does it have to be manually added by the user?

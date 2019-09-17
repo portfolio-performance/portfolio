@@ -27,6 +27,19 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
         full = new DecimalFormat("#,###"); //$NON-NLS-1$
     }
 
+    // Experiment: let's say we'd have another constructor here which accepts numeric input with negative sign. This
+    // could replace the original constructor, but one would then need to change all calls throughout PP
+    public StringToCurrencyConverter(Values<?> type, boolean acceptNegatives)
+    {
+        this.factor = type.factor();
+
+        DecimalFormatSymbols symbols = new DecimalFormatSymbols();
+        pattern = Pattern.compile("^(" + (acceptNegatives ? "-?" : "") + "[\\d" + symbols.getGroupingSeparator() + "]*)(" //$NON-NLS-1$ //$NON-NLS-2$
+                        + symbols.getDecimalSeparator() + "(\\d*))?$"); //$NON-NLS-1$
+        full = new DecimalFormat("#,###"); //$NON-NLS-1$
+    }
+
+
     @Override
     public Object getFromType()
     {
@@ -67,6 +80,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
 
         String strBefore = m.group(1);
         Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
+        boolean isNegative = strBefore.contains("-");
 
         String strAfter = m.group(3);
         long after = 0;
@@ -83,6 +97,7 @@ public class StringToCurrencyConverter implements IValidatingConverter<String, L
                 after *= 10;
         }
 
-        return before.longValue() * factor + after;
+        // For negative numbers: subtract decimal digits instead of adding them
+        return (isNegative ? before.longValue() * factor - after : before.longValue() * factor + after);
     }
 }

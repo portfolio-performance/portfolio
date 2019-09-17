@@ -12,7 +12,7 @@ import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
 
 public class ValueEditingSupport extends PropertyEditingSupport
 {
-    private final StringToCurrencyConverter stringToLong;
+    private StringToCurrencyConverter stringToLong;
     private final CurrencyToStringConverter longToString;
 
     public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType)
@@ -62,4 +62,15 @@ public class ValueEditingSupport extends PropertyEditingSupport
             notify(element, newValue, oldValue);
         }
     }
+
+    public void setStringToLong(StringToCurrencyConverter stringToLong)
+    {
+        this.stringToLong = stringToLong;
+    }
+
+    public StringToCurrencyConverter getStringToLong()
+    {
+        return stringToLong;
+    }
+
 }
