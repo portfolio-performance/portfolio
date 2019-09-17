@@ -587,6 +587,42 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschriftErtraegnisgutschrift4()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftErtraegnisgutschrift4.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(Item::getSecurity) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+        assertThat(security.getIsin(), is("NL0000388619"));
+        assertThat(security.getName(), is("Unilever N.V. Aandelen op naam EO -,16"));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-09-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(12.23))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(40)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(2.46 + 1.64 + 0.09))));
+    }
+
+    @Test
     public void testWertpapierKaufAktien() throws IOException // Aktien
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
