@@ -1,0 +1,124 @@
+# MSCI Market Classification translation template
+labels = Market,Region,Country
+name = Regions (MSCI)
+
+# MSCI World
+RW.label = World
+
+RW1.label = Americas
+RW11.label = Canada
+RW12.label = United States
+
+RW2.label = Europe & Middle East
+RW21.label = Austria
+RW22.label = Belgium
+RW23.label = Denmark
+RW24.label = Finland
+RW25.label = France
+RW26.label = Germany
+RW27.label = Ireland
+RW28.label = Israel
+RW29.label = Italy
+RW210.label = Netherlands
+RW211.label = Norway
+RW212.label = Portugal
+RW213.label = Spain
+RW214.label = Sweden
+RW215.label = Switzerland
+RW216.label = United Kingdom
+
+RW3.label = Pacific
+RW31.label = Australia
+RW32.label = Hong Kong
+RW33.label = Japan
+RW34.label = New Zealand
+RW35.label = Singapore
+
+# MSCI Emerging Markets
+REM.label = Emerging Markets
+
+REM1.label = Americas
+REM11.label = Argentina
+REM12.label = Brazil
+REM13.label = Chile
+REM14.label = Colombia
+REM15.label = Mexico
+REM16.label = Peru
+
+REM2.label = Europe, Middle East & Africa
+REM21.label = Czech Republic
+REM22.label = Egypt
+REM23.label = Greece
+REM24.label = Hungary
+REM25.label = Poland
+REM26.label = Qatar
+REM27.label = Russia
+REM28.label = Saudi Arabia
+REM29.label = South Africa
+REM210.label = Turkey
+REM211.label = United Arab Emirates
+
+REM3.label = Asia
+REM31.label = China
+REM32.label = India
+REM33.label = Indonesia
+REM34.label = Korea
+REM35.label = Malaysia
+REM36.label = Pakistan
+REM37.label = Philippines
+REM38.label = Taiwan
+REM39.label = Thailand
+
+# MSCI Frontier Markets
+RFM.label = Frontier Markets
+
+RFM1.label = Europe & CIS
+RFM11.label = Croatia
+RFM12.label = Estonia
+RFM13.label = Lithuania
+RFM14.label = Kazakhstan
+RFM15.label = Romania
+RFM16.label = Serbia
+RFM17.label = Slovenia
+
+RFM2.label = Africa
+RFM21.label = Kenya
+RFM22.label = Mauritius
+RFM23.label = Morocco
+RFM24.label = Nigeria
+RFM25.label = Tunisia
+RFM26.label = WAEMU
+
+RFM3.label = Middle East
+RFM31.label = Bahrain
+RFM32.label = Jordan
+RFM33.label = Kuwait
+RFM34.label = Lebanon
+RFM35.label = Oman
+
+RFM4.label = Asia
+RFM41.label = Bangladesh
+RFM42.label = Sri Lanka
+RFM43.label = Vietnam
+
+# MSCI Standalone Markets
+RSM.label = Standalone Markets
+
+RSM1.label = Americas
+RSM11.label = Jamaica
+RSM12.label = Panama
+RSM13.label = Trinidad & Tobago
+
+RSM2.label = Europe & CIS
+RSM21.label = Bosnia Herzegovina
+RSM22.label = Bulgaria
+RSM23.label = Malta
+RSM24.label = Iceland
+RSM25.label = Ukraine
+
+RSM3.label = Africa
+RSM31.label = Botswana
+RSM32.label = Zimbabwe
+
+RSM4.label = Middle East
+RSM41.label = Palestine
