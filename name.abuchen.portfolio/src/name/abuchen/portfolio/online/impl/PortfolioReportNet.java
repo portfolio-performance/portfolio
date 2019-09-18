@@ -1,16 +1,12 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,9 +20,7 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.webaccess.WebAccess;
-import name.abuchen.portfolio.util.webaccess.WebAccessHeader;
-import name.abuchen.portfolio.util.webaccess.WebAccessParameter;
+import name.abuchen.portfolio.util.webaccess.WebAccess;;
 
 public class PortfolioReportNet
 {
@@ -209,64 +203,52 @@ public class PortfolioReportNet
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        WebAccess webAccess;
+        String content;
         // return webAccess.getDocument();
 
         if (type != null)
         {
-            webAccess = WebAccess.builder().document("https", HOST, "/api/securities/search/" + query)//$NON-NLS-1$ //$NON-NLS-2$
-                            .withParameter(WebAccessParameter.builder().addParameter("type", //$NON-NLS-1$
-                                            type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND))
-                            .build();
+            content = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
+                            .addParameter("type", //$NON-NLS-1$
+                                            type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
+                            .get();
+
         }
         else
         {
-            webAccess = WebAccess.builder().document("https", HOST, "/api/securities/search/" + query)//$NON-NLS-1$ //$NON-NLS-2$
-                            .build();
+            content = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
+                            .get();
         }
 
-        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
-        return readItems(con);
+        return readItems(content);
     }
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
-        WebAccess webAccess = WebAccess.builder().document("https", HOST, "/api/securities/" + onlineId)//$NON-NLS-1$ //$NON-NLS-2$
-                        .withHeader(WebAccessHeader.builder().addHeaders("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString()))
-                        .withHeader(WebAccessHeader.builder().addHeaders("X-Reason", "periodic update")) //$NON-NLS-1$//$NON-NLS-2$
-                        .withHeader(WebAccessHeader.builder().addHeaders("Content-Type", //$NON-NLS-1$
-                                        "application/json;chartset=UTF-8")) //$NON-NLS-1$
-                        .build();
+        String content = new WebAccess().document("https", HOST, "/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
+                        .addHeader("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
+                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
+                        .addHeader("X-Reason", "periodic update") //$NON-NLS-1$//$NON-NLS-2$
+                        .addHeader("Content-Type", //$NON-NLS-1$
+                                        "application/json;chartset=UTF-8") //$NON-NLS-1$
+                        .get();
 
-        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
         Optional<ResultItem> onlineItem = Optional.empty();
-        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
-        {
-            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-
-            JSONObject response = (JSONObject) JSONValue.parse(html);
-            if (response != null)
-                onlineItem = Optional.of(OnlineItem.from(response));
-        }
+        JSONObject response = (JSONObject) JSONValue.parse(content);
+        if (response != null)
+            onlineItem = Optional.of(OnlineItem.from(response));
 
         return onlineItem;
     }
 
-    private List<ResultItem> readItems(InputStream con) throws IOException
+    private List<ResultItem> readItems(String con) throws IOException
     {
         List<ResultItem> onlineItems = new ArrayList<>();
-
-        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
+        JSONArray response = (JSONArray) JSONValue.parse(con);
+        if (response != null)
         {
-            String body = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
-
-            JSONArray response = (JSONArray) JSONValue.parse(body);
-            if (response != null)
-            {
-                for (int ii = 0; ii < response.size(); ii++)
-                    onlineItems.add(OnlineItem.from((JSONObject) response.get(ii)));
-            }
+            for (int ii = 0; ii < response.size(); ii++)
+                onlineItems.add(OnlineItem.from((JSONObject) response.get(ii)));
         }
 
         return onlineItems;

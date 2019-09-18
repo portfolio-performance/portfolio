@@ -68,10 +68,10 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
         String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
 
-        WebAccess webAccess = WebAccess.builder().document("https", "de.finance.yahoo.com", url)//$NON-NLS-1$ //$NON-NLS-2$
-                        .build();
+        String html = new WebAccess().document("https", "de.finance.yahoo.com", url) //$NON-NLS-1$ //$NON-NLS-2$
+                        .get();
 
-        extractFrom(answer, webAccess.getDocument());
+        extractFrom(answer, html);
     }
 
     /* protected */void extractFrom(List<ResultItem> answer, String html)

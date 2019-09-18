@@ -2,11 +2,8 @@ package name.abuchen.portfolio.online.impl;
 
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -15,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
-import java.util.Scanner;
 
 import com.google.common.util.concurrent.RateLimiter;
 
@@ -103,23 +99,19 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                         + "&symbol={0}&interval=1min&apikey={1}&datatype=csv&outputsize=compact", //$NON-NLS-1$
                         security.getTickerSymbol(), apiKey);
 
-        WebAccess webAccess = WebAccess.builder().document("https", "www.alphavantage.co", wknUrl)//$NON-NLS-1$ //$NON-NLS-2$
-                        .build();
-
-        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
-
-        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
+        try
         {
-            String body = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            String html = new WebAccess().document("https", "www.alphavantage.co", wknUrl) //$NON-NLS-1$ //$NON-NLS-2$
+                            .get();
 
-            String[] lines = body.split("\\r?\\n"); //$NON-NLS-1$
+            String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
                 return false;
 
             // poor man's check
             if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, body)));
+                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
                 return false;
             }
 
@@ -219,23 +211,19 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                         + "&symbol={0}&apikey={1}&datatype=csv&outputsize={2}", //$NON-NLS-1$
                         security.getTickerSymbol(), apiKey, outputSize.name().toLowerCase(Locale.US));
 
-        WebAccess webAccess = WebAccess.builder().document("https", "www.alphavantage.co", wknUrl)//$NON-NLS-1$ //$NON-NLS-2$
-                        .build();
-
-        InputStream con = new ByteArrayInputStream(webAccess.getDocument().getBytes());
-
-        try (Scanner scanner = new Scanner(con, StandardCharsets.UTF_8.name()))
+        try
         {
-            String body = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            String html = new WebAccess().document("https", "www.alphavantage.co", wknUrl) //$NON-NLS-1$ //$NON-NLS-2$
+                            .get();
 
-            String[] lines = body.split("\\r?\\n"); //$NON-NLS-1$
+            String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
                 return Collections.emptyList();
 
             // poor man's check
             if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, body)));
+                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
                 return Collections.emptyList();
             }
 

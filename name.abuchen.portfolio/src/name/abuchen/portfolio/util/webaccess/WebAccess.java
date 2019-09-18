@@ -19,118 +19,55 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-public class WebAccess implements AutoCloseable
-{
+import name.abuchen.portfolio.util.OnlineHelper;
 
+public class WebAccess implements IWebAccess
+{
     public final static RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(600000)
                     .setConnectTimeout(600000).setConnectionRequestTimeout(600000).build();
 
     private String scheme;
     private String host;
     private String path;
-    private CloseableHttpResponse response;
     private String document;
+    private List<Header> headers;
+    private List<NameValuePair> parameters;
+    private CloseableHttpResponse response;
 
-    private List<WebAccessHeader> headers;
-    private List<WebAccessParameter> parameters;
-
-    public static WebAccessBuilder builder()
+    @Override
+    public IWebAccess document(String scheme, String host, String path)
     {
-        return new WebAccess.WebAccessBuilder();
+        this.setScheme(scheme);
+        this.setHost(host);
+        this.setPath(path);
+        this.headers = new ArrayList<>();
+        this.parameters = new ArrayList<NameValuePair>();
+        return this;
     }
 
-    private WebAccess()
+    @Override
+    public IWebAccess addParameter(String param, String value)
     {
+        this.parameters.add(new BasicNameValuePair(param, value));
+        return this;
     }
 
-    public String getScheme()
+    @Override
+    public IWebAccess addHeader(String param, String value)
     {
-        return scheme;
+        this.headers.add(new BasicHeader(param, value));
+        return this;
     }
 
-    public void setScheme(String scheme)
+    @Override
+    public String get() throws IOException
     {
-        this.scheme = scheme;
-    }
-
-    public String getHost()
-    {
-        return host;
-    }
-
-    public void setHost(String host)
-    {
-        this.host = host;
-    }
-
-    public String getPath()
-    {
-        return path;
-    }
-
-    public void setPath(String path)
-    {
-        this.path = path;
-    }
-
-    public List<WebAccessHeader> getHeaders()
-    {
-        return headers;
-    }
-
-    public void setHeaders(List<WebAccessHeader> headers)
-    {
-        this.headers = headers;
-    }
-
-    public List<WebAccessParameter> getParameters()
-    {
-        return parameters;
-    }
-
-    public void setParameters(List<WebAccessParameter> parameters)
-    {
-        this.parameters = parameters;
-    }
-
-    public CloseableHttpResponse getResponse()
-    {
-        return response;
-    }
-
-    public void setResponse(CloseableHttpResponse response)
-    {
-        this.response = response;
-    }
-
-    public String getDocument()
-    {
-
-        List<Header> lstHeaders = new ArrayList<>();
-        if (headers != null)
-        {
-            for (WebAccessHeader header : headers)
-            {
-                lstHeaders.add(new BasicHeader(header.getParam(), header.getValue()));
-            }
-        }
 
         CloseableHttpClient client = HttpClientBuilder.create().setDefaultRequestConfig(defaultRequestConfig)
-                        .setDefaultHeaders(lstHeaders)
-                        .setUserAgent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/76.0.3809.132 Safari/537.36") //$NON-NLS-1$
-                        .build();
+                        .setDefaultHeaders(this.headers).setUserAgent(getUserAgent()).build();
 
         URIBuilder uriBuilder = new URIBuilder().setScheme(scheme).setHost(host).setPath(path);
-
-        List<NameValuePair> lstParameters = new ArrayList<NameValuePair>();
-        if (parameters != null)
-        {
-            for (WebAccessParameter parameter : parameters)
-            {
-                lstParameters.add(new BasicNameValuePair(parameter.getParam(), parameter.getValue()));
-            }
-        }
-        uriBuilder.setParameters(lstParameters);
+        uriBuilder.setParameters(this.parameters);
 
         URL objectURL;
         try
@@ -143,55 +80,75 @@ public class WebAccess implements AutoCloseable
 
             this.document = EntityUtils.toString(response.getEntity());
         }
-        catch (URISyntaxException | IOException e)
+        catch (URISyntaxException e)
         {
         }
+
         return this.document;
     }
 
-    @Override
-    public void close() throws Exception
+    public String getHost()
     {
-        // TODO Auto-generated method stub
+        return host;
     }
 
-    public static class WebAccessBuilder
+    public void setHost(String host)
     {
-        private WebAccess managedInstance = new WebAccess();
+        this.host = host;
+    }
 
-        public WebAccessBuilder document(String scheme, String host, String path)
-        {
-            managedInstance.setScheme(scheme);
-            managedInstance.setHost(host);
-            managedInstance.setPath(path);
-            return this;
-        }
+    public String getScheme()
+    {
+        return scheme;
+    }
 
-        public WebAccessBuilder withHeader(WebAccessHeader header)
-        {
-            if (managedInstance.headers == null)
-            {
-                managedInstance.headers = new ArrayList<WebAccessHeader>();
-            }
-            managedInstance.headers.add(header);
-            return this;
-        }
+    public void setScheme(String scheme)
+    {
+        this.scheme = scheme;
+    }
 
-        public WebAccessBuilder withParameter(WebAccessParameter parameter)
-        {
-            // new BasicHeader(WEBMATE_USER_HEADERKEY, authInfo.emailAddress)
-            if (managedInstance.parameters == null)
-            {
-                managedInstance.parameters = new ArrayList<WebAccessParameter>();
-            }
-            managedInstance.parameters.add(parameter);
-            return this;
-        }
+    public String getPath()
+    {
+        return path;
+    }
 
-        public WebAccess build()
-        {
-            return managedInstance;
-        }
+    public void setPath(String path)
+    {
+        this.path = path;
+    }
 
+    public List<Header> getHeaders()
+    {
+        return headers;
+    }
+
+    public void addHeaders(String param, String value)
+    {
+        this.headers.add(new BasicHeader(param, value));
+    }
+
+    public List<NameValuePair> getParameters()
+    {
+        return parameters;
+    }
+
+    public void addParameters(String param, String value)
+    {
+        this.parameters.add(new BasicNameValuePair(param, value));
+    }
+
+    public CloseableHttpResponse getResponse()
+    {
+        return response;
+    }
+
+    public void setResponse(CloseableHttpResponse response)
+    {
+        this.response = response;
+    }
+
+    protected String getUserAgent()
+    {
+        return OnlineHelper.getUserAgent();
     }
 }

@@ -1,10 +1,10 @@
-package name.abuchen.portfolio.online.impl;
+package name.abuchen.portfolio.util;
 
-/* package */ final class OnlineHelper
+/* package */ public final class OnlineHelper
 {
 
     @SuppressWarnings("nls")
-    /* package */ static String getUserAgent()
+    /* package */ public static String getUserAgent()
     {
         String os = System.getProperty("os.name", "unknown").toLowerCase();
         if (os.startsWith("windows"))

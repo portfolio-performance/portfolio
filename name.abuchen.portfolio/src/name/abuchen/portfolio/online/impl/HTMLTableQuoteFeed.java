@@ -38,6 +38,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
