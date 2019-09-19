@@ -11,7 +11,7 @@ import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.webaccess.WebAccess;
+import name.abuchen.portfolio.util.WebAccess;
 
 /* package */ class YahooSymbolSearch
 {

@@ -20,7 +20,7 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.webaccess.WebAccess;;
+import name.abuchen.portfolio.util.WebAccess;;
 
 public class PortfolioReportNet
 {
@@ -203,12 +203,12 @@ public class PortfolioReportNet
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        String content;
+        String html;
         // return webAccess.getDocument();
 
         if (type != null)
         {
-            content = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
+            html = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
                             .addParameter("type", //$NON-NLS-1$
                                             type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
                             .get();
@@ -216,16 +216,16 @@ public class PortfolioReportNet
         }
         else
         {
-            content = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
+            html = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
                             .get();
         }
 
-        return readItems(content);
+        return readItems(html);
     }
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
-        String content = new WebAccess().document("https", HOST, "/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
+        String html = new WebAccess().document("https", HOST, "/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
                         .addHeader("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
                                         + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                         .addHeader("X-Reason", "periodic update") //$NON-NLS-1$//$NON-NLS-2$
@@ -234,7 +234,7 @@ public class PortfolioReportNet
                         .get();
 
         Optional<ResultItem> onlineItem = Optional.empty();
-        JSONObject response = (JSONObject) JSONValue.parse(content);
+        JSONObject response = (JSONObject) JSONValue.parse(html);
         if (response != null)
             onlineItem = Optional.of(OnlineItem.from(response));
 

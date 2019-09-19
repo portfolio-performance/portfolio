@@ -23,7 +23,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.RateLimitExceededException;
-import name.abuchen.portfolio.util.webaccess.WebAccess;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class AlphavantageQuoteFeed implements QuoteFeed
 {

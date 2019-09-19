@@ -1,4 +1,4 @@
-package name.abuchen.portfolio.util.webaccess;
+package name.abuchen.portfolio.util;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -19,9 +19,7 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
-import name.abuchen.portfolio.util.OnlineHelper;
-
-public class WebAccess implements IWebAccess
+public class WebAccess
 {
     public final static RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(600000)
                     .setConnectTimeout(600000).setConnectionRequestTimeout(600000).build();
@@ -34,8 +32,7 @@ public class WebAccess implements IWebAccess
     private List<NameValuePair> parameters;
     private CloseableHttpResponse response;
 
-    @Override
-    public IWebAccess document(String scheme, String host, String path)
+    public WebAccess document(String scheme, String host, String path)
     {
         this.setScheme(scheme);
         this.setHost(host);
@@ -45,21 +42,18 @@ public class WebAccess implements IWebAccess
         return this;
     }
 
-    @Override
-    public IWebAccess addParameter(String param, String value)
+    public WebAccess addParameter(String param, String value)
     {
         this.parameters.add(new BasicNameValuePair(param, value));
         return this;
     }
 
-    @Override
-    public IWebAccess addHeader(String param, String value)
+    public WebAccess addHeader(String param, String value)
     {
         this.headers.add(new BasicHeader(param, value));
         return this;
     }
 
-    @Override
     public String get() throws IOException
     {
 

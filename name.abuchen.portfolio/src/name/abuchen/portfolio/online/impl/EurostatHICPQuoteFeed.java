@@ -24,7 +24,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.webaccess.WebAccess;;
+import name.abuchen.portfolio.util.WebAccess;;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
 {

@@ -15,7 +15,7 @@ import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-import name.abuchen.portfolio.util.webaccess.WebAccess;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
