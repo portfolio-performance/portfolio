@@ -15,7 +15,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
 @SuppressWarnings("nls")
-public class GBXExchangeRateProviderTest
+public class ExchangeRateProviderGBXTest
 {
     @Test
     public void testIt()

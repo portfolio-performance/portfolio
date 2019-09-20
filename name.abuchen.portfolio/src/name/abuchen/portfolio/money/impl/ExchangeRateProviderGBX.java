@@ -12,7 +12,7 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
-public class GBXExchangeRateProvider implements ExchangeRateProvider
+public class ExchangeRateProviderGBX implements ExchangeRateProvider
 {
     private static final String GBX = "GBX"; //$NON-NLS-1$
     private static final String GBP = "GBP"; //$NON-NLS-1$
