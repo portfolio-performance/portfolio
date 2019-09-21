@@ -123,20 +123,21 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("nls")
     private String requestData(Security security) throws IOException
     {
-        String html = new WebAccess().document("http", EUROSTAT_HOST, EUROSTAT_PAGE) //$NON-NLS-1$
-                        .addParameter("filterNonGeo", "1") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("precision", "1") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("geo", //$NON-NLS-1$
+        return new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
+                        .withScheme("http") //
+                        .addParameter("filterNonGeo", "1") //
+                        .addParameter("precision", "1")
+                        .addParameter("geo",
                                         security.getTickerSymbol().toUpperCase())
-                        .addParameter("unit", "I15") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("unitLabel", "code") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("coicop", "CP00") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("groupedIndicators", "1") //$NON-NLS-1$ //$NON-NLS-2$
-                        .addParameter("shortLabel", "1") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addParameter("unit", "I15") //
+                        .addParameter("unitLabel", "code") //
+                        .addParameter("coicop", "CP00") //
+                        .addParameter("groupedIndicators", "1") //
+                        .addParameter("shortLabel", "1") //
                         .get();
-        return html;
     }
 
     private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)

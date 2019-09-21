@@ -204,11 +204,10 @@ public class PortfolioReportNet
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
         String html;
-        // return webAccess.getDocument();
 
         if (type != null)
         {
-            html = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
+            html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
                             .addParameter("type", //$NON-NLS-1$
                                             type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
                             .get();
@@ -216,8 +215,7 @@ public class PortfolioReportNet
         }
         else
         {
-            html = new WebAccess().document("https", HOST, "/api/securities/search/" + query) //$NON-NLS-1$ //$NON-NLS-2$
-                            .get();
+            html = new WebAccess(HOST, "/api/securities/search/" + query).get(); //$NON-NLS-1$
         }
 
         return readItems(html);
@@ -225,13 +223,13 @@ public class PortfolioReportNet
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
-        String html = new WebAccess().document("https", HOST, "/api/securities/" + onlineId) //$NON-NLS-1$ //$NON-NLS-2$
-                        .addHeader("X-Source", "Portfolio Peformance " //$NON-NLS-1$ //$NON-NLS-2$
-                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
-                        .addHeader("X-Reason", "periodic update") //$NON-NLS-1$//$NON-NLS-2$
-                        .addHeader("Content-Type", //$NON-NLS-1$
-                                        "application/json;chartset=UTF-8") //$NON-NLS-1$
-                        .get();
+        @SuppressWarnings("nls")
+        String html = new WebAccess(HOST, "/api/securities/" + onlineId)
+                        .addHeader("X-Source",
+                                        "Portfolio Peformance " + FrameworkUtil.getBundle(PortfolioReportNet.class)
+                                                        .getVersion().toString())
+                        .addHeader("X-Reason", "periodic update")
+                        .addHeader("Content-Type", "application/json;chartset=UTF-8").get();
 
         Optional<ResultItem> onlineItem = Optional.empty();
         JSONObject response = (JSONObject) JSONValue.parse(html);
@@ -241,10 +239,10 @@ public class PortfolioReportNet
         return onlineItem;
     }
 
-    private List<ResultItem> readItems(String con) throws IOException
+    private List<ResultItem> readItems(String html)
     {
         List<ResultItem> onlineItems = new ArrayList<>();
-        JSONArray response = (JSONArray) JSONValue.parse(con);
+        JSONArray response = (JSONArray) JSONValue.parse(html);
         if (response != null)
         {
             for (int ii = 0; ii < response.size(); ii++)

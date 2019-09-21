@@ -95,14 +95,17 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
 
-        String wknUrl = MessageFormat.format("/query?function=TIME_SERIES_INTRADAY" //$NON-NLS-1$
-                        + "&symbol={0}&interval=1min&apikey={1}&datatype=csv&outputsize=compact", //$NON-NLS-1$
-                        security.getTickerSymbol(), apiKey);
-
         try
         {
-            String html = new WebAccess().document("https", "www.alphavantage.co", wknUrl) //$NON-NLS-1$ //$NON-NLS-2$
-                            .get();
+            @SuppressWarnings("nls")
+            String html = new WebAccess("www.alphavantage.co", "/query")
+                            .addParameter("function", "TIME_SERIES_INTRADAY") //
+                            .addParameter("symbol", security.getTickerSymbol()) //
+                            .addParameter("interval", "1min") //
+                            .addParameter("apikey", apiKey) //
+                            .addParameter("datatype", "csv") //
+                            .addParameter("outputsize", "compact") //
+                            .get(); // $NON-NLS-1$
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
@@ -207,13 +210,15 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
 
-        String wknUrl = MessageFormat.format("/query?function=TIME_SERIES_DAILY" //$NON-NLS-1$
-                        + "&symbol={0}&apikey={1}&datatype=csv&outputsize={2}", //$NON-NLS-1$
-                        security.getTickerSymbol(), apiKey, outputSize.name().toLowerCase(Locale.US));
-
         try
         {
-            String html = new WebAccess().document("https", "www.alphavantage.co", wknUrl) //$NON-NLS-1$ //$NON-NLS-2$
+            @SuppressWarnings("nls")
+            String html = new WebAccess("www.alphavantage.co", "/query") //
+                            .addParameter("function", "TIME_SERIES_DAILY") //
+                            .addParameter("symbol", security.getTickerSymbol()) //
+                            .addParameter("apikey", apiKey) //
+                            .addParameter("datatype", "csv") //
+                            .addParameter("outputsize", outputSize.name().toLowerCase(Locale.US)) //
                             .get();
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$

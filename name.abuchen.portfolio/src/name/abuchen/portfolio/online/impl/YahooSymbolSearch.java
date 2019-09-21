@@ -89,14 +89,18 @@ import name.abuchen.portfolio.util.WebAccess;
         }
     }
 
-    private static final String SEARCH_URL = "/aq/autoc?query={0}&region=DE&lang=de-DE&callback=YAHOO.util.ScriptNodeDataSource.callbacks"; //$NON-NLS-1$
-
     public Stream<Result> search(String query) throws IOException
     {
         List<Result> answer = new ArrayList<>();
 
-        String html = new WebAccess().document("https", "s.yimg.com", SEARCH_URL) //$NON-NLS-1$ //$NON-NLS-2$
+        @SuppressWarnings("nls")
+        String html = new WebAccess("s.yimg.com", "/aq/autoc") //
+                        .addParameter("query", query) //
+                        .addParameter("region", "DE") //
+                        .addParameter("lang", "de-DE") //
+                        .addParameter("callback", "YAHOO.util.ScriptNodeDataSource.callbacks") //
                         .get();
+
         // strip away java script call back method
         int start = html.indexOf('(');
         int end = html.lastIndexOf(')');
