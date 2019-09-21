@@ -9,8 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.Instant;
@@ -27,12 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import org.apache.http.HttpStatus;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -46,14 +38,11 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
     public static final String ID = "YAHOO"; //$NON-NLS-1$
-
-    private static final String LATEST_URL = "https://query1.finance.yahoo.com/v7/finance/quote?lang=en-US&region=US&corsDomain=finance.yahoo.com&symbols={0}"; //$NON-NLS-1$
-
-    private static final String HISTORICAL_URL = "https://query1.finance.yahoo.com/v7/finance/spark?symbols={0}&range={1}&interval=1d"; //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -71,60 +60,55 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     public final boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
 
-        try (CloseableHttpClient client = HttpClients.createSystem())
+        try
         {
-            String wknUrl = MessageFormat.format(LATEST_URL,
-                            URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()));
+            @SuppressWarnings("nls")
+            String html = new WebAccess("query1.finance.yahoo.com", "/v7/finance/quote") //
+                            .addParameter("lang", "en-US").addParameter("region", "US")
+                            .addParameter("corsDomain", "finance.yahoo.com")
+                            .addParameter("symbols", security.getTickerSymbol()).get();
 
-            try (CloseableHttpResponse response = client.execute(new HttpGet(wknUrl)))
+            int startIndex = html.indexOf("quoteResponse"); //$NON-NLS-1$
+            if (startIndex < 0)
+                return false;
+
+            LatestSecurityPrice price = new LatestSecurityPrice();
+
+            Optional<String> time = extract(html, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (time.isPresent())
             {
-                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                    throw new IOException(wknUrl + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
-
-                String body = EntityUtils.toString(response.getEntity());
-
-                int startIndex = body.indexOf("quoteResponse"); //$NON-NLS-1$
-                if (startIndex < 0)
-                    return false;
-
-                LatestSecurityPrice price = new LatestSecurityPrice();
-
-                Optional<String> time = extract(body, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (time.isPresent())
-                {
-                    long epoch = Long.parseLong(time.get());
-                    price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
-                }
-
-                Optional<String> value = extract(body, startIndex, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (value.isPresent())
-                    price.setValue(asPrice(value.get()));
-
-                Optional<String> previousClose = extract(body, startIndex, "\"regularMarketPreviousClose\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (previousClose.isPresent())
-                    price.setPreviousClose(asPrice(previousClose.get()));
-
-                Optional<String> high = extract(body, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (high.isPresent())
-                    price.setHigh(asPrice(high.get()));
-
-                Optional<String> low = extract(body, startIndex, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (low.isPresent())
-                    price.setLow(asPrice(low.get()));
-
-                Optional<String> volume = extract(body, startIndex, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
-                if (volume.isPresent())
-                    price.setVolume(asNumber(volume.get()));
-
-                if (price.getDate() == null || price.getValue() <= 0)
-                {
-                    errors.add(new IOException(body));
-                    return false;
-                }
-
-                security.setLatest(price);
-                return true;
+                long epoch = Long.parseLong(time.get());
+                price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
             }
+
+            Optional<String> value = extract(html, startIndex, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (value.isPresent())
+                price.setValue(asPrice(value.get()));
+
+            Optional<String> previousClose = extract(html, startIndex, "\"regularMarketPreviousClose\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (previousClose.isPresent())
+                price.setPreviousClose(asPrice(previousClose.get()));
+
+            Optional<String> high = extract(html, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (high.isPresent())
+                price.setHigh(asPrice(high.get()));
+
+            Optional<String> low = extract(html, startIndex, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (low.isPresent())
+                price.setLow(asPrice(low.get()));
+
+            Optional<String> volume = extract(html, startIndex, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (volume.isPresent())
+                price.setVolume(asNumber(volume.get()));
+
+            if (price.getDate() == null || price.getValue() <= 0)
+            {
+                errors.add(new IOException(html));
+                return false;
+            }
+
+            security.setLatest(price);
+            return true;
         }
         catch (IOException | ParseException e)
         {
@@ -218,6 +202,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("nls")
     private String requestData(Security security, LocalDate startDate) throws IOException
     {
         int days = Dates.daysBetween(startDate, LocalDate.now());
@@ -238,20 +223,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         else if (days < 1500)
             range = "5y"; //$NON-NLS-1$
 
-        try (CloseableHttpClient client = HttpClients.createSystem())
-        {
-            String wknUrl = MessageFormat.format(HISTORICAL_URL, //
-                            URLEncoder.encode(security.getTickerSymbol(), StandardCharsets.UTF_8.name()), //
-                            range);
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/spark") //
+                        .addParameter("symbols", security.getTickerSymbol()).addParameter("range", range)
+                        .addParameter("interval", "1d").get();
 
-            try (CloseableHttpResponse response = client.execute(new HttpGet(wknUrl)))
-            {
-                if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                    throw new IOException(wknUrl + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
-
-                return EntityUtils.toString(response.getEntity());
-            }
-        }
     }
 
     private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)

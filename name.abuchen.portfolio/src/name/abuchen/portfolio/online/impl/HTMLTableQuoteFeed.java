@@ -3,8 +3,7 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -38,8 +37,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -391,7 +390,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     protected String getUserAgent()
     {
-        return OnlineHelper.getUserAgent();
+        return null;
     }
 
     protected boolean isIgnoreContentType()
@@ -403,13 +402,14 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent())
-                            .ignoreContentType(isIgnoreContentType()).timeout(30000).get(), errors);
+            URL urlObject = new URL(url);
+            String html = new WebAccess(urlObject.getHost(), urlObject.getPath()).withScheme(urlObject.getProtocol())
+                            .addUserAgent(getUserAgent()).get();
+            return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
         }
-        catch (URISyntaxException | IOException e)
+        catch (IOException e)
         {
-            errors.add(new IOException(url + '\n' + e.getMessage(), e));
+            errors.add(new IOException(url.toString() + '\n' + e.getMessage(), e));
             return Collections.emptyList();
         }
     }
