@@ -405,7 +405,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             URL urlObject = new URL(url);
             String html = new WebAccess(urlObject.getHost(), urlObject.getPath()).withScheme(urlObject.getProtocol())
-                            .get(); // $NON-NLS-1$
+                            .get();
             return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
         }
         catch (IOException e)

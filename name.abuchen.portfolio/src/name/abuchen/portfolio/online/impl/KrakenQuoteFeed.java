@@ -104,7 +104,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
                             .addParameter("pair", security.getTickerSymbol()) //
                             .addParameter("since", tickerStartEpochSeconds.toString()) //
                             .addParameter("interval", "1440") //
-                            .get(); // $NON-NLS-1$
+                            .get();
 
             JSONObject json = (JSONObject) JSONValue.parse(html);
             JSONArray errorItems = (JSONArray) json.get("error"); //$NON-NLS-1$
