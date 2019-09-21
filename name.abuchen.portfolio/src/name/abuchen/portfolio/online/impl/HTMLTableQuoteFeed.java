@@ -37,7 +37,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -391,7 +390,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     protected String getUserAgent()
     {
-        return OnlineHelper.getUserAgent();
+        return null;
     }
 
     protected boolean isIgnoreContentType()
@@ -405,7 +404,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             URL urlObject = new URL(url);
             String html = new WebAccess(urlObject.getHost(), urlObject.getPath()).withScheme(urlObject.getProtocol())
-                            .get();
+                            .addUserAgent(getUserAgent()).get();
             return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
         }
         catch (IOException e)
