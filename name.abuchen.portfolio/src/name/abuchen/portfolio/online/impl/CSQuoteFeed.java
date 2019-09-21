@@ -25,7 +25,6 @@ import name.abuchen.portfolio.Messages;
 public class CSQuoteFeed extends HTMLTableQuoteFeed
 {
     public static final String ID = "CREDITSUISSE_HTML_TABLE"; //$NON-NLS-1$
-    public static final String USERAGENT = "curl/7.58.0"; //$NON-NLS-1$
 
     protected static class CSDateColumn extends DateColumn
     {
@@ -66,12 +65,6 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
     protected Column[] getColumns()
     {
         return COLUMNS;
-    }
-
-    @Override
-    protected String getUserAgent()
-    {
-        return USERAGENT;
     }
 
     @Override

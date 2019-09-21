@@ -37,7 +37,6 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -387,11 +386,6 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     public List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
         return Collections.emptyList();
-    }
-
-    protected String getUserAgent()
-    {
-        return OnlineHelper.getUserAgent();
     }
 
     protected boolean isIgnoreContentType()
