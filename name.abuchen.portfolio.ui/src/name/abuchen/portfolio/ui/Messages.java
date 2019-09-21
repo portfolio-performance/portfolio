@@ -103,6 +103,7 @@ public class Messages extends NLS
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
+    public static String ColumnCount;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -464,6 +465,7 @@ public class Messages extends NLS
     public static String LabelChartDetailSettingsShowDataLabel;
     public static String LabelChartDetailSettingsShowMissingTradingDays;
     public static String LabelChartShowLabels;
+    public static String LabelChartType;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
