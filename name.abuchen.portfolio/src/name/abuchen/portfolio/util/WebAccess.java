@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -22,7 +23,8 @@ import org.apache.http.util.EntityUtils;
 public class WebAccess
 {
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
-                    .setConnectTimeout(2000).setConnectionRequestTimeout(20000).build();
+                    .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
+                    .build();
 
     private String scheme = "https"; //$NON-NLS-1$
     private String host;
