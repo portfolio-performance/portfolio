@@ -373,7 +373,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .section("tax", "currency").optional() //
-                        .match("^anrechenbare Quellensteuer [0-9]*% (?<currency>\\w{3}+)(\\s+)(?<tax>[\\d.,]*?)")
+                        .match("^ausländische Quellensteuer [0-9]*% (?<currency>\\w{3}+)(\\s+)(?<tax>[\\d.,]*?)")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
