@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Optional;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -26,7 +27,7 @@ public class AccountTransferModel extends AbstractModel
 {
     public enum Properties
     {
-        sourceAccount, targetAccount, date, fxAmount, exchangeRate, inverseExchangeRate, amount, //
+        sourceAccount, targetAccount, date, time, fxAmount, exchangeRate, inverseExchangeRate, amount, //
         note, sourceAccountCurrency, targetAccountCurrency, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, calculationStatus;
     }
@@ -38,6 +39,7 @@ public class AccountTransferModel extends AbstractModel
     private Account sourceAccount;
     private Account targetAccount;
     private LocalDate date = LocalDate.now();
+    private LocalTime time = LocalTime.MIDNIGHT;
 
     private long fxAmount;
     private BigDecimal exchangeRate = BigDecimal.ONE;
@@ -90,7 +92,7 @@ public class AccountTransferModel extends AbstractModel
             t.insert();
         }
 
-        t.setDate(date.atStartOfDay());
+        t.setDate(LocalDateTime.of(date, time));
         t.setNote(note);
 
         // if source and target account have the same currencies, no forex data
@@ -140,6 +142,7 @@ public class AccountTransferModel extends AbstractModel
 
         LocalDateTime transactionDate = entry.getSourceTransaction().getDateTime();
         this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
         this.note = entry.getSourceTransaction().getNote();
 
         this.fxAmount = entry.getSourceTransaction().getAmount();
@@ -258,6 +261,16 @@ public class AccountTransferModel extends AbstractModel
     {
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateExchangeRate();
+    }
+
+    public LocalTime getTime()
+    {
+        return time;
+    }
+
+    public void setTime(LocalTime time)
+    {
+        firePropertyChange(Properties.time.name(), this.time, this.time = time);
     }
 
     public long getFxAmount()

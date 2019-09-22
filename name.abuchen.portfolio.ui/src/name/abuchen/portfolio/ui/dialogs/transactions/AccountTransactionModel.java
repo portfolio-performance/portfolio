@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
@@ -29,7 +30,7 @@ public class AccountTransactionModel extends AbstractModel
 {
     public enum Properties
     {
-        security, account, date, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
+        security, account, date, time, shares, fxGrossAmount, dividendAmount, exchangeRate, inverseExchangeRate, grossAmount, // NOSONAR
         fxTaxes, taxes, total, note, exchangeRateCurrencies, inverseExchangeRateCurrencies, // NOSONAR
         accountCurrencyCode, securityCurrencyCode, fxCurrencyCode, calculationStatus; // NOSONAR
     }
@@ -45,6 +46,7 @@ public class AccountTransactionModel extends AbstractModel
     private Security security;
     private Account account;
     private LocalDate date = LocalDate.now();
+    private LocalTime time = LocalTime.MIDNIGHT;
     private long shares;
 
     private long fxGrossAmount;
@@ -126,7 +128,7 @@ public class AccountTransactionModel extends AbstractModel
             account.addTransaction(t);
         }
 
-        t.setDateTime(date.atStartOfDay());
+        t.setDateTime(LocalDateTime.of(date, time));
         t.setSecurity(!EMPTY_SECURITY.equals(security) ? security : null);
         t.setShares(supportsShares() ? shares : 0);
         t.setAmount(total);
@@ -220,6 +222,7 @@ public class AccountTransactionModel extends AbstractModel
         this.account = account;
         LocalDateTime transactionDate = transaction.getDateTime();
         this.date = transactionDate.toLocalDate();
+        this.time = transactionDate.toLocalTime();
         this.shares = transaction.getShares();
         this.total = transaction.getAmount();
 
@@ -385,6 +388,16 @@ public class AccountTransactionModel extends AbstractModel
         firePropertyChange(Properties.date.name(), this.date, this.date = date);
         updateShares();
         updateExchangeRate();
+    }
+
+    public LocalTime getTime()
+    {
+        return time;
+    }
+
+    public void setTime(LocalTime time)
+    {
+        firePropertyChange(Properties.time.name(), this.time, this.time = time);
     }
 
     public long getShares()
