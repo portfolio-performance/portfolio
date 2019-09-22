@@ -27,6 +27,7 @@ public class WebAccess
                     .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
                     .build();
 
+    private String url;
     private String scheme = "https"; //$NON-NLS-1$
     private String host;
     private String path;
@@ -43,55 +44,74 @@ public class WebAccess
         }
     }
 
+    public WebAccess(String url)
+    {
+        this.url = Objects.requireNonNull(url.trim(), "PP WebAccess: rawURL null"); //$NON-NLS-1$
+    }
+
+    public WebAccess withAddress(String host, String path)
+    {
+        this.host = Objects.requireNonNull(host.trim(), "PP WebAccess: host is null"); //$NON-NLS-1$
+        this.path = Objects.requireNonNull(path.trim(), "PP WebAccess: path is null"); //$NON-NLS-1$
+        return this;
+    }
+
     public WebAccess withScheme(String scheme)
     {
-        if (Objects.nonNull(scheme))
-            this.scheme = scheme;
+        this.scheme = Objects.requireNonNull(scheme.trim(), "PP WebAccess: scheme is null"); //$NON-NLS-1$
         return this;
     }
 
     public WebAccess addParameter(String param, String value)
     {
-        if (Objects.nonNull(param) && Objects.nonNull(value))
-        {
-            this.parameters.add(new BasicNameValuePair(param, value));
-        }
+        param = Objects.requireNonNull(param.trim(), "PP WebAccess: Parameter is null"); //$NON-NLS-1$
+        value = Objects.requireNonNull(value.trim(), "PP WebAccess: Value Agent is null"); //$NON-NLS-1$
+        this.parameters.add(new BasicNameValuePair(param, value));
         return this;
     }
 
     public WebAccess addHeader(String param, String value)
     {
-        if (Objects.nonNull(param) && Objects.nonNull(value))
-        {
-            this.headers.add(new BasicHeader(param, value));
-        }
+        param = Objects.requireNonNull(param.trim(), "PP WebAccess: Header: Parameter is null"); //$NON-NLS-1$
+        value = Objects.requireNonNull(value.trim(), "PP WebAccess: Header: Value Agent is null"); //$NON-NLS-1$
+        this.headers.add(new BasicHeader(param, value));
         return this;
     }
 
     public WebAccess addUserAgent(String userAgent)
     {
-        if (Objects.nonNull(userAgent))
-            this.userAgent = userAgent;
+        this.userAgent = userAgent;
         return this;
     }
 
     public String get() throws IOException
     {
-        CloseableHttpClient client = HttpClientBuilder.create() //
-                        .setDefaultRequestConfig(defaultRequestConfig) //
-                        .setDefaultHeaders(this.headers) //
-                        .setUserAgent(this.userAgent).build();
 
-        URIBuilder uriBuilder = new URIBuilder().setScheme(scheme).setHost(host).setPath(path);
-        uriBuilder.setParameters(this.parameters);
+        String errorURL = null;
+        CloseableHttpResponse response = null;
 
         try
         {
-            URL objectURL = uriBuilder.build().toURL();
-            CloseableHttpResponse response = client.execute(new HttpGet(objectURL.toString()));
-            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new IOException(objectURL.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
+            CloseableHttpClient client = HttpClientBuilder.create() //
+                            .setDefaultRequestConfig(defaultRequestConfig) //
+                            .setDefaultHeaders(this.headers) //
+                            .setUserAgent(this.userAgent).build();
 
+            if (this.url != null && !this.url.isEmpty())
+            {
+                response = client.execute(new HttpGet(url));
+                errorURL = this.url;
+            }
+            else
+            {
+                URIBuilder uriBuilder = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPath(this.path);
+                uriBuilder.setParameters(this.parameters);
+                URL objectURL = uriBuilder.build().toURL();
+                response = client.execute(new HttpGet(objectURL.toString()));
+                errorURL = objectURL.toString();
+            }
+            if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
+                throw new IOException(errorURL + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
             return EntityUtils.toString(response.getEntity());
         }
         catch (URISyntaxException e)
@@ -99,5 +119,4 @@ public class WebAccess
             throw new IOException(e);
         }
     }
-
 }
