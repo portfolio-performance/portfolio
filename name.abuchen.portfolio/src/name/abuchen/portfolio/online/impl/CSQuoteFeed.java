@@ -5,8 +5,15 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.Collections;
+import java.util.List;
+
+import org.jsoup.Jsoup;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
 
 /**
  * This class provides a feed for Credit Suisse Quotes. Probably all quotes
@@ -20,9 +27,7 @@ import name.abuchen.portfolio.Messages;
  * there are header titles that are specific to Credit Suisse and 2) Credit
  * Suisse returns the quotes with Excel mime-type which are in fact HTML tables
  * but would be converted upon opening Excel. This is a little bit of a hack on
- * CS' part.
- *
- * For testing ==>
+ * CS' part. For testing ==>
  * https://amfunds.credit-suisse.com/ch/de/institutional/fund/history/CH0209106761?currency=USD
  */
 public class CSQuoteFeed extends HTMLTableQuoteFeed
@@ -71,16 +76,9 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
         return COLUMNS;
     }
 
-    @Override
     protected String getUserAgent()
     {
         return USERAGENT;
-    }
-
-    @Override
-    protected boolean isIgnoreContentType()
-    {
-        return true;
     }
 
     /**
@@ -96,5 +94,21 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
             if (arg.charAt(0) != '#')
                 new CSQuoteFeed().doLoad(arg, writer);
         writer.flush();
+    }
+
+    @Override
+    protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
+    {
+        try
+        {
+            String escapedUrl = new URI(url).toASCIIString();
+            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent()).ignoreContentType(true)
+                            .timeout(30000).get(), errors);
+        }
+        catch (URISyntaxException | IOException e)
+        {
+            errors.add(new IOException(url + '\n' + e.getMessage(), e));
+            return Collections.emptyList();
+        }
     }
 }

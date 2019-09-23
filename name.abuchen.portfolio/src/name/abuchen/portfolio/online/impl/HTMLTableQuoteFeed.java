@@ -3,8 +3,6 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -38,8 +36,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
-import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
@@ -389,25 +387,15 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
-    protected String getUserAgent()
-    {
-        return OnlineHelper.getUserAgent();
-    }
-
-    protected boolean isIgnoreContentType()
-    {
-        return false;
-    }
-
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
-            String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent())
-                            .ignoreContentType(isIgnoreContentType()).timeout(30000).get(), errors);
+            Document document = Jsoup.parse(new WebAccess(url) //
+                            .get());
+            return parse(url, document, errors);
         }
-        catch (URISyntaxException | IOException e)
+        catch (IOException e)
         {
             errors.add(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
@@ -419,7 +407,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
-    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
+    protected List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
