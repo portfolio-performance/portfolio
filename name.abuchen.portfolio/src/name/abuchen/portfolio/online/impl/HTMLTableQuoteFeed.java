@@ -36,6 +36,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -387,11 +388,23 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    protected String getUserAgent()
+    {
+        return OnlineHelper.getUserAgent();
+    }
+
+    protected boolean isIgnoreContentType()
+    {
+        return false;
+    }
+
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
             Document document = Jsoup.parse(new WebAccess(url) //
+                            .addUserAgent(getUserAgent())
+                            .ignoreContentType(isIgnoreContentType())
                             .get());
             return parse(url, document, errors);
         }

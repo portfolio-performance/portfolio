@@ -5,15 +5,8 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Collections;
-import java.util.List;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.util.WebAccess;
 
 /**
  * This class provides a feed for Credit Suisse Quotes. Probably all quotes
@@ -78,9 +71,16 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
         return COLUMNS;
     }
 
+    @Override
     protected String getUserAgent()
     {
         return USERAGENT;
+    }
+
+    @Override
+    protected boolean isIgnoreContentType()
+    {
+        return true;
     }
 
     /**
@@ -96,23 +96,5 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
             if (arg.charAt(0) != '#')
                 new CSQuoteFeed().doLoad(arg, writer);
         writer.flush();
-    }
-
-    @Override
-    protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
-    {
-        try
-        {
-            Document document = Jsoup.parse(new WebAccess(url) //
-                            .addUserAgent(getUserAgent())
-                            .ignoreContentType(true)
-                            .get());
-            return parse(url, document, errors);
-        }
-        catch (IOException e)
-        {
-            errors.add(new IOException(url + '\n' + e.getMessage(), e));
-            return Collections.emptyList();
-        }
     }
 }
