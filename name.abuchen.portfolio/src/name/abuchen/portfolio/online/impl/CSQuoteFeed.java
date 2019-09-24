@@ -5,15 +5,15 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.List;
 
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.util.WebAccess;
 
 /**
  * This class provides a feed for Credit Suisse Quotes. Probably all quotes
@@ -27,7 +27,9 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
  * there are header titles that are specific to Credit Suisse and 2) Credit
  * Suisse returns the quotes with Excel mime-type which are in fact HTML tables
  * but would be converted upon opening Excel. This is a little bit of a hack on
- * CS' part. For testing ==>
+ * CS' part.
+ * 
+ * For testing ==>
  * https://amfunds.credit-suisse.com/ch/de/institutional/fund/history/CH0209106761?currency=USD
  */
 public class CSQuoteFeed extends HTMLTableQuoteFeed
@@ -101,11 +103,13 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
     {
         try
         {
-            String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent()).ignoreContentType(true)
-                            .timeout(30000).get(), errors);
+            Document document = Jsoup.parse(new WebAccess(url) //
+                            .addUserAgent(getUserAgent())
+                            .ignoreContentType(true)
+                            .get());
+            return parse(url, document, errors);
         }
-        catch (URISyntaxException | IOException e)
+        catch (IOException e)
         {
             errors.add(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();

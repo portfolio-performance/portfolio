@@ -76,9 +76,8 @@ import org.apache.http.util.EntityUtils;
  *   Target URL
  *          http://example.com/path/page.html?parameter=value
  * 
- *  String html = new WebAccess("example.com", "/path/")
+ *  String html = new WebAccess("example.com", "/path/page.html")
  *                       .withScheme("http")
- *                       .addParameter("parameter", "value")
  *                       .addParameter("parameter", "value")
  *                       .addHeader("Content-Type", "application/json;chartset=UTF-8")
  *                       .addHeader("X-Response", "daily")
