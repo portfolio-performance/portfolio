@@ -159,7 +159,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         // TODO 2: not matched by buy/sell with taxes...
 
         // just char sequence
-        DocumentType type = new DocumentType("Steuerliche Behandlung: Ausländische Dividende");
+        DocumentType type = new DocumentType("Steuerliche Behandlung: (Aus|In)ländische Dividende");
 
         this.addDocumentTyp(type);
 
