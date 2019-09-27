@@ -72,7 +72,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax").optional() //
-                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .match("^ *a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
                             Unit unit = createTaxUnit(v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
@@ -274,7 +274,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax").optional() //
-                        .match("^a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .match("^ *a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
                             Unit unit = createTaxUnit(v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
@@ -360,7 +360,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("tax").optional() //
-                        .match("^e *r *s *t *a *t *t *e *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
+                        .match("^ *e *r *s *t *a *t *t *e *t *e *S *t *e *u *e *r *n *(?<tax>.*)$") //
                         .assign((t, v) -> {
                             Unit unit = createTaxUnit(v.get("tax"));
                             if (unit == null || unit.getAmount().isZero())
