@@ -27,6 +27,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addTaxTransaction();
         addSellTransaction();
+        addExpireTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -370,6 +371,51 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(t -> t.getAmount() == 0L ? null : new TransactionItem(t)));
+    }
+    
+    @SuppressWarnings("nls")
+    private void addExpireTransaction()
+    {
+        DocumentType type = new DocumentType("A *b *r *e *c *h *n *u *n *g *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *e *");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Einlösung *");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("date", "name", "nameContinued", "wkn", "shares", "isin")
+                        .match("^ *p *e *r *(?<date> \\d *\\d *\\. *\\d *\\d *\\. *\\d *\\d *\\d *\\d)\\s{3,}(?<name>.*)\\s{3,}(?<wkn>.*) *$")
+                        .match("^ *S *T *K *(?<shares>[\\d. ]+(,[\\d ]+)?) *(?<nameContinued>(\\S{1,} {1,2})*) *(?<isin>[\\S ]*) *$")
+                        .assign((t, v) -> {
+                            v.put("isin", stripBlanksAndUnderscores(v.get("isin")));
+                            v.put("wkn", stripBlanksAndUnderscores(v.get("wkn")));
+                            v.put("date", stripBlanksAndUnderscores(v.get("date")));
+                            v.put("shares", stripBlanksAndUnderscores(v.get("shares")));
+                            v.put("name", stripBlanksAndUnderscores(v.get("name")));
+                            v.put("nameContinued", stripBlanksAndUnderscores(v.get("nameContinued")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+
+                        .section("amount", "currency") //
+                        .match("^Kurswert Einl.sung *(?<currency>\\w{3}+) *(?<amount>[\\d,]*) *$")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSection(pdfTransaction);
+        
+        block.set(pdfTransaction);
     }
 
     @SuppressWarnings("nls")
