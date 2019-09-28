@@ -1,14 +1,13 @@
 package name.abuchen.portfolio.util;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 import org.apache.http.Header;
-import org.apache.http.HttpEntity;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.CookieSpecs;
@@ -16,13 +15,13 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
-import org.apache.http.entity.ContentType;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+//@formatter:off
 /**
  * This class is centralizing the download of web content and returns the response as string.
  * This is a FLUENT-API.
@@ -85,67 +84,50 @@ import org.apache.http.util.EntityUtils;
  *                       .ignoreContentType(true)
  *                       .get();
  */
-
+//@formatter:on
 public class WebAccess
 {
     public static final RequestConfig defaultRequestConfig = RequestConfig.custom().setSocketTimeout(20000)
                     .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
                     .build();
 
-    private static ArrayList<String> filterContentType = new ArrayList<>();
-
-    static
-    {
-        filterContentType.add(ContentType.DEFAULT_TEXT.getMimeType().toString());
-        filterContentType.add(ContentType.APPLICATION_JSON.getMimeType().toString());
-        filterContentType.add(ContentType.APPLICATION_XHTML_XML.getMimeType().toString());
-        filterContentType.add(ContentType.APPLICATION_XML.getMimeType().toString());
-        filterContentType.add(ContentType.TEXT_HTML.getMimeType().toString());
-        filterContentType.add(ContentType.TEXT_PLAIN.getMimeType().toString());
-        filterContentType.add(ContentType.TEXT_XML.getMimeType().toString());
-    }
-
-    private String url;
     private String scheme = "https"; //$NON-NLS-1$
     private String host;
     private String path;
     private String userAgent = OnlineHelper.getUserAgent();
-    private Boolean ignoreContentType = false;
     private List<Header> headers = new ArrayList<>();
     private List<NameValuePair> parameters = new ArrayList<>();
 
     public WebAccess(String host, String path)
     {
-        if (Objects.nonNull(host) && Objects.nonNull(path))
-        {
-            this.host = host.trim();
-            this.path = path.trim();
-        }
+        this.host = Objects.requireNonNull(host).trim();
+        this.path = Objects.requireNonNull(path).trim();
     }
 
-    public WebAccess(String url)
+    public WebAccess(String url) throws URISyntaxException
     {
-        this.url = Objects.requireNonNull(url.trim(), "PP WebAccess: url is null"); //$NON-NLS-1$
+        URIBuilder builder = new URIBuilder(url);
+
+        this.scheme = builder.getScheme();
+        this.host = builder.getHost();
+        this.path = builder.getPath();
+        this.parameters.addAll(builder.getQueryParams());
     }
 
     public WebAccess withScheme(String scheme)
     {
-        this.scheme = Objects.requireNonNull(scheme.trim(), "PP WebAccess: scheme is null"); //$NON-NLS-1$
+        this.scheme = Objects.requireNonNull(scheme).trim();
         return this;
     }
 
     public WebAccess addParameter(String param, String value)
     {
-        param = Objects.requireNonNull(param, "PP WebAccess: Parameter is null"); //$NON-NLS-1$
-        value = Objects.requireNonNull(value, "PP WebAccess: Value Agent is null"); //$NON-NLS-1$
         this.parameters.add(new BasicNameValuePair(param, value));
         return this;
     }
 
     public WebAccess addHeader(String param, String value)
     {
-        param = Objects.requireNonNull(param, "PP WebAccess: Header: Parameter is null"); //$NON-NLS-1$
-        value = Objects.requireNonNull(value, "PP WebAccess: Header: Value Agent is null"); //$NON-NLS-1$
         this.headers.add(new BasicHeader(param, value));
         return this;
     }
@@ -156,16 +138,8 @@ public class WebAccess
         return this;
     }
 
-    public WebAccess ignoreContentType(Boolean ignoreContentType)
-    {
-        this.ignoreContentType = ignoreContentType;
-        return this;
-    }
-
     public String get() throws IOException
     {
-
-        String errorURL = null;
         CloseableHttpResponse response = null;
 
         try
@@ -175,39 +149,13 @@ public class WebAccess
                             .setDefaultHeaders(this.headers) //
                             .setUserAgent(this.userAgent).build();
 
-            if (this.url != null && !this.url.isEmpty())
-            {
-                response = client.execute(new HttpGet(url));
-                errorURL = this.url;
-            }
-            else
-            {
-                URIBuilder uriBuilder = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPath(this.path);
-                uriBuilder.setParameters(this.parameters);
-                URL objectURL = uriBuilder.build().toURL();
-                response = client.execute(new HttpGet(objectURL.toString()));
-                errorURL = objectURL.toString();
-            }
-
-            if (!this.ignoreContentType)
-            {
-                HttpEntity entity = response.getEntity();
-                ContentType contentType;
-                if (entity != null)
-                {
-                    contentType = ContentType.get(entity);
-                    Boolean contentFound = filterContentType.stream()
-                                    .anyMatch(s -> contentType.getMimeType().toString().contains(s));
-                    if (!contentFound)
-                        throw new IllegalStateException(errorURL + " --> content type " + contentType.getMimeType() //$NON-NLS-1$
-                                        + " is not supported"); //$NON-NLS-1$
-                }
-                else
-                    throw new IllegalStateException(errorURL + " --> missing ContentType"); //$NON-NLS-1$
-            }
+            URI uri = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPath(this.path)
+                            .setParameters(this.parameters).build();
+            response = client.execute(new HttpGet(uri));
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
-                throw new IOException(errorURL + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
+                throw new IOException(uri.toString() + " --> " + response.getStatusLine().getStatusCode()); //$NON-NLS-1$
+
             return EntityUtils.toString(response.getEntity());
         }
         catch (URISyntaxException e)

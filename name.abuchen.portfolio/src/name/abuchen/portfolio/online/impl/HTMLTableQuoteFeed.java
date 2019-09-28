@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -393,22 +394,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return OnlineHelper.getUserAgent();
     }
 
-    protected boolean isIgnoreContentType()
-    {
-        return false;
-    }
-
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
             Document document = Jsoup.parse(new WebAccess(url) //
                             .addUserAgent(getUserAgent())
-                            .ignoreContentType(isIgnoreContentType())
                             .get());
             return parse(url, document, errors);
         }
-        catch (IOException e)
+        catch (URISyntaxException | IOException e)
         {
             errors.add(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
@@ -420,7 +415,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
-    protected List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
+    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$

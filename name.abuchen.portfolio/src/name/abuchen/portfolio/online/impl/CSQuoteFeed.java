@@ -77,12 +77,6 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
         return USERAGENT;
     }
 
-    @Override
-    protected boolean isIgnoreContentType()
-    {
-        return true;
-    }
-
     /**
      * Test method to parse HTML tables
      * 
