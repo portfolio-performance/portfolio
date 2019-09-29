@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -25,16 +26,30 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
     private final String label;
     private final Class<E> type;
 
+    /**
+     * If not null, display the context menu at this path (and not at the top
+     * level of the widget configuration menu).
+     */
+    private final String pathToMenu;
+
     private EnumSet<E> values;
 
     public EnumBasedConfig(WidgetDelegate<?> delegate, String label, Class<E> type, Dashboard.Config configurationKey,
                     Policy policy)
+    {
+        this(delegate, label, type, configurationKey, policy, null);
+    }
+
+    public EnumBasedConfig(WidgetDelegate<?> delegate, String label, Class<E> type, Dashboard.Config configurationKey,
+                    Policy policy, String pathToMenu)
     {
         this.delegate = delegate;
         this.configurationKey = configurationKey;
         this.label = label;
         this.type = type;
         this.policy = policy;
+
+        this.pathToMenu = pathToMenu;
 
         this.values = EnumSet.noneOf(type);
 
@@ -62,10 +77,19 @@ public class EnumBasedConfig<E extends Enum<E>> implements WidgetConfig
     public void menuAboutToShow(IMenuManager manager)
     {
         MenuManager subMenu = new MenuManager(label);
-        manager.add(subMenu);
-
         for (E v : type.getEnumConstants())
             subMenu.add(buildAction(v));
+
+        if (pathToMenu != null)
+        {
+            IMenuManager alternative = manager.findMenuUsingPath(pathToMenu);
+            alternative.add(new Separator());
+            alternative.add(subMenu);
+        }
+        else
+        {
+            manager.add(subMenu);
+        }
     }
 
     private Action buildAction(E value)

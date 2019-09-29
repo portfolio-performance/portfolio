@@ -19,18 +19,28 @@ public class DataSeriesConfig implements WidgetConfig
 {
     private final WidgetDelegate<?> delegate;
     private final boolean supportsBenchmarks;
+    private final String label;
+    private final Dashboard.Config configurationKey;
 
     private DataSeries dataSeries;
 
     public DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks)
     {
+        this(delegate, supportsBenchmarks, false, Messages.LabelDataSeries, Dashboard.Config.DATA_SERIES);
+    }
+
+    protected DataSeriesConfig(WidgetDelegate<?> delegate, boolean supportsBenchmarks, boolean supportsEmptyDataSeries,
+                    String label, Dashboard.Config configurationKey)
+    {
         this.delegate = delegate;
         this.supportsBenchmarks = supportsBenchmarks;
+        this.label = label;
+        this.configurationKey = configurationKey;
 
-        String uuid = delegate.getWidget().getConfiguration().get(Dashboard.Config.DATA_SERIES.name());
+        String uuid = delegate.getWidget().getConfiguration().get(configurationKey.name());
         if (uuid != null && !uuid.isEmpty())
             dataSeries = delegate.getDashboardData().getDataSeriesSet().lookup(uuid);
-        if (dataSeries == null)
+        if (dataSeries == null && !supportsEmptyDataSeries)
             dataSeries = delegate.getDashboardData().getDataSeriesSet().getAvailableSeries().stream()
                             .filter(ds -> ds.getType().equals(DataSeries.Type.CLIENT)).findAny()
                             .orElseThrow(IllegalArgumentException::new);
@@ -44,10 +54,12 @@ public class DataSeriesConfig implements WidgetConfig
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(dataSeries.getLabel()));
+        manager.appendToGroup(DashboardView.INFO_MENU_GROUP_NAME, new LabelOnly(getLabel()));
 
-        MenuManager subMenu = new MenuManager(Messages.LabelDataSeries);
-        subMenu.add(new LabelOnly(dataSeries.getLabel()));
+        // use configurationKey as contribution id to allow other context menus
+        // to attach to this menu manager later
+        MenuManager subMenu = new MenuManager(label, configurationKey.name());
+        subMenu.add(new LabelOnly(dataSeries != null ? dataSeries.getLabel() : "-")); //$NON-NLS-1$
         subMenu.add(new Separator());
         subMenu.add(new SimpleAction(Messages.MenuSelectDataSeries, a -> doAddSeries(false)));
 
@@ -66,7 +78,7 @@ public class DataSeriesConfig implements WidgetConfig
         dialog.setElements(list);
         dialog.setMultiSelection(false);
 
-        if (dialog.open() != DataSeriesSelectionDialog.OK)
+        if (dialog.open() != DataSeriesSelectionDialog.OK) // NOSONAR
             return;
 
         List<DataSeries> result = dialog.getResult();
@@ -74,12 +86,12 @@ public class DataSeriesConfig implements WidgetConfig
             return;
 
         dataSeries = result.get(0);
-        delegate.getWidget().getConfiguration().put(Dashboard.Config.DATA_SERIES.name(), dataSeries.getUUID());
+        delegate.getWidget().getConfiguration().put(configurationKey.name(), dataSeries.getUUID());
 
         // construct label to indicate the data series (user can manually change
         // the label later)
-        String label = WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " + dataSeries.getLabel(); //$NON-NLS-1$
-        delegate.getWidget().setLabel(label);
+        delegate.getWidget().setLabel(WidgetFactory.valueOf(delegate.getWidget().getType()).getLabel() + ", " //$NON-NLS-1$
+                        + dataSeries.getLabel());
 
         delegate.update();
         delegate.getClient().touch();
@@ -88,6 +100,6 @@ public class DataSeriesConfig implements WidgetConfig
     @Override
     public String getLabel()
     {
-        return Messages.LabelDataSeries + ": " + dataSeries.getLabel(); //$NON-NLS-1$
+        return label + ": " + (dataSeries != null ? dataSeries.getLabel() : "-"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 }
