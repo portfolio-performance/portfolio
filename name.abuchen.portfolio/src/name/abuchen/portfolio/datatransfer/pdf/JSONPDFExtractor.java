@@ -34,9 +34,11 @@ import name.abuchen.portfolio.json.JPDFExtractorDefinition.JTransactionMatcher;
 import name.abuchen.portfolio.json.JSecurity;
 import name.abuchen.portfolio.json.JTransaction;
 import name.abuchen.portfolio.json.JTransactionUnit;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -96,6 +98,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                     break;
                 case SALE:
                     pdftx.wrap(t -> wrapBuySell(t, PortfolioTransaction.Type.SELL));
+                    break;
+                case DIVIDEND:
+                    pdftx.wrap(this::wrapDividend);
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -160,6 +165,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$
+        security.setCurrency(asCurrencyCode(v.get("currency"))); //$NON-NLS-1$
         t.setSecurity(security);
     }
 
@@ -232,12 +238,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         entry.setShares(Values.Share.factorize(t.getShares()));
 
-        Map<String, String> values = new HashMap<>();
-        values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
-        values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
-        values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
-        values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
-        entry.setSecurity(getOrCreateSecurity(values));
+        entry.setSecurity(convertToSecurity(t));
 
         t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull)
                         .forEach(u -> entry.getPortfolioTransaction().addUnit(u));
@@ -247,12 +248,62 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         return item;
     }
 
+    private Extractor.Item wrapDividend(JTransaction t)
+    {
+        AccountTransaction tx = new AccountTransaction();
+        tx.setType(AccountTransaction.Type.DIVIDENDS);
+
+        tx.setAmount(Values.Amount.factorize(t.getAmount()));
+        tx.setCurrencyCode(t.getCurrency());
+        tx.setShares(Values.Share.factorize(t.getShares()));
+
+        if (t.getTime() != null)
+            tx.setDateTime(t.getDate().atTime(t.getTime()));
+        else
+            tx.setDateTime(t.getDate().atStartOfDay());
+
+        tx.setSecurity(convertToSecurity(t));
+
+        t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull).forEach(tx::addUnit);
+
+        TransactionItem item = new TransactionItem(tx);
+        item.setData(t);
+        return item;
+    }
+
+    private Security convertToSecurity(JTransaction t)
+    {
+        Map<String, String> values = new HashMap<>();
+        values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
+        values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
+        values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
+        values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
+        values.put("currency", t.getSecurity().getCurrency()); //$NON-NLS-1$
+        return getOrCreateSecurity(values);
+    }
+
     private Transaction.Unit convertToUnit(JTransaction jtx, JTransactionUnit junit)
     {
-        if (junit.getAmount() == 0d)
-            return null;
+        Money amount = null;
 
-        Money amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
+        if (junit.getAmount() == null || junit.getAmount() == 0d)
+        {
+            // if amount is not available, but fxAmount and fxRateToBase is,
+            // calculate the value
+            if (junit.getFxAmount() == null || junit.getFxAmount() == 0d //
+                            || junit.getFxRateToBase() == null
+                            || junit.getFxRateToBase().compareTo(BigDecimal.ZERO) == 0)
+                return null;
+
+            double value = BigDecimal.valueOf(junit.getFxAmount())
+                            .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
+
+            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(value));
+        }
+        else
+        {
+            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
+        }
 
         if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE
                         && (junit.getFxAmount() == null || junit.getFxAmount() == 0d))
@@ -262,7 +313,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         if (Strings.isNullOrEmpty(junit.getFxCurrency()))
             return null;
 
-        String fxCurrency = asCurrencyCode(junit.getFxCurrency());
+        String fxCurrency = asCurrencyCode(jtx.getSecurity().getCurrency());
 
         if (jtx.getCurrency().equals(fxCurrency))
         {

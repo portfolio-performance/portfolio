@@ -10,6 +10,7 @@ public class JSecurity
     private String isin;
     private String wkn;
     private String ticker;
+    private String currency;
 
     public String getName()
     {
@@ -50,6 +51,16 @@ public class JSecurity
     {
         this.ticker = ticker;
     }
+    
+    public String getCurrency()
+    {
+        return currency;
+    }
+
+    public void setCurrency(String currency)
+    {
+        this.currency = currency;
+    }
 
     public static JSecurity from(Security security)
     {
@@ -58,6 +69,7 @@ public class JSecurity
         s.isin = Strings.emptyToNull(security.getIsin());
         s.wkn = Strings.emptyToNull(security.getWkn());
         s.ticker = Strings.emptyToNull(security.getTickerSymbol());
+        s.currency = Strings.emptyToNull(security.getCurrencyCode());
         return s;
     }
 }

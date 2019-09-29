@@ -10,7 +10,8 @@
 			"security": {
 				"name": "COMSTAGE-MSCI WORLD TRN U.ETF INH.ANT.I O.N. 1/1",
 				"isin": "LU0392494562",
-				"wkn": "ETF110"
+				"wkn": "ETF110",
+				"currency": "EUR"
 			}
 		}
 	]

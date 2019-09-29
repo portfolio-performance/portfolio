@@ -1,0 +1,86 @@
+{
+	"version": 1,
+	"name": "Deutsche Bank - Kaufbuchungen",
+	"locale": "de",
+	"pattern": [
+		"TRADE REPUBLIC",
+		"DIVIDENDE"
+	],
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"startWith": "DIVIDENDE",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"POSITION ANZAHL ERTRÄGNIS BETRAG",
+						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
+						".*",
+						"(?<isin>.*)"
+					]
+				},
+				{
+					"pattern": [
+						"GESAMT ([\\d+,.]*) (\\w{3}+)",
+						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
+					]
+				},
+				{
+					"pattern": [
+						"VERRECHNUNGSKONTO VALUTA BETRAG",
+						".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)"
+					]
+				},
+				{
+					"pattern": [
+						"POSITION ANZAHL ERTRÄGNIS BETRAG",
+						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"GESAMT (?<fxAmount>[\\d+,.]*) (?<fxCurrency>\\w{3}+)",
+						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kapitalertragssteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Quellensteuer DE für US-Emittent -(?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3}+)",
+						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
+	]
+}

@@ -11,7 +11,8 @@
 			"security": {
 				"name": "BASF SE",
 				"isin": "DE000BASF111",
-				"wkn": "BASF11"
+				"wkn": "BASF11",
+				"currency": "EUR"
 			},
 			"units": [
 				{

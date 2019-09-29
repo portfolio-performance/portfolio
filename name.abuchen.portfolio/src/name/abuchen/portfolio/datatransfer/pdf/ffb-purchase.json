@@ -14,7 +14,7 @@
 				{
 					"context": "SECURITY",
 					"pattern": [
-						"^Splittkauf( Betrag)? (?<name>.*) [\\d.,]+ \\w{3} [\\d.,]+ \\w{3} [\\d.,]+$",
+						"^Splittkauf( Betrag)? (?<name>.*) [\\d.,]+ \\w{3} [\\d.,]+ (?<currency>\\w{3}) [\\d.,]+$",
 						"^[\\d]* (?<wkn>[^ ]+) / (?<isin>[^ ]+) .*"
 					]
 				},
