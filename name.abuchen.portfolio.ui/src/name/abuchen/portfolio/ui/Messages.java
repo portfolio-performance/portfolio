@@ -41,6 +41,7 @@ public class Messages extends NLS
     public static String BtnLabelOpenInvestmentPlanView;
     public static String BtnLabelRestartLater;
     public static String BtnLabelRestartNow;
+    public static String BtnTooltipInvertExchangeRate;
     public static String CellEditor_NotANumber;
     public static String ChartBringForward;
     public static String ChartBringToFront;

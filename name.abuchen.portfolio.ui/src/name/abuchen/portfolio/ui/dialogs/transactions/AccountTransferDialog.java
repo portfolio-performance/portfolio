@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
@@ -126,12 +128,14 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         fxAmount.bindValue(Properties.fxAmount.name(), Messages.ColumnAmount, Values.Amount, true);
         fxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
 
-        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
+        exchangeRate.bindInvertAction(() -> model()
+                        .setExchangeRate(BigDecimal.ONE.divide(model().getExchangeRate(), 10, RoundingMode.HALF_DOWN)));
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
@@ -169,6 +173,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .thenRight(fxAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
+                        .thenRight(exchangeRate.buttonInvertExchangeRate, 0) //
                         .thenRight(exchangeRate.currency).width(amountWidth) //
                         .thenRight(amount.label) //
                         .thenRight(amount.value).width(amountWidth) //
