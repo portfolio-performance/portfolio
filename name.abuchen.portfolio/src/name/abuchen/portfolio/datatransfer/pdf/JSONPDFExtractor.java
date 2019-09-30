@@ -238,9 +238,10 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         entry.setShares(Values.Share.factorize(t.getShares()));
 
-        entry.setSecurity(convertToSecurity(t));
+        Security security = convertToSecurity(t);
+        entry.setSecurity(security);
 
-        t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull)
+        t.getUnits().map(u -> convertToUnit(security, t, u)).filter(Objects::nonNull)
                         .forEach(u -> entry.getPortfolioTransaction().addUnit(u));
 
         BuySellEntryItem item = new BuySellEntryItem(entry);
@@ -262,9 +263,10 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         else
             tx.setDateTime(t.getDate().atStartOfDay());
 
-        tx.setSecurity(convertToSecurity(t));
+        Security security = convertToSecurity(t);
+        tx.setSecurity(security);
 
-        t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull).forEach(tx::addUnit);
+        t.getUnits().map(u -> convertToUnit(security, t, u)).filter(Objects::nonNull).forEach(tx::addUnit);
 
         TransactionItem item = new TransactionItem(tx);
         item.setData(t);
@@ -282,7 +284,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         return getOrCreateSecurity(values);
     }
 
-    private Transaction.Unit convertToUnit(JTransaction jtx, JTransactionUnit junit)
+    private Transaction.Unit convertToUnit(Security security, JTransaction jtx, JTransactionUnit junit)
     {
         Money amount = null;
 
@@ -313,12 +315,27 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         if (Strings.isNullOrEmpty(junit.getFxCurrency()))
             return null;
 
-        String fxCurrency = asCurrencyCode(jtx.getSecurity().getCurrency());
+        String fxCurrency = asCurrencyCode(junit.getFxCurrency());
 
-        if (jtx.getCurrency().equals(fxCurrency))
+        // two reasons to not have a fx unit:
+
+        // a) fx part of unit is not needed if currency of security and unit
+        // match
+
+        boolean transactionAndUnitCurrencyMatch = jtx.getCurrency().equals(fxCurrency);
+
+        // b) fx part of unit is not needed if the security is configured in the
+        // currency of the transactions. However, it is important to check
+        // against the resolved security as the parsed currency might differ
+
+        boolean transactionAndSecurityCurrencyMatch = jtx.getCurrency().equals(security.getCurrencyCode());
+
+        if (transactionAndUnitCurrencyMatch || transactionAndSecurityCurrencyMatch)
         {
-            return junit.getType() != Transaction.Unit.Type.GROSS_VALUE ? new Transaction.Unit(junit.getType(), amount)
-                            : null;
+            if (junit.getType() == Transaction.Unit.Type.GROSS_VALUE)
+                return null;
+            else
+                new Transaction.Unit(junit.getType(), amount);
         }
 
         // check forex amount
