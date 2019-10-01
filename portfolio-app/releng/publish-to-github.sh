@@ -21,9 +21,9 @@ PortfolioPerformance-${PCK_VERSION}-linux.gtk.x86_64.tar.gz
 PortfolioPerformance-${PCK_VERSION}-linux.gtk.x86.tar.gz
 PortfolioPerformance-${PCK_VERSION}-win32.win32.x86_64.zip
 PortfolioPerformance-${PCK_VERSION}-win32.win32.x86.zip
-PortfolioPerformance-distro-${PCK_VERSION}-macosx.cocoa.x86_64.tar.gz
 PortfolioPerformance-distro-${PCK_VERSION}-win32.win32.x86_64.zip
 PortfolioPerformance-distro-${PCK_VERSION}-win32.win32.x86.zip
+PortfolioPerformance-${PCK_VERSION}.dmg
 EOF
 )
 
