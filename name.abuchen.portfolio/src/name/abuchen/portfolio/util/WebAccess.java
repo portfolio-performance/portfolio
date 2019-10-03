@@ -93,7 +93,9 @@ public class WebAccess
 
     private String scheme = "https"; //$NON-NLS-1$
     private String host;
+    private Integer port;
     private String path;
+    private String fragment;
     private String userAgent = OnlineHelper.getUserAgent();
     private List<Header> headers = new ArrayList<>();
     private List<NameValuePair> parameters = new ArrayList<>();
@@ -110,13 +112,27 @@ public class WebAccess
 
         this.scheme = builder.getScheme();
         this.host = builder.getHost();
+        this.port = builder.getPort();
         this.path = builder.getPath();
+        this.fragment = builder.getFragment();
         this.parameters.addAll(builder.getQueryParams());
     }
 
     public WebAccess withScheme(String scheme)
     {
         this.scheme = Objects.requireNonNull(scheme).trim();
+        return this;
+    }
+
+    public WebAccess withPort(Integer port)
+    {
+        this.port = Objects.requireNonNull(port);
+        return this;
+    }
+
+    public WebAccess withFragment(String fragment)
+    {
+        this.fragment = Objects.requireNonNull(fragment).trim();
         return this;
     }
 
@@ -151,8 +167,8 @@ public class WebAccess
                             .useSystemProperties() //
                             .build();
 
-            URI uri = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPath(this.path)
-                            .setParameters(this.parameters).build();
+            URI uri = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPort(port).setPath(this.path)
+                            .setParameters(this.parameters).setFragment(fragment).build();
             response = client.execute(new HttpGet(uri));
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
