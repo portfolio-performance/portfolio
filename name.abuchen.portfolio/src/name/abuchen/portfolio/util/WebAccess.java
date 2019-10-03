@@ -147,7 +147,9 @@ public class WebAccess
             CloseableHttpClient client = HttpClientBuilder.create() //
                             .setDefaultRequestConfig(defaultRequestConfig) //
                             .setDefaultHeaders(this.headers) //
-                            .setUserAgent(this.userAgent).build();
+                            .setUserAgent(this.userAgent) //
+                            .useSystemProperties() //
+                            .build();
 
             URI uri = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPath(this.path)
                             .setParameters(this.parameters).build();
