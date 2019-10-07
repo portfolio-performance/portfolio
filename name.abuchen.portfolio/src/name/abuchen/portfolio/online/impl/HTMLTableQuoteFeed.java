@@ -155,7 +155,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                             DateTimeFormatter.ofPattern("d. MMM. y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM d, y", Locale.ENGLISH), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
-                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH) //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d/M/y"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("y-M-d HH:mm:ss"),
+                            DateTimeFormatter.ofPattern("d.M.yy HH:mm:ss"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d.M.y HH:mm:ss"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMM y HH:mm:ss"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMMM y HH:mm:ss"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d. MMM. y HH:mm:ss"), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("MMM d, y HH:mm:ss", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("MMM dd, y HH:mm:ss", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("EEEE, MMMM dd, yEEE, MMM dd, y HH:mm:ss", Locale.ENGLISH), //$NON-NLS-1$
+                            DateTimeFormatter.ofPattern("d/M/y HH:mm:ss") //$NON-NLS-1$
             };
         }
 
@@ -415,7 +426,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
-    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
+    protected List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$

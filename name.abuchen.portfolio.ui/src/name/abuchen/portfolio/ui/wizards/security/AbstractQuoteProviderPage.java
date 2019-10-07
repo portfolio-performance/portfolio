@@ -40,6 +40,8 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
+import name.abuchen.portfolio.online.impl.FileCSVQuoteFeed;
+import name.abuchen.portfolio.online.impl.FileTSVQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -302,7 +304,9 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         boolean dropDown = feed != null && feed.getId() != null
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID));
         boolean feedURL = feed != null && feed.getId() != null
-                        && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID));
+                        && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID)
+                                        || feed.getId().equals(FileCSVQuoteFeed.ID)
+                                        || feed.getId().equals(FileTSVQuoteFeed.ID));
         boolean needsTicker = feed != null && feed.getId() != null && feed.getId().equals(AlphavantageQuoteFeed.ID);
 
         if (textFeedURL != null)
