@@ -93,7 +93,7 @@ public class WebAccess
 
     private String scheme = "https"; //$NON-NLS-1$
     private String host;
-    private Integer port;
+    private int port = -1;
     private String path;
     private String fragment;
     private String userAgent = OnlineHelper.getUserAgent();
@@ -126,7 +126,7 @@ public class WebAccess
 
     public WebAccess withPort(Integer port)
     {
-        this.port = Objects.requireNonNull(port);
+        this.port = port != null ? port : -1;
         return this;
     }
 
