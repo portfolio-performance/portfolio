@@ -9,7 +9,6 @@ import java.util.Objects;
 
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.config.CookieSpecs;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -18,7 +17,6 @@ import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 //@formatter:off
@@ -91,54 +89,44 @@ public class WebAccess
                     .setConnectTimeout(2000).setConnectionRequestTimeout(20000).setCookieSpec(CookieSpecs.STANDARD)
                     .build();
 
-    private String scheme = "https"; //$NON-NLS-1$
-    private String host;
-    private int port = -1;
-    private String path;
-    private String fragment;
-    private String userAgent = OnlineHelper.getUserAgent();
+    private final URIBuilder builder;
     private List<Header> headers = new ArrayList<>();
-    private List<NameValuePair> parameters = new ArrayList<>();
+    private String userAgent = OnlineHelper.getUserAgent();
 
     public WebAccess(String host, String path)
     {
-        this.host = Objects.requireNonNull(host).trim();
-        this.path = Objects.requireNonNull(path).trim();
+        this.builder = new URIBuilder();
+        this.builder.setScheme("https"); //$NON-NLS-1$
+        this.builder.setHost(Objects.requireNonNull(host).trim());
+        this.builder.setPath(Objects.requireNonNull(path).trim());
     }
 
     public WebAccess(String url) throws URISyntaxException
     {
-        URIBuilder builder = new URIBuilder(url);
-
-        this.scheme = builder.getScheme();
-        this.host = builder.getHost();
-        this.port = builder.getPort();
-        this.path = builder.getPath();
-        this.fragment = builder.getFragment();
-        this.parameters.addAll(builder.getQueryParams());
+        this.builder = new URIBuilder(url);
     }
 
     public WebAccess withScheme(String scheme)
     {
-        this.scheme = Objects.requireNonNull(scheme).trim();
+        this.builder.setScheme(Objects.requireNonNull(scheme).trim());
         return this;
     }
 
     public WebAccess withPort(Integer port)
     {
-        this.port = port != null ? port : -1;
+        this.builder.setPort(port != null ? port : -1);
         return this;
     }
 
     public WebAccess withFragment(String fragment)
     {
-        this.fragment = Objects.requireNonNull(fragment).trim();
+        this.builder.setFragment(Objects.requireNonNull(fragment).trim());
         return this;
     }
 
     public WebAccess addParameter(String param, String value)
     {
-        this.parameters.add(new BasicNameValuePair(param, value));
+        this.builder.addParameter(param, value);
         return this;
     }
 
@@ -167,8 +155,8 @@ public class WebAccess
                             .useSystemProperties() //
                             .build();
 
-            URI uri = new URIBuilder().setScheme(this.scheme).setHost(this.host).setPort(port).setPath(this.path)
-                            .setParameters(this.parameters).setFragment(fragment).build();
+
+            URI uri = builder.build();
             response = client.execute(new HttpGet(uri));
 
             if (response.getStatusLine().getStatusCode() != HttpStatus.SC_OK)
