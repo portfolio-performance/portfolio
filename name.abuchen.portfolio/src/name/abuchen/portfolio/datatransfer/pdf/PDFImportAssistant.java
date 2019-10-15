@@ -51,6 +51,7 @@ public class PDFImportAssistant
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new SutorPDFExtractor(client));
+        extractors.add(new SwissquotePDFExtractor(client));
 
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "deutsche-bank-sale.json")); //$NON-NLS-1$

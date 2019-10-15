@@ -1,0 +1,32 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 05.08.2019
+Börsentransaktion: Kauf Unsere Referenz: 32484929
+Gemäss Ihrem Kaufauftrag vom 05.08.2019 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+APPLE ORD ISIN: US0378331005 NASDAQ New York
+NKN: 908440
+Anzahl Preis Betrag
+15 193 USD 2'895.00
+Total USD 2'895.00
+Kommission Swissquote Bank AG USD 0.85
+Abgabe (Eidg. Stempelsteuer) USD 4.75
+Zu Ihren Lasten USD 2'900.60
+Betrag belastet auf Kontonummer  99999901, Valutadatum 07.08.2019
+Vielen Dank für Ihren Auftrag.
+Im Rahmen dieser Transaktion hat Swissquote Bank Ltd. als Kommissionär gehandelt.
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Der Ort der Ausführung wird nur als Anhaltspunkt angegeben. In einigen Fällen, die der Bank zum Zeitpunkt der Erstellung dieser Benachrichtigung
+nicht bekannt waren, konnte ein Vermittler (zum Beispiel ein Broker) als Gegenpartei für Ihre Order, zum gleichen Preis wie Sie ihn an der Börse
+erhalten hätten, auftreten. Bitte nehmen Sie Kontakt zu uns auf, falls Sie mehr Informationen zu diesem Thema benötigen. 
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079 

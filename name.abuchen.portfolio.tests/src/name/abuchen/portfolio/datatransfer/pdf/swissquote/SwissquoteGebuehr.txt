@@ -1,0 +1,25 @@
+PDF author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 30.09.2019
+Depotgebühren Unsere Referenz: 32484929
+Wir haben Ihrem Konto folgende Beträge belastet:
+Kontonummer 99999900
+Valutadatum 30.09.2019
+Bruttobetrag CHF 26.51
+MwSt 7.70 % CHF 2.04
+Betrag belastet CHF 28.55
+Ausser in Sonderfällen, wie beispielsweise bei einer Kontoschliessung, werden die Depotgebühren jeweils zum 31.
+März, 30 Juni, 30 September und 31. Dezember des laufenden Jahres erhoben. Sie werden auf Basis des jeweiligen
+dreimonatigen Durchschnittswerts des Wertschriften-Portfolios berechnet.
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079
