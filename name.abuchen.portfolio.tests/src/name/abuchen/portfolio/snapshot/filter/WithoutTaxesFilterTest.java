@@ -55,12 +55,12 @@ public class WithoutTaxesFilterTest
 
             Portfolio p = new PortfolioBuilder(a) //
                             .buy(security1, "2016-02-01", Values.Share.factorize(1), Values.Amount.factorize(100),
-                                            Values.Amount.factorize(10), Values.Amount.factorize(5))
+                                            Values.Amount.factorize(10), 0, Values.Amount.factorize(5))
                             .outbound_delivery(security1, "2016-02-02", Values.Share.factorize(1),
                                             Values.Amount.factorize(200), Values.Amount.factorize(20),
                                             Values.Amount.factorize(10))
                             .inbound_delivery(security2, "2016-03-01", Values.Share.factorize(2),
-                                            Values.Amount.factorize(500), Values.Amount.factorize(9),
+                                            Values.Amount.factorize(500), Values.Amount.factorize(9), 0,
                                             Values.Amount.factorize(4))
                             .sell(security2, "2016-03-02", Values.Share.factorize(1), Values.Amount.factorize(250),
                                             Values.Amount.factorize(6), Values.Amount.factorize(3))

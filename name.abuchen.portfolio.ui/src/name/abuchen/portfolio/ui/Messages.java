@@ -103,6 +103,7 @@ public class Messages extends NLS
     public static String ColumnColor;
     public static String ColumnCreditNote;
     public static String ColumnColumnLabel;
+    public static String ColumnCompensation;
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
     public static String ColumnLatest_MenuLabel;

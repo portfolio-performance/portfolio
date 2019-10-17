@@ -39,9 +39,9 @@ public class SecurityPositionTest
     {
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 100000, null, 100 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.SELL, 0, 0));
+                        Type.SELL, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
                         new SecurityPrice(), tx);
 
@@ -55,11 +55,11 @@ public class SecurityPositionTest
     {
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 25000, null, 25 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 150000, null, 75 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 100000, null, 50 * Values.Share.factor(),
-                        Type.SELL, 0, 0));
+                        Type.SELL, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
                         new SecurityPrice(), tx);
 
@@ -75,11 +75,11 @@ public class SecurityPositionTest
     {
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 75000, null, 75 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 50000, null, 25 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 100000, null, 50 * Values.Share.factor(),
-                        Type.SELL, 0, 0));
+                        Type.SELL, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
                         new SecurityPrice(), tx);
 
@@ -96,7 +96,7 @@ public class SecurityPositionTest
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
                         new SecurityPrice(), Arrays.asList( //
                                         new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 500_00, null,
-                                                        50 * Values.Share.factor(), Type.SELL, 0, 0)));
+                                                        50 * Values.Share.factor(), Type.SELL, 0, 0, 0)));
 
         assertThat(position.getShares(), is(-50L * Values.Share.factor()));
         assertThat(position.getFIFOPurchasePrice(), is(Money.of(CurrencyUnit.EUR, 0)));
@@ -109,7 +109,7 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
@@ -127,9 +127,9 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(100L * Values.Share.factor()));
@@ -147,11 +147,11 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_OUT, 0, 0));
+                        Type.TRANSFER_OUT, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(50L * Values.Share.factor()));
@@ -169,13 +169,13 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_OUT, 0, 0));
+                        Type.TRANSFER_OUT, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 2, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(100L * Values.Share.factor()));
@@ -193,13 +193,13 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_OUT, 0, 0));
+                        Type.TRANSFER_OUT, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 50 * Values.Share.factor(),
-                        Type.TRANSFER_IN, 0, 0));
+                        Type.TRANSFER_IN, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 2, 0, 0), CurrencyUnit.EUR, 55000, null, 25 * Values.Share.factor(),
-                        Type.TRANSFER_OUT, 0, 0));
+                        Type.TRANSFER_OUT, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(25L * Values.Share.factor()));
@@ -217,9 +217,9 @@ public class SecurityPositionTest
         SecurityPrice price = new SecurityPrice(LocalDate.of(2012, Month.DECEMBER, 2), Values.Quote.factorize(20));
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.BUY, 0, 0));
+                        Type.BUY, 0, 0, 0));
         tx.add(new PortfolioTransaction(LocalDateTime.of(2012, Month.FEBRUARY, 1, 0, 0), CurrencyUnit.EUR, 55000, null, 25 * Values.Share.factor(),
-                        Type.TRANSFER_OUT, 0, 0));
+                        Type.TRANSFER_OUT, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(), price, tx);
 
         assertThat(position.getShares(), is(25L * Values.Share.factor()));
@@ -326,7 +326,7 @@ public class SecurityPositionTest
     {
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();
         tx.add(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 50000, null, 50 * Values.Share.factor(),
-                        Type.SELL, 0, 0));
+                        Type.SELL, 0, 0, 0));
         SecurityPosition position = new SecurityPosition(new Security(), new TestCurrencyConverter(),
                         new SecurityPrice(), tx);
 

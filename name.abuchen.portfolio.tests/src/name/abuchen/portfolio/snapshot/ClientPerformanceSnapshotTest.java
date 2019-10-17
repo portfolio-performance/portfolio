@@ -140,7 +140,7 @@ public class ClientPerformanceSnapshotTest
         portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(
                         new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
-                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0, 0));
         client.addPortfolio(portfolio);
 
         Account account = new Account();
@@ -174,7 +174,7 @@ public class ClientPerformanceSnapshotTest
         portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(
                         new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
-                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();
@@ -205,10 +205,10 @@ public class ClientPerformanceSnapshotTest
         portfolio.setReferenceAccount(new Account());
         portfolio.addTransaction(
                         new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
-                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0, 0));
         portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.of(2011, Month.JANUARY, 15, 0, 0),
                         CurrencyUnit.EUR, 99_00, security, Values.Share.factorize(1),
-                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0));
+                        PortfolioTransaction.Type.DELIVERY_INBOUND, 0, 0, 0));
         client.addPortfolio(portfolio);
 
         CurrencyConverter converter = new TestCurrencyConverter();

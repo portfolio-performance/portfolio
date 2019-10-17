@@ -69,6 +69,9 @@ public class PortfolioTransaction extends Transaction
     /* package */transient long fees;
 
     @Deprecated
+    /* package */transient long compensation;
+
+    @Deprecated
     /* package */transient long taxes;
 
     public PortfolioTransaction()
@@ -77,13 +80,15 @@ public class PortfolioTransaction extends Transaction
     }
 
     public PortfolioTransaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
-                    Type type, long fees, long taxes)
+                    Type type, long fees, long compensation, long taxes)
     {
         super(date, currencyCode, amount, security, shares, null);
         this.type = type;
 
         if (fees != 0)
             addUnit(new Unit(Unit.Type.FEE, Money.of(currencyCode, fees)));
+        if (compensation != 0)
+            addUnit(new Unit(Unit.Type.COMPENSATION, Money.of(currencyCode, compensation)));
         if (taxes != 0)
             addUnit(new Unit(Unit.Type.TAX, Money.of(currencyCode, taxes)));
     }
@@ -128,24 +133,26 @@ public class PortfolioTransaction extends Transaction
     }
 
     /**
-     * Returns the gross value, i.e. the value including taxes and fees. See
+     * Returns the gross value, i.e. the value including taxes, compensation and fees. See
      * {@link #getGrossValue()}.
      */
     public long getGrossValueAmount()
     {
         long taxAndFees = getUnits().filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE)
                         .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
+        long compensation = getUnits().filter(u -> u.getType() == Unit.Type.COMPENSATION)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount())).getAmount();
 
         if (this.type.isPurchase())
-            return getAmount() - taxAndFees;
+            return getAmount() - taxAndFees + compensation;
         else
-            return getAmount() + taxAndFees;
+            return getAmount() + taxAndFees - compensation;
     }
 
     /**
-     * Returns the gross value, i.e. the value before taxes and fees are
+     * Returns the gross value, i.e. the value before taxes, compensation and fees are
      * applied. In the case of a buy transaction, that are the gross costs, i.e.
-     * before adding additional taxes and fees. In the case of sell
+     * before adding additional taxes, compensation and fees. In the case of sell
      * transactions, that are the gross proceeds before the deduction of taxes
      * and fees.
      */

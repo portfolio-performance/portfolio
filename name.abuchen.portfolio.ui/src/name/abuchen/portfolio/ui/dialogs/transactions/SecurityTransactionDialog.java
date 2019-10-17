@@ -154,6 +154,21 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         true);
         convertedGrossValue.bindCurrency(Properties.transactionCurrencyCode.name());
 
+        // compensation
+
+        Label minusForexCompensation = new Label(editArea, SWT.NONE);
+        minusForexCompensation.setText("-"); //$NON-NLS-1$
+
+        Input forexCompensation = new Input(editArea, signCompensation() + Messages.ColumnCompensation);
+        forexCompensation.bindValue(Properties.forexCompensation.name(), Messages.ColumnCompensation, Values.Amount, false);
+        forexCompensation.bindCurrency(Properties.securityCurrencyCode.name());
+        forexCompensation.setVisible(model().supportsCompensationUnits());
+
+        Input compensation = new Input(editArea, signCompensation() + Messages.ColumnCompensation);
+        compensation.bindValue(Properties.compensation.name(), Messages.ColumnCompensation, Values.Amount, false);
+        compensation.bindCurrency(Properties.transactionCurrencyCode.name());
+        compensation.setVisible(model().supportsCompensationUnits());
+
         // fees
 
         Label plusForexFees = new Label(editArea, SWT.NONE);
@@ -228,6 +243,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         // converted gross value
                         .thenBelow(convertedGrossValue.value).width(width).label(convertedGrossValue.label)
                         .suffix(convertedGrossValue.currency)
+                        // compensation
+                        .thenBelow(compensation.value).width(width).label(compensation.label).suffix(compensation.currency)
                         // fees
                         .thenBelow(fees.value).width(width).label(fees.label).suffix(fees.currency)
                         // taxes
@@ -237,6 +254,9 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         // note
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(securities.value.getControl()).right(total.value).label(lblNote);
+
+        startingWith(compensation.value).thenLeft(minusForexCompensation).thenLeft(forexCompensation.currency).width(currencyWidth)
+                        .thenLeft(forexCompensation.value).width(width).thenLeft(forexCompensation.label);
 
         startingWith(fees.value).thenLeft(plusForexFees).thenLeft(forexFees.currency).width(currencyWidth)
                         .thenLeft(forexFees.value).width(width).thenLeft(forexFees.label);
@@ -263,6 +283,10 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             plusForexFees.setVisible(visible);
             fees.label.setVisible(!visible);
 
+            forexCompensation.setVisible(visible && model().supportsCompensationUnits());
+            minusForexCompensation.setVisible(visible && model().supportsCompensationUnits());
+            compensation.label.setVisible(!visible && model().supportsCompensationUnits());
+
             forexTaxes.setVisible(visible);
             plusForexTaxes.setVisible(visible);
             taxes.label.setVisible(!visible);
@@ -271,6 +295,7 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             if (!visible)
             {
                 model().setForexFees(0);
+                model().setForexCompensation(0);
                 model().setForexTaxes(0);
             }
         });
@@ -294,6 +319,20 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
             case SELL:
             case DELIVERY_OUTBOUND:
                 return "- "; //$NON-NLS-1$
+            default:
+                throw new UnsupportedOperationException();
+        }
+    }
+    private String signCompensation()
+    {
+        switch (model().getType())
+        {
+            case BUY:
+            case DELIVERY_INBOUND:
+                return "- "; //$NON-NLS-1$
+            case SELL:
+            case DELIVERY_OUTBOUND:
+                return "+ "; //$NON-NLS-1$
             default:
                 throw new UnsupportedOperationException();
         }

@@ -56,7 +56,7 @@ public class CrossEntryCheckTest
     public void testMissingSellInAccountIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.BUY, 1, 0));
+                        PortfolioTransaction.Type.BUY, 1, 0, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -71,7 +71,7 @@ public class CrossEntryCheckTest
     public void testMissingBuyInAccountIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.SELL, 1, 0));
+                        PortfolioTransaction.Type.SELL, 1, 0, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -102,7 +102,7 @@ public class CrossEntryCheckTest
     {
         LocalDateTime date = LocalDateTime.now();
         portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.SELL, 1, 0));
+                        PortfolioTransaction.Type.SELL, 1, 0, 0));
 
         account.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 1, security, //
                         AccountTransaction.Type.SELL));
@@ -117,7 +117,7 @@ public class CrossEntryCheckTest
     {
         LocalDateTime date = LocalDateTime.now();
         portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.SELL, 1, 0));
+                        PortfolioTransaction.Type.SELL, 1, 0, 0));
 
         account.addTransaction(new AccountTransaction(date, CurrencyUnit.EUR, 2, security,
                         AccountTransaction.Type.SELL));
@@ -194,7 +194,7 @@ public class CrossEntryCheckTest
     public void testMissingPortfolioTransferOutIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.TRANSFER_IN, 1, 0));
+                        PortfolioTransaction.Type.TRANSFER_IN, 1, 0, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -209,7 +209,7 @@ public class CrossEntryCheckTest
     public void testMissingPortfolioTransferInIssue()
     {
         portfolio.addTransaction(new PortfolioTransaction(LocalDateTime.now(), CurrencyUnit.EUR, 1, security, 1,
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0));
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 
@@ -228,14 +228,14 @@ public class CrossEntryCheckTest
 
         LocalDateTime date = LocalDateTime.now();
         portfolio.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
-                        PortfolioTransaction.Type.TRANSFER_IN, 1, 0));
+                        PortfolioTransaction.Type.TRANSFER_IN, 1, 0, 0));
 
         PortfolioTransaction umatched = new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0);
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0, 0);
         portfolio.addTransaction(umatched);
 
         second.addTransaction(new PortfolioTransaction(date, CurrencyUnit.EUR, 3, security, 1,
-                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0));
+                        PortfolioTransaction.Type.TRANSFER_OUT, 1, 0, 0));
 
         List<Issue> issues = new CrossEntryCheck().execute(client);
 

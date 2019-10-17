@@ -34,7 +34,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public enum Properties
     {
         portfolio, security, account, date, time, shares, quote, grossValue, exchangeRate, inverseExchangeRate, //
-        convertedGrossValue, forexFees, fees, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
+        convertedGrossValue, forexFees, fees, forexCompensation, compensation, forexTaxes, taxes, total, note, exchangeRateCurrencies, //
         inverseExchangeRateCurrencies, transactionCurrency, transactionCurrencyCode, securityCurrencyCode, //
         calculationStatus;
     }
@@ -53,6 +53,8 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     protected long convertedGrossValue;
     protected long forexFees;
     protected long fees;
+    protected long forexCompensation;
+    protected long compensation;
     protected long forexTaxes;
     protected long taxes;
     protected long total;
@@ -85,8 +87,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
         setConvertedGrossValue(0);
         setTotal(0);
         setFees(0);
-        setTaxes(0);
         setForexFees(0);
+        setCompensation(0);
+        setForexCompensation(0);
+        setTaxes(0);
         setForexTaxes(0);
         setNote(null);
     }
@@ -121,6 +125,12 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                     else
                         this.fees += unit.getAmount().getAmount();
                     break;
+                case COMPENSATION:
+                    if (unit.getForex() != null)
+                        this.forexCompensation += unit.getForex().getAmount();
+                    else
+                        this.compensation += unit.getAmount().getAmount();
+                    break;
                 case TAX:
                     if (unit.getForex() != null)
                         this.forexTaxes += unit.getForex().getAmount();
@@ -153,6 +163,10 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.FEE, //
                             Money.of(getTransactionCurrencyCode(), fees)));
 
+        if (compensation != 0)
+            transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.COMPENSATION, //
+                            Money.of(getTransactionCurrencyCode(), compensation)));
+
         if (taxes != 0)
             transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.TAX, //
                             Money.of(getTransactionCurrencyCode(), taxes)));
@@ -165,6 +179,13 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
                                 Money.of(getTransactionCurrencyCode(),
                                                 Math.round(forexFees * exchangeRate.doubleValue())), //
                                 Money.of(getSecurityCurrencyCode(), forexFees), //
+                                exchangeRate));
+
+            if (forexCompensation != 0)
+                transaction.addUnit(new Transaction.Unit(Transaction.Unit.Type.COMPENSATION, //
+                                Money.of(getTransactionCurrencyCode(),
+                                                Math.round(forexCompensation * exchangeRate.doubleValue())), //
+                                Money.of(getSecurityCurrencyCode(), forexCompensation), //
                                 exchangeRate));
 
             if (forexTaxes != 0)
@@ -461,7 +482,7 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
             firePropertyChange(Properties.exchangeRate.name(), this.exchangeRate, this.exchangeRate = newExchangeRate);
             firePropertyChange(Properties.inverseExchangeRate.name(), oldInverseRate, getInverseExchangeRate());
 
-            triggerTotal(calculateTotal()); // forex fees and taxes might change
+            triggerTotal(calculateTotal()); // forex fees, compensation and taxes might change
         }
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -497,6 +518,34 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
     public void setForexFees(long forexFees)
     {
         firePropertyChange(Properties.forexFees.name(), this.forexFees, this.forexFees = forexFees);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getCompensation()
+    {
+        return compensation;
+    }
+
+    public void setCompensation(long compensation)
+    {
+        firePropertyChange(Properties.compensation.name(), this.compensation, this.compensation = compensation);
+        triggerTotal(calculateTotal());
+
+        firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
+                        this.calculationStatus = calculateStatus());
+    }
+
+    public long getForexCompensation()
+    {
+        return forexCompensation;
+    }
+
+    public void setForexCompensation(long forexCompensation)
+    {
+        firePropertyChange(Properties.forexCompensation.name(), this.forexCompensation, this.forexCompensation = forexCompensation);
         triggerTotal(calculateTotal());
 
         firePropertyChange(Properties.calculationStatus.name(), this.calculationStatus,
@@ -599,16 +648,16 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     protected long calculateConvertedGrossValue()
     {
-        long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
+        long feesCompensationAndTaxes = fees - compensation + taxes + Math.round(exchangeRate.doubleValue() * (forexFees - forexCompensation + forexTaxes));
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return Math.max(0, total - feesAndTaxes);
+                return Math.max(0, total - feesCompensationAndTaxes);
             case SELL:
             case DELIVERY_OUTBOUND:
-                return total + feesAndTaxes;
+                return total + feesCompensationAndTaxes;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -616,18 +665,25 @@ public abstract class AbstractSecurityTransactionModel extends AbstractModel
 
     private long calculateTotal()
     {
-        long feesAndTaxes = fees + taxes + Math.round(exchangeRate.doubleValue() * (forexFees + forexTaxes));
+        long feesCompensationAndTaxes = fees - compensation+ taxes + Math.round(exchangeRate.doubleValue() * (forexFees - forexCompensation + forexTaxes));
 
         switch (type)
         {
             case BUY:
             case DELIVERY_INBOUND:
-                return convertedGrossValue + feesAndTaxes;
+                return convertedGrossValue + feesCompensationAndTaxes;
             case SELL:
             case DELIVERY_OUTBOUND:
-                return Math.max(0, convertedGrossValue - feesAndTaxes);
+                return Math.max(0, convertedGrossValue - feesCompensationAndTaxes);
             default:
                 throw new UnsupportedOperationException();
         }
     }
+    
+    public boolean supportsCompensationUnits()
+    {
+        return type == PortfolioTransaction.Type.BUY || type == PortfolioTransaction.Type.DELIVERY_INBOUND;
+    }
+
+
 }

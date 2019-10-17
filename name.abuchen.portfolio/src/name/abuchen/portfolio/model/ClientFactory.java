@@ -572,7 +572,9 @@ public class ClientFactory
                 // added attributes to account and portfolio
             case 41:
                 // added tax units to interest transaction
-
+            case 42:
+                // added buy / transfer-in support compensation
+                
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:

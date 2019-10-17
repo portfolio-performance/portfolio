@@ -32,15 +32,15 @@ public class PortfolioBuilder
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount)
     {
-        return inbound_delivery(security, date, shares, amount, 0, 0);
+        return inbound_delivery(security, date, shares, amount, 0, 0, 0);
     }
 
     public PortfolioBuilder inbound_delivery(Security security, String date, long shares, long amount, long fees,
-                    long taxes)
+                    long compensation, long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
                         security, shares,
-                        Type.DELIVERY_INBOUND, fees, taxes));
+                        Type.DELIVERY_INBOUND, fees, compensation, taxes));
         return this;
     }
 
@@ -48,7 +48,7 @@ public class PortfolioBuilder
                     long taxes)
     {
         portfolio.addTransaction(new PortfolioTransaction(AccountBuilder.asDateTime(date), CurrencyUnit.EUR, amount,
-                        security, shares, Type.DELIVERY_OUTBOUND, fees, taxes));
+                        security, shares, Type.DELIVERY_OUTBOUND, fees, 0, taxes));
         return this;
     }
 
@@ -62,31 +62,31 @@ public class PortfolioBuilder
 
     public PortfolioBuilder buy(Security security, String date, long shares, long amount)
     {
-        return buysell(Type.BUY, security, date, shares, amount, 0, 0);
+        return buysell(Type.BUY, security, date, shares, amount, 0, 0, 0);
     }
 
-    public PortfolioBuilder buy(Security security, String date, long shares, long amount, long fees, long taxes)
+    public PortfolioBuilder buy(Security security, String date, long shares, long amount, long fees, long compensation, long taxes)
     {
-        return buysell(Type.BUY, security, date, shares, amount, fees, taxes);
+        return buysell(Type.BUY, security, date, shares, amount, fees, compensation, taxes);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, long amount)
     {
-        return buysell(Type.SELL, security, date, shares, amount, 0, 0);
+        return buysell(Type.SELL, security, date, shares, amount, 0, 0, 0);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, long amount, long fees)
     {
-        return buysell(Type.SELL, security, date, shares, amount, fees, 0);
+        return buysell(Type.SELL, security, date, shares, amount, fees, 0, 0);
     }
 
     public PortfolioBuilder sell(Security security, String date, long shares, long amount, long fees, long taxes)
     {
-        return buysell(Type.SELL, security, date, shares, amount, fees, taxes);
+        return buysell(Type.SELL, security, date, shares, amount, fees, 0, taxes);
     }
 
     private PortfolioBuilder buysell(Type type, Security security, String date, long shares, long amount, long fees,
-                    long taxes)
+                    long compensation, long taxes)
     {
         if (portfolio.getReferenceAccount() == null)
         {
