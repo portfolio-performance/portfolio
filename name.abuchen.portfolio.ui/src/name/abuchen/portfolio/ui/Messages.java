@@ -246,6 +246,8 @@ public class Messages extends NLS
     public static String ColumnSharesOwned;
     public static String ColumnSource;
     public static String ColumnStartDate;
+    public static String ColumnLastDate;
+    public static String ColumnNextDate;
     public static String ColumnStatus;
     public static String ColumnSubTotal;
     public static String ColumnSum;

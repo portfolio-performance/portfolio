@@ -268,7 +268,7 @@ public class InvestmentPlan implements Named, Adaptable, Attributable
     /**
      * Returns the date of the last transaction generated
      */
-    private LocalDate getLastDate()
+    public LocalDate getLastDate()
     {
         LocalDate last = null;
         for (Transaction t : transactions)
