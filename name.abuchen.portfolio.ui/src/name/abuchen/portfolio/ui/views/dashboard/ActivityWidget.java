@@ -3,14 +3,17 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
@@ -22,8 +25,11 @@ import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
 import org.swtchart.IBarSeries;
+import org.swtchart.ICustomPaintListener;
+import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
 import org.swtchart.ISeries.SeriesType;
+import org.swtchart.LineStyle;
 
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
@@ -59,11 +65,86 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         }
     }
 
-    class ChartTypeConfig extends EnumBasedConfig<ChartType>
+    static class ChartTypeConfig extends EnumBasedConfig<ChartType>
     {
         public ChartTypeConfig(WidgetDelegate<?> delegate)
         {
             super(delegate, Messages.LabelChartType, ChartType.class, Dashboard.Config.AGGREGATION, Policy.EXACTLY_ONE);
+        }
+    }
+
+    public static class TimeGridPaintListener implements ICustomPaintListener
+    {
+        private static final int INDENT = 5;
+
+        private final Chart chart;
+
+        public TimeGridPaintListener(Chart chart)
+        {
+            this.chart = chart;
+        }
+
+        @Override
+        public void paintControl(PaintEvent e)
+        {
+            @SuppressWarnings("unchecked")
+            List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
+            if (yearMonths == null || yearMonths.isEmpty())
+                return;
+            
+            // collect years
+            
+            IAxis xAxis = chart.getAxisSet().getXAxis(0);
+
+            List<Pair<Integer, Integer>> years = new ArrayList<>();
+            years.add(Pair.of(yearMonths.get(0).getYear(), xAxis.getPixelCoordinate(0)));
+            for (int index = 1; index < yearMonths.size(); index++)
+            {
+                YearMonth yearMonth = yearMonths.get(index);
+                if (yearMonth.getYear() == years.get(years.size() - 1).getKey())
+                    continue;
+                years.add(Pair.of(yearMonths.get(index).getYear(), xAxis.getPixelCoordinate(index)));
+            }
+
+            // draw marker per year
+
+            for (int index = 0; index < years.size(); index++)
+            {
+                Pair<Integer, Integer> pair = years.get(index);
+                int x = pair.getValue();
+
+                e.gc.drawLine(x, 0, x, e.height);
+
+                int nextX = index + 1 < years.size() ? years.get(index + 1).getValue() - INDENT : e.width - INDENT;
+                int availableWidth = nextX - x;
+
+                String label = String.valueOf(pair.getKey());
+                if (drawLabel(e.gc, label, x, availableWidth))
+                    continue;
+
+                label = String.format("%02d", pair.getKey() % 100); //$NON-NLS-1$
+                drawLabel(e.gc, label, x, availableWidth);
+            }
+        }
+
+        private boolean drawLabel(GC gc, String label, int x, int availableWidth)
+        {
+            Point point = gc.textExtent(label);
+            if (point.x < availableWidth)
+            {
+                gc.drawText(label, x + INDENT, INDENT, true);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        @Override
+        public boolean drawBehindSeries()
+        {
+            return true;
         }
     }
 
@@ -108,8 +189,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         toolTip.setValueFormat(new DecimalFormat("#")); //$NON-NLS-1$
         toolTip.setXAxisFormat(obj -> {
             Integer index = (Integer) obj;
-            Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
-            List<YearMonth> yearMonths = interval.getYearMonths();
+            @SuppressWarnings("unchecked")
+            List<YearMonth> yearMonths = (List<YearMonth>) chart.getData();
             return yearMonths.get(index).toString();
         });
 
@@ -127,6 +208,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         xAxis.getTick().setForeground(Colors.BLACK);
         xAxis.getTitle().setVisible(false);
         xAxis.getTitle().setText(Messages.ColumnMonth);
+        xAxis.getGrid().setStyle(LineStyle.NONE);
         xAxis.enableCategory(true);
 
         IAxis yAxis = chart.getAxisSet().getYAxis(0);
@@ -135,6 +217,7 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
         yAxis.setPosition(Position.Secondary);
 
         chart.getPlotArea().addTraverseListener(event -> event.doit = true);
+        ((IPlotArea) chart.getPlotArea()).addCustomPaintListener(new TimeGridPaintListener(chart));
 
         container.layout();
 
@@ -172,6 +255,8 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
             Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
             List<YearMonth> yearMonths = interval.getYearMonths();
+
+            chart.setData(yearMonths);
 
             xAxis.setCategorySeries(yearMonths.stream().map(ym -> String.valueOf(ym.getMonthValue()))
                             .collect(Collectors.toList()).toArray(new String[0]));
