@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -241,7 +243,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return Values.Date.format(((InvestmentPlan) e).getLastDate());
+                Optional<LocalDate> lastDate = ((InvestmentPlan) e).getLastDate();
+                return lastDate.map(Values.Date::format).orElseGet(() -> null);
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "LastDate").attachTo(column); //$NON-NLS-1$
