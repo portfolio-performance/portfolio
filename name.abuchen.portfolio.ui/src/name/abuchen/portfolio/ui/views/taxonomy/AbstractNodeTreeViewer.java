@@ -639,6 +639,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         column.setVisible(false);
         support.addColumn(column);
 
+        getModel().getAttachedModels().forEach(m -> m.addColumns(support));
+
         getModel().getClient() //
                         .getSettings() //
                         .getAttributeTypes() //

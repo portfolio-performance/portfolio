@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -27,6 +28,7 @@ import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
@@ -50,7 +52,20 @@ public final class TaxonomyModel
     {
         void onModelEdited();
     }
-    
+
+    public interface AttachedModel
+    {
+        default void setup(TaxonomyModel model)
+        {
+        }
+
+        void recalculate(TaxonomyModel model);
+
+        default void addColumns(ShowHideColumnHelper columns)
+        {
+        }
+    }
+
     public static final String KEY_FILTER_NON_ZERO = "-filter-non-zero"; //$NON-NLS-1$
     public static final String KEY_FILTER_NOT_RETIRED = "-filter-not-retired"; //$NON-NLS-1$
 
@@ -85,6 +100,7 @@ public final class TaxonomyModel
 
     private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
 
+    private List<AttachedModel> attachedModels = new ArrayList<>();
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
@@ -100,6 +116,8 @@ public final class TaxonomyModel
 
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+
+        this.attachedModels.add(new RecalculateTargetsAttachedModel());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
                         Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());
@@ -141,8 +159,11 @@ public final class TaxonomyModel
         // calculate actuals
         visitActuals(snapshot, virtualRootNode);
 
+        // setup attached models
+        this.attachedModels.forEach(m -> m.setup(this));
+
         // calculate targets
-        recalculateTargets();
+        runRecalculations();
     }
 
     private void addUnassigned(Client client)
@@ -217,19 +238,9 @@ public final class TaxonomyModel
         node.setActual(actual.toMoney());
     }
 
-    private void recalculateTargets()
+    private void runRecalculations()
     {
-        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual()));
-
-        visitAll(node -> {
-            if (node.isClassification() && !node.isRoot())
-            {
-                Money parent = node.getParent().getTarget();
-                Money target = Money.of(parent.getCurrencyCode(), Math.round(
-                                parent.getAmount() * node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT));
-                node.setTarget(target);
-            }
-        });
+        this.attachedModels.forEach(m -> m.recalculate(this));
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -241,7 +252,7 @@ public final class TaxonomyModel
     {
         this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
     }
-    
+
     public boolean isSecuritiesInPieChartExcluded()
     {
         return excludeSecuritiesInPieChart;
@@ -285,6 +296,11 @@ public final class TaxonomyModel
     public List<Predicate<TaxonomyNode>> getNodeFilters()
     {
         return nodeFilters;
+    }
+
+    public Stream<AttachedModel> getAttachedModels()
+    {
+        return attachedModels.stream();
     }
 
     public Taxonomy getTaxonomy()
@@ -366,7 +382,7 @@ public final class TaxonomyModel
     {
         virtualRootNode.setActual(snapshot.getMonetaryAssets());
         visitActuals(snapshot, virtualRootNode);
-        recalculateTargets();
+        runRecalculations();
     }
 
     public void visitAll(NodeVisitor visitor)
