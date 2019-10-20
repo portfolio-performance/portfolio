@@ -12,6 +12,11 @@ import java.util.function.Function;
 
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * The {@code Interval} class represents a period by a start and end date. The
+ * interval is <em>half-open</em> — it <em>excludes</em> the start date but
+ * <em>includes</em> the end date: {@code (start,end]}.
+ */
 public final class Interval
 {
 
@@ -44,15 +49,24 @@ public final class Interval
         return getDays() > other.getDays();
     }
 
+    /**
+     * Tests whether the given date is included in the interval. The interval is
+     * <em>half-open</em> — it <em>excludes</em> the start date but
+     * <em>includes</em> the end date: {@code (start,end]}.
+     */
     public boolean contains(LocalDate other)
     {
         return other.isAfter(start) && !other.isAfter(end);
     }
 
+    /**
+     * Tests whether the given date is included in the interval. The interval is
+     * <em>half-open</em> — it <em>excludes</em> the start date but
+     * <em>includes</em> the end date: {@code (start,end]}.
+     */
     public boolean contains(LocalDateTime other)
     {
-        LocalDate otherDate = other.toLocalDate();
-        return otherDate.isAfter(start) && !otherDate.isAfter(end);
+        return contains(other.toLocalDate());
     }
 
     public long getDays()

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -11,27 +12,26 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class SimpleMovingAverage
 {
-
     public static final int MIN_AVERAGE_PRICES_PER_WEEK = 2;
+
     private int rangeSMA;
     private Security security;
-    private LocalDate startDate;
-    private ChartLineSeriesAxes SMA;
-    private List<LocalDate> datesSMA;
-    private List<Double> valuesSMA;
+    private ChartInterval interval;
+    private ChartLineSeriesAxes result;
 
-    public SimpleMovingAverage(int rangeSMA, Security security, LocalDate startDate)
+    public SimpleMovingAverage(int rangeSMA, Security security, ChartInterval interval)
     {
         this.rangeSMA = rangeSMA;
         this.security = security;
-        this.startDate = startDate;
-        this.SMA = new ChartLineSeriesAxes();
-        this.datesSMA = new ArrayList<>();
-        this.valuesSMA = new ArrayList<>();
-        this.calculateSMA();
+        this.interval = Objects.requireNonNull(interval);
+
+        this.result = new ChartLineSeriesAxes();
+
+        calculateSMA();
     }
 
     /**
@@ -42,12 +42,7 @@ public class SimpleMovingAverage
      */
     public ChartLineSeriesAxes getSMA()
     {
-        return this.SMA;
-    }
-
-    public SimpleMovingAverage calculateSMA(int rangeSMA, Security security, LocalDate startDate)
-    {
-        return new SimpleMovingAverage(rangeSMA, security, startDate);
+        return this.result;
     }
 
     /**
@@ -64,35 +59,38 @@ public class SimpleMovingAverage
         if (prices == null || prices.size() < rangeSMA)
             return;
 
-        int index = 0;
+        int index = Collections.binarySearch(prices, new SecurityPrice(interval.getStart(), 0),
+                        new SecurityPrice.ByDate());
 
-        if (startDate != null)
-        {
-            index = Collections.binarySearch(prices, new SecurityPrice(startDate, 0), new SecurityPrice.ByDate());
+        if (index < 0)
+            index = -index - 1;
 
-            if (index < 0)
-                index = -index - 1;
+        if (index >= prices.size())
+            return;
 
-            if (index >= prices.size())
-                return;
-        }
+        List<LocalDate> datesSMA = new ArrayList<>();
+        List<Double> valuesSMA = new ArrayList<>();
 
-        for (; index < prices.size(); index++)
+        for (; index < prices.size(); index++) // NOSONAR
         {
             if (index < rangeSMA - 1)
                 continue;
             
+            LocalDate date = prices.get(index).getDate();
+            if (date.isAfter(interval.getEnd()))
+                break;
+
             List<SecurityPrice> filteredPrices = prices.subList(index - rangeSMA + 1, index + 1);
             long sum = filteredPrices.stream().mapToLong(SecurityPrice::getValue).sum();
 
             valuesSMA.add(sum / Values.Quote.divider() / filteredPrices.size());
-            datesSMA.add(prices.get(index).getDate());
+            datesSMA.add(date);
         }
         
         LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[0]);
         Double[] tmpPrices = valuesSMA.toArray(new Double[0]);
 
-        this.SMA.setDates(TimelineChart.toJavaUtilDate(tmpDates));
-        this.SMA.setValues(ArrayUtils.toPrimitive(tmpPrices));
+        result.setDates(TimelineChart.toJavaUtilDate(tmpDates));
+        result.setValues(ArrayUtils.toPrimitive(tmpPrices));
     }
 }
