@@ -89,6 +89,18 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public Object setData(String key, Object object)
+        {
+            return classification.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return classification.getData(key);
+        }
+
+        @Override
         public <T> T adapt(Class<T> type)
         {
             if (type == Named.class || type == Annotated.class)
@@ -175,6 +187,18 @@ public abstract class TaxonomyNode implements Adaptable
         public String getId()
         {
             return assignment.getInvestmentVehicle().getUUID();
+        }
+
+        @Override
+        public Object setData(String key, Object object)
+        {
+            return assignment.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return assignment.getData(key);
         }
 
         @Override
@@ -318,6 +342,10 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract void setRank(int rank);
 
     public abstract String getColor();
+
+    public abstract Object setData(String key, Object object);
+
+    public abstract Object getData(String key);
 
     public List<TaxonomyNode> getPath()
     {

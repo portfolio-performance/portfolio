@@ -2,8 +2,10 @@ package name.abuchen.portfolio.model;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ public class Classification implements Named
         private InvestmentVehicle investmentVehicle;
         private int weight;
         private int rank;
+        private Map<String, Object> data;
 
         public Assignment()
         {
@@ -59,6 +62,22 @@ public class Classification implements Named
         {
             this.rank = rank;
         }
+
+        public Object setData(String key, Object object)
+        {
+            if (data == null)
+                data = new HashMap<>();
+
+            return object == null ? data.remove(key) : data.put(key, object);
+        }
+
+        public Object getData(String key)
+        {
+            if (data == null)
+                return null;
+
+            return data.get(key);
+        }
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
@@ -80,6 +99,7 @@ public class Classification implements Named
     private int weight;
     private int rank;
 
+    private Map<String, Object> data;
 
     public Classification()
     {
@@ -219,6 +239,22 @@ public class Classification implements Named
     public void setRank(int rank)
     {
         this.rank = rank;
+    }
+
+    public Object setData(String key, Object object)
+    {
+        if (data == null)
+            data = new HashMap<>();
+
+        return object == null ? data.remove(key) : data.put(key, object);
+    }
+
+    public Object getData(String key)
+    {
+        if (data == null)
+            return null;
+
+        return data.get(key);
     }
 
     public String getPathName(boolean includeParent, int limit)
@@ -426,6 +462,9 @@ public class Classification implements Named
         copy.rank = this.rank;
         copy.weight = this.weight;
 
+        if (this.data != null)
+            copy.data = new HashMap<>(this.data);
+
         for (Classification classification : children)
         {
             Classification c = classification.copy();
@@ -438,6 +477,8 @@ public class Classification implements Named
             Assignment a = new Assignment(assignment.getInvestmentVehicle());
             a.setWeight(assignment.getWeight());
             a.setRank(assignment.getRank());
+            if (assignment.data != null)
+                a.data = new HashMap<>(assignment.data);
             copy.addAssignment(a);
         }
 
