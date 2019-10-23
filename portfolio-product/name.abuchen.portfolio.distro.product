@@ -35,7 +35,6 @@
    <features>
       <feature id="name.abuchen.portfolio.feature"/>
       <feature id="name.abuchen.portfolio.dependencies.feature"/>
-
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
@@ -51,7 +50,6 @@
       <feature id="org.eclipse.ecf.filetransfer.feature"/>
       <feature id="org.eclipse.nebula.cwt.feature"/>
       <feature id="org.eclipse.nebula.widgets.cdatetime.feature"/>
-      
       <feature id="name.abuchen.zulu.jre.feature"/>
    </features>
 
@@ -62,9 +60,9 @@
       <plugin id="org.eclipse.equinox.ds" autoStart="true" startLevel="2" />
       <plugin id="org.eclipse.equinox.simpleconfigurator" autoStart="true" startLevel="1" />
       <plugin id="org.eclipse.osgi" autoStart="true" startLevel="-1" />
-      <property name="osgi.instance.area.default" value="$LOCALAPPDATA$/PortfolioPerformance/workspace" os="win32" />
-      <property name="osgi.instance.area.default" value="@user.home/Library/Application Support/name.abuchen.portfolio.product/workspace" os="macosx" />
-      <property name="osgi.instance.area.default" value="@user.home/.PortfolioPerformance/workspace" os="linux" />
+      <property name="osgi.instance.area.default" value="./workspace" os="win32" />
+      <property name="osgi.instance.area.default" value="./workspace" os="macosx" />
+      <property name="osgi.instance.area.default" value="./workspace" os="linux" />
    </configurations>
 
 </product>
