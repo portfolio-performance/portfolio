@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -399,7 +400,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             Document document = Jsoup.parse(new WebAccess(url) //
-                            .addUserAgent(getUserAgent())
+                            .addUserAgent(getUserAgent()) //
                             .get());
             return parse(url, document, errors);
         }
@@ -460,7 +461,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
     }
@@ -473,14 +475,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         // check if th exist in body
@@ -488,7 +492,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         // then check first two regular rows
