@@ -53,6 +53,7 @@ Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
- org.apache.pdfbox
+ org.apache.pdfbox,
+ org.jsoup
 Automatic-Module-Name: name.abuchen.portfolio
 Eclipse-ExtensibleAPI: true
