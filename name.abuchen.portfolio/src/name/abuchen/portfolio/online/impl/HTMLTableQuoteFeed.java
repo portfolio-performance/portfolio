@@ -399,11 +399,9 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            Document document = Jsoup.parse(Jsoup.clean( //
-                            new WebAccess(url) //
+            Document document = Jsoup.parse(new WebAccess(url) //
                                             .addUserAgent(getUserAgent()) //
-                                            .get(), //
-                            Whitelist.relaxed()));
+                            .get());
             return parse(url, document, errors);
         }
         catch (URISyntaxException | IOException e)
@@ -415,7 +413,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
-        return parse("n/a", Jsoup.parse(Jsoup.clean(html, Whitelist.relaxed())), errors); //$NON-NLS-1$
+        return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
     }
 
     private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
@@ -463,7 +461,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
     }
@@ -476,14 +475,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         // check if th exist in body
@@ -491,7 +492,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (specs.size() != 0)
+                return new HeaderInfo(0, header.size());
         }
 
         // then check first two regular rows
