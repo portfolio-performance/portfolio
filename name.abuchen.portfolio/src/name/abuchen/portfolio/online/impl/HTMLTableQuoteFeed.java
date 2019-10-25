@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -398,9 +399,11 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            Document document = Jsoup.parse(new WebAccess(url) //
-                            .addUserAgent(getUserAgent())
-                            .get());
+            Document document = Jsoup.parse(Jsoup.clean( //
+                            new WebAccess(url) //
+                                            .addUserAgent(getUserAgent()) //
+                                            .get(), //
+                            Whitelist.relaxed()));
             return parse(url, document, errors);
         }
         catch (URISyntaxException | IOException e)
@@ -412,7 +415,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
     protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
     {
-        return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
+        return parse("n/a", Jsoup.parse(Jsoup.clean(html, Whitelist.relaxed())), errors); //$NON-NLS-1$
     }
 
     private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
