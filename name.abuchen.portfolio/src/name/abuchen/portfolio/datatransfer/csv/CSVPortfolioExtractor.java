@@ -9,11 +9,13 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AccountNameField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.PortfolioNameField;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -45,6 +47,8 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new DateField("date-quote", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                         .setOptional(true));
+        fields.add(new AccountNameField("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new PortfolioNameField("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
