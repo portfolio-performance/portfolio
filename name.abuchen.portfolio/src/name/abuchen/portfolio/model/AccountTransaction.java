@@ -75,7 +75,8 @@ public class AccountTransaction extends Transaction
     }
 
     private Type type;
-
+    private Account accountContext;
+    
     public AccountTransaction()
     {
         // needed for xstream de-serialization
@@ -131,5 +132,15 @@ public class AccountTransaction extends Transaction
                                         ? getCrossEntry().getCrossOwner(this).toString()
                                         : "<no XEntry>" //$NON-NLS-1$
         );
+    }
+    
+    public void setAccountContext(Account account)
+    {
+        accountContext = account;
+    }
+
+    public Account getAccountContext()
+    {
+        return accountContext;
     }
 }

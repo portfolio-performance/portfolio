@@ -12,6 +12,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction.Context;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.pdf.AbstractPDFExtractor;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
@@ -216,8 +217,13 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            if (transaction instanceof AccountTransaction)
-                return action.process((AccountTransaction) transaction, context.getAccount());
+            if (transaction instanceof AccountTransaction) 
+            {
+                Account account = ((AccountTransaction) transaction).getAccountContext();
+                if (account == null)
+                    account = context.getAccount();
+                return action.process((AccountTransaction) transaction, account);
+            }
             else if (transaction instanceof PortfolioTransaction)
                 return action.process((PortfolioTransaction) transaction, context.getPortfolio());
             else
@@ -273,7 +279,8 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            return action.process(entry, context.getAccount(), context.getPortfolio());
+            Account account = entry.getAccount() == null ? entry.getAccount() : context.getAccount();
+            return action.process(entry, account, context.getPortfolio());
         }
     }
 

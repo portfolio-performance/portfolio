@@ -14,11 +14,15 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AccountNameField;
+import name.abuchen.portfolio.datatransfer.csv.CSVImporter.PortfolioNameField;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -44,6 +48,8 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField("shares", Messages.CSVColumn_Shares).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AccountNameField("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new PortfolioNameField("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
@@ -72,6 +78,22 @@ import name.abuchen.portfolio.money.Money;
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
+        String accountName = getText(Messages.CSVColumn_AccountName, rawValues, field2column);
+        String portfolioName = null;
+
+        Account account = null;
+        if (accountName != null) {
+            account = this.getClient().getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst().orElse(null);
+            if (account == null)
+                throw new RuntimeException(Messages.CSVImportMissingAccount);            
+        }
+
+        Portfolio portfolio = null;
+        if (portfolioName != null) {
+            portfolio = this.getClient().getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst().orElse(null);
+            if (portfolio == null)
+                throw new RuntimeException(Messages.CSVImportMissingPortfolio);
+        }
 
         switch (type)
         {
@@ -82,6 +104,7 @@ import name.abuchen.portfolio.money.Money;
                 entry.setCurrencyCode(amount.getCurrencyCode());
                 entry.setDate(date.withHour(0).withMinute(0));
                 entry.setNote(note);
+                entry.setSourceAccount(account);
                 items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
                 break;
             case BUY:
@@ -104,6 +127,8 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
+                buySellEntry.setAccount(account);
+                buySellEntry.setPortfolio(portfolio);
                 items.add(new BuySellEntryItem(buySellEntry));
                 break;
             case DIVIDENDS: // NOSONAR
@@ -126,6 +151,7 @@ import name.abuchen.portfolio.money.Money;
                 t.setType(type);
                 t.setAmount(Math.abs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
+                t.setAccountContext(account);
                 if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
                     t.setSecurity(security);
                 t.setDateTime(date.withHour(0).withMinute(0));
