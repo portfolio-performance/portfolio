@@ -47,6 +47,7 @@ Import-Package: com.google.common.base,
  org.json.simple.parser,
  org.jsoup,
  org.jsoup.nodes,
+ org.jsoup.safety,
  org.jsoup.select
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor

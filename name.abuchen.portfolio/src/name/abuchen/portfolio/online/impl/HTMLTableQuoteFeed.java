@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -45,34 +46,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     protected abstract static class Column
     {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                unusualSymbols.setGroupingSeparator('\'');
-                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = ThreadLocal.withInitial(() -> {
+            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+            unusualSymbols.setGroupingSeparator('\'');
+            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+        });
 
         private final Pattern[] patterns;
 
@@ -399,7 +383,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         try
         {
             Document document = Jsoup.parse(new WebAccess(url) //
-                            .addUserAgent(getUserAgent())
+                            .addUserAgent(getUserAgent()) //
                             .get());
             return parse(url, document, errors);
         }
@@ -460,7 +444,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
     }
@@ -473,14 +458,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // check if th exist in body
@@ -488,7 +475,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // then check first two regular rows
@@ -524,8 +512,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<>();
-        for (Column column : getColumns())
-            available.add(column);
+        Collections.addAll(available, getColumns());
 
         for (int ii = 0; ii < row.size(); ii++)
         {
