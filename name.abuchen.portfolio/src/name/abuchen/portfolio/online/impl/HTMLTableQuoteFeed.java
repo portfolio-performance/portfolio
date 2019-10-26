@@ -46,34 +46,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 {
     protected abstract static class Column
     {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                unusualSymbols.setGroupingSeparator('\'');
-                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = ThreadLocal.withInitial(() -> {
+            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+            unusualSymbols.setGroupingSeparator('\'');
+            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+        });
 
         private final Pattern[] patterns;
 
@@ -475,7 +458,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            if (specs.size() != 0)
+            if (!specs.isEmpty())
                 return new HeaderInfo(0, header.size());
         }
 
@@ -483,7 +466,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            if (specs.size() != 0)
+            if (!specs.isEmpty())
                 return new HeaderInfo(0, header.size());
         }
 
@@ -492,7 +475,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            if (specs.size() != 0)
+            if (!specs.isEmpty())
                 return new HeaderInfo(0, header.size());
         }
 
@@ -529,8 +512,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<>();
-        for (Column column : getColumns())
-            available.add(column);
+        Collections.addAll(available, getColumns());
 
         for (int ii = 0; ii < row.size(); ii++)
         {

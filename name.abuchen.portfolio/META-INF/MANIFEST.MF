@@ -47,13 +47,13 @@ Import-Package: com.google.common.base,
  org.json.simple.parser,
  org.jsoup,
  org.jsoup.nodes,
+ org.jsoup.safety,
  org.jsoup.select
 Bundle-ClassPath: .
 Bundle-Vendor: %Bundle-Vendor
 Require-Bundle: org.eclipse.core.runtime,
  org.apache.httpcomponents.httpclient,
  org.apache.httpcomponents.httpcore,
- org.apache.pdfbox,
- org.jsoup
+ org.apache.pdfbox
 Automatic-Module-Name: name.abuchen.portfolio
 Eclipse-ExtensibleAPI: true
