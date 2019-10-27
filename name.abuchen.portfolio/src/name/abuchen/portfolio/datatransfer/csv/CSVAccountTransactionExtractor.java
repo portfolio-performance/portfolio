@@ -49,6 +49,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
         fields.add(new AccountNameField("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AccountNameField("account2", Messages.CSVColumn_AccountName2nd).setOptional(true)); //$NON-NLS-1$
         fields.add(new PortfolioNameField("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
     }
 
@@ -78,22 +79,10 @@ import name.abuchen.portfolio.money.Money;
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
-        String accountName = getText(Messages.CSVColumn_AccountName, rawValues, field2column);
-        String portfolioName = null;
+        Account account = getAccount(getClient(), rawValues, field2column);
+        Account account2nd = getAccount(getClient(), rawValues, field2column, true);
 
-        Account account = null;
-        if (accountName != null) {
-            account = this.getClient().getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst().orElse(null);
-            if (account == null)
-                throw new RuntimeException(Messages.CSVImportMissingAccount);            
-        }
-
-        Portfolio portfolio = null;
-        if (portfolioName != null) {
-            portfolio = this.getClient().getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst().orElse(null);
-            if (portfolio == null)
-                throw new RuntimeException(Messages.CSVImportMissingPortfolio);
-        }
+        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
 
         switch (type)
         {
@@ -105,6 +94,7 @@ import name.abuchen.portfolio.money.Money;
                 entry.setDate(date.withHour(0).withMinute(0));
                 entry.setNote(note);
                 entry.setSourceAccount(account);
+                entry.setTargetAccount(account2nd);
                 items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
                 break;
             case BUY:

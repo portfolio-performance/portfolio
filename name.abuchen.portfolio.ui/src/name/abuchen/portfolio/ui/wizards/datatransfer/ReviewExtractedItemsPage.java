@@ -42,6 +42,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.Extractor.AccountTransferItem;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -405,6 +407,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             {
                 Security security = entry.getItem().getSecurity();
                 return security != null ? security.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+        
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnAccount);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Item item = entry.getItem();
+                if (item instanceof AccountTransferItem) {
+                   
+                }
+                return null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));

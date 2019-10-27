@@ -18,6 +18,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
@@ -225,7 +226,7 @@ public interface Extractor
                 return action.process((AccountTransaction) transaction, account);
             }
             else if (transaction instanceof PortfolioTransaction)
-                return action.process((PortfolioTransaction) transaction, context.getPortfolio());
+                return action.process((PortfolioTransaction) transaction, context.getPortfolio());   
             else
                 throw new UnsupportedOperationException();
         }
@@ -280,7 +281,8 @@ public interface Extractor
         public Status apply(ImportAction action, Context context)
         {
             Account account = entry.getAccount() == null ? entry.getAccount() : context.getAccount();
-            return action.process(entry, account, context.getPortfolio());
+            Portfolio portfolio = entry.getPortfolio() == null ? entry.getPortfolio() : context.getPortfolio();
+            return action.process(entry, account, portfolio);
         }
     }
 

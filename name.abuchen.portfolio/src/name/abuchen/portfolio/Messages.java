@@ -39,7 +39,9 @@ public class Messages extends NLS
     public static String CSVColumn_Value;
     public static String CSVColumn_WKN;
     public static String CSVColumn_AccountName;
+    public static String CSVColumn_AccountName2nd;
     public static String CSVColumn_PortfolioName;
+    public static String CSVColumn_PortfolioName2nd;
     public static String CSVColumn_CumulatedPerformanceInPercent;
     public static String CSVColumn_Currency;
     public static String CSVColumn_CurrencyGrossAmount;

@@ -18,8 +18,10 @@ import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.PortfolioNameField;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -106,6 +108,12 @@ import name.abuchen.portfolio.money.Money;
 
         Unit grossAmount = extractGrossAmount(rawValues, field2column, amount);
 
+        Account account = getAccount(getClient(), rawValues, field2column);
+        Account account2nd = getAccount(getClient(), rawValues, field2column, true);
+
+        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
+
+        
         switch (type)
         {
             case BUY:
