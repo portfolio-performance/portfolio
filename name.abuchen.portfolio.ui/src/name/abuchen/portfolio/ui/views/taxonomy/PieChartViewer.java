@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import java.awt.Color;
-
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
@@ -20,6 +18,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -127,10 +126,9 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                                 .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
                                 .append(")\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
-                buffer.append(",\"color\":\"").append(
-                                !excludeSecurities && node.isAssignment() ? colorBrighter(nodeColor) : node.getColor())
+                buffer.append(",\"color\":\"")
+                                .append(node.isAssignment() ? ColorConversion.brighter(nodeColor) : node.getColor())
                                 .append("\"");
-                nodeColor = node.getColor();
             }
 
             addChildren(buffer, node, node.getColor(), total, excludeSecurities);
@@ -171,14 +169,5 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
             if (!isFirst)
                 buffer.append("]"); //$NON-NLS-1$
         }
-
-        private String colorBrighter(String inputColor)
-        {
-            Color color = new Color(Integer.valueOf(inputColor.substring(1, 3), 16),
-                            Integer.valueOf(inputColor.substring(3, 5), 16),
-                            Integer.valueOf(inputColor.substring(5, 7), 16));
-            return "#" + Integer.toHexString(color.brighter().getRGB()).substring(2); //$NON-NLS-1$
-        }
-
     }
 }

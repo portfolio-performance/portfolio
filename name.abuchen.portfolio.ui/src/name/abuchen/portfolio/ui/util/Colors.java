@@ -121,10 +121,6 @@ public final class Colors
 
     public static Color brighter(Color base)
     {
-        float[] hsb = base.getRGB().getHSB();
-        float saturation = Math.max(0f, hsb[1] - 0.2f);
-        float brightness = Math.min(1f, hsb[2] + 0.2f);
-        return getColor(new RGB(hsb[0], saturation, brightness));
+        return getColor(ColorConversion.brighter(base.getRGB()));
     }
-
 }
