@@ -56,7 +56,15 @@ public interface Extractor
          * JSON structure of the transaction to the test cases
          */
         private Object data;
+        
+        private Account accountPrimary;
 
+        private Account accountSecondary;
+        
+        private Portfolio portfolioPrimary;
+        
+        private Portfolio portfolioSecondary;
+        
         public abstract Annotated getSubject();
 
         public abstract Security getSecurity();
@@ -86,6 +94,39 @@ public interface Extractor
         {
             this.data = data;
         }
+        
+        public Account getAccountPrimary() {
+            return accountPrimary;
+        }
+
+        public void setAccountPrimary(Account account) {
+            accountPrimary = account;
+        }
+
+        public Account getAccountSecondary() {
+            return accountPrimary;
+        }
+
+        public void setAccountSecondary(Account account) {
+            accountSecondary = account;
+        }
+        
+        public Portfolio getPortfolioPrimary() {
+            return portfolioPrimary;
+        }
+
+        public void setPortfolioPrimary(Portfolio portfolio) {
+            portfolioPrimary = portfolio;
+        }
+
+        public Portfolio getPortfolioSecondary() {
+            return portfolioPrimary;
+        }
+
+        public void setPortfolioSecondary(Portfolio portfolio) {
+            portfolioSecondary = portfolio;
+        }
+
     }
 
     /**
@@ -220,13 +261,18 @@ public interface Extractor
         {
             if (transaction instanceof AccountTransaction) 
             {
-                Account account = ((AccountTransaction) transaction).getAccountContext();
+                Account account = getAccountPrimary();
                 if (account == null)
                     account = context.getAccount();
                 return action.process((AccountTransaction) transaction, account);
             }
             else if (transaction instanceof PortfolioTransaction)
-                return action.process((PortfolioTransaction) transaction, context.getPortfolio());   
+            {
+                Portfolio portfolio = getPortfolioPrimary();
+                if (portfolio == null)
+                    portfolio = context.getPortfolio();
+                return action.process((PortfolioTransaction) transaction, portfolio);
+            }
             else
                 throw new UnsupportedOperationException();
         }
@@ -280,8 +326,14 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
-            Account account = entry.getAccount() == null ? entry.getAccount() : context.getAccount();
-            Portfolio portfolio = entry.getPortfolio() == null ? entry.getPortfolio() : context.getPortfolio();
+            Account account = getAccountPrimary();
+            if (account == null) {
+                account = context.getAccount();
+            }
+            Portfolio portfolio = getPortfolioPrimary();
+            if (portfolio == null) {
+                portfolio = context.getPortfolio();
+            }
             return action.process(entry, account, portfolio);
         }
     }
@@ -331,10 +383,18 @@ public interface Extractor
         @Override
         public Status apply(ImportAction action, Context context)
         {
+            Account account = getAccountPrimary();
+            if (account == null)
+                account = context.getAccount();
+            
+            Account accountSecondary = getAccountSecondary();
+            if (accountSecondary == null)
+                accountSecondary = context.getSecondaryAccount();
+            
             if (isOutbound)
-                return action.process(entry, context.getAccount(), context.getSecondaryAccount());
+                return action.process(entry, account, accountSecondary);
             else
-                return action.process(entry, context.getSecondaryAccount(), context.getAccount());
+                return action.process(entry, accountSecondary, account);
         }
     }
 

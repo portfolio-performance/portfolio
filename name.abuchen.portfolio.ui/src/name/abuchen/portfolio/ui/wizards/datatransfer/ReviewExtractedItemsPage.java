@@ -418,10 +418,24 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Item item = entry.getItem();
-                if (item instanceof AccountTransferItem) {
-                   
-                }
+                Account acc = entry.getItem().getAccountPrimary();
+                if (acc != null)
+                    return acc.getName();
+                return null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+        
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnPortfolio);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Portfolio p = entry.getItem().getPortfolioPrimary();
+                if (p != null)
+                    return p.getName();
                 return null;
             }
         });

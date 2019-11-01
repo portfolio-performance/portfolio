@@ -93,9 +93,11 @@ import name.abuchen.portfolio.money.Money;
                 entry.setCurrencyCode(amount.getCurrencyCode());
                 entry.setDate(date.withHour(0).withMinute(0));
                 entry.setNote(note);
-                entry.setSourceAccount(account);
-                entry.setTargetAccount(account2nd);
-                items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
+                
+                Item i = new AccountTransferItem(entry, type == Type.TRANSFER_OUT);
+                i.setAccountPrimary(account);
+                i.setAccountSecondary(account2nd);
+                items.add(i);
                 break;
             case BUY:
             case SELL:
@@ -117,9 +119,11 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
-                buySellEntry.setAccount(account);
-                buySellEntry.setPortfolio(portfolio);
-                items.add(new BuySellEntryItem(buySellEntry));
+                
+                Item bsi = new BuySellEntryItem(buySellEntry);
+                bsi.setAccountPrimary(account);
+                bsi.setPortfolioPrimary(portfolio);
+                items.add(bsi);
                 break;
             case DIVIDENDS: // NOSONAR
                 // dividends must have a security
@@ -141,7 +145,6 @@ import name.abuchen.portfolio.money.Money;
                 t.setType(type);
                 t.setAmount(Math.abs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
-                t.setAccountContext(account);
                 if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
                     t.setSecurity(security);
                 t.setDateTime(date.withHour(0).withMinute(0));
@@ -150,7 +153,10 @@ import name.abuchen.portfolio.money.Money;
                     t.setShares(Math.abs(shares));
                 if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
                     t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
-                items.add(new TransactionItem(t));
+                
+                TransactionItem ti = new TransactionItem(t);
+                ti.setAccountPrimary(account);
+                items.add(ti);
                 break;
             default:
                 throw new IllegalArgumentException(type.toString());
