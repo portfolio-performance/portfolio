@@ -32,11 +32,18 @@ public class EarningsViewModel
     {
         DIVIDENDS(Messages.LabelDividends, AccountTransaction.Type.DIVIDENDS), //
         INTEREST(Messages.LabelInterest, AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE), //
-        EARNINGS(Messages.LabelEarnings, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, // $NON-NLS-1$
+        EARNINGS(Messages.LabelEarnings, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
                         AccountTransaction.Type.INTEREST_CHARGE), //
-        TAXES(Messages.LabelTaxes, null), // $NON-NLS-1$
-        FEES(Messages.LabelFees, null), // $NON-NLS-1$
-        ALL("   \u2211    ", null); //$NON-NLS-1$
+        TAXES(Messages.ColumnTaxes, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
+                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
+                        AccountTransaction.Type.TAX_REFUND), //
+        FEES(Messages.ColumnFees, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
+                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
+                        AccountTransaction.Type.FEES_REFUND), //
+        ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, //$NON-NLS-1$
+                        AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
+                        AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
+                        AccountTransaction.Type.FEES_REFUND);
 
         private String label;
         private Set<AccountTransaction.Type> types;
@@ -44,8 +51,7 @@ public class EarningsViewModel
         private Mode(String label, AccountTransaction.Type first, AccountTransaction.Type... rest)
         {
             this.label = label;
-            if (first != null)
-                this.types = EnumSet.of(first, rest);
+            this.types = EnumSet.of(first, rest);
         }
 
         public String getLabel()
@@ -53,9 +59,9 @@ public class EarningsViewModel
             return label;
         }
 
-        public boolean isIncluded(AccountTransaction transaction)
+        public boolean isAccountTxIncluded(AccountTransaction transaction)
         {
-            return (this.types != null ? this.types.contains(transaction.getType()) : true);
+            return this.types.contains(transaction.getType());
         }
     }
 
@@ -109,7 +115,7 @@ public class EarningsViewModel
     private int noOfmonths;
     private List<Line> lines;
     private Line sum;
-    private List<TransactionPair<?>> transactions = new ArrayList<>();;
+    private List<TransactionPair<?>> transactions = new ArrayList<>();
 
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
@@ -230,7 +236,7 @@ public class EarningsViewModel
         this.noOfmonths = (now.getYear() - startYear) * 12 + now.getMonthValue();
 
         Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);
-        Predicate<Transaction> predicate = t -> interval.contains(t.getDateTime());
+        Predicate<Transaction> checkIsInInterval = t -> interval.contains(t.getDateTime());
 
         Map<InvestmentVehicle, Line> vehicle2line = new HashMap<>();
 
@@ -239,18 +245,19 @@ public class EarningsViewModel
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(client);
 
-        EnumSet<Mode> excludeMode = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
-        if (!excludeMode.contains(mode))
+        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.TAXES, Mode.FEES, Mode.ALL);
+        if (processPorfolioTx.contains(mode))
         {
             for (Portfolio portfolio : filteredClient.getPortfolios())
             {
-                for (PortfolioTransaction t : portfolio.getTransactions()) // NOSONAR
+                for (PortfolioTransaction t : portfolio.getTransactions())
                 {
-                    if (!predicate.test(t))
+                    if (!checkIsInInterval.test(t))
                         continue;
 
                     long value = 0;
-                    switch(mode) {
+                    switch (mode)
+                    {
                         case TAXES:
                             value -= t.getUnitSum(Unit.Type.TAX).with(converter.at(t.getDateTime())).getAmount();
                             break;
@@ -271,37 +278,30 @@ public class EarningsViewModel
 
                         int index = (t.getDateTime().getYear() - startYear) * 12 + t.getDateTime().getMonthValue() - 1;
 
-                        // should not be null but portfolio is not applicable to InvestmentVehicle...
-                        InvestmentVehicle vehicle = t.getSecurity() != null ? t.getSecurity() : null;
-                        Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, noOfmonths));
-                        line.values[index] = value;
-                        line.sum -= value;
+                        Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));
+                        line.values[index] += value;
+                        line.sum += value;
 
-                        sum.values[index] = value;
-                        sum.sum -= value;
+                        sum.values[index] += value;
+                        sum.sum += value;
                     }
                 }
             }
         }
 
-        EnumSet<AccountTransaction.Type> excludeTransaction = EnumSet.of(AccountTransaction.Type.TRANSFER_IN, AccountTransaction.Type.TRANSFER_OUT,
-                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL, AccountTransaction.Type.DEPOSIT,
-                        AccountTransaction.Type.REMOVAL);
         for (Account account : filteredClient.getAccounts())
         {
             for (AccountTransaction t : account.getTransactions()) // NOSONAR
             {
-                if (!mode.isIncluded(t))
+                if (!mode.isAccountTxIncluded(t))
                     continue;
 
-                if (excludeTransaction.contains(t.getType()))
-                    continue;
-                    
-                if (!predicate.test(t))
+                if (!checkIsInInterval.test(t))
                     continue;
 
                 long value = 0;
-                switch(mode) {
+                switch (mode)
+                {
                     case TAXES:
                         if (t.getType() == AccountTransaction.Type.TAXES
                                         || t.getType() == AccountTransaction.Type.TAX_REFUND)
@@ -311,7 +311,9 @@ public class EarningsViewModel
                                 value *= -1;
                         }
                         else
+                        {
                             value -= t.getUnitSum(Unit.Type.TAX).with(converter.at(t.getDateTime())).getAmount();
+                        }
                         break;
                     case FEES:
                         if (t.getType() == AccountTransaction.Type.FEES
@@ -321,22 +323,16 @@ public class EarningsViewModel
                             if (t.getType().isDebit())
                                 value *= -1;
                         }
-
                         else
+                        {
                             value -= t.getUnitSum(Unit.Type.FEE).with(converter.at(t.getDateTime())).getAmount();
+                        }
                         break;
                     case ALL:
-                        if (t.getType() == AccountTransaction.Type.TAXES
-                                        || t.getType() == AccountTransaction.Type.TAX_REFUND
-                                        || t.getType() == AccountTransaction.Type.FEES
-                                        || t.getType() == AccountTransaction.Type.FEES_REFUND)
-                            value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                        else
-                            value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
+                        value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
                         if (t.getType().isDebit())
                             value *= -1;
                         break;
-
                     default:
                         value = (useGrossValue ? t.getGrossValue() : t.getMonetaryAmount())
                                         .with(converter.at(t.getDateTime())).getAmount();
@@ -362,7 +358,7 @@ public class EarningsViewModel
         }
         this.lines = new ArrayList<>(vehicle2line.values());
     }
-    
+
     public void addUpdateListener(UpdateListener listener)
     {
         this.listeners.add(listener);

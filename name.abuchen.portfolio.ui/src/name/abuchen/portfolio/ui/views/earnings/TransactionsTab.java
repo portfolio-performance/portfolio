@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.text.MessageFormat;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -121,8 +122,16 @@ public class TransactionsTab implements EarningsTab
                 return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
             }
         });
-        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column, SWT.UP);
+        ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getTransaction().getDateTime()).attachTo(column,
+                        SWT.UP);
         support.addColumn(column);
+
+        Function<Object, Comparable<?>> tx2type = element -> ((TransactionPair<?>) element)
+                        .getTransaction() instanceof AccountTransaction
+                                        ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction())
+                                                        .getType().toString()
+                                        : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction())
+                                                        .getType().toString();
 
         column = new Column(Messages.ColumnTransactionType, SWT.LEFT, 80);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -130,11 +139,7 @@ public class TransactionsTab implements EarningsTab
             @Override
             public String getText(Object element)
             {
-                return ((TransactionPair<?>) element).getTransaction() instanceof AccountTransaction
-                                ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction()).getType()
-                                                .toString()
-                                : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction()).getType()
-                                                .toString();
+                return (String) tx2type.apply(element);
             }
 
             @Override
@@ -143,13 +148,7 @@ public class TransactionsTab implements EarningsTab
                 return colorFor(element);
             }
         });
-        ColumnViewerSorter
-                        .create(element -> ((TransactionPair<?>) element).getTransaction() instanceof AccountTransaction
-                                        ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction())
-                                                        .getType()
-                                        : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction())
-                                                        .getType())
-                        .attachTo(column);
+        ColumnViewerSorter.create(tx2type).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnSecurity, SWT.None, 250);
@@ -199,9 +198,12 @@ public class TransactionsTab implements EarningsTab
             @Override
             public String getText(Object element)
             {
-                Money transactionGrossValue = ((TransactionPair<?>) element).getTransaction() instanceof AccountTransaction
-                                ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction()).getGrossValue()
-                                : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction()).getGrossValue();
+                Money transactionGrossValue = ((TransactionPair<?>) element)
+                                .getTransaction() instanceof AccountTransaction
+                                                ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction())
+                                                                .getGrossValue()
+                                                : ((PortfolioTransaction) ((TransactionPair<?>) element)
+                                                                .getTransaction()).getGrossValue();
                 return Values.Money.format(transactionGrossValue, client.getBaseCurrency());
             }
 
@@ -343,12 +345,16 @@ public class TransactionsTab implements EarningsTab
 
     private Color colorFor(Object element)
     {
-        return (((TransactionPair<?>) element).getTransaction() instanceof AccountTransaction
-                        ? ((AccountTransaction) ((TransactionPair<?>) element).getTransaction()).getType().isCredit() //
-                        : ((PortfolioTransaction) ((TransactionPair<?>) element).getTransaction()).getType()
-                                        .isPurchase())
-                                                        ? Colors.DARK_GREEN
-                                                        : Colors.DARK_RED;
+        TransactionPair<?> tx = (TransactionPair<?>) element;
+        if (tx.getTransaction() instanceof AccountTransaction)
+        {
+            return ((AccountTransaction) tx.getTransaction()).getType().isCredit() ? Colors.DARK_GREEN
+                            : Colors.DARK_RED;
+        }
+        else
+        {
+            return ((PortfolioTransaction) tx.getTransaction()).getType().isPurchase() ? Colors.DARK_GREEN
+                            : Colors.DARK_RED;
+        }
     }
-
 }

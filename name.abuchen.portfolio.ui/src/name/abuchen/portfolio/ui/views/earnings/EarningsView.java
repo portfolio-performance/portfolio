@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.time.LocalDate;
+import java.util.EnumSet;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.views.earnings.EarningsViewModel.Mode;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class EarningsView extends AbstractFinanceView
@@ -146,11 +148,16 @@ public class EarningsView extends AbstractFinanceView
             }
         }));
 
-        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
-            Action action = new SimpleAction(Messages.LabelUseGrossDividends,
-                            a -> model.setUseGrossValue(!model.usesGrossValue()));
-            action.setChecked(model.usesGrossValue());
-            manager.add(action);
+        toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
+            
+            EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
+            if (supportGrossValue.contains(model.getMode()))
+            {
+                Action action = new SimpleAction(Messages.LabelUseGrossValue,
+                                a -> model.setUseGrossValue(!model.usesGrossValue()));
+                action.setChecked(model.usesGrossValue());
+                manager.add(action);
+            }
 
             EarningsTab tab = (EarningsTab) folder.getSelection().getData();
             if (tab != null)

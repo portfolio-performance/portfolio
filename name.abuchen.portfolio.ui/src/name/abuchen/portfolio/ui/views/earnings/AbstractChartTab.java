@@ -1,9 +1,7 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.text.DateFormatSymbols;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.inject.Inject;
 
@@ -12,7 +10,6 @@ import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
@@ -30,7 +27,23 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 
 public abstract class AbstractChartTab implements EarningsTab
 {
-    private List<PaintListener> customBehindPaintListener = new ArrayList<>();
+    private class PaintBehindListener implements ICustomPaintListener
+    {
+        @Override
+        public void paintControl(PaintEvent e)
+        {
+            int y = chart.getAxisSet().getYAxis(0).getPixelCoordinate(0);
+            e.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
+            e.gc.setLineStyle(SWT.LINE_SOLID);
+            e.gc.drawLine(0, y, e.width, y);
+        }
+
+        @Override
+        public boolean drawBehindSeries()
+        {
+            return true;
+        }
+    }
 
     private static final int[][] FIVE_COLORS = new int[][] { //
                     new int[] { 114, 124, 201 }, //
@@ -78,7 +91,7 @@ public abstract class AbstractChartTab implements EarningsTab
         chart.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         chart.getTitle().setVisible(false);
         chart.getLegend().setPosition(SWT.BOTTOM);
-        chart.getPlotArea().addPaintListener(event -> customBehindPaintListener.forEach(l -> l.paintControl(event)));
+        chart.getPlotArea().addPaintListener(new PaintBehindListener());
 
         IAxis xAxis = chart.getAxisSet().getXAxis(0);
         xAxis.getTitle().setVisible(false);
@@ -108,26 +121,6 @@ public abstract class AbstractChartTab implements EarningsTab
         model.addUpdateListener(this::updateChart);
 
         return chart;
-    }
-
-    private class PaintBehindListener implements ICustomPaintListener
-    {
-        @Override
-        public void paintControl(PaintEvent e)
-        {
-            int y = chart.getAxisSet().getYAxis(0).getPixelCoordinate(0);
-            e.gc.setLineWidth(3);
-            e.gc.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
-            e.gc.setLineStyle(SWT.LINE_SOLID);
-            e.gc.drawLine(0, y, e.width, y);
-            e.gc.setLineWidth(1);
-        }
-
-        @Override
-        public boolean drawBehindSeries()
-        {
-            return true;
-        }
     }
 
     protected void attachTooltipTo(Chart chart)
