@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
@@ -26,23 +27,30 @@ public class PortfolioReportNet
 {
     /* package */ static class Market
     {
+        private static final String SYMBOL_KEY = "symbol"; //$NON-NLS-1$
+
         private String name;
         private String symbol;
 
         static List<Market> from(JSONObject json)
         {
-            if (json == null || json.isEmpty())
+            if (json == null)
                 return Collections.emptyList();
 
             @SuppressWarnings("unchecked")
             Set<Map.Entry<Object, Object>> set = json.entrySet();
 
-            return set.stream().map(entry -> {
-                Market m = new Market();
-                m.name = entry.getKey().toString();
-                m.symbol = (String) ((JSONObject) entry.getValue()).get("symbol"); //$NON-NLS-1$
-                return m;
-            }).filter(m -> m.getSymbol() != null && !m.getSymbol().isEmpty()).collect(Collectors.toList());
+            return set.stream() //
+                            .filter(entry -> entry.getKey().toString().startsWith(SYMBOL_KEY)) //
+                            .map(entry -> {
+                                Market m = new Market();
+                                String key = entry.getKey().toString();
+                                m.name = key.substring(SYMBOL_KEY.length()).toUpperCase(Locale.US);
+                                m.symbol = entry.getValue() == null ? null : entry.getValue().toString();
+                                return m;
+                            }) //
+                            .filter(m -> m.getSymbol() != null && !m.getSymbol().isEmpty())
+                            .collect(Collectors.toList());
         }
 
         private Market()
@@ -76,7 +84,7 @@ public class PortfolioReportNet
             vehicle.id = (String) jsonObject.get("uuid"); //$NON-NLS-1$
             vehicle.name = (String) jsonObject.get("name"); //$NON-NLS-1$
 
-            String t = (String) jsonObject.get("security_type"); //$NON-NLS-1$
+            String t = (String) jsonObject.get("securityType"); //$NON-NLS-1$
             if (TYPE_SHARE.equals(t))
                 vehicle.type = SecuritySearchProvider.Type.SHARE.toString();
             else if (TYPE_BOND.equals(t))
@@ -86,7 +94,7 @@ public class PortfolioReportNet
 
             vehicle.isin = (String) jsonObject.get("isin"); //$NON-NLS-1$
             vehicle.wkn = (String) jsonObject.get("wkn"); //$NON-NLS-1$
-            vehicle.markets = Market.from((JSONObject) jsonObject.get("markets")); //$NON-NLS-1$
+            vehicle.markets = Market.from(jsonObject);
             return vehicle;
         }
 
@@ -208,7 +216,7 @@ public class PortfolioReportNet
         if (type != null)
         {
             html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
-                            .addParameter("type", //$NON-NLS-1$
+                            .addParameter("securityType", //$NON-NLS-1$
                                             type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
                             .get();
 
@@ -224,7 +232,7 @@ public class PortfolioReportNet
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
     {
         @SuppressWarnings("nls")
-        String html = new WebAccess(HOST, "/api/securities/" + onlineId)
+        String html = new WebAccess(HOST, "/api/securities/uuid/" + onlineId)
                         .addHeader("X-Source",
                                         "Portfolio Peformance " + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                         .getVersion().toString())
