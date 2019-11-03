@@ -424,7 +424,22 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return null;
             }
         });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+        
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnAccount2nd);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Account acc = entry.getItem().getAccountSecondary();
+                if (acc != null)
+                    return acc.getName();
+                return null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
         
         column = new TableViewerColumn(viewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnPortfolio);
@@ -439,7 +454,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 return null;
             }
         });
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
     }
 
     private void attachContextMenu(final Table table)

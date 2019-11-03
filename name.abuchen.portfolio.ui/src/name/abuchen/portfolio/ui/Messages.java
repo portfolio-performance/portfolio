@@ -75,6 +75,7 @@ public class Messages extends NLS
     public static String ColumnAbsolutePerformancePercent;
     public static String ColumnAbsolutePerformancePercent_Option;
     public static String ColumnAccount;
+    public static String ColumnAccount2nd;
     public static String ColumnAccountFrom;
     public static String ColumnAccountTo;
     public static String ColumnActualPercent;

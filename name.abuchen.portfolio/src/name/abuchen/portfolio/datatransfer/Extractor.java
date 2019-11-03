@@ -104,7 +104,7 @@ public interface Extractor
         }
 
         public Account getAccountSecondary() {
-            return accountPrimary;
+            return accountSecondary;
         }
 
         public void setAccountSecondary(Account account) {
@@ -120,7 +120,7 @@ public interface Extractor
         }
 
         public Portfolio getPortfolioSecondary() {
-            return portfolioPrimary;
+            return portfolioSecondary;
         }
 
         public void setPortfolioSecondary(Portfolio portfolio) {
