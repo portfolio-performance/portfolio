@@ -52,6 +52,9 @@ public class ReportingPeriodDialog extends Dialog
     private Spinner year;
 
     private Button radioCurrentMonth;
+
+    private Button radioYTD;
+
     private List<Button> radioBtnList;
 
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
@@ -125,6 +128,9 @@ public class ReportingPeriodDialog extends Dialog
         radioCurrentMonth = new Button(editArea, SWT.RADIO);
         radioCurrentMonth.setText(Messages.LabelCurrentMonth);
 
+        radioYTD = new Button(editArea, SWT.RADIO);
+        radioYTD.setText(Messages.LabelYTD);
+
         //
         // form layout
         //
@@ -163,6 +169,8 @@ public class ReportingPeriodDialog extends Dialog
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
         FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioYearX, 20));
+
+        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentMonth, 20));
 
         //
         // wiring
@@ -214,6 +222,8 @@ public class ReportingPeriodDialog extends Dialog
             radioYearX.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentMonth)
             radioCurrentMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.YearToDate)
+            radioYTD.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -273,6 +283,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioCurrentMonth.getSelection())
         {
             result = new ReportingPeriod.CurrentMonth();
+        }
+        else if (radioYTD.getSelection())
+        {
+            result = new ReportingPeriod.YearToDate();
         }
         else
         {

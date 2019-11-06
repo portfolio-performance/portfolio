@@ -131,6 +131,7 @@ public class Messages extends NLS
     public static String LabelReportingPeriodMonths;
     public static String LabelReportingPeriodSince;
     public static String LabelReportingPeriodYears;
+    public static String LabelReportingPeriodYTD;
     public static String LabelSearchAll;
     public static String LabelSearchBond;
     public static String LabelSearchShare;
