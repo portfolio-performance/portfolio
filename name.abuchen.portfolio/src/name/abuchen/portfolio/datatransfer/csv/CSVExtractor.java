@@ -210,8 +210,6 @@ public abstract class CSVExtractor implements Extractor
         {
             account = client.getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst()
                             .orElse(null);
-            if (account == null)
-                throw new IllegalArgumentException(Messages.CSVImportMissingAccount + accountName);
         }
         return account;
     }
@@ -231,8 +229,6 @@ public abstract class CSVExtractor implements Extractor
         {
             portfolio = client.getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst()
                             .orElse(null);
-            if (portfolio == null)
-                throw new IllegalArgumentException(Messages.CSVImportMissingPortfolio + portfolioName);
         }
         return portfolio;
     }

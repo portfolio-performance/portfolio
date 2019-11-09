@@ -416,25 +416,21 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Account acc = entry.getItem().getAccountPrimary();
-                if (acc != null)
-                    return acc.getName();
-                return null;
+                Account account = entry.getItem().getAccountPrimary();
+                return account != null ? account.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
 
         column = new TableViewerColumn(viewer, SWT.NONE);
-        column.getColumn().setText(Messages.ColumnAccount2nd);
+        column.getColumn().setText(Messages.ColumnOffsetAccount);
         column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
         {
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Account acc = entry.getItem().getAccountSecondary();
-                if (acc != null)
-                    return acc.getName();
-                return null;
+                Account account = entry.getItem().getAccountSecondary();
+                return account != null ? account.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
@@ -446,10 +442,21 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             @Override
             public String getText(ExtractedEntry entry)
             {
-                Portfolio p = entry.getItem().getPortfolioPrimary();
-                if (p != null)
-                    return p.getName();
-                return null;
+                Portfolio portfolio = entry.getItem().getPortfolioPrimary();
+                return portfolio != null ? portfolio.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnOffsetPortfolio);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Portfolio portfolio = entry.getItem().getPortfolioSecondary();
+                return portfolio != null ? portfolio.getName() : null;
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
