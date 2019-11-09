@@ -178,7 +178,8 @@ public class ReportingPeriodDialog extends Dialog
 
         presetFromTemplate();
 
-        radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX, radioYearX);
+        radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
+                        radioYearX, radioCurrentMonth, radioYTD);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -188,17 +189,19 @@ public class ReportingPeriodDialog extends Dialog
 
         return composite;
     }
-    
-    private void deselectSelectedRadioButtons(final Button radio) {
-        radioBtnList.stream()
-            .filter(btn -> !btn.equals(radio))
-            .filter(btn -> btn.getSelection())
-            .forEach(btn -> btn.setSelection(false));
+
+    private void deselectSelectedRadioButtons(final Button radio)
+    {
+        radioBtnList.stream() //
+                        .filter(btn -> !btn.equals(radio)) //
+                        .filter(Button::getSelection) //
+                        .forEach(btn -> btn.setSelection(false));
     }
-    
+
     private void activateRadioOnChange(final Button radio, Control... controls)
     {
-        for (Control c : controls) {
+        for (Control c : controls)
+        {
             c.addListener(SWT.Selection, event -> {
                 deselectSelectedRadioButtons(radio);
                 radio.setSelection(true);
