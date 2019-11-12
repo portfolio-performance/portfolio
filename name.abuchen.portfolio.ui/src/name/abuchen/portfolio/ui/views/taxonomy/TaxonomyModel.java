@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import javax.inject.Inject;
 
@@ -28,6 +29,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.AssignmentNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.ClassificationNode;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyNode.UnassignedContainerNode;
@@ -51,7 +53,20 @@ public final class TaxonomyModel
     {
         void onModelEdited();
     }
-    
+
+    public interface AttachedModel
+    {
+        default void setup(TaxonomyModel model)
+        {
+        }
+
+        void recalculate(TaxonomyModel model);
+
+        default void addColumns(ShowHideColumnHelper columns)
+        {
+        }
+    }
+
     public static final String KEY_FILTER_NON_ZERO = "-filter-non-zero"; //$NON-NLS-1$
     public static final String KEY_FILTER_NOT_RETIRED = "-filter-not-retired"; //$NON-NLS-1$
 
@@ -86,6 +101,7 @@ public final class TaxonomyModel
 
     private List<Predicate<TaxonomyNode>> nodeFilters = new ArrayList<>();
 
+    private List<AttachedModel> attachedModels = new ArrayList<>();
     private List<TaxonomyModelUpdatedListener> listeners = new ArrayList<>();
     private List<DirtyListener> dirtyListener = new ArrayList<>();
 
@@ -101,6 +117,9 @@ public final class TaxonomyModel
 
         this.filteredClient = client;
         this.snapshot = ClientSnapshot.create(client, converter, LocalDate.now());
+
+        this.attachedModels.add(new RecalculateTargetsAttachedModel());
+        this.attachedModels.add(new ExpectedReturnsAttachedModel());
 
         Classification virtualRoot = new Classification(null, Classification.VIRTUAL_ROOT,
                         Messages.PerformanceChartLabelEntirePortfolio, taxonomy.getRoot().getColor());
@@ -142,8 +161,11 @@ public final class TaxonomyModel
         // calculate actuals
         visitActuals(snapshot, virtualRootNode);
 
+        // setup attached models
+        this.attachedModels.forEach(m -> m.setup(this));
+
         // calculate targets
-        recalculateTargets();
+        runRecalculations();
     }
 
     private void addUnassigned(Client client)
@@ -218,19 +240,9 @@ public final class TaxonomyModel
         node.setActual(actual.toMoney());
     }
 
-    private void recalculateTargets()
+    private void runRecalculations()
     {
-        virtualRootNode.setTarget(virtualRootNode.getActual().subtract(unassignedNode.getActual()));
-
-        visitAll(node -> {
-            if (node.isClassification() && !node.isRoot())
-            {
-                Money parent = node.getParent().getTarget();
-                Money target = Money.of(parent.getCurrencyCode(), Math.round(
-                                parent.getAmount() * node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT));
-                node.setTarget(target);
-            }
-        });
+        this.attachedModels.forEach(m -> m.recalculate(this));
     }
 
     public boolean isUnassignedCategoryInChartsExcluded()
@@ -242,7 +254,7 @@ public final class TaxonomyModel
     {
         this.excludeUnassignedCategoryInCharts = excludeUnassignedCategoryInCharts;
     }
-    
+
     public boolean isSecuritiesInPieChartExcluded()
     {
         return excludeSecuritiesInPieChart;
@@ -286,6 +298,11 @@ public final class TaxonomyModel
     public List<Predicate<TaxonomyNode>> getNodeFilters()
     {
         return nodeFilters;
+    }
+
+    public Stream<AttachedModel> getAttachedModels()
+    {
+        return attachedModels.stream();
     }
 
     public Taxonomy getTaxonomy()
@@ -367,8 +384,7 @@ public final class TaxonomyModel
     {
         virtualRootNode.setActual(snapshot.getMonetaryAssets());
         visitActuals(snapshot, virtualRootNode);
-        recalculateTargets();
-        calcFullERTree(virtualRootNode); // Recalculate full expected returns tree
+        runRecalculations();
     }
 
     public void visitAll(NodeVisitor visitor)
@@ -434,100 +450,6 @@ public final class TaxonomyModel
     
 
 
-    // Beginning of 'expected returns' model calculations.
-    // Recursively calculate the expected returns for the full ER (expected returns) tree below (and including) 'node'. This is used both
-    // upon init/update of the asset allocation page, and also after modifying an expected return field.
-    public void calcFullERTree(TaxonomyNode node) {
-        // Recurse over all children. Recursion will stop when node has no children, i.e. is leaf
-        node.getChildren().forEach(child -> calcFullERTree(child));
-
-        // If this node is an assignment (=a security), there is nothing to do - it either has an expected return assigned or not,
-        // but we don't need to calculate anything.  And if this node is not in use, nothing needs to be done either.
-        if (node.isAssignment() || !node.isERinUse()) {
-            return;
-        }
-        // If one of the children is marked as unused, don't calculate this node either
-        for (TaxonomyNode child : node.getChildren()) {
-            if (!child.isERinUse()) {
-                return;
-            }
-        }
-        // Finally, calc and update
-        // Rounding here seems to help in avoiding rounding errors 
-        node.setExpectedReturn((int)Math.round(calcERForNode(node, false)));
-    }
-
-    // Calculate the expected return for a given node, as a weighted average of the node's children's ER's.
-    // markAsUsed: if True, mark this node's children as in use
-    private double calcERForNode(TaxonomyNode parent, boolean markChildrenAsUsed)
-    {
-        double portfolioER = 0;
-        // Calculate parent's expected return as weighted average of expected returns of all 
-        //   siblings (all children of the parent) of the node. (Does not consider whether nodes are in use or not.)
-        for (TaxonomyNode node : parent.getChildren()) {
-            // Divide amount in this asset class by amount of total assets (root of asset class tree)
-            long base = node.getParent() == null ? node.getActual().getAmount() : node.getParent().getActual().getAmount();
-            double pctOfCategory = node.getActual().getAmount() / (double) base;
-            portfolioER += pctOfCategory * node.getExpectedReturn();
-            if (markChildrenAsUsed) {
-                node.setERinUse(true);  // Mark node as 'used' in portfolio return calculation
-            }
-        }
-        return portfolioER;
-    }
-
-
-    // This is called after manually changing a ER field (i.e. from the viewer's onERModified()).
-    // In order to make a calculation possible, mark the required nodes as "in use" or "not in use" and finally
-    // re-calculate the modified tree from the root downwards.
-    public void recalcExpectedReturns(TaxonomyNode currentNode) {
-        // Mark as in use: 1. this node and all its siblings, 2. all parents and their siblings up to root
-        markParentER(currentNode);
-
-        // In the special situation where we have only one child, and that child is an assignment (=security), we can 
-        // assign the new expected return to that child as well, since it logically must have the same ER
-        if (currentNode.getChildren().size() == 1 && currentNode.getChildren().get(0).isAssignment()) {
-            // Set expected return of child to that of current node
-            currentNode.getChildren().get(0).setExpectedReturn(currentNode.getExpectedReturn()); 
-            // and mark child as in use
-            currentNode.getChildren().get(0).setERinUse(true);
-        } else {
-            // Normal situation:
-            // Children below this modified node need to be marked as "not in use for the calculation of overall portfolio expected return".
-            // Mark as not in use: all children and their children (if I change ER of an asset class, obviously the assigned securities' ER cannot be used in the calculation anymore)
-            markChildrenAsERUnused(currentNode);
-        }
-        // Recalculate the full tree
-        calcFullERTree(currentNode);
-    }
-
-    // Recursively mark as in use: 1. this node and all its siblings, 2. all parents and their siblings up to root
-    private void markParentER(TaxonomyNode currentNode)
-    {
-        TaxonomyNode parent = currentNode.getParent();
-        for (TaxonomyNode node : parent.getChildren()) {
-            node.setERinUse(true);
-        }
-        parent.setERinUse(true);
-
-        // Continue updating up the tree (further upwards until root)
-        if (!parent.isRoot()) {
-            markParentER(parent);
-        }
-    }
-
-    private void markChildrenAsERUnused(TaxonomyNode currentNode) {
-        for (TaxonomyNode child : currentNode.getChildren()) {
-            child.setERinUse(false);
-            if (child.isClassification()) {
-                child.getClassification().getAssignments().forEach(assignment -> assignment.setERinUse(false));
-            }
-            if (child.getChildren() != null) {
-                markChildrenAsERUnused(child);
-            }
-        }
-    }
-    // END of 'expected returns' model calculations
 
 
 }

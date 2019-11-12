@@ -102,7 +102,8 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 
     private void createText(Composite container)
     {
-        StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
+        StyledText text = new StyledText(container,
+                        SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 
         List<StyleRange> ranges = new ArrayList<>();
 

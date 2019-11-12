@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -233,6 +235,31 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "start").attachTo(column); //$NON-NLS-1$
         new DateEditingSupport(InvestmentPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnLastDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Optional<LocalDate> lastDate = ((InvestmentPlan) e).getLastDate();
+                return lastDate.map(Values.Date::format).orElseGet(() -> null);
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "LastDate").attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnNextDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Date.format(((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated());
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "DateOfNextTransactionToBeGenerated").attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnInterval, SWT.None, 80);

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -27,6 +26,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -38,40 +38,25 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
     protected abstract static class Column
     {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                unusualSymbols.setGroupingSeparator('\'');
-                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = ThreadLocal.withInitial(() -> {
+            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+            unusualSymbols.setGroupingSeparator('\'');
+            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+        });
 
         private final Pattern[] patterns;
 
@@ -393,18 +378,14 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return OnlineHelper.getUserAgent();
     }
 
-    protected boolean isIgnoreContentType()
-    {
-        return false;
-    }
-
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
-            String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl, Jsoup.connect(escapedUrl).userAgent(getUserAgent())
-                            .ignoreContentType(isIgnoreContentType()).timeout(30000).get(), errors);
+            Document document = Jsoup.parse(new WebAccess(url) //
+                            .addUserAgent(getUserAgent()) //
+                            .get());
+            return parse(url, document, errors);
         }
         catch (URISyntaxException | IOException e)
         {
@@ -463,7 +444,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
     }
@@ -476,14 +458,16 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // check if th exist in body
@@ -491,7 +475,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return new HeaderInfo(0, header.size());
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // then check first two regular rows
@@ -527,8 +512,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<>();
-        for (Column column : getColumns())
-            available.add(column);
+        Collections.addAll(available, getColumns());
 
         for (int ii = 0; ii < row.size(); ii++)
         {

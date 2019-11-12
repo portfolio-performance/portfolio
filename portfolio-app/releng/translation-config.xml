@@ -117,6 +117,7 @@
 				<string>.*color</string>
 				<string>.*children</string>
 				<string>.*weight</string>
+				<string>comment</string>
 			</excludes>
 		</artifact>
 	</artifacts>

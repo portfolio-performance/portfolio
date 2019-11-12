@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 
 import javax.annotation.PostConstruct;
@@ -33,10 +35,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferModel.Properties;
-import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
@@ -115,15 +115,12 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         MultiValidator validator = new AccountsMustBeDifferentValidator(sourceObservable, targetObservable);
         context.addValidationStatusProvider(validator);
 
-        // date
+        // date + time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DatePicker valueDate = new DatePicker(editArea);
-        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
-        context.bindValue(targetDate, dateObservable);
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // other input fields
 
@@ -131,12 +128,14 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
         fxAmount.bindValue(Properties.fxAmount.name(), Messages.ColumnAmount, Values.Amount, true);
         fxAmount.bindCurrency(Properties.sourceAccountCurrency.name());
 
-        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
+        exchangeRate.bindInvertAction(() -> model()
+                        .setExchangeRate(BigDecimal.ONE.divide(model().getExchangeRate(), 10, RoundingMode.HALF_DOWN)));
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
@@ -166,13 +165,15 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
 
         FormDataFactory forms = startingWith(source.value.getControl(), source.label).suffix(source.currency)
                         .thenBelow(target.value.getControl()).label(target.label).suffix(target.currency)
-                        .thenBelow(valueDate.getControl()).label(lblDate);
+                        .thenBelow(dateTime.date.getControl()).label(dateTime.label).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
 
         // fxAmount - exchange rate - amount
         forms.thenBelow(fxAmount.value).width(amountWidth).label(fxAmount.label) //
                         .thenRight(fxAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
+                        .thenRight(exchangeRate.buttonInvertExchangeRate, 0) //
                         .thenRight(exchangeRate.currency).width(amountWidth) //
                         .thenRight(amount.label) //
                         .thenRight(amount.value).width(amountWidth) //
@@ -181,7 +182,7 @@ public class AccountTransferDialog extends AbstractTransactionDialog // NOSONAR
                         .thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3)
                         .left(target.value.getControl()).right(amount.value).label(lblNote);
 
-        int widest = widest(source.label, target.label, lblDate, fxAmount.label, lblNote);
+        int widest = widest(source.label, target.label, dateTime.label, fxAmount.label, lblNote);
         startingWith(source.label).width(widest);
 
         //

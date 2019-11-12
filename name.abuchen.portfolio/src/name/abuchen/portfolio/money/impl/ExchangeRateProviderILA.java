@@ -12,30 +12,31 @@ import name.abuchen.portfolio.money.ExchangeRate;
 import name.abuchen.portfolio.money.ExchangeRateProvider;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 
-public class AEDExchangeRateProvider implements ExchangeRateProvider
+public class ExchangeRateProviderILA implements ExchangeRateProvider
 {
-    private static final String AED = "AED"; //$NON-NLS-1$
+    private static final String ILA = "ILA"; //$NON-NLS-1$
+    private static final String ILS = "ILS"; //$NON-NLS-1$
 
     @Override
     public String getName()
     {
-        return CurrencyUnit.getInstance(AED).getDisplayName();
+        return CurrencyUnit.getInstance(ILA).getDisplayName();
     }
 
     @Override
     public List<ExchangeRateTimeSeries> getAvailableTimeSeries(Client client)
     {
         List<ExchangeRateTimeSeries> answer = new ArrayList<>();
-        answer.add(new USDAED(this));
+        answer.add(new ILAILS(this));
         return answer;
     }
 
-    private static class USDAED implements ExchangeRateTimeSeries
+    private static class ILAILS implements ExchangeRateTimeSeries
     {
         private ExchangeRateProvider provider;
-        private BigDecimal rate = BigDecimal.valueOf(3.6725);
+        private BigDecimal rate = BigDecimal.valueOf(0.01);
 
-        public USDAED(ExchangeRateProvider provider)
+        public ILAILS(ExchangeRateProvider provider)
         {
             this.provider = provider;
         }
@@ -43,13 +44,13 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
         @Override
         public String getBaseCurrency()
         {
-            return CurrencyUnit.USD;
+            return ILA;
         }
 
         @Override
         public String getTermCurrency()
         {
-            return AED;
+            return ILS;
         }
 
         @Override
@@ -78,4 +79,5 @@ public class AEDExchangeRateProvider implements ExchangeRateProvider
             return 2;
         }
     }
+
 }

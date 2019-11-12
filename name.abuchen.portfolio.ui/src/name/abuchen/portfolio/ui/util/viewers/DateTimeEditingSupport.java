@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.Messages;
 public class DateTimeEditingSupport extends PropertyEditingSupport
 {
     private static final DateTimeFormatter[] timeFormatters = new DateTimeFormatter[] {
+                    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT), //
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG), //

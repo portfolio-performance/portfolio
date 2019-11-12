@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -133,12 +135,14 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
         grossValue.bindValue(Properties.grossValue.name(), Messages.ColumnSubTotal, Values.Amount, true);
         grossValue.bindCurrency(Properties.securityCurrencyCode.name());
 
-        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
+        exchangeRate.bindInvertAction(() -> model()
+                        .setExchangeRate(BigDecimal.ONE.divide(model().getExchangeRate(), 10, RoundingMode.HALF_DOWN)));
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
@@ -217,7 +221,8 @@ public class SecurityTransactionDialog extends AbstractTransactionDialog // NOSO
                         .thenRight(grossValue.currency);
 
         startingWith(quote.value).thenBelow(exchangeRate.value).width(width).label(exchangeRate.label)
-                        .thenRight(exchangeRate.currency).width(width);
+                        .thenRight(exchangeRate.buttonInvertExchangeRate, 0).thenRight(exchangeRate.currency)
+                        .width(width);
 
         startingWith(grossValue.value)
                         // converted gross value

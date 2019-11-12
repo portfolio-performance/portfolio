@@ -10,7 +10,8 @@
 			"security": {
 				"name": "UBS Msci Pacific exJap.U ETF A",
 				"isin": "LU0446734526",
-				"wkn": "A0X97T"
+				"wkn": "A0X97T",
+				"currency": "USD"
 			},
 			"units": [
 				{
@@ -35,7 +36,8 @@
 			"security": {
 				"name": "ISHS Gbl.Corp.Bd.EU Hgd.U.ETF",
 				"isin": "IE00B9M6SJ31",
-				"wkn": "A1W02Q"
+				"wkn": "A1W02Q",
+				"currency": "EUR"	
 			},
 			"units": [
 				{

@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -46,11 +48,9 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeDateSelectionProperty;
 
 @SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -111,13 +111,10 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date & time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DatePicker valueDate = new DatePicker(editArea);
-        IObservableValue<?> targetDate = new SimpleDateTimeDateSelectionProperty().observe(valueDate.getControl());
-        @SuppressWarnings("unchecked")
-        IObservableValue<?> dateObservable = BeanProperties.value(Properties.date.name()).observe(model);
-        context.bindValue(targetDate, dateObservable);
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // shares
 
@@ -149,12 +146,14 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         fxGrossAmount.bindValue(Properties.fxGrossAmount.name(), totalLabel, Values.Amount, true);
         fxGrossAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
-        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
+        exchangeRate.bindInvertAction(() -> model()
+                        .setExchangeRate(BigDecimal.ONE.divide(model().getExchangeRate(), 10, RoundingMode.HALF_DOWN)));
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
@@ -203,8 +202,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // form layout
         //
 
-        int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        taxes.label, total.label, lblNote);
+        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
+                        taxes.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
         if (securities != null)
@@ -224,7 +223,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date
         // shares
-        forms = forms.thenBelow(valueDate.getControl()).label(lblDate);
+        forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
+
+        startingWith(dateTime.date.getControl()).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
+
         // shares [- amount per share]
         forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
@@ -232,6 +235,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
+                        .thenRight(exchangeRate.buttonInvertExchangeRate, 0) //
                         .thenRight(exchangeRate.currency).width(amountWidth) //
                         .thenRight(grossAmount.label) //
                         .thenRight(grossAmount.value).width(amountWidth) //
@@ -279,7 +283,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)

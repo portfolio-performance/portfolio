@@ -11,8 +11,8 @@ import name.abuchen.portfolio.money.Values;
 
 public final class TaxonomyTemplate
 {
-    /* package */static final String INDUSTRY_GICS = "industry-gics"; //$NON-NLS-1$
-    /* package */static final String INDUSTRY_SIMPLE2LEVEL = "industry-simple2level"; //$NON-NLS-1$
+    /* package */static final String INDUSTRY_GICS = "industry-gics";//$NON-NLS-1$
+    /* package */static final String INDUSTRY_SIMPLE2LEVEL = "industry-simple"; //$NON-NLS-1$
 
     private static final List<TaxonomyTemplate> TEMPLATES = Arrays.asList( //
                     new TaxonomyTemplate("assetclasses"), //$NON-NLS-1$

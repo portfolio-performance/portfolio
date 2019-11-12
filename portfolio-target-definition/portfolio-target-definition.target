@@ -11,6 +11,10 @@
 		<unit id="org.eclipse.equinox.executable.feature.group" version="3.8.100.v20180827-1352"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="https://download.eclipse.org/tools/orbit/downloads/drops/R20190827152740/repository"/>
+		<unit id="org.bouncycastle.bcpg" version="1.61.0.v20190602-1335"/>
+		<unit id="org.bouncycastle.bcpkix" version="1.61.0.v20190602-1335"/>
+		<unit id="org.bouncycastle.bcprov" version="1.61.0.v20190602-1335"/>
 		<unit id="org.hamcrest.core" version="1.3.0.v20180420-1519"/>
 		<unit id="org.hamcrest.core.source" version="1.3.0.v20180420-1519"/>
 		<unit id="org.hamcrest.integration" version="1.3.0.v201305210900"/>
@@ -18,18 +22,14 @@
 		<unit id="org.hamcrest.library" version="1.3.0.v20180524-2246"/>
 		<unit id="org.junit" version="4.12.0.v201504281640"/>
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
-		<unit id="org.mockito" version="2.13.0.v20180426-1843"/>
-		<unit id="org.mockito.source" version="2.13.0.v20180426-1843"/>
-		<unit id="org.bouncycastle.bcpg" version="1.59.0.v20180326-2325"/>
-		<unit id="org.bouncycastle.bcpkix" version="1.59.0.v20180326-2325"/>
-		<unit id="org.bouncycastle.bcprov" version="1.59.0.v20180328-2148"/>
-		<repository location="http://download.eclipse.org/tools/orbit/downloads/drops/R20180606145124/repository"/>
+		<unit id="org.mockito" version="2.23.0.v20190527-1420"/>
+		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.0/photon/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20180815020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20180815020001"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20180815020001"/>
+		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.1/photon/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20190126080931"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20190126080931"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190126080931"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201804281520"/>

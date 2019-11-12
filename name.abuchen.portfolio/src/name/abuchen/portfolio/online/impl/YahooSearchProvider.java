@@ -9,17 +9,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
@@ -65,21 +61,24 @@ public class YahooSearchProvider implements SecuritySearchProvider
 
     private void addSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        try (CloseableHttpClient client = HttpClients.createSystem())
-        {
-            String templateURL = "https://de.finance.yahoo.com/_finance_doubledown/api/resource/searchassist;" //$NON-NLS-1$
-                            + "searchTerm={0}?bkt=finance-DE-de-DE-def&device=desktop&feature=canvassOffnet%2CccOnMute%2CenablePromoImage%2CnewContentAttribution" //$NON-NLS-1$
-                            + "%2CrelatedVideoFeature%2CvideoNativePlaylist%2CenableCrypto%2CenableESG%2CenablePrivacyUpdate%2CenableGuceJs%2CenableGuceJsOverlay" //$NON-NLS-1$
-                            + "%2CenableCMP%2CenableSingleRail&intl=de&lang=de-DE&partner=none&prid=92ms5apdf6jc3&region=DE&site=finance&tz=Europe%2FBerlin&ver=0.102.1312&returnMeta=true"; //$NON-NLS-1$
+        String templateURL = "/_finance_doubledown/api/resource/searchassist;searchTerm={0}"; //$NON-NLS-1$
 
-            String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
+        String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
 
-            try (CloseableHttpResponse response = client.execute(new HttpGet(url)))
-            {
-                String body = EntityUtils.toString(response.getEntity());
-                extractFrom(answer, body);
-            }
-        }
+        @SuppressWarnings("nls")
+        String html = new WebAccess("de.finance.yahoo.com", url) //
+                        .addParameter("bkt", "finance-DE-de-DE-def").addParameter("device", "desktop")
+                        .addParameter("intl", "de") //
+                        .addParameter("lang", "de-DE") //
+                        .addParameter("partner", "none") //
+                        .addParameter("region", "DE") //
+                        .addParameter("site", "finance") //
+                        .addParameter("tz", "Europe%2FBerlin") //
+                        .addParameter("ver", "0.102.1312") //
+                        .addParameter("returnMeta", "true") //
+                        .get();
+
+        extractFrom(answer, html);
     }
 
     /* protected */void extractFrom(List<ResultItem> answer, String html)

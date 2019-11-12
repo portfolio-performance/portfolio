@@ -1,0 +1,39 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2019-09-12",
+			"currency": "EUR",
+			"amount": 3.1,
+			"shares": 10.0,
+			"security": {
+				"name": "Microsoft Corp.",
+				"isin": "US5949181045",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"fxAmount": 4.6,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.106
+				},
+				{
+					"type": "TAX",
+					"amount": 0.42
+				},
+				{
+					"type": "TAX",
+					"amount": 0.02
+				},
+				{
+					"type": "TAX",
+					"fxAmount": 0.69,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.106
+				}
+			]
+		}
+	]
+}

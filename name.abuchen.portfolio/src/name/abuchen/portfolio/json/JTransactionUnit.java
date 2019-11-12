@@ -9,7 +9,7 @@ import name.abuchen.portfolio.money.Values;
 public class JTransactionUnit
 {
     private Transaction.Unit.Type type;
-    private double amount;
+    private Double amount;
     private String fxCurrency;
     private Double fxAmount;
     private BigDecimal fxRateToBase;
@@ -24,12 +24,12 @@ public class JTransactionUnit
         this.type = type;
     }
 
-    public double getAmount()
+    public Double getAmount()
     {
         return amount;
     }
 
-    public void setAmount(double amount)
+    public void setAmount(Double amount)
     {
         this.amount = amount;
     }

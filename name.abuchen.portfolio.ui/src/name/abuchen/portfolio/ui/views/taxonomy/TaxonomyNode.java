@@ -51,31 +51,6 @@ public abstract class TaxonomyNode implements Adaptable
         {
             classification.setWeight(weight);
         }
-
-        @Override
-        public int getExpectedReturn()
-        {
-            return classification.getExpectedReturn();
-        }
-
-        @Override
-        public void setExpectedReturn(int expectedReturn)
-        {
-            classification.setExpectedReturn(expectedReturn);
-        }
-
-        @Override
-        public boolean isERinUse()
-        {
-            return classification.isERinUse();
-        }
-
-        @Override
-        public void setERinUse(boolean isERInUse)
-        {
-            classification.setERinUse(isERInUse);
-        }
-
         
         @Override
         public int getRank()
@@ -111,6 +86,18 @@ public abstract class TaxonomyNode implements Adaptable
         public String getColor()
         {
             return classification.getColor();
+        }
+
+        @Override
+        public Object setData(String key, Object object)
+        {
+            return classification.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return classification.getData(key);
         }
 
         @Override
@@ -173,30 +160,6 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
-        public int getExpectedReturn()
-        {
-            return assignment.getExpectedReturn();
-        }
-
-        @Override
-        public void setExpectedReturn(int expectedReturn)
-        {
-            assignment.setExpectedReturn(expectedReturn);
-        }
-
-        @Override
-        public boolean isERinUse()
-        {
-            return assignment.isERinUse();
-        }
-
-        @Override
-        public void setERinUse(boolean isERInUse)
-        {
-            assignment.setERinUse(isERInUse);
-        }
-
-        @Override
         public int getRank()
         {
             return assignment.getRank();
@@ -224,6 +187,18 @@ public abstract class TaxonomyNode implements Adaptable
         public String getId()
         {
             return assignment.getInvestmentVehicle().getUUID();
+        }
+
+        @Override
+        public Object setData(String key, Object object)
+        {
+            return assignment.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return assignment.getData(key);
         }
 
         @Override
@@ -362,19 +337,15 @@ public abstract class TaxonomyNode implements Adaptable
 
     public abstract void setWeight(int weight);
     
-    public abstract int getExpectedReturn();
-
-    public abstract void setExpectedReturn(int expectedReturn);
-
-    public abstract boolean isERinUse();
-
-    public abstract void setERinUse(boolean eRinUse);
-
     public abstract int getRank();
 
     public abstract void setRank(int rank);
 
     public abstract String getColor();
+
+    public abstract Object setData(String key, Object object);
+
+    public abstract Object getData(String key);
 
     public List<TaxonomyNode> getPath()
     {

@@ -345,15 +345,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         onModified(element, newValue, oldValue);
     }
 
-    // Method that is triggered when the user modifies a value in the "expected returns" column
-    public void onERModified(Object element, Object newValue, Object oldValue)
-    {
-        TaxonomyNode node = (TaxonomyNode) element;
-        // Trigger recalculation of affected expected returns, in the model
-        getModel().recalcExpectedReturns(node);
-    
-        onModified(element, newValue, oldValue);
-    }
 
     @Override
     public void configMenuAboutToShow(IMenuManager manager)
@@ -579,98 +570,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             }
         });
         support.addColumn(column);
-        
-        addExpectedReturnsColumn(support);
     }
 
-    // Adds a column where you can enter your expected return for this asset class (or security)
-    private void addExpectedReturnsColumn(ShowHideColumnHelper support)
-    {
-        Column column = new Column("expectedReturn", Messages.ColumnExpectedReturn, SWT.RIGHT, 100); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnExpectedReturn_MenuLabel);
-        column.setDescription(Messages.ColumnExpectedReturn_Description);
-        column.setLabelProvider(new StyledCellLabelProvider()
-        {
-            private  Styler strikeoutStyler = new Styler()
-            {
-                @Override
-                public void applyStyles(TextStyle textStyle)
-                {
-                    textStyle.strikeout = true;
-                    textStyle.foreground = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
-                }
-            };
-
-            @Override
-            public void update(final ViewerCell cell) {
-                TaxonomyNode node = (TaxonomyNode) cell.getElement();
-
-                String erText = Values.Percent_ER.format(node.getExpectedReturn());
-                // If node is not in use, print percentage in grey and strikethrough
-                StyledString styledString = new StyledString(erText, node.isERinUse() ? null : strikeoutStyler);
-                cell.setText(styledString.getString());
-                cell.setStyleRanges(styledString.getStyleRanges());
-
-                // Print overall portfolio performance in bold
-                // Is it acceptable here to identify this node by its name? Some example portfolios (DAX) don't seem to have "Asset Allocation".
-                if (node.getName().equals("Asset Allocation")) {
-                    // Set font to bold
-                    FontData fontData = Display.getCurrent().getSystemFont().getFontData()[0];
-                    fontData.setStyle(SWT.BOLD);
-                    cell.setFont(new Font(Display.getDefault(), fontData));
-                }
-            }
-
-            // This will still be used (for the CSV export)
-            public String getText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-                String prefix = ((node.isERinUse() ? "" : "(unused) "));
-                return prefix + Values.Percent_ER.format(node.getExpectedReturn());
-            }
-
-            @Override
-            public String getToolTipText(Object element)
-            {
-                TaxonomyNode node = (TaxonomyNode) element;
-
-                String text = node.isERinUse() ? Messages.ColumnExpectedReturn_Tooltip_InUse : Messages.ColumnExpectedReturn_Tooltip_NotInUse;
-                if (node.getName().equals("Asset Allocation")) {
-                    text = Messages.ColumnExpectedReturn_Tooltip_TotalPortfolioReturn;
-                }
-                if (text == null)
-                    return null;
-
-                return text;
-            }
-
-        });
-
-        ValueEditingSupport vesER = new ValueEditingSupport(TaxonomyNode.class, "expectedReturn", Values.Percent_ER)
-        {
-            @Override
-            public CellEditor createEditor(Composite composite)
-            {
-                TextCellEditor textEditor = new TextCellEditor(composite);
-                ((Text) textEditor.getControl()).setTextLimit(20);
-                // 'true' in NumberVerifyListener() to allow negative values - it's the year 2019 and we need negative interest rates
-                ((Text) textEditor.getControl()).addVerifyListener(new NumberVerifyListener(true));
-                return textEditor;
-            }
-
-        };
-        vesER.addListener(this::onERModified).attachTo(column);
-        // Experimental - Currently calling an experimental constructor to allow negative numbers
-        vesER.setStringToLong(new StringToCurrencyConverter(Values.Percent_ER, true));
-
-        column.setSorter(null);
-        // Should the row be visible by default, or does it have to be manually added by the user?
-        column.setVisible(false);
-        support.addColumn(column);
-
-        // Initial calculation of overall portfolio expected return. Calculate all expected returns from root downwards
-        getModel().calcFullERTree(getModel().getVirtualRootNode());
-    }
 
 
     protected void addAdditionalColumns(ShowHideColumnHelper support) // NOSONAR
@@ -752,6 +653,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         });
         column.setVisible(false);
         support.addColumn(column);
+
+        getModel().getAttachedModels().forEach(m -> m.addColumns(support));
 
         getModel().getClient() //
                         .getSettings() //

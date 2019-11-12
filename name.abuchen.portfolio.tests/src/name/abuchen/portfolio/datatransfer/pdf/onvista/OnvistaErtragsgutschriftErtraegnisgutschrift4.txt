@@ -1,0 +1,56 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=376955000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=<myname>
+ADRESSZEILE3=<myaddress1>
+ADRESSZEILE4=<myaddress2>
+Dividende für
+Herr ADRESSZEILE5=01.01.2019 - 31.12.2019
+<myname> ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+<myaddress1> BELEGNUMMER=2405
+<myaddress2> <mydepot> <Abrechnungsnummer> / 10.09.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+<myname>
+Frankfurt am Main, 10.09.2019
+Dividendengutschrift
+Gattungsbezeichnung ISIN
+Unilever N.V. Aandelen op naam EO -,16 NL0000388619
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 40,000 08.08.2019 11.09.2019 EUR 0,410400
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+11.09.2019 376955045 EUR 12,23
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 16,42
+ausländische Quellensteuer 15% EUR 2,46
+anrechenbare Quellensteuer 15% EUR 2,46
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 6,58
+einbehaltene Kapitalertragsteuer EUR 1,64
+einbehaltener Solidaritätszuschlag EUR 0,09
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 1.417,88
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 77,98
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Steuerlicher Stichtag: 11.09.2019
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach, Frauke Hegemann Vorsitzender des Aufsichtsrates: Michael Mandel
+3.20/ABREEREIERTR/GDBERTRG/002405/110919/000342
+

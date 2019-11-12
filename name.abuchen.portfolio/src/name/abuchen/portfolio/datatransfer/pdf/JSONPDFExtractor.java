@@ -34,9 +34,11 @@ import name.abuchen.portfolio.json.JPDFExtractorDefinition.JTransactionMatcher;
 import name.abuchen.portfolio.json.JSecurity;
 import name.abuchen.portfolio.json.JTransaction;
 import name.abuchen.portfolio.json.JTransactionUnit;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -96,6 +98,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                     break;
                 case SALE:
                     pdftx.wrap(t -> wrapBuySell(t, PortfolioTransaction.Type.SELL));
+                    break;
+                case DIVIDEND:
+                    pdftx.wrap(this::wrapDividend);
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -160,6 +165,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$
+        security.setCurrency(asCurrencyCode(v.get("currency"))); //$NON-NLS-1$
         t.setSecurity(security);
     }
 
@@ -232,14 +238,10 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         entry.setShares(Values.Share.factorize(t.getShares()));
 
-        Map<String, String> values = new HashMap<>();
-        values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
-        values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
-        values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
-        values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
-        entry.setSecurity(getOrCreateSecurity(values));
+        Security security = convertToSecurity(t);
+        entry.setSecurity(security);
 
-        t.getUnits().map(u -> convertToUnit(t, u)).filter(Objects::nonNull)
+        t.getUnits().map(u -> convertToUnit(security, t, u)).filter(Objects::nonNull)
                         .forEach(u -> entry.getPortfolioTransaction().addUnit(u));
 
         BuySellEntryItem item = new BuySellEntryItem(entry);
@@ -247,12 +249,63 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         return item;
     }
 
-    private Transaction.Unit convertToUnit(JTransaction jtx, JTransactionUnit junit)
+    private Extractor.Item wrapDividend(JTransaction t)
     {
-        if (junit.getAmount() == 0d)
-            return null;
+        AccountTransaction tx = new AccountTransaction();
+        tx.setType(AccountTransaction.Type.DIVIDENDS);
 
-        Money amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
+        tx.setAmount(Values.Amount.factorize(t.getAmount()));
+        tx.setCurrencyCode(t.getCurrency());
+        tx.setShares(Values.Share.factorize(t.getShares()));
+
+        if (t.getTime() != null)
+            tx.setDateTime(t.getDate().atTime(t.getTime()));
+        else
+            tx.setDateTime(t.getDate().atStartOfDay());
+
+        Security security = convertToSecurity(t);
+        tx.setSecurity(security);
+
+        t.getUnits().map(u -> convertToUnit(security, t, u)).filter(Objects::nonNull).forEach(tx::addUnit);
+
+        TransactionItem item = new TransactionItem(tx);
+        item.setData(t);
+        return item;
+    }
+
+    private Security convertToSecurity(JTransaction t)
+    {
+        Map<String, String> values = new HashMap<>();
+        values.put("name", t.getSecurity().getName()); //$NON-NLS-1$
+        values.put("isin", t.getSecurity().getIsin()); //$NON-NLS-1$
+        values.put("tickerSymbol", t.getSecurity().getTicker()); //$NON-NLS-1$
+        values.put("wkn", t.getSecurity().getWkn()); //$NON-NLS-1$
+        values.put("currency", t.getSecurity().getCurrency()); //$NON-NLS-1$
+        return getOrCreateSecurity(values);
+    }
+
+    private Transaction.Unit convertToUnit(Security security, JTransaction jtx, JTransactionUnit junit)
+    {
+        Money amount = null;
+
+        if (junit.getAmount() == null || junit.getAmount() == 0d)
+        {
+            // if amount is not available, but fxAmount and fxRateToBase is,
+            // calculate the value
+            if (junit.getFxAmount() == null || junit.getFxAmount() == 0d //
+                            || junit.getFxRateToBase() == null
+                            || junit.getFxRateToBase().compareTo(BigDecimal.ZERO) == 0)
+                return null;
+
+            double value = BigDecimal.valueOf(junit.getFxAmount())
+                            .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
+
+            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(value));
+        }
+        else
+        {
+            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
+        }
 
         if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE
                         && (junit.getFxAmount() == null || junit.getFxAmount() == 0d))
@@ -264,10 +317,25 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         String fxCurrency = asCurrencyCode(junit.getFxCurrency());
 
-        if (jtx.getCurrency().equals(fxCurrency))
+        // two reasons to not have a fx unit:
+
+        // a) fx part of unit is not needed if currency of security and unit
+        // match
+
+        boolean transactionAndUnitCurrencyMatch = jtx.getCurrency().equals(fxCurrency);
+
+        // b) fx part of unit is not needed if the security is configured in the
+        // currency of the transactions. However, it is important to check
+        // against the resolved security as the parsed currency might differ
+
+        boolean transactionAndSecurityCurrencyMatch = jtx.getCurrency().equals(security.getCurrencyCode());
+
+        if (transactionAndUnitCurrencyMatch || transactionAndSecurityCurrencyMatch)
         {
-            return junit.getType() != Transaction.Unit.Type.GROSS_VALUE ? new Transaction.Unit(junit.getType(), amount)
-                            : null;
+            if (junit.getType() == Transaction.Unit.Type.GROSS_VALUE)
+                return null;
+            else
+                new Transaction.Unit(junit.getType(), amount);
         }
 
         // check forex amount

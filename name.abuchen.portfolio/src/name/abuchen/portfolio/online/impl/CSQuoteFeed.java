@@ -21,6 +21,9 @@ import name.abuchen.portfolio.Messages;
  * Suisse returns the quotes with Excel mime-type which are in fact HTML tables
  * but would be converted upon opening Excel. This is a little bit of a hack on
  * CS' part.
+ * 
+ * For testing ==>
+ * https://amfunds.credit-suisse.com/ch/de/institutional/fund/history/CH0209106761?currency=USD
  */
 public class CSQuoteFeed extends HTMLTableQuoteFeed
 {
@@ -72,12 +75,6 @@ public class CSQuoteFeed extends HTMLTableQuoteFeed
     protected String getUserAgent()
     {
         return USERAGENT;
-    }
-
-    @Override
-    protected boolean isIgnoreContentType()
-    {
-        return true;
     }
 
     /**

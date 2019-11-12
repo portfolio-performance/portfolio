@@ -1,0 +1,29 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 18.09.2019
+Dividende Unsere Referenz: 32484929
+Im Hinblick auf folgenden Titel:
+Titel
+Bezeichnung Anzahl
+LOGITECH N ISIN: CH0025751329NKN: 2575132 250
+haben wir Ihrem Konto den folgenden Betrag gutgeschrieben:
+Kontonummer 99999900
+Ausführungsdatum 18.09.2019
+Valutadatum 20.09.2019
+Anzahl 250
+Dividende 0.72999 CHF
+Betrag CHF 182.50
+Verrechnungssteuer 35% (CH) CHF 63.88
+Total CHF 118.62
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079
