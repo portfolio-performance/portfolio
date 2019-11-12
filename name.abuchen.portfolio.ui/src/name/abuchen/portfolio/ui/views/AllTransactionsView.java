@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.Separator;
@@ -117,7 +118,7 @@ public class AllTransactionsView extends AbstractFinanceView
                 search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = search.getText().trim();
+                    String filterText = Pattern.quote(search.getText().trim());
                     if (filterText.length() == 0)
                     {
                         filter = null;
