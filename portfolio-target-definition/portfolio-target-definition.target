@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="portfolio-target-definition" sequenceNumber="22">
+<target name="portfolio-target-definition" sequenceNumber="23">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.200.v20180906-1121"/>
@@ -26,18 +26,18 @@
 		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.16.1/photon/"/>
-		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20190126080931"/>
-		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20190126080931"/>
-		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190126080931"/>
-	</location>
-	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.3.0.201804281520"/>
 		<repository location="http://download.eclipse.org/nebula/releases/2.0.1"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://buchen.github.io/portfolio-deps/1.1.0"/>
 		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.1.0"/>
+	</location>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.17.0/photon/"/>
+		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20190713101254"/>
 	</location>
 </locations>
 </target>
