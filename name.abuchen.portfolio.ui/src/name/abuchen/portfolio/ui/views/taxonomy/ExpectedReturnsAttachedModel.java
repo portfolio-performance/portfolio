@@ -68,7 +68,6 @@ public class ExpectedReturnsAttachedModel implements TaxonomyModel.AttachedModel
         // Trigger recalculation of affected expected returns, in the model
         recalcExpectedReturns(node);
 
-        recalculate(this.taxonomyModel);
         taxonomyModel.fireTaxonomyModelChange(node);
         taxonomyModel.markDirty();
     }
