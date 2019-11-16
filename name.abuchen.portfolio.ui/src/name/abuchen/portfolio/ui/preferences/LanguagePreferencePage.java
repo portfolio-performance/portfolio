@@ -40,7 +40,8 @@ public class LanguagePreferencePage extends PreferencePage
         AUTOMATIC(null, Messages.LabelLanguageAutomatic), //
         GERMAN("de", "Deutsch"), //$NON-NLS-1$ //$NON-NLS-2$
         ENGLISH("en", "English"), //$NON-NLS-1$ //$NON-NLS-2$
-        SPANISH("es", "Español"); //$NON-NLS-1$ //$NON-NLS-2$
+        SPANISH("es", "Español"), //$NON-NLS-1$ //$NON-NLS-2$
+        DUTCH("nl", "Nederlands"); //$NON-NLS-1$ //$NON-NLS-2$
 
         private String code;
         private String label;

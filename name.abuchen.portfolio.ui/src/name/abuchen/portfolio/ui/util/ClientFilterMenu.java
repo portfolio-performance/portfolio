@@ -78,7 +78,7 @@ public final class ClientFilterMenu implements IMenuListener
         this.client = client;
         this.preferences = preferences;
 
-        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", c -> c); //$NON-NLS-1$
+        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", ClientFilter.NO_FILTER); //$NON-NLS-1$
         defaultItems.add(selectedItem);
 
         client.getActivePortfolios().forEach(portfolio -> {
@@ -194,8 +194,8 @@ public final class ClientFilterMenu implements IMenuListener
                 if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
                     customItems.removeLast();
 
-                preferences.putValue(ClientFilterDropDown.class.getSimpleName(), String.join(";", //$NON-NLS-1$
-                                customItems.stream().map(i -> i.uuids).collect(Collectors.toList())));
+                preferences.putValue(ClientFilterDropDown.class.getSimpleName(),
+                                customItems.stream().map(i -> i.uuids).collect(Collectors.joining(";"))); //$NON-NLS-1$
 
                 listeners.forEach(l -> l.accept(newItem.filter));
             }

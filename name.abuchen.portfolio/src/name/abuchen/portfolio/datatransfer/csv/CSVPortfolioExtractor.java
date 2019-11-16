@@ -9,13 +9,16 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -45,6 +48,8 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new DateField("date-quote", Messages.CSVColumn_DateQuote).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("quote", Messages.CSVColumn_Quote, "Schluss", "Schlusskurs", "Close") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                         .setOptional(true));
+        fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
@@ -88,6 +93,9 @@ import name.abuchen.portfolio.money.Money;
 
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
 
+        Account account = getAccount(getClient(), rawValues, field2column);
+        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
+
         BuySellEntry entry = new BuySellEntry();
         entry.setType(PortfolioTransaction.Type.BUY);
         entry.setSecurity(security);
@@ -97,7 +105,12 @@ import name.abuchen.portfolio.money.Money;
         entry.setShares(shares);
         entry.setNote(note);
 
-        items.add(new BuySellEntryItem(entry));
+        Extractor.Item item = new BuySellEntryItem(entry);
+
+        item.setAccountPrimary(account);
+        item.setPortfolioPrimary(portfolio);
+
+        items.add(item);
 
         // check if the data contains price
 

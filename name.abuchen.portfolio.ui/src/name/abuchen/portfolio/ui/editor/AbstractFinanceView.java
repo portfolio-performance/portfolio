@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractFinanceView
 {
@@ -40,6 +41,11 @@ public abstract class AbstractFinanceView
     private PortfolioPart part;
 
     private Composite top;
+
+    /**
+     * The unescaped text of the title label.
+     */
+    private String titleText;
     private Label title;
 
     /**
@@ -60,16 +66,18 @@ public abstract class AbstractFinanceView
 
     protected String getTitle()
     {
-        return title.getText();
+        return titleText;
     }
 
     protected final void updateTitle(String title)
     {
         if (!this.title.isDisposed())
         {
-            boolean isEqual = title.equals(this.title.getText());
+            String escaped = TextUtil.tooltip(title);
+            boolean isEqual = escaped.equals(this.title.getText());
 
-            this.title.setText(title);
+            this.titleText = title;
+            this.title.setText(escaped);
             if (!isEqual)
                 this.title.getParent().layout(true);
         }
@@ -132,8 +140,9 @@ public abstract class AbstractFinanceView
         Font boldFont = resourceManager.createFont(FontDescriptor
                         .createFrom(JFaceResources.getFont(JFaceResources.HEADER_FONT)).setStyle(SWT.BOLD));
 
+        titleText = getDefaultTitle();
         title = new Label(header, SWT.NONE);
-        title.setText(getDefaultTitle());
+        title.setText(TextUtil.tooltip(titleText));
         title.setFont(boldFont);
         title.setForeground(Colors.SIDEBAR_TEXT);
         title.setBackground(header.getBackground());
@@ -244,5 +253,10 @@ public abstract class AbstractFinanceView
     public final void inject(Object object)
     {
         ContextInjectionFactory.inject(object, context);
+    }
+
+    public <T> T getFromContext(Class<T> clazz)
+    {
+        return context.get(clazz);
     }
 }

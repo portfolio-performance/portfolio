@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -23,6 +24,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.DeltaPercentageIndicatorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -94,8 +96,20 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             }
         });
         support.addColumn(column);
+
+        column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
+
+        Function<Object, Double> percentageProvider = element -> { // NOSONAR
+            TaxonomyNode node = (TaxonomyNode) element;
+            return node.getTarget() == null ? null
+                            : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
+        };
         
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider));
+        support.addColumn(column);
+
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDeltaPercentRelative_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -129,6 +143,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return actualPercent - weightPercent;
             }
         });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("delta", Messages.ColumnDeltaValue, SWT.RIGHT, 100); //$NON-NLS-1$
@@ -259,7 +274,8 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isClassification() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK)
+                                : null;
             }
 
             @Override

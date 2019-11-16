@@ -37,7 +37,8 @@ public class CreateTextFromPDFHandler
 
         try
         {
-            PDFInputFile inputFile = new PDFInputFile(new File(fileDialog.getFilterPath(), fileName));
+            File file = new File(fileDialog.getFilterPath(), fileName);
+            PDFInputFile inputFile = new PDFInputFile(file);
             inputFile.convertPDFtoText();
 
             String text = MessageFormat.format(Messages.PDFImportDebugAuthor, inputFile.getAuthor());
@@ -45,7 +46,7 @@ public class CreateTextFromPDFHandler
             text += "\n-----------------------------------------\n"; //$NON-NLS-1$
             text += inputFile.getText().replace("\r","");   // CRLF to spac; //$NON-NLS-1$ //$NON-NLS-2$
 
-            new DisplayTextDialog(shell, text).open();
+            new DisplayTextDialog(shell, file, text).open();
         }
         catch (IOException e)
         {

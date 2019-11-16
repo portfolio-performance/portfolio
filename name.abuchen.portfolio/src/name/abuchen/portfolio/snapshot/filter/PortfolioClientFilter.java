@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -30,8 +31,8 @@ public class PortfolioClientFilter implements ClientFilter
 
     public PortfolioClientFilter(List<Portfolio> portfolios, List<Account> accounts)
     {
-        this.portfolios = portfolios;
-        this.accounts = accounts;
+        this.portfolios = Objects.requireNonNull(portfolios);
+        this.accounts = Objects.requireNonNull(accounts);
     }
 
     public PortfolioClientFilter(Portfolio portfolio)
@@ -292,5 +293,30 @@ public class PortfolioClientFilter implements ClientFilter
 
         // do *not* copy units as REMOVAL and DEPOSIT have never units
         return clone;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((accounts == null) ? 0 : accounts.hashCode());
+        result = prime * result + ((portfolios == null) ? 0 : portfolios.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        PortfolioClientFilter other = (PortfolioClientFilter) obj;
+
+        return accounts.equals(other.accounts) && portfolios.equals(other.portfolios);
     }
 }

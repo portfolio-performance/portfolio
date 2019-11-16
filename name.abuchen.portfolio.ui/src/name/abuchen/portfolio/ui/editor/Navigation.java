@@ -30,6 +30,7 @@ import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AccountListView;
+import name.abuchen.portfolio.ui.views.AllTransactionsView;
 import name.abuchen.portfolio.ui.views.BrowserTestView;
 import name.abuchen.portfolio.ui.views.HoldingsPieChartView;
 import name.abuchen.portfolio.ui.views.InvestmentPlanListView;
@@ -43,7 +44,7 @@ import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsView;
 import name.abuchen.portfolio.ui.views.currency.CurrencyView;
 import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
-import name.abuchen.portfolio.ui.views.dividends.DividendsView;
+import name.abuchen.portfolio.ui.views.earnings.EarningsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
 import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
@@ -351,6 +352,10 @@ public final class Navigation
             int size = list.size();
             int index = list.indexOf(watchlist);
 
+            // section has one more element: all securities. Therefore the index
+            // into the children needs an offset
+            int offset = (int) section.getChildren().filter(i -> !(i.getParameter() instanceof Watchlist)).count();
+
             if (index > 0)
             {
                 manager.add(new SimpleAction(Messages.MenuMoveUp, a -> {
@@ -358,7 +363,7 @@ public final class Navigation
                     watchlists.remove(watchlist);
                     watchlists.add(index - 1, watchlist);
                     section.children.remove(item);
-                    section.children.add(index - 1, item);
+                    section.children.add(index - 1 + offset, item);
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
@@ -372,7 +377,7 @@ public final class Navigation
                     watchlists.remove(watchlist);
                     watchlists.add(index + 1, watchlist);
                     section.children.remove(item);
-                    section.children.add(index + 1, item);
+                    section.children.add(index + 1 + offset, item);
 
                     this.listeners.forEach(l -> l.changed(item));
                     client.touch();
@@ -402,6 +407,10 @@ public final class Navigation
         masterData.add(new Item(Messages.LabelAccounts, Images.ACCOUNT, AccountListView.class));
         masterData.add(new Item(Messages.LabelPortfolios, Images.PORTFOLIO, PortfolioListView.class));
         masterData.add(new Item(Messages.LabelInvestmentPlans, Images.INVESTMENTPLAN, InvestmentPlanListView.class));
+
+        Item allTransactions = new Item(Messages.LabelAllTransactions, AllTransactionsView.class);
+        allTransactions.addTag(Tag.HIDE);
+        masterData.add(allTransactions);
     }
 
     private void createPerformanceSection()
@@ -423,7 +432,7 @@ public final class Navigation
         performance.add(new Item(Messages.ClientEditorLabelChart, PerformanceChartView.class));
         performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
-        performance.add(new Item(Messages.LabelDividends, DividendsView.class));
+        performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class));
 
         Item allTrades = new Item(Messages.LabelTrades, TradeDetailsView.class);
         allTrades.addTag(Tag.HIDE);

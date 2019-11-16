@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.dialogs;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
@@ -51,6 +53,10 @@ public class ReportingPeriodDialog extends Dialog
 
     private Button radioCurrentMonth;
 
+    private Button radioYTD;
+
+    private List<Button> radioBtnList;
+
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
     {
         super(parentShell);
@@ -77,6 +83,7 @@ public class ReportingPeriodDialog extends Dialog
         radioLast.setText(Messages.LabelReportingDialogLast);
         years = new Spinner(editArea, SWT.BORDER);
         years.setMinimum(0);
+
         Label lblYears = new Label(editArea, SWT.NONE);
         lblYears.setText(Messages.LabelReportingDialogYears);
         months = new Spinner(editArea, SWT.BORDER);
@@ -121,6 +128,9 @@ public class ReportingPeriodDialog extends Dialog
         radioCurrentMonth = new Button(editArea, SWT.RADIO);
         radioCurrentMonth.setText(Messages.LabelCurrentMonth);
 
+        radioYTD = new Button(editArea, SWT.RADIO);
+        radioYTD.setText(Messages.LabelYTD);
+
         //
         // form layout
         //
@@ -160,12 +170,16 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioYearX, 20));
 
+        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentMonth, 20));
+
         //
         // wiring
         //
 
         presetFromTemplate();
 
+        radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
+                        radioYearX, radioCurrentMonth, radioYTD);
         activateRadioOnChange(radioLast, years, months);
         activateRadioOnChange(radioLastDays, days);
         activateRadioOnChange(radioLastTradingDays, tradingDays);
@@ -176,10 +190,23 @@ public class ReportingPeriodDialog extends Dialog
         return composite;
     }
 
+    private void deselectSelectedRadioButtons(final Button radio)
+    {
+        radioBtnList.stream() //
+                        .filter(btn -> !btn.equals(radio)) //
+                        .filter(Button::getSelection) //
+                        .forEach(btn -> btn.setSelection(false));
+    }
+
     private void activateRadioOnChange(final Button radio, Control... controls)
     {
         for (Control c : controls)
-            c.addListener(SWT.Selection, event -> radio.setSelection(true));
+        {
+            c.addListener(SWT.Selection, event -> {
+                deselectSelectedRadioButtons(radio);
+                radio.setSelection(true);
+            });
+        }
     }
 
     private void presetFromTemplate()
@@ -198,6 +225,8 @@ public class ReportingPeriodDialog extends Dialog
             radioYearX.setSelection(true);
         else if (template instanceof ReportingPeriod.CurrentMonth)
             radioCurrentMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.YearToDate)
+            radioYTD.setSelection(true);
         else
             throw new IllegalArgumentException();
 
@@ -257,6 +286,10 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioCurrentMonth.getSelection())
         {
             result = new ReportingPeriod.CurrentMonth();
+        }
+        else if (radioYTD.getSelection())
+        {
+            result = new ReportingPeriod.YearToDate();
         }
         else
         {

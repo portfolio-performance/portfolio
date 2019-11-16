@@ -37,5 +37,10 @@
                id="name.abuchen.portfolio.ui.window.mainwindow">
          </element>
       </processor>
+      <processor
+            apply="always"
+            beforefragment="true"
+            class="name.abuchen.portfolio.bootstrap.MergeOldLayoutIntoCurrentApplicationModelProcessor">
+      </processor>
    </extension>
 </plugin>

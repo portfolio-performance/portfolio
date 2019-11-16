@@ -100,7 +100,7 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
             @Override
             public Image getImage(Object element)
             {
-                return Images.TEXT.image();
+                return Images.BOOKMARK.image();
             }
 
         });

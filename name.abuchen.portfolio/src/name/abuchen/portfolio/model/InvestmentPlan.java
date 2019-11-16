@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -15,13 +16,15 @@ import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
-public class InvestmentPlan implements Named, Adaptable
+public class InvestmentPlan implements Named, Adaptable, Attributable
 {
     private String name;
     private String note;
     private Security security;
     private Portfolio portfolio;
     private Account account;
+
+    private Attributes attributes;
 
     /**
      * Indicates whether the transactions of this investment plan are
@@ -166,9 +169,73 @@ public class InvestmentPlan implements Named, Adaptable
         this.fees = fees;
     }
 
+    @Override
+    public Attributes getAttributes()
+    {
+        if (attributes == null)
+            attributes = new Attributes();
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        this.attributes = attributes;
+    }
+
     public List<Transaction> getTransactions()
     {
         return this.transactions;
+    }
+
+    /**
+     * Returns a list of transaction pairs, i.e. transaction and the owner
+     * (account or portfolio). As the list of transactions is part of the XML
+     * format, we cannot change the InvestmentPlan class.
+     */
+    public List<TransactionPair<?>> getTransactions(Client client)
+    {
+        List<TransactionPair<?>> answer = new ArrayList<>();
+
+        for (Transaction t : transactions)
+        {
+            if (t instanceof AccountTransaction)
+                answer.add(new TransactionPair<AccountTransaction>(lookupOwner(client, (AccountTransaction) t),
+                                (AccountTransaction) t));
+            else
+                answer.add(new TransactionPair<PortfolioTransaction>(lookupOwner(client, (PortfolioTransaction) t),
+                                (PortfolioTransaction) t));
+        }
+
+        return answer;
+    }
+
+    /**
+     * Returns the owner of the transaction. Because an investment plan can be
+     * updated, older transactions do not necessarily belong to the account that
+     * is currently configured for by the plan.
+     */
+    private Account lookupOwner(Client client, AccountTransaction t)
+    {
+        if (account != null && account.getTransactions().contains(t))
+            return account;
+
+        return client.getAccounts().stream().filter(a -> a.getTransactions().contains(t)).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
+    }
+
+    /**
+     * Returns the owner of the transaction. Because an investment plan can be
+     * updated, older transactions do not necessarily belong to the portfolio
+     * that is currently configured for the plan.
+     */
+    private Portfolio lookupOwner(Client client, PortfolioTransaction t)
+    {
+        if (portfolio != null && portfolio.getTransactions().contains(t))
+            return portfolio;
+
+        return client.getPortfolios().stream().filter(a -> a.getTransactions().contains(t)).findAny()
+                        .orElseThrow(IllegalArgumentException::new);
     }
 
     public void removeTransaction(PortfolioTransaction transaction)
@@ -202,7 +269,7 @@ public class InvestmentPlan implements Named, Adaptable
     /**
      * Returns the date of the last transaction generated
      */
-    private LocalDate getLastDate()
+    public Optional<LocalDate> getLastDate()
     {
         LocalDate last = null;
         for (Transaction t : transactions)
@@ -212,7 +279,7 @@ public class InvestmentPlan implements Named, Adaptable
                 last = date;
         }
 
-        return last;
+        return Optional.ofNullable(last);
     }
 
     /**
@@ -271,32 +338,38 @@ public class InvestmentPlan implements Named, Adaptable
 
     public LocalDate getDateOfNextTransactionToBeGenerated()
     {
-        LocalDate lastDate = getLastDate();
-        LocalDate startDate = start.toLocalDate();
-        if (lastDate == null)
+        Optional<LocalDate> lastDate = getLastDate();
+
+        if (lastDate.isPresent())
         {
+            return next(lastDate.get());
+        }
+        else
+        {
+            LocalDate startDate = start.toLocalDate();
+
             // do not generate a investment plan transaction on a public holiday
             TradeCalendar tradeCalendar = security != null ? TradeCalendarManager.getInstance(security)
                             : TradeCalendarManager.getDefaultInstance();
             while (tradeCalendar.isHoliday(startDate))
                 startDate = startDate.plusDays(1);
-        }
 
-        return lastDate != null ? next(lastDate) : startDate;
+            return startDate;
+        }
     }
 
-    public List<Transaction> generateTransactions(CurrencyConverter converter)
+    public List<TransactionPair<?>> generateTransactions(CurrencyConverter converter)
     {
         LocalDate transactionDate = getDateOfNextTransactionToBeGenerated();
-        List<Transaction> newlyCreated = new ArrayList<>();
+        List<TransactionPair<?>> newlyCreated = new ArrayList<>();
 
         LocalDate now = LocalDate.now();
 
         while (!transactionDate.isAfter(now))
         {
-            Transaction transaction = createTransaction(converter, transactionDate);
+            TransactionPair<?> transaction = createTransaction(converter, transactionDate);
 
-            transactions.add(transaction);
+            transactions.add(transaction.getTransaction());
             newlyCreated.add(transaction);
 
             transactionDate = next(transactionDate);
@@ -305,7 +378,7 @@ public class InvestmentPlan implements Named, Adaptable
         return newlyCreated;
     }
 
-    private Transaction createTransaction(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createTransaction(CurrencyConverter converter, LocalDate tDate)
     {
         Class<? extends Transaction> planType = getPlanType();
 
@@ -317,7 +390,7 @@ public class InvestmentPlan implements Named, Adaptable
             throw new IllegalArgumentException();
     }
 
-    private Transaction createSecurityTx(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createSecurityTx(CurrencyConverter converter, LocalDate tDate)
     {
         String targetCurrencyCode = getCurrencyCode();
         boolean needsCurrencyConversion = !targetCurrencyCode.equals(security.getCurrencyCode());
@@ -361,7 +434,7 @@ public class InvestmentPlan implements Named, Adaptable
                 entry.getPortfolioTransaction().addUnit(forex);
 
             entry.insert();
-            return entry.getPortfolioTransaction();
+            return new TransactionPair<>(portfolio, entry.getPortfolioTransaction());
         }
         else
         {
@@ -383,11 +456,11 @@ public class InvestmentPlan implements Named, Adaptable
                 transaction.addUnit(forex);
 
             portfolio.addTransaction(transaction);
-            return transaction;
+            return new TransactionPair<>(portfolio, transaction);
         }
     }
 
-    private Transaction createDepositTx(CurrencyConverter converter, LocalDate tDate)
+    private TransactionPair<?> createDepositTx(CurrencyConverter converter, LocalDate tDate)
     {
         Money deposit = Money.of(getCurrencyCode(), amount);
 
@@ -404,6 +477,6 @@ public class InvestmentPlan implements Named, Adaptable
                         Values.DateTime.format(LocalDateTime.now()), name));
 
         account.addTransaction(transaction);
-        return transaction;
+        return new TransactionPair<>(account, transaction);
     }
 }

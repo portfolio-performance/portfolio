@@ -59,7 +59,10 @@ public class ClientSettings
         bookmarks.add(new Bookmark(
                         "maxblue Kauforder", //$NON-NLS-1$
                         "https://meine.deutsche-bank.de/trxm/db/init.do" //$NON-NLS-1$
-                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$         
+                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$
+        bookmarks.add(new Bookmark("extraETF.com", //$NON-NLS-1$
+                        "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
+
     }
 
     private void addDefaultAttributeTypes()
@@ -154,6 +157,11 @@ public class ClientSettings
     public void addAttributeType(int index, AttributeType type)
     {
         attributeTypes.add(index, type);
+    }
+
+    public int getAttributeTypeIndexOf(AttributeType type)
+    {
+        return attributeTypes.indexOf(type);
     }
 
     public ConfigurationSet getConfigurationSet(String key)

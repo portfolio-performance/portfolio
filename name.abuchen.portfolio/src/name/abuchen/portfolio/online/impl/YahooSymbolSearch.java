@@ -1,24 +1,17 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.util.WebAccess;
 
 /* package */ class YahooSymbolSearch
 {
@@ -96,44 +89,38 @@ import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
         }
     }
 
-    private static final String SEARCH_URL = "https://s.yimg.com/aq/autoc?query={0}&region=DE&lang=de-DE&callback=YAHOO.util.ScriptNodeDataSource.callbacks"; //$NON-NLS-1$
-
     public Stream<Result> search(String query) throws IOException
     {
         List<Result> answer = new ArrayList<>();
-        
-        try (CloseableHttpClient client = HttpClients.createSystem())
+
+        @SuppressWarnings("nls")
+        String html = new WebAccess("s.yimg.com", "/aq/autoc") //
+                        .addParameter("query", query) //
+                        .addParameter("region", "DE") //
+                        .addParameter("lang", "de-DE") //
+                        .addParameter("callback", "YAHOO.util.ScriptNodeDataSource.callbacks") //
+                        .get();
+
+        // strip away java script call back method
+        int start = html.indexOf('(');
+        int end = html.lastIndexOf(')');
+        html = html.substring(start + 1, end);
+
+        JSONObject responseData = (JSONObject) JSONValue.parse(html);
+        if (responseData != null)
         {
-            // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
-            String searchUrl = MessageFormat.format(SEARCH_URL,
-                            URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
-
-            try (CloseableHttpResponse response = client.execute(new HttpGet(searchUrl)))
+            JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
+            if (resultSet != null)
             {
-                String html = EntityUtils.toString(response.getEntity());
-
-                // strip away java script call back method
-                int start = html.indexOf('(');
-                int end = html.lastIndexOf(')');
-                html = html.substring(start + 1, end);
-
-                JSONObject responseData = (JSONObject) JSONValue.parse(html);
-                if (responseData != null)
+                JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
+                if (result != null)
                 {
-                    JSONObject resultSet = (JSONObject) responseData.get("ResultSet"); //$NON-NLS-1$
-                    if (resultSet != null)
-                    {
-                        JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
-                        if (result != null)
-                        {
-                            for (int ii = 0; ii < result.size(); ii++)
-                                answer.add(Result.from((JSONObject) result.get(ii)));
-                        }
-                    }
+                    for (int ii = 0; ii < result.size(); ii++)
+                        answer.add(Result.from((JSONObject) result.get(ii)));
                 }
             }
         }
-        
+
         return answer.stream();
     }
 }

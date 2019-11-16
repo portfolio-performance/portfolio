@@ -20,16 +20,11 @@ public class PortfolioReportNetTest
     {
         JSONObject jsonObject = (JSONObject) JSONValue.parseWithException("{\n" + //
                         "    \"isin\": \"DE0005190003\",\n" + //
-                        "    \"markets\": {\n" + //
-                        "        \"XFRA\": {\n" + //
-                        "            \"symbol\": \"BMW\"\n" + //
-                        "        },\n" + //
-                        "        \"XNAS\": {\n" + //
-                        "            \"symbol\": \"BAMXF\"\n" + //
-                        "        }\n" + //
-                        "    },\n" + //
+                        "    \"symbolXfra\": \"BMW\"," + //
+                        "    \"symbolXnas\": \"BAMXF\"," + //
+                        "    \"symbolXnys\": null," + //
                         "    \"name\": \"BAY.MOTOREN WERKE AG ST\",\n" + //
-                        "    \"security_type\": \"share\",\n" + //
+                        "    \"securityType\": \"share\",\n" + //
                         "    \"uuid\": \"f9c39f31b1f443639e462cd8e22e3ce7\",\n" + //
                         "    \"wkn\": \"519000\"\n" + //
                         "}");
@@ -54,7 +49,7 @@ public class PortfolioReportNetTest
         assertValues(security);
         assertThat(item.update(security), is(false));
 
-        security.getProperties().findAny().ifPresent(property -> security.removeProperty(property));
+        security.getProperties().findAny().ifPresent(security::removeProperty);
         assertThat(item.update(security), is(true));
         assertValues(security);
         assertThat(item.update(security), is(false));

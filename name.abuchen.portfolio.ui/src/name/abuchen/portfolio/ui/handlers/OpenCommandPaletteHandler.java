@@ -2,6 +2,8 @@ package name.abuchen.portfolio.ui.handlers;
 
 import javax.inject.Named;
 
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
@@ -21,12 +23,17 @@ public class OpenCommandPaletteHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, IEclipseContext context)
     {
         if (!MenuHelper.isClientPartActive(part))
             return;
 
-        new CommandPalettePopup((PortfolioPart) part.getObject()).open();
+        IEclipseContext childContext = context.createChild();
+        childContext.set(PortfolioPart.class, (PortfolioPart) part.getObject());
+
+        ContextInjectionFactory.make(CommandPalettePopup.class, childContext).open();
+
+        childContext.dispose();
     }
 
 }

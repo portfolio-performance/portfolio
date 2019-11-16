@@ -33,6 +33,7 @@ public enum Images
     WATCHLIST("watchlist.png"), //$NON-NLS-1$
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
+    BOOKMARK("bookmark.png"), //$NON-NLS-1$
 
     // buttons
 
@@ -64,6 +65,8 @@ public enum Images
     REMOVE("remove.png"), //$NON-NLS-1$
     CHEVRON("chevron.png"), //$NON-NLS-1$
     INTERVAL("interval.png"), //$NON-NLS-1$
+    NEW_TRANSACTION("new_transaction.png"), //$NON-NLS-1$
+    INVERT_EXCHANGE_RATE("invert_exchange_rate.png"), //$NON-NLS-1$
 
     CATEGORY("category.png"), //$NON-NLS-1$
     UNASSIGNED_CATEGORY("unassigned.png"), //$NON-NLS-1$

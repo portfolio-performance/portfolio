@@ -18,6 +18,9 @@ import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.FieldFormat;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Isin;
 import name.abuchen.portfolio.util.TextUtil;
@@ -90,8 +93,7 @@ public abstract class CSVExtractor implements Extractor
     }
 
     protected final Long getValue(String name, String[] rawValues, Map<String, Column> field2column,
-                    Values<Long> values)
-                    throws ParseException
+                    Values<Long> values) throws ParseException
     {
         String value = getText(name, rawValues, field2column);
         if (value == null)
@@ -191,5 +193,43 @@ public abstract class CSVExtractor implements Extractor
             return (E) ff.getFormat().parseObject(value);
         else
             return Enum.valueOf(type, value);
+    }
+
+    protected final Account getAccount(Client client, String[] rawValues, Map<String, Column> field2column)
+    {
+        return getAccount(client, rawValues, field2column, false);
+    }
+
+    protected final Account getAccount(Client client, String[] rawValues, Map<String, Column> field2column,
+                    boolean use2nd)
+    {
+        String type = use2nd ? Messages.CSVColumn_AccountName2nd : Messages.CSVColumn_AccountName;
+        String accountName = getText(type, rawValues, field2column);
+        Account account = null;
+        if (accountName != null && !accountName.isEmpty())
+        {
+            account = client.getAccounts().stream().filter(x -> x.getName().equals(accountName)).findFirst()
+                            .orElse(null);
+        }
+        return account;
+    }
+
+    protected final Portfolio getPortfolio(Client client, String[] rawValues, Map<String, Column> field2column)
+    {
+        return getPortfolio(client, rawValues, field2column, false);
+    }
+
+    protected final Portfolio getPortfolio(Client client, String[] rawValues, Map<String, Column> field2column,
+                    boolean use2nd)
+    {
+        String type = use2nd ? Messages.CSVColumn_PortfolioName2nd : Messages.CSVColumn_PortfolioName;
+        String portfolioName = getText(type, rawValues, field2column);
+        Portfolio portfolio = null;
+        if (portfolioName != null && !portfolioName.isEmpty())
+        {
+            portfolio = client.getPortfolios().stream().filter(x -> x.getName().equals(portfolioName)).findFirst()
+                            .orElse(null);
+        }
+        return portfolio;
     }
 }

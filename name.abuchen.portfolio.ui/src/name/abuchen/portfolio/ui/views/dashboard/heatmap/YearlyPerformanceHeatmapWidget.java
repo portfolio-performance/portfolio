@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard.heatmap;
 
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -57,16 +58,16 @@ public class YearlyPerformanceHeatmapWidget extends AbstractHeatmapWidget<Double
         for (DataSeries s : dataSeries)
             model.addHeader(s.getLabel());
 
-        for (Integer year : calcInterval.iterYears())
+        for (Year year : calcInterval.getYears())
         {
-            String label = numDashboardColumns > 2 ? String.valueOf(year % 100) : String.valueOf(year);
+            String label = numDashboardColumns > 2 ? String.valueOf(year.getValue() % 100) : String.valueOf(year);
             HeatmapModel.Row<Double> row = new HeatmapModel.Row<>(label);
 
             // yearly data
             for (DataSeries series : dataSeries)
             {
                 PerformanceIndex performanceIndex = getDashboardData().calculate(series,
-                                new ReportingPeriod.YearX(year).toInterval(now));
+                                new ReportingPeriod.YearX(year.getValue()).toInterval(now));
                 row.addData(performanceIndex.getFinalAccumulatedPercentage());
             }
 

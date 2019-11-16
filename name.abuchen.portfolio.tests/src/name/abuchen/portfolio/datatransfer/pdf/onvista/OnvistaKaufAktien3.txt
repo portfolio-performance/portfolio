@@ -1,0 +1,42 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=372650000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Wertpapierabrechnung ADRESSZEILE1=Frau
+ADRESSZEILE2=X
+Kauf Limitauftrag ADRESSZEILE3=X
+Kommissionsgeschäft ADRESSZEILE4=X
+XGeschlechtX ADRESSZEILE5=
+XVornameX XNachnameX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XAdresseX BELEGNUMMER=9764
+X X 372650000 59157179 / 20.08.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+X X
+Frankfurt am Main, 20.08.2019
+Wir haben für Sie gekauft
+Gattungsbezeichnung ISIN
+Cisco Systems Inc. Registered Shares DL-,001 US17275R1023
+Nominal Kurs
+STK 35,000 USD 47,9200
+Handelstag 19.08.2019 Kurswert USD 1.677,20-
+Handelszeit 15:30 Orderprovision USD 11,03-
+Handelsplatz Börse NASDAQ/NAN Handelsplatzgebühr USD 5,51-
+Verwahrart Wertpapierrechnung Ausmachender Betrag USD 1.693,74-
+Lagerland USA
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+21.08.2019 372650044 EUR/USD 1,1026 EUR 1.536,13
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach, Frauke Hegemann Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREABHNHANDKFDI/GAAASAFG/009764/210819/005926

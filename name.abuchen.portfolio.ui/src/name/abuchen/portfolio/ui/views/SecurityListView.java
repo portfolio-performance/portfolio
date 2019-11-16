@@ -410,7 +410,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 search.setSize(300, SWT.DEFAULT);
 
                 search.addModifyListener(e -> {
-                    String filterText = search.getText().trim();
+                    String filterText = Pattern.quote(search.getText().trim());
                     if (filterText.length() == 0)
                     {
                         filterPattern = null;

@@ -258,6 +258,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer weight)
+        {
+            return String.format("%,.2f%%", weight / divider()); //$NON-NLS-1$
+        }
+    };
+                    
     public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
     {
         @Override

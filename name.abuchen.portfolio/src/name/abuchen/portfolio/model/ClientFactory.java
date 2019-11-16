@@ -568,6 +568,12 @@ public class ClientFactory
                 // added onlineId to security
             case 39:
                 // removed consumer price indices
+            case 40:
+                // added attributes to account and portfolio
+            case 41:
+                // added tax units to interest transaction
+            case 42:
+                // added data map to classification and assignemnt
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

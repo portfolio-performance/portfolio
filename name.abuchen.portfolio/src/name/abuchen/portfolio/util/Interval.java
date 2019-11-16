@@ -2,12 +2,21 @@ package name.abuchen.portfolio.util;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 import name.abuchen.portfolio.money.Values;
 
+/**
+ * The {@code Interval} class represents a period by a start and end date. The
+ * interval is <em>half-open</em> — it <em>excludes</em> the start date but
+ * <em>includes</em> the end date: {@code (start,end]}.
+ */
 public final class Interval
 {
 
@@ -16,8 +25,8 @@ public final class Interval
 
     private Interval(LocalDate start, LocalDate end)
     {
-        this.start = start;
-        this.end = end;
+        this.start = Objects.requireNonNull(start);
+        this.end = Objects.requireNonNull(end);
     }
 
     public static Interval of(LocalDate start, LocalDate end)
@@ -40,15 +49,24 @@ public final class Interval
         return getDays() > other.getDays();
     }
 
+    /**
+     * Tests whether the given date is included in the interval. The interval is
+     * <em>half-open</em> — it <em>excludes</em> the start date but
+     * <em>includes</em> the end date: {@code (start,end]}.
+     */
     public boolean contains(LocalDate other)
     {
         return other.isAfter(start) && !other.isAfter(end);
     }
-    
+
+    /**
+     * Tests whether the given date is included in the interval. The interval is
+     * <em>half-open</em> — it <em>excludes</em> the start date but
+     * <em>includes</em> the end date: {@code (start,end]}.
+     */
     public boolean contains(LocalDateTime other)
     {
-        LocalDate otherDate = other.toLocalDate();
-        return otherDate.isAfter(start) && !otherDate.isAfter(end);
+        return contains(other.toLocalDate());
     }
 
     public long getDays()
@@ -57,32 +75,44 @@ public final class Interval
     }
 
     /**
-     * Returns an Iterable with all the year contained in the interval.
-     * Particularly, if the start of the interval is the last day of a year,
-     * that year is not included.
+     * Returns the list of {@link Year}s contained in the given interval. As the
+     * interval excludes the first day (but includes the last day), the Year of
+     * the first day is not included.
      */
-    public Iterable<Integer> iterYears()
+    public List<Year> getYears()
     {
-        return () -> new Iterator<Integer>()
+        return collect(Year::from);
+    }
+
+    /**
+     * Returns the list of {@link YearMonth}s contained in the given interval.
+     * As the interval excludes the first day (but includes the last day), the
+     * YearMonth of the first day is not included.
+     */
+    public List<YearMonth> getYearMonths()
+    {
+        return collect(YearMonth::from);
+    }
+
+    private <T> List<T> collect(Function<LocalDate, T> collector)
+    {
+        List<T> answer = new ArrayList<>();
+
+        T lastItem = null;
+
+        LocalDate index = start.plusDays(1); // first day not in range
+        while (!index.isAfter(end))
         {
-            LocalDate index = LocalDate.of(start.plusDays(1).getYear(), 1, 1);
-
-            @Override
-            public boolean hasNext()
+            T item = collector.apply(index);
+            if (!item.equals(lastItem))
             {
-                return !index.isAfter(end);
+                answer.add(item);
+                lastItem = item;
             }
+            index = index.plusDays(1);
+        }
 
-            @Override
-            public Integer next()
-            {
-                if (!hasNext())
-                    throw new NoSuchElementException();
-                Integer answer = index.getYear();
-                index = index.plusYears(1);
-                return answer;
-            }
-        };
+        return answer;
     }
 
     @Override
@@ -90,8 +120,8 @@ public final class Interval
     {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((end == null) ? 0 : end.hashCode());
-        result = prime * result + ((start == null) ? 0 : start.hashCode());
+        result = prime * result + end.hashCode();
+        result = prime * result + start.hashCode();
         return result;
     }
 
@@ -104,22 +134,9 @@ public final class Interval
             return false;
         if (getClass() != obj.getClass())
             return false;
+
         Interval other = (Interval) obj;
-        if (end == null)
-        {
-            if (other.end != null)
-                return false;
-        }
-        else if (!end.equals(other.end))
-            return false;
-        if (start == null)
-        {
-            if (other.start != null)
-                return false;
-        }
-        else if (!start.equals(other.start))
-            return false;
-        return true;
+        return end.equals(other.end) && start.equals(other.start);
     }
 
     @Override

@@ -39,6 +39,8 @@ public abstract class ReportingPeriod
             return new YearX(code);
         else if (type == CurrentMonth.CODE)
             return new CurrentMonth();
+        else if (type == YearToDate.CODE)
+            return new YearToDate();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -349,6 +351,34 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return Messages.LabelReportingPeriodCurrentMonth;
+        }
+    }
+
+    public static class YearToDate extends ReportingPeriod
+    {
+        private static final char CODE = 'X';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1);
+
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodYTD;
         }
     }
 }

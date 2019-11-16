@@ -1,13 +1,17 @@
 package name.abuchen.portfolio.ui.dialogs.palette;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import javax.inject.Inject;
+
 import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.core.contexts.ContextInjectionFactory;
+import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
@@ -27,6 +31,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.TextLayout;
+import org.eclipse.swt.graphics.TextStyle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -50,6 +55,11 @@ public class CommandPalettePopup extends PopupDialog
     {
         String getTitel();
 
+        default String getSubtitle()
+        {
+            return null;
+        }
+
         default Images getImage()
         {
             return Images.VIEW;
@@ -58,6 +68,11 @@ public class CommandPalettePopup extends PopupDialog
         default void execute()
         {
         }
+    }
+
+    public interface ElementProvider
+    {
+        List<Element> getElements();
     }
 
     private static class Item
@@ -71,15 +86,13 @@ public class CommandPalettePopup extends PopupDialog
 
         public void measure(Event event, TextLayout textLayout)
         {
-            Table table = ((TableItem) event.item).getParent();
+            setup(event, textLayout);
 
             Image image = element.getImage().image();
             Rectangle imageBounds = image.getBounds();
             event.width += imageBounds.width + 2;
             event.height = Math.max(event.height, imageBounds.height + 2);
 
-            textLayout.setFont(table.getFont());
-            textLayout.setText(element.getTitel());
             Rectangle textBounds = textLayout.getBounds();
             event.width += textBounds.width + 2;
             event.height = Math.max(event.height, textBounds.height + 2);
@@ -87,7 +100,7 @@ public class CommandPalettePopup extends PopupDialog
 
         public void paint(Event event, TextLayout textLayout)
         {
-            Table table = ((TableItem) event.item).getParent();
+            setup(event, textLayout);
 
             Rectangle tableItemBounds = ((TableItem) event.item).getTextBounds(event.index);
 
@@ -95,11 +108,29 @@ public class CommandPalettePopup extends PopupDialog
             event.gc.drawImage(image, event.x + 1, event.y + 1);
             tableItemBounds.x += 1 + image.getBounds().width;
 
-            textLayout.setFont(table.getFont());
-            textLayout.setText(element.getTitel());
             Rectangle textBounds = textLayout.getBounds();
             textLayout.draw(event.gc, tableItemBounds.x,
                             tableItemBounds.y + (tableItemBounds.height - textBounds.height) / 2);
+        }
+
+        private void setup(Event event, TextLayout textLayout)
+        {
+            Table table = ((TableItem) event.item).getParent();
+            textLayout.setFont(table.getFont());
+
+            String title = element.getTitel();
+            String subtitle = element.getSubtitle();
+
+            if (subtitle == null)
+            {
+                textLayout.setText(title);
+            }
+            else
+            {
+                textLayout.setText(title + " " + subtitle); //$NON-NLS-1$
+                textLayout.setStyle(new TextStyle(null, Colors.GRAY, null), title.length() + 1,
+                                title.length() + 1 + subtitle.length());
+            }
         }
 
         public void erase(Event event)
@@ -115,12 +146,21 @@ public class CommandPalettePopup extends PopupDialog
 
     private TextLayout textLayout;
 
-    public CommandPalettePopup(PortfolioPart part)
+    @Inject
+    public CommandPalettePopup(IEclipseContext context, PortfolioPart part)
     {
-        super(Display.getDefault().getActiveShell(), SWT.RESIZE, true, true, false, true, true, null,
+        super(Display.getDefault().getActiveShell(), SWT.TOOL, true, true, false, true, true, null,
                         Messages.LabelStartTyping);
 
-        elements.addAll(NavigationElements.createFor(part));
+        List<Class<? extends ElementProvider>> provider = new ArrayList<>();
+        provider.add(NavigationElements.class);
+        provider.add(BookmarkElements.class);
+        provider.add(TransactionElements.class);
+
+        for (Class<? extends ElementProvider> clazz : provider)
+            elements.addAll(ContextInjectionFactory.make(clazz, context).getElements());
+
+        Collections.sort(elements, (r, l) -> r.getTitel().compareTo(l.getTitel()));
 
         create();
     }
@@ -336,9 +376,20 @@ public class CommandPalettePopup extends PopupDialog
 
     private List<Item> match(String filter)
     {
+        if (filter.isEmpty())
+            return this.elements.stream().map(Item::new).collect(Collectors.toList());
+
         Pattern filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-        Predicate<Element> predicate = filter.isEmpty() ? e -> true
-                        : e -> filterPattern.matcher(e.getTitel()).matches();
-        return this.elements.stream().filter(predicate).map(Item::new).collect(Collectors.toList());
+
+        List<Element> result = new ArrayList<>();
+
+        // first: search title
+        this.elements.stream().filter(e -> filterPattern.matcher(e.getTitel()).matches()).forEach(result::add);
+
+        // second: search subtitle (but add only if not yet found)
+        this.elements.stream().filter(e -> e.getSubtitle() != null && filterPattern.matcher(e.getSubtitle()).matches())
+                        .filter(e -> !result.contains(e)).forEach(result::add);
+
+        return result.stream().map(Item::new).collect(Collectors.toList());
     }
 }

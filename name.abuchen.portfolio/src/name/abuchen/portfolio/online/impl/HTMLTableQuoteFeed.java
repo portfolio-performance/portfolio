@@ -3,7 +3,6 @@ package name.abuchen.portfolio.online.impl;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
@@ -27,6 +26,7 @@ import java.util.regex.Pattern;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
@@ -38,40 +38,25 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
+import name.abuchen.portfolio.util.OnlineHelper;
 import name.abuchen.portfolio.util.TextUtil;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class HTMLTableQuoteFeed implements QuoteFeed
 {
-    private abstract static class Column
+    protected abstract static class Column
     {
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_GERMAN = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.GERMAN))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH)); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_ENGLISH = ThreadLocal
+                        .withInitial(() -> new DecimalFormat("#,##0.###", new DecimalFormatSymbols(Locale.ENGLISH))); //$NON-NLS-1$
 
-        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
-                unusualSymbols.setGroupingSeparator('\'');
-                return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
-            }
-        };
+        static final ThreadLocal<DecimalFormat> DECIMAL_FORMAT_APOSTROPHE = ThreadLocal.withInitial(() -> {
+            DecimalFormatSymbols unusualSymbols = new DecimalFormatSymbols(Locale.US);
+            unusualSymbols.setGroupingSeparator('\'');
+            return new DecimalFormat("#,##0.##", unusualSymbols); //$NON-NLS-1$
+        });
 
         private final Pattern[] patterns;
 
@@ -131,14 +116,20 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class DateColumn extends Column
+    protected static class DateColumn extends Column
     {
         private DateTimeFormatter[] formatters;
 
         @SuppressWarnings("nls")
         public DateColumn()
         {
-            super(new String[] { "Datum.*", "Date.*" });
+            this(new String[] { "Datum.*", "Date.*" });
+        }
+
+        @SuppressWarnings("nls")
+        public DateColumn(String[] patterns)
+        {
+            super(patterns);
 
             formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("y-M-d"),
                             DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
@@ -174,13 +165,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class CloseColumn extends Column
+    protected static class CloseColumn extends Column
     {
         @SuppressWarnings("nls")
         public CloseColumn()
         {
             super(new String[] { "Schluss.*", "Schluß.*", "Rücknahmepreis.*", "Close.*", "Zuletzt", "Price",
                             "akt. Kurs" });
+        }
+
+        public CloseColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -190,12 +186,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class HighColumn extends Column
+    protected static class HighColumn extends Column
     {
         @SuppressWarnings("nls")
         public HighColumn()
         {
             super(new String[] { "Hoch.*", "Tageshoch.*", "Max.*", "High.*" });
+        }
+
+        public HighColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -208,12 +209,17 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         }
     }
 
-    private static class LowColumn extends Column
+    protected static class LowColumn extends Column
     {
         @SuppressWarnings("nls")
         public LowColumn()
         {
             super(new String[] { "Tief.*", "Tagestief.*", "Low.*" });
+        }
+
+        public LowColumn(String[] patterns)
+        {
+            super(patterns);
         }
 
         @Override
@@ -235,6 +241,18 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             this.column = column;
             this.index = index;
+        }
+    }
+
+    private static class HeaderInfo
+    {
+        private final int rowIndex;
+        private final int numberOfHeaderColumns;
+
+        public HeaderInfo(int rowIndex, int numberOfHeaderColumns)
+        {
+            this.rowIndex = rowIndex;
+            this.numberOfHeaderColumns = numberOfHeaderColumns;
         }
     }
 
@@ -355,14 +373,19 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return Collections.emptyList();
     }
 
+    protected String getUserAgent()
+    {
+        return OnlineHelper.getUserAgent();
+    }
+
     protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
     {
         try
         {
-            String escapedUrl = new URI(url).toASCIIString();
-            return parse(escapedUrl,
-                            Jsoup.connect(escapedUrl).userAgent(OnlineHelper.getUserAgent()).timeout(30000).get(),
-                            errors);
+            Document document = Jsoup.parse(new WebAccess(url) //
+                            .addUserAgent(getUserAgent()) //
+                            .get());
+            return parse(url, document, errors);
         }
         catch (URISyntaxException | IOException e)
         {
@@ -389,7 +412,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         {
             List<Spec> specs = new ArrayList<>();
 
-            int rowIndex = buildSpecFromTable(table, specs);
+            HeaderInfo headerInfo = buildSpecFromTable(table, specs);
+            int rowIndex = headerInfo.rowIndex;
 
             if (isSpecValid(specs))
             {
@@ -402,7 +426,8 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
                     try
                     {
-                        LatestSecurityPrice price = extractPrice(row, specs, language);
+                        LatestSecurityPrice price = extractPrice(row, specs, language,
+                                        headerInfo.numberOfHeaderColumns);
                         if (price != null)
                             prices.add(price);
                     }
@@ -419,27 +444,30 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url, document.html())));
+            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+                            Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
     }
 
     @SuppressWarnings("nls")
-    private int buildSpecFromTable(Element table, List<Spec> specs)
+    private HeaderInfo buildSpecFromTable(Element table, List<Spec> specs)
     {
         // check if thead exists
         Elements header = table.select("> thead > tr > th");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return 0;
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         header = table.select("> thead > tr > td");
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return 0;
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // check if th exist in body
@@ -447,35 +475,44 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         if (!header.isEmpty())
         {
             buildSpecFromRow(header, specs);
-            return 0;
+            if (!specs.isEmpty())
+                return new HeaderInfo(0, header.size());
         }
 
         // then check first two regular rows
         int rowIndex = 0;
 
         Elements rows = table.select("> tbody > tr");
+        Elements headerRow = null;
+
         if (!rows.isEmpty())
         {
             Element firstRow = rows.get(0);
-            buildSpecFromRow(firstRow.select("> td"), specs);
+            headerRow = firstRow.select("> td");
+            buildSpecFromRow(headerRow, specs);
             rowIndex++;
         }
 
         if (specs.isEmpty() && rows.size() > 1)
         {
             Element secondRow = rows.get(1);
-            buildSpecFromRow(secondRow.select("> td"), specs);
+            headerRow = secondRow.select("> td");
+            buildSpecFromRow(headerRow, specs);
             rowIndex++;
         }
 
-        return rowIndex;
+        return new HeaderInfo(rowIndex, headerRow != null ? headerRow.size() : 0);
+    }
+
+    protected Column[] getColumns()
+    {
+        return COLUMNS;
     }
 
     private void buildSpecFromRow(Elements row, List<Spec> specs)
     {
         Set<Column> available = new HashSet<>();
-        for (Column column : COLUMNS)
-            available.add(column);
+        Collections.addAll(available, getColumns());
 
         for (int ii = 0; ii < row.size(); ii++)
         {
@@ -510,12 +547,13 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return hasDate && hasClose;
     }
 
-    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs, String languageHint) throws ParseException
+    private LatestSecurityPrice extractPrice(Element row, List<Spec> specs, String languageHint,
+                    int numberOfHeaderColumns) throws ParseException
     {
         Elements cells = row.select("> td"); //$NON-NLS-1$
 
-        // row can be empty if it contains only 'th' elements
-        if (cells.size() <= 1)
+        // we're only looking at rows having the same size as the header row
+        if (cells.size() != numberOfHeaderColumns)
             return null;
 
         LatestSecurityPrice price = new LatestSecurityPrice();
@@ -537,12 +575,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         PrintWriter writer = new PrintWriter(System.out); // NOSONAR
         for (String arg : args)
             if (arg.charAt(0) != '#')
-                doLoad(arg, writer);
+                new HTMLTableQuoteFeed().doLoad(arg, writer);
         writer.flush();
     }
 
     @SuppressWarnings("nls")
-    private static void doLoad(String source, PrintWriter writer) throws IOException
+    protected void doLoad(String source, PrintWriter writer) throws IOException
     {
         writer.println("--------");
         writer.println(source);
@@ -553,7 +591,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         if (source.startsWith("http"))
         {
-            prices = new HTMLTableQuoteFeed().parseFromURL(source, errors);
+            prices = parseFromURL(source, errors);
         }
         else
         {

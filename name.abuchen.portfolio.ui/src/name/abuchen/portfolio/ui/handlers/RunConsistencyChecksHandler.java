@@ -2,14 +2,13 @@ package name.abuchen.portfolio.ui.handlers;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 
 public class RunConsistencyChecksHandler
 {
@@ -23,10 +22,6 @@ public class RunConsistencyChecksHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
-
-        new ConsistencyChecksJob(client, true).schedule();
+        MenuHelper.getActiveClient(part).ifPresent(client -> new ConsistencyChecksJob(client, true).schedule());
     }
 }

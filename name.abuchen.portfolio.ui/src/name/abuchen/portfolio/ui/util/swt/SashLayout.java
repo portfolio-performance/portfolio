@@ -92,13 +92,7 @@ public class SashLayout extends Layout
         @Override
         public void mouseDoubleClick(MouseEvent e)
         {
-            SashLayoutData data = getLayoutData(getChildren().get(isBeginning ? 0 : 1));
-            data.size *= -1;
-
-            host.layout();
-            host.update();
-            
-            divider.setVisible(false);
+            flip();
         }
     }
 
@@ -209,6 +203,23 @@ public class SashLayout extends Layout
                 answer.add(child);
 
         return answer;
+    }
+
+    public boolean isHidden()
+    {
+        SashLayoutData data = getLayoutData(getChildren().get(isBeginning ? 0 : 1));
+        return data.size < 0;
+    }
+
+    public void flip()
+    {
+        SashLayoutData data = getLayoutData(getChildren().get(isBeginning ? 0 : 1));
+        data.size *= -1;
+
+        host.layout();
+        host.update();
+
+        divider.setVisible(false);
     }
 
     @Override

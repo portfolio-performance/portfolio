@@ -408,6 +408,58 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
             }
         });
         layout.setColumnData(column.getColumn(), new ColumnPixelData(250, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnAccount);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Account account = entry.getItem().getAccountPrimary();
+                return account != null ? account.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnOffsetAccount);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Account account = entry.getItem().getAccountSecondary();
+                return account != null ? account.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnPortfolio);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Portfolio portfolio = entry.getItem().getPortfolioPrimary();
+                return portfolio != null ? portfolio.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
+
+        column = new TableViewerColumn(viewer, SWT.NONE);
+        column.getColumn().setText(Messages.ColumnOffsetPortfolio);
+        column.setLabelProvider(new FormattedLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(ExtractedEntry entry)
+            {
+                Portfolio portfolio = entry.getItem().getPortfolioSecondary();
+                return portfolio != null ? portfolio.getName() : null;
+            }
+        });
+        layout.setColumnData(column.getColumn(), new ColumnPixelData(100, true));
     }
 
     private void attachContextMenu(final Table table)

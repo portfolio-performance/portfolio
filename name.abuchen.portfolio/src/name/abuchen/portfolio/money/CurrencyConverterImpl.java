@@ -10,7 +10,7 @@ import name.abuchen.portfolio.Messages;
 public class CurrencyConverterImpl implements CurrencyConverter
 {
     private static final ExchangeRate FALLBACK_EXCHANGE_RATE = new ExchangeRate(LocalDate.now(), BigDecimal.ONE);
-    
+
     private final ExchangeRateProviderFactory factory;
     private final String termCurrency;
 
@@ -24,20 +24,6 @@ public class CurrencyConverterImpl implements CurrencyConverter
     public String getTermCurrency()
     {
         return termCurrency;
-    }
-
-    @Override
-    public Money convert(LocalDate date, Money amount)
-    {
-        if (termCurrency.equals(amount.getCurrencyCode()))
-            return amount;
-
-        if (amount.isZero())
-            return Money.of(termCurrency, 0);
-
-        ExchangeRate rate = getRate(date, amount.getCurrencyCode());
-        BigDecimal converted = rate.getValue().multiply(BigDecimal.valueOf(amount.getAmount()));
-        return Money.of(termCurrency, Math.round(converted.doubleValue()));
     }
 
     @Override

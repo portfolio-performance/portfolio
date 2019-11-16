@@ -54,7 +54,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("Name der Security"));
+        assertThat(security.getName(), is("Name der Security Inhaber-Anteile"));
         assertThat(security.getIsin(), is("DE000BASF111"));
         assertThat(security.getWkn(), is("BASF11"));
 
@@ -92,7 +92,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("ComSta foobar .ETF"));
+        assertThat(security.getName(), is("ComSta foobar .ETF Inhaber-Anteile I o.N."));
         assertThat(security.getIsin(), is("LU1234444444"));
         assertThat(security.getWkn(), is("ETF999"));
 
@@ -130,7 +130,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("NXP Semiconductors NV"));
+        assertThat(security.getName(), is("NXP Semiconductors NV Aandelen aan toonder EO -,20"));
         assertThat(security.getIsin(), is("NL0009538784"));
         assertThat(security.getWkn(), is("A1C5WJ"));
 
@@ -168,7 +168,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("Medtronic PLC"));
+        assertThat(security.getName(), is("Medtronic PLC Registered Shares DL -,0001"));
         assertThat(security.getIsin(), is("IE00BTN1Y115"));
         assertThat(security.getWkn(), is("A14M2J"));
 
@@ -206,7 +206,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("Boeing Co."));
+        assertThat(security.getName(), is("Boeing Co. Registered Shares DL 5"));
         assertThat(security.getIsin(), is("US0970231058"));
         assertThat(security.getWkn(), is("850471"));
 
@@ -244,7 +244,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("BayWa AG"));
+        assertThat(security.getName(), is("BayWa AG vink. Namens-Aktien o.N."));
         assertThat(security.getIsin(), is("DE0005194062"));
         assertThat(security.getWkn(), is("519406"));
 
@@ -282,7 +282,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("Allianz SE"));
+        assertThat(security.getName(), is("Allianz SE vink.Namens-Aktien o.N."));
         assertThat(security.getIsin(), is("DE0008404005"));
         assertThat(security.getWkn(), is("840400"));
 
@@ -320,7 +320,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("T. Rowe Price Group Inc."));
+        assertThat(security.getName(), is("T. Rowe Price Group Inc. Registered Shares DL -,20"));
         assertThat(security.getIsin(), is("US74144T1088"));
         assertThat(security.getWkn(), is("870967"));
 
@@ -337,6 +337,41 @@ public class ComdirectPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(2.9 + 9.9))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(25)));
+    }
+
+    @Test
+    public void testWertpapierKauf9()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf9.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getName(), is("Fresenius SE & Co. KGaA Inhaber-Aktien o.N."));
+        assertThat(security.getIsin(), is("DE0005785604"));
+        assertThat(security.getWkn(), is("578560"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(49.96)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-04-03T00:00")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(0.74))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.805)));
     }
 
     @Test
@@ -358,7 +393,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("FooBar. ETF"));
+        assertThat(security.getName(), is("FooBar. ETF Inhaber-Anteile I o.N."));
         assertThat(security.getIsin(), is("DE1234567890"));
         assertThat(security.getWkn(), is("ABC123"));
 
@@ -400,7 +435,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("Boeing Co."));
+        assertThat(security.getName(), is("Boeing Co. Registered Shares DL 5"));
         assertThat(security.getIsin(), is("US0970231058"));
         assertThat(security.getWkn(), is("850471"));
 
@@ -438,7 +473,7 @@ public class ComdirectPDFExtractorTest
         item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
         Security security = ((SecurityItem) item.get()).getSecurity();
-        assertThat(security.getName(), is("ITC Holdings Corp."));
+        assertThat(security.getName(), is("ITC Holdings Corp. Registered Shares o. N."));
         assertThat(security.getIsin(), is("US4656851056"));
         assertThat(security.getWkn(), is("A0F401"));
 

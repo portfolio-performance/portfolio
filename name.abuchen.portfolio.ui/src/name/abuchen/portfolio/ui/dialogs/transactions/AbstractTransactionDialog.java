@@ -247,6 +247,39 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
         }
     }
 
+    public class ExchangeRateInput extends Input
+    {
+        public final ImageHyperlink buttonInvertExchangeRate;
+
+        public ExchangeRateInput(Composite editArea, String text)
+        {
+            super(editArea, text);
+
+            buttonInvertExchangeRate = new ImageHyperlink(editArea, SWT.NONE);
+            buttonInvertExchangeRate.setImage(Images.INVERT_EXCHANGE_RATE.image());
+            buttonInvertExchangeRate.setToolTipText(Messages.BtnTooltipInvertExchangeRate);
+        }
+
+        public void bindInvertAction(Runnable invertAction)
+        {
+            buttonInvertExchangeRate.addHyperlinkListener(new HyperlinkAdapter()
+            {
+                @Override
+                public void linkActivated(HyperlinkEvent e)
+                {
+                    invertAction.run();
+                }
+            });
+        }
+
+        @Override
+        public void setVisible(boolean visible)
+        {
+            super.setVisible(visible);
+            buttonInvertExchangeRate.setVisible(visible);
+        }
+    }
+
     class ModelStatusListener
     {
         public void setStatus(IStatus status)

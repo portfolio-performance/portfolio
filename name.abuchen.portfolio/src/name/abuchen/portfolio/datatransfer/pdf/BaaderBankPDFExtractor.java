@@ -88,7 +88,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung: Verkauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Scalable Capital .*");
+        Block block = new Block("Seite 1/2");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();

@@ -80,7 +80,9 @@ public class AboutDialog extends Dialog
                         PortfolioPlugin.getDefault().getBundle().getVersion().toString(), //
                         DateTimeFormatter.ofPattern("MMM YYYY").format(BuildInfo.INSTANCE.getBuildTime()), //$NON-NLS-1$
                         System.getProperty("osgi.os"), //$NON-NLS-1$
-                        System.getProperty("osgi.arch")); //$NON-NLS-1$
+                        System.getProperty("osgi.arch"), //$NON-NLS-1$
+                        System.getProperty("java.vm.version"), //$NON-NLS-1$
+                        System.getProperty("java.vm.vendor")); //$NON-NLS-1$
 
         Composite area = new Composite(parent, SWT.NONE);
 

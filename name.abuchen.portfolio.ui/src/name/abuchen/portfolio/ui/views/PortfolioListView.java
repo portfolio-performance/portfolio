@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -15,6 +16,7 @@ import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
@@ -28,9 +30,11 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -43,6 +47,7 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationL
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -90,7 +95,11 @@ public class PortfolioListView extends AbstractListView implements ModificationL
     {
         // actions from the security context menu (buy, sell, ...) call
         // #notifyModelUpdated when adding new transactions
-        portfolios.setSelection(portfolios.getSelection());
+        ISelection selection = portfolios.getSelection();
+
+        setInput();
+
+        portfolios.setSelection(selection);
     }
 
     @Override
@@ -130,14 +139,13 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             portfolios.editElement(portfolio, 0);
         };
 
-        toolBar.add(new DropDown(Messages.MenuCreatePortfolioOrTransaction, Images.PLUS, SWT.NONE,
-                        manager -> {
-                            manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
-                            manager.add(new Separator());
+        toolBar.add(new DropDown(Messages.MenuCreatePortfolioOrTransaction, Images.PLUS, SWT.NONE, manager -> {
+            manager.add(new SimpleAction(Messages.PortfolioMenuAdd, newPortfolioAction));
+            manager.add(new Separator());
 
-                            Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
-                            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
-                        }));
+            Portfolio portfolio = (Portfolio) portfolios.getStructuredSelection().getFirstElement();
+            new SecurityContextMenu(PortfolioListView.this).menuAboutToShow(manager, null, portfolio);
+        }));
     }
 
     private void addFilterButton(ToolBarManager toolBar)
@@ -203,7 +211,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnReferenceAccount, SWT.None, 160);
+        column = new Column("1", Messages.ColumnReferenceAccount, SWT.None, 160); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -218,9 +226,25 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                         .addListener(this).attachTo(column);
         portfolioColumns.addColumn(column);
 
+        column = new NameColumn("volume", Messages.ColumnVolumeOfSecurityDeposits, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            CurrencyConverter converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
+
+            @Override
+            public String getText(Object element)
+            {
+                PortfolioSnapshot snapshot = PortfolioSnapshot.create((Portfolio) element, converter, LocalDate.now());
+                return Values.Money.format(snapshot.getValue(), getClient().getBaseCurrency());
+            }
+        });
+        portfolioColumns.addColumn(column);
+
         column = new NoteColumn();
         column.getEditingSupport().addListener(this);
         portfolioColumns.addColumn(column);
+
+        addAttributeColumns(portfolioColumns);
 
         portfolioColumns.createColumns();
 
@@ -235,7 +259,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
             if (portfolio != null)
             {
-                transactions.setInput(null, portfolio, portfolio.getTransactions());
+                transactions.setInput(portfolio.getTransactions().stream().map(t -> new TransactionPair<>(portfolio, t))
+                                .collect(Collectors.toList()));
                 transactions.refresh();
                 CurrencyConverter converter = new CurrencyConverterImpl(factory,
                                 portfolio.getReferenceAccount().getCurrencyCode());
@@ -243,13 +268,26 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             }
             else
             {
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
                 transactions.refresh();
                 statementOfAssets.setInput((PortfolioSnapshot) null);
             }
         });
 
         hookContextMenu(portfolios.getTable(), this::fillPortfolioContextMenu);
+    }
+
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Portfolio.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void fillPortfolioContextMenu(IMenuManager manager)
@@ -298,6 +336,7 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.TabTransactions);
         transactions = new TransactionsViewer(folder, this);
+        inject(transactions);
         item.setControl(transactions.getControl());
 
         folder.setSelection(0);

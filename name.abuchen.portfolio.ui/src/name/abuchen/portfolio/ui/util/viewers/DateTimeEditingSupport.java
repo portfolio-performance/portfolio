@@ -19,6 +19,7 @@ import name.abuchen.portfolio.ui.Messages;
 public class DateTimeEditingSupport extends PropertyEditingSupport
 {
     private static final DateTimeFormatter[] timeFormatters = new DateTimeFormatter[] {
+                    DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM),
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT), //
                     DateTimeFormatter.ofLocalizedDateTime(FormatStyle.LONG), //
@@ -39,7 +40,8 @@ public class DateTimeEditingSupport extends PropertyEditingSupport
         super(subjectType, attributeName);
 
         if (!LocalDateTime.class.isAssignableFrom(descriptor().getPropertyType()))
-            throw new RuntimeException(String.format("Property %s needs to be of type LocalDateTime", attributeName)); //$NON-NLS-1$
+            throw new IllegalArgumentException(
+                            String.format("Property %s needs to be of type LocalDateTime", attributeName)); //$NON-NLS-1$
     }
 
     @Override

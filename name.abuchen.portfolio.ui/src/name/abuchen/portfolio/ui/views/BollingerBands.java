@@ -7,11 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.ArrayUtils;
+
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.views.SecuritiesChart.ChartInterval;
 
 public class BollingerBands
 
@@ -20,7 +23,7 @@ public class BollingerBands
     private int BollingerBandsDays;
     private double BollingerBandsFactor;
     private Security security;
-    private LocalDate startDate;
+    private ChartInterval interval;
     private ChartLineSeriesAxes BollingerBandsLowerBand;
     private ChartLineSeriesAxes BollingerBandsMiddleBand;
     private ChartLineSeriesAxes BollingerBandsUpperBand;
@@ -31,12 +34,13 @@ public class BollingerBands
     private List<Double> valuesBollingerBandsMiddleBands;
     private List<Double> valuesBollingerBandsUpperBands;
 
-    public BollingerBands(int BollingerBandsDays, double BollingerBandsFactor, Security security, LocalDate startDate)
+    public BollingerBands(int BollingerBandsDays, double BollingerBandsFactor, Security security,
+                    ChartInterval interval)
     {
         this.BollingerBandsDays = BollingerBandsDays;
         this.BollingerBandsFactor = BollingerBandsFactor;
         this.security = security;
-        this.startDate = startDate;
+        this.interval = interval;
         this.BollingerBandsLowerBand = new ChartLineSeriesAxes();
         this.BollingerBandsMiddleBand = new ChartLineSeriesAxes();
         this.BollingerBandsUpperBand = new ChartLineSeriesAxes();
@@ -54,24 +58,19 @@ public class BollingerBands
      * @return The ChartLineSeriesAxes contains the X and Y Axes of the
      *         generated Bollinger Bands
      */
-    public ChartLineSeriesAxes getLowerBands()
+    public ChartLineSeriesAxes getLowerBand()
     {
         return this.BollingerBandsLowerBand;
     }
 
-    public ChartLineSeriesAxes getMiddleBands()
+    public ChartLineSeriesAxes getMiddleBand()
     {
         return this.BollingerBandsMiddleBand;
     }
 
-    public ChartLineSeriesAxes getUpperBands()
+    public ChartLineSeriesAxes getUpperBand()
     {
         return this.BollingerBandsUpperBand;
-    }
-
-    public BollingerBands calculateBollingerBands(int BollingerBandsDays, double BollingerBandsFactor, Security security, LocalDate startDate)
-    {
-        return new BollingerBands(BollingerBandsDays, BollingerBandsFactor, security, startDate);
     }
 
     /**
@@ -87,34 +86,24 @@ public class BollingerBands
         this.prices = security.getPricesIncludingLatest();
         int index;
 
-        SecurityPrice startPrice = null;
 
         if (prices == null || prices.size() < BollingerBandsDays + 3)
             return;
 
-        if (startDate == null)
-        {
-            startPrice = this.getStartPrice();
-            // in case no valid start date could be determined, return null
-            if (startPrice == null)
-                return;
-            index = prices.indexOf(startPrice);
-            if (index >= prices.size())
-                return;
-        }
-        else
-        {
-            startPrice = this.getStartPriceFromStartDate();
-            // in case no valid start date could be determined, return null
-            if (startPrice == null)
-                return;
-            index = prices.indexOf(startPrice);
-            if (index >= prices.size())
-                return;
-        }
+        SecurityPrice startPrice = this.getStartPriceFromStartDate();
+        // in case no valid start date could be determined, return null
+        if (startPrice == null)
+            return;
+        index = prices.indexOf(startPrice);
+        if (index >= prices.size())
+            return;
 
-        for (; index < prices.size(); index++)
+        for (; index < prices.size(); index++) // NOSONAR
         {
+            LocalDate date = prices.get(index).getDate();
+            if (date.isAfter(interval.getEnd()))
+                break;
+
             if (index < BollingerBandsDays) continue; 
             LocalDate nextDate = prices.get(index).getDate();
             LocalDate isBefore = nextDate.plusDays(1);
@@ -142,7 +131,7 @@ public class BollingerBands
             valuesBollingerBandsLowerBands.add(valueBollingerBandsLowerBands);
             valuesBollingerBandsMiddleBands.add(QuotePriceAverage);
             valuesBollingerBandsUpperBands.add(valueBollingerBandsUpperBands);
-            datesBollingerBands.add(prices.get(index).getDate());
+            datesBollingerBands.add(date);
         }
         LocalDate[] tmpDates = datesBollingerBands.toArray(new LocalDate[0]);
         Double[] tmpPricesLower = valuesBollingerBandsLowerBands.toArray(new Double[0]);
@@ -168,11 +157,12 @@ public class BollingerBands
     {
         // get Date of first possible bollinger bands calculation beginning from startDate
         int index = Math.abs(
-                        Collections.binarySearch(prices, new SecurityPrice(startDate, 0), new SecurityPrice.ByDate()));
+                        Collections.binarySearch(prices, new SecurityPrice(interval.getStart(), 0),
+                                        new SecurityPrice.ByDate()));
 
         if (index >= prices.size())
             return null;
-        return determineStartPrice(startDate);
+        return determineStartPrice(interval.getStart());
     }
 
     public SecurityPrice getStartPrice()

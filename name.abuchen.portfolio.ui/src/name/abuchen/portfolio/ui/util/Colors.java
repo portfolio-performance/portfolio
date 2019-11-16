@@ -119,4 +119,8 @@ public final class Colors
         return luminance < 0.2 ? BLACK : WHITE;
     }
 
+    public static Color brighter(Color base)
+    {
+        return getColor(ColorConversion.brighter(base.getRGB()));
+    }
 }

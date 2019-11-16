@@ -18,6 +18,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -88,7 +89,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 TaxonomyNode root = getModel().getChartRenderingRootNode();
 
                 StringBuilder buffer = new StringBuilder();
-                printNode(buffer, root, root.getActual(), getModel().isSecuritiesInPieChartExcluded());
+                printNode(buffer, root, "", root.getActual(), getModel().isSecuritiesInPieChartExcluded()); //$NON-NLS-1$
                 return buffer.toString();
             }
             catch (Throwable e) // NOSONAR
@@ -99,7 +100,8 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
         }
 
         @SuppressWarnings("nls")
-        private void printNode(StringBuilder buffer, TaxonomyNode node, Money total, boolean excludeSecurities)
+        private void printNode(StringBuilder buffer, TaxonomyNode node, String nodeColor, Money total,
+                        boolean excludeSecurities)
         {
             String name = StringEscapeUtils.escapeJson(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
@@ -124,15 +126,18 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                                 .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
                                 .append(")\",");
                 buffer.append("\"value\":").append(node.getActual().getAmount());
-                buffer.append(",\"color\":\"").append(node.getColor()).append("\"");
+                buffer.append(",\"color\":\"")
+                                .append(node.isAssignment() ? ColorConversion.brighter(nodeColor) : node.getColor())
+                                .append("\"");
             }
 
-            addChildren(buffer, node, total, excludeSecurities);
+            addChildren(buffer, node, node.getColor(), total, excludeSecurities);
 
             buffer.append("}");
         }
 
-        private void addChildren(StringBuilder buffer, TaxonomyNode node, Money total, boolean excludeSecurities)
+        private void addChildren(StringBuilder buffer, TaxonomyNode node, String nodeColor, Money total,
+                        boolean excludeSecurities)
         {
             // iterate over children if
             // a) all are shown anyway or
@@ -157,13 +162,12 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
                 else
                     buffer.append(","); //$NON-NLS-1$
 
-                printNode(buffer, child, total, excludeSecurities);
+                printNode(buffer, child, nodeColor, total, excludeSecurities);
                 isFirst = false;
             }
 
             if (!isFirst)
                 buffer.append("]"); //$NON-NLS-1$
         }
-
     }
 }

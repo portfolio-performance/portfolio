@@ -22,12 +22,13 @@ import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.FontDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -37,8 +38,11 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.ui.util.swt.StyledLabel;
 import name.abuchen.portfolio.util.BuildInfo;
 
 @SuppressWarnings("restriction")
@@ -60,56 +64,76 @@ public class WelcomePart
 
     private Composite recentFilesComposite;
     private Font boldFont;
+    private Font bigFont;
 
     @PostConstruct
     public void createComposite(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
-        container.setBackground(parent.getDisplay().getSystemColor(SWT.COLOR_WHITE));
-
-        RowLayout layout = new RowLayout();
-        layout.spacing = 20;
-        layout.marginHeight = layout.marginWidth = 10;
-        container.setLayout(layout);
+        container.setBackground(Colors.WHITE);
+        GridLayoutFactory.fillDefaults().margins(20, 20).applyTo(container);
 
         // create fonts
-        FontData[] fD = container.getFont().getFontData();
-        fD[0].setStyle(SWT.BOLD);
-        boldFont = new Font(container.getDisplay(), fD[0]);
 
-        fD[0].setStyle(SWT.NORMAL);
-        fD[0].setHeight(fD[0].getHeight() * 2);
-        final Font bigFont = new Font(container.getDisplay(), fD[0]);
+        FontDescriptor fontDescriptor = FontDescriptor.createFrom(container.getFont());
+        boldFont = fontDescriptor.setStyle(SWT.BOLD).createFont(container.getDisplay());
+        bigFont = fontDescriptor.increaseHeight(20).createFont(container.getDisplay());
 
         container.addDisposeListener(e -> {
             boldFont.dispose();
             bigFont.dispose();
         });
 
-        // first column: logo
-        Label image = new Label(container, SWT.NONE);
-        image.setBackground(container.getBackground());
+        createHeader(container);
+        createContent(container);
+    }
+
+    private void createHeader(Composite container)
+    {
+        Composite composite = new Composite(container, SWT.NONE);
+        composite.setBackground(container.getBackground());
+        composite.setLayout(new FormLayout());
+
+        // logo
+        Label image = new Label(composite, SWT.NONE);
+        image.setBackground(composite.getBackground());
         image.setImage(Images.LOGO_128.image());
 
-        // second column: actions
-        Composite actions = new Composite(container, SWT.NONE);
-        actions.setBackground(container.getBackground());
-        GridLayoutFactory.fillDefaults().numColumns(2).spacing(20, 20).applyTo(actions);
-
-        Label title = new Label(actions, SWT.NONE);
+        // name
+        Label title = new Label(composite, SWT.NONE);
         title.setText(Messages.LabelPortfolioPerformance);
         title.setFont(bigFont);
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(title);
 
-        Label version = new Label(actions, SWT.NONE);
+        // version
+        Label version = new Label(composite, SWT.NONE);
         version.setText(PortfolioPlugin.getDefault().getBundle().getVersion().toString() + " (" //$NON-NLS-1$
                         + DateTimeFormatter.ofPattern("MMM YYYY").format(BuildInfo.INSTANCE.getBuildTime()) //$NON-NLS-1$
                         + ")"); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().span(2, 1).applyTo(version);
 
-        Composite links = new Composite(actions, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(links);
-        GridLayoutFactory.fillDefaults().applyTo(links);
+        FormDataFactory.startingWith(image) //
+                        .thenRight(title, 30).top(new FormAttachment(image, 0, SWT.TOP)) //
+                        .thenBelow(version);
+    }
+
+    private void createContent(Composite container)
+    {
+        Composite composite = new Composite(container, SWT.NONE);
+        composite.setBackground(container.getBackground());
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(composite);
+
+        GridLayoutFactory.fillDefaults().numColumns(3).spacing(20, 20).applyTo(composite);
+
+        createLinks(composite);
+        createRecentFilesComposite(composite);
+        createTranslationInfo(composite);
+    }
+
+    private void createLinks(Composite composite)
+    {
+        Composite links = new Composite(composite, SWT.NONE);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(links);
+
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(links);
 
         addSectionLabel(boldFont, links, Messages.IntroLabelActions);
         addLink(links, "action:open", Messages.IntroOpenFile, Messages.IntroOpenFileText); //$NON-NLS-1$
@@ -126,15 +150,14 @@ public class WelcomePart
                         Messages.IntroOpenHowtos, Messages.IntroOpenHowtosText);
         addLink(links, "https://forum.portfolio-performance.info/c/faq", //$NON-NLS-1$
                         Messages.IntroOpenFAQ, Messages.IntroOpenFAQText);
-
-        createRecentFilesComposite(actions);
     }
 
     private void createRecentFilesComposite(Composite actions)
     {
         recentFilesComposite = new Composite(actions, SWT.NONE);
-        GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.BEGINNING).applyTo(recentFilesComposite);
-        GridLayoutFactory.fillDefaults().applyTo(recentFilesComposite);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(recentFilesComposite);
+
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(recentFilesComposite);
 
         addSectionLabel(boldFont, recentFilesComposite, Messages.IntroLabelRecentlyUsedFiles);
 
@@ -143,6 +166,22 @@ public class WelcomePart
             String name = Path.fromOSString(file).lastSegment();
             addLink(recentFilesComposite, OPEN + file, name, null);
         }
+    }
+
+    private void createTranslationInfo(Composite composite)
+    {
+        Composite translation = new Composite(composite, SWT.None);
+        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(translation);
+        translation.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
+        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(translation);
+
+        addSectionLabel(boldFont, translation, Messages.IntroLabelTranslation);
+
+        StyledLabel text = new StyledLabel(translation, SWT.WRAP);
+        text.setText(Messages.IntroLabelTranslationInfo);
+        GridDataFactory.fillDefaults().indent(3, 0).applyTo(text);
+
+        addLink(translation, "action:opensettings", Messages.IntroChangeLanguageInPreferences, null); //$NON-NLS-1$
     }
 
     private void addSectionLabel(Font boldFont, Composite actions, String label)
@@ -211,6 +250,10 @@ public class WelcomePart
             executeCommand("name.abuchen.portfolio.ui.command.openSample", //$NON-NLS-1$
                             UIConstants.Parameter.SAMPLE_FILE, //
                             "/" + getClass().getPackage().getName().replace('.', '/') + "/dax.xml"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        else if ("action:opensettings".equals(target)) //$NON-NLS-1$
+        {
+            executeCommand(UIConstants.Command.PREFERENCES);
         }
         else if (target.startsWith("http")) //$NON-NLS-1$
         {

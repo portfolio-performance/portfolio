@@ -16,7 +16,7 @@ import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.ui.Messages;
@@ -46,11 +46,11 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
             if (startAfterOtherJob != null)
                 startAfterOtherJob.join();
 
-            Map<InvestmentPlan, List<Transaction>> tx = new HashMap<>();
+            Map<InvestmentPlan, List<TransactionPair<?>>> tx = new HashMap<>();
 
             CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
             getClient().getPlans().stream().filter(InvestmentPlan::isAutoGenerate).forEach(plan -> {
-                List<Transaction> transactions = plan.generateTransactions(converter);
+                List<TransactionPair<?>> transactions = plan.generateTransactions(converter);
                 if (!transactions.isEmpty())
                     tx.put(plan, transactions);
             });
@@ -63,7 +63,7 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
 
                     if (tx.size() == 1)
                     {
-                        Entry<InvestmentPlan, List<Transaction>> entry = tx.entrySet().iterator().next();
+                        Entry<InvestmentPlan, List<TransactionPair<?>>> entry = tx.entrySet().iterator().next();
                         message = MessageFormat.format(Messages.InvestmentPlanTxCreated, entry.getKey().getName(),
                                         entry.getValue().size());
                     }
@@ -74,7 +74,7 @@ public final class CreateInvestmentPlanTxJob extends AbstractClientJob
                         StringBuilder builder = new StringBuilder();
                         builder.append(MessageFormat.format(Messages.InvestmentPlanTxForMultiplePlansCreated, count));
 
-                        for (Entry<InvestmentPlan, List<Transaction>> entry : tx.entrySet())
+                        for (Entry<InvestmentPlan, List<TransactionPair<?>>> entry : tx.entrySet())
                             builder.append(MessageFormat.format("\n{0}: {1}", entry.getKey().getName(), //$NON-NLS-1$
                                             entry.getValue().size()));
 

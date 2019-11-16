@@ -1,0 +1,70 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/2
+München
+20.07.2019
+Scalable Capital Vermögensverw.GmbH
+Scalable Capital 
+Prinzregentenstr. 48 Vermögensverwaltung GmbH 
+Prinzregentenstr. 48
+80538 München
+80538 München
++49 89 380 380 67
+service@scalable.capital
+MusterName
+Stamm-Nr.: 12345    Portfolio: 1
+Depot-Nr.: 0123456789
+Vorgangs-Nr.: 01234567
+Referenz-Nr.: 01234567
+Wertpapierabrechnung: Verkauf KOPIE
+Auftragsdatum: 19.07.2019 Ausführungsplatz: Div. Ausführungspl.
+Auftragszeit: 10:59:08:48
+Nominale ISIN: IE0032895942 WKN: 911950 Kurs 
+STK 11    iShs DL Corp Bond UCITS ETF EUR 105,60
+Registered Shares o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 1.161,60
+Zu Gunsten Konto 01234567 Valuta: 23.07.2019 EUR 1.161,60
+Die Wertpapiere buchen wir zu Lasten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+19.07.2019 11:13:08:00
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 299 MIC des Ausführungsplatzes: BEST
+Lagerland: Großbritannien
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker | HRB 217778, Amtsgericht München |
+USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-049.108
+Wertpapierabrechnung: Verkauf KOPIE
+Fortsetzung: Seite 2/2
+Darstellung der steuerlichen Berechnungsgrundlagen:
+Merkposten / Steuertöpfe vorher Erhöhung/Reduktion nachher
+Freistellungsauftrag EUR 700,00 EUR 48,15 - EUR 651,85
+Allgemeiner Verlustverrechnungstopf EUR 36,37 EUR 36,37 - EUR 0,00
+Ausnutzung FSA EUR 0,00 EUR 48,15 - EUR 48,15 -
+Bemessungsgrundlagen Steuerpflicht brutto Steuerpflicht netto
+Veräusserungsergebnis brutto sonst. F. EUR 84,52 EUR 0,00
+Kapitalertragsteuer auf allgemeine Gewinne EUR 84,52 EUR 0,00
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäfts-
+Geschäft Nr. Datum Whg./St. Nominal/Stück Anschaff.-kosten ant. Veräußer.-erlös ant. Ergebnis
+WP Kauf 6585909 17.08.2018 STK 10,00 981,20 1.056,00 74,80
+WP Kauf 6729630 05.09.2018 STK 1,00 95,88 105,60 9,72
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker | HRB 217778, Amtsgericht München |
+USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-049.108

@@ -92,7 +92,7 @@ public class ExchangeRateWidget extends WidgetDelegate<Object>
         ExchangeRateTimeSeries series = get(ExchangeRateSeriesConfig.class).getSeries();
         Optional<ExchangeRate> rate = series.lookupRate(period.toInterval(LocalDate.now()).getEnd());
 
-        this.indicator.setText(series.getLabel() + ' '
+        this.indicator.setText(series.getBaseCurrency() + '/' + series.getTermCurrency() + ' '
                         + (rate.isPresent() ? Values.ExchangeRate.format(rate.get().getValue()) : '-'));
     }
 }

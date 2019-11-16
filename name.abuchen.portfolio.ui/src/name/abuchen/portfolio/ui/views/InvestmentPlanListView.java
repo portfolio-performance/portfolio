@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.inject.Inject;
 
@@ -27,7 +29,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
@@ -46,6 +48,7 @@ import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
@@ -132,6 +135,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                         getPreferenceStore(), plans, layout);
 
         addColumns(planColumns);
+        addAttributeColumns(planColumns);
 
         planColumns.createColumns();
         plans.getTable().setHeaderVisible(true);
@@ -143,9 +147,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
             if (plan != null)
-                transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
+                transactions.setInput(plan.getTransactions(getClient()));
             else
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
 
             transactions.refresh();
         });
@@ -233,6 +237,31 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         new DateEditingSupport(InvestmentPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
+        column = new Column(Messages.ColumnLastDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Optional<LocalDate> lastDate = ((InvestmentPlan) e).getLastDate();
+                return lastDate.map(Values.Date::format).orElseGet(() -> null);
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "LastDate").attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnNextDate, SWT.None, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Date.format(((InvestmentPlan) e).getDateOfNextTransactionToBeGenerated());
+            }
+        });
+        ColumnViewerSorter.create(InvestmentPlan.class, "DateOfNextTransactionToBeGenerated").attachTo(column); //$NON-NLS-1$
+        support.addColumn(column);
+
         column = new Column(Messages.ColumnInterval, SWT.None, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -301,6 +330,19 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         support.addColumn(column);
     }
 
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(InvestmentPlan.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
+    }
+
     private void fillPlansContextMenu(IMenuManager manager)
     {
         final InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) plans.getSelection()).getFirstElement();
@@ -313,7 +355,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public void run()
             {
                 CurrencyConverterImpl converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-                List<Transaction> latest = plan.generateTransactions(converter);
+                List<TransactionPair<?>> latest = plan.generateTransactions(converter);
 
                 if (latest.isEmpty())
                 {
@@ -326,7 +368,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                     markDirty();
                     plans.refresh();
                     transactions.markTransactions(latest);
-                    transactions.setInput(plan.getAccount(), plan.getPortfolio(), plan.getTransactions());
+                    transactions.setInput(plan.getTransactions(getClient()));
                 }
             }
         });
@@ -346,7 +388,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                 markDirty();
 
                 plans.setInput(getClient().getPlans());
-                transactions.setInput(null, null, null);
+                transactions.setInput(null);
             }
         });
     }
@@ -355,6 +397,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     protected void createBottomTable(Composite parent)
     {
         transactions = new TransactionsViewer(parent, this);
+        inject(transactions);
         transactions.setFullContextMenu(false);
 
         if (!getClient().getPlans().isEmpty())

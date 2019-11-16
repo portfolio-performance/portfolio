@@ -10,7 +10,6 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 
 public class UpdateQuotesHandler
@@ -25,10 +24,7 @@ public class UpdateQuotesHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
-
-        new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
+        MenuHelper.getActiveClient(part).ifPresent(
+                        client -> new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule());
     }
 }

@@ -18,7 +18,7 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
-public abstract class Transaction implements Annotated
+public abstract class Transaction implements Annotated, Adaptable
 {
     public static class Unit
     {
@@ -130,7 +130,8 @@ public abstract class Transaction implements Annotated
     private List<Unit> units;
 
     public Transaction()
-    {}
+    {
+    }
 
     public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
@@ -192,6 +193,11 @@ public abstract class Transaction implements Annotated
     public Security getSecurity()
     {
         return security;
+    }
+
+    public Optional<Security> getOptionalSecurity()
+    {
+        return Optional.ofNullable(security);
     }
 
     public void setSecurity(Security security)
@@ -309,5 +315,14 @@ public abstract class Transaction implements Annotated
     {
         Collections.sort(transactions, new ByDate());
         return transactions;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Security.class)
+            return type.cast(security);
+        else
+            return null;
     }
 }

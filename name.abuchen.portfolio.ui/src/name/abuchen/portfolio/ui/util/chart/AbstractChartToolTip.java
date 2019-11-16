@@ -120,7 +120,6 @@ public abstract class AbstractChartToolTip implements Listener
             focus = newTipDate;
             Point size = createAndMeasureTooltip();
 
-            size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
             Rectangle bounds = calculateBounds(event, size);
             tip.setBounds(bounds);
         }

@@ -1,0 +1,54 @@
+PDFBox Version: 1.8.16
+-----------------------------------------
+Depotführung: Ihr der FFB benannte Vermittler:
+vaamo
+Sciuridae Vermögensverwaltungs GmbH
+Mainzer Landstraße 250-254
+60326 Frankfurt am Main
+Telefon: 069 3807 6632
+Frau E-Mail: service@vaamo.de
+Maxima Musterfrau
+Musterstr. 1234
+12345 Musterstadt
+Es schreibt Ihnen:
+FFB Kundenbetreuung
+Kronberg im Taunus, 03. Mai 2019
+Fondsabrechnung
+Auszug  13 Blatt 1
+Depotinhaber Maxima Musterfrau
+Depotnummer 1111111111 (Privatvermögen)
+Portfolio Anlagestrategie100
+Transaktion Fondsname Betrag Preis Anteile
+Auftrags-Nr. WKN / ISIN Wechselkurs Preisdatum Bestand alt
+Fondsgesellschaft Währungsbetrag Zwischengewinn Bestand neu
+Verwahrart, Lagerland Rücknahmepreis
+Splittkauf Betrag UBS Msci Pacific exJap.U ETF A 1,77 EUR 44,4324 USD 0,045
+2536717769 A0X97T / LU0446734526 1,125168 USD 16.04.2019 1,334
+UBS (Luxembourg) S.A. 1,99 USD 0,0000 EUR 1,379
+Girosammelverwahrung, Luxemburg 44,4324 USD
+Abrechnungsbetrag 1,77 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Wiederanlage ISHS Gbl.Corp.Bd.EU Hgd.U.ETF 0,96 EUR 101,4000 EUR 0,009
+2536921666 A1W02Q / IE00B9M6SJ31 01.05.2019 0,735
+iShares 0,0000 EUR 0,744
+Wertpapierrechnung, Irland 101,4000 EUR
+Abrechnungsbetrag 0,96 EUR
+Ausgabeaufschlag / Provision (0,00 %) 0,00 EUR
+Anlagen in Investmentfonds können erst nach Kenntnisnahme der gesetzlichen Verkaufsunterlagen (aktueller Verkaufsprospekt, wesentliche 
+Anlegerinformationen, Halb-/Jahresbericht) erfolgen. Diese Unterlagen haben Sie direkt von Ihrem Vermittler erhalten. Sofern Sie keine 
+elektronischen Orderwege nutzen, verwenden Sie bitte für Investmentfonds-Aufträge ausschließlich die Serviceformulare der FFB, die Sie 
+online oder über Ihren Vermittler erhalten.
+Steuerliche Informationen
+Erteilter Freistellungsauftrag 200,00 EUR gültig bis: unbefristet Verlustverrechnungstopf neu 0,00 EUR
+davon noch verfügbar 195,42 EUR Quellensteuertopf neu 0,00 EUR
+Hinweise:
+Auslandzahlungen, die 12.500 EUR übersteigen, sind gemäß der Außenwirtschaftsverordnung (AWV) durch Sie meldepflichtig. Weitergehende Informationen zur 
+Meldepflicht nach AWV erhalten Sie direkt von der Deutschen Bundesbank, unter www.bundesbank.de oder unter der Rufnummer 0800 1234 111.
+Einwendungen gegen diese Fondsabrechnung wegen Unrichtigkeit oder Unvollständigkeit richten Sie bitte schriftlich spätestens einen Monat nach Zugang an:
+FIL Fondsbank GmbH, Revision, Postfach 11 06 63, 60041 Frankfurt am Main, Telefax (069) 7 70 60 - 444.
+FIL Fondsbank GmbH Postanschrift: Vorsitzender Geschäftsführung: Sitz: Kronberg im Taunus
+Kastanienhöhe 1 Postfach 11 06 63 des Aufsichtsrats: Gerhard Oehne (Sprecher) Amtsgericht
+61476 Kronberg im Taunus 60041 Frankfurt am Main Ferdinand-Alexander Leisten Peter Nonner Königstein HRB 8336
+info@ffb.de Telefon (069) 7 70 60 - 200 Gerald Rink Umsatzsteuer-ID Nr.
+www.ffb.de Telefax (069) 7 70 60 - 555 DE213709602
+ABGST_V1.0

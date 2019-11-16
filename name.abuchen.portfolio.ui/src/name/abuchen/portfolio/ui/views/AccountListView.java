@@ -67,11 +67,15 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountListView extends AbstractListView implements ModificationListener
 {
@@ -274,6 +278,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
+        addAttributeColumns(accountColumns);
+
         accountColumns.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
@@ -284,6 +290,19 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts.refresh();
 
         hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
+    }
+
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        getClient().getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(Account.class)) //
+                        .forEach(attribute -> {
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
     }
 
     private void fillAccountsContextMenu(IMenuManager manager) // NOSONAR
@@ -468,6 +487,21 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
+        transactionsColumns.addColumn(column);
+
+        column = new IsinColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new SymbolColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new WknColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
         column = new Column("5", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$

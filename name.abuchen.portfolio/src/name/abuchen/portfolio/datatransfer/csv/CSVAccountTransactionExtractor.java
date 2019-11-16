@@ -8,17 +8,20 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.AmountField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Column;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.DateField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.EnumField;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.Field;
 import name.abuchen.portfolio.datatransfer.csv.CSVImporter.ISINField;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -44,6 +47,9 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField("shares", Messages.CSVColumn_Shares).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("account2nd", Messages.CSVColumn_AccountName2nd).setOptional(true)); //$NON-NLS-1$
+        fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
     }
 
     @Override
@@ -73,6 +79,12 @@ import name.abuchen.portfolio.money.Money;
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
 
+        Account account = getAccount(getClient(), rawValues, field2column);
+        Account account2nd = getAccount(getClient(), rawValues, field2column, true);
+        Portfolio portfolio = getPortfolio(getClient(), rawValues, field2column);
+
+        Extractor.Item item = null;
+
         switch (type)
         {
             case TRANSFER_IN:
@@ -82,7 +94,7 @@ import name.abuchen.portfolio.money.Money;
                 entry.setCurrencyCode(amount.getCurrencyCode());
                 entry.setDate(date.withHour(0).withMinute(0));
                 entry.setNote(note);
-                items.add(new AccountTransferItem(entry, type == Type.TRANSFER_OUT));
+                item = new AccountTransferItem(entry, type == Type.TRANSFER_OUT);
                 break;
             case BUY:
             case SELL:
@@ -104,7 +116,7 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
-                items.add(new BuySellEntryItem(buySellEntry));
+                item = new BuySellEntryItem(buySellEntry);
                 break;
             case DIVIDENDS: // NOSONAR
                 // dividends must have a security
@@ -134,11 +146,17 @@ import name.abuchen.portfolio.money.Money;
                     t.setShares(Math.abs(shares));
                 if (type == Type.DIVIDENDS && taxes != null && taxes.longValue() != 0)
                     t.addUnit(new Unit(Unit.Type.TAX, Money.of(t.getCurrencyCode(), Math.abs(taxes))));
-                items.add(new TransactionItem(t));
+                item = new TransactionItem(t);
                 break;
             default:
                 throw new IllegalArgumentException(type.toString());
         }
+
+        item.setAccountPrimary(account);
+        item.setAccountSecondary(account2nd);
+        item.setPortfolioPrimary(portfolio);
+
+        items.add(item);
     }
 
     private Type inferType(String[] rawValues, Map<String, Column> field2column, Security security, Money amount)

@@ -182,10 +182,15 @@ public class PortfolioPart implements ClientInputListener
         sash.addDisposeListener(e -> part.getPersistedState().put(sashIdentifier,
                         String.valueOf(((SashLayoutData) navigationBar.getLayoutData()).getSize())));
 
-        // open previously selected view (or default view, if none was selected)
+        // open configured initial view, previously selected view, or default
+        // view
 
         Optional<Navigation.Item> item = clientInput.getNavigation()
-                        .findByIdentifier(part.getPersistedState().get(UIConstants.PersistedState.VIEW));
+                        .findByIdentifier(part.getPersistedState().get(UIConstants.PersistedState.INITIAL_VIEW));
+
+        if (!item.isPresent())
+            item = clientInput.getNavigation()
+                            .findByIdentifier(part.getPersistedState().get(UIConstants.PersistedState.VIEW));
 
         if (!item.isPresent())
             item = clientInput.getNavigation().findAll(Navigation.Tag.DEFAULT_VIEW).findAny();
@@ -419,6 +424,16 @@ public class PortfolioPart implements ClientInputListener
     public LinkedList<ReportingPeriod> getReportingPeriods() // NOSONAR
     {
         return clientInput.getReportingPeriods();
+    }
+
+    public Optional<AbstractFinanceView> getCurrentView()
+    {
+        return Optional.ofNullable(view);
+    }
+
+    public Optional<Navigation.Item> getSelectedItem()
+    {
+        return Optional.ofNullable(selectedItem);
     }
 
     public ReportingPeriod getSelectedPeriod()

@@ -53,11 +53,11 @@ public class ImportPDFHandler
 
     /* package */ void doExecute(MPart part, Shell shell)
     {
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport(part, shell, client));
+    }
 
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
-
+    private void runImport(MPart part, Shell shell, Client client)
+    {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
