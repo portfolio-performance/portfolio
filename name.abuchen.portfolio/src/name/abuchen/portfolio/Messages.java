@@ -63,8 +63,10 @@ public class Messages extends NLS
     public static String CSVFormatDDMMMYYYY_German;
     public static String CSVFormatDDMMYY;
     public static String CSVFormatDDMMYY1;
+    public static String CSVFormatDDMMYY2;
     public static String CSVFormatDDMMYYYY;
     public static String CSVFormatDDMMYYYY1;
+    public static String CSVFormatDDMMYYYY2;
     public static String CSVFormatISO;
     public static String CSVFormatMMDDYY;
     public static String CSVFormatMMDDYY1;
