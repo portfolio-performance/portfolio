@@ -138,7 +138,7 @@ import name.abuchen.portfolio.money.Money;
                 t.setType(type);
                 t.setAmount(Math.abs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
-                if (type == Type.DIVIDENDS || type == Type.TAX_REFUND)
+                if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES || type == Type.FEES_REFUND)
                     t.setSecurity(security);
                 t.setDateTime(date.withHour(0).withMinute(0));
                 t.setNote(note);
