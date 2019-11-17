@@ -1,19 +1,24 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ContributionItem;
@@ -26,6 +31,7 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
@@ -50,7 +56,6 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.PartPersistedState;
-import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
@@ -187,6 +192,63 @@ public class DashboardView extends AbstractHistoricView
         }
     }
 
+    /**
+     * Runnable that calls supplier functions of widgets to calculate the widget
+     * data and then updates the widgets in the main thread.
+     */
+    private final class CalculateWidgetDataRunnable implements Runnable
+    {
+        private final Map<Widget, Object> cache;
+
+        private CalculateWidgetDataRunnable(Map<Widget, Object> cache)
+        {
+            this.cache = cache;
+        }
+
+        @Override
+        public void run()
+        {
+            List<Map<WidgetDelegate<Object>, Supplier<Object>>> queueTasks = new ArrayList<>();
+
+            workQueue.drainTo(queueTasks);
+            if (queueTasks.isEmpty())
+                return;
+
+            Map<WidgetDelegate<Object>, Supplier<Object>> tasks = queueTasks.get(queueTasks.size() - 1);
+
+            Map<WidgetDelegate<Object>, Object> data = new HashMap<>();
+            for (Map.Entry<WidgetDelegate<Object>, Supplier<Object>> task : tasks.entrySet())
+            {
+                try
+                {
+                    data.put(task.getKey(), task.getValue().get());
+                }
+                catch (Exception e)
+                {
+                    // continue calculating the dashboard data
+                    PortfolioPlugin.log(e);
+                }
+            }
+
+            if (Thread.currentThread().isInterrupted())
+                return;
+
+            sync.asyncExec(() -> {
+                data.entrySet().stream() //
+                                .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
+                                .forEach(entry -> {
+                                    entry.getKey().update(entry.getValue());
+
+                                    if (entry.getValue() == null)
+                                        cache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
+                                    else
+                                        cache.put(entry.getKey().getWidget(), entry.getValue());
+                                });
+                updateScrolledCompositeMinSize();
+            });
+        }
+    }
+
     public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
@@ -205,6 +267,22 @@ public class DashboardView extends AbstractHistoricView
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
+
+    private ExecutorService executor;
+    private BlockingQueue<Map<WidgetDelegate<Object>, Supplier<Object>>> workQueue;
+
+    @PostConstruct
+    protected void postContruct()
+    {
+        executor = Executors.newSingleThreadExecutor();
+        workQueue = new LinkedBlockingQueue<>();
+    }
+
+    @PreDestroy
+    protected void preDestroy()
+    {
+        executor.shutdownNow();
+    }
 
     @Override
     protected String getDefaultTitle()
@@ -579,45 +657,17 @@ public class DashboardView extends AbstractHistoricView
 
         if (!tasks.isEmpty())
         {
-            new AbstractClientJob(getClient(), Messages.MsgUpdatingDashboardData)
-            {
-                @Override
-                protected IStatus run(IProgressMonitor monitor)
-                {
-                    Map<WidgetDelegate<Object>, Object> data = new HashMap<>();
+            // using an ExecutorService with a BlockingQueue because
+            // a) using the Job API will randomly execute the jobs and hence not
+            // always show the latest data
+            // b) Jobs will compete with the background jobs to updates quotes
+            // and hence it can take a long time to actually see first data in
+            // the UI
+            // c) one job can drain the queue and skip calculations that would
+            // immediately be out dated.
 
-                    for (Map.Entry<WidgetDelegate<Object>, Supplier<Object>> task : tasks.entrySet())
-                    {
-                        try
-                        {
-                            data.put(task.getKey(), task.getValue().get());
-                        }
-                        catch (Exception e)
-                        {
-                            // continue calculating the dashboard data
-                            PortfolioPlugin.log(e);
-                        }
-                    }
-
-                    sync.asyncExec(() -> {
-                        data.entrySet().stream() //
-                                        .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
-                                        .forEach(entry -> {
-                                            entry.getKey().update(entry.getValue());
-
-                                            if (entry.getValue() == null)
-                                                currentCache.put(entry.getKey().getWidget(),
-                                                                DashboardData.EMPTY_RESULT);
-                                            else
-                                                currentCache.put(entry.getKey().getWidget(), entry.getValue());
-                                        });
-                        updateScrolledCompositeMinSize();
-                    });
-
-                    return Status.OK_STATUS;
-                }
-
-            }.schedule();
+            workQueue.add(tasks);
+            executor.submit(new CalculateWidgetDataRunnable(currentCache));
         }
     }
 
@@ -650,7 +700,7 @@ public class DashboardView extends AbstractHistoricView
         InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ConfigurationNew,
                         Messages.ColumnName, newDashboard.getName(), null);
 
-        if (dialog.open() != InputDialog.OK)
+        if (dialog.open() != Window.OK)
             return;
 
         newDashboard.setName(dialog.getValue());
@@ -666,7 +716,7 @@ public class DashboardView extends AbstractHistoricView
         InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
                         Messages.ColumnName, board.getName(), null);
 
-        if (dialog.open() != InputDialog.OK)
+        if (dialog.open() != Window.OK)
             return;
 
         board.setName(dialog.getValue());
