@@ -41,7 +41,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .find("POSITION ANZAHL KURS BETRAG") //
                         .match("(?<name>.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$") //
                         .match(".*") //
-                        .match("(?<isin>.*)").assign((t, v) -> {
+                        .match("(ISIN:)?(?<isin>.*)").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
@@ -88,7 +88,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         .find("POSITION ANZAHL KURS BETRAG") //
                         .match("(?<name>.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$") //
                         .match(".*") //
-                        .match("(?<isin>.*)").assign((t, v) -> {
+                        .match("(ISIN:)?(?<isin>.*)").assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
