@@ -133,6 +133,40 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKauf04()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Kauf04.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0007472060"));
+        assertThat(security.getName(), is("Wirecard AG"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(485.80))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2019-11-05T15:16")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(4)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+    }
+
+    @Test
     public void testVerkauf01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
