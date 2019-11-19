@@ -420,25 +420,28 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                 Elements rows = table.select("> tbody > tr"); //$NON-NLS-1$
 
                 int size = rows.size();
-                for (; rowIndex < size; rowIndex++)
+                if (size != 0)
                 {
-                    Element row = rows.get(rowIndex);
+                    for (; rowIndex < size; rowIndex++)
+                    {
+                        Element row = rows.get(rowIndex);
 
-                    try
-                    {
-                        LatestSecurityPrice price = extractPrice(row, specs, language,
-                                        headerInfo.numberOfHeaderColumns);
-                        if (price != null)
-                            prices.add(price);
+                        try
+                        {
+                            LatestSecurityPrice price = extractPrice(row, specs, language,
+                                            headerInfo.numberOfHeaderColumns);
+                            if (price != null)
+                                prices.add(price);
+                        }
+                        catch (Exception e)
+                        {
+                            errors.add(new IOException(url + '\n' + e.getMessage(), e));
+                        }
                     }
-                    catch (Exception e)
-                    {
-                        errors.add(new IOException(url + '\n' + e.getMessage(), e));
-                    }
+
+                    // skip all other tables
+                    break;
                 }
-
-                // skip all other tables
-                break;
             }
         }
 
