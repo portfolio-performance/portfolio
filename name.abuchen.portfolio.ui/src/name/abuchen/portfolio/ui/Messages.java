@@ -427,6 +427,8 @@ public class Messages extends NLS
     public static String LabelAbsoluteChange;
     public static String LabelAbsoluteDelta;
     public static String LabelAbsoluteInvestedCapital;
+    public static String LabelAccount;
+    public static String LabelAccount2nd;
     public static String LabelAccounts;
     public static String LabelAccountTransfer;
     public static String LabelAccumulatedDividends;

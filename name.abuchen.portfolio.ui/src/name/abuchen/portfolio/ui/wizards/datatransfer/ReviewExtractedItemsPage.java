@@ -13,6 +13,7 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -42,6 +43,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.ImportAction;
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
 import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
@@ -67,6 +69,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.views.ReviewAccountContextMenu;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -540,6 +543,32 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
                 }
             });
         }
+        
+        manager.add(new Separator());
+        
+        ReviewAccountContextMenu.IApplyAccount fncAssignAccount = new ReviewAccountContextMenu.IApplyAccount()
+        {            
+            @Override
+            public void execute(Item item, Account account)
+            {
+                item.setAccountPrimary(account);
+                
+            }
+        };
+
+        new ReviewAccountContextMenu().menuAboutToShow(manager, Messages.LabelAccount, tableViewer, client, fncAssignAccount);
+
+        ReviewAccountContextMenu.IApplyAccount fncAssignAccountSecondary = new ReviewAccountContextMenu.IApplyAccount()
+        {            
+            @Override
+            public void execute(Item item, Account account)
+            {
+                item.setAccountSecondary(account);
+                
+            }
+        };
+
+        new ReviewAccountContextMenu().menuAboutToShow(manager, Messages.LabelAccount2nd, tableViewer, client, fncAssignAccountSecondary);
     }
 
     @Override
