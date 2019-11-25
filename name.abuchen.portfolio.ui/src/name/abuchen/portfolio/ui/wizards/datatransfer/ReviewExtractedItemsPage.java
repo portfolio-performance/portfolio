@@ -4,15 +4,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -55,6 +57,7 @@ import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
@@ -67,6 +70,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class ReviewExtractedItemsPage extends AbstractWizardPage implements ImportAction.Context
@@ -481,6 +485,9 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     {
         IStructuredSelection selection = (IStructuredSelection) tableViewer.getSelection();
 
+        if (selection.isEmpty())
+            return;
+
         boolean atLeastOneImported = false;
         boolean atLeastOneNotImported = false;
 
@@ -513,32 +520,52 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
 
         if (atLeastOneImported)
         {
-            manager.add(new Action(Messages.LabelDoNotImport)
-            {
-                @Override
-                public void run()
-                {
-                    for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                        ((ExtractedEntry) element).setImported(false);
+            manager.add(new SimpleAction(Messages.LabelDoNotImport, a -> {
+                for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                    ((ExtractedEntry) element).setImported(false);
 
-                    tableViewer.refresh();
-                }
-            });
+                tableViewer.refresh();
+            }));
         }
 
         if (atLeastOneNotImported)
         {
-            manager.add(new Action(Messages.LabelDoImport)
+            manager.add(new SimpleAction(Messages.LabelDoImport, a ->
             {
-                @Override
-                public void run()
-                {
-                    for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
-                        ((ExtractedEntry) element).setImported(true);
+                for (Object element : ((IStructuredSelection) tableViewer.getSelection()).toList())
+                    ((ExtractedEntry) element).setImported(true);
 
-                    tableViewer.refresh();
-                }
-            });
+                tableViewer.refresh();
+            }));
+        }
+
+        manager.add(new Separator());
+
+        showApplyToAllItemsMenu(manager, Messages.ColumnAccount, client::getAccounts,
+                        (item, account) -> item.setAccountPrimary(account));
+        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetAccount, client::getAccounts,
+                        (item, account) -> item.setAccountSecondary(account));
+
+        showApplyToAllItemsMenu(manager, Messages.ColumnPortfolio, client::getPortfolios,
+                        (item, portfolio) -> item.setPortfolioPrimary(portfolio));
+        showApplyToAllItemsMenu(manager, Messages.ColumnOffsetPortfolio, client::getPortfolios,
+                        (item, portfolio) -> item.setPortfolioSecondary(portfolio));
+    }
+
+    private <T extends Named> void showApplyToAllItemsMenu(IMenuManager parent, String label, Supplier<List<T>> options,
+                    BiConsumer<Extractor.Item, T> applier)
+    {
+        IMenuManager manager = new MenuManager(label);
+        parent.add(manager);
+
+        for (T subject : options.get())
+        {
+            manager.add(new SimpleAction(subject.getName(), a -> {
+                for (Object element : tableViewer.getStructuredSelection().toList())
+                    applier.accept(((ExtractedEntry) element).getItem(), subject);
+
+                tableViewer.refresh();
+            }));
         }
     }
 
