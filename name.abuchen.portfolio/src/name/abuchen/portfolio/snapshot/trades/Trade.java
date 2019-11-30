@@ -9,6 +9,7 @@ import java.util.Optional;
 import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Adaptable;
 import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.TransactionPair;
@@ -20,10 +21,11 @@ import name.abuchen.portfolio.util.Dates;
 
 public class Trade implements Adaptable
 {
-    private Security security;
+    private final Security security;
+    private final Portfolio portfolio;
     private LocalDateTime start;
     private LocalDateTime end;
-    private long shares;
+    private final long shares;
 
     private List<TransactionPair<PortfolioTransaction>> transactions = new ArrayList<>();
 
@@ -32,10 +34,11 @@ public class Trade implements Adaptable
     private long holdingPeriod;
     private double irr;
 
-    public Trade(Security security, long shares)
+    public Trade(Security security, Portfolio portfolio, long shares)
     {
         this.security = security;
         this.shares = shares;
+        this.portfolio = portfolio;
     }
 
     /* package */ void calculate(CurrencyConverter converter)
@@ -106,6 +109,11 @@ public class Trade implements Adaptable
     public Security getSecurity()
     {
         return security;
+    }
+
+    public Portfolio getPortfolio()
+    {
+        return portfolio;
     }
 
     public Optional<LocalDateTime> getEnd()

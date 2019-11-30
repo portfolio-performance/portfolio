@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.BuySellEntry;
@@ -83,14 +84,16 @@ public class TradeCollector
 
         // create open trades out of the remaining
 
-        for (List<TransactionPair<PortfolioTransaction>> position : openTransactions.values())
+        for (Entry<Portfolio, List<TransactionPair<PortfolioTransaction>>> entry : openTransactions.entrySet())
         {
+            List<TransactionPair<PortfolioTransaction>> position = entry.getValue();
+
             if (position.isEmpty())
                 continue;
 
             long shares = position.stream().mapToLong(p -> p.getTransaction().getShares()).sum();
 
-            Trade newTrade = new Trade(security, shares);
+            Trade newTrade = new Trade(security, entry.getKey(), shares);
             newTrade.setStart(position.get(0).getTransaction().getDateTime());
             newTrade.getTransactions().addAll(position);
 
@@ -105,7 +108,8 @@ public class TradeCollector
     private Trade createNewTradeFromSell(Map<Portfolio, List<TransactionPair<PortfolioTransaction>>> openTransactions,
                     TransactionPair<PortfolioTransaction> pair) throws TradeCollectorException
     {
-        Trade newTrade = new Trade(pair.getTransaction().getSecurity(), pair.getTransaction().getShares());
+        Trade newTrade = new Trade(pair.getTransaction().getSecurity(), (Portfolio) pair.getOwner(),
+                        pair.getTransaction().getShares());
 
         List<TransactionPair<PortfolioTransaction>> open = openTransactions.get(pair.getOwner());
 

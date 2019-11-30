@@ -42,6 +42,7 @@ public class TradesTableViewer
     private AbstractFinanceView view;
 
     private TableViewer trades;
+    private ShowHideColumnHelper support;
 
     public TradesTableViewer(AbstractFinanceView view)
     {
@@ -58,7 +59,7 @@ public class TradesTableViewer
 
         ColumnViewerToolTipSupport.enableFor(trades, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(
+        support = new ShowHideColumnHelper(
                         SecuritiesPerformanceView.class.getSimpleName() + "@trades@" + viewMode.name(), //$NON-NLS-1$
                         view.getPreferenceStore(), trades, layout);
         createTradesColumns(support, viewMode);
@@ -200,6 +201,20 @@ public class TradesTableViewer
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getIRR()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getIRR()));
         support.addColumn(column);
+
+        column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPortfolio);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return ((Trade) e).getPortfolio().getName();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getPortfolio().getName()));
+        column.setVisible(false);
+        support.addColumn(column);
     }
 
     public void setInput(List<Trade> trades)
@@ -210,5 +225,10 @@ public class TradesTableViewer
     public TableViewer getTableViewer()
     {
         return trades;
+    }
+
+    public ShowHideColumnHelper getShowHideColumnHelper()
+    {
+        return support;
     }
 }

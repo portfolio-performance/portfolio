@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,10 @@ import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -84,8 +87,8 @@ import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
@@ -859,8 +862,11 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         item.setText(Messages.SecurityTabTrades);
         trades = new TradesTableViewer(this);
         item.setControl(trades.createViewControl(folder, TradesTableViewer.ViewMode.SINGLE_SECURITY));
+        item.setData((Consumer<IMenuManager>) manager -> trades.getShowHideColumnHelper().menuAboutToShow(manager));
 
         folder.setSelection(0);
+
+        setupTabFolderToolBar(folder);
 
         // latest quote information
 
@@ -868,6 +874,36 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         reportingPeriodUpdated();
+    }
+
+    private void setupTabFolderToolBar(CTabFolder folder)
+    {
+        ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
+        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> {
+                            CTabItem selection = folder.getSelection();
+                            if (selection == null)
+                                return;
+
+                            @SuppressWarnings("unchecked")
+                            Consumer<IMenuManager> menu = (Consumer<IMenuManager>) selection.getData();
+                            if (menu == null)
+                                return;
+
+                            menu.accept(manager);
+                        }));
+        ToolBar toolBar = toolBarManager.createControl(folder);
+        toolBar.setBackground(folder.getBackground());
+
+        CTabItem selection = folder.getSelection();
+        toolBar.setVisible(selection != null && selection.getData() != null);
+
+        folder.setTopRight(toolBar);
+
+        folder.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+            CTabItem s = folder.getSelection();
+            toolBar.setVisible(s != null && s.getData() != null);
+        }));
     }
 
     private void createTransactionColumns(ShowHideColumnHelper support)

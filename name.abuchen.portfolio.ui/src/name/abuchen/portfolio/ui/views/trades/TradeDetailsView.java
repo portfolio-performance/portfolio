@@ -120,7 +120,8 @@ public class TradeDetailsView extends AbstractFinanceView
                                             .export(Messages.LabelTrades + ".csv"))); //$NON-NLS-1$
         }));
 
-        super.addButtons(toolBarManager);
+        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> table.getShowHideColumnHelper().menuAboutToShow(manager)));
     }
 
     @Override
