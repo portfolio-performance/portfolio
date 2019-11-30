@@ -109,6 +109,7 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_SQAUsKHtEeONB5LYBnC_Tw" elementId="name.abuchen.portfolio.ui.menu.help.errorlog" label="%command.showErrorView.label" tooltip="%command.showErrorView.tooltip" command="_veiGEPPLEeOuTsL2OeJEvQ">
           <parameters xmi:id="_XQxsIPPMEeOuTsL2OeJEvQ" elementId="" name="name.abuchen.portfolio.ui.param.part" value="name.abuchen.portfolio.ui.part.errorlog"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_NBSbgBM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.menu.help.saveerrorlog" label="%command.saveErrorLog.label" command="_PZoy8BM9EeqsXLK6ns2Lug"/>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_K91VsHJzEeaMJYqdyBIeUw" elementId="name.abuchen.portfolio.ui.menu.help.forceclearpersistedstate" label="%command.forceClearPersistedState.name" tooltip="%command.forceClearPersistedState.tooltip" command="_aOrCgHJzEeaMJYqdyBIeUw"/>
       </children>
     </mainMenu>
@@ -143,6 +144,7 @@
   <handlers xmi:id="_dvFAkJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.setCurrentViewAsInitialView" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SetCurrentViewAsInitialViewHandler" command="_kXGdcJkBEemdcMPaSHoNPw"/>
   <handlers xmi:id="_XnhhkJkDEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.openWithLastView" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenWithLastViewHandler" command="_ttUJcJkCEemdcMPaSHoNPw"/>
   <handlers xmi:id="_nh13gJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.showHideSidebar" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ShowHideSidebarHandler" command="_kGDGEJl3EemdcMPaSHoNPw"/>
+  <handlers xmi:id="_VFcfMBM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.handler.saveErrorLog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveErrorLogHandler" command="_PZoy8BM9EeqsXLK6ns2Lug"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -218,6 +220,7 @@
   <commands xmi:id="_kXGdcJkBEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.setCurrentViewAsInitialView" commandName="setCurrentViewAsDefaultView"/>
   <commands xmi:id="_ttUJcJkCEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.openWithLastView" commandName="%command.openWithLastView.name"/>
   <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar"/>
+  <commands xmi:id="_PZoy8BM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.command.saveErrorLog" commandName="saveErrorLog"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>
