@@ -47,7 +47,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung: Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Scalable Capital .*");
+        Block block = new Block("Scalable Capital Vermögensverw.GmbH");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -79,7 +79,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                           Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
-                        .wrap(t -> new BuySellEntryItem(t)));
+                        .wrap(BuySellEntryItem::new));
     }
     
     @SuppressWarnings("nls")
