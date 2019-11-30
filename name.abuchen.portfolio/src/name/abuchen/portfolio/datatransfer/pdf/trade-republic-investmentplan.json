@@ -4,17 +4,17 @@
 	"locale": "de",
 	"pattern": [
 		"TRADE REPUBLIC",
-		"DIVIDENDE"
+		"SPARPLAN"
 	],
 	"transactions": [
 		{
-			"type": "DIVIDEND",
-			"startWith": "DIVIDENDE",
+			"type": "PURCHASE",
+			"startWith": "WERTPAPIERABRECHNUNG SPARPLAN",
 			"sections": [
 				{
 					"context": "SECURITY",
 					"pattern": [
-						"POSITION ANZAHL ERTRÄGNIS BETRAG",
+						"POSITION ANZAHL KURS BETRAG",
 						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
 						".*",
 						"(ISIN: )?(?<isin>.*)"
@@ -22,19 +22,18 @@
 				},
 				{
 					"pattern": [
-						"GESAMT ([\\d+,.]*) (\\w{3}+)",
 						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
 					]
 				},
 				{
 					"pattern": [
 						"VERRECHNUNGSKONTO VALUTA BETRAG",
-						".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)"
+						".* (?<date>\\d+.\\d+.\\d{4}+) -([\\d+,.]*) (\\w{3}+)"
 					]
 				},
 				{
 					"pattern": [
-						"POSITION ANZAHL ERTRÄGNIS BETRAG",
+						"POSITION ANZAHL KURS BETRAG",
 						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$"
 					]
 				},
@@ -42,11 +41,10 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"GESAMT (?<fxAmount>[\\d+,.]*) (?<fxCurrency>\\w{3}+)",
-						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
+						"Fremdkostenzuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
 					],
 					"attributes": {
-						"type": "GROSS_VALUE"
+						"type": "FEE"
 					}
 				},
 				{
@@ -64,17 +62,6 @@
 					"isOptional": true,
 					"pattern": [
 						"Solidaritätszuschlag -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
-					],
-					"attributes": {
-						"type": "TAX"
-					}
-				},
-				{
-					"context": "UNIT",
-					"isOptional": true,
-					"pattern": [
-						"Quellensteuer DE für US-Emittent -(?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3}+)",
-						"Zwischensumme (?<fxRateToBase>[\\d.,]+) \\w{3}+/\\w{3}+ [\\d.,]+ \\w{3}+"
 					],
 					"attributes": {
 						"type": "TAX"
