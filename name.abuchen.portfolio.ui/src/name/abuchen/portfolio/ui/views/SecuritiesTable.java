@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -75,8 +74,8 @@ import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
@@ -280,23 +279,33 @@ public final class SecuritiesTable implements ModificationListener
         column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
         column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
-            SecurityPrice price = ((Security) element).getSecurityPrice(LocalDate.now());
-            if (!(price instanceof LatestSecurityPrice))
+            List<SecurityPrice> prices = ((Security) element).getPricesIncludingLatest().stream() //
+                            .filter(p -> !p.getDate().isAfter(LocalDate.now())).distinct() //
+                            .sorted() //
+                            .collect(Collectors.toList());
+
+            if (prices.size() < 2)
                 return null;
 
-            LatestSecurityPrice latest = (LatestSecurityPrice) price;
-            if (latest.getPreviousClose() == LatestSecurityPrice.NOT_AVAILABLE)
-                return null;
-
-            return (latest.getValue() - latest.getPreviousClose()) / (double) latest.getPreviousClose();
+            double latestQuote = prices.get(prices.size() - 1).getValue() / Values.Quote.divider();
+            double previousQuote = prices.get(prices.size() - 2).getValue() / Values.Quote.divider();
+            return (latestQuote - previousQuote) / previousQuote;
         }));
         column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
             SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
             SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
+            List<SecurityPrice> prices1 = ((Security) o1).getPricesIncludingLatest().stream() //
+                            .filter(p -> !p.getDate().isAfter(LocalDate.now())).distinct() //
+                            .sorted() //
+                            .collect(Collectors.toList());
+            List<SecurityPrice> prices2 = ((Security) o2).getPricesIncludingLatest().stream() //
+                            .filter(p -> !p.getDate().isAfter(LocalDate.now())).distinct() //
+                            .sorted() //
+                            .collect(Collectors.toList());
 
-            if (!(p1 instanceof LatestSecurityPrice))
+            if (prices1.size() < 2)
                 p1 = null;
-            if (!(p2 instanceof LatestSecurityPrice))
+            if (prices2.size() < 2)
                 p2 = null;
 
             if (p1 == null)
@@ -304,11 +313,13 @@ public final class SecuritiesTable implements ModificationListener
             if (p2 == null)
                 return 1;
 
-            LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
-            LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
+            double latestQuote1 = prices1.get(prices1.size() - 1).getValue() / Values.Quote.divider();
+            double latestQuote2 = prices2.get(prices2.size() - 1).getValue() / Values.Quote.divider();
+            double previousQuote1 = prices1.get(prices1.size() - 2).getValue() / Values.Quote.divider();
+            double previousQuote2 = prices2.get(prices2.size() - 2).getValue() / Values.Quote.divider();
 
-            double v1 = ((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100;
-            double v2 = ((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100;
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
             return Double.compare(v1, v2);
         }));
         support.addColumn(column);
