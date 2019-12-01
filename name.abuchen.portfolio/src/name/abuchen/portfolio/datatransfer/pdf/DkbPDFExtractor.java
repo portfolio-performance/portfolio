@@ -29,7 +29,6 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier(""); //$NON-NLS-1$
 
         addBuyTransaction();
-        addBuyTransactionFund();
         addSellTransaction();
         addInterestTransaction();
         addDividendTransaction();
@@ -50,54 +49,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addBuyTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung \\b(Kauf?.+|Ausgabe.+)\\b");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapier Abrechnung Kauf");
-        type.addBlock(block);
-        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
-        pdfTransaction.subject(() -> {
-            BuySellEntry entry = new BuySellEntry();
-            entry.setType(PortfolioTransaction.Type.BUY);
-            return entry;
-        });
-        block.set(pdfTransaction);
-        pdfTransaction.section("notation", "shares", "name", "isin", "wkn")
-                        .find("Nominale Wertpapierbezeichnung ISIN \\(WKN\\)")
-                        .match("(?<notation>^St\\Dck|^\\w{3}+) (?<shares>\\d{1,3}(\\.\\d{3})*(,\\d{2,})?) (?<name>.*) (?<isin>[^ ]*) (\\((?<wkn>.*)\\).*)$")
-                        .assign((t, v) -> {
-                            String notation = v.get("notation");
-                            if (notation != null && !(notation.startsWith("St") && notation.endsWith("ck")))
-                            {
-                                // Prozent-Notierung, Workaround..
-                                t.setShares((asShares(v.get("shares")) / 100));
-                            }
-                            else
-                            {
-                                t.setShares(asShares(v.get("shares")));
-                            }
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
-
-                        .section("date", "amount").match("(^Schlusstag)(/-Zeit)? (?<date>\\d+.\\d+.\\d{4}+) (.*)")
-                        .match("(^Ausmachender Betrag) (?<amount>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)(-) (?<currency>\\w{3}+)")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
-                            t.setAmount(asAmount(v.get("amount")));
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-
-                        .wrap(BuySellEntryItem::new);
-
-        addFeesSectionsTransaction(pdfTransaction);
-    }
-
-    private void addBuyTransactionFund()
-    {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung Ausgabe Investmentfonds");
-        this.addDocumentTyp(type);
-
-        Block block = new Block("Wertpapier Abrechnung Ausgabe Investmentfonds");
+        Block block = new Block("Wertpapier Abrechnung \\b(Kauf?.+|Ausgabe.+)\\b");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
@@ -585,6 +540,13 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
                         .section("fee", "currency").optional()
                         .match("(^Transaktionsentgelt Börse) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
+                        })
+                        
+                        .section("fee", "currency").optional()
+                        .match(".*Namensaktien (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?[-]) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             getTransaction(t).addUnit(new Unit(Unit.Type.FEE,
                                             Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee")))));
