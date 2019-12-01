@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Stream;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.util.Pair;
 
 /**
  * A <code>Security</code> is used for assets that have historical prices
@@ -399,6 +400,38 @@ public final class Security implements Attributable, InvestmentVehicle
             return prices.get(0);
         else
             return prices.get(-index - 2);
+    }
+
+    /**
+     * Returns the latest two security prices needed to display the previous
+     * close as well as to calculate the change on the previous close.
+     * 
+     * @return a pair of security prices with the <em>left</em> being today's
+     *         price and <em>right</em> being the previous close
+     */
+    public Optional<Pair<SecurityPrice, SecurityPrice>> getLatestTwoSecurityPrices()
+    {
+        if (prices.isEmpty())
+            return Optional.empty();
+
+        List<SecurityPrice> list = getPricesIncludingLatest();
+        if (list.size() < 2)
+            return Optional.empty();
+
+        LocalDate now = LocalDate.now();
+
+        SecurityPrice today = null;
+
+        int index = list.size() - 1;
+        while (index >= 0)
+        {
+            today = list.get(index);
+            if (!today.getDate().isAfter(now))
+                break;
+            index--;
+        }
+
+        return index > 0 ? Optional.of(new Pair<>(list.get(index), list.get(index - 1))) : Optional.empty();
     }
 
     public String getLatestFeed()

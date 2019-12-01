@@ -224,6 +224,7 @@ public class Messages extends NLS
     public static String ColumnPersonalDividendYieldMovingAverage_Description;
     public static String ColumnPortfolio;
     public static String ColumnPreviousClose;
+    public static String ColumnPreviousPrice;
     public static String ColumnProfitLoss;
     public static String ColumnProfitLossBaseCurrency;
     public static String ColumnPurchasePrice;

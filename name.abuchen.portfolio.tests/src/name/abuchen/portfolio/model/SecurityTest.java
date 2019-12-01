@@ -11,17 +11,20 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.util.Pair;
+
 public class SecurityTest
 {
 
     @Test
-    public void testThatDeepCopyIncludesAllProperties() throws IntrospectionException, IllegalAccessException,
-                    InvocationTargetException
+    public void testThatDeepCopyIncludesAllProperties()
+                    throws IntrospectionException, IllegalAccessException, InvocationTargetException
     {
         BeanInfo info = Introspector.getBeanInfo(Security.class);
 
@@ -45,14 +48,14 @@ public class SecurityTest
                 skipped++;
         }
 
-        assertThat(skipped, equalTo(9));
+        assertThat(skipped, equalTo(10));
 
         Security target = source.deepCopy();
 
         assertThat(target.getUUID(), not(equalTo(source.getUUID())));
 
         // compare
-        for (PropertyDescriptor p : info.getPropertyDescriptors())
+        for (PropertyDescriptor p : info.getPropertyDescriptors()) // NOSONAR
         {
             if ("UUID".equals(p.getName())) //$NON-NLS-1$
                 continue;
@@ -93,5 +96,39 @@ public class SecurityTest
     {
         Security security = new Security();
         security.addPrice(null);
+    }
+
+    @Test
+    public void testLatestTwoSecurityPrices()
+    {
+        Security security = new Security();
+
+        assertThat(security.getLatestTwoSecurityPrices().isPresent(), is(false));
+
+        SecurityPrice pYesterday = new SecurityPrice(LocalDate.now().plusDays(-2), 90);
+        SecurityPrice pToday = new LatestSecurityPrice(LocalDate.now(), 100);
+        SecurityPrice pTommorrow = new SecurityPrice(LocalDate.now().plusDays(1), 110);
+
+        // test that nothing is returned if only the latest security price
+        // exists
+        security.setLatest((LatestSecurityPrice) pToday);
+        assertThat(security.getLatestTwoSecurityPrices().isPresent(), is(false));
+
+        // test that future dates are ignored!
+        security.addPrice(pTommorrow);
+        assertThat(security.getLatestTwoSecurityPrices().isPresent(), is(false));
+
+        security.addPrice(pYesterday);
+
+        Optional<Pair<SecurityPrice, SecurityPrice>> latestTwo = security.getLatestTwoSecurityPrices();
+        assertThat(latestTwo.orElseThrow(IllegalArgumentException::new), is(new Pair<>(pToday, pYesterday)));
+
+        security.setLatest(null);
+        assertThat(security.getLatestTwoSecurityPrices().isPresent(), is(false));
+
+        security.addPrice(pToday);
+        latestTwo = security.getLatestTwoSecurityPrices();
+        assertThat(latestTwo.orElseThrow(IllegalArgumentException::new), is(new Pair<>(pToday, pYesterday)));
+
     }
 }

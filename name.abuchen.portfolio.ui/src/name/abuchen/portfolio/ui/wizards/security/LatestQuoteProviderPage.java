@@ -129,10 +129,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysLow));
                         long volume = p.getVolume();
                         valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
-                        long prevClose = p.getPreviousClose();
-                        valuePreviousClose.setText(
-                                        prevClose == -1 ? Messages.LabelNotAvailable : Values.Quote.format(prevClose));
-
                     }
                     else
                     {
@@ -159,7 +155,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     private Label valueDaysHigh;
     private Label valueDaysLow;
     private Label valueVolume;
-    private Label valuePreviousClose;
 
     public LatestQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
@@ -265,10 +260,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         labelVolume.setText(Messages.ColumnVolume);
         valueVolume = new Label(composite, SWT.RIGHT);
 
-        Label labelPreviousClose = new Label(composite, SWT.NONE);
-        labelPreviousClose.setText(Messages.ColumnPreviousClose);
-        valuePreviousClose = new Label(composite, SWT.RIGHT);
-
         // layout
 
         FormLayout layout = new FormLayout();
@@ -276,8 +267,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         layout.marginRight = 5;
         composite.setLayout(layout);
 
-        Control biggest = widestWidget(labelLatestPrice, labelLatestTrade, labelDaysHigh, labelDaysLow, labelVolume,
-                        labelPreviousClose);
+        Control biggest = widestWidget(labelLatestPrice, labelLatestTrade, labelDaysHigh, labelDaysLow, labelVolume);
         int width = dateWidth(composite);
 
         FormData data = new FormData();
@@ -294,7 +284,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
         placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
         placeBelow(valueDaysLow, labelVolume, valueVolume);
-        placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
     }
 
     @Override
@@ -311,7 +300,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         valueDaysHigh.setText(EMPTY_LABEL);
         valueDaysLow.setText(EMPTY_LABEL);
         valueVolume.setText(EMPTY_LABEL);
-        valuePreviousClose.setText(EMPTY_LABEL);
     }
 
     @Override

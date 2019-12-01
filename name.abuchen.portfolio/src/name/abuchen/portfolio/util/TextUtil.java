@@ -37,7 +37,7 @@ public final class TextUtil
             if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == '\n')
                 fragment = fragment.substring(0, fragment.length() - 1);
 
-            wrapped.append(fragment.replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+            wrapped.append(fragment.replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         // remove added character needed to create a word boundary
@@ -46,7 +46,7 @@ public final class TextUtil
 
     public static final String tooltip(String text)
     {
-        return text == null ? null : text.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+        return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static final String sanitizeFilename(String label)

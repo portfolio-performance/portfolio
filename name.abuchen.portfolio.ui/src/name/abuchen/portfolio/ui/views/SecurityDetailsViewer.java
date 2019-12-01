@@ -35,6 +35,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class SecurityDetailsViewer
 {
@@ -74,7 +75,7 @@ public class SecurityDetailsViewer
 
         protected String escape(String label)
         {
-            return label != null ? label.replaceAll("&", "&&") : EMPTY_LABEL; //$NON-NLS-1$ //$NON-NLS-2$
+            return label != null ? TextUtil.tooltip(label) : EMPTY_LABEL;
         }
 
         protected String nonNullString(String label)
@@ -199,7 +200,6 @@ public class SecurityDetailsViewer
         private Label valueDaysHigh;
         private Label valueDaysLow;
         private Label valueVolume;
-        private Label valuePreviousClose;
 
         public LatestQuoteFacet(Font boldFont, Color color)
         {
@@ -233,10 +233,6 @@ public class SecurityDetailsViewer
             labelVolume.setText(Messages.ColumnVolume);
             valueVolume = new Label(composite, SWT.RIGHT);
 
-            Label labelPreviousClose = new Label(composite, SWT.NONE);
-            labelPreviousClose.setText(Messages.ColumnPreviousClose);
-            valuePreviousClose = new Label(composite, SWT.RIGHT);
-
             // layout
 
             FormLayout layout = new FormLayout();
@@ -263,7 +259,6 @@ public class SecurityDetailsViewer
             placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
             placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
             placeBelow(valueDaysLow, labelVolume, valueVolume);
-            placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
 
             return composite;
         }
@@ -276,8 +271,7 @@ public class SecurityDetailsViewer
 
             if (security == null || security.getLatest() == null)
             {
-                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume,
-                                valuePreviousClose);
+                clearLabel(valueLatestPrices, valueLatestTrade, valueDaysHigh, valueDaysLow, valueVolume);
             }
             else
             {
@@ -294,9 +288,6 @@ public class SecurityDetailsViewer
                 long volume = p.getVolume();
                 valueVolume.setText(volume == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
                                 : String.format("%,d", volume)); //$NON-NLS-1$
-                long prevClose = p.getPreviousClose();
-                valuePreviousClose.setText(prevClose == LatestSecurityPrice.NOT_AVAILABLE ? Messages.LabelNotAvailable
-                                : Values.Quote.format(prevClose));
             }
         }
 
@@ -386,7 +377,7 @@ public class SecurityDetailsViewer
                 heading.setText(taxonomy.getName());
 
             List<Classification> path = classification[0] != null ? classification[0].getPathToRoot()
-                            : new ArrayList<Classification>();
+                            : new ArrayList<>();
             for (int ii = 0; ii < labels.size(); ii++)
                 labels.get(ii).setText(path.size() > ii + 1 ? escape(path.get(ii + 1).getName()) : EMPTY_LABEL);
         }
