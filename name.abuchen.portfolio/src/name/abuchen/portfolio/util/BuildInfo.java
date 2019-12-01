@@ -1,9 +1,13 @@
 package name.abuchen.portfolio.util;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import name.abuchen.portfolio.PortfolioLog;
 
 public enum BuildInfo
 {
@@ -27,10 +31,11 @@ public enum BuildInfo
         {
             // timestamp is written into build-info.properties by Maven
             ResourceBundle bundle = ResourceBundle.getBundle("build-info"); //$NON-NLS-1$
-            return LocalDateTime.parse(bundle.getString("build.timestamp")); //$NON-NLS-1$
+            return Instant.parse(bundle.getString("build.timestamp")).atZone(ZoneId.systemDefault()).toLocalDateTime(); //$NON-NLS-1$
         }
         catch (MissingResourceException | DateTimeParseException e)
         {
+            PortfolioLog.error(e);
             return LocalDateTime.now();
         }
     }
