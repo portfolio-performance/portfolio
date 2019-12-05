@@ -21,10 +21,10 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class KrakenQuoteFeed implements QuoteFeed
+public final class BitfinexQuoteFeed implements QuoteFeed
 {
 
-    public static final String ID = "KRAKEN"; //$NON-NLS-1$
+    public static final String ID = "BITFINEX"; //$NON-NLS-1$
 
     @Override
     public String getId()
@@ -35,7 +35,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public String getName()
     {
-        return "Kraken Cryptocurrency Exchange"; //$NON-NLS-1$
+        return "Bitfinex Cryptocurrency Exchange"; //$NON-NLS-1$
     }
 
     @Override
