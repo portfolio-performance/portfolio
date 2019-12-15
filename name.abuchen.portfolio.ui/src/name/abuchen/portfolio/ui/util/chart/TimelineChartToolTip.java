@@ -31,6 +31,7 @@ import org.swtchart.ISeries;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
@@ -188,11 +189,42 @@ public class TimelineChartToolTip extends AbstractChartToolTip
         right.setForeground(foregroundColor);
         right.setText(formatXAxisData(getFocusedObject()));
 
-        ISeries[] allSeries = getChart().getSeriesSet().getSeries();
-        if (reverseLabels)
-            Collections.reverse(Arrays.asList(allSeries));
+        List<Pair<ISeries, Double>> values = computeValues(getChart().getSeriesSet().getSeries());
 
-        for (ISeries series : allSeries)
+        if (reverseLabels)
+            Collections.reverse(values);
+
+        if (isAltPressed())
+            Collections.sort(values, (l, r) -> r.getValue().compareTo(l.getValue()));
+
+        for (Pair<ISeries, Double> value : values)
+        {
+            ISeries series = value.getKey();
+
+            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor()
+                            : ((IBarSeries) series).getBarColor();
+
+            left = new Label(data, SWT.NONE);
+            left.setBackground(color);
+            left.setForeground(Colors.getTextColor(color));
+            left.setText(TextUtil.tooltip(series.getId()));
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
+
+            right = new Label(data, SWT.RIGHT);
+            right.setForeground(foregroundColor);
+            right.setText(valueFormat.format(value.getRight()));
+            GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
+        }
+
+        Object focus = getFocusedObject();
+        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+    }
+
+    private List<Pair<ISeries, Double>> computeValues(ISeries[] allSeries)
+    {
+        List<Pair<ISeries, Double>> values = new ArrayList<>();
+
+        for (ISeries series : allSeries) // NOSONAR
         {
             if (excludeFromTooltip.contains(series.getId()))
                 continue;
@@ -214,23 +246,10 @@ public class TimelineChartToolTip extends AbstractChartToolTip
                 value = series.getYSeries()[line];
             }
 
-            Color color = series instanceof ILineSeries ? ((ILineSeries) series).getLineColor()
-                            : ((IBarSeries) series).getBarColor();
-
-            left = new Label(data, SWT.NONE);
-            left.setBackground(color);
-            left.setForeground(Colors.getTextColor(color));
-            left.setText(TextUtil.tooltip(series.getId()));
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
-
-            right = new Label(data, SWT.RIGHT);
-            right.setForeground(foregroundColor);
-            right.setText(valueFormat.format(value));
-            GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(right);
+            values.add(new Pair<>(series, value));
         }
 
-        Object focus = getFocusedObject();
-        extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+        return values;
     }
 
     private String formatXAxisData(Object obj)

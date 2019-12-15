@@ -1,11 +1,12 @@
 package name.abuchen.portfolio.util;
 
+import java.util.Map;
 import java.util.Objects;
 
 /**
  * An immutable pair consisting of two non-null <code>Object</code> elements.
  */
-public class Pair<L, R>
+public class Pair<L, R> implements Map.Entry<L, R>
 {
     private final L left;
     private final R right;
@@ -21,9 +22,27 @@ public class Pair<L, R>
         return left;
     }
 
+    @Override
+    public L getKey() // NOSONAR
+    {
+        return left;
+    }
+
     public R getRight()
     {
         return right;
+    }
+
+    @Override
+    public R getValue() // NOSONAR
+    {
+        return right;
+    }
+
+    @Override
+    public R setValue(R value)
+    {
+        throw new UnsupportedOperationException();
     }
 
     @Override
