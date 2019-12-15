@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
@@ -90,43 +89,32 @@ public final class BitfinexQuoteFeed implements QuoteFeed
         }
         return isUpdated;
     }
-
+    
     @SuppressWarnings("unchecked")
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    private List<LatestSecurityPrice> convertBitfinexJsonArray(JSONArray ohlcArray, List<Exception> errors)
     {
         final Long secondsPerDay = 24L * 60 * 60;
-        final Long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
-        try
+        List<LatestSecurityPrice> prices = new ArrayList<>();
+        
+        if(ohlcArray.size() == 0)
+            return prices;
+        
+        if (ohlcArray.get(0) instanceof JSONArray)
         {
-            @SuppressWarnings("nls")
-            String html = new WebAccess("api.kraken.com", "/0/public/OHLC")
-                            .addParameter("pair", security.getTickerSymbol()) //
-                            .addParameter("since", tickerStartEpochSeconds.toString()) //
-                            .addParameter("interval", "1440") //
-                            .get();
-
-            JSONObject json = (JSONObject) JSONValue.parse(html);
-            JSONArray errorItems = (JSONArray) json.get("error"); //$NON-NLS-1$
-            if (!errorItems.isEmpty())
-                throw new IOException(this.getName() + " --> " + errorItems.toString()); //$NON-NLS-1$
-            JSONObject result = (JSONObject) json.get("result"); //$NON-NLS-1$
-            JSONArray ohlcItems = (JSONArray) result.get(security.getTickerSymbol());
-            List<LatestSecurityPrice> prices = new ArrayList<>();
-            ohlcItems.forEach(e -> {
+            // ohlcArray is an array of quotes
+            ohlcArray.forEach(e -> {
                 JSONArray quoteEntry = (JSONArray) e;
                 Long timestamp = Long.parseLong(quoteEntry.get(0).toString());
 
                 try
                 {
                     Long open = YahooHelper.asPrice(quoteEntry.get(1).toString());
-                    Long high = YahooHelper.asPrice(quoteEntry.get(2).toString());
-                    Long low = YahooHelper.asPrice(quoteEntry.get(3).toString());
-                    Long close = YahooHelper.asPrice(quoteEntry.get(4).toString());
-                    Integer volume = YahooHelper.asNumber(quoteEntry.get(6).toString());
+                    Long close = YahooHelper.asPrice(quoteEntry.get(2).toString());
+                    Long high = YahooHelper.asPrice(quoteEntry.get(3).toString());
+                    Long low = YahooHelper.asPrice(quoteEntry.get(4).toString());
+                    Integer volume = YahooHelper.asNumber(quoteEntry.get(5).toString());
 
-                    LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.ofEpochDay(timestamp / secondsPerDay),
-                                    close);
+                    LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.ofEpochDay(timestamp / 1000 / secondsPerDay), close);
                     price.setHigh(high);
                     price.setLow(low);
                     price.setVolume(volume);
@@ -140,6 +128,55 @@ public final class BitfinexQuoteFeed implements QuoteFeed
                     errors.add(ex);
                 }
             });
+        }
+        else
+        {
+           // Single quote
+            Long timestamp = Long.parseLong(ohlcArray.get(0).toString());
+
+            try
+            {
+                Long open = YahooHelper.asPrice(ohlcArray.get(1).toString());
+                Long close = YahooHelper.asPrice(ohlcArray.get(2).toString());
+                Long high = YahooHelper.asPrice(ohlcArray.get(3).toString());
+                Long low = YahooHelper.asPrice(ohlcArray.get(4).toString());
+                Integer volume = YahooHelper.asNumber(ohlcArray.get(5).toString());
+
+                LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.ofEpochDay(timestamp / 1000 / secondsPerDay), close);
+                price.setHigh(high);
+                price.setLow(low);
+                price.setVolume(volume);
+                price.setPreviousClose(open);
+
+                prices.add(price);
+
+            }
+            catch (ParseException ex)
+            {
+                errors.add(ex);
+            }
+        }
+        return prices;
+    }
+
+    @Override
+    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    {
+        final Long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
+        final String histLatest = ((start.compareTo(LocalDate.now()) == 0) ? "last" : "hist"); //$NON-NLS-1$ //$NON-NLS-2$
+        try
+        {
+            @SuppressWarnings("nls")
+            String path = "/v2/candles/trade:1D:t" + security.getTickerSymbol() + "/" + histLatest; // Ticker: BTCUSD, IOTUSD, ...
+            String html = new WebAccess("api-pub.bitfinex.com", path) //$NON-NLS-1$
+                            .addParameter("limit", "1000") // //$NON-NLS-1$ //$NON-NLS-2$
+                            .addParameter("start", tickerStartEpochSeconds.toString()) // //$NON-NLS-1$
+                            .get();
+
+            JSONArray ohlcItems = (JSONArray) JSONValue.parse(html);    
+            
+            List<LatestSecurityPrice> prices = convertBitfinexJsonArray(ohlcItems, errors);
+
             return prices;
 
         }
@@ -161,5 +198,4 @@ public final class BitfinexQuoteFeed implements QuoteFeed
     {
         return Collections.emptyList();
     }
-
 }
