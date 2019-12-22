@@ -15,6 +15,9 @@ import java.util.function.Function;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.resource.FontDescriptor;
+import org.eclipse.jface.resource.JFaceResources;
+import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.RowLayout;
@@ -36,6 +39,8 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public class TimelineChartToolTip extends AbstractChartToolTip
 {
+    private LocalResourceManager resourceManager;
+
     private Function<Object, String> xAxisFormat;
 
     private DecimalFormat valueFormat = new DecimalFormat("#,##0.00"); //$NON-NLS-1$
@@ -56,6 +61,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
     public TimelineChartToolTip(Chart chart)
     {
         super(chart);
+
+        this.resourceManager = new LocalResourceManager(JFaceResources.getResources(), chart);
     }
 
     public void enableCategory(boolean enabled)
@@ -218,6 +225,13 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Object focus = getFocusedObject();
         extraInfoProvider.forEach(provider -> provider.accept(container, focus));
+
+        Label hint = new Label(data, SWT.NONE);
+        hint.setForeground(Colors.DARK_GRAY);
+        hint.setText(Messages.TooltipHintPressAlt);
+        hint.setFont(this.resourceManager.createFont(
+                        FontDescriptor.createFrom(data.getFont()).increaseHeight(-3).withStyle(SWT.ITALIC)));
+        GridDataFactory.fillDefaults().span(2, 1).applyTo(hint);
     }
 
     private List<Pair<ISeries, Double>> computeValues(ISeries[] allSeries)
