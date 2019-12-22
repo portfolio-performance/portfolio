@@ -23,8 +23,9 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public final class KrakenQuoteFeed implements QuoteFeed
 {
-
     public static final String ID = "KRAKEN"; //$NON-NLS-1$
+
+    private static final long SECONDS_PER_DAY = 24L * 60 * 60;
 
     @Override
     public String getId()
@@ -77,7 +78,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
         if (!security.getPrices().isEmpty())
             quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
 
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, quoteStartDate, errors);
+        List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, quoteStartDate, errors);
 
         boolean isUpdated = false;
         for (SecurityPrice p : prices)
@@ -91,18 +92,23 @@ public final class KrakenQuoteFeed implements QuoteFeed
         return isUpdated;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
-        final Long secondsPerDay = 24L * 60 * 60;
-        final Long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
+        return getHistoricalQuotes(LatestSecurityPrice.class, security, start, errors);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security, LocalDate start,
+                    List<Exception> errors)
+    {
+        final long tickerStartEpochSeconds = start.atStartOfDay(ZoneOffset.UTC).toEpochSecond();
         try
         {
             @SuppressWarnings("nls")
             String html = new WebAccess("api.kraken.com", "/0/public/OHLC")
                             .addParameter("pair", security.getTickerSymbol()) //
-                            .addParameter("since", tickerStartEpochSeconds.toString()) //
+                            .addParameter("since", String.valueOf(tickerStartEpochSeconds)) //
                             .addParameter("interval", "1440") //
                             .get();
 
@@ -112,30 +118,36 @@ public final class KrakenQuoteFeed implements QuoteFeed
                 throw new IOException(this.getName() + " --> " + errorItems.toString()); //$NON-NLS-1$
             JSONObject result = (JSONObject) json.get("result"); //$NON-NLS-1$
             JSONArray ohlcItems = (JSONArray) result.get(security.getTickerSymbol());
-            List<LatestSecurityPrice> prices = new ArrayList<>();
+            List<T> prices = new ArrayList<>();
             ohlcItems.forEach(e -> {
                 JSONArray quoteEntry = (JSONArray) e;
                 Long timestamp = Long.parseLong(quoteEntry.get(0).toString());
 
                 try
                 {
-                    Long open = YahooHelper.asPrice(quoteEntry.get(1).toString());
-                    Long high = YahooHelper.asPrice(quoteEntry.get(2).toString());
-                    Long low = YahooHelper.asPrice(quoteEntry.get(3).toString());
-                    Long close = YahooHelper.asPrice(quoteEntry.get(4).toString());
-                    Integer volume = YahooHelper.asNumber(quoteEntry.get(6).toString());
+                    long open = YahooHelper.asPrice(quoteEntry.get(1).toString());
+                    long high = YahooHelper.asPrice(quoteEntry.get(2).toString());
+                    long low = YahooHelper.asPrice(quoteEntry.get(3).toString());
+                    long close = YahooHelper.asPrice(quoteEntry.get(4).toString());
+                    int volume = YahooHelper.asNumber(quoteEntry.get(6).toString());
 
-                    LatestSecurityPrice price = new LatestSecurityPrice(LocalDate.ofEpochDay(timestamp / secondsPerDay),
-                                    close);
-                    price.setHigh(high);
-                    price.setLow(low);
-                    price.setVolume(volume);
-                    price.setPreviousClose(open);
+                    T price = klass.getConstructor().newInstance();
+                    price.setDate(LocalDate.ofEpochDay(timestamp / SECONDS_PER_DAY));
+                    price.setValue(close);
+
+                    if (price instanceof LatestSecurityPrice)
+                    {
+                        LatestSecurityPrice lsp = (LatestSecurityPrice) price;
+                        lsp.setHigh(high);
+                        lsp.setLow(low);
+                        lsp.setVolume(volume);
+                        lsp.setPreviousClose(open);
+                    }
 
                     prices.add(price);
 
                 }
-                catch (ParseException ex)
+                catch (ReflectiveOperationException | ParseException | IllegalArgumentException | SecurityException ex)
                 {
                     errors.add(ex);
                 }
