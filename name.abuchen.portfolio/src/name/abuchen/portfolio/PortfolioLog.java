@@ -13,7 +13,8 @@ public class PortfolioLog
     private static final String PLUGIN_ID = "name.abuchen.portfolio"; //$NON-NLS-1$
 
     private PortfolioLog()
-    {}
+    {
+    }
 
     private static void log(IStatus status)
     {

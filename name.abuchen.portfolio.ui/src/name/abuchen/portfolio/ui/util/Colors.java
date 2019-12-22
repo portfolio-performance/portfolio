@@ -47,7 +47,8 @@ public final class Colors
     public static final Color SIDEBAR_BORDER = getColor(244, 245, 245); // F4F5F5
 
     private Colors()
-    {}
+    {
+    }
 
     public static Color getColor(RGB rgb)
     {

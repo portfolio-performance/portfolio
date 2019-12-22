@@ -39,7 +39,8 @@ public class ClientProgressProvider extends ProgressProvider
 
         @Override
         public void internalWorked(double work)
-        {}
+        {
+        }
 
         @Override
         public boolean isCanceled()
@@ -67,7 +68,8 @@ public class ClientProgressProvider extends ProgressProvider
 
         @Override
         public void worked(int work)
-        {}
+        {
+        }
 
         private void internalSetText(final String text)
         {

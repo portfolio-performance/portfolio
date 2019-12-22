@@ -58,7 +58,8 @@ public abstract class ColumnEditingSupport
      * Called before the editor for the given element is made visible
      */
     public void prepareEditor(Object element)
-    {}
+    {
+    }
 
     public abstract Object getValue(Object element) throws Exception;
 
@@ -95,7 +96,8 @@ public abstract class ColumnEditingSupport
             {
                 return event.eventType == ColumnViewerEditorActivationEvent.TRAVERSAL
                                 || event.eventType == ColumnViewerEditorActivationEvent.MOUSE_DOUBLE_CLICK_SELECTION
-                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED && event.keyCode == SWT.CR)
+                                || (event.eventType == ColumnViewerEditorActivationEvent.KEY_PRESSED
+                                                && event.keyCode == SWT.CR)
                                 || event.eventType == ColumnViewerEditorActivationEvent.PROGRAMMATIC;
             }
         };

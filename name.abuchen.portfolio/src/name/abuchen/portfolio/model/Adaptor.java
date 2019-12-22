@@ -24,5 +24,6 @@ public final class Adaptor
     }
 
     private Adaptor()
-    {}
+    {
+    }
 }

@@ -6,7 +6,8 @@ public class Isin
     public static final String PATTERN = "[A-Z]{2}[A-Z0-9]{9}\\d"; //$NON-NLS-1$
 
     private Isin()
-    {}
+    {
+    }
 
     public static final boolean isValid(String isin) // NOSONAR
     {

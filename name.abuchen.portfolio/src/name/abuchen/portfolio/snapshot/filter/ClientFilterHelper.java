@@ -8,7 +8,8 @@ import name.abuchen.portfolio.model.PortfolioTransferEntry;
 /* protected */ class ClientFilterHelper
 {
     private ClientFilterHelper()
-    {}
+    {
+    }
 
     /* package */ static void recreateTransfer(PortfolioTransferEntry transferEntry, ReadOnlyPortfolio sourcePortfolio,
                     ReadOnlyPortfolio targetPortfolio)

@@ -11,7 +11,8 @@ public class Factory
     private static final List<SecuritySearchProvider> SEARCH;
 
     private Factory()
-    {}
+    {
+    }
 
     public static final List<QuoteFeed> getQuoteFeedProvider()
     {

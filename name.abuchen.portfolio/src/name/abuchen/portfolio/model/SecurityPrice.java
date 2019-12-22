@@ -23,7 +23,8 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     private long value;
 
     public SecurityPrice()
-    {}
+    {
+    }
 
     public SecurityPrice(LocalDate date, long price)
     {

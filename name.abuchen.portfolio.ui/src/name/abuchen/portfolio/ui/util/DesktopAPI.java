@@ -36,5 +36,6 @@ public class DesktopAPI
     }
 
     private DesktopAPI()
-    {}
+    {
+    }
 }

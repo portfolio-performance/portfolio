@@ -45,7 +45,8 @@ public final class ColumnViewerSorter
         private static final ThreadLocal<Map<String, Object>> MAP = ThreadLocal.withInitial(HashMap::new);
 
         private SortingContext()
-        {}
+        {
+        }
 
         /* protected */ static void setSortDirection(int direction)
         {

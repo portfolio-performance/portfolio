@@ -45,7 +45,8 @@ public class MoneyCollectors
     }
 
     private MoneyCollectors()
-    {}
+    {
+    }
 
     public static Collector<Money, MutableMoney, Money> sum(String currencyCode)
     {

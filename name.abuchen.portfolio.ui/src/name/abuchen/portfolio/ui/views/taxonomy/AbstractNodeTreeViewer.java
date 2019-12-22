@@ -721,7 +721,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     @Override
     public void afterPage()
-    {}
+    {
+    }
 
     @Override
     public void dispose()

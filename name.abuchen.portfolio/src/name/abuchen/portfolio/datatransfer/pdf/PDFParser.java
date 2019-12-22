@@ -324,5 +324,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     }
 
     private PDFParser()
-    {}
+    {
+    }
 }

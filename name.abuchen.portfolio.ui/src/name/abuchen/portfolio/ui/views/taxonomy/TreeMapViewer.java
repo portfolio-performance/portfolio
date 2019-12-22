@@ -44,11 +44,13 @@ import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
     @Override
     public void beforePage()
-    {}
+    {
+    }
 
     @Override
     public void afterPage()
-    {}
+    {
+    }
 
     @Override
     public void nodeChange(TaxonomyNode node)

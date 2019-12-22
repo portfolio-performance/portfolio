@@ -424,13 +424,16 @@ public abstract class AbstractTransactionDialog extends TitleAreaDialog
     }
 
     public void setAccount(Account account)
-    {}
+    {
+    }
 
     public void setPortfolio(Portfolio portfolio)
-    {}
+    {
+    }
 
     public void setSecurity(Security security)
-    {}
+    {
+    }
 
     /**
      * make sure drop-down boxes contain the security, portfolio and account of

@@ -38,11 +38,13 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
     @Override
     public void beforePage()
-    {}
+    {
+    }
 
     @Override
     public void afterPage()
-    {}
+    {
+    }
 
     @Override
     public void nodeChange(TaxonomyNode node)
@@ -68,7 +70,6 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                         + "\"valueLabel\":\"%s\"" //$NON-NLS-1$
                         + "}"; //$NON-NLS-1$
 
-
         private LoadDataFunction(Browser browser, String name)
         {
             super(browser, name);
@@ -86,14 +87,14 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                 // classified nodes
                 TaxonomyNode node = getModel().getClassificationRootNode();
                 addChildren(joiner, node, total);
-                
+
                 // add unclassified if included
                 if (!getModel().isUnassignedCategoryInChartsExcluded())
                 {
                     TaxonomyNode unassigned = getModel().getUnassignedNode();
                     addChildren(joiner, unassigned, total);
                 }
-                
+
                 return joiner.toString();
             }
             catch (Throwable e) // NOSONAR
@@ -169,7 +170,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                             caption, //
                             percentage));
         }
-        
+
         /**
          * Format the {@link Classification} of the given {@link TaxonomyNode}
          * to a {@link String}.
@@ -209,18 +210,14 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             // first try to get classification from the current node
             Classification cl = node.getClassification();
             if (cl != null)
-            {
                 return node;
-            }
             // then try the parent node
             TaxonomyNode parent = node.getParent();
             if (parent != null)
-            {
                 return getClassificationNode(parent);
-            }
             return null;
         }
-        
+
         /**
          * Gets the root {@link Classification} node for the given node.
          * 
@@ -232,7 +229,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         {
             // check if node has a parent
             TaxonomyNode parent = node.getParent();
-            boolean parentIsRoot=false;
+            boolean parentIsRoot = false;
             if ((parent != null))
             {
                 if (!parent.isRoot())
@@ -240,9 +237,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                     // try to walk further up
                     TaxonomyNode tn = getRootClassificationNode(parent);
                     if (tn != null)
-                    {
                         return tn;
-                    }
                 }
                 else
                 {
@@ -251,9 +246,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
             }
             // then try current node
             if (!parentIsRoot && (node.getClassification() != null))
-            {
                 return node;
-            }
             return null;
         }
 

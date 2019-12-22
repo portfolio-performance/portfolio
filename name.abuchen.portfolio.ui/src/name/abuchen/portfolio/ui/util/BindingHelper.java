@@ -143,7 +143,8 @@ public class BindingHelper
         private Client client;
 
         public Model()
-        {}
+        {
+        }
 
         public Model(Client client)
         {
@@ -473,8 +474,8 @@ public class BindingHelper
     }
 
     @SuppressWarnings("unchecked")
-    public final Text bindStringInput(Composite editArea, final String label, String property,
-                    int style, int lenghtInCharacters)
+    public final Text bindStringInput(Composite editArea, final String label, String property, int style,
+                    int lenghtInCharacters)
     {
         Text txtValue = createTextInput(editArea, label, style, lenghtInCharacters);
 

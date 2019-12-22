@@ -167,7 +167,8 @@ public class ExportSelectionPage extends AbstractWizardPage
 
         @Override
         public void dispose()
-        {}
+        {
+        }
     }
 
     static class ExportItemsLabelProvider extends LabelProvider

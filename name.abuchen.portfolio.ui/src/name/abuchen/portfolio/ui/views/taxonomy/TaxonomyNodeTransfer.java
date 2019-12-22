@@ -17,7 +17,8 @@ public class TaxonomyNodeTransfer extends ByteArrayTransfer
     private List<TaxonomyNode> nodes;
 
     protected TaxonomyNodeTransfer()
-    {}
+    {
+    }
 
     public static TaxonomyNodeTransfer getTransfer()
     {

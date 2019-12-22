@@ -11,7 +11,8 @@ import name.abuchen.portfolio.model.Client;
 final class CSVExtractorTestUtil
 {
     private CSVExtractorTestUtil()
-    {}
+    {
+    }
 
     /**
      * Build column config for unit testing, e.g. expect all values exactly in

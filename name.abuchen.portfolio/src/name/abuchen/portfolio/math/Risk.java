@@ -195,5 +195,6 @@ public final class Risk
     }
 
     private Risk()
-    {}
+    {
+    }
 }

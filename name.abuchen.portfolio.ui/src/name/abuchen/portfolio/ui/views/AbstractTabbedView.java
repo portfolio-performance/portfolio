@@ -26,7 +26,8 @@ public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> exten
         Composite createTab(Composite parent);
 
         default void addButtons(ToolBarManager toolBarManager)
-        {}
+        {
+        }
     }
 
     private CTabFolder folder;
@@ -79,7 +80,7 @@ public abstract class AbstractTabbedView<T extends AbstractTabbedView.Tab> exten
             folder.setSelection(0);
 
         updateToolBar();
-        
+
         return folder;
     }
 

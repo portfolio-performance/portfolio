@@ -41,10 +41,12 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
     }
 
     public void configMenuAboutToShow(IMenuManager manager)
-    {}
+    {
+    }
 
     public void exportMenuAboutToShow(IMenuManager manager)
-    {}
+    {
+    }
 
     public abstract Control createControl(Composite parent);
 
@@ -53,5 +55,6 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
     public abstract void afterPage();
 
     public void dispose()
-    {}
+    {
+    }
 }
