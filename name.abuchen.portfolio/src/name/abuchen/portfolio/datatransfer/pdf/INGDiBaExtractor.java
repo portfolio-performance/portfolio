@@ -89,10 +89,25 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("^Nominale( St.ck)? (?<shares>[\\d.]+(,\\d+)?).*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
+                        .section("time").optional() //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) .* (?<time>\\d+:\\d+:\\d+).*") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("time", v.get("time"));
+                        })
+                        
                         .section("date") //
                         .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                            {
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
+                        
                         .section("amount", "currency") //
                         .match("Endbetrag zu Ihren Lasten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
@@ -153,6 +168,10 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .section("date") //
                         .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+).*") //
                         .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        
+                        .section("date","time").optional() //
+                        .match("(Ausf.hrungstag . -zeit|Ausf.hrungstag|Schlusstag . -zeit|Schlusstag) (?<date>\\d+.\\d+.\\d{4}+) .* (?<time>\\d+:\\d+:\\d+).*") //
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("amount", "currency") //
                         .match("Endbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //

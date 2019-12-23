@@ -46,10 +46,25 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
+                        .section("time").optional() //
+                        .match("Handelszeit *: (?<time>\\d+:\\d+) Uhr.*") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("time", v.get("time"));
+                        })
+                        
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
-
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                            {
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
+                        
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
@@ -248,9 +263,24 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
+                        .section("time").optional() //
+                        .match("Handelszeit *: (?<time>\\d+:\\d+) Uhr.*") //
+                        .assign((t, v) -> {
+                            type.getCurrentContext().put("time", v.get("time"));
+                        })
+                        
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
-                        .assign((t, v) -> t.setDate(asDate(v.get("date"))))
+                        .assign((t, v) -> {
+                            if (type.getCurrentContext().get("time") != null)
+                            {
+                                t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
+                            }
+                            else
+                            {
+                                t.setDate(asDate(v.get("date")));
+                            }
+                        })
 
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
