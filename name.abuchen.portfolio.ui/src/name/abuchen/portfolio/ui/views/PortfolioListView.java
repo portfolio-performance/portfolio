@@ -279,12 +279,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
     private void addAttributeColumns(ShowHideColumnHelper support)
     {
-        getClient().getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Portfolio.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
+        AttributeColumn.createFor(getClient(), Portfolio.class) //
+                        .forEach(column -> {
                             column.getEditingSupport().addListener(this);
                             support.addColumn(column);
                         });

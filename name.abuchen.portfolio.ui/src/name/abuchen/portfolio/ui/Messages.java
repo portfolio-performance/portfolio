@@ -119,6 +119,7 @@ public class Messages extends NLS
     public static String ColumnDateFirstHistoricalQuote_MenuLabel;
     public static String ColumnDateLatestExchangeRate;
     public static String ColumnDateOfQuote;
+    public static String ColumnDaysBetweenPostfix;
     public static String ColumnDaysHigh;
     public static String ColumnDaysLow;
     public static String ColumnDebitNote;

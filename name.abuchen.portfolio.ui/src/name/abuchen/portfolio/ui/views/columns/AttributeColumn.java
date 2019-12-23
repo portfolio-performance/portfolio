@@ -1,7 +1,12 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
@@ -11,6 +16,7 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
@@ -84,13 +90,14 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
-            return getValue(element).map(b -> b ? Messages.LabelYes : Messages.LabelNo).orElse(""); //$NON-NLS-1$
+            return getValue(element).map(b -> Boolean.TRUE.equals(b) ? Messages.LabelYes : Messages.LabelNo).orElse(""); //$NON-NLS-1$
         }
 
         @Override
         public Image getImage(Object element)
         {
-            return getValue(element).map(b -> b ? Images.CHECK.image() : Images.XMARK.image()).orElse(null);
+            return getValue(element).map(b -> Boolean.TRUE.equals(b) ? Images.CHECK.image() : Images.XMARK.image())
+                            .orElse(null);
         }
 
         private Optional<Boolean> getValue(Object element)
@@ -104,9 +111,11 @@ public class AttributeColumn extends Column
         }
     }
 
-    public AttributeColumn(final AttributeType attribute)
+    private static final String ID = "attribute$"; //$NON-NLS-1$
+
+    private AttributeColumn(final AttributeType attribute)
     {
-        super("attribute$" + attribute.getId(), attribute.getColumnLabel(), //$NON-NLS-1$
+        super(ID + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
                         attribute.isNumber() ? SWT.RIGHT : SWT.LEFT, 80);
 
         setMenuLabel(attribute.getName());
@@ -126,4 +135,56 @@ public class AttributeColumn extends Column
 
     }
 
+    public static Stream<Column> createFor(Client client, Class<? extends Attributable> target)
+    {
+        return client.getSettings() //
+                        .getAttributeTypes() //
+                        .filter(a -> a.supports(target)) //
+                        .flatMap(attribute -> {
+
+                            List<Column> columns = new ArrayList<>();
+
+                            // primary column
+                            Column column = new AttributeColumn(attribute);
+                            column.setVisible(false);
+                            columns.add(column);
+
+                            // secondary column - if applicable
+                            if (attribute.getType() == LocalDate.class)
+                            {
+                                column = createDaysLeftColumn(attribute);
+                                columns.add(column);
+                            }
+
+                            return columns.stream();
+                        });
+    }
+
+    private static Column createDaysLeftColumn(AttributeType attribute)
+    {
+        Column column;
+        column = new Column(ID + attribute.getId() + "-daysbetween", //$NON-NLS-1$
+                        attribute.getColumnLabel() + " - " + Messages.ColumnDaysBetweenPostfix, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setMenuLabel(attribute.getName() + " - " + Messages.ColumnDaysBetweenPostfix); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelAttributes);
+        column.setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
+        new AttributeEditingSupport(attribute).attachTo(column);
+
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                if (attributable == null)
+                    return null;
+
+                LocalDate value = (LocalDate) attributable.getAttributes().get(attribute);
+                return value == null ? null : String.valueOf(ChronoUnit.DAYS.between(value, LocalDate.now()));
+            }
+        });
+
+        column.setVisible(false);
+        return column;
+    }
 }

@@ -637,12 +637,8 @@ public class StatementOfAssetsViewer
 
     private void addAttributeColumns()
     {
-        client.getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
+        AttributeColumn.createFor(client, Security.class) //
+                        .forEach(column -> {
                             if (column.getSorter() != null)
                                 column.getSorter().wrap(ElementComparator::new);
                             column.getEditingSupport().addListener(new TouchClientListener(client));

@@ -805,12 +805,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             recordColumns.addColumn(column);
         }
 
-        getClient().getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
+        AttributeColumn.createFor(getClient(), Security.class) //
+                        .forEach(column -> {
                             column.setEditingSupport(null);
                             recordColumns.addColumn(column);
                         });

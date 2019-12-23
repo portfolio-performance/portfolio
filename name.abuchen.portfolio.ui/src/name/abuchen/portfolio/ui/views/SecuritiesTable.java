@@ -487,12 +487,8 @@ public final class SecuritiesTable implements ModificationListener
 
     private void addAttributeColumns()
     {
-        getClient().getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
+        AttributeColumn.createFor(getClient(), Security.class) //
+                        .forEach(column -> {
                             column.getEditingSupport().addListener(this);
                             support.addColumn(column);
                         });

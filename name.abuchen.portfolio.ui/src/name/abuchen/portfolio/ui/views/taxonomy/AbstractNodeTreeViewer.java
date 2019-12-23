@@ -641,16 +641,11 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
         getModel().getAttachedModels().forEach(m -> m.addColumns(support));
 
-        getModel().getClient() //
-                        .getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column col = new AttributeColumn(attribute);
-                            col.setVisible(false);
-                            col.setSorter(null);
-                            col.getEditingSupport().addListener(this);
-                            support.addColumn(col);
+        AttributeColumn.createFor(getModel().getClient(), Security.class) //
+                        .forEach(c -> {
+                            c.setSorter(null);
+                            c.getEditingSupport().addListener(this);
+                            support.addColumn(c);
                         });
     }
 
