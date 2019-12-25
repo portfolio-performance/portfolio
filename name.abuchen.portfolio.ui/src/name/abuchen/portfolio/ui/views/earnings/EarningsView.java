@@ -137,7 +137,6 @@ public class EarningsView extends AbstractFinanceView
         model.getClientFilterMenu().addListener(f -> dropDown.setImage(
                         model.getClientFilterMenu().hasActiveFilter() ? Images.FILTER_ON : Images.FILTER_OFF));
         toolBar.add(dropDown);
-
         toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE, manager -> {
             final int itemCount = folder.getItemCount();
             for (int ii = 0; ii < itemCount; ii++)
