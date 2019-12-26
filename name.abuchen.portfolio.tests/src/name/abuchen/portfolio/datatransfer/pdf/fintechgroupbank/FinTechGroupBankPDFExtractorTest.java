@@ -52,11 +52,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertFirstSecurity(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
+        checkSecurity(results, "DE0005194062", "519406", "BAYWA AG VINK.NA. O.N.", CurrencyUnit.EUR);
         assertFirstTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
 
-        assertSecondSecurity(results.stream().filter(i -> i instanceof SecurityItem) //
-                        .collect(Collectors.toList()).get(1));
+        checkSecurity(results, "DE0008402215", "840221", "HANN.RUECK SE NA O.N.", CurrencyUnit.EUR,1);
         assertSecondTransaction(results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList())
                         .get(1));
 
@@ -66,18 +65,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertFourthTransaction(results.stream().filter(i -> i instanceof TransactionItem) //
                         .collect(Collectors.toList()).get(0));
 
-    }
-
-    private Security assertFirstSecurity(Optional<Item> item)
-    {
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0005194062"));
-        assertThat(security.getWkn(), is("519406"));
-        assertThat(security.getName(), is("BAYWA AG VINK.NA. O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-
-        return security;
     }
 
     private void assertFirstTransaction(Optional<Item> item)
@@ -94,17 +81,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 5_90L)));
         assertThat(entry.getPortfolioTransaction().getGrossPricePerShare(),
                         is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(39.248))));
-    }
-
-    private Security assertSecondSecurity(Item item)
-    {
-        Security security = ((SecurityItem) item).getSecurity();
-        assertThat(security.getIsin(), is("DE0008402215"));
-        assertThat(security.getWkn(), is("840221"));
-        assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-
-        return security;
     }
 
     private void assertSecondTransaction(Item item)
@@ -166,16 +142,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(20));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0008474503"));
-        assertThat(security.getName(), is("DEKAFONDS CF"));
+        checkSecurity(results, "DE0008474503", null, "DEKAFONDS CF", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         PortfolioTransaction entry = (PortfolioTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -199,17 +169,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("LU0392495023"));
-        assertThat(security.getWkn(), is("ETF114"));
-        assertThat(security.getName(), is("C.S.-MSCI PACIF.T.U.ETF I"));
+        checkSecurity(results, "LU0392495023", "ETF114", "C.S.-MSCI PACIF.T.U.ETF I", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -235,15 +198,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00B2QWCY14"));
-        assertThat(security.getWkn(), is("A0Q1YY"));
-        assertThat(security.getName(), is("ISHSIII-S+P SM.CAP600 DLD"));
+        checkSecurity(results, "IE00B2QWCY14", "A0Q1YY", "ISHSIII-S+P SM.CAP600 DLD", CurrencyUnit.EUR);
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
@@ -270,15 +226,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("LU0392494992"));
-        assertThat(security.getWkn(), is("ETF113"));
-        assertThat(security.getName(), is("C.-MSCI NO.AM.TRN U.ETF I"));
+        checkSecurity(results, "LU0392494992", "ETF113", "C.-MSCI NO.AM.TRN U.ETF I", CurrencyUnit.EUR);
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
@@ -304,15 +253,8 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00B2NPKV68"));
-        assertThat(security.getWkn(), is("A0NECU"));
-        assertThat(security.getName(), is("ISHSII-JPM DL EM BD DLDIS"));
+        checkSecurity(results, "IE00B2NPKV68", "A0NECU", "ISHSII-JPM DL EM BD DLDIS", CurrencyUnit.EUR);
 
         PortfolioTransaction transaction = results.stream().filter(i -> i instanceof Extractor.BuySellEntryItem)
                         .map(i -> (BuySellEntry) ((Extractor.BuySellEntryItem) i).getSubject())
@@ -326,7 +268,7 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0.9))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(9.703363)));
     }
-    
+
     @Test
     public void testWertpapierKauf7()
     {
@@ -337,14 +279,14 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(20));
-        
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
                         .collect(Collectors.toList());
-        
+
         assertThat(tx.size(), is(10));
-        
+
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2017-11-01T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
@@ -362,19 +304,18 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
                         .collect(Collectors.toList());
-        
+
         assertThat(tx.size(), is(1));
-        
+
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T15:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.BUY)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16)))))));
+                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.16)))))));
     }
 
     @Test
@@ -384,7 +325,8 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf9Sammelabrechnung.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf9Sammelabrechnung.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -392,12 +334,7 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item;
 
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000A1MECS1"));
-        assertThat(security.getWkn(), is("A1MECS"));
-        assertThat(security.getName(), is("SOURCE PHY.MRKT.ETC00 XAU"));
+        checkSecurity(results, "DE000A1MECS1", "A1MECS", "SOURCE PHY.MRKT.ETC00 XAU", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -412,7 +349,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.025361)));
     }
-    
+
     @Test
     public void testWertpapierKauf10()
     {
@@ -426,14 +363,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("LU0274211480"));
-        assertThat(security.getWkn(), is("DBX1DA"));
-        assertThat(security.getName(), is("DB X-TRACK.DAX ETF(DR)1C"));
+        checkSecurity(results, "LU0274211480", "DBX1DA", "DB X-TRACK.DAX ETF(DR)1C", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -460,14 +392,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00B6YX5D40"));
-        assertThat(security.getWkn(), is("A1JKS0"));
-        assertThat(security.getName(), is("SPDR S+P US DIV.ARIST.ETF"));
+        checkSecurity(results, "IE00B6YX5D40", "A1JKS0", "SPDR S+P US DIV.ARIST.ETF", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -494,14 +421,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0001234567"));
-        assertThat(security.getWkn(), is("DS5WKN"));
-        assertThat(security.getName(), is("DEUT.BANK CALL20 BBB"));
+        checkSecurity(results, "DE0001234567", "DS5WKN", "DEUT.BANK CALL20 BBB", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -514,7 +436,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(3.9))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2000)));
     }
-    
+
     @Test
     public void testWertpapierKauf13()
     {
@@ -528,14 +450,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("LU0635178014"));
-        assertThat(security.getWkn(), is("ETF127"));
-        assertThat(security.getName(), is("COMS.-MSCI EM.M.T.U.ETF I"));
+        checkSecurity(results, "LU0635178014", "ETF127", "COMS.-MSCI EM.M.T.U.ETF I", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -562,14 +479,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00BF2B0K52"));
-        assertThat(security.getWkn(), is("A2DTF1"));
-        assertThat(security.getName(), is("FRAN.LIB.Q EM EQ.UC.DLA"));
+        checkSecurity(results, "IE00BF2B0K52", "A2DTF1", "FRAN.LIB.Q EM EQ.UC.DLA", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -582,7 +494,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(8.61))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
     }
-    
+
     @Test
     public void testWertpapierKauf15_Fonds2019() // NOSONAR
     {
@@ -590,20 +502,16 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf15_Fonds2019.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf15_Fonds2019.txt"),
+                        errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00BKM4GZ66"));
-        assertThat(security.getWkn(), is("A111X9"));
-        assertThat(security.getName(), is("IS C.MSCI EMIMI U.ETF DLA"));
+        checkSecurity(results, "IE00BKM4GZ66", "A111X9", "IS C.MSCI EMIMI U.ETF DLA", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -679,15 +587,9 @@ public class FinTechGroupBankPDFExtractorTest
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0008402215"));
-        assertThat(security.getWkn(), is("840221"));
-        assertThat(security.getName(), is("HANN.RUECK SE NA O.N."));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        Security security = checkSecurity(results, "DE0008402215", "840221", "HANN.RUECK SE NA O.N.", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -713,14 +615,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE1234567890"));
-        assertThat(security.getWkn(), is("AB1234"));
-        assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
+        Security security = checkSecurity(results, "DE1234567890", "AB1234", "ISH.FOOBAR 12345666 x.EFT",
+                        CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -746,14 +644,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0006335003"));
-        assertThat(security.getWkn(), is("633500"));
-        assertThat(security.getName(), is("KRONES AG O.N."));
+        Security security = checkSecurity(results, "DE0006335003", "633500", "KRONES AG O.N.", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -766,7 +659,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(6.12))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
     }
-    
+
     @Test
     public void testErtragsgutschrift4_Fonds2019() // NOSONAR
     {
@@ -774,21 +667,17 @@ public class FinTechGroupBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift4_Fonds2019.txt"),
-                        errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift4_Fonds2019.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("IE00B945VV12"));
-        assertThat(security.getWkn(), is("A1T8FS"));
-        assertThat(security.getName(), is("VANG.FTSE DEV.EU.UETF EOD"));
+        Security security = checkSecurity(results, "IE00B945VV12", "A1T8FS", "VANG.FTSE DEV.EU.UETF EOD",
+                        CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -814,14 +703,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("US8552441094"));
-        assertThat(security.getWkn(), is("884437"));
-        assertThat(security.getName(), is("STARBUCKS CORP."));
+        Security security = checkSecurity(results, "US8552441094", "884437", "STARBUCKS CORP.", CurrencyUnit.USD);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -834,7 +718,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.78))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(105)));
     }
-    
+
     @Test
     public void testDividendeAusland2()
     {
@@ -849,14 +733,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("GB00B03MLX29"));
-        assertThat(security.getWkn(), is("A0D94M"));
-        assertThat(security.getName(), is("ROYAL DUTCH SHELL A EO-07"));
-        
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Security security = checkSecurity(results, "GB00B03MLX29", "A0D94M", "ROYAL DUTCH SHELL A EO-07",
+                        CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -884,14 +764,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // security
-        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE1234567890"));
-        assertThat(security.getWkn(), is("AB1234"));
-        assertThat(security.getName(), is("ISH.FOOBAR 12345666 x.EFT"));
+        Security security = checkSecurity(results, "DE1234567890", "AB1234", "ISH.FOOBAR 12345666 x.EFT",
+                        CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
@@ -915,17 +791,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertThat(security.getWkn(), is("US9RGR"));
-        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+        checkSecurity(results, "DE000US9RGR9", "US9RGR", "UBS AG LONDON 14/16 RWE", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -951,17 +820,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("LU0323578657"));
-        assertThat(security.getWkn(), is("A0M430"));
-        assertThat(security.getName(), is("FLOSSB.V.STORCH-MUL.OPP.R"));
+        checkSecurity(results, "LU0323578657", "A0M430", "FLOSSB.V.STORCH-MUL.OPP.R", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -987,17 +849,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE0009807008"));
-        assertThat(security.getWkn(), is("980700"));
-        assertThat(security.getName(), is("GRUNDBESITZ EUROPA RC"));
+        checkSecurity(results, "DE0009807008", "980700", "GRUNDBESITZ EUROPA RC", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -1010,7 +865,7 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(5.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(121)));
     }
-    
+
     @Test
     public void testWertpapierVerkauf4()
     {
@@ -1021,21 +876,25 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        
+
+        // security
+        checkSecurity(results, "IE00B53HP851", "A0YEDM", "ISHSVII-FTSE 100 LS ACC", CurrencyUnit.EUR);
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
                         .collect(Collectors.toList());
-        
+
         assertThat(tx.size(), is(1));
-        
+
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2018-01-09T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95)))))));
+                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.95)))))));
+
+        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(0))));
     }
-    
+
     @Test
     public void testWertpapierVerkauf5()
     {
@@ -1046,21 +905,24 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        
+
+        // security
+        checkSecurity(results, "IE00BKWQ0D84", "A1191N", "SSGA S.E.E.II-M.EU.CON.S.", CurrencyUnit.EUR);
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
                         .collect(Collectors.toList());
-        
+
         assertThat(tx.size(), is(1));
-        
+
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-02-06T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
-                        hasProperty("monetaryAmount",
-                                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48)))))));
+                        hasProperty("monetaryAmount", is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9.48)))))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(5.9))));
     }
-    
+
     @Test
     public void testWertpapierVerkauf6()
     {
@@ -1071,19 +933,23 @@ public class FinTechGroupBankPDFExtractorTest
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
-        
+
+        // security
+        checkSecurity(results, "CA03765K1049", "A12HM0", "APHRIA INC.", CurrencyUnit.EUR);
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
                         .collect(Collectors.toList());
-        
+
         assertThat(tx.size(), is(1));
-        
+
         assertThat(tx, hasItem(allOf( //
                         hasProperty("dateTime", is(LocalDateTime.parse("2019-04-09T00:00"))), //
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4416.52)))))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(8.41))));
     }
 
     @Test
@@ -1097,6 +963,9 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
+        // security
+        checkSecurity(results, "IE00B41RYL63", "A1JJTM", "SPDR BL.BA.EO AG.BD U.ETF", CurrencyUnit.EUR);
+
         List<PortfolioTransaction> tx = results.stream() //
                         .filter(i -> i instanceof BuySellEntryItem)
                         .map(i -> ((BuySellEntry) i.getSubject()).getPortfolioTransaction())
@@ -1109,6 +978,7 @@ public class FinTechGroupBankPDFExtractorTest
                         hasProperty("type", is(PortfolioTransaction.Type.SELL)), //
                         hasProperty("monetaryAmount",
                                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(9529.81)))))));
+        assertThat(tx.get(0).getUnitSum(Unit.Type.FEE), is(Money.of("EUR", Values.Amount.factorize(8.41))));
     }
 
     @Test
@@ -1127,11 +997,7 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item;
 
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+        checkSecurity(results, "DE000US9RGR9", null, "UBS AG LONDON 14/16 RWE", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1161,11 +1027,7 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item;
 
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000US9RGR9"));
-        assertThat(security.getName(), is("UBS AG LONDON 14/16 RWE"));
+        checkSecurity(results, "DE000US9RGR9", null, "UBS AG LONDON 14/16 RWE", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1194,11 +1056,7 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item;
 
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000CM31SV9"));
-        assertThat(security.getName(), is("COMMERZBANK INLINE09EO/SF"));
+        checkSecurity(results, "DE000CM31SV9", null, "COMMERZBANK INLINE09EO/SF", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1229,11 +1087,7 @@ public class FinTechGroupBankPDFExtractorTest
         Optional<Item> item;
 
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000CK1Q3N7"));
-        assertThat(security.getName(), is("COMMERZBANK INLINE11EO/SF"));
+        checkSecurity(results, "DE000CK1Q3N7", null, "COMMERZBANK INLINE11EO/SF", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1261,30 +1115,19 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(results.size(), is(6));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
-        assertFirstSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem).findFirst());
+        checkSecurity(results, "DE000CB81KN1", null, "COMMERZBANK PUT10 EOLS", CurrencyUnit.EUR);
+        
         assertFirstTransactionBestandsausbuchung(
                         results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst());
 
-        assertSecondSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
-                        .collect(Collectors.toList()).get(1));
+        checkSecurity(results, "DE000CM3C8A3", null, "COMMERZBANK CALL10 EO/DL", CurrencyUnit.EUR,1);
+        
         assertSecondTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem)
                         .collect(Collectors.toList()).get(1));
-        assertThirdSecurityBestandsausbuchung(results.stream().filter(i -> i instanceof SecurityItem) //
-                        .collect(Collectors.toList()).get(2));
+        checkSecurity(results, "DE000CM3C896", null, "COMMERZBANK CALL10 EO/DL", CurrencyUnit.EUR,2);
         assertThirdTransactionBestandsausbuchung(results.stream().filter(i -> i instanceof BuySellEntryItem)
                         .collect(Collectors.toList()).get(2));
 
-    }
-
-    private Security assertFirstSecurityBestandsausbuchung(Optional<Item> item)
-    {
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000CB81KN1"));
-        assertThat(security.getName(), is("COMMERZBANK PUT10 EOLS"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-
-        return security;
     }
 
     private void assertFirstTransactionBestandsausbuchung(Optional<Item> item)
@@ -1300,16 +1143,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(2000_000000L));
     }
 
-    private Security assertSecondSecurityBestandsausbuchung(Item item)
-    {
-        Security security = ((SecurityItem) item).getSecurity();
-        assertThat(security.getIsin(), is("DE000CM3C8A3"));
-        assertThat(security.getName(), is("COMMERZBANK CALL10 EO/DL"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-
-        return security;
-    }
-
     private void assertSecondTransactionBestandsausbuchung(Item item)
     {
         assertThat(item.getSubject(), instanceOf(BuySellEntry.class));
@@ -1321,16 +1154,6 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 0_00L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2010-03-16T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(1250_000000L));
-    }
-
-    private Security assertThirdSecurityBestandsausbuchung(Item item)
-    {
-        Security security = ((SecurityItem) item).getSecurity();
-        assertThat(security.getIsin(), is("DE000CM3C896"));
-        assertThat(security.getName(), is("COMMERZBANK CALL10 EO/DL"));
-        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
-
-        return security;
     }
 
     private void assertThirdTransactionBestandsausbuchung(Item item)
@@ -1359,17 +1182,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000SG0WRD3"));
-        assertThat(security.getWkn(), is("SG0WRD"));
-        assertThat(security.getName(), is("SG EFF. TURBOL ZS"));
+        checkSecurity(results, "DE000SG0WRD3", "SG0WRD", "SG EFF. TURBOL ZS", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -1418,17 +1234,10 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(3));
 
-        Optional<Item> item;
-
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000SKWM021"));
-        assertThat(security.getWkn(), is("SKWM02"));
-        assertThat(security.getName(), is("SKW STAHL-METAL.HLDG.NA"));
+        checkSecurity(results, "DE000SKWM021", "SKWM02", "SKW STAHL-METAL.HLDG.NA", CurrencyUnit.EUR);
 
-        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
         BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
 
@@ -1468,12 +1277,7 @@ public class FinTechGroupBankPDFExtractorTest
 
         // check Käufe
         // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-        assertThat(item.isPresent(), is(true));
-        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
-        assertThat(security.getIsin(), is("DE000VN4LAU4"));
-        assertThat(security.getWkn(), is("VN4LAU"));
-        assertThat(security.getName(), is("VONT.FINL PR CALL17 DAX"));
+        checkSecurity(results, "DE000VN4LAU4", "VN4LAU", "VONT.FINL PR CALL17 DAX", CurrencyUnit.EUR);
 
         item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -1488,15 +1292,10 @@ public class FinTechGroupBankPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(3.90))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(1750)));
 
-        Item item2;
+        // Security 2
+        checkSecurity(results, "DE000VN547F8", "VN547F", "VONT.FINL PR PUT17 DAX", CurrencyUnit.EUR,1);
 
-        item2 = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(1);
-        security = ((SecurityItem) item2).getSecurity();
-        assertThat(security.getIsin(), is("DE000VN547F8"));
-        assertThat(security.getWkn(), is("VN547F"));
-        assertThat(security.getName(), is("VONT.FINL PR PUT17 DAX"));
-
-        item2 = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList()).get(1);
+        Item item2 = results.stream().filter(i -> i instanceof BuySellEntryItem).collect(Collectors.toList()).get(1);
         entry = (BuySellEntry) item2.getSubject();
 
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
@@ -1565,5 +1364,33 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2016-12-31T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(4.94)));
         assertThat(transaction.getCurrencyCode(), is("EUR"));
+    }
+
+    private Security checkSecurity(List<Item> results, String isin, String wkn, String name, String currencyUnit)
+    {
+        return checkSecurity(results, isin, wkn, name, currencyUnit, 0);
+    }
+
+    private Security checkSecurity(List<Item> results, String isin, String wkn, String name, String currencyUnit,
+                    int index)
+    {
+        Security security;
+        if (index == 0)
+        {
+           Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+            assertThat(item.isPresent(), is(true));
+            security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        }
+        else
+        {
+            Item item = results.stream().filter(i -> i instanceof SecurityItem).collect(Collectors.toList()).get(index);
+            security = ((SecurityItem) item).getSecurity();
+        }
+
+        assertThat(security.getIsin(), is(isin));
+        assertThat(security.getWkn(), is(wkn));
+        assertThat(security.getName(), is(name));
+        assertThat(security.getCurrencyCode(), is(currencyUnit));
+        return security;
     }
 }
