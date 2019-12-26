@@ -222,7 +222,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
-
                         .section("fee", "currency").optional() //
                         .match(".* Provision[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
@@ -612,25 +611,43 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                                             t.setAmount(asAmount(v.get("amount")));
                                                         }))
 
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Provision *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .section("fee", "currency").optional() //
+                        .match(".* Provision[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* Eigene Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .section("fee", "currency").optional() //
+                        .match(".* Provision[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("fee", "currency").optional()
-                        //
-                        .match(".* \\*Fremde Spesen *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .section("fee", "currency").optional() //
+                        .match(".* Eigene Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* Eigene Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* \\*Fremde Spesen[\\s:]*(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.FEE,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional() //
+                        .match(".* \\*Fremde Spesen[\\s:]*(?<fee>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)")
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
@@ -1090,7 +1107,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             return null;
                         }));
     }
-
+    
     @Override
     public String getLabel()
     {
