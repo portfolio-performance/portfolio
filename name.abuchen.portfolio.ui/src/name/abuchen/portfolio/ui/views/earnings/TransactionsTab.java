@@ -86,7 +86,7 @@ public class TransactionsTab implements EarningsTab
         tableViewer = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
         ColumnViewerToolTipSupport.enableFor(tableViewer, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(TransactionsTab.class.getSimpleName() + "@v2", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(TransactionsTab.class.getSimpleName() + "@v3", //$NON-NLS-1$
                         preferences, tableViewer, layout);
 
         addColumns(support);
