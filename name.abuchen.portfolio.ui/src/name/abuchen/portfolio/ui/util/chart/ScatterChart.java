@@ -77,4 +77,10 @@ public class ScatterChart extends Chart
     {
         this.contextMenu.exportMenuAboutToShow(manager, label);
     }
+
+    @Override
+    public void save(String filename, int format)
+    {
+        ChartUtil.save(this, filename, format);
+    }
 }

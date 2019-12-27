@@ -11,15 +11,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -382,38 +377,6 @@ public class TimelineChart extends Chart // NOSONAR
     @Override
     public void save(String filename, int format)
     {
-        Image image = new Image(Display.getDefault(), getBounds());
-
-        GC gc = new GC(image);
-        print(gc);
-        gc.dispose();
-
-        ImageData imageData = image.getImageData();
-
-        // flip image on macOS
-        // see https://github.com/eclipse/swtchart/issues/86
-        if (Platform.OS_MACOSX.equals(Platform.getOS()))
-        {
-            int bytesPerPixel = imageData.bytesPerLine / imageData.width;
-            int destBytesPerLine = imageData.width * bytesPerPixel;
-            byte[] newData = new byte[imageData.data.length];
-            for (int srcY = 0; srcY < imageData.height; srcY++)
-            {
-                for (int srcX = 0; srcX < imageData.width; srcX++)
-                {
-                    int destX = srcX;
-                    int destY = imageData.height - srcY - 1;
-                    int destIndex = (destY * destBytesPerLine) + (destX * bytesPerPixel);
-                    int srcIndex = (srcY * imageData.bytesPerLine) + (srcX * bytesPerPixel);
-                    System.arraycopy(imageData.data, srcIndex, newData, destIndex, bytesPerPixel);
-                }
-            }
-            imageData = new ImageData(imageData.width, imageData.height, imageData.depth, imageData.palette, destBytesPerLine, newData);
-        }
-
-        ImageLoader loader = new ImageLoader();
-        loader.data = new ImageData[] { imageData };
-        loader.save(filename, format);
-        image.dispose();
+        ChartUtil.save(this, filename, format);
     }
 }
