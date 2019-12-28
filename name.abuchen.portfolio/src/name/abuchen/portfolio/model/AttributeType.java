@@ -15,11 +15,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.money.LimitPrice;
 import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
+    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("[0-9><=.,]"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -43,6 +45,65 @@ public class AttributeType
             return value.trim().length() > 0 ? value.trim() : null;
         }
 
+    }
+    
+    public static class LimitPriceConverter implements Converter
+    {
+        private final DecimalFormat full;
+
+        private Values<LimitPrice> values;
+
+        public LimitPriceConverter()
+        {
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
+        }
+        
+        public LimitPriceConverter(Values<LimitPrice> values)
+        {
+            this.values = values;
+            
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
+        }
+        
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? values.format((LimitPrice) object) : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                String input = value.trim();
+                if (input.length() == 0 || !startsWithValidComparatorString(input))
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
+                Matcher m = LIMIT_PRICE_PATTERN.matcher(input);
+                if (!m.matches())
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
+
+                BigDecimal v = (BigDecimal) full.parse(input);
+
+                return v.multiply(BigDecimal.valueOf(values.factor())).longValue();
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
+        
+        private boolean startsWithValidComparatorString(String str)
+        {
+            if(str.length() == 0)
+                return false;
+            
+            return true;
+        }
+        
     }
 
     private static class LongConverter implements Converter
