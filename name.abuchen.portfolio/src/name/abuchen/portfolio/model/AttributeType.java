@@ -15,11 +15,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.LimitPrice.CompareType;
 import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
+    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -43,6 +45,47 @@ public class AttributeType
             return value.trim().length() > 0 ? value.trim() : null;
         }
 
+    }
+
+    public static class LimitPriceConverter implements Converter
+    {
+        private final DecimalFormat full;
+
+        public LimitPriceConverter()
+        {
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
+        }
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? ((LimitPrice) object).toString() : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                if (value.length() == 0)
+                    return null;
+
+                Matcher m = LIMIT_PRICE_PATTERN.matcher(value);
+                if (!m.matches())
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
+                String compare = m.group(1);
+                long price = ((BigDecimal) full.parse(m.group(2))).multiply(Values.Quote.getBigDecimalFactor())
+                                .longValue();
+
+                return new LimitPrice(CompareType.valueOf(compare), price);
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
     }
 
     private static class LongConverter implements Converter

@@ -217,6 +217,7 @@ public class Messages extends NLS
     public static String MsgNoQuotesFoundInHTML;
     public static String MsgNoResults;
     public static String MsgNotANumber;
+    public static String MsgNotAComparator;
     public static String MsgNotAPortflioFile;
     public static String MsgPasswordMissing;
     public static String MsgReadingFile;
