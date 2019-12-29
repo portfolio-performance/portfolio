@@ -82,7 +82,8 @@ public class IBFlexStatementExtractor implements Extractor
     {
         if (date.length() > 8)
         {
-            return LocalDate.parse(date).atStartOfDay();
+            // OLD: return LocalDate.parse(date).atStartOfDay(); Quapla, 29.12.19
+            return LocalDate.parse(date, DateTimeFormatter.ofPattern("yyyyMMdd;HHmmss")).atStartOfDay();
         }
         else
         {
