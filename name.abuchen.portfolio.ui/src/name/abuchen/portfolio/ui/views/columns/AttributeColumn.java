@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.LimitPrice;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
@@ -110,6 +111,56 @@ public class AttributeColumn extends Column
             return Optional.ofNullable((Boolean) attributes.get(attribute));
         }
     }
+    
+    private static final class LimitPriceLabelProvider extends ColumnLabelProvider
+    {
+        private final AttributeType attribute;
+
+        private LimitPriceLabelProvider(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            // TODO: element -> Security.class
+            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            if (attributable == null)
+                return null;
+
+            Attributes attributes = attributable.getAttributes();
+
+            Object value = attributes.get(attribute);
+            return attribute.getConverter().toString(value);
+        }
+
+        /*@Override
+        public Image getImage(Object element)
+        {
+            return getValue(element).map(b -> Boolean.TRUE.equals(b) ? Images.CHECK.image() : Images.XMARK.image())
+                            .orElse(null);
+        }*/
+
+        private Optional<LimitPrice> getValue(Object element)
+        {
+            // TODO!
+            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            if (attributable == null)
+                return Optional.empty();
+            Attributes attributes = attributable.getAttributes();
+            return Optional.empty();
+            
+            /*
+            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            if (attributable == null)
+                return Optional.empty();
+
+            Attributes attributes = attributable.getAttributes();
+            return Optional.ofNullable((Boolean) attributes.get(attribute));
+            */
+        }
+    }
 
     private static final String ID = "attribute$"; //$NON-NLS-1$
 
@@ -126,6 +177,11 @@ public class AttributeColumn extends Column
         {
             setLabelProvider(new BooleanLabelProvider(attribute));
             new BooleanAttributeEditingSupport(attribute).attachTo(this);
+        }
+        else if (attribute.getType() == LimitPrice.class)
+        {
+            setLabelProvider(new LimitPriceLabelProvider(attribute));
+            new AttributeEditingSupport(attribute).attachTo(this);
         }
         else
         {

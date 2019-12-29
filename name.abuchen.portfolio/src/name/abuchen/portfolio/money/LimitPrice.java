@@ -1,16 +1,15 @@
 package name.abuchen.portfolio.money;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class LimitPrice implements Comparable<LimitPrice>
 {
     public enum CompareType
     {
-        GREATER(">"), //$NON-NLS-1$
         GREATER_OR_EQUAL(">="), //$NON-NLS-1$
-        SMALLER("<"), //$NON-NLS-1$
-        SMALLER_OR_EQUAL("<="); //$NON-NLS-1$
+        SMALLER_OR_EQUAL("<="), //$NON-NLS-1$
+        GREATER(">"), //$NON-NLS-1$
+        SMALLER("<"); //$NON-NLS-1$
         
         private String str;
         
@@ -24,14 +23,20 @@ public class LimitPrice implements Comparable<LimitPrice>
     }
     
     private CompareType compareType;
-    private BigDecimal limitPrice;
+    private long limitPrice;
+    
+    public LimitPrice(CompareType type, long price)
+    {
+        this.compareType = type;
+        this.limitPrice = price;
+    }
     
     public CompareType getCompareType()
     {
         return compareType;
     }
 
-    public BigDecimal getLimitPrice()
+    public long getLimitPrice()
     {
         return limitPrice;
     }
@@ -64,12 +69,13 @@ public class LimitPrice implements Comparable<LimitPrice>
         int compare = compareType.getCompareString().compareTo(other.getCompareType().getCompareString());
         if (compare != 0)
             return compare;
-        return limitPrice.compareTo(other.getLimitPrice());
+        return (int) (limitPrice - other.getLimitPrice());
     }
 
     @Override
     public String toString()
     {
-        return compareType.getCompareString() + limitPrice.toString();
+        String str = compareType.getCompareString() + limitPrice;
+        return str;
     }
 }

@@ -16,12 +16,13 @@ import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.money.LimitPrice;
+import name.abuchen.portfolio.money.LimitPrice.CompareType;
 import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
-    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("[0-9><=.,]"); //$NON-NLS-1$
+    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^(\\s*(<=?|>=?)\\s*\\d*(,?)\\d*)$"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -70,7 +71,8 @@ public class AttributeType
         @Override
         public String toString(Object object)
         {
-            return object != null ? values.format((LimitPrice) object) : ""; //$NON-NLS-1$
+            //return object != null ? values.format((LimitPrice) object) : ""; //$NON-NLS-1$
+            return object != null ? ((LimitPrice) object).toString() : ""; //$NON-NLS-1$
         }
 
         @Override
@@ -79,6 +81,7 @@ public class AttributeType
             try
             {
                 String input = value.trim();
+                input = input.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
                 if (input.length() == 0 || !startsWithValidComparatorString(input))
                     throw new IllegalArgumentException(Messages.MsgNotAComparator);
 
@@ -86,9 +89,40 @@ public class AttributeType
                 if (!m.matches())
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
 
+                CompareType cType;
+                if(input.startsWith(">=")) //$NON-NLS-1$
+                {
+                    input = input.replace(">=", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    cType = CompareType.GREATER_OR_EQUAL;
+                }
+                else if(input.startsWith("<=")) //$NON-NLS-1$
+                {
+                    input = input.replace("<=", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    cType = CompareType.SMALLER_OR_EQUAL;
+                }
+                else if(input.startsWith(">")) //$NON-NLS-1$
+                {
+                    input = input.replace(">", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    cType = CompareType.GREATER;
+                }
+                else if(input.startsWith("<")) //$NON-NLS-1$
+                {
+                    input = input.replace("<", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    cType = CompareType.SMALLER;
+                }
+                else 
+                {
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+                }
+                
+                if (input.length() == 0)
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
+                    
                 BigDecimal v = (BigDecimal) full.parse(input);
-
-                return v.multiply(BigDecimal.valueOf(values.factor())).longValue();
+                //long price = v.multiply(BigDecimal.valueOf(values.factor())).longValue();
+                long price = v.longValue();
+                
+                return new LimitPrice(cType, price);
             }
             catch (ParseException e)
             {
@@ -98,12 +132,13 @@ public class AttributeType
         
         private boolean startsWithValidComparatorString(String str)
         {
-            if(str.length() == 0)
-                return false;
-            
-            return true;
+            if(str.startsWith(">=") || //$NON-NLS-1$
+               str.startsWith("<=") || //$NON-NLS-1$
+               str.startsWith(">") || //$NON-NLS-1$
+               str.startsWith("<")) //$NON-NLS-1$
+                return true;
+            return false;
         }
-        
     }
 
     private static class LongConverter implements Converter
