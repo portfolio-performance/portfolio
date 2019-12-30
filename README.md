@@ -2,7 +2,7 @@
 
 A simple tool to calculate the overall performance of an investment portfolio.
 
-See http://www.portfolio-performance.info for more details.
+See https://www.portfolio-performance.info for more details.
 
 [![Build Status](https://travis-ci.org/buchen/portfolio.svg?branch=master)](https://travis-ci.org/buchen/portfolio) [![Latest Release](https://img.shields.io/github/release/buchen/portfolio.svg)](https://github.com/buchen/portfolio/releases/latest) [![Release Date](https://img.shields.io/github/release-date/buchen/portfolio?color=blue)](https://github.com/buchen/portfolio/releases/latest) [![License](https://img.shields.io/github/license/buchen/portfolio.svg)](https://github.com/buchen/portfolio/blob/master/LICENSE)
 
@@ -10,15 +10,15 @@ See http://www.portfolio-performance.info for more details.
 
 ## Prerequisites
 
-* [Java 8](http://www.java.com)
-* [Maven](http://maven.apache.org)
-* [Eclipse](http://www.eclipse.org)
+* [Java 8](https://www.java.com)
+* [Maven](https://maven.apache.org)
+* [Eclipse](https://www.eclipse.org)
 
 ## Developing with Eclipse
 
 ### Eclipse Setup
 
-To develop, use the latest [Eclipse IDE](http://eclipse.org/downloads/) release plus **Plug-in Development Environment (PDE)**. PDE homepage is http://www.eclipse.org/pde/ and it can be installed via Help/Install new Software. The link for the update site is mentioned in the PDE docs.
+To develop, use the latest [Eclipse IDE](https://www.eclipse.org/downloads/) release plus **Plug-in Development Environment (PDE)**. PDE homepage is https://www.eclipse.org/pde/ and it can be installed via Help/Install new Software. The link for the update site is mentioned in the PDE docs.
 
 Optionally, install via the Eclipse Marketplace
 * infinitest
@@ -76,4 +76,4 @@ mvn clean verify -Dtycho.disableP2Mirrors
 ## License
 
 Eclipse Public License
-http://www.eclipse.org/legal/epl-v10.html
+https://www.eclipse.org/legal/epl-v10.html
