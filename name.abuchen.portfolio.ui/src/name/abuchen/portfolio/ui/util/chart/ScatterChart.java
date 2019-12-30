@@ -42,6 +42,7 @@ public class ScatterChart extends Chart
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
+        getPlotArea().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }
@@ -75,5 +76,11 @@ public class ScatterChart extends Chart
     public void exportMenuAboutToShow(IMenuManager manager, String label)
     {
         this.contextMenu.exportMenuAboutToShow(manager, label);
+    }
+
+    @Override
+    public void save(String filename, int format)
+    {
+        ChartUtil.save(this, filename, format);
     }
 }

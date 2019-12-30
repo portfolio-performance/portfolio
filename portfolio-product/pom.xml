@@ -1,18 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.25.1</version>
+		<version>0.43.2-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
 	<artifactId>portfolio.product</artifactId>
 	<packaging>eclipse-repository</packaging>
 
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
 	<build>
 		<plugins>
 			<plugin>
@@ -26,6 +31,9 @@
 					<profileProperties>
 						<macosx-bundled>true</macosx-bundled>
 					</profileProperties>
+					<extraArtifactRepositoryProperties>
+						<p2.statsURI>https://www.portfolio-report.net/api/stats/update</p2.statsURI>
+					</extraArtifactRepositoryProperties>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -39,17 +47,9 @@
 							<goal>materialize-products</goal>
 						</goals>
 					</execution>
-					<execution>
-						<id>archive-products</id>
-						<phase>integration-test</phase>
-						<goals>
-							<goal>archive-products</goal>
-						</goals>
-					</execution>
 				</executions>
 				<configuration>
 					<formats>
-						<macosx>tar.gz</macosx>
 						<linux>tar.gz</linux>
 					</formats>
 					<products>
@@ -71,13 +71,15 @@
 					<execution>
 						<id>fix-info-plist</id>
 						<phase>package</phase>
+						<configuration>
+							<productId>name.abuchen.portfolio.product</productId>
+						</configuration>
 						<goals>
 							<goal>fix-info-plist</goal>
 						</goals>
 					</execution>
 				</executions>
 				<configuration>
-					<productId>name.abuchen.portfolio.product</productId>
 					<appName>PortfolioPerformance.app</appName>
 					<properties>
 						<property>
@@ -90,15 +92,15 @@
 						</property>
 						<property>
 							<name>CFBundleGetInfoString</name>
-							<value>Copyright 2012 - 2016 Andreas Buchen. All rights reserved.</value>
-						</property>
-						<property>
-							<name>CFBundleLocalizations</name>
-							<value>[en,de]</value>
+							<value>Copyright 2012 - 2019 Andreas Buchen. All rights reserved.</value>
 						</property>
 						<property>
 							<name>Eclipse</name>
 							<value />
+						</property>
+						<property>
+							<name>CFBundleLocalizations</name>
+							<value><![CDATA[<array><string>en</string><string>de</string><string>es</string><string>nl</string></array>]]></value>
 						</property>
 					</properties>
 				</configuration>
@@ -108,41 +110,166 @@
 
 	<profiles>
 		<profile>
+			<id>package-distro</id>
 			<activation>
 				<activeByDefault>false</activeByDefault>
-				<property>
-					<name>dmg-distro</name>
-					<value>true</value>
-				</property>
 			</activation>
 			<build>
 				<plugins>
 					<plugin>
-						<artifactId>exec-maven-plugin</artifactId>
-						<groupId>org.codehaus.mojo</groupId>
+						<groupId>org.eclipse.tycho</groupId>
+						<artifactId>tycho-p2-director-plugin</artifactId>
+						<version>${tycho-version}</version>
 						<executions>
 							<execution>
-								<id>dmg-distro</id>
+								<id>archive-products</id>
+								<phase>integration-test</phase>
+								<goals>
+									<goal>archive-products</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<products>
+								<product>
+									<id>name.abuchen.portfolio.product</id>
+									<attachId>name.abuchen.portfolio.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+								<product>
+									<id>name.abuchen.portfolio.distro.product</id>
+									<attachId>name.abuchen.portfolio.disto.product</attachId>
+									<rootFolder>portfolio</rootFolder>
+									<archiveFileName>PortfolioPerformance-distro-${project.version}</archiveFileName>
+									<rootFolders>
+										<macosx>PortfolioPerformance.app</macosx>
+									</rootFolders>
+								</product>
+							</products>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>name.abuchen</groupId>
+						<artifactId>fix-info-plist-maven-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>fix-info-plist</id>
+								<phase>package</phase>
+								<configuration>
+									<productId>name.abuchen.portfolio.product</productId>
+								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
+							</execution>
+							<execution>
+								<id>fix-info-plist-distro</id>
+								<phase>package</phase>
+								<configuration>
+									<productId>name.abuchen.portfolio.distro.product</productId>
+								</configuration>
+								<goals>
+									<goal>fix-info-plist</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>exec-maven-plugin</artifactId>
+						<version>1.6.0</version>
+						<executions>
+							<execution>
+								<id>sign-macos-distro</id>
 								<phase>package</phase>
 								<goals>
 									<goal>exec</goal>
 								</goals>
 								<configuration>
-									<executable>/usr/bin/hdiutil</executable>
+									<executable>${project.basedir}/signing/codesign-macos-product.sh</executable>
+									<workingDirectory>/tmp</workingDirectory>
 									<arguments>
-										<argument>create</argument>
-										<argument>-srcfolder</argument>
-										<argument>target/products/name.abuchen.portfolio.product/macosx/cocoa/x86_64</argument>
-										<argument>-ov</argument>
-										<argument>-format</argument>
-										<argument>UDZO</argument>
-										<argument>-volname</argument>
-										<argument>PortfolioPerformance-${project.version}</argument>
-										<argument>target/products/PortfolioPerformance-${project.version}.dmg</argument>
+										<argument>${project.basedir}</argument>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
 									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>build-dmg-distro</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<!-- install from https://github.com/sindresorhus/create-dmg -->
+									<executable>create-dmg</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>${project.build.directory}/products/name.abuchen.portfolio.distro.product/macosx/cocoa/x86_64/PortfolioPerformance.app</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
+								</configuration>
+							</execution>
+							<execution>
+								<id>rename-dmg</id>
+								<phase>package</phase>
+								<goals>
+									<goal>exec</goal>
+								</goals>
+								<configuration>
+									<executable>mv</executable>
+									<workingDirectory>${project.build.directory}/products</workingDirectory>
+									<arguments>
+										<argument>Portfolio Performance ${project.artifact.selectedVersion.majorVersion}.${project.artifact.selectedVersion.minorVersion}.${project.artifact.selectedVersion.incrementalVersion}.dmg</argument>
+										<argument>PortfolioPerformance-${project.version}.dmg</argument>
+									</arguments>
+									<skip>${applesigner.skip}</skip>
 								</configuration>
 							</execution>
 						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.codehaus.mojo</groupId>
+						<artifactId>build-helper-maven-plugin</artifactId>
+						<version>3.0.0</version>
+						<executions>
+							<execution>
+								<id>attach-dmg</id>
+								<phase>package</phase>
+								<goals>
+									<goal>attach-artifact</goal>
+								</goals>
+								<configuration>
+									<artifacts>
+										<artifact>
+											<file>${project.build.directory}/products/PortfolioPerformance-${project.version}.dmg</file>
+											<type>dmg</type>
+										</artifact>
+									</artifacts>
+								</configuration>
+							</execution>
+						</executions>
+					</plugin>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+						<configuration>
+							<skip>${gpgsigner.skip}</skip>
+						</configuration>
 					</plugin>
 				</plugins>
 			</build>

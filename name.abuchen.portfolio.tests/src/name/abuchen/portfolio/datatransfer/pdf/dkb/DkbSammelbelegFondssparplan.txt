@@ -1,0 +1,35 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin
+Depotnummer 12345678
+Kundennummer 1234567890
+Erika Nicola Mustermann
+Datum 31.12.2018
+Frau Vertragsbeginn 05.07.2018
+Erika Nicola Mustermann Vertragsende b.a.w.
+Musterstr. 11 Sparplannummer 4
+12345 Musterstadt Umsatzsteuer-ID DE12234455
+Halbjahresabrechnung Sparplan
+Wertpapierbezeichnung ISIN (WKN)
+COMSTA.-MSCI EM.MKTS.TRN U.ETF LU0635178014 (ETF127)
+INHABER-ANTEILE I O.N.
+Im Rahmen Ihres bestehenden Sparplans haben wir vereinbarungsgemäß nachstehende Käufe außerbörslich für Sie
+durchgeführt.
+Die Gegenwerte haben wir Ihnen belastet und die erworbenen Stücke Ihrem Depotkonto gutgeschrieben.
+(Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -)
+Umsatzart Sparrate in Ordernummer Preis je Stück Devise Anteilsumsatz Schlusstag Valuta Zwischengewinn Steuerausgleich
+EUR in EUR in Stück in EUR in EUR
+Kauf 90,00 531781/77.00 40,1900 1,0000 2,2394 05.07.2018 09.07.2018 0,00 0,00
+Kauf 90,00 548714/63.00 41,4900 1,0000 2,1692 06.08.2018 08.08.2018 0,00 0,00
+Kauf 90,00 567153/38.00 38,7050 1,0000 2,3253 05.09.2018 07.09.2018 0,00 0,00
+Kauf 90,00 586519/87.00 38,3050 1,0000 2,3496 05.10.2018 09.10.2018 0,00 0,00
+Kauf 90,00 605113/36.00 38,0100 1,0000 2,3678 05.11.2018 07.11.2018 0,00 0,00
+Kauf 90,00 626208/11.00 38,8600 1,0000 2,3160 05.12.2018 07.12.2018 0,00 0,00
+Im Abrechnungszeitraum angelegter Betrag EUR 540,00
+Im Abrechnungszeitraum erworbene Anteile Stück 13,7673
+Durchschnittspreis der erworbenen Anteile EUR 39,22
+Evtl. anfallende Erträge werden Ihnen mit separater Abrechnung vergütet. Für evtl. Bestandsveränderungen aus
+zusätzlichen Käufen oder Verkäufen haben Sie separate Abrechnungen erhalten.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0884.12313358.0041301OF12

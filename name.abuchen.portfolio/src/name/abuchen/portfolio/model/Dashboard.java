@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Dashboard
+public final class Dashboard
 {
     public enum Config
     {
-        REPORTING_PERIOD, DATA_SERIES, CONFIG_UUID, AGGREGATION;
+        REPORTING_PERIOD, DATA_SERIES, SECONDARY_DATA_SERIES, CONFIG_UUID, AGGREGATION, EXCHANGE_RATE_SERIES, COLOR_SCHEMA, LAYOUT, HEIGHT, EARNING_TYPE, NET_GROSS, CLIENT_FILTER, CALCULATION_METHOD;
     }
-    
-    public static class Column
+
+    public static final class Column
     {
         private List<Widget> widgets = new ArrayList<>();
 
@@ -27,7 +27,7 @@ public class Dashboard
         }
     }
 
-    public static class Widget
+    public static final class Widget
     {
         private String type;
         private String label;

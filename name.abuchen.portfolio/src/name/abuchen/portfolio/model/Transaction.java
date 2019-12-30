@@ -3,7 +3,7 @@ package name.abuchen.portfolio.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -18,40 +18,13 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Values;
 
-public abstract class Transaction implements Annotated
+public abstract class Transaction implements Annotated, Adaptable
 {
     public static class Unit
     {
         public enum Type
         {
             GROSS_VALUE, TAX, FEE
-        }
-
-        public Unit(Type type, Money amount)
-        {
-            this.type = Objects.requireNonNull(type);
-            this.amount = Objects.requireNonNull(amount);
-            this.forex = null;
-            this.exchangeRate = null;
-        }
-
-        public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
-        {
-            this.type = Objects.requireNonNull(type);
-            this.amount = Objects.requireNonNull(amount);
-            this.forex = Objects.requireNonNull(forex);
-            this.exchangeRate = Objects.requireNonNull(exchangeRate);
-
-            // check whether given amount is in range of converted amount
-            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.0001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.0001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-
-            if (amount.getAmount() < lower || amount.getAmount() > upper)
-                throw new IllegalArgumentException(
-                                MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
-                                                Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
         }
 
         /**
@@ -75,6 +48,33 @@ public abstract class Transaction implements Annotated
          */
         private final BigDecimal exchangeRate;
 
+        public Unit(Type type, Money amount)
+        {
+            this.type = Objects.requireNonNull(type);
+            this.amount = Objects.requireNonNull(amount);
+            this.forex = null;
+            this.exchangeRate = null;
+        }
+
+        public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
+        {
+            this.type = Objects.requireNonNull(type);
+            this.amount = Objects.requireNonNull(amount);
+            this.forex = Objects.requireNonNull(forex);
+            this.exchangeRate = Objects.requireNonNull(exchangeRate);
+
+            // check whether given amount is in range of converted amount
+            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.001))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.001))
+                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+
+            if (amount.getAmount() < lower || amount.getAmount() > upper)
+                throw new IllegalArgumentException(
+                                MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
+                                                Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
+        }
+
         public Type getType()
         {
             return type;
@@ -95,6 +95,16 @@ public abstract class Transaction implements Annotated
             return exchangeRate;
         }
 
+        @Override
+        public String toString()
+        {
+            return String.format("%-17s %s %s %s", //$NON-NLS-1$
+                            type.name(), //
+                            amount.toString(), //
+                            (forex != null ? forex.toString() : "<no forex>"), //$NON-NLS-1$
+                            (exchangeRate != null ? exchangeRate.toString() : "<no exchange>") //$NON-NLS-1$
+            );
+        }
     }
 
     public static final class ByDate implements Comparator<Transaction>, Serializable
@@ -104,11 +114,11 @@ public abstract class Transaction implements Annotated
         @Override
         public int compare(Transaction t1, Transaction t2)
         {
-            return t1.getDate().compareTo(t2.getDate());
+            return t1.getDateTime().compareTo(t2.getDateTime());
         }
     }
 
-    private LocalDate date;
+    private LocalDateTime date;
     private String currencyCode;
     private long amount;
 
@@ -120,14 +130,16 @@ public abstract class Transaction implements Annotated
     private List<Unit> units;
 
     public Transaction()
-    {}
+    {
+    }
 
-    public Transaction(LocalDate date, String currencyCode, long amount)
+    public Transaction(LocalDateTime date, String currencyCode, long amount)
     {
         this(date, currencyCode, amount, null, 0, null);
     }
 
-    public Transaction(LocalDate date, String currencyCode, long amount, Security security, long shares, String note)
+    public Transaction(LocalDateTime date, String currencyCode, long amount, Security security, long shares,
+                    String note)
     {
         this.date = date;
         this.currencyCode = currencyCode;
@@ -137,12 +149,12 @@ public abstract class Transaction implements Annotated
         this.note = note;
     }
 
-    public LocalDate getDate()
+    public LocalDateTime getDateTime()
     {
         return date;
     }
 
-    public void setDate(LocalDate date)
+    public void setDateTime(LocalDateTime date)
     {
         this.date = date;
     }
@@ -181,6 +193,11 @@ public abstract class Transaction implements Annotated
     public Security getSecurity()
     {
         return security;
+    }
+
+    public Optional<Security> getOptionalSecurity()
+    {
+        return Optional.ofNullable(security);
     }
 
     public void setSecurity(Security security)
@@ -274,7 +291,7 @@ public abstract class Transaction implements Annotated
     public Money getUnitSum(Unit.Type type)
     {
         return getUnits().filter(u -> u.getType() == type) //
-                        .collect(MoneyCollectors.sum(getCurrencyCode(), u -> u.getAmount()));
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount));
     }
 
     /**
@@ -286,6 +303,9 @@ public abstract class Transaction implements Annotated
                         .collect(MoneyCollectors.sum(converter.getTermCurrency(), unit -> {
                             if (converter.getTermCurrency().equals(unit.getAmount().getCurrencyCode()))
                                 return unit.getAmount();
+                            else if (unit.getForex() != null
+                                            && converter.getTermCurrency().equals(unit.getForex().getCurrencyCode()))
+                                return unit.getForex();
                             else
                                 return unit.getAmount().with(converter.at(date));
                         }));
@@ -295,5 +315,14 @@ public abstract class Transaction implements Annotated
     {
         Collections.sort(transactions, new ByDate());
         return transactions;
+    }
+
+    @Override
+    public <T> T adapt(Class<T> type)
+    {
+        if (type == Security.class)
+            return type.cast(security);
+        else
+            return null;
     }
 }

@@ -1,21 +1,19 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-
-import org.apache.pdfbox.pdmodel.PDDocument;
-import org.apache.pdfbox.util.PDFTextStripper;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -26,24 +24,30 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 
-/* package */abstract class AbstractPDFExtractor implements Extractor
+public abstract class AbstractPDFExtractor implements Extractor
 {
-    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy", Locale.GERMANY); //$NON-NLS-1$
+    private static final DateTimeFormatter DATE_TIME_SECONDS_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm", //$NON-NLS-1$
+                    Locale.GERMANY);
+    private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("d.M.yyyy HH:mm:ss", //$NON-NLS-1$
+                    Locale.GERMANY);
 
     private final NumberFormat numberFormat = NumberFormat.getInstance(Locale.GERMANY);
 
     private final Client client;
     private SecurityCache securityCache;
-    private final PDFTextStripper textStripper;
+
     private final List<String> bankIdentifier = new ArrayList<>();
     private final List<DocumentType> documentTypes = new ArrayList<>();
 
-    public AbstractPDFExtractor(Client client) throws IOException
+    public AbstractPDFExtractor(Client client)
     {
         this.client = client;
+    }
 
-        textStripper = new PDFTextStripper();
-        textStripper.setSortByPosition(true);
+    public final Client getClient()
+    {
+        return client;
     }
 
     protected final void addDocumentTyp(DocumentType type)
@@ -56,65 +60,47 @@ import name.abuchen.portfolio.money.Values;
         this.bankIdentifier.add(identifier);
     }
 
-    @Override
-    public String getFilterExtension()
+    public List<String> getBankIdentifier()
     {
-        return "*.pdf"; //$NON-NLS-1$
+        return bankIdentifier;
+    }
+
+    public String getPDFAuthor()
+    {
+        return null;
     }
 
     @Override
-    public List<Item> extract(List<File> files, List<Exception> errors)
+    public List<Item> extract(SecurityCache securityCache, Extractor.InputFile inputFile, List<Exception> errors)
     {
         // careful: security cache makes extractor stateful
-        securityCache = new SecurityCache(client);
+        this.securityCache = securityCache;
 
         List<Item> results = new ArrayList<>();
-        for (File f : files)
-        {
-            try
-            {
-                String text = strip(f);
-                results.addAll(extract(f.getName(), text, errors));
-            }
-            catch (IOException e)
-            {
-                errors.add(new IOException(f.getName() + ": " + e.getMessage(), e)); //$NON-NLS-1$
-            }
-        }
 
-        results.addAll(securityCache.createMissingSecurityItems(results));
+        if (!(inputFile instanceof PDFInputFile))
+            throw new IllegalArgumentException();
 
-        securityCache = null;
+        String text = ((PDFInputFile) inputFile).getText();
+        results.addAll(extract(inputFile.getFile().getName(), text, errors));
+
+        this.securityCache = null;
 
         return results;
     }
 
-                    /* testing */String strip(File file) throws IOException
-    {
-        try (PDDocument doc = PDDocument.load(file))
-        {
-            return textStripper.getText(doc);
-        }
-    }
-
-    private List<Item> extract(String filename, String text, List<Exception> errors)
+    private final List<Item> extract(String filename, String text, List<Exception> errors)
     {
         try
         {
             checkBankIdentifier(filename, text);
 
-            List<Item> items = new ArrayList<>();
-
-            for (DocumentType type : documentTypes)
-            {
-                if (type.matches(text))
-                    type.parse(filename, items, text);
-            }
+            List<Item> items = parseDocumentTypes(documentTypes, filename, text);
 
             if (items.isEmpty())
             {
                 errors.add(new UnsupportedOperationException(
-                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, filename)));
+                                MessageFormat.format(Messages.PDFdbMsgCannotDetermineFileType, getLabel(), filename)));
             }
 
             for (Item item : items)
@@ -134,6 +120,17 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
+    protected final List<Item> parseDocumentTypes(List<DocumentType> documentTypes, String filename, String text)
+    {
+        List<Item> items = new ArrayList<>();
+        for (DocumentType type : documentTypes)
+        {
+            if (type.matches(text))
+                type.parse(filename, items, text);
+        }
+        return items;
+    }
+
     private void checkBankIdentifier(String filename, String text)
     {
         if (bankIdentifier.isEmpty())
@@ -150,9 +147,24 @@ import name.abuchen.portfolio.money.Values;
     protected Security getOrCreateSecurity(Map<String, String> values)
     {
         String isin = values.get("isin"); //$NON-NLS-1$
+        if (isin != null)
+            isin = isin.trim();
+
         String tickerSymbol = values.get("tickerSymbol"); //$NON-NLS-1$
+        if (tickerSymbol != null)
+            tickerSymbol = tickerSymbol.trim();
+
         String wkn = values.get("wkn"); //$NON-NLS-1$
-        String name = values.get("name") != null ? values.get("name").trim() : null; //$NON-NLS-1$ //$NON-NLS-2$
+        if (wkn != null)
+            wkn = wkn.trim();
+
+        String name = values.get("name"); //$NON-NLS-1$
+        if (name != null)
+            name = name.trim();
+
+        String nameRowTwo = values.get("nameContinued"); //$NON-NLS-1$
+        if (nameRowTwo != null)
+            name = name + " " + nameRowTwo.trim(); //$NON-NLS-1$
 
         Security security = securityCache.lookup(isin, tickerSymbol, wkn, name, () -> {
             Security s = new Security();
@@ -188,7 +200,7 @@ import name.abuchen.portfolio.money.Values;
         return unit == null ? client.getBaseCurrency() : unit.getCurrencyCode();
     }
 
-                    /* protected */long asAmount(String value)
+    /* protected */long asAmount(String value)
     {
         try
         {
@@ -200,7 +212,7 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-                    /* protected */BigDecimal asExchangeRate(String value)
+    /* protected */BigDecimal asExchangeRate(String value)
     {
         try
         {
@@ -212,8 +224,36 @@ import name.abuchen.portfolio.money.Values;
         }
     }
 
-                    /* protected */LocalDate asDate(String value)
+    /* protected */LocalDateTime asDate(String value)
     {
-        return LocalDate.parse(value, DATE_FORMAT);
+        return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+    }
+
+    /* protected */LocalTime asTime(String value)
+    {
+        LocalTime time = null;
+
+        try
+        {
+            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm")); //$NON-NLS-1$
+        }
+        catch (DateTimeParseException e)
+        {
+            time = LocalTime.parse(value, DateTimeFormatter.ofPattern("HH:mm:ss")); //$NON-NLS-1$
+        }
+
+        return time.withSecond(0);
+    }
+
+    /* protected */LocalDateTime asDate(String date, String time)
+    {
+        try
+        {
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_SECONDS_FORMAT); //$NON-NLS-1$
+        }
+        catch (Exception e)
+        {
+            return LocalDateTime.parse(String.format("%s %s", date, time), DATE_TIME_FORMAT); //$NON-NLS-1$
+        }
     }
 }

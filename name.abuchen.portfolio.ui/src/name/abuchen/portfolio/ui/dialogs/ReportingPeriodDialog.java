@@ -1,7 +1,10 @@
 package name.abuchen.portfolio.ui.dialogs;
 
+import java.time.LocalDate;
 import java.time.Period;
 import java.time.Year;
+import java.util.Arrays;
+import java.util.List;
 
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.jface.dialogs.Dialog;
@@ -18,9 +21,10 @@ import org.eclipse.swt.widgets.Spinner;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.DatePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 public class ReportingPeriodDialog extends Dialog
 {
@@ -38,14 +42,20 @@ public class ReportingPeriodDialog extends Dialog
     private Spinner tradingDays;
 
     private Button radioFromXtoY;
-    private DateTimePicker dateFrom;
-    private DateTimePicker dateTo;
+    private DatePicker dateFrom;
+    private DatePicker dateTo;
 
     private Button radioSinceX;
-    private DateTimePicker dateSince;
+    private DatePicker dateSince;
 
     private Button radioYearX;
     private Spinner year;
+
+    private Button radioCurrentMonth;
+
+    private Button radioYTD;
+
+    private List<Button> radioBtnList;
 
     public ReportingPeriodDialog(Shell parentShell, ReportingPeriod template)
     {
@@ -73,6 +83,7 @@ public class ReportingPeriodDialog extends Dialog
         radioLast.setText(Messages.LabelReportingDialogLast);
         years = new Spinner(editArea, SWT.BORDER);
         years.setMinimum(0);
+
         Label lblYears = new Label(editArea, SWT.NONE);
         lblYears.setText(Messages.LabelReportingDialogYears);
         months = new Spinner(editArea, SWT.BORDER);
@@ -99,20 +110,26 @@ public class ReportingPeriodDialog extends Dialog
 
         radioFromXtoY = new Button(editArea, SWT.RADIO);
         radioFromXtoY.setText(Messages.LabelReportingDialogFrom);
-        dateFrom = new DateTimePicker(editArea);
+        dateFrom = new DatePicker(editArea);
         Label lblTo = new Label(editArea, SWT.NONE);
         lblTo.setText(Messages.LabelReportingDialogUntil);
-        dateTo = new DateTimePicker(editArea);
+        dateTo = new DatePicker(editArea);
 
         radioSinceX = new Button(editArea, SWT.RADIO);
         radioSinceX.setText(Messages.LabelReportingDialogSince);
-        dateSince = new DateTimePicker(editArea);
+        dateSince = new DatePicker(editArea);
 
         radioYearX = new Button(editArea, SWT.RADIO);
         radioYearX.setText(Messages.LabelReportingDialogYear);
         year = new Spinner(editArea, SWT.BORDER);
         year.setMinimum(Year.MIN_VALUE);
         year.setMaximum(Year.MAX_VALUE);
+
+        radioCurrentMonth = new Button(editArea, SWT.RADIO);
+        radioCurrentMonth.setText(Messages.LabelCurrentMonth);
+
+        radioYTD = new Button(editArea, SWT.RADIO);
+        radioYTD.setText(Messages.LabelYTD);
 
         //
         // form layout
@@ -151,31 +168,42 @@ public class ReportingPeriodDialog extends Dialog
 
         FormDataFactory.startingWith(radioYearX).top(new FormAttachment(radioSinceX, 20)).thenRight(year);
 
+        FormDataFactory.startingWith(radioCurrentMonth).top(new FormAttachment(radioYearX, 20));
+
+        FormDataFactory.startingWith(radioYTD).top(new FormAttachment(radioCurrentMonth, 20));
+
         //
         // wiring
         //
 
         presetFromTemplate();
 
-        listen(radioLast, years, months);
-        listen(radioLastDays, days);
-        listen(radioLastTradingDays, tradingDays);
-        listen(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
-        listen(radioSinceX, dateSince.getControl());
-        listen(radioYearX, year);
+        radioBtnList = Arrays.asList(radioLast, radioLastDays, radioLastTradingDays, radioFromXtoY, radioSinceX,
+                        radioYearX, radioCurrentMonth, radioYTD);
+        activateRadioOnChange(radioLast, years, months);
+        activateRadioOnChange(radioLastDays, days);
+        activateRadioOnChange(radioLastTradingDays, tradingDays);
+        activateRadioOnChange(radioFromXtoY, dateFrom.getControl(), dateTo.getControl());
+        activateRadioOnChange(radioSinceX, dateSince.getControl());
+        activateRadioOnChange(radioYearX, year);
 
         return composite;
     }
 
-    private void listen(final Button radio, Control... controls)
+    private void deselectSelectedRadioButtons(final Button radio)
+    {
+        radioBtnList.stream() //
+                        .filter(btn -> !btn.equals(radio)) //
+                        .filter(Button::getSelection) //
+                        .forEach(btn -> btn.setSelection(false));
+    }
+
+    private void activateRadioOnChange(final Button radio, Control... controls)
     {
         for (Control c : controls)
         {
             c.addListener(SWT.Selection, event -> {
-                radioLast.setSelection(false);
-                radioFromXtoY.setSelection(false);
-                radioSinceX.setSelection(false);
-
+                deselectSelectedRadioButtons(radio);
                 radio.setSelection(true);
             });
         }
@@ -195,23 +223,29 @@ public class ReportingPeriodDialog extends Dialog
             radioSinceX.setSelection(true);
         else if (template instanceof ReportingPeriod.YearX)
             radioYearX.setSelection(true);
+        else if (template instanceof ReportingPeriod.CurrentMonth)
+            radioCurrentMonth.setSelection(true);
+        else if (template instanceof ReportingPeriod.YearToDate)
+            radioYTD.setSelection(true);
         else
             throw new IllegalArgumentException();
 
-        dateFrom.setSelection(template.getStartDate());
-        dateSince.setSelection(template.getStartDate());
+        Interval interval = template.toInterval(LocalDate.now());
 
-        dateTo.setSelection(template.getEndDate());
+        dateFrom.setSelection(interval.getStart());
+        dateSince.setSelection(interval.getStart());
 
-        Period p = Period.between(template.getStartDate(), template.getEndDate());
+        dateTo.setSelection(interval.getEnd());
+
+        Period p = Period.between(interval.getStart(), interval.getEnd());
         years.setSelection(p.getYears());
         months.setSelection(p.getMonths());
 
-        days.setSelection(Dates.daysBetween(template.getStartDate(), template.getEndDate()));
+        days.setSelection(Dates.daysBetween(interval.getStart(), interval.getEnd()));
 
-        tradingDays.setSelection(Dates.tradingDaysBetween(template.getStartDate(), template.getEndDate()));
+        tradingDays.setSelection(Dates.tradingDaysBetween(interval.getStart(), interval.getEnd()));
 
-        year.setSelection(template.getEndDate().getYear());
+        year.setSelection(interval.getEnd().getYear());
     }
 
     @Override
@@ -248,6 +282,14 @@ public class ReportingPeriodDialog extends Dialog
         else if (radioYearX.getSelection())
         {
             result = new ReportingPeriod.YearX(year.getSelection());
+        }
+        else if (radioCurrentMonth.getSelection())
+        {
+            result = new ReportingPeriod.CurrentMonth();
+        }
+        else if (radioYTD.getSelection())
+        {
+            result = new ReportingPeriod.YearToDate();
         }
         else
         {

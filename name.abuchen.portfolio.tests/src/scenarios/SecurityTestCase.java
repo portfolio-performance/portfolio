@@ -16,9 +16,9 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
 public class SecurityTestCase
@@ -39,10 +39,10 @@ public class SecurityTestCase
         Security security = client.getSecurities().get(0);
         PortfolioTransaction delivery = client.getPortfolios().get(0).getTransactions().get(0);
 
-        assertThat("delivery transaction must be before earliest historical quote", delivery.getDate(),
-                        lessThan(security.getPrices().get(0).getTime()));
+        assertThat("delivery transaction must be before earliest historical quote",
+                        delivery.getDateTime().toLocalDate(), lessThan(security.getPrices().get(0).getDate()));
 
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2013-12-04"), LocalDate.parse("2014-12-04"));
+        Interval period = Interval.of(LocalDate.parse("2013-12-04"), LocalDate.parse("2014-12-04"));
         TestCurrencyConverter converter = new TestCurrencyConverter();
         SecurityPerformanceSnapshot snapshot = SecurityPerformanceSnapshot.create(client, converter, period);
 

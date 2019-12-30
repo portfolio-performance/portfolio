@@ -55,7 +55,7 @@ public class AssertImportActions
     }
 
     private static final ImportAction[] actions = new ImportAction[] { //
-                    new CheckValidTypesAction(), new CheckCurrenciesAction() };
+                    new CheckValidTypesAction(), new CheckSecurityRelatedValuesAction(), new CheckCurrenciesAction() };
 
     public void check(List<Extractor.Item> items, ImportAction.Context context)
     {

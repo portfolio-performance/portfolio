@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -16,15 +17,16 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.Interval;
 
 public class ReportingPeriodConfig implements WidgetConfig
 {
-    private final WidgetDelegate delegate;
+    private final WidgetDelegate<?> delegate;
     private DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG);
 
     private ReportingPeriod reportingPeriod;
 
-    public ReportingPeriodConfig(WidgetDelegate delegate)
+    public ReportingPeriodConfig(WidgetDelegate<?> delegate)
     {
         this.delegate = delegate;
 
@@ -46,6 +48,20 @@ public class ReportingPeriodConfig implements WidgetConfig
         return reportingPeriod != null ? reportingPeriod : delegate.getDashboardData().getDefaultReportingPeriod();
     }
 
+    public void setReportingPeriod(ReportingPeriod reportingPeriod)
+    {
+        this.reportingPeriod = reportingPeriod;
+
+        if (reportingPeriod != null)
+            delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
+                            reportingPeriod.getCode());
+        else
+            delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
+
+        delegate.update();
+        delegate.getClient().touch();
+    }
+
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
@@ -57,19 +73,10 @@ public class ReportingPeriodConfig implements WidgetConfig
                         : Messages.LabelUsingDashboardDefaultReportingPeriod));
         subMenu.add(new Separator());
 
-        subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> {
-            reportingPeriod = null;
-            delegate.getWidget().getConfiguration().remove(Dashboard.Config.REPORTING_PERIOD.name());
-            delegate.getClient().markDirty();
-        }));
+        subMenu.add(new SimpleAction(Messages.MenuUseDashboardDefaultReportingPeriod, a -> setReportingPeriod(null)));
 
         delegate.getDashboardData().getDefaultReportingPeriods().stream()
-                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> {
-                            reportingPeriod = p;
-                            delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
-                                            p.getCode());
-                            delegate.getClient().markDirty();
-                        })));
+                        .forEach(p -> subMenu.add(new SimpleAction(p.toString(), a -> setReportingPeriod(p))));
         subMenu.add(new Separator());
 
         subMenu.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
@@ -77,14 +84,11 @@ public class ReportingPeriodConfig implements WidgetConfig
                             getReportingPeriod());
             if (dialog.open() == ReportingPeriodDialog.OK)
             {
-                reportingPeriod = dialog.getReportingPeriod();
+                ReportingPeriod rp = dialog.getReportingPeriod();
+                if (!delegate.getDashboardData().getDefaultReportingPeriods().contains(rp))
+                    delegate.getDashboardData().getDefaultReportingPeriods().add(rp);
 
-                if (!delegate.getDashboardData().getDefaultReportingPeriods().contains(reportingPeriod))
-                    delegate.getDashboardData().getDefaultReportingPeriods().add(reportingPeriod);
-
-                delegate.getWidget().getConfiguration().put(Dashboard.Config.REPORTING_PERIOD.name(),
-                                reportingPeriod.getCode());
-                delegate.getClient().markDirty();
+                setReportingPeriod(rp);
             }
         }));
 
@@ -97,9 +101,11 @@ public class ReportingPeriodConfig implements WidgetConfig
         StringBuilder label = new StringBuilder();
         label.append(Messages.LabelReportingPeriod).append(": "); //$NON-NLS-1$
         label.append(getReportingPeriod().toString());
-        label.append(" (").append(formatter.format(getReportingPeriod().getStartDate())) //$NON-NLS-1$
+
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
+        label.append(" (").append(formatter.format(interval.getStart())) //$NON-NLS-1$
                         .append(" - ") //$NON-NLS-1$
-                        .append(formatter.format(getReportingPeriod().getEndDate())).append(")"); //$NON-NLS-1$
+                        .append(formatter.format(interval.getEnd())).append(")"); //$NON-NLS-1$
         if (reportingPeriod == null)
             label.append(" | ").append(Messages.LabelUsingDashboardDefaultReportingPeriod); //$NON-NLS-1$
         return label.toString();

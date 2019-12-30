@@ -1,68 +1,38 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.preference.IPreferenceStore;
+
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
+import name.abuchen.portfolio.util.Interval;
 
 public class DashboardData
 {
-    private static final class CacheKey
-    {
-        private Class<?> type;
-        private ReportingPeriod period;
-
-        public CacheKey(Class<?> type, ReportingPeriod period)
-        {
-            this.type = Objects.requireNonNull(type);
-            this.period = Objects.requireNonNull(period);
-        }
-
-        @Override
-        public int hashCode()
-        {
-            return Objects.hash(type, period);
-        }
-
-        @Override
-        public boolean equals(Object obj)
-        {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-
-            CacheKey other = (CacheKey) obj;
-            if (!type.equals(other.type))
-                return false;
-            if (!period.equals(other.period))
-                return false;
-            return true;
-        }
-
-    }
+    public static final Object EMPTY_RESULT = new Object();
 
     private final Client client;
+    private final IPreferenceStore preferences;
+    private final ExchangeRateProviderFactory factory;
     private final CurrencyConverter converter;
 
-    private final Map<CacheKey, Object> cache = new HashMap<>();
+    private final Map<Object, Object> cache = Collections.synchronizedMap(new HashMap<>());
 
     private List<ReportingPeriod> defaultReportingPeriods = new ArrayList<>();
     private ReportingPeriod defaultReportingPeriod;
@@ -70,21 +40,30 @@ public class DashboardData
     private DataSeriesSet dataSeriesSet;
     private DataSeriesCache dataSeriesCache;
 
+    private Map<Widget, Object> resultCache = Collections.synchronizedMap(new HashMap<>());
+
     private Dashboard dashboard;
 
     @Inject
-    public DashboardData(Client client, ExchangeRateProviderFactory factory)
+    public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory)
     {
         this.client = client;
+        this.preferences = preferences;
+        this.factory = factory;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
-        this.dataSeriesSet = new DataSeriesSet(client, DataSeries.UseCase.RETURN_VOLATILITY);
+        this.dataSeriesSet = new DataSeriesSet(client, preferences, DataSeries.UseCase.RETURN_VOLATILITY);
         this.dataSeriesCache = new DataSeriesCache(client, factory);
     }
 
     public Client getClient()
     {
         return client;
+    }
+
+    public IPreferenceStore getPreferences()
+    {
+        return preferences;
     }
 
     public Dashboard getDashboard()
@@ -117,46 +96,61 @@ public class DashboardData
         return defaultReportingPeriod;
     }
 
+    public ExchangeRateProviderFactory getExchangeRateProviderFactory()
+    {
+        return factory;
+    }
+
     public DataSeriesSet getDataSeriesSet()
     {
         return dataSeriesSet;
     }
 
-    public void clearCache()
+    public synchronized void clearCache()
     {
         cache.clear();
         dataSeriesCache.clear();
+
+        clearResultCache();
     }
 
-    public <T> T calculate(Class<T> type, ReportingPeriod period)
-    {
-        CacheKey key = new CacheKey(type, period);
-        return type.cast(cache.computeIfAbsent(key, k -> doCalculate(type, period)));
-    }
-
-    private Object doCalculate(Class<?> type, ReportingPeriod period)
-    {
-        if (type.equals(ClientPerformanceSnapshot.class))
-        {
-            return new ClientPerformanceSnapshot(client, converter, period);
-        }
-        else if (type.equals(PerformanceIndex.class))
-        {
-            return PerformanceIndex.forClient(client, converter, period, new ArrayList<Exception>());
-        }
-        else
-        {
-            return null;
-        }
-    }
-
+    /**
+     * Returns a specialized cache that computes {@link PerformanceIndex}
+     * results if not present.
+     */
     public DataSeriesCache getDataSeriesCache()
     {
         return dataSeriesCache;
     }
 
-    public PerformanceIndex calculate(DataSeries dataSeries, ReportingPeriod reportingPeriod)
+    /**
+     * Returns a generic cache that can be used by widgets to share data for the
+     * current dashboard.
+     */
+    public Map<Object, Object> getCache()
+    {
+        return cache;
+    }
+
+    public CurrencyConverter getCurrencyConverter()
+    {
+        return converter;
+    }
+
+    public PerformanceIndex calculate(DataSeries dataSeries, Interval reportingPeriod)
     {
         return dataSeriesCache.lookup(dataSeries, reportingPeriod);
+    }
+
+    public synchronized Map<Widget, Object> getResultCache()
+    {
+        return resultCache;
+    }
+
+    public synchronized void clearResultCache()
+    {
+        // create a new cache map in order to make sure that old (possibly
+        // still running) tasks do not write into the new cache
+        resultCache = Collections.synchronizedMap(new HashMap<>());
     }
 }

@@ -3,7 +3,6 @@ package name.abuchen.portfolio.snapshot;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,7 +45,7 @@ public final class GroupByTaxonomy
         this.valuation = valuation;
     }
 
-    /* package */GroupByTaxonomy(Taxonomy taxonomy, ClientSnapshot snapshot)
+    /* package */ GroupByTaxonomy(Taxonomy taxonomy, ClientSnapshot snapshot)
     {
         this(taxonomy, snapshot.getCurrencyConverter(), snapshot.getTime(), snapshot.getMonetaryAssets());
 
@@ -58,7 +57,7 @@ public final class GroupByTaxonomy
             if (account.getFunds().isZero())
                 continue;
 
-            vehicle2position.put(account.getAccount(), new Item(new SecurityPosition(account)));
+            vehicle2position.put(account.unwrapAccount(), new Item(new SecurityPosition(account)));
         }
 
         // portfolio
@@ -88,7 +87,9 @@ public final class GroupByTaxonomy
         if (taxonomy != null)
         {
             createCategoriesAndAllocate(vehicle2position);
-            sortCategoriesByRank();
+
+            Collections.sort(categories, (r, l) -> Integer.compare(r.getClassification().getRank(),
+                            l.getClassification().getRank()));
         }
 
         allocateLeftOvers(vehicle2position);
@@ -102,9 +103,9 @@ public final class GroupByTaxonomy
 
             // first: assign items to categories
 
-            // item.weight records both the weight
-            // (a) already assigned to any category
-            // (b) assigned to this category
+            // item.weight records the weight
+            // (a) already assigned to any category (in vechile2position)
+            // (b) assigned to this category (in vehicle2item)
 
             classification.accept(new Taxonomy.Visitor()
             {
@@ -114,25 +115,12 @@ public final class GroupByTaxonomy
                     Item item = vehicle2position.get(assignment.getInvestmentVehicle());
                     if (item != null)
                     {
-                        item.weight += assignment.getWeight(); // record (a)
+                        // record (a)
+                        item.weight += assignment.getWeight();
 
-                        SecurityPosition position = item.position;
-                        if (assignment.getWeight() == Classification.ONE_HUNDRED_PERCENT)
-                        {
-                            vehicle2item.put(assignment.getInvestmentVehicle(), item);
-                        }
-                        else
-                        {
-                            Item other = vehicle2item.get(assignment.getInvestmentVehicle());
-                            if (other == null)
-                            {
-                                other = new Item(position);
-                                vehicle2item.put(assignment.getInvestmentVehicle(), other);
-                            }
-
-                            // record (b) into the copy
-                            other.weight += assignment.getWeight();
-                        }
+                        // add to map of this classification + record (b)
+                        vehicle2item.computeIfAbsent(assignment.getInvestmentVehicle(),
+                                        v -> new Item(item.position)).weight += assignment.getWeight();
                     }
                 }
             });
@@ -158,20 +146,6 @@ public final class GroupByTaxonomy
                 Collections.sort(category.getPositions(), new AssetPosition.ByDescription());
             }
         }
-    }
-
-    private void sortCategoriesByRank()
-    {
-        Collections.sort(categories, new Comparator<AssetCategory>()
-        {
-            @Override
-            public int compare(AssetCategory o1, AssetCategory o2)
-            {
-                int rank1 = o1.getClassification().getRank();
-                int rank2 = o2.getClassification().getRank();
-                return rank1 < rank2 ? -1 : rank1 == rank2 ? 0 : 1;
-            }
-        });
     }
 
     private void allocateLeftOvers(final Map<InvestmentVehicle, Item> vehicle2position)
@@ -211,6 +185,12 @@ public final class GroupByTaxonomy
     public Money getFIFOPurchaseValue()
     {
         return categories.stream().map(AssetCategory::getFIFOPurchaseValue)
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
+    }
+
+    public Money getMovingAveragePurchaseValue()
+    {
+        return categories.stream().map(AssetCategory::getMovingAveragePurchaseValue)
                         .collect(MoneyCollectors.sum(converter.getTermCurrency()));
     }
 

@@ -7,7 +7,7 @@ import static org.junit.Assert.assertThat;
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -31,6 +31,8 @@ public class InsertActionTest
 {
     private Client client;
     private BuySellEntry entry;
+    
+    private LocalDateTime transactionDate = LocalDateTime.now().withSecond(0).withNano(0);
 
     @Before
     public void prepare()
@@ -47,7 +49,7 @@ public class InsertActionTest
         entry.setType(Type.BUY);
         entry.setMonetaryAmount(Money.of(CurrencyUnit.EUR, 9_99));
         entry.setShares(99);
-        entry.setDate(LocalDate.now());
+        entry.setDate(transactionDate);
         entry.setSecurity(security);
         entry.setNote("note");
         entry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money.of(CurrencyUnit.EUR, 1_99)));
@@ -93,7 +95,7 @@ public class InsertActionTest
         assertThat(t.getSecurity(), is(client.getSecurities().get(0)));
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 9_99)));
         assertThat(t.getNote(), is("note"));
-        assertThat(t.getDate(), is(LocalDate.now()));
+        assertThat(t.getDateTime(), is(transactionDate));
         assertThat(t.getShares(), is(99L));
 
         assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 1_99)));
@@ -117,7 +119,7 @@ public class InsertActionTest
         assertThat(properties, hasItem("currencyCode"));
         assertThat(properties, hasItem("amount"));
         assertThat(properties, hasItem("shares"));
-        assertThat(properties, hasItem("date"));
+        assertThat(properties, hasItem("dateTime"));
         assertThat(properties, hasItem("type"));
         assertThat(properties, hasItem("note"));
 

@@ -1,12 +1,16 @@
 package name.abuchen.portfolio.ui.dnd;
 
-import name.abuchen.portfolio.model.Adaptable;
-import name.abuchen.portfolio.model.Security;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.StructuredViewer;
 import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
+
+import name.abuchen.portfolio.model.Adaptable;
+import name.abuchen.portfolio.model.Security;
 
 public class SecurityDragListener extends DragSourceAdapter
 {
@@ -17,43 +21,47 @@ public class SecurityDragListener extends DragSourceAdapter
         this.viewer = viewer;
     }
 
-    public void dragFinished(DragSourceEvent event)
-    {
-        if (!event.doit)
-            return;
-
-        // TODO: remove from watch list if security was moved
-    }
-
+    @Override
     public void dragSetData(DragSourceEvent event)
     {
-        SecurityTransfer.getTransfer().setSecurity(getSecurity());
+        SecurityTransfer.getTransfer().setSecurities(getSecurities());
     }
 
+    @Override
     public void dragStart(DragSourceEvent event)
     {
-        event.doit = getSecurity() != null;
+        event.doit = getSecurities() != null;
     }
 
-    private Security getSecurity()
+    private List<Security> getSecurities()
     {
-        IStructuredSelection selection = (IStructuredSelection) viewer.getSelection();
+        IStructuredSelection selection = (IStructuredSelection) viewer.getStructuredSelection();
         if (selection.isEmpty())
             return null;
 
-        Object element = selection.getFirstElement();
+        List<Security> selectedSecurities = new ArrayList<>();
+        Iterator<?> selectionIterator = selection.iterator();
+        while (selectionIterator.hasNext())
+        {
+            Object object = selectionIterator.next();
+            if (object instanceof Security)
+            {
+                selectedSecurities.add((Security) object);
+            }
+            else if (object instanceof Adaptable)
+            {
+                Security selectedSecurity = ((Adaptable) object).adapt(Security.class);
+                if (selectedSecurity != null)
+                {
+                    selectedSecurities.add(selectedSecurity);
+                }
+            }
+            else
+            {
+                // ignore elements that cannot be dragged
+            }
+        }
 
-        if (element instanceof Security)
-        {
-            return (Security) element;
-        }
-        else if (element instanceof Adaptable)
-        {
-            return ((Adaptable) element).adapt(Security.class);
-        }
-        else
-        {
-            return null;
-        }
+        return selectedSecurities;
     }
 }

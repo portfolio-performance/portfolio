@@ -1,0 +1,19 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Max
+Mustermann
+Musterstr. 2
+54321 Musterhausen
+Benutzername: ***zft
+Transaktionsübersicht von 26-04-2019 bis 01-05-2019
+Datum Uhrzeit Produkt ISIN Börse Anzahl Kurs Wert in WechselkurLokalwährun Wert s Gebühr Gesamt
+29-04-2019 16:11 TESLA MOTORS INC. - C US88160R1014 NDQ -3 USD 240,00 USD 720,00 EUR 645,04 1,1162 EUR -0,51 EUR 644,53
+29-04-2019 09:16 ODX1 P12300.00 03MAY19 DE000C34JCK6 ERX 1 EUR 50,00 EUR -250,00 EUR -250,00 EUR -0,90 EUR -250,90
+26-04-2019 20:23 TESLA MOTORS INC. - C US88160R1014 NDQ 1 USD 234,00 USD -234,00 EUR -209,92 1,1147 EUR -0,50 EUR -210,42
+26-04-2019 17:52 TESLA MOTORS INC. - C US88160R1014 NDQ 2 USD 240,00 USD -480,00 EUR -430,69 1,1145 EUR -0,51 EUR -431,20
+DEGIRO B.V. T +49 69 365 065 457 DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Kontoauszug 2019-05-06
+registriert.

@@ -46,6 +46,7 @@ public class EditReportingPeriodsDialog extends Dialog
         return this.periods;
     }
 
+    @Override
     protected void configureShell(Shell shell)
     {
         super.configureShell(shell);
@@ -62,7 +63,7 @@ public class EditReportingPeriodsDialog extends Dialog
         TableColumnLayout layout = new TableColumnLayout();
         tableArea.setLayout(layout);
 
-        tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.MULTI | SWT.MULTI);
+        tableViewer = new TableViewer(tableArea, SWT.BORDER | SWT.MULTI);
         final Table table = tableViewer.getTable();
         table.setHeaderVisible(false);
         table.setLinesVisible(false);
@@ -81,7 +82,7 @@ public class EditReportingPeriodsDialog extends Dialog
         tableViewer.setContentProvider(ArrayContentProvider.getInstance());
         tableViewer.setInput(periods);
 
-        new ContextMenu(tableViewer.getTable(), m -> fillContextMenu(m)).hook();
+        new ContextMenu(tableViewer.getTable(), this::fillContextMenu).hook();
 
         return container;
     }

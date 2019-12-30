@@ -17,7 +17,7 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
 
     private String baseCurrency;
     private String termCurrency;
-    private List<ExchangeRate> rates = new ArrayList<ExchangeRate>();
+    private List<ExchangeRate> rates = new ArrayList<>();
 
     public ExchangeRateTimeSeriesImpl()
     {
@@ -52,15 +52,15 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
     }
 
     @Override
-    public ExchangeRateProvider getProvider()
+    public Optional<ExchangeRateProvider> getProvider()
     {
-        return provider;
+        return Optional.of(provider);
     }
 
     @Override
     public List<ExchangeRate> getRates()
     {
-        return new ArrayList<ExchangeRate>(rates);
+        return new ArrayList<>(rates);
     }
 
     public void setProvider(ExchangeRateProvider provider)
@@ -110,4 +110,9 @@ public class ExchangeRateTimeSeriesImpl implements ExchangeRateTimeSeries
             return Optional.of(rates.get(-index - 2));
     }
 
+    @Override
+    public int getWeight()
+    {
+        return 2;
+    }
 }

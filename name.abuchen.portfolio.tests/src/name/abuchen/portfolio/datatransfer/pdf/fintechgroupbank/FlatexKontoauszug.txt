@@ -1,0 +1,76 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+               Frankfurt, 03.04.2016
+01022620000005000000000
+Herrn
+Max Mustermann
+Musterstra�e. 2
+12345 Stadt
+Kontoauszug Nr:    001/2016                              Seite 1 von 2
+Kontonummer :      1111111111  dazugeh�rige IBAN:  DE00 0000 0000 0000 0000 00
+Kontenart   :      Kontokorrentkonto
+Kontow�hrung:      EUR
+Alter Saldo vom    31.12.2015                     in EUR             2.000,00+
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+04.01.     06.01.  Ausf�hrung ORDER Kauf   000000000000              1.000,00-
+                   00000000
+04.01.     04.01.  Ertr�gnisaussch�ttung XXXXXXXXXXXX                    1,00+
+05.01.     06.01.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+                   000000000
+29.01.     29.01.  �berweisung                                       1.100,00+
+                   Ubertrag Depot
+                   BICBICBICBI
+                   DE00000000000000000000
+                   MAX MUSTERMANN
+                   KREF: XXXXXXXXXXXXXXXXXXXXXXXXXXX
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Bernd W�rfel
+2000000000000000 0000000000000000
+Kontoauszug Nr:    001/2016                              Seite 2 von 2
+Buchungs-  Valuta  Buchungstext                                         Betrag
+datum                                                                   in EUR
+11.03.     14.03.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+                   0000000000                                                 
+18.03.     22.03.  Ausf�hrung ORDER Verkauf   XXXXXXXXXXXX             500,00+
+                   00000000
+19.03.     22.03.  Geb�hren Ordernummer 00000000 Transnr                 5,90-
+                   0000000000                                                 
+30.03.     29.03.  Ertr�gnisaussch�ttung 000000000000                    1,00+
+31.03.     31.03.  Zinsabschluss   01.01.2016 - 31.03.2016               0,00+
+Neuer Saldo 31.03.2016 Nr. 001/2016         W�hrung EUR              1.584,30+
+Der ausgewiesene Kontosaldo kann durch abweichende Wertstellung (Valuta) vom
+wertm��igen Kontostand abweichen. Die Wertstellung von Buchungen ist auch
+relevant f�r die Berechnung von Zinsen.
+Gem�� � 11 Au�enwirtschaftsgesetz (AWG) in Verbindung mit �� 67 ff. Au�en-
+wirtschaftsverordnung (AWV) haben Inl�nder (in Deutschland ans�ssige
+nat�rliche und juristische Personen) Zahlungen von mehr als 12 500 Euro oder
+Gegenwert zu melden, die sie von Ausl�ndern (im Ausland ans�ssige nat�rliche
+und juristische Personen) oder f�r deren Rechnung von Inl�ndern entgegennehmen
+(eingehende Zahlungen) oder an Ausl�nder oder f�r deren Rechnung an Inl�nder
+leisten (ausgehende Zahlungen). Die Deutsche Bundesbank und ihre Fillialen
+erteilen dazu gern die notwendigen Ausk�nfte.
+Guthaben sind als Einlagen nach Ma�gabe des Einlagensicherungsgesetzes
+entsch�digungsf�hig. N�here Informationen k�nnen dem "Informationsbogen f�r
+den Einleger" entnommen werden.
+Der Rechnungsabschluss wird Ihnen als separates Dokument zur Verf�gung
+gestellt.
+Beanstandungen  gegen Rechnungsabschl�sse sind unverz�glich und schriftlich zu
+senden an:
+      biw AG
+      Revision
+      Hausbroicher Str. 222
+      47877 Willich.
+Der Abschlusssaldo gilt als genehmigt, wenn ihm nicht innerhalb von 6 Wochen
+ab Zugang schriftlich widersprochen  wird. Zur Fristwahrung gen�gt die
+rechtzeitige Absendung der Einwendung.
+F�r weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Bernd W�rfel
+2000000000000000

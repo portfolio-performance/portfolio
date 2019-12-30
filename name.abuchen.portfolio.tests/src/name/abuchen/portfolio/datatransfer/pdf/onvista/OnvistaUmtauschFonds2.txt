@@ -1,0 +1,110 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=356238000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE3=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE4=XXXXXXXXXXXXXXXXXXX
+XXXXXXXXXXXXXXXXXXX ADRESSZEILE5=
+XXXXXXXXXXXXXXXXXXX ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+XXXXXXXXXXXXXXXXXXX BELEGNUMMER=2186
+XXXXXXXXXXXXXXXXXXX XXXXXXXXXXXXXXXXXXX 49489250 / 26.02.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXXXXXXXXXXXXXXX
+Frankfurt am Main, 26.02.2019
+Einbuchung:
+Gattungsbezeichnung ISIN
+MUL-Lyx.MSCI AC As.Paci.e.Jap. Act. au Port. EUR Acc. oN LU1900068328
+Nominal
+STK 1,9315
+Verwahrart
+Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/DUANDEREEREIEBSTUM/GDBVKAPU/002186/260219/235908
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=356238000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Umtausch ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE3=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE4=XXXXXXXXXXXXXXXXXXX
+Herr ADRESSZEILE5=
+XXXXXXXXXXXXXXXXXXX ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+XXXXXXXXXXXXXXXXXXX BELEGNUMMER=385
+XXXXXXXXXXXXXXXXXXX 356238000 91490290 / 26.02.2019 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+XXXXXXXXXXXXXXXXXXX
+Frankfurt am Main, 26.02.2019
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Lyxor MSCI AC As.Pa.x Ja.U.ETF Act. au Port. Acc o.N. FR0010312124
+Nominal Ex-Tag
+STK 1,9315 22.02.2019
+Verwahrart
+Girosammelverwahrung
+Kapitalertragsteuer USD 0,29-
+Solidaritätszuschlag USD 0,01-
+Ausmachender Betrag USD 0,30-
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Lasten
+22.02.2019 356238049 EUR/USD 1,13375 EUR 0,27
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Gesamtveräußerungsergebnis vor Anwendung einer TFQ EUR 1,49
+Veräußerungsgewinn Fonds EUR 1,04
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 1,04
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,26
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,01
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Itzehoe, Steuernummer 18/297/13562.
+Es folgt Seite 2
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREEREIABSTUM/GDBVKAPU/000385/270219/002536
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=356238000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+ADRESSZEILE1=Herr
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. ADRESSZEILE2=XXXXXXXXXXXXXXXXXXX
+356238000 91490290 2 ADRESSZEILE3=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE4=XXXXXXXXXXXXXXXXXXX
+ADRESSZEILE5=
+ADRESSZEILE6=
+BELEGNUMMER=385
+Jahressteuerbescheinigung folgt SEITENNUMMER=2
+STEUERERSTATTUNG=N
+Wir werden in Ihrem Depot wie angegeben buchen.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+onvista bank Wildunger Straße 6a 60487 Frankfurt am Main T: +49 (0)69-7107-0 F: +49 (0)69-7107-100 info@onvista-bank.de www.onvista-bank.de
+onvista bank ist eine Marke der comdirect bank AG
+Sitz der comdirect bank AG: Pascalkehre 15 25451 Quickborn (AG Pinneberg HRB 4889) T: +49 (0)4106-704-0 F: +49 (0)4106-708-258-5 www.comdirect.de
+Vorstand: Arno Walter (Vorsitzender), Dietmar von Blücher, Matthias Hach Vorsitzender des Aufsichtsrates: Michael Mandel
+3.18/ABREEREIABSTUM/GDBVKAPU/000385/270219/002536

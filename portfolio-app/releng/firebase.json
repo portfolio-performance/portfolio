@@ -1,0 +1,7 @@
+{
+  "hosting": [ {
+      "target": "updatesite",
+      "public": "updatesite"
+    }
+  ]
+}

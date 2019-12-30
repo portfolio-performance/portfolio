@@ -3,6 +3,8 @@ package name.abuchen.portfolio.money;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 
@@ -153,6 +155,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> AmountShort = new Values<Long>("#,##0", 100D, 100) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long amount)
+        {
+            return format.format(amount / divider());
+        }
+    };
+
     public static final Values<Long> Share = new Values<Long>("#,##0.######", 1000000D, 1000000) //$NON-NLS-1$
     {
         private final DecimalFormat format = new DecimalFormat(pattern());
@@ -195,6 +208,20 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1D, 1) //$NON-NLS-1$
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+
+        @Override
+        public String format(LocalDateTime date)
+        {
+            if (date.toLocalTime().equals(LocalTime.MIDNIGHT))
+                return Values.Date.format(date.toLocalDate());
+            else
+                return formatter.format(date);
+        }
+    };
+
     public static final Values<Double> Percent = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
     {
         @Override
@@ -231,6 +258,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer weight)
+        {
+            return String.format("%,.2f%%", weight / divider()); //$NON-NLS-1$
+        }
+    };
+                    
     public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
     {
         @Override
@@ -270,12 +306,14 @@ public abstract class Values<E>
     private final String pattern;
     private final double divider;
     private final int factor;
+    private final BigDecimal bdFactor;
 
     private Values(String pattern, double divider, int factor)
     {
         this.pattern = pattern;
         this.divider = divider;
         this.factor = factor;
+        this.bdFactor = BigDecimal.valueOf(factor);
     }
 
     public String pattern()
@@ -291,6 +329,14 @@ public abstract class Values<E>
     public int factor()
     {
         return factor;
+    }
+
+    /**
+     * Returns the factor as BigDecimal
+     */
+    public BigDecimal getBigDecimalFactor()
+    {
+        return bdFactor;
     }
 
     public long factorize(double value)

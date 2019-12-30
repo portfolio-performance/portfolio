@@ -1,9 +1,14 @@
 package name.abuchen.portfolio.bootstrap;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -16,17 +21,20 @@ import org.eclipse.e4.core.services.statusreporter.StatusReporter;
 import org.eclipse.e4.ui.internal.workbench.swt.IEventLoopAdvisor;
 import org.eclipse.e4.ui.model.application.MAddon;
 import org.eclipse.e4.ui.model.application.MApplication;
-import org.eclipse.e4.ui.model.application.MApplicationElement;
 import org.eclipse.e4.ui.model.application.ui.MElementContainer;
 import org.eclipse.e4.ui.model.application.ui.MUIElement;
+import org.eclipse.e4.ui.model.application.ui.advanced.MPerspective;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
+import org.eclipse.e4.ui.model.application.ui.basic.MWindow;
+import org.eclipse.e4.ui.workbench.IModelResourceHandler;
 import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.Selector;
 import org.eclipse.e4.ui.workbench.lifecycle.PostContextCreate;
 import org.eclipse.e4.ui.workbench.lifecycle.PreSave;
 import org.eclipse.e4.ui.workbench.lifecycle.ProcessRemovals;
 import org.eclipse.e4.ui.workbench.modeling.EModelService;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
+import org.eclipse.emf.ecore.EObject;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.util.EcoreUtil;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.osgi.framework.FrameworkUtil;
@@ -37,7 +45,6 @@ import org.osgi.service.prefs.BackingStoreException;
 public class LifeCycleManager
 {
     private static final String MODEL_VERSION = "model.version"; //$NON-NLS-1$
-    private static final String FORCE_CLEAR_PERSISTED_STATE = "model.forceClearPersistedState"; //$NON-NLS-1$
 
     @Inject
     @Preference(nodePath = "name.abuchen.portfolio.bootstrap")
@@ -105,25 +112,29 @@ public class LifeCycleManager
         {
             logger.info(MessageFormat.format(
                             "Detected model change from version {0} to version {1}; clearing persisted state", //$NON-NLS-1$
-                            modelVersion.toString(), programVersion.toString()));
+                            modelVersion, programVersion));
             System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
         }
     }
 
     private void checkForRequestToClearPersistedState()
     {
-        boolean forceClearPersistedState = Boolean
-                        .parseBoolean(preferences.get(FORCE_CLEAR_PERSISTED_STATE, Boolean.FALSE.toString()));
+        boolean forceClearPersistedState = Boolean.parseBoolean(
+                        preferences.get(ModelConstants.FORCE_CLEAR_PERSISTED_STATE, Boolean.FALSE.toString()));
 
         if (forceClearPersistedState)
         {
             logger.info(MessageFormat.format("Clearing persisted state due to ''{0}=true''", //$NON-NLS-1$
-                            FORCE_CLEAR_PERSISTED_STATE));
+                            ModelConstants.FORCE_CLEAR_PERSISTED_STATE));
             System.setProperty(IWorkbench.CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
+
+            // set as system property so that the ResourceWindowStateProcessor
+            // does not attempt to merge parts of the old model into the new one
+            System.setProperty(ModelConstants.FORCE_CLEAR_PERSISTED_STATE, Boolean.TRUE.toString());
 
             try
             {
-                preferences.remove(FORCE_CLEAR_PERSISTED_STATE);
+                preferences.remove(ModelConstants.FORCE_CLEAR_PERSISTED_STATE);
                 preferences.flush();
             }
             catch (BackingStoreException e)
@@ -162,7 +173,7 @@ public class LifeCycleManager
                 }
                 else
                 {
-                    exception.printStackTrace();
+                    exception.printStackTrace(); // NOSONAR
                 }
             }
 
@@ -178,7 +189,7 @@ public class LifeCycleManager
                 if (!"org.eclipse.swt.widgets.Control".equals(stackTrace[0].getClassName())) //$NON-NLS-1$
                     return false;
 
-                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$
+                if (!"internal_new_GC".equals(stackTrace[0].getMethodName())) //$NON-NLS-1$ NOSONAR
                     return false;
 
                 return true;
@@ -202,10 +213,11 @@ public class LifeCycleManager
     }
 
     @PreSave
-    public void doPreSave(MApplication app, EPartService partService, EModelService modelService)
+    public void doPreSave(MApplication app, EModelService modelService, IModelResourceHandler handler)
     {
         saveModelVersion();
-        removePortfolioPartsWithoutPersistedFile(app, partService, modelService);
+        removePortfolioPartsWithoutPersistedFile(app, modelService);
+        saveCopyOfApplicationModel(app, handler);
     }
 
     private void saveModelVersion()
@@ -227,29 +239,96 @@ public class LifeCycleManager
         }
     }
 
-    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EPartService partService,
-                    EModelService modelService)
+    private void removePortfolioPartsWithoutPersistedFile(MApplication app, EModelService modelService)
     {
         List<MPart> parts = modelService.findElements(app, MPart.class, EModelService.IN_ACTIVE_PERSPECTIVE,
-                        new Selector()
-                        {
-                            @Override
-                            public boolean select(MApplicationElement element)
-                            {
-                                if (!"name.abuchen.portfolio.ui.part.portfolio".equals(element.getElementId())) //$NON-NLS-1$
-                                    return false;
-                                return element.getPersistedState().get("file") == null; //$NON-NLS-1$
-                            }
+                        element -> {
+                            if (!ModelConstants.PORTFOLIO_PART.equals(element.getElementId()))
+                                return false;
+                            return element.getPersistedState().get("file") == null; //$NON-NLS-1$
                         });
+
+        Set<MElementContainer<?>> parentsWithRemovedChildren = new HashSet<>();
 
         for (MPart part : parts)
         {
             MElementContainer<MUIElement> parent = part.getParent();
 
-            if (parent.getSelectedElement().equals(part))
+            if (part.equals(parent.getSelectedElement()))
                 parent.setSelectedElement(null);
 
             parent.getChildren().remove(part);
+            parentsWithRemovedChildren.add(parent);
+        }
+
+        for (MElementContainer<?> container : parentsWithRemovedChildren)
+        {
+            if (modelService.isLastEditorStack(container))
+                break;
+
+            if (container.getChildren().isEmpty())
+            {
+                MElementContainer<MUIElement> parent = container.getParent();
+                if (parent != null)
+                {
+                    container.setToBeRendered(false);
+
+                    if (container.equals(parent.getSelectedElement()))
+                        parent.setSelectedElement(null);
+                    parent.getChildren().remove(container);
+                }
+                else if (container instanceof MWindow)
+                {
+                    // Must be a Detached Window
+                    MUIElement eParent = (MUIElement) ((EObject) container).eContainer();
+                    if (eParent instanceof MPerspective)
+                    {
+                        ((MPerspective) eParent).getWindows().remove(container);
+                    }
+                    else if (eParent instanceof MWindow)
+                    {
+                        ((MWindow) eParent).getWindows().remove(container);
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * Save a copy of the application model so that the
+     * {@link MergeOldLayoutIntoCurrentApplicationModelProcessor} can merge the
+     * layout back if the application has been updated.
+     */
+    private void saveCopyOfApplicationModel(MApplication app, IModelResourceHandler handler)
+    {
+        try
+        {
+            MApplication appCopy = (MApplication) EcoreUtil.copy((EObject) app);
+            Resource resource = handler.createResourceWithApp(appCopy);
+
+            File file = new File(Platform.getStateLocation(FrameworkUtil.getBundle(LifeCycleManager.class)).toFile(),
+                            ModelConstants.E4XMICOPY_FILENAME);
+
+            try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file)))
+            {
+                resource.save(out, null);
+            }
+            catch (IOException e)
+            {
+                // nothing to do: if no copy of the application model exist when
+                // clearing the persisted state (for example after an upgrade),
+                // then the user has to start with an empty layout
+                logger.error(e);
+            }
+
+            resource.unload();
+            resource.getResourceSet().getResources().remove(resource);
+        }
+        catch (IllegalArgumentException e)
+        {
+            // error while copying application model
+            logger.error(e);
         }
     }
 }

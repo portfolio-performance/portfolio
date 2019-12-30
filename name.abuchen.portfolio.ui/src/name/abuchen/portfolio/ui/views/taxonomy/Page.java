@@ -2,10 +2,10 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdatedListener;
 
@@ -35,13 +35,18 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
         return renderer;
     }
 
-    public IPreferenceStore getPreferenceStore()
+    public final IPreferenceStore getPreferenceStore()
     {
         return preferenceStore;
     }
 
-    public void showConfigMenu(Shell shell)
-    {}
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+    }
+
+    public void exportMenuAboutToShow(IMenuManager manager)
+    {
+    }
 
     public abstract Control createControl(Composite parent);
 
@@ -50,5 +55,6 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
     public abstract void afterPage();
 
     public void dispose()
-    {}
+    {
+    }
 }

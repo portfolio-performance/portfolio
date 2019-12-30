@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.wizards.splits;
 
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
@@ -30,22 +31,24 @@ public class PreviewQuotesPage extends AbstractWizardPage
 {
     private class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
     {
+        @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
             return null;
         }
 
+        @Override
         public String getColumnText(Object element, int columnIndex)
         {
             SecurityPrice p = (SecurityPrice) element;
             switch (columnIndex)
             {
                 case 0:
-                    return Values.Date.format(p.getTime());
+                    return Values.Date.format(p.getDate());
                 case 1:
                     return Values.Quote.format(p.getValue());
                 case 2:
-                    if (model.isChangeHistoricalQuotes() && p.getTime().isBefore(model.getExDate()))
+                    if (model.isChangeHistoricalQuotes() && p.getDate().isBefore(model.getExDate()))
                     {
                         long shares = p.getValue() * model.getOldShares() / model.getNewShares();
                         return Values.Quote.format(shares);
@@ -119,8 +122,10 @@ public class PreviewQuotesPage extends AbstractWizardPage
 
         DataBindingContext context = new DataBindingContext();
 
-        context.bindValue(WidgetProperties.selection().observe(checkbox), //
-                        BeanProperties.value("changeHistoricalQuotes").observe(model)); //$NON-NLS-1$
+        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelObservable = BeanProperties.value("changeHistoricalQuotes").observe(model); //$NON-NLS-1$
+        context.bindValue(targetObservable, modelObservable);
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {

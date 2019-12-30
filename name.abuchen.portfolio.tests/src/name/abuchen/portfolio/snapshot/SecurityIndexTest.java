@@ -19,6 +19,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 public class SecurityIndexTest
 {
@@ -35,7 +36,7 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, startPrice) //
+                        .deposit_(startDate.atStartOfDay(), startPrice) //
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
@@ -46,9 +47,9 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -79,8 +80,8 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
-                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
+                        .interest(startDate.atStartOfDay().plusDays(10), 10 * Values.Amount.factor()) //
                         .addTo(client);
 
         Security security = new SecurityBuilder() //
@@ -91,9 +92,9 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -134,8 +135,8 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
-                        .interest(startDate.plusDays(10), 10 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
+                        .interest(startDate.atStartOfDay().plusDays(10), 10 * Values.Amount.factor()) //
                         .addTo(client);
 
         int startPrice = 50 * Values.Amount.factor();
@@ -148,9 +149,9 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts
@@ -186,7 +187,7 @@ public class SecurityIndexTest
         Client client = new Client();
 
         new AccountBuilder() //
-                        .deposit_(startDate, 100 * Values.Amount.factor()) //
+                        .deposit_(startDate.atStartOfDay(), 100 * Values.Amount.factor()) //
                         .addTo(client);
 
         Security security = new Security();
@@ -196,9 +197,9 @@ public class SecurityIndexTest
 
         List<Exception> warnings = new ArrayList<Exception>();
 
-        ReportingPeriod reportInterval = new ReportingPeriod.FromXtoY(startDate, endDate);
+        Interval reportInterval = Interval.of(startDate, endDate);
         CurrencyConverter converter = new TestCurrencyConverter();
-        ClientIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
+        PerformanceIndex clientIndex = PerformanceIndex.forClient(client, converter, reportInterval, warnings);
         PerformanceIndex securityIndex = PerformanceIndex.forSecurity(clientIndex, security);
 
         // asserts

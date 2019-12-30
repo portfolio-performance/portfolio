@@ -8,6 +8,7 @@ import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -34,9 +35,8 @@ public class DetectDuplicatesActionTest
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
 
-        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount")
-                        .before((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(),
-                                        is(Code.WARNING)))
+        new PropertyChecker<AccountTransaction>(AccountTransaction.class, "note", "forex", "monetaryAmount").before(
+                        (name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.WARNING)))
                         .after((name, o, c) -> assertThat(name, action.process(o, account(c)).getCode(), is(Code.OK)))
                         .run();
     }
@@ -59,6 +59,7 @@ public class DetectDuplicatesActionTest
     private Account account(AccountTransaction t)
     {
         Account a = new Account();
+        a.setCurrencyCode(t.getCurrencyCode());
         a.addTransaction(t);
         return a;
     }
@@ -124,8 +125,8 @@ public class DetectDuplicatesActionTest
 
         private void check(PropertyDescriptor change) throws Exception
         {
-            T instance = type.newInstance();
-            T other = type.newInstance();
+            T instance = type.getDeclaredConstructor().newInstance();
+            T other = type.getDeclaredConstructor().newInstance();
 
             for (PropertyDescriptor p : properties)
             {
@@ -155,6 +156,10 @@ public class DetectDuplicatesActionTest
             else if (propertyType == LocalDate.class)
             {
                 return LocalDate.of(1999, 1, 1);
+            }
+            else if (propertyType == LocalDateTime.class)
+            {
+                return LocalDateTime.of(1999, 1, 1, 0, 0, 0);
             }
             else if (propertyType == Security.class)
             {
@@ -189,6 +194,10 @@ public class DetectDuplicatesActionTest
             else if (propertyType == LocalDate.class)
             {
                 return LocalDate.of(2000 + random.nextInt(30), 1, 1);
+            }
+            else if (propertyType == LocalDateTime.class)
+            {
+                return LocalDateTime.of(2000 + random.nextInt(30), 1, 1, 0, 0, 0);
             }
             else if (propertyType == Security.class)
             {

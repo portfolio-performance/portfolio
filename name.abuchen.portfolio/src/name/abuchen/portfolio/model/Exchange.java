@@ -6,7 +6,8 @@ public class Exchange
     private String name;
 
     public Exchange()
-    {}
+    {
+    }
 
     public Exchange(String id, String name)
     {

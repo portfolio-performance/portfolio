@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Optional;
+
 public final class Adaptor
 {
     public static <T> T adapt(Class<T> type, Object subject)
@@ -16,6 +18,12 @@ public final class Adaptor
         return null;
     }
 
+    public static <T> Optional<T> optionally(Class<T> type, Object subject)
+    {
+        return Optional.ofNullable(adapt(type, subject));
+    }
+
     private Adaptor()
-    {}
+    {
+    }
 }

@@ -15,7 +15,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.util.Interval;
 
 public class IssueCurrencyGainsRoundingError
 {
@@ -25,7 +25,7 @@ public class IssueCurrencyGainsRoundingError
         Client client = ClientFactory.load(IssueCurrencyGainsRoundingError.class
                         .getResourceAsStream("IssueCurrencyGainsRoundingError.xml")); //$NON-NLS-1$
 
-        ReportingPeriod period = new ReportingPeriod.FromXtoY(LocalDate.parse("2015-01-09"), //$NON-NLS-1$
+        Interval period = Interval.of(LocalDate.parse("2015-01-09"), //$NON-NLS-1$
                         LocalDate.parse("2016-01-09")); //$NON-NLS-1$
 
         CurrencyConverter converter = new TestCurrencyConverter();

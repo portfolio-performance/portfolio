@@ -18,7 +18,12 @@ public class NoteColumn extends Column
 {
     public NoteColumn()
     {
-        super("note", Messages.ColumnNote, SWT.LEFT, 22); //$NON-NLS-1$
+        this("note"); //$NON-NLS-1$
+    }
+
+    public NoteColumn(String id)
+    {
+        super(id, Messages.ColumnNote, SWT.LEFT, 22);
 
         setLabelProvider(new ColumnLabelProvider()
         {
@@ -43,7 +48,8 @@ public class NoteColumn extends Column
             @Override
             public String getToolTipText(Object e)
             {
-                return TextUtil.wordwrap(getText(e));
+                String note = getText(e);
+                return note == null || note.isEmpty() ? null : TextUtil.wordwrap(note);
             }
 
         });

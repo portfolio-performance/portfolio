@@ -11,8 +11,8 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.selection.SelectionService;
 
 public class UpdateQuotesHandler
 {
@@ -24,16 +24,19 @@ public class UpdateQuotesHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Named("name.abuchen.portfolio.ui.param.target") @Optional String target)
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell, SelectionService selectionService,
+                    @Named("name.abuchen.portfolio.ui.param.only-current-security") @Optional String onlyCurrentSecurity)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
-            return;
-
-        UpdateQuotesJob.Target t = "historic".equals(target) ? UpdateQuotesJob.Target.HISTORIC //$NON-NLS-1$
-                        : UpdateQuotesJob.Target.LATEST;
-
-        new UpdateQuotesJob(client, EnumSet.of(t)).schedule();
+        MenuHelper.getActiveClient(part).ifPresent(client -> {
+            if (Boolean.parseBoolean(onlyCurrentSecurity))
+            {
+                selectionService.getSelection(client)
+                                .ifPresent(s -> new UpdateQuotesJob(client, s.getSecurity()).schedule());
+            }
+            else
+            {
+                new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
+            }
+        });
     }
 }

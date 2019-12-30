@@ -7,15 +7,15 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
-
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 
 public class TableViewerCSVExporter extends AbstractCSVExporter
 {
@@ -27,9 +27,9 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
     }
 
     @Override
-    protected Control getControl()
+    protected Shell getShell()
     {
-        return viewer.getTable();
+        return viewer.getTable().getShell();
     }
 
     @Override

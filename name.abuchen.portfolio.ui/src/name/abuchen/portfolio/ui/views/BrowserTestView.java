@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
-import name.abuchen.portfolio.ui.AbstractFinanceView;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
 import org.eclipse.swt.widgets.Composite;

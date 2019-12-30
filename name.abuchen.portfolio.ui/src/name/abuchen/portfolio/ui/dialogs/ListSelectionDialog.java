@@ -123,7 +123,7 @@ public class ListSelectionDialog extends Dialog
         label.setText(this.message);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
 
-        searchText = new Text(container, SWT.BORDER);
+        searchText = new Text(container, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(searchText);
         searchText.setFocus();
 

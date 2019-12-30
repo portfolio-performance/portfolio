@@ -16,6 +16,7 @@ import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -51,7 +52,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
     private abstract static class ViewerPolicy
     {
-        private org.eclipse.swt.widgets.Listener sortOrderChangedListener;
+        /**
+         * The changeListener is attached to various SWT events (ordering,
+         * resizing or moving columns) in order to store the updated
+         * configuration.
+         */
+        private org.eclipse.swt.widgets.Listener changeListener;
 
         abstract ColumnViewer getViewer();
 
@@ -87,14 +93,20 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
                 // add selection listener *after* attaching the viewer sorter
                 // because the viewer sorter will add a listener that actually
                 // changes the sort order
-                if (sortOrderChangedListener != null)
-                    getColumnWidget(viewerColumn).addListener(SWT.Selection, sortOrderChangedListener);
+                if (changeListener != null)
+                    getColumnWidget(viewerColumn).addListener(SWT.Selection, changeListener);
             }
 
             if (column.getEditingSupport() != null)
             {
                 viewerColumn.setEditingSupport(
                                 new ColumnEditingSupportWrapper(getViewer(), column.getEditingSupport()));
+            }
+
+            if (changeListener != null)
+            {
+                getColumnWidget(viewerColumn).addListener(SWT.Resize, changeListener);
+                getColumnWidget(viewerColumn).addListener(SWT.Move, changeListener);
             }
         }
 
@@ -103,9 +115,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             getViewer().getControl().setRedraw(redraw);
         }
 
-        public void setSortOrderChangedListener(org.eclipse.swt.widgets.Listener sortOrderChangedListener)
+        public void setChangeListener(org.eclipse.swt.widgets.Listener changeListener)
         {
-            this.sortOrderChangedListener = sortOrderChangedListener;
+            this.changeListener = changeListener;
         }
     }
 
@@ -183,6 +195,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             tableColumn.setMoveable(true);
             tableColumn.setWidth(width);
             tableColumn.setData(Column.class.getName(), column);
+
+            if (column.getImage() != null)
+                tableColumn.setImage(column.getImage().image());
 
             if (option == null)
             {
@@ -286,6 +301,9 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             treeColumn.setWidth(width);
             treeColumn.setData(Column.class.getName(), column);
 
+            if (column.getImage() != null)
+                treeColumn.setImage(column.getImage().image());
+
             if (option == null)
             {
                 treeColumn.setText(column.getLabel());
@@ -347,7 +365,7 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         if (client != null)
         {
             this.store = new ConfigurationStore(identifier, client, preferences, this);
-            this.policy.setSortOrderChangedListener(e -> store.updateActive(serialize()));
+            this.policy.setChangeListener(e -> store.updateActive(serialize()));
         }
 
         this.policy.getViewer().getControl().addDisposeListener(e -> ShowHideColumnHelper.this.widgetDisposed());
@@ -362,9 +380,6 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
 
         if (contextMenu != null)
             contextMenu.dispose();
-
-        if (store != null)
-            store.dispose();
     }
 
     public String getConfigurationName()
@@ -377,12 +392,12 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         this.listeners.add(l);
     }
 
-    public void showSaveMenu(Shell shell)
+    public void setToolBarManager(ToolBarManager toolBar)
     {
         if (store == null)
-            throw new UnsupportedOperationException();
+            throw new NullPointerException("store"); //$NON-NLS-1$
 
-        store.showMenu(shell);
+        store.setToolBarManager(toolBar);
     }
 
     public void showHideShowColumnsMenu(Shell shell)

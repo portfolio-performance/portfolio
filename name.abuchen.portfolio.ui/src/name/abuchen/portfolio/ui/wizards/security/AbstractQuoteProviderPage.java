@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,28 +8,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -38,6 +33,17 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.CSQuoteFeed;
+import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
+import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.util.BindingHelper;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
@@ -58,7 +64,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             {
                 Security s = buildTemporarySecurity();
 
-                List<Exception> errors = new ArrayList<Exception>();
+                List<Exception> errors = new ArrayList<>();
                 cacheExchanges.put(feed, feed.getExchanges(s, errors));
 
                 PortfolioPlugin.log(errors);
@@ -124,19 +130,25 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private Group grpQuoteFeed;
     private Label labelDetailData;
+
     private ComboViewer comboExchange;
     private Text textFeedURL;
+    private Text textTicker;
+
+    private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
 
     private final EditSecurityModel model;
+    private final BindingHelper bindings;
 
     // used to identify if the ticker has been changed on another page
     private String tickerSymbol;
 
-    private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<QuoteFeed, List<Exchange>>();
+    private Map<QuoteFeed, List<Exchange>> cacheExchanges = new HashMap<>();
 
-    protected AbstractQuoteProviderPage(EditSecurityModel model)
+    protected AbstractQuoteProviderPage(EditSecurityModel model, BindingHelper bindings)
     {
         this.model = model;
+        this.bindings = bindings;
     }
 
     protected final EditSecurityModel getModel()
@@ -174,7 +186,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             this.tickerSymbol = model.getTickerSymbol();
 
             // clear caches
-            cacheExchanges = new HashMap<QuoteFeed, List<Exchange>>();
+            cacheExchanges = new HashMap<>();
             reinitCaches();
 
             new LoadExchangesJob().schedule();
@@ -197,7 +209,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
         setFeed(feed.getId());
 
-        if (comboExchange != null && feed.getId() != null && feed.getId().startsWith(YAHOO))
+        if (comboExchange != null && feed.getId() != null
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)))
         {
             Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
             if (exchange != null)
@@ -235,14 +248,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         setupInitialData();
 
-        comboProvider.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            @Override
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                onFeedProviderChanged(event);
-            }
-        });
+        comboProvider.addSelectionChangedListener(this::onFeedProviderChanged);
     }
 
     /**
@@ -255,6 +261,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         // create a temporary security and set all attributes
         Security security = new Security();
         model.setAttributes(security);
+        model.getSecurity().getProperties().forEach(security::addProperty);
         return security;
     }
 
@@ -262,10 +269,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     {
         grpQuoteFeed = new Group(container, SWT.NONE);
         grpQuoteFeed.setText(Messages.LabelQuoteFeed);
-        FormData fd_grpQuoteFeed = new FormData();
-        fd_grpQuoteFeed.top = new FormAttachment(0, 5);
-        fd_grpQuoteFeed.left = new FormAttachment(0, 10);
-        grpQuoteFeed.setLayoutData(fd_grpQuoteFeed);
+        FormData formData = new FormData();
+        formData.top = new FormAttachment(0, 5);
+        formData.left = new FormAttachment(0, 10);
+        grpQuoteFeed.setLayoutData(formData);
         GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(grpQuoteFeed);
 
         Label lblProvider = new Label(grpQuoteFeed, SWT.NONE);
@@ -292,85 +299,80 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void createDetailDataWidgets(QuoteFeed feed)
     {
-        boolean dropDown = feed != null && feed.getId() != null && feed.getId().startsWith(YAHOO);
-        boolean feedURL = feed != null && feed.getId() != null && feed.getId().indexOf(HTML) >= 0;
+        boolean dropDown = feed != null && feed.getId() != null
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID));
+        boolean feedURL = feed != null && feed.getId() != null
+                        && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID));
+        boolean needsTicker = feed != null && feed.getId() != null && feed.getId().equals(AlphavantageQuoteFeed.ID);
+
+        if (textFeedURL != null)
+        {
+            textFeedURL.dispose();
+            textFeedURL = null;
+        }
+
+        if (comboExchange != null)
+        {
+            comboExchange.getControl().dispose();
+            comboExchange = null;
+        }
+
+        if (textTicker != null)
+        {
+            textTicker.dispose();
+            textTicker = null;
+
+            model.removePropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
+        }
 
         if (dropDown)
         {
             labelDetailData.setText(Messages.LabelExchange);
 
-            if (textFeedURL != null)
+            comboExchange = new ComboViewer(grpQuoteFeed, SWT.READ_ONLY);
+            comboExchange.setContentProvider(ArrayContentProvider.getInstance());
+            comboExchange.setLabelProvider(new LabelProvider()
             {
-                textFeedURL.dispose();
-                textFeedURL = null;
-            }
-
-            if (comboExchange == null)
-            {
-                comboExchange = new ComboViewer(grpQuoteFeed, SWT.READ_ONLY);
-                comboExchange.setContentProvider(ArrayContentProvider.getInstance());
-                comboExchange.setLabelProvider(new LabelProvider()
+                @Override
+                public String getText(Object element)
                 {
-                    @Override
-                    public String getText(Object element)
-                    {
-                        return ((Exchange) element).getName();
-                    }
-                });
-                GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
+                    Exchange exchange = (Exchange) element;
+                    return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
+                }
+            });
+            GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
 
-                comboExchange.addSelectionChangedListener(new ISelectionChangedListener()
-                {
-                    @Override
-                    public void selectionChanged(SelectionChangedEvent event)
-                    {
-                        onExchangeChanged(event);
-                    }
-                });
-            }
+            comboExchange.addSelectionChangedListener(this::onExchangeChanged);
         }
         else if (feedURL)
         {
             labelDetailData.setText(Messages.EditWizardQuoteFeedLabelFeedURL);
 
-            if (comboExchange != null)
-            {
-                comboExchange.getControl().dispose();
-                comboExchange = null;
-            }
+            textFeedURL = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(textFeedURL);
 
-            if (textFeedURL == null)
-            {
-                textFeedURL = new Text(grpQuoteFeed, SWT.BORDER);
-                GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(textFeedURL);
+            textFeedURL.addModifyListener(e -> onFeedURLChanged());
+        }
+        else if (needsTicker)
+        {
+            labelDetailData.setText(Messages.ColumnTicker);
 
-                textFeedURL.addModifyListener(new ModifyListener()
-                {
-                    @Override
-                    public void modifyText(ModifyEvent e)
-                    {
-                        onFeedURLChanged();
-                    }
-                });
-            }
+            textTicker = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
+
+            IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("tickerSymbol").observe(model); //$NON-NLS-1$
+            bindings.getBindingContext().bindValue(observeText, observable);
+
+            model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
         else
         {
             labelDetailData.setText(""); //$NON-NLS-1$
-
-            if (comboExchange != null)
-            {
-                comboExchange.getControl().dispose();
-                comboExchange = null;
-            }
-
-            if (textFeedURL != null)
-            {
-                textFeedURL.dispose();
-                textFeedURL = null;
-            }
         }
 
+        grpQuoteFeed.layout(true);
         grpQuoteFeed.getParent().layout();
     }
 
@@ -385,10 +387,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createDetailDataWidgets(feed);
 
-        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null && feed.getId().startsWith("YAHOO")) //$NON-NLS-1$
+        if (model.getTickerSymbol() != null && feed != null && feed.getId() != null
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)))
         {
             Exchange exchange = new Exchange(model.getTickerSymbol(), model.getTickerSymbol());
-            ArrayList<Exchange> input = new ArrayList<Exchange>();
+            ArrayList<Exchange> input = new ArrayList<>();
             input.add(exchange);
             comboExchange.setInput(input);
             comboExchange.setSelection(new StructuredSelection(exchange));
@@ -502,4 +505,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             setStatus(null);
         }
     }
+
+    private void onTickerSymbolChanged()
+    {
+        boolean hasTicker = model.getTickerSymbol() != null && !model.getTickerSymbol().isEmpty();
+
+        if (!hasTicker)
+        {
+            clearSampleQuotes();
+            setStatus(MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnTicker));
+        }
+        else
+        {
+            QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+            showSampleQuotes(feed, null);
+            setStatus(null);
+        }
+    }
+
 }

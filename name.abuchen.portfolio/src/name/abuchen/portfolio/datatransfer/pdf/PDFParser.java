@@ -19,25 +19,37 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 {
     /* package */static class DocumentType
     {
-        private String marker;
+        private List<Pattern> mustInclude = new ArrayList<>();
+
         private List<Block> blocks = new ArrayList<>();
         private Map<String, String> context = new HashMap<>();
         private BiConsumer<Map<String, String>, String[]> contextProvider;
 
-        public DocumentType(String marker)
+        public DocumentType(List<Pattern> mustInclude)
         {
-            this(marker, null);
+            this.mustInclude.addAll(mustInclude);
         }
 
-        public DocumentType(String marker, BiConsumer<Map<String, String>, String[]> contextProvider)
+        public DocumentType(String mustInclude)
         {
-            this.marker = marker;
+            this(mustInclude, null);
+        }
+
+        public DocumentType(String mustInclude, BiConsumer<Map<String, String>, String[]> contextProvider)
+        {
+            this.mustInclude.add(Pattern.compile(mustInclude));
             this.contextProvider = contextProvider;
         }
 
         public boolean matches(String text)
         {
-            return text.contains(marker);
+            for (Pattern pattern : mustInclude)
+            {
+                if (!pattern.matcher(text).find())
+                    return false;
+            }
+
+            return true;
         }
 
         public void addBlock(Block block)
@@ -149,6 +161,47 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return section;
         }
 
+        @SafeVarargs
+        public final Transaction<T> oneOf(Function<Section<T>, Transaction<T>>... alternatives)
+        {
+            List<Section<T>> subSections = new ArrayList<>();
+            for (Function<Section<T>, Transaction<T>> function : alternatives)
+            {
+                Section<T> s = new Section<>(this, null);
+                function.apply(s);
+                subSections.add(s);
+            }
+
+            sections.add(new Section<T>(this, null)
+            {
+                @Override
+                public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
+                {
+                    List<String> errors = new ArrayList<>();
+
+                    for (Section<T> section : subSections)
+                    {
+                        try
+                        {
+                            section.parse(filename, lines, lineNo, lineNoEnd, target);
+
+                            // if parsing was successful, then return
+                            return;
+                        }
+                        catch (IllegalArgumentException ignore)
+                        {
+                            // try next sub-section
+                            errors.add(ignore.getMessage());
+                        }
+                    }
+
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoneOfSubSectionsMatched,
+                                    String.valueOf(subSections.size()), String.join("; ", errors))); //$NON-NLS-1$
+                }
+            });
+            return this;
+        }
+
         public Transaction<T> wrap(Function<T, Item> wrapper)
         {
             this.wrapper = wrapper;
@@ -160,7 +213,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             T target = supplier.get();
 
             for (Section<T> section : sections)
-                section.parse(filename, items, lines, lineNoStart, lineNoEnd, target);
+                section.parse(filename, lines, lineNoStart, lineNoEnd, target);
 
             if (wrapper == null)
                 throw new IllegalArgumentException("Wrapping function missing"); //$NON-NLS-1$
@@ -183,6 +236,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         {
             this.transaction = transaction;
             this.attributes = attributes;
+        }
+
+        public Section<T> attributes(String... attributes)
+        {
+            this.attributes = attributes;
+            return this;
         }
 
         public Section<T> optional()
@@ -209,7 +268,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             return transaction;
         }
 
-        public void parse(String filename, List<Item> items, String[] lines, int lineNo, int lineNoEnd, T target)
+        public void parse(String filename, String[] lines, int lineNo, int lineNoEnd, T target)
         {
             Map<String, String> values = new HashMap<>();
 
@@ -265,5 +324,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     }
 
     private PDFParser()
-    {}
+    {
+    }
 }

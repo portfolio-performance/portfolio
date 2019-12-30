@@ -2,6 +2,7 @@ package name.abuchen.portfolio.money.impl;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,9 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
     }
 
     @Override
-    public ExchangeRateProvider getProvider()
+    public Optional<ExchangeRateProvider> getProvider()
     {
-        throw new UnsupportedOperationException();
+        return Optional.empty();
     }
 
     @Override
@@ -62,4 +63,18 @@ public class ChainedExchangeRateTimeSeries implements ExchangeRateTimeSeries
         return Optional.of(new ExchangeRate(requestedTime, value));
     }
 
+    @Override
+    public int getWeight()
+    {
+        int weight = 1;
+        for (int ii = 0; ii < series.length; ii++)
+            weight += series[ii].getWeight();
+        return weight;
+    }
+
+    @Override
+    public List<ExchangeRateTimeSeries> getComposition()
+    {
+        return Arrays.asList(series);
+    }
 }

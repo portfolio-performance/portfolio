@@ -13,7 +13,7 @@ public class TokenReplacingReader extends Reader
 {
     public interface ITokenResolver
     {
-        public String resolveToken(String tokenName);
+        public String resolveToken(String tokenName) throws IOException;
     }
 
     protected PushbackReader pushbackReader = null;
@@ -74,13 +74,13 @@ public class TokenReplacingReader extends Reader
     }
 
     @Override
-    public int read(char cbuf[]) throws IOException
+    public int read(char[] cbuf) throws IOException
     {
         return read(cbuf, 0, cbuf.length);
     }
 
     @Override
-    public int read(char cbuf[], int off, int len) throws IOException
+    public int read(char[] cbuf, int off, int len) throws IOException
     {
         int charsRead = 0;
         for (int i = 0; i < len; i++)

@@ -1,0 +1,27 @@
+PDF Author: 'motth' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Kunde 1.234.567.890 Herr
+Portfolio 1.234.567.890.01 Max Mustermann
+Musterweg 1
+1234 Schweiz
+Basel, 01.01.2018
+Börsenabrechnung - Kauf
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Kauf
+0.051 Ant CSIF SPI Extra
+ISIN: CH0110869143
+Kurs: CHF 2'051.86
+Betrag CHF 104.78
+ 
+Verrechneter Betrag: Valuta 04.07.2018 CHF 104.78
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

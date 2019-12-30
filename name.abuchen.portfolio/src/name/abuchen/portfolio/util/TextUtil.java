@@ -1,12 +1,19 @@
 package name.abuchen.portfolio.util;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public final class TextUtil
 {
+    public static final String PARAGRAPH_BREAK = "\n\n"; //$NON-NLS-1$
+
+    private static final String VALID_NUM_CHARACTERS = "0123456789,.'-"; //$NON-NLS-1$
+
     private TextUtil()
-    {}
+    {
+    }
 
     public static final String wordwrap(String text)
     {
@@ -24,8 +31,13 @@ public final class TextUtil
             if (wrapped.length() > 0)
                 wrapped.append("\n"); //$NON-NLS-1$
 
-            String substring = raw.substring(m.start(), m.end());
-            wrapped.append(substring.replaceAll("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
+            String fragment = raw.substring(m.start(), m.end());
+
+            // if fragment includes a line-break, do not add another one
+            if (fragment.length() > 0 && fragment.charAt(fragment.length() - 1) == '\n')
+                fragment = fragment.substring(0, fragment.length() - 1);
+
+            wrapped.append(fragment.replace("&", "&&")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         // remove added character needed to create a word boundary
@@ -34,6 +46,69 @@ public final class TextUtil
 
     public static final String tooltip(String text)
     {
-        return text == null ? null : text.replaceAll("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+        return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    public static final String sanitizeFilename(String label)
+    {
+        // https://stackoverflow.com/a/10151795/1158146
+
+        String filename = label;
+
+        try
+        {
+            filename = new String(label.getBytes(), StandardCharsets.UTF_8.name());
+        }
+        catch (UnsupportedEncodingException ignore)
+        {
+            // UTF-8 is available
+        }
+
+        // filter ? \ / : | < > // *
+        filename = filename.replaceAll("[\\?\\\\/:|<>\\*]", " "); //$NON-NLS-1$ //$NON-NLS-2$
+        filename = filename.replaceAll("\\s+", "_"); //$NON-NLS-1$ //$NON-NLS-2$
+        return filename;
+    }
+
+    /**
+     * Since {@see String#trim} does not trim all whitespace and space
+     * characters, this is an alternative implementation. Inspired by the blog
+     * post at http://closingbraces.net/2008/11/11/javastringtrim/
+     */
+    public static String strip(String value)
+    {
+        int len = value.length();
+        int st = 0;
+
+        while ((st < len) && (Character.isWhitespace(value.charAt(st)) || Character.isSpaceChar(value.charAt(st))))
+        {
+            st++;
+        }
+
+        while ((st < len) && (Character.isWhitespace(value.charAt(len - 1))
+                        || Character.isSpaceChar(value.charAt(len - 1))))
+        {
+            len--;
+        }
+        return ((st > 0) || (len < value.length())) ? value.substring(st, len) : value;
+
+    }
+
+    /**
+     * Removes unwanted characters before and after any number characters. Used
+     * when importing data from CSV files.
+     */
+    public static String stripNonNumberCharacters(String value)
+    {
+        int start = 0;
+        int len = value.length();
+
+        while ((start < len) && VALID_NUM_CHARACTERS.indexOf(value.charAt(start)) < 0)
+            start++;
+
+        while ((start < len) && VALID_NUM_CHARACTERS.indexOf(value.charAt(len - 1)) < 0)
+            len--;
+
+        return ((start > 0) || (len < value.length())) ? value.substring(start, len) : value;
     }
 }

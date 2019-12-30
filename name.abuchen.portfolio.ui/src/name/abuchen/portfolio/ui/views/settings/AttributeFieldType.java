@@ -6,8 +6,10 @@ import java.util.ResourceBundle;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.AmountConverter;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.DateConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
@@ -18,10 +20,12 @@ public enum AttributeFieldType
     STRING(String.class, StringConverter.class), //
     AMOUNT(Long.class, AmountConverter.class), //
     AMOUNTPLAIN(Long.class, AmountPlainConverter.class), //
+    PERCENT(Double.class, PercentConverter.class), //
     PERCENTPLAIN(Double.class, PercentPlainConverter.class), //
     QUOTE(Long.class, QuoteConverter.class), //
     SHARE(Long.class, ShareConverter.class), //
-    DATE(LocalDate.class, DateConverter.class);
+    DATE(LocalDate.class, DateConverter.class), //
+    BOOLEAN(Boolean.class, BooleanConverter.class);
 
     private static final ResourceBundle RESOURCES = ResourceBundle
                     .getBundle("name.abuchen.portfolio.ui.views.settings.labels"); //$NON-NLS-1$
@@ -51,6 +55,7 @@ public enum AttributeFieldType
                         && type.isAssignableFrom(attribute.getType());
     }
 
+    @Override
     public String toString()
     {
         return RESOURCES.getString(name() + ".name"); //$NON-NLS-1$

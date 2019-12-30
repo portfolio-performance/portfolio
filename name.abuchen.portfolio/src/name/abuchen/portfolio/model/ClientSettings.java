@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
-import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
 public class ClientSettings
@@ -48,8 +48,6 @@ public class ClientSettings
                         "http://www.onvista.de/suche.html?SEARCH_VALUE={isin}&SELECTED_TOOL=ALL_TOOLS")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("Finanzen.net", //$NON-NLS-1$
                         "http://www.finanzen.net/suchergebnis.asp?frmAktiensucheTextfeld={isin}")); //$NON-NLS-1$
-        bookmarks.add(new Bookmark("finanztreff.de", //$NON-NLS-1$
-                        "http://www.finanztreff.de/kurse_einzelkurs_suche.htn?suchbegriff={isin}")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("Ariva.de Fundamentaldaten", //$NON-NLS-1$
                         "http://www.ariva.de/{isin}/bilanz-guv")); //$NON-NLS-1$
         bookmarks.add(new Bookmark("justETF", //$NON-NLS-1$
@@ -61,7 +59,10 @@ public class ClientSettings
         bookmarks.add(new Bookmark(
                         "maxblue Kauforder", //$NON-NLS-1$
                         "https://meine.deutsche-bank.de/trxm/db/init.do" //$NON-NLS-1$
-                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$         
+                                        + "?style=mb&style=mb&login=br24order&action=PurchaseSecurity2And3Steps&wknOrIsin={isin}")); //$NON-NLS-1$
+        bookmarks.add(new Bookmark("extraETF.com", //$NON-NLS-1$
+                        "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
+
     }
 
     private void addDefaultAttributeTypes()
@@ -71,7 +72,7 @@ public class ClientSettings
         ter.setColumnLabel(Messages.AttributesTERColumn);
         ter.setTarget(Security.class);
         ter.setType(Double.class);
-        ter.setConverter(PercentPlainConverter.class);
+        ter.setConverter(PercentConverter.class);
         attributeTypes.add(ter);
 
         AttributeType aum = new AttributeType("aum"); //$NON-NLS-1$
@@ -95,8 +96,16 @@ public class ClientSettings
         fee.setColumnLabel(Messages.AttributesAcquisitionFeeColumn);
         fee.setTarget(Security.class);
         fee.setType(Double.class);
-        fee.setConverter(PercentPlainConverter.class);
+        fee.setConverter(PercentConverter.class);
         attributeTypes.add(fee);
+
+        AttributeType managementFee = new AttributeType("managementFee"); //$NON-NLS-1$
+        managementFee.setName(Messages.AttributesManagementFeeName);
+        managementFee.setColumnLabel(Messages.AttributesManagementFeeColumn);
+        managementFee.setTarget(Security.class);
+        managementFee.setType(Double.class);
+        managementFee.setConverter(PercentConverter.class);
+        attributeTypes.add(managementFee);
     }
 
     public List<Bookmark> getBookmarks()
@@ -148,6 +157,11 @@ public class ClientSettings
     public void addAttributeType(int index, AttributeType type)
     {
         attributeTypes.add(index, type);
+    }
+
+    public int getAttributeTypeIndexOf(AttributeType type)
+    {
+        return attributeTypes.indexOf(type);
     }
 
     public ConfigurationSet getConfigurationSet(String key)

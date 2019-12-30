@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.25.1" useFeatures="true" includeLaunchers="true">
+<product name="Portfolio Performance" uid="name.abuchen.portfolio.product" id="name.abuchen.portfolio.bootstrap.product" application="org.eclipse.e4.ui.workbench.swt.E4Application" version="0.43.2.qualifier" useFeatures="true" includeLaunchers="true">
 
    <configIni use="default">
    </configIni>
 
    <launcherArgs>
-      <programArgsLin>--launcher.GTK_version 2
-      </programArgsLin>
-      <vmArgs>-Xms256m -Xmx768m
+      <vmArgs>-XX:+IgnoreUnrecognizedVMOptions --add-modules=ALL-SYSTEM --illegal-access=permit -XX:+UseG1GC -XX:+UseStringDeduplication -Xms256m -Xmx768m
       </vmArgs>
+      <vmArgsLin>-Djdk.gtk.version=3
+      </vmArgsLin>
       <vmArgsMac>-XstartOnFirstThread -Dorg.eclipse.swt.internal.carbon.smallFonts
       </vmArgsMac>
    </launcherArgs>
@@ -20,7 +20,6 @@
    <launcher name="PortfolioPerformance">
       <linux icon="icons/icon.xpm"/>
       <macosx icon="icons/pp.icns"/>
-      <solaris/>
       <win useIco="true">
          <ico path="icons/pp.ico"/>
          <bmp/>
@@ -35,11 +34,14 @@
 
    <features>
       <feature id="name.abuchen.portfolio.feature"/>
+      <feature id="name.abuchen.portfolio.dependencies.feature"/>
       <feature id="org.eclipse.e4.rcp"/>
       <feature id="org.eclipse.emf.ecore"/>
       <feature id="org.eclipse.emf.common"/>
       <feature id="org.eclipse.equinox.p2.core.feature"/>
       <feature id="org.eclipse.babel.nls_eclipse_de"/>
+      <feature id="org.eclipse.babel.nls_eclipse_es"/>
+      <feature id="org.eclipse.babel.nls_eclipse_nl"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.feature"/>
       <feature id="org.eclipse.ecf.core.ssl.feature"/>
       <feature id="org.eclipse.ecf.filetransfer.httpclient4.ssl.feature"/>

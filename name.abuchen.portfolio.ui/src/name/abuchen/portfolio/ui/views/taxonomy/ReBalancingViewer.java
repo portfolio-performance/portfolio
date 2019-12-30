@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 
 import javax.inject.Inject;
 
@@ -17,10 +18,14 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.AssetPosition;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.DeltaPercentageIndicatorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
@@ -92,6 +97,55 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
         });
         support.addColumn(column);
 
+        column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
+
+        Function<Object, Double> percentageProvider = element -> { // NOSONAR
+            TaxonomyNode node = (TaxonomyNode) element;
+            return node.getTarget() == null ? null
+                            : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
+        };
+        
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider));
+        support.addColumn(column);
+
+        column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnDeltaPercentRelative_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+
+                return Values.Percent.format(calculateRelativeDelta(node));
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.getTarget() == null)
+                    return null;
+                return Display.getCurrent().getSystemColor(calculateRelativeDelta(node) >= 0
+                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+            }
+            
+            private double calculateRelativeDelta(TaxonomyNode node)
+            {
+                long actual = node.getActual().getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount()
+                                : node.getParent().getActual().getAmount();
+                double weightPercent = node.getWeight() / (double) Classification.ONE_HUNDRED_PERCENT;
+                double actualPercent = (base != 0) ? (double) actual / base : weightPercent;
+
+                return actualPercent - weightPercent;
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("delta", Messages.ColumnDeltaValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -132,6 +186,29 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getModel().getCurrencyCode());
             }
         });
+        support.addColumn(column);
+
+        column = new Column("shares", Messages.ColumnSharesOwned, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setLabelProvider(new SharesLabelProvider()
+        {
+            @Override
+            public Long getValue(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                Security security = node.getBackingSecurity();
+                if (security == null || security.getCurrencyCode() == null)
+                    return null;
+
+                AssetPosition position = getModel().getClientSnapshot().getPositionsByVehicle().get(security);
+                if (position == null)
+                    return null;
+                
+                return Math.round(position.getPosition().getShares() * node.getWeight()
+                                / (double) Classification.ONE_HUNDRED_PERCENT);
+            }
+        });
+        column.setVisible(false);
         support.addColumn(column);
 
         column = new Column("deltashares", Messages.ColumnDeltaShares, SWT.RIGHT, 100); //$NON-NLS-1$
@@ -197,14 +274,15 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             {
                 TaxonomyNode node = (TaxonomyNode) element;
                 return node.isClassification() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
+                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK)
+                                : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isClassification() && getModel().hasWeightError(node) ? getWarningColor() : null;
+                return node.isClassification() && getModel().hasWeightError(node) ? Colors.WARNING : null;
             }
 
             @Override
@@ -225,7 +303,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 return super.canEdit(element);
             }
 
-        }.addListener((element, newValue, oldValue) -> onWeightModified(element, newValue, oldValue)).attachTo(column);
+        }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
     }
 
@@ -234,9 +312,11 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
     {
         super.fillContextMenu(manager);
 
-        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) getNodeViewer().getSelection())
-                        .getFirstElement();
+        final IStructuredSelection selection = getNodeViewer().getStructuredSelection();
+        if (selection.isEmpty() || selection.size() > 1)
+            return;
 
+        final TaxonomyNode node = (TaxonomyNode) selection.getFirstElement();
         if (node == null || node.isUnassignedCategory())
             return;
 

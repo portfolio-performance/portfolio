@@ -1,0 +1,45 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+01022620000005000000000
+Herrn
+M Frankfurt,          15.01.2014ax Mustermann
+Musterstraße. 2
+12345 Stadt
+Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+Ihre Depotnummer: 1111111111
+Depotinhaber    : Mustermann, Max
+Nr.111111111                   ISH.FOOBAR 12345666 x.EFT (DE1234567890/AB1234)
+St.             :          99          Bruttoausschüttung
+                                       pro Stück          :     0,123433 EUR
+Extag           :  15.01.2014          Bruttoausschüttung :        77,77 EUR
+Valuta          :  15.01.2014          *Einbeh. Steuer    :        22,22 EUR
+                                       Endbetrag          :        55,55 EUR
+* Einbehaltene Kapitalertragsteuer, ggf. ausländische Quellensteuer zuzüglich
+  Solidaritätszuschlag und ggf. Kirchensteuer. Evtl. Details dazu finden Sie im
+  Steuerreport unter der Transaktion-Nr.: 111111111
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.:  1111111111
+Fondsinformationen:
+steuerpflichtiger Ertrag                                  :        77,77 EUR
+   davon ausländische Erträge mit anrechenb. QSt          :         0,77 EUR
+         ausländische Erträge mit anrechenb. fikt. QSt    :         0,00 EUR
+anrechenbare ausländische Quellensteuer**                 :         0,07 EUR
+Absetzung für Abnutzung oder Substanzverringerung         :         0,00 EUR
+Betrag Progressionsvorbehalt***                           :         0,00 EUR
+**   ggf. mit einbeh. Steuer verrechnet und/oder Quellensteuer-Topf zugeführt
+***  im wesentlichen relevant wenn Stücke im Betriebsvermögen
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Willich  -  Amtsgericht Krefeld  (HRB 10867)
+Vorsitzender des Aufsichtsrats: Frank Niehage   -  Vorstand: Lars Lankes, Andreas Wolf, Bernd Würfel
+2000000000000000 0000000000000000

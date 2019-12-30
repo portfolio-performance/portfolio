@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.Arrays;
@@ -22,8 +23,8 @@ public class IRRTest
                         LocalDate.of(2010, Month.DECEMBER, 31)), //
                         Arrays.asList(-200d, 210d));
 
-        result = new BigDecimal(result).setScale(8, BigDecimal.ROUND_HALF_UP).doubleValue();
-        double excel = new BigDecimal(0.050140747d).setScale(8, BigDecimal.ROUND_HALF_UP).doubleValue();
+        result = new BigDecimal(result).setScale(8, RoundingMode.HALF_UP).doubleValue();
+        double excel = new BigDecimal(0.050140747d).setScale(8, RoundingMode.HALF_UP).doubleValue();
 
         assertThat(result, is(excel));
     }

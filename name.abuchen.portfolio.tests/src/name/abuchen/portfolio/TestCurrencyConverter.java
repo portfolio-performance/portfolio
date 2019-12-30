@@ -15,7 +15,7 @@ import name.abuchen.portfolio.money.impl.InverseExchangeRateTimeSeries;
 @SuppressWarnings("nls")
 public class TestCurrencyConverter implements CurrencyConverter
 {
-    private static ExchangeRateTimeSeriesImpl EUR_USD = null;
+    private static ExchangeRateTimeSeriesImpl EUR_USD = null; // NOSONAR
 
     static
     {
@@ -58,19 +58,18 @@ public class TestCurrencyConverter implements CurrencyConverter
     @Override
     public Money convert(LocalDate date, Money amount)
     {
-        if (termCurrency.equals(amount.getCurrencyCode()))
-            return amount;
-
-        if (amount.isZero())
-            return Money.of(termCurrency, 0);
-
-        // testing: any other currency will be converted 1:1
-        if (!amount.getCurrencyCode().equals(series.getBaseCurrency()))
-            return Money.of(termCurrency, amount.getAmount());
-
-        ExchangeRate rate = getRate(date, amount.getCurrencyCode());
-        BigDecimal converted = rate.getValue().multiply(BigDecimal.valueOf(amount.getAmount()));
-        return Money.of(termCurrency, Math.round(converted.doubleValue()));
+        try
+        {
+            return CurrencyConverter.super.convert(date, amount);
+        }
+        catch (MonetaryException e)
+        {
+            // testing: any other currency will be converted 1:1
+            if (!amount.getCurrencyCode().equals(series.getBaseCurrency()))
+                return Money.of(termCurrency, amount.getAmount());
+            else
+                throw e;
+        }
     }
 
     @Override
@@ -82,7 +81,7 @@ public class TestCurrencyConverter implements CurrencyConverter
         if (!currencyCode.equals(series.getBaseCurrency()))
             throw new MonetaryException();
 
-        return series.lookupRate(date).get();
+        return series.lookupRate(date).orElseThrow(IllegalArgumentException::new);
     }
 
     @Override

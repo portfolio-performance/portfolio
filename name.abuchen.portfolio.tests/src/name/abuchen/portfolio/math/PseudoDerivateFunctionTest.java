@@ -4,6 +4,7 @@ import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.junit.Test;
 
@@ -28,6 +29,6 @@ public class PseudoDerivateFunctionTest
 
         double result = p.compute(1d);
 
-        assertThat(new BigDecimal(result).setScale(5, BigDecimal.ROUND_HALF_UP).doubleValue(), is(1d));
+        assertThat(new BigDecimal(result).setScale(5, RoundingMode.HALF_UP).doubleValue(), is(1d));
     }
 }

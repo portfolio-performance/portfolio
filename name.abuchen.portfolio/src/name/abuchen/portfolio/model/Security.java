@@ -9,9 +9,18 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
+import name.abuchen.portfolio.util.Pair;
 
+/**
+ * A <code>Security</code> is used for assets that have historical prices
+ * attached.
+ * </p>
+ * <strong>Attributes</strong> are managed and edited by the user while
+ * <strong>properties</strong> are managed by the program.
+ */
 public final class Security implements Attributable, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
@@ -28,15 +37,18 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     private String uuid;
+    private String onlineId;
 
     private String name;
     private String currencyCode = CurrencyUnit.EUR;
+    private String targetCurrencyCode;
 
     private String note;
 
     private String isin;
     private String tickerSymbol;
     private String wkn;
+    private String calendar;
 
     // feed and feedURL are used to update historical prices
     private String feed;
@@ -52,6 +64,7 @@ public final class Security implements Attributable, InvestmentVehicle
     private Attributes attributes;
 
     private List<SecurityEvent> events;
+    private List<SecurityProperty> properties;
 
     private boolean isRetired = false;
 
@@ -105,6 +118,16 @@ public final class Security implements Attributable, InvestmentVehicle
             generateUUID();
     }
 
+    public String getOnlineId()
+    {
+        return onlineId;
+    }
+
+    public void setOnlineId(String onlineId)
+    {
+        this.onlineId = onlineId;
+    }
+
     @Override
     public String getName()
     {
@@ -127,6 +150,29 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setCurrencyCode(String currencyCode)
     {
         this.currencyCode = currencyCode;
+    }
+
+    /**
+     * Gets the target currency for exchange rates (the currency of the exchange
+     * rate).
+     * 
+     * @return target currency for exchange rates, else null
+     */
+    public String getTargetCurrencyCode()
+    {
+        return this.targetCurrencyCode;
+    }
+
+    /**
+     * Sets the target currency for exchange rates (defines the currency of the
+     * exchange rate).
+     * 
+     * @param targetCurrencyCode
+     *            target currency for exchange rates, else null
+     */
+    public void setTargetCurrencyCode(String targetCurrencyCode)
+    {
+        this.targetCurrencyCode = targetCurrencyCode;
     }
 
     @Override
@@ -169,6 +215,26 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setWkn(String wkn)
     {
         this.wkn = wkn;
+    }
+
+    public String getCalendar()
+    {
+        return calendar;
+    }
+
+    public void setCalendar(String calendar)
+    {
+        this.calendar = calendar;
+    }
+
+    /**
+     * Is this an exchange rate symbol?
+     * 
+     * @return true for exchange rates, else false
+     */
+    public boolean isExchangeRate()
+    {
+        return this.targetCurrencyCode != null;
     }
 
     /**
@@ -236,6 +302,25 @@ public final class Security implements Attributable, InvestmentVehicle
     }
 
     /**
+     * Returns a list of historical security prices that includes the latest
+     * security price if no history price exists for that date
+     */
+    public List<SecurityPrice> getPricesIncludingLatest()
+    {
+        if (latest == null)
+            return getPrices();
+
+        int index = Collections.binarySearch(prices, new SecurityPrice(latest.getDate(), latest.getValue()));
+
+        if (index >= 0) // historic quote exists -> use it
+            return getPrices();
+
+        List<SecurityPrice> copy = new ArrayList<>(prices);
+        copy.add(~index, latest);
+        return copy;
+    }
+
+    /**
      * Adds security price to historical quotes.
      * 
      * @return true if the historical quote was updated.
@@ -278,7 +363,7 @@ public final class Security implements Attributable, InvestmentVehicle
         prices.clear();
     }
 
-    public SecurityPrice getSecurityPrice(LocalDate requestedTime)
+    public SecurityPrice getSecurityPrice(LocalDate requestedDate)
     {
         // assumption: prefer historic quote over latest if there are more
         // up-to-date historic quotes
@@ -294,19 +379,19 @@ public final class Security implements Attributable, InvestmentVehicle
 
         if (latest != null //
                         && (lastHistoric == null //
-                                        || (!requestedTime.isBefore(latest.getTime()) && //
-                                                        !latest.getTime().isBefore(lastHistoric.getTime()) //
+                                        || (!requestedDate.isBefore(latest.getDate()) && //
+                                                        !latest.getDate().isBefore(lastHistoric.getDate()) //
                                         )))
             return latest;
 
         if (lastHistoric == null)
-            return new SecurityPrice(requestedTime, 0);
+            return new SecurityPrice(requestedDate, 0);
 
         // avoid binary search if last historic quote <= requested date
-        if (!lastHistoric.getTime().isAfter(requestedTime))
+        if (!lastHistoric.getDate().isAfter(requestedDate))
             return lastHistoric;
 
-        SecurityPrice p = new SecurityPrice(requestedTime, 0);
+        SecurityPrice p = new SecurityPrice(requestedDate, 0);
         int index = Collections.binarySearch(prices, p);
 
         if (index >= 0)
@@ -315,6 +400,38 @@ public final class Security implements Attributable, InvestmentVehicle
             return prices.get(0);
         else
             return prices.get(-index - 2);
+    }
+
+    /**
+     * Returns the latest two security prices needed to display the previous
+     * close as well as to calculate the change on the previous close.
+     * 
+     * @return a pair of security prices with the <em>left</em> being today's
+     *         price and <em>right</em> being the previous close
+     */
+    public Optional<Pair<SecurityPrice, SecurityPrice>> getLatestTwoSecurityPrices()
+    {
+        if (prices.isEmpty())
+            return Optional.empty();
+
+        List<SecurityPrice> list = getPricesIncludingLatest();
+        if (list.size() < 2)
+            return Optional.empty();
+
+        LocalDate now = LocalDate.now();
+
+        SecurityPrice today = null;
+
+        int index = list.size() - 1;
+        while (index >= 0)
+        {
+            today = list.get(index);
+            if (!today.getDate().isAfter(now))
+                break;
+            index--;
+        }
+
+        return index > 0 ? Optional.of(new Pair<>(list.get(index), list.get(index - 1))) : Optional.empty();
     }
 
     public String getLatestFeed()
@@ -361,11 +478,13 @@ public final class Security implements Attributable, InvestmentVehicle
         }
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
@@ -383,6 +502,27 @@ public final class Security implements Attributable, InvestmentVehicle
         if (this.events == null)
             this.events = new ArrayList<>();
         this.events.add(event);
+    }
+
+    public Stream<SecurityProperty> getProperties()
+    {
+        if (properties == null)
+            properties = new ArrayList<>();
+        return properties.stream();
+    }
+
+    public void addProperty(SecurityProperty data)
+    {
+        if (properties == null)
+            properties = new ArrayList<>();
+        this.properties.add(data);
+    }
+
+    public boolean removeProperty(SecurityProperty data)
+    {
+        if (properties == null)
+            properties = new ArrayList<>();
+        return this.properties.remove(data);
     }
 
     @Override
@@ -409,7 +549,10 @@ public final class Security implements Attributable, InvestmentVehicle
                             .filter(t -> this.equals(t.getSecurity()))
                             .filter(t -> t.getType() == AccountTransaction.Type.INTEREST
                                             || t.getType() == AccountTransaction.Type.DIVIDENDS
-                                            || t.getType() == AccountTransaction.Type.TAX_REFUND)
+                                            || t.getType() == AccountTransaction.Type.TAXES
+                                            || t.getType() == AccountTransaction.Type.TAX_REFUND
+                                            || t.getType() == AccountTransaction.Type.FEES
+                                            || t.getType() == AccountTransaction.Type.FEES_REFUND)
                             .map(t -> new TransactionPair<AccountTransaction>(account, t)) //
                             .forEach(answer::add);
         }
@@ -452,13 +595,17 @@ public final class Security implements Attributable, InvestmentVehicle
     {
         Security answer = new Security();
 
+        answer.onlineId = onlineId;
+
         answer.name = name;
         answer.currencyCode = currencyCode;
+        answer.targetCurrencyCode = targetCurrencyCode;
 
         answer.note = note;
         answer.isin = isin;
         answer.tickerSymbol = tickerSymbol;
         answer.wkn = wkn;
+        answer.calendar = calendar;
 
         answer.feed = feed;
         answer.feedURL = feedURL;
@@ -469,6 +616,9 @@ public final class Security implements Attributable, InvestmentVehicle
         answer.latest = latest;
 
         answer.events = new ArrayList<>(getEvents());
+
+        if (properties != null)
+            answer.properties = new ArrayList<>(properties);
 
         answer.isRetired = isRetired;
 

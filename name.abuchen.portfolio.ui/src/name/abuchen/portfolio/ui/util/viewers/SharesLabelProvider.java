@@ -14,6 +14,8 @@ import org.eclipse.swt.graphics.TextLayout;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.money.Values;
 
@@ -76,6 +78,16 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         return textLayout.getBounds();
     }
 
+    private Rectangle getBounds(Widget widget, int index)
+    {
+        if (widget instanceof TableItem)
+            return ((TableItem) widget).getBounds(index);
+        else if (widget instanceof TreeItem)
+            return ((TreeItem) widget).getBounds(index);
+        else
+            throw new IllegalArgumentException();
+    }
+
     @Override
     protected void measure(Event event, Object element)
     {
@@ -84,20 +96,14 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
         {
             String text = format.format(value / Values.Share.divider());
             Rectangle size = getSize(event, text);
-
-            Rectangle tableItem = ((TableItem) event.item).getBounds(event.index);
-
-            int width = Math.min(size.width, tableItem.width);
-
-            event.setBounds(new Rectangle(event.x + tableItem.width - width, event.y, //
-                            width, event.height));
+            event.setBounds(new Rectangle(event.x, event.y, size.width, event.height));
         }
     }
 
     @Override
     protected void paint(Event event, Object element)
     {
-        Rectangle tableItem = ((TableItem) event.item).getBounds(event.index);
+        Rectangle tableItem = getBounds(event.item, event.index);
         boolean isSelected = (event.detail & SWT.SELECTED) != 0 || (event.detail & SWT.HOT) != 0;
 
         if (!isSelected)
@@ -123,7 +129,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
 
         Rectangle layoutBounds = textLayout.getBounds();
         int x = event.x + tableItem.width - Math.min(size.width, tableItem.width);
-        int y = tableItem.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
+        int y = event.y + Math.max(0, (tableItem.height - layoutBounds.height) / 2);
 
         textLayout.draw(event.gc, x, y);
 

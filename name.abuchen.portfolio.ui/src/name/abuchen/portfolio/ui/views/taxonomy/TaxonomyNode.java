@@ -89,12 +89,30 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public Object setData(String key, Object object)
+        {
+            return classification.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return classification.getData(key);
+        }
+
+        @Override
         public <T> T adapt(Class<T> type)
         {
             if (type == Named.class || type == Annotated.class)
                 return type.cast(classification);
             else
                 return super.adapt(type);
+        }
+
+        @Override
+        public String toString()
+        {
+            return getName();
         }
     }
 
@@ -172,12 +190,24 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public Object setData(String key, Object object)
+        {
+            return assignment.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return assignment.getData(key);
+        }
+
+        @Override
         public String getColor()
         {
             if (assignment.getInvestmentVehicle() instanceof Security)
-                return Colors.EQUITY.asHex();
+                return Colors.toHex(Colors.EQUITY);
             else
-                return Colors.CASH.asHex();
+                return Colors.toHex(Colors.CASH);
         }
 
         @Override
@@ -207,7 +237,7 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public String getColor()
         {
-            return Colors.OTHER_CATEGORY.asHex();
+            return Colors.toHex(Colors.OTHER_CATEGORY);
         }
     }
 
@@ -230,6 +260,11 @@ public abstract class TaxonomyNode implements Adaptable
     public boolean isRoot()
     {
         return parent == null;
+    }
+
+    public TaxonomyNode getRoot()
+    {
+        return parent == null ? this : parent.getRoot();
     }
 
     public List<TaxonomyNode> getChildren()
@@ -307,6 +342,10 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract void setRank(int rank);
 
     public abstract String getColor();
+
+    public abstract Object setData(String key, Object object);
+
+    public abstract Object getData(String key);
 
     public List<TaxonomyNode> getPath()
     {

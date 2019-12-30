@@ -1,22 +1,39 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.util.LocalSelectionTransfer;
 import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceAdapter;
@@ -24,20 +41,25 @@ import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
 
 import name.abuchen.portfolio.model.Dashboard;
+import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.PartPersistedState;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.views.AbstractHistoricView;
@@ -170,20 +192,97 @@ public class DashboardView extends AbstractHistoricView
         }
     }
 
+    /**
+     * Runnable that calls supplier functions of widgets to calculate the widget
+     * data and then updates the widgets in the main thread.
+     */
+    private final class CalculateWidgetDataRunnable implements Runnable
+    {
+        private final Map<Widget, Object> cache;
+
+        private CalculateWidgetDataRunnable(Map<Widget, Object> cache)
+        {
+            this.cache = cache;
+        }
+
+        @Override
+        public void run()
+        {
+            List<Map<WidgetDelegate<Object>, Supplier<Object>>> queueTasks = new ArrayList<>();
+
+            workQueue.drainTo(queueTasks);
+            if (queueTasks.isEmpty())
+                return;
+
+            Map<WidgetDelegate<Object>, Supplier<Object>> tasks = queueTasks.get(queueTasks.size() - 1);
+
+            Map<WidgetDelegate<Object>, Object> data = new HashMap<>();
+            for (Map.Entry<WidgetDelegate<Object>, Supplier<Object>> task : tasks.entrySet())
+            {
+                try
+                {
+                    data.put(task.getKey(), task.getValue().get());
+                }
+                catch (Exception e)
+                {
+                    // continue calculating the dashboard data
+                    PortfolioPlugin.log(e);
+                }
+            }
+
+            if (Thread.currentThread().isInterrupted())
+                return;
+
+            sync.asyncExec(() -> {
+                data.entrySet().stream() //
+                                .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
+                                .forEach(entry -> {
+                                    entry.getKey().update(entry.getValue());
+
+                                    if (entry.getValue() == null)
+                                        cache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
+                                    else
+                                        cache.put(entry.getKey().getWidget(), entry.getValue());
+                                });
+                updateScrolledCompositeMinSize();
+            });
+        }
+    }
+
     public static final String INFO_MENU_GROUP_NAME = "info"; //$NON-NLS-1$
 
     private static final String SELECTED_DASHBOARD_KEY = "selected-dashboard"; //$NON-NLS-1$
-    private static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
+    /* package */ static final String DELEGATE_KEY = "$delegate"; //$NON-NLS-1$
     private static final String FILLER_KEY = "$filler"; //$NON-NLS-1$
 
     @Inject
-    private IPreferenceStore preferences;
+    private PartPersistedState persistedState;
+
+    @Inject
+    private UISynchronize sync;
 
     private DashboardResources resources;
+    private ScrolledComposite scrolledComposite;
     private Composite container;
 
     private Dashboard dashboard;
     private DashboardData dashboardData;
+
+    private ExecutorService executor;
+    private BlockingQueue<Map<WidgetDelegate<Object>, Supplier<Object>>> workQueue;
+
+    @PostConstruct
+    protected void postContruct()
+    {
+        executor = Executors.newSingleThreadExecutor();
+        workQueue = new LinkedBlockingQueue<>();
+    }
+
+    @PreDestroy
+    protected void preDestroy()
+    {
+        executor.shutdownNow();
+    }
 
     @Override
     protected String getDefaultTitle()
@@ -201,32 +300,77 @@ public class DashboardView extends AbstractHistoricView
     @Override
     public void reportingPeriodUpdated()
     {
-        dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        this.dashboardData.setDefaultReportingPeriod(getReportingPeriod());
+        this.dashboardData.clearResultCache();
         updateWidgets();
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addViewButtons(ToolBarManager toolBar)
+    {
+        createDashboardToolItems(toolBar);
+    }
+
+    @Override
+    protected void addButtons(ToolBarManager toolBar)
     {
         super.addButtons(toolBar);
 
-        AbstractDropDown.create(toolBar, Messages.MenuConfigureDashboards, Images.SAVE.image(), SWT.NONE, manager -> {
-            getClient().getDashboards().forEach(d -> {
-                Action action = new SimpleAction(d.getName(), a -> selectDashboard(d));
-                action.setChecked(d.equals(dashboard));
-                manager.add(action);
-            });
+        toolBar.add(new DropDown(Messages.MenuConfigureCurrentDashboard, Images.CONFIG, SWT.NONE, manager -> manager
+                        .add(new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn()))));
+    }
 
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.ConfigurationNew, a -> createNewDashboard(null)));
-            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(dashboard)));
-            manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(dashboard)));
-            manager.add(new SimpleAction(Messages.ConfigurationDelete, a -> deleteDashboard(dashboard)));
+    private void createDashboardToolItems(ToolBarManager toolBar)
+    {
+        int[] index = { 0 };
+        getClient().getDashboards().forEach(board -> toolBar.add(createToolItem(index[0]++, board)));
+
+        Action newAction = new SimpleAction(Messages.MenuNewDashboard, a -> createNewDashboard(null));
+        newAction.setImageDescriptor(Images.VIEW_PLUS.descriptor());
+        toolBar.add(newAction);
+    }
+
+    private ContributionItem createToolItem(int index, Dashboard board)
+    {
+        DropDown toolItem = new DropDown(board.getName(), board.equals(dashboard) ? Images.VIEW_SELECTED : Images.VIEW,
+                        SWT.DROP_DOWN);
+
+        toolItem.setMenuListener(manager -> {
+            if (!board.equals(dashboard))
+            {
+                manager.add(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
+                manager.add(new Separator());
+            }
+
+            manager.add(new SimpleAction(Messages.ConfigurationDuplicate, a -> createNewDashboard(board)));
+            manager.add(new SimpleAction(Messages.ConfigurationRename, a -> renameDashboard(board)));
+            manager.add(new ConfirmAction(Messages.ConfigurationDelete,
+                            MessageFormat.format(Messages.ConfigurationDeleteConfirm, board.getName()),
+                            a -> deleteDashboard(board)));
+
+            if (index > 0)
+            {
+                manager.add(new Separator());
+                manager.add(new SimpleAction(Messages.ChartBringToFront, a -> bringToFrontDashboard(board)));
+            }
         });
 
-        AbstractDropDown.create(toolBar, Messages.MenuConfigureCurrentDashboard, Images.CONFIG.image(), SWT.NONE,
-                        manager -> manager.add(
-                                        new SimpleAction(Messages.MenuNewDashboardColumn, a -> createNewColumn())));
+        toolItem.setDefaultAction(new SimpleAction(Messages.MenuShow, a -> selectDashboard(board)));
+
+        return toolItem;
+    }
+
+    private void recreateDashboardToolItems()
+    {
+        ToolBarManager toolBar = getViewToolBarManager();
+        if (toolBar.getControl().isDisposed())
+            return;
+
+        toolBar.removeAll();
+
+        createDashboardToolItems(toolBar);
+
+        toolBar.update(true);
     }
 
     @Override
@@ -235,10 +379,10 @@ public class DashboardView extends AbstractHistoricView
         resources = new DashboardResources(parent);
 
         dashboardData = make(DashboardData.class);
-        dashboardData.setDefaultReportingPeriods(getReportingPeriods());
+        dashboardData.setDefaultReportingPeriods(getPart().getClientInput().getReportingPeriods());
         dashboardData.setDefaultReportingPeriod(getReportingPeriod());
 
-        int indexOfSelectedDashboard = Math.max(0, preferences.getInt(SELECTED_DASHBOARD_KEY));
+        int indexOfSelectedDashboard = Math.max(0, persistedState.getInt(SELECTED_DASHBOARD_KEY));
 
         dashboard = getClient().getDashboards() //
                         .skip(indexOfSelectedDashboard) //
@@ -246,35 +390,66 @@ public class DashboardView extends AbstractHistoricView
                             Dashboard newDashboard = createDefaultDashboard();
                             getClient().addDashboard(newDashboard);
                             markDirty();
+                            createDashboardToolItems(getToolBarManager());
                             return newDashboard;
                         });
 
-        container = new Composite(parent, SWT.NONE);
-        container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
+
+        container = new Composite(scrolledComposite, SWT.NONE);
+        container.setBackground(Colors.WHITE);
 
         selectDashboard(dashboard);
 
-        container.addDisposeListener(e -> preferences.setValue(SELECTED_DASHBOARD_KEY,
+        scrolledComposite.setContent(container);
+        scrolledComposite.setExpandVertical(true);
+        scrolledComposite.setExpandHorizontal(true);
+
+        // resize listener
+        ControlListener listener = ControlListener.controlResizedAdapter(e -> updateScrolledCompositeMinSize());
+        parent.getParent().addControlListener(listener);
+        scrolledComposite.addDisposeListener(e -> parent.getParent().removeControlListener(listener));
+
+        container.addDisposeListener(e -> persistedState.setValue(SELECTED_DASHBOARD_KEY,
                         getClient().getDashboards().collect(Collectors.toList()).indexOf(dashboard)));
 
-        return container;
+        return scrolledComposite;
+    }
+
+    private void updateScrolledCompositeMinSize()
+    {
+        // because this method can be called *after* calculating data in the
+        // background, all widgets can already be disposed
+
+        if (scrolledComposite.isDisposed())
+            return;
+
+        Composite parent = scrolledComposite.getParent();
+        if (parent.isDisposed())
+            return;
+
+        Composite grandparent = parent.getParent();
+        if (grandparent.isDisposed())
+            return;
+
+        Rectangle clientArea = grandparent.getClientArea();
+        Point size = container.computeSize(clientArea.width, SWT.DEFAULT);
+
+        // On windows only, we do not have an overlay scrollbar and hence have
+        // to reduce the visible area to make room for the vertical scrollbar
+        if (Platform.OS_WIN32.equals(Platform.getOS()) && size.y > clientArea.height)
+        {
+            int width = clientArea.width - scrolledComposite.getVerticalBar().getSize().x;
+            size = container.computeSize(width, SWT.DEFAULT);
+        }
+
+        scrolledComposite.setMinSize(size);
     }
 
     private void buildColumns()
     {
         for (Dashboard.Column column : dashboard.getColumns())
-        {
-            Composite composite = buildColumn(container, column);
-
-            for (Dashboard.Widget widget : column.getWidgets())
-            {
-                WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
-                if (factory == null)
-                    continue;
-
-                buildDelegate(composite, factory, widget);
-            }
-        }
+            buildColumn(container, column);
     }
 
     private Composite buildColumn(Composite composite, Dashboard.Column column)
@@ -293,25 +468,68 @@ public class DashboardView extends AbstractHistoricView
         // *all* context menus attached to nested composites are always shown.
         Composite filler = new Composite(columnControl, SWT.NONE);
         filler.setBackground(columnControl.getBackground());
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(filler);
+        GridDataFactory.fillDefaults().hint(SWT.DEFAULT, 10).grab(true, true).applyTo(filler);
         columnControl.setData(FILLER_KEY, filler);
 
-        new ContextMenu(filler, manager -> {
-            MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
-            for (WidgetFactory type : WidgetFactory.values())
-                subMenu.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
-            manager.add(subMenu);
-            manager.add(new Separator());
-            manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft, a -> createNewColumn(column, columnControl)));
-            manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
-        }).hook();
+        new ContextMenu(filler, manager -> columnMenuAboutToShow(manager, column, columnControl)).hook();
+
+        for (Dashboard.Widget widget : column.getWidgets())
+        {
+            try
+            {
+                WidgetFactory factory = WidgetFactory.valueOf(widget.getType());
+                if (factory == null)
+                    continue;
+
+                buildDelegate(columnControl, factory, widget);
+            }
+            catch (IllegalArgumentException e)
+            {
+                // do nothing -> just skip the unknown widget type
+            }
+        }
 
         return columnControl;
     }
 
-    private WidgetDelegate buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    private void columnMenuAboutToShow(IMenuManager manager, Dashboard.Column column, Composite columnControl)
     {
-        WidgetDelegate delegate = widgetType.create(widget, dashboardData);
+        MenuManager subMenu = new MenuManager(Messages.MenuNewWidget);
+        manager.add(subMenu);
+
+        Map<String, MenuManager> group2menu = new HashMap<>();
+        group2menu.put(null, subMenu);
+
+        for (WidgetFactory type : WidgetFactory.values())
+        {
+            MenuManager mm = group2menu.computeIfAbsent(type.getGroup(), group -> {
+                MenuManager groupMenu = new MenuManager(group);
+                subMenu.add(groupMenu);
+                return groupMenu;
+            });
+            mm.add(new SimpleAction(type.getLabel(), a -> addNewWidget(columnControl, type)));
+        }
+
+        manager.add(new Separator());
+        manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnLeft,
+                        a -> createNewColumn(column, columnControl, SWT.LEFT)));
+        manager.add(new SimpleAction(Messages.MenuAddNewDashboardColumnRight,
+                        a -> createNewColumn(column, columnControl, SWT.RIGHT)));
+        manager.add(new SimpleAction(Messages.MenuDuplicateDashboardColumn,
+                        a -> duplicateColumn(column, columnControl)));
+
+        MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
+        manager.add(applyToAll);
+        new ReportingPeriodApplyToAll(this.dashboardData).menuAboutToShow(applyToAll, columnControl);
+
+        manager.add(new Separator());
+        manager.add(new SimpleAction(Messages.MenuDeleteDashboardColumn, a -> deleteColumn(columnControl)));
+    }
+
+    private WidgetDelegate<?> buildDelegate(Composite columnControl, WidgetFactory widgetType, Dashboard.Widget widget)
+    {
+        WidgetDelegate<?> delegate = widgetType.create(widget, dashboardData);
+        inject(delegate);
 
         Composite element = delegate.createControl(columnControl, resources);
         element.setData(widget);
@@ -333,14 +551,14 @@ public class DashboardView extends AbstractHistoricView
         return delegate;
     }
 
-    private String buildToolTip(WidgetDelegate delegate)
+    private String buildToolTip(WidgetDelegate<?> delegate)
     {
         StringJoiner text = new StringJoiner("\n"); //$NON-NLS-1$
         delegate.getWidgetConfigs().forEach(c -> text.add(c.getLabel()));
         return text.toString();
     }
 
-    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate delegate)
+    private void widgetMenuAboutToShow(IMenuManager manager, WidgetDelegate<?> delegate)
     {
         manager.add(new Separator(INFO_MENU_GROUP_NAME));
         manager.add(new Separator("edit")); //$NON-NLS-1$
@@ -361,11 +579,12 @@ public class DashboardView extends AbstractHistoricView
 
             composite.dispose();
             parent.layout();
-            markDirty();
+            updateScrolledCompositeMinSize();
+            getClient().touch();
         }));
     }
 
-    private Composite findCompositeFor(WidgetDelegate delegate)
+    private Composite findCompositeFor(WidgetDelegate<?> delegate)
     {
         for (Control column : container.getChildren())
         {
@@ -392,7 +611,7 @@ public class DashboardView extends AbstractHistoricView
         DragSourceAdapter dragAdapter = new WidgetDragSourceAdapter(transfer, control);
 
         DragSource dragSource = new DragSource(control, DND.DROP_MOVE | DND.DROP_COPY);
-        dragSource.setTransfer(new Transfer[] { transfer });
+        dragSource.setTransfer(transfer);
         dragSource.addDragListener(dragAdapter);
     }
 
@@ -403,20 +622,52 @@ public class DashboardView extends AbstractHistoricView
         DropTargetAdapter dragAdapter = new WidgetDropTargetAdapter(transfer, parent, w -> markDirty());
 
         DropTarget dropTarget = new DropTarget(parent, DND.DROP_MOVE | DND.DROP_COPY);
-        dropTarget.setTransfer(new Transfer[] { transfer });
+        dropTarget.setTransfer(transfer);
         dropTarget.addDropListener(dragAdapter);
     }
 
     private void updateWidgets()
     {
+        // use currentCache for updating the existing results of the tasks and
+        // calculating new ones
+        Map<Widget, Object> currentCache = this.dashboardData.getResultCache();
+
+        Map<WidgetDelegate<Object>, Supplier<Object>> tasks = new HashMap<>();
         for (Control column : container.getChildren())
         {
             for (Control child : ((Composite) column).getChildren())
             {
-                WidgetDelegate delegate = (WidgetDelegate) child.getData(DELEGATE_KEY);
+                @SuppressWarnings("unchecked")
+                WidgetDelegate<Object> delegate = (WidgetDelegate<Object>) child.getData(DELEGATE_KEY);
                 if (delegate != null)
-                    delegate.update();
+                {
+                    Object data = currentCache.get(delegate.getWidget());
+
+                    if (DashboardData.EMPTY_RESULT.equals(data))
+                        delegate.update(null);
+                    else if (data != null)
+                        delegate.update(data);
+                    else
+                        tasks.put(delegate, delegate.getUpdateTask());
+                }
             }
+        }
+
+        updateScrolledCompositeMinSize();
+
+        if (!tasks.isEmpty())
+        {
+            // using an ExecutorService with a BlockingQueue because
+            // a) using the Job API will randomly execute the jobs and hence not
+            // always show the latest data
+            // b) Jobs will compete with the background jobs to updates quotes
+            // and hence it can take a long time to actually see first data in
+            // the UI
+            // c) one job can drain the queue and skip calculations that would
+            // immediately be out dated.
+
+            workQueue.add(tasks);
+            executor.submit(new CalculateWidgetDataRunnable(currentCache));
         }
     }
 
@@ -425,6 +676,8 @@ public class DashboardView extends AbstractHistoricView
         this.dashboardData.setDashboard(board);
         this.dashboard = board;
         updateTitle(board.getName());
+
+        recreateDashboardToolItems();
 
         for (Control column : container.getChildren())
             column.dispose();
@@ -435,6 +688,7 @@ public class DashboardView extends AbstractHistoricView
                         .equalWidth(true).spacing(10, 10).applyTo(container);
 
         container.layout(true);
+        updateScrolledCompositeMinSize();
 
         updateWidgets();
     }
@@ -443,16 +697,17 @@ public class DashboardView extends AbstractHistoricView
     {
         Dashboard newDashboard = template != null ? template.copy() : createDefaultDashboard();
 
-        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
+        InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.ConfigurationNew,
                         Messages.ColumnName, newDashboard.getName(), null);
 
-        if (dialog.open() != InputDialog.OK)
+        if (dialog.open() != Window.OK)
             return;
 
         newDashboard.setName(dialog.getValue());
 
         getClient().addDashboard(newDashboard);
-        markDirty();
+        getClient().touch();
+
         selectDashboard(newDashboard);
     }
 
@@ -461,25 +716,38 @@ public class DashboardView extends AbstractHistoricView
         InputDialog dialog = new InputDialog(Display.getCurrent().getActiveShell(), Messages.MenuRenameDashboard,
                         Messages.ColumnName, board.getName(), null);
 
-        if (dialog.open() != InputDialog.OK)
+        if (dialog.open() != Window.OK)
             return;
 
         board.setName(dialog.getValue());
-        markDirty();
+        getClient().touch();
         updateTitle(board.getName());
+
+        recreateDashboardToolItems();
     }
 
     private void deleteDashboard(Dashboard board)
     {
         getClient().removeDashboard(board);
-        markDirty();
+        getClient().touch();
+
+        recreateDashboardToolItems();
 
         selectDashboard(getClient().getDashboards().findFirst().orElseGet(() -> {
             Dashboard newDashboard = createDefaultDashboard();
             getClient().addDashboard(newDashboard);
-            markDirty();
+            getClient().touch();
             return newDashboard;
         }));
+    }
+
+    private void bringToFrontDashboard(Dashboard board)
+    {
+        getClient().removeDashboard(board);
+        getClient().addDashboard(0, board);
+        getClient().touch();
+
+        recreateDashboardToolItems();
     }
 
     private void addNewWidget(Composite columnControl, WidgetFactory widgetType)
@@ -491,37 +759,76 @@ public class DashboardView extends AbstractHistoricView
         widget.setType(widgetType.name());
         column.getWidgets().add(widget);
 
-        WidgetDelegate delegate = buildDelegate(columnControl, widgetType, widget);
+        WidgetDelegate<?> delegate = buildDelegate(columnControl, widgetType, widget);
 
-        markDirty();
+        getClient().touch();
         delegate.update();
         columnControl.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private void createNewColumn()
     {
         Dashboard.Column column = new Dashboard.Column();
         dashboard.getColumns().add(column);
+        getClient().touch();
 
         buildColumn(container, column);
 
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
-    private void createNewColumn(Dashboard.Column beforeColumn, Composite beforeColumnControl)
+    private void createNewColumn(Dashboard.Column referenceColumn, Composite referenceColumnControl, int position)
     {
-        int index = dashboard.getColumns().indexOf(beforeColumn);
-        
+        int index = dashboard.getColumns().indexOf(referenceColumn);
+
+        if (position == SWT.RIGHT)
+            index++;
+
         Dashboard.Column newColumn = new Dashboard.Column();
         dashboard.getColumns().add(index, newColumn);
-        
-        buildColumn(container, newColumn).moveAbove(beforeColumnControl);
-        
+        getClient().touch();
+
+        Composite c = buildColumn(container, newColumn);
+        if (position == SWT.RIGHT)
+            c.moveBelow(referenceColumnControl);
+        else
+            c.moveAbove(referenceColumnControl);
+
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
+    }
+
+    private void duplicateColumn(Dashboard.Column column, Composite columnControl)
+    {
+        int index = dashboard.getColumns().indexOf(column) + 1;
+
+        Dashboard.Column newColumn = new Dashboard.Column();
+        dashboard.getColumns().add(index, newColumn);
+
+        newColumn.setWidgets(column.getWidgets().stream().map(widget -> {
+            Widget copy = new Widget();
+            copy.setLabel(widget.getLabel());
+            copy.setType(widget.getType());
+            copy.getConfiguration().putAll(widget.getConfiguration());
+            return copy;
+        }).collect(Collectors.toList()));
+
+        getClient().touch();
+
+        buildColumn(container, newColumn).moveBelow(columnControl);
+
+        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
+                        .applyTo(container);
+        container.layout(true);
+        updateScrolledCompositeMinSize();
+
+        updateWidgets();
     }
 
     private void deleteColumn(Composite columnControl)
@@ -536,6 +843,7 @@ public class DashboardView extends AbstractHistoricView
         GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
                         .applyTo(container);
         container.layout(true);
+        updateScrolledCompositeMinSize();
     }
 
     private Dashboard createDefaultDashboard()

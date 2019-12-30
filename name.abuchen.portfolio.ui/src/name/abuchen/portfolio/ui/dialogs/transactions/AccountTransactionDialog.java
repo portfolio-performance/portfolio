@@ -5,6 +5,8 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.amountWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.currencyWidth;
 import static name.abuchen.portfolio.ui.util.SWTHelper.widest;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -15,6 +17,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.action.Action;
@@ -45,10 +48,9 @@ import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.FormDataFactory;
 import name.abuchen.portfolio.ui.util.LabelOnly;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 @SuppressWarnings("restriction")
 public class AccountTransactionDialog extends AbstractTransactionDialog // NOSONAR
@@ -74,6 +76,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         AccountTransactionModel m = new AccountTransactionModel(client, type);
         m.setExchangeRateProviderFactory(factory);
         setModel(m);
+
+        // set account only if exactly one exists
+        // (otherwise force user to choose)
+        List<Account> activeAccounts = client.getActiveAccounts();
+        if (activeAccounts.size() == 1)
+            m.setAccount(activeAccounts.get(0));
     }
 
     private AccountTransactionModel model()
@@ -101,13 +109,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         accounts.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         accounts.bindCurrency(Properties.accountCurrencyCode.name());
 
-        // date
+        // date & time
 
-        Label lblDate = new Label(editArea, SWT.RIGHT);
-        lblDate.setText(Messages.ColumnDate);
-        DateTimePicker valueDate = new DateTimePicker(editArea);
-        context.bindValue(new SimpleDateTimeSelectionProperty().observe(valueDate.getControl()),
-                        BeanProperties.value(Properties.date.name()).observe(model));
+        DateTimeInput dateTime = new DateTimeInput(editArea, Messages.ColumnDate);
+        dateTime.bindDate(Properties.date.name());
+        dateTime.bindTime(Properties.time.name());
+        dateTime.bindButton(() -> model().getTime(), time -> model().setTime(time));
 
         // shares
 
@@ -127,6 +134,11 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         btnShares.setVisible(model().supportsShares());
         editArea.addDisposeListener(e -> AccountTransactionDialog.this.widgetDisposed());
 
+        Input dividendAmount = new Input(editArea, Messages.LabelDividendPerShare);
+        dividendAmount.bindBigDecimal(Properties.dividendAmount.name(), "#,##0.0000"); //$NON-NLS-1$
+        dividendAmount.bindCurrency(Properties.fxCurrencyCode.name());
+        dividendAmount.setVisible(model().supportsShares());
+
         // other input fields
 
         String totalLabel = model().supportsTaxUnits() ? Messages.ColumnGrossValue : getTotalLabel();
@@ -134,12 +146,14 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         fxGrossAmount.bindValue(Properties.fxGrossAmount.name(), totalLabel, Values.Amount, true);
         fxGrossAmount.bindCurrency(Properties.fxCurrencyCode.name());
 
-        Input exchangeRate = new Input(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
+        ExchangeRateInput exchangeRate = new ExchangeRateInput(editArea, useIndirectQuotation ? "/ " : "x "); //$NON-NLS-1$ //$NON-NLS-2$
         exchangeRate.bindBigDecimal(
                         useIndirectQuotation ? Properties.inverseExchangeRate.name() : Properties.exchangeRate.name(),
                         Values.ExchangeRate.pattern());
         exchangeRate.bindCurrency(useIndirectQuotation ? Properties.inverseExchangeRateCurrencies.name()
                         : Properties.exchangeRateCurrencies.name());
+        exchangeRate.bindInvertAction(() -> model()
+                        .setExchangeRate(BigDecimal.ONE.divide(model().getExchangeRate(), 10, RoundingMode.HALF_DOWN)));
 
         model().addPropertyChangeListener(Properties.exchangeRate.name(),
                         e -> exchangeRate.value.setToolTipText(AbstractModel.createCurrencyToolTip(
@@ -178,16 +192,18 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         Label lblNote = new Label(editArea, SWT.LEFT);
         lblNote.setText(Messages.ColumnNote);
-        Text valueNote = new Text(editArea, SWT.BORDER);
-        context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueNote),
-                        BeanProperties.value(Properties.note.name()).observe(model));
+        Text valueNote = new Text(editArea, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+        IObservableValue<?> targetNote = WidgetProperties.text(SWT.Modify).observe(valueNote);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> noteObservable = BeanProperties.value(Properties.note.name()).observe(model);
+        context.bindValue(targetNote, noteObservable);
 
         //
         // form layout
         //
 
-        int widest = widest(securities != null ? securities.label : null, accounts.label, lblDate, shares.label,
-                        fxGrossAmount.label, lblNote);
+        int widest = widest(securities != null ? securities.label : null, accounts.label, dateTime.label, shares.label,
+                        taxes.label, total.label, lblNote, fxGrossAmount.label);
 
         FormDataFactory forms;
         if (securities != null)
@@ -207,17 +223,31 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
 
         // date
         // shares
-        forms = forms.thenBelow(valueDate.getControl()).label(lblDate) //
-                        .thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
+        forms = forms.thenBelow(dateTime.date.getControl()).label(dateTime.label);
+
+        startingWith(dateTime.date.getControl()).thenRight(dateTime.time)
+                        .thenRight(dateTime.button, 0);
+
+        // shares [- amount per share]
+        forms = forms.thenBelow(shares.value).width(amountWidth).label(shares.label).suffix(btnShares) //
                         // fxAmount - exchange rate - amount
                         .thenBelow(fxGrossAmount.value).width(amountWidth).label(fxGrossAmount.label) //
                         .thenRight(fxGrossAmount.currency).width(currencyWidth) //
                         .thenRight(exchangeRate.label) //
                         .thenRight(exchangeRate.value).width(amountWidth) //
+                        .thenRight(exchangeRate.buttonInvertExchangeRate, 0) //
                         .thenRight(exchangeRate.currency).width(amountWidth) //
                         .thenRight(grossAmount.label) //
                         .thenRight(grossAmount.value).width(amountWidth) //
                         .thenRight(grossAmount.currency).width(currencyWidth);
+
+        if (model().supportsShares())
+        {
+            // shares [- amount per share]
+            startingWith(btnShares).thenRight(dividendAmount.label) //
+                            .thenRight(dividendAmount.value).width(amountWidth) //
+                            .thenRight(dividendAmount.currency).width(currencyWidth); //
+        }
 
         // forexTaxes - taxes
         if (model().supportsTaxUnits())
@@ -234,7 +264,8 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         }
 
         // note
-        forms.thenBelow(valueNote).left(accounts.value.getControl()).right(grossAmount.value).label(lblNote);
+        forms.thenBelow(valueNote).height(SWTHelper.lineHeight(valueNote) * 3).left(accounts.value.getControl())
+                        .right(grossAmount.value).label(lblNote);
 
         //
         // hide / show exchange rate if necessary
@@ -252,7 +283,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             grossAmount.setVisible(isFxVisible);
             forexTaxes.setVisible(isFxVisible && model().supportsShares());
             plusForexTaxes.setVisible(isFxVisible && model().supportsShares());
-            taxes.label.setVisible(!isFxVisible && model().supportsShares());
+            taxes.label.setVisible(!isFxVisible && model().supportsTaxUnits());
 
             // in case fx taxes have been entered
             if (!isFxVisible)
@@ -281,7 +312,12 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
         // add empty security only if it has not been added previously
         // --> happens when editing an existing transaction
         if (model().supportsOptionalSecurity() && !activeSecurities.contains(AccountTransactionModel.EMPTY_SECURITY))
+        {
             activeSecurities.add(0, AccountTransactionModel.EMPTY_SECURITY);
+
+            if (model().getSecurity() == null)
+                model().setSecurity(AccountTransactionModel.EMPTY_SECURITY);
+        }
 
         ComboInput securities = new ComboInput(editArea, Messages.ColumnSecurity);
         securities.value.setInput(activeSecurities);
@@ -320,7 +356,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             if (list.size() > 1)
             {
                 for (PortfolioSnapshot ps : list)
-                    addAction(manager, ps, ps.getSource().getName());
+                    addAction(manager, ps, ps.getPortfolio().getName());
             }
         }
 
@@ -371,6 +407,7 @@ public class AccountTransactionDialog extends AbstractTransactionDialog // NOSON
             case TAX_REFUND:
             case DIVIDENDS:
             case DEPOSIT:
+            case FEES_REFUND:
                 return Messages.ColumnCreditNote;
             case BUY:
             case SELL:

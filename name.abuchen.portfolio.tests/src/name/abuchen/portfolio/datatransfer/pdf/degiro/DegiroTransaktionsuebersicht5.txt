@@ -1,0 +1,19 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Herr Mustermann
+Musterstrasse
+1234 Musterstadt
+Austria
+Benutzername: ***xxx
+Transaktionsübersicht von 25-03-2019 bis 25-04-2019
+Datum Uhrzeit Produkt ISIN Börse Anzahl Kurs Wert inLokalwährun Wert
+Wechselkur
+s Gebühr Gesamt
+25-04-2019 19:03 ARCHER-DANIELS-MIDLAND US0394831020 NSY 2 USD 42,26 USD -84,52 EUR -75,90 1,1135 EUR -0,01 EUR -75,91
+25-04-2019 19:03 ARCHER-DANIELS-MIDLAND US0394831020 NSY 48 USD 42,26 USD -2.028,48 EUR -1.821,72 1,1135 EUR -0,67 EUR -1.822,39
+DEGIRO B.V. T +49 69 365 065 457 DEGIRO B.V. ist als
+Amstelplein 1 E Investmentgesellschaft bei der
+1096 HA Amsterdam kundenservice@degiro.de niederländischen Seite 1 / 1
+I www.degiro.de Finanzaufsichtsbehörde (AFM) Kontoauszug 2019-04-25
+registriert.

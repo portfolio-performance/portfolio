@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.util;
 
+import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
@@ -7,69 +8,103 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.util.ColorConversion;
 
-public enum Colors
+public final class Colors
 {
-    TOTALS(0, 0, 0), //
 
-    CASH(196, 55, 194), //
-    DEBT(220, 161, 34), //
-    EQUITY(87, 87, 255), //
-    REAL_ESTATE(253, 106, 14), //
-    COMMODITY(87, 159, 87), //
+    public static final Color GRAY = Display.getDefault().getSystemColor(SWT.COLOR_GRAY);
+    public static final Color WHITE = Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+    public static final Color DARK_GRAY = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY);
+    public static final Color DARK_RED = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
+    public static final Color DARK_GREEN = Display.getDefault().getSystemColor(SWT.COLOR_DARK_GREEN);
+    public static final Color BLACK = Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
-    CPI(120, 120, 120), //
-    IRR(0, 0, 0), //
+    private static final ColorRegistry REGISTRY = new ColorRegistry();
 
-    HEADINGS(149, 165, 180), // 95A5B4
-    OTHER_CATEGORY(180, 180, 180), //
-    INFO_TOOLTIP_BACKGROUND(236, 235, 236),
+    public static final Color ICON_ORANGE = getColor(241, 143, 1); // F18F01
+    public static final Color ICON_BLUE = getColor(14, 110, 142);
+    public static final Color ICON_GREEN = getColor(154, 193, 85);
 
-    WARNING(254, 223, 107);
+    public static final Color TOTALS = getColor(0, 0, 0);
 
-    private final int red;
-    private final int green;
-    private final int blue;
+    public static final Color CASH = getColor(196, 55, 194);
+    public static final Color EQUITY = getColor(87, 87, 255);
 
-    private Colors(int red, int green, int blue)
+    public static final Color CPI = getColor(120, 120, 120);
+    public static final Color IRR = getColor(0, 0, 0);
+
+    public static final Color DARK_BLUE = getColor(149, 165, 180); // 95A5B4
+
+    public static final Color HEADINGS = getColor(57, 62, 66); // 393E42
+    public static final Color OTHER_CATEGORY = getColor(180, 180, 180);
+    public static final Color INFO_TOOLTIP_BACKGROUND = getColor(236, 235, 236);
+
+    public static final Color WARNING = getColor(254, 223, 107); // FEDF6B
+    public static final Color WARNING_RED = getColor(209, 29, 29); // D11D1D
+
+    public static final Color SIDEBAR_TEXT = getColor(57, 62, 66);
+    public static final Color SIDEBAR_BACKGROUND = getColor(249, 250, 250); // F9FAFA
+    public static final Color SIDEBAR_BACKGROUND_SELECTED = getColor(228, 230, 233); // E4E6E9
+    public static final Color SIDEBAR_BORDER = getColor(244, 245, 245); // F4F5F5
+
+    private Colors()
     {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
     }
 
-    public int red()
+    public static Color getColor(RGB rgb)
     {
-        return this.red;
+        return getColor(rgb.red, rgb.green, rgb.blue);
     }
 
-    public int green()
+    /**
+     * Constructs a color instance with the given red, green and blue values.
+     *
+     * @param red
+     *            the red component of the new instance
+     * @param green
+     *            the green component of the new instance
+     * @param blue
+     *            the blue component of the new instance
+     * @exception IllegalArgumentException
+     *                if the red, green or blue argument is not between 0 and
+     *                255
+     */
+    public static Color getColor(int red, int green, int blue)
     {
-        return this.green;
+        String key = getColorKey(red, green, blue);
+        if (REGISTRY.hasValueFor(key))
+        {
+            return REGISTRY.get(key);
+        }
+        else
+        {
+            REGISTRY.put(key, new RGB(red, green, blue));
+            return getColor(key);
+        }
     }
 
-    public int blue()
+    private static Color getColor(String key)
     {
-        return this.blue;
+        return REGISTRY.get(key);
     }
 
-    public RGB swt()
+    private static String getColorKey(int red, int green, int blue)
     {
-        return new RGB(red, green, blue);
+        return red + "_" + green + "_" + blue; //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-    public String asHex()
+    public static String toHex(Color color)
     {
-        return toHex(swt());
+        return ColorConversion.toHex(color.getRed(), color.getGreen(), color.getBlue());
     }
 
     public static String toHex(RGB rgb)
     {
-        return ColorConversion.toHex(rgb);
+        return ColorConversion.toHex(rgb.red, rgb.green, rgb.blue);
     }
 
     public static RGB toRGB(String hex)
     {
-        int rgb[] = ColorConversion.toRGB(hex);
+        int[] rgb = ColorConversion.toRGB(hex);
         return new RGB(rgb[0], rgb[1], rgb[2]);
     }
 
@@ -82,11 +117,11 @@ public enum Colors
         // http://stackoverflow.com/questions/596216/formula-to-determine-brightness-of-rgb-color
 
         double luminance = 1 - (0.299 * color.getRed() + 0.587 * color.getGreen() + 0.114 * color.getBlue()) / 255;
-
-        if (luminance < 0.2)
-            return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
-        else
-            return Display.getDefault().getSystemColor(SWT.COLOR_WHITE);
+        return luminance < 0.2 ? BLACK : WHITE;
     }
 
+    public static Color brighter(Color base)
+    {
+        return getColor(ColorConversion.brighter(base.getRGB()));
+    }
 }

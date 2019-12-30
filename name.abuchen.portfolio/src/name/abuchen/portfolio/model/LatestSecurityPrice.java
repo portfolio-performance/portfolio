@@ -6,18 +6,28 @@ public class LatestSecurityPrice extends SecurityPrice
 {
     private long high;
     private long low;
-    private int volume;
+    private long volume;
 
     private long previousClose;
-    
+
     public static final long NOT_AVAILABLE = -1L;
 
     public LatestSecurityPrice()
-    {}
-
-    public LatestSecurityPrice(LocalDate time, long price)
     {
-        super(time, price);
+    }
+
+    public LatestSecurityPrice(LocalDate date, long price)
+    {
+        super(date, price);
+    }
+
+    public LatestSecurityPrice(LocalDate date, long price, long high, long low, long volume)
+    {
+        super(date, price);
+
+        this.high = high;
+        this.low = low;
+        this.volume = volume;
     }
 
     public long getHigh()
@@ -40,16 +50,17 @@ public class LatestSecurityPrice extends SecurityPrice
         this.low = low;
     }
 
-    public int getVolume()
+    public long getVolume()
     {
         return volume;
     }
 
-    public void setVolume(int volume)
+    public void setVolume(long volume)
     {
         this.volume = volume;
     }
 
+    @Deprecated
     public long getPreviousClose()
     {
         return previousClose;
@@ -68,7 +79,7 @@ public class LatestSecurityPrice extends SecurityPrice
         result = prime * result + (int) (high ^ (high >>> 32));
         result = prime * result + (int) (low ^ (low >>> 32));
         result = prime * result + (int) (previousClose ^ (previousClose >>> 32));
-        result = prime * result + volume;
+        result = prime * result + (int) (volume ^ (volume >>> 32));
         return result;
     }
 

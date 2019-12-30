@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.resource.JFaceResources;
-import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
@@ -32,9 +30,7 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
-import name.abuchen.portfolio.ui.util.Colors;
-
-public class TimelineChart extends Chart
+public class TimelineChart extends Chart // NOSONAR
 {
     private static class MarkerLine
     {
@@ -57,17 +53,32 @@ public class TimelineChart extends Chart
         }
     }
 
+    private static class NonTradingDayMarker
+    {
+        private LocalDate date;
+        private Color color;
+
+        private NonTradingDayMarker(LocalDate date, Color color)
+        {
+            this.date = date;
+            this.color = color;
+        }
+
+        public long getTimeMillis()
+        {
+            return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+        }
+    }
+
     private List<MarkerLine> markerLines = new ArrayList<>();
+    private List<NonTradingDayMarker> nonTradingDayMarkers = new ArrayList<>();
 
     private TimelineChartToolTip toolTip;
-    private final LocalResourceManager resources;
     private ChartContextMenu contextMenu;
 
     public TimelineChart(Composite parent)
     {
         super(parent, SWT.NONE);
-
-        resources = new LocalResourceManager(JFaceResources.getResources(), this);
 
         setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
         getTitle().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
@@ -85,12 +96,35 @@ public class TimelineChart extends Chart
         yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
 
+        // 2nd y axis
+        int axisId = getAxisSet().createYAxis();
+        IAxis y2Axis = getAxisSet().getYAxis(axisId);
+        y2Axis.getTitle().setVisible(false);
+        y2Axis.getTick().setVisible(false);
+        y2Axis.getGrid().setStyle(LineStyle.NONE);
+        y2Axis.setPosition(Position.Primary);
+
         ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
         {
             @Override
             public void paintControl(PaintEvent e)
             {
                 paintTimeGrid(e);
+            }
+
+            @Override
+            public boolean drawBehindSeries()
+            {
+                return true;
+            }
+        });
+
+        ((IPlotArea) getPlotArea()).addCustomPaintListener(new ICustomPaintListener()
+        {
+            @Override
+            public void paintControl(PaintEvent eventNonTradingDay)
+            {
+                paintNonTradingDayMarker(eventNonTradingDay);
             }
 
             @Override
@@ -107,6 +141,7 @@ public class TimelineChart extends Chart
         ZoomMouseWheelListener.attachTo(this);
         MovePlotKeyListener.attachTo(this);
         ZoomInAreaListener.attachTo(this);
+        getPlotArea().addTraverseListener(event -> event.doit = true);
 
         this.contextMenu = new ChartContextMenu(this);
     }
@@ -127,24 +162,30 @@ public class TimelineChart extends Chart
         this.markerLines.clear();
     }
 
+    public void addNonTradingDayMarker(LocalDate date, Color color)
+    {
+        this.nonTradingDayMarkers.add(new NonTradingDayMarker(date, color));
+        Collections.sort(this.nonTradingDayMarkers, (ml1, ml2) -> ml1.date.compareTo(ml2.date));
+    }
+
+    public void removeNonTradingDayMarker(LocalDate date, Color color)
+    {
+        this.nonTradingDayMarkers.remove(new NonTradingDayMarker(date, color));
+    }
+
+    public void clearNonTradingDayMarker()
+    {
+        this.nonTradingDayMarkers.clear();
+    }
+
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, String label)
     {
         return addDateSeries(dates, values, Display.getDefault().getSystemColor(SWT.COLOR_BLACK), false, label);
     }
 
-    public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Colors color, String label)
-    {
-        return addDateSeries(dates, values, resources.createColor(color.swt()), false, label);
-    }
-
     public ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, String label)
     {
         return addDateSeries(dates, values, color, false, label);
-    }
-
-    public void addDateSeries(LocalDate[] dates, double[] values, Colors color, boolean showArea)
-    {
-        addDateSeries(dates, values, resources.createColor(color.swt()), showArea, color.name());
     }
 
     private ILineSeries addDateSeries(LocalDate[] dates, double[] values, Color color, boolean showArea, String label)
@@ -261,6 +302,49 @@ public class TimelineChart extends Chart
         }
     }
 
+    private void paintNonTradingDayMarker(PaintEvent eventNonTradingDay) // NOSONAR
+    {
+        if (nonTradingDayMarkers.isEmpty())
+            return;
+        IAxis xAxis = getAxisSet().getXAxis(0);
+        Range range = xAxis.getRange();
+        ZoneId zoneId = ZoneId.systemDefault();
+        LocalDate start = Instant.ofEpochMilli((long) range.lower).atZone(zoneId).toLocalDate();
+        LocalDate end = Instant.ofEpochMilli((long) range.upper).atZone(zoneId).toLocalDate();
+        long days = ChronoUnit.DAYS.between(start, end);
+        double dayWidth = Math.ceil((eventNonTradingDay.width) / (days - 1d));
+        int markerWidthXLeft = (int) (dayWidth / 2);
+        ArrayList<LocalDate> nonTradingDayDates = new ArrayList<>();
+        for (NonTradingDayMarker marker : nonTradingDayMarkers)
+        {
+            nonTradingDayDates.add(marker.date);
+        }
+        for (NonTradingDayMarker marker : nonTradingDayMarkers)
+        {
+            int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
+            double barWidth = 0;
+            for (LocalDate date = marker.date; date.isBefore(end); date = date.plusDays(1))
+            {
+                if (!nonTradingDayDates.contains(date))
+                    break;
+                barWidth = barWidth + dayWidth;
+            }
+            if (nonTradingDayDates.contains(marker.date.minusDays(1)))
+                continue;
+
+            if (barWidth < 3)
+                barWidth = 3;
+            eventNonTradingDay.gc.setBackground(marker.color);
+            eventNonTradingDay.gc.setLineWidth(0);
+            eventNonTradingDay.gc.setAlpha(100);
+            eventNonTradingDay.gc.fillRectangle(x - markerWidthXLeft, 25, (int) barWidth,
+                            eventNonTradingDay.height - 25);
+            eventNonTradingDay.gc.setBackgroundPattern(null);
+            eventNonTradingDay.gc.setAlpha(255); // Dirty fix to avoid that the
+                                                 // whole chart is adjusted
+        }
+    }
+
     public void exportMenuAboutToShow(IMenuManager manager, String label)
     {
         this.contextMenu.exportMenuAboutToShow(manager, label);
@@ -288,5 +372,11 @@ public class TimelineChart extends Chart
         {
             setRedraw(true);
         }
+    }
+
+    @Override
+    public void save(String filename, int format)
+    {
+        ChartUtil.save(this, filename, format);
     }
 }

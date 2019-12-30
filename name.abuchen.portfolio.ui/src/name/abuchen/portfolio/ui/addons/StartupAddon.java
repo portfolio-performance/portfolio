@@ -16,6 +16,7 @@ import org.eclipse.core.runtime.jobs.IJobManager;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
+import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
 import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
@@ -43,16 +44,37 @@ public class StartupAddon
 {
     private static final class UpdateExchangeRatesJob extends Job
     {
+        private final IEventBroker broker;
         private final ExchangeRateProvider provider;
 
-        private UpdateExchangeRatesJob(ExchangeRateProvider provider)
+        private boolean loadDone = false;
+
+        private UpdateExchangeRatesJob(IEventBroker broker, ExchangeRateProvider provider)
         {
             super(MessageFormat.format(Messages.MsgUpdatingExchangeRates, provider.getName()));
+            this.broker = broker;
             this.provider = provider;
         }
 
         @Override
         protected IStatus run(IProgressMonitor monitor)
+        {
+            if (!loadDone)
+            {
+                // load data from file only the first time around
+
+                loadFromFile(monitor);
+                loadDone = true;
+            }
+
+            updateOnline(monitor);
+
+            schedule(1000L * 60 * 60 * 12); // every 12 hours
+
+            return Status.OK_STATUS;
+        }
+
+        private void loadFromFile(IProgressMonitor monitor)
         {
             try
             {
@@ -64,7 +86,14 @@ public class StartupAddon
                 // method runs in any case
                 PortfolioPlugin.log(e);
             }
+            finally
+            {
+                broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
+            }
+        }
 
+        private void updateOnline(IProgressMonitor monitor)
+        {
             try
             {
                 provider.update(monitor);
@@ -73,8 +102,10 @@ public class StartupAddon
             {
                 PortfolioPlugin.log(e);
             }
-
-            return Status.OK_STATUS;
+            finally
+            {
+                broker.post(UIConstants.Event.ExchangeRates.LOADED, provider);
+            }
         }
     }
 
@@ -131,19 +162,19 @@ public class StartupAddon
     }
 
     @PostConstruct
-    public void updateExchangeRates(ExchangeRateProviderFactory factory)
+    public void updateExchangeRates(IEventBroker broker)
     {
-        for (final ExchangeRateProvider provider : factory.getProviders())
+        for (final ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
-            Job job = new UpdateExchangeRatesJob(provider);
+            Job job = new UpdateExchangeRatesJob(broker, provider);
             job.schedule();
         }
     }
 
     @PreDestroy
-    public void storeExchangeRates(ExchangeRateProviderFactory factory)
+    public void storeExchangeRates()
     {
-        for (ExchangeRateProvider provider : factory.getProviders())
+        for (ExchangeRateProvider provider : ExchangeRateProviderFactory.getProviders())
         {
             try
             {

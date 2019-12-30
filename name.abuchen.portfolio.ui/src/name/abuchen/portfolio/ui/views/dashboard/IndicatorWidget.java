@@ -1,27 +1,28 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
+import java.time.LocalDate;
 import java.util.Objects;
 import java.util.function.BiFunction;
+import java.util.function.Supplier;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.InfoToolTip;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.util.Interval;
 
-public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
+public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget<N>
 {
     public static class Builder<N extends Number>
     {
         private Widget widget;
         private DashboardData dashboardData;
         private Values<N> formatter;
-        private BiFunction<DataSeries, ReportingPeriod, N> provider;
-        private BiFunction<DataSeries, ReportingPeriod, String> tooltip;
+        private BiFunction<DataSeries, Interval, N> provider;
+        private BiFunction<DataSeries, Interval, String> tooltip;
         private boolean supportsBenchmarks = true;
         private boolean isValueColored = true;
 
@@ -37,13 +38,13 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
             return this;
         }
 
-        Builder<N> with(BiFunction<DataSeries, ReportingPeriod, N> provider)
+        Builder<N> with(BiFunction<DataSeries, Interval, N> provider)
         {
             this.provider = provider;
             return this;
         }
 
-        Builder<N> withTooltip(BiFunction<DataSeries, ReportingPeriod, String> tooltip)
+        Builder<N> withTooltip(BiFunction<DataSeries, Interval, String> tooltip)
         {
             this.tooltip = tooltip;
             return this;
@@ -76,8 +77,8 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
     }
 
     private Values<N> formatter;
-    private BiFunction<DataSeries, ReportingPeriod, N> provider;
-    private BiFunction<DataSeries, ReportingPeriod, String> tooltip;
+    private BiFunction<DataSeries, Interval, N> provider;
+    private BiFunction<DataSeries, Interval, String> tooltip;
     private boolean isValueColored = true;
 
     public IndicatorWidget(Widget widget, DashboardData dashboardData, boolean supportsBenchmarks)
@@ -95,12 +96,12 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
         this.formatter = formatter;
     }
 
-    void setProvider(BiFunction<DataSeries, ReportingPeriod, N> provider)
+    void setProvider(BiFunction<DataSeries, Interval, N> provider)
     {
         this.provider = provider;
     }
 
-    void setTooltip(BiFunction<DataSeries, ReportingPeriod, String> tooltip)
+    void setTooltip(BiFunction<DataSeries, Interval, String> tooltip)
     {
         this.tooltip = tooltip;
     }
@@ -117,22 +118,26 @@ public class IndicatorWidget<N extends Number> extends AbstractIndicatorWidget
 
         if (tooltip != null)
             InfoToolTip.attach(indicator, () -> tooltip.apply(get(DataSeriesConfig.class).getDataSeries(),
-                            get(ReportingPeriodConfig.class).getReportingPeriod()));
+                            get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now())));
 
         return container;
     }
 
     @Override
-    public void update()
+    public Supplier<N> getUpdateTask()
     {
-        super.update();
+        return () -> provider.apply(get(DataSeriesConfig.class).getDataSeries(),
+                        get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now()));
+    }
 
-        N value = provider.apply(get(DataSeriesConfig.class).getDataSeries(),
-                        get(ReportingPeriodConfig.class).getReportingPeriod());
+    @Override
+    public void update(N value)
+    {
+        super.update(value);
+
         indicator.setText(formatter.format(value));
 
         if (isValueColored)
-            indicator.setForeground(Display.getDefault()
-                            .getSystemColor(value.doubleValue() < 0 ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN));
+            indicator.setForeground(value.doubleValue() < 0 ? Colors.DARK_RED : Colors.DARK_GREEN);
     }
 }

@@ -1,0 +1,56 @@
+PDFBox Version: 1.8.13
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer: 1234567891
+1234567891/00
+Vermerk der Bank: 2000
+Name 2
+Strasse
+12345 Stadt Datum: 09.01.2018
+Seite: 1 von 2
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+OMNICOM GROUP INC. Registered Shares DL -,15 871706 US6819191064
+Bestand
+25 Stück
+Dividende pro Stück 0,60 USD Schlusstag 17.12.2017
+Brutto in USD 15,00 USD
+abzgl. Quellensteuer 15,00 % von 15,00 USD 2,25 USD
+Zwischensumme in USD 12,75 USD
+Devisenkurs 1,195900 USD / EUR
+Brutto in EUR 12,54 EUR
+Quellensteuer in EUR 1,88 EUR
+Zwischensumme in EUR 10,66 EUR
+abzgl. Kapitalertragsteuer 25,00 % von 5,02 EUR 1,26 EUR
+abzgl. Solidaritätszuschlag 5,50 % von 1,26 EUR 0,06 EUR
+Netto zugunsten IBAN DE00 0000 0000 0000 0000 00 9,34 EUR
+Valuta 09.01.2018 BIC CSDBDE71XXX
+Anrechenbare Quellensteuer 15,00 % von 15,00 USD 1,88 EUR
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland.
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: 1234567891
+1234567891/00
+Vermerk der Bank: 2000
+2
+Datum: 09.01.2018
+Seite: 2 von 2
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 12,54 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet -7,52 EUR
+somit verrechnete Quellensteuer -1,88 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 5,02 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR

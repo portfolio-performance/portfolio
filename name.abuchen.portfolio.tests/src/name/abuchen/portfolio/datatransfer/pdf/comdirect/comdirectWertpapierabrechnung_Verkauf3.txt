@@ -1,0 +1,66 @@
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+
+Telefon   :   04106-708 25 00
+
+
+
+
+    11873 010
+Depotnr.:        0000000 00
+            BLZ:             000 000 00
+Vorname Nachname
+
+
+Straßenname Hausnummer
+00000 Ort
+
+
+
+
+
+GESCHÄFTSABRECHNUNG VOM 25.02.2016
+
+*
+Wertpapierverkauf
+Geschäftsnummer   : 91 027455 bis 91 027456
+Ordernummer       : 072170653514      Rechnungsnummer   : 000000000000DDE5
+Geschäftstag      : 25.02.2016        Ausführungsplatz  : TRADEGATE
+                                                          (Kommissionsgeschäft)
+
+Wertpapier-Bezeichnung                                               WPKNR/ISIN
+ITC Holdings Corp.                                                       A0F401
+Registered Shares o. N.                                            US4656851056
+
+
+Ihre Order wurde wie folgt ausgeführt:
+
+Handelszeit   Nennwert                Zum Kurs von                     Kurswert
+ 21:05        St.  540                EUR  37,38        EUR           20.185,20
+ 21:05        St.   30                EUR  37,37        EUR            1.121,10
+--------------------------------------------------------------------------------
+ Summe        St.  570                EUR  37,379473    EUR           21.306,30
+(ggf. gerundet)
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Abwickl.entgelt Clearstream : EUR                5,80-
+                          Gesamtprovision             : EUR               58,17-
+                          Börsenplatzabhäng. Entgelt  : EUR                2,50-
+                          Summe Entgelte              : EUR               66,47-
+--------------------------------------------------------------------------------
+
+
+IBAN                                  Valuta        Zu Ihren Gunsten vor Steuern
+DE00 0000 1111 0000 0000 00   EUR     29.02.2016        EUR           21.239,83
+
+Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA (AKV)
+Teilausführung Ihrer Order
+
+e r s ta t te t e S t e ue r n     E_ _U R_ _ _ _ _ _ _ _ _  _ _ __ _ 7_1__,7_ 3_
+
+
+comdirect bank

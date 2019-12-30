@@ -18,11 +18,6 @@ public class ReadOnlyClient extends Client
         this.source = Objects.requireNonNull(source);
     }
 
-    public Client getSource()
-    {
-        return source;
-    }
-
     @Override
     public void addSecurity(Security security)
     {
@@ -74,4 +69,14 @@ public class ReadOnlyClient extends Client
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void setProperty(String key, String value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    public static Client unwrap(Client client)
+    {
+        return client instanceof ReadOnlyClient ? unwrap(((ReadOnlyClient) client).source) : client;
+    }
 }

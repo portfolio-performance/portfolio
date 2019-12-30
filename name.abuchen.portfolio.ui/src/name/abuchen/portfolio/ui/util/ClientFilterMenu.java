@@ -2,12 +2,15 @@ package name.abuchen.portfolio.ui.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
@@ -29,7 +32,7 @@ import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
 
 public final class ClientFilterMenu implements IMenuListener
 {
-    private static class Item
+    public static class Item
     {
         String label;
         String uuids;
@@ -38,12 +41,29 @@ public final class ClientFilterMenu implements IMenuListener
         public Item(String label, String uuids, ClientFilter filter)
         {
             this.label = label;
-            this.uuids = uuids;
+            this.uuids = Objects.requireNonNull(uuids);
             this.filter = filter;
         }
-    }
 
-    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 5;
+        public String getLabel()
+        {
+            return label;
+        }
+
+        public String getUUIDs()
+        {
+            return uuids;
+        }
+
+        public ClientFilter getFilter()
+        {
+            return filter;
+        }
+    }
+    
+    public static final String PREF_KEY_POSTFIX = "-client-filter"; //$NON-NLS-1$
+
+    private static final int MAXIMUM_NO_CUSTOM_ITEMS = 30;
 
     private final Client client;
     private final IPreferenceStore preferences;
@@ -53,22 +73,28 @@ public final class ClientFilterMenu implements IMenuListener
     private LinkedList<Item> customItems = new LinkedList<>();
     private Item selectedItem;
 
-    public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener)
+    public ClientFilterMenu(Client client, IPreferenceStore preferences)
     {
         this.client = client;
         this.preferences = preferences;
-        this.listeners.add(listener);
 
-        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, null, c -> c);
+        selectedItem = new Item(Messages.PerformanceChartLabelEntirePortfolio, "", ClientFilter.NO_FILTER); //$NON-NLS-1$
         defaultItems.add(selectedItem);
 
-        client.getPortfolios().forEach(portfolio -> {
-            defaultItems.add(new Item(portfolio.getName(), null, new PortfolioClientFilter(portfolio)));
+        client.getActivePortfolios().forEach(portfolio -> {
+            defaultItems.add(new Item(portfolio.getName(), portfolio.getUUID(), new PortfolioClientFilter(portfolio)));
             defaultItems.add(new Item(portfolio.getName() + " + " + portfolio.getReferenceAccount().getName(), //$NON-NLS-1$
-                            null, new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
+                            portfolio.getUUID() + "," + portfolio.getReferenceAccount().getUUID(), //$NON-NLS-1$
+                            new PortfolioClientFilter(portfolio, portfolio.getReferenceAccount())));
         });
 
         loadCustomItems();
+    }
+
+    public ClientFilterMenu(Client client, IPreferenceStore preferences, Consumer<ClientFilter> listener)
+    {
+        this(client, preferences);
+        this.listeners.add(listener);
     }
 
     private void loadCustomItems()
@@ -85,7 +111,7 @@ public final class ClientFilterMenu implements IMenuListener
         for (String item : items)
         {
             String[] uuids = item.split(","); //$NON-NLS-1$
-            Object[] objects = Arrays.stream(uuids).map(uuid2object::get).filter(o -> o != null).toArray();
+            Object[] objects = Arrays.stream(uuids).map(uuid2object::get).filter(Objects::nonNull).toArray();
 
             if (objects.length > 0)
             {
@@ -168,8 +194,8 @@ public final class ClientFilterMenu implements IMenuListener
                 if (customItems.size() > MAXIMUM_NO_CUSTOM_ITEMS)
                     customItems.removeLast();
 
-                preferences.putValue(ClientFilterDropDown.class.getSimpleName(), String.join(";", //$NON-NLS-1$
-                                customItems.stream().map(i -> i.uuids).collect(Collectors.toList())));
+                preferences.putValue(ClientFilterDropDown.class.getSimpleName(),
+                                customItems.stream().map(i -> i.uuids).collect(Collectors.joining(";"))); //$NON-NLS-1$
 
                 listeners.forEach(l -> l.accept(newItem.filter));
             }
@@ -203,9 +229,30 @@ public final class ClientFilterMenu implements IMenuListener
     {
         return selectedItem.filter;
     }
+    
+    public Item getSelectedItem()
+    {
+        return selectedItem;
+    }
 
     public void addListener(Consumer<ClientFilter> listener)
     {
         listeners.add(listener);
     }
+
+    public Stream<Item> getAllItems()
+    {
+        return Stream.concat(defaultItems.stream(), customItems.stream());
+    }
+
+    public List<Item> getCustomItems()
+    {
+        return Collections.unmodifiableList(customItems);
+    }
+
+    public void select(Item item)
+    {
+        selectedItem = item;
+    }
+
 }

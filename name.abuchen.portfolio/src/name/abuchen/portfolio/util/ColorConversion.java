@@ -4,6 +4,10 @@ import org.eclipse.swt.graphics.RGB;
 
 public class ColorConversion
 {
+    private ColorConversion()
+    {
+    }
+
     public static int[] toRGB(String hex)
     {
         try
@@ -18,10 +22,15 @@ public class ColorConversion
         }
     }
 
-    public static float[] toHSB(String hex)
+    public static RGB hex2RGB(String hex)
     {
         int[] rgb = toRGB(hex);
-        return new RGB(rgb[0], rgb[1], rgb[2]).getHSB();
+        return new RGB(rgb[0], rgb[1], rgb[2]);
+    }
+
+    public static float[] toHSB(String hex)
+    {
+        return hex2RGB(hex).getHSB();
     }
 
     public static String toHex(RGB rgb)
@@ -37,5 +46,18 @@ public class ColorConversion
     public static String toHex(float hue, float saturation, float brightness)
     {
         return toHex(new RGB(hue, saturation, brightness));
+    }
+
+    public static RGB brighter(RGB rgb)
+    {
+        float[] hsb = rgb.getHSB();
+        float saturation = Math.max(0f, hsb[1] - 0.2f);
+        float brightness = Math.min(1f, hsb[2] + 0.2f);
+        return new RGB(hsb[0], saturation, brightness);
+    }
+
+    public static String brighter(String hex)
+    {
+        return toHex(brighter(hex2RGB(hex)));
     }
 }

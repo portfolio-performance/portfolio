@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Attributes
 {
-    private Map<String, Object> map = new HashMap<String, Object>();
+    private Map<String, Object> map = new HashMap<>();
 
     public Object put(AttributeType attribute, Object value)
     {

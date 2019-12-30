@@ -3,10 +3,10 @@ package name.abuchen.portfolio.datatransfer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -113,30 +113,31 @@ public class SecurityCache
     }
 
     /**
-     * Returns a list of {@link SecurityItem} that are implicitly created when
-     * extracting transactions. Do not add all newly created securities as they
-     * might be created out of erroneous transactions.
+     * Inserts {@link SecurityItem} which have been implicitly created by other
+     * transactions.
      */
-    public Collection<Item> createMissingSecurityItems(List<Item> items)
+    public void addMissingSecurityItems(Map<Extractor, List<Item>> extractor2items)
     {
-        List<Item> answer = new ArrayList<>();
-
         Set<Security> available = new HashSet<>();
         available.addAll(client.getSecurities());
-        items.stream().filter(i -> i instanceof SecurityItem).map(Item::getSecurity).forEach(available::add);
 
-        for (Item item : items)
+        extractor2items.values().stream().flatMap(List<Item>::stream).filter(i -> i instanceof SecurityItem)
+                        .map(Item::getSecurity).forEach(available::add);
+
+        for (Entry<Extractor, List<Item>> entry : extractor2items.entrySet())
         {
-            if (item instanceof SecurityItem || item.getSecurity() == null)
-                continue;
-
-            if (!available.contains(item.getSecurity()))
+            // copy list as we are potentially modifying it
+            for (Item item : new ArrayList<>(entry.getValue()))
             {
-                answer.add(new SecurityItem(item.getSecurity()));
-                available.add(item.getSecurity());
+                if (item instanceof SecurityItem || item.getSecurity() == null)
+                    continue;
+
+                if (!available.contains(item.getSecurity()))
+                {
+                    entry.getValue().add(new SecurityItem(item.getSecurity()));
+                    available.add(item.getSecurity());
+                }
             }
         }
-
-        return answer;
     }
 }

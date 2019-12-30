@@ -7,6 +7,7 @@ import static name.abuchen.portfolio.ui.util.SWTHelper.widestWidget;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -53,7 +54,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         }
 
         @Override
-        public boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+        public boolean updateLatestQuotes(Security security, List<Exception> errors)
         {
             return false;
         }
@@ -67,19 +68,19 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         @Override
         public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
 
         @Override
         public List<Exchange> getExchanges(Security subject, List<Exception> errors)
         {
-            return null;
+            return Collections.emptyList();
         }
     }
 
@@ -109,10 +110,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
-                List<Security> list = new ArrayList<>();
-                list.add(s);
-
-                feed.updateLatestQuotes(list, new ArrayList<Exception>());
+                feed.updateLatestQuotes(s, new ArrayList<Exception>());
 
                 Display.getDefault().asyncExec(() -> {
                     if (valueLatestPrices == null || valueLatestPrices.isDisposed())
@@ -123,7 +121,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         LatestSecurityPrice p = s.getLatest();
 
                         valueLatestPrices.setText(Values.Quote.format(p.getValue()));
-                        valueLatestTrade.setText(Values.Date.format(p.getTime()));
+                        valueLatestTrade.setText(Values.Date.format(p.getDate()));
                         long daysHigh = p.getHigh();
                         valueDaysHigh.setText(
                                         daysHigh == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysHigh));
@@ -131,10 +129,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                         valueDaysLow.setText(daysLow == -1 ? Messages.LabelNotAvailable : Values.Quote.format(daysLow));
                         long volume = p.getVolume();
                         valueVolume.setText(volume == -1 ? Messages.LabelNotAvailable : String.format("%,d", volume)); //$NON-NLS-1$
-                        long prevClose = p.getPreviousClose();
-                        valuePreviousClose.setText(
-                                        prevClose == -1 ? Messages.LabelNotAvailable : Values.Quote.format(prevClose));
-
                     }
                     else
                     {
@@ -144,7 +138,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
             }
             catch (Exception e)
             {
-                Display.getDefault().asyncExec(() -> clearSampleQuotes());
+                Display.getDefault().asyncExec(() -> clearSampleQuotes()); // NOSONAR
 
                 PortfolioPlugin.log(e);
             }
@@ -161,18 +155,18 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
     private Label valueDaysHigh;
     private Label valueDaysLow;
     private Label valueVolume;
-    private Label valuePreviousClose;
 
     public LatestQuoteProviderPage(final EditSecurityModel model, BindingHelper bindings)
     {
-        super(model);
+        super(model, bindings);
 
         setTitle(Messages.EditWizardLatestQuoteFeedTitle);
 
         // validate that quote provider message is null -> no errors
         bindings.getBindingContext().addValidationStatusProvider(new MultiValidator()
         {
-            IObservableValue observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<?> observable = BeanProperties.value("statusLatestQuotesProvider").observe(model); //$NON-NLS-1$
 
             @Override
             protected IStatus validate()
@@ -266,10 +260,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         labelVolume.setText(Messages.ColumnVolume);
         valueVolume = new Label(composite, SWT.RIGHT);
 
-        Label labelPreviousClose = new Label(composite, SWT.NONE);
-        labelPreviousClose.setText(Messages.ColumnPreviousClose);
-        valuePreviousClose = new Label(composite, SWT.RIGHT);
-
         // layout
 
         FormLayout layout = new FormLayout();
@@ -277,8 +267,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         layout.marginRight = 5;
         composite.setLayout(layout);
 
-        Control biggest = widestWidget(labelLatestPrice, labelLatestTrade, labelDaysHigh, labelDaysLow, labelVolume,
-                        labelPreviousClose);
+        Control biggest = widestWidget(labelLatestPrice, labelLatestTrade, labelDaysHigh, labelDaysLow, labelVolume);
         int width = dateWidth(composite);
 
         FormData data = new FormData();
@@ -295,7 +284,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         placeBelow(valueLatestTrade, labelDaysHigh, valueDaysHigh);
         placeBelow(valueDaysHigh, labelDaysLow, valueDaysLow);
         placeBelow(valueDaysLow, labelVolume, valueVolume);
-        placeBelow(valueVolume, labelPreviousClose, valuePreviousClose);
     }
 
     @Override
@@ -312,7 +300,6 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         valueDaysHigh.setText(EMPTY_LABEL);
         valueDaysLow.setText(EMPTY_LABEL);
         valueVolume.setText(EMPTY_LABEL);
-        valuePreviousClose.setText(EMPTY_LABEL);
     }
 
     @Override

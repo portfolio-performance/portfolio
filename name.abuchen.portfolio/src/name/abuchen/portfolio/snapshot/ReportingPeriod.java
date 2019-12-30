@@ -11,18 +11,14 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public abstract class ReportingPeriod
 {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
-    protected final LocalDate startDate;
-    protected final LocalDate endDate;
-
-    public ReportingPeriod(LocalDate startDate, LocalDate endDate)
+    private ReportingPeriod()
     {
-        this.startDate = startDate;
-        this.endDate = endDate;
     }
 
     public static final ReportingPeriod from(String code) throws IOException
@@ -41,6 +37,10 @@ public abstract class ReportingPeriod
             return new SinceX(code);
         else if (type == YearX.CODE)
             return new YearX(code);
+        else if (type == CurrentMonth.CODE)
+            return new CurrentMonth();
+        else if (type == YearToDate.CODE)
+            return new YearToDate();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -49,31 +49,14 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-
-    public final LocalDate getStartDate()
+    public final Predicate<Transaction> containsTransaction(LocalDate relativeTo)
     {
-        return startDate;
+        Interval interval = toInterval(relativeTo);
+        return t -> t.getDateTime().toLocalDate().isAfter(interval.getStart())
+                        && !t.getDateTime().toLocalDate().isAfter(interval.getEnd());
     }
 
-    public final LocalDate getEndDate()
-    {
-        return endDate;
-    }
-
-    public final Predicate<Transaction> containsTransaction()
-    {
-        return t -> t.getDate().isAfter(startDate) && !t.getDate().isAfter(endDate);
-    }
-
-    public final Interval toInterval()
-    {
-        // reported via forum: if the user selects as 'since' date something in
-        // the future
-        if (endDate.isBefore(startDate))
-            return Interval.of(endDate, startDate);
-        else
-            return Interval.of(startDate, endDate);
-    }
+    public abstract Interval toInterval(LocalDate relativeTo);
 
     public abstract void writeTo(StringBuilder buffer);
 
@@ -82,43 +65,6 @@ public abstract class ReportingPeriod
         StringBuilder buf = new StringBuilder();
         writeTo(buf);
         return buf.toString();
-    }
-
-    @Override
-    public int hashCode()
-    {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
-        result = prime * result + ((startDate == null) ? 0 : startDate.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj)
-    {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        ReportingPeriod other = (ReportingPeriod) obj;
-        if (endDate == null)
-        {
-            if (other.endDate != null)
-                return false;
-        }
-        else if (!endDate.equals(other.endDate))
-            return false;
-        if (startDate == null)
-        {
-            if (other.startDate != null)
-                return false;
-        }
-        else if (!startDate.equals(other.startDate))
-            return false;
-        return true;
     }
 
     public static class LastX extends ReportingPeriod
@@ -136,10 +82,14 @@ public abstract class ReportingPeriod
 
         public LastX(int years, int months)
         {
-            super(LocalDate.now().minusYears(years).minusMonths(months), LocalDate.now());
-
             this.years = years;
             this.months = months;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo.minusYears(years).minusMonths(months), relativeTo);
         }
 
         @Override
@@ -180,9 +130,13 @@ public abstract class ReportingPeriod
 
         public LastXDays(int days)
         {
-            super(LocalDate.now().minusDays(days), LocalDate.now());
-
             this.days = days;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo.minusDays(days), relativeTo);
         }
 
         @Override
@@ -211,14 +165,18 @@ public abstract class ReportingPeriod
 
         public LastXTradingDays(int tradingDays)
         {
-            super(tradingDaysSince(LocalDate.now(), tradingDays), LocalDate.now());
-
             this.tradingDays = tradingDays;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(tradingDaysSince(relativeTo, tradingDays), relativeTo);
         }
 
         /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
         {
-            TradeCalendar calendar = new TradeCalendar();
+            TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
 
             LocalDate date = start;
             int daysToGo = tradingDays;
@@ -230,7 +188,7 @@ public abstract class ReportingPeriod
 
                 date = date.minusDays(1);
             }
-            
+
             while (calendar.isHoliday(date))
                 date = date.minusDays(1);
 
@@ -246,8 +204,7 @@ public abstract class ReportingPeriod
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays,
-                            tradingDays);
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
         }
     }
 
@@ -255,28 +212,43 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'F';
 
+        private final LocalDate startDate;
+        private final LocalDate endDate;
+
         /* package */ FromXtoY(String code)
         {
-            super(LocalDate.parse(code.substring(1, code.indexOf('_'))),
+            this(LocalDate.parse(code.substring(1, code.indexOf('_'))),
                             LocalDate.parse(code.substring(code.indexOf('_') + 1)));
         }
 
         public FromXtoY(LocalDate startDate, LocalDate endDate)
         {
-            super(startDate, endDate);
+            this.startDate = startDate;
+            this.endDate = endDate;
+        }
+
+        public FromXtoY(Interval interval)
+        {
+            this(interval.getStart(), interval.getEnd());
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(startDate, endDate);
         }
 
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(getStartDate().toString()).append('_').append(getEndDate().toString());
+            buffer.append(CODE).append(startDate.toString()).append('_').append(endDate.toString());
         }
 
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, getStartDate().format(DATE_FORMATTER),
-                            getEndDate().format(DATE_FORMATTER));
+            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, startDate.format(DATE_FORMATTER),
+                            endDate.format(DATE_FORMATTER));
         }
     }
 
@@ -284,26 +256,37 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'S';
 
+        private final LocalDate startDate;
+
         /* package */ SinceX(String code)
         {
-            super(LocalDate.parse(code.substring(1)), LocalDate.now());
+            this(LocalDate.parse(code.substring(1)));
         }
 
         public SinceX(LocalDate startDate)
         {
-            super(startDate, LocalDate.now());
+            this.startDate = startDate;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
         }
 
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(getStartDate().toString());
+            buffer.append(CODE).append(startDate.toString());
         }
 
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodSince, getStartDate().format(DATE_FORMATTER));
+            return MessageFormat.format(Messages.LabelReportingPeriodSince, startDate.format(DATE_FORMATTER));
         }
 
     }
@@ -312,27 +295,90 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'Y';
 
+        private final int year;
+
         /* package */ YearX(String code)
         {
-            super(LocalDate.of(Integer.parseInt(code.substring(1)) - 1, 12, 31),
-                            LocalDate.of(Integer.parseInt(code.substring(1)), 12, 31));
+            this(Integer.parseInt(code.substring(1)));
         }
 
         public YearX(int year)
         {
-            super(LocalDate.of(year - 1, 12, 31), LocalDate.of(year, 12, 31));
+            this.year = year;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(LocalDate.of(year - 1, 12, 31), LocalDate.of(year, 12, 31));
         }
 
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(getEndDate().getYear());
+            buffer.append(CODE).append(year);
         }
 
         @Override
         public String toString()
         {
-            return String.valueOf(getEndDate().getYear());
+            return String.valueOf(year);
+        }
+    }
+
+    public static class CurrentMonth extends ReportingPeriod
+    {
+        private static final char CODE = 'M';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
+
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentMonth;
+        }
+    }
+
+    public static class YearToDate extends ReportingPeriod
+    {
+        private static final char CODE = 'X';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1);
+
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodYTD;
         }
     }
 }

@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.ui.views.dashboard;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
@@ -17,11 +19,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.swtchart.ISeries;
 
+import com.google.common.collect.Lists;
+
 import name.abuchen.portfolio.model.ConfigurationSet;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.model.Dashboard.Widget;
 import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.LabelOnly;
@@ -30,21 +33,24 @@ import name.abuchen.portfolio.ui.util.chart.TimelineChart;
 import name.abuchen.portfolio.ui.views.PerformanceChartView;
 import name.abuchen.portfolio.ui.views.StatementOfAssetsHistoryView;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSerializer;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesSet;
 import name.abuchen.portfolio.ui.views.dataseries.PerformanceChartSeriesBuilder;
 import name.abuchen.portfolio.ui.views.dataseries.StatementOfAssetsSeriesBuilder;
+import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TextUtil;
 
-public class ChartWidget extends WidgetDelegate
+public class ChartWidget extends WidgetDelegate<Object>
 {
     private class ChartConfig implements WidgetConfig
     {
-        private WidgetDelegate delegate;
+        private WidgetDelegate<?> delegate;
         private ConfigurationSet configSet;
         private ConfigurationSet.Configuration config;
 
-        public ChartConfig(WidgetDelegate delegate, DataSeries.UseCase useCase)
+        public ChartConfig(WidgetDelegate<?> delegate, DataSeries.UseCase useCase)
         {
             this.delegate = delegate;
 
@@ -68,7 +74,9 @@ public class ChartWidget extends WidgetDelegate
                 SimpleAction action = new SimpleAction(c.getName(), a -> {
                     config = c;
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.CONFIG_UUID.name(), c.getUUID());
-                    delegate.getClient().markDirty();
+
+                    delegate.update();
+                    delegate.getClient().touch();
                 });
                 action.setChecked(c.equals(config));
                 subMenu.add(action);
@@ -92,10 +100,10 @@ public class ChartWidget extends WidgetDelegate
 
     private class AggregationConfig implements WidgetConfig
     {
-        private WidgetDelegate delegate;
+        private WidgetDelegate<?> delegate;
         private Aggregation.Period aggregation;
 
-        public AggregationConfig(WidgetDelegate delegate)
+        public AggregationConfig(WidgetDelegate<?> delegate)
         {
             this.delegate = delegate;
 
@@ -122,7 +130,9 @@ public class ChartWidget extends WidgetDelegate
             Action action = new SimpleAction(Messages.LabelAggregationDaily, a -> {
                 aggregation = null;
                 delegate.getWidget().getConfiguration().remove(Dashboard.Config.AGGREGATION.name());
-                delegate.getClient().markDirty();
+
+                delegate.update();
+                delegate.getClient().touch();
             });
             action.setChecked(aggregation == null);
             subMenu.add(action);
@@ -131,7 +141,9 @@ public class ChartWidget extends WidgetDelegate
                 Action menu = new SimpleAction(a.toString(), x -> {
                     aggregation = a;
                     delegate.getWidget().getConfiguration().put(Dashboard.Config.AGGREGATION.name(), a.name());
-                    delegate.getClient().markDirty();
+
+                    delegate.update();
+                    delegate.getClient().touch();
                 });
                 menu.setChecked(aggregation == a);
                 subMenu.add(menu);
@@ -164,7 +176,7 @@ public class ChartWidget extends WidgetDelegate
         super(widget, dashboardData);
 
         this.useCase = useCase;
-        this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), useCase);
+        this.dataSeriesSet = new DataSeriesSet(dashboardData.getClient(), dashboardData.getPreferences(), useCase);
 
         addConfig(new ChartConfig(this, useCase));
         if (useCase == DataSeries.UseCase.PERFORMANCE)
@@ -180,7 +192,8 @@ public class ChartWidget extends WidgetDelegate
         container.setBackground(parent.getBackground());
 
         title = new Label(container, SWT.NONE);
-        title.setText(getWidget().getLabel());
+        title.setBackground(container.getBackground());
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
         GridDataFactory.fillDefaults().grab(true, false).applyTo(title);
 
         chart = new TimelineChart(container);
@@ -189,6 +202,7 @@ public class ChartWidget extends WidgetDelegate
         chart.getAxisSet().getYAxis(0).getTick().setVisible(false);
         if (useCase != DataSeries.UseCase.STATEMENT_OF_ASSETS)
             chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().reverseLabels(true);
 
         GC gc = new GC(container);
         gc.setFont(resources.getKpiFont());
@@ -203,15 +217,34 @@ public class ChartWidget extends WidgetDelegate
     }
 
     @Override
-    Control getTitleControl()
+    public Control getTitleControl()
     {
         return title;
     }
 
     @Override
-    public void update()
+    public Supplier<Object> getUpdateTask()
     {
-        title.setText(getWidget().getLabel());
+        // just fill the cache - the chart series builder will look it up and
+        // pass it directly to the chart
+
+        DataSeriesCache cache = getDashboardData().getDataSeriesCache();
+
+        List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
+                        get(ChartConfig.class).getData());
+
+        Interval interval = get(ReportingPeriodConfig.class).getReportingPeriod().toInterval(LocalDate.now());
+
+        return () -> {
+            series.forEach(s -> cache.lookup(s, interval));
+            return null;
+        };
+    }
+
+    @Override
+    public void update(Object object)
+    {
+        title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         try
         {
@@ -222,10 +255,11 @@ public class ChartWidget extends WidgetDelegate
             for (ISeries s : chart.getSeriesSet().getSeries())
                 chart.getSeriesSet().deleteSeries(s.getId());
 
-            List<DataSeries> series = new DataSeriesSerializer().fromString(dataSeriesSet,
-                            get(ChartConfig.class).getData());
+            List<DataSeries> series = Lists.reverse(
+                            new DataSeriesSerializer().fromString(dataSeriesSet, get(ChartConfig.class).getData()));
 
-            ReportingPeriod reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod();
+            Interval reportingPeriod = get(ReportingPeriodConfig.class).getReportingPeriod()
+                            .toInterval(LocalDate.now());
 
             switch (useCase)
             {
@@ -250,14 +284,14 @@ public class ChartWidget extends WidgetDelegate
         chart.redraw();
     }
 
-    private void buildAssetSeries(List<DataSeries> series, ReportingPeriod reportingPeriod)
+    private void buildAssetSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         StatementOfAssetsSeriesBuilder b1 = new StatementOfAssetsSeriesBuilder(chart,
                         getDashboardData().getDataSeriesCache());
         series.forEach(s -> b1.build(s, reportingPeriod));
     }
 
-    private void buildPerformanceSeries(List<DataSeries> series, ReportingPeriod reportingPeriod)
+    private void buildPerformanceSeries(List<DataSeries> series, Interval reportingPeriod)
     {
         PerformanceChartSeriesBuilder b2 = new PerformanceChartSeriesBuilder(chart,
                         getDashboardData().getDataSeriesCache());

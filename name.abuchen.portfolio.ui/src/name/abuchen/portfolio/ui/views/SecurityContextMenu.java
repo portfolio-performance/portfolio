@@ -10,12 +10,12 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
@@ -46,21 +46,21 @@ public class SecurityContextMenu
             return;
         }
 
-        new OpenDialogAction(owner, Messages.SecurityMenuBuy) //
+        new OpenDialogAction(owner, Messages.SecurityMenuBuy + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.BUY) //
                         .with(portfolio) //
                         .with(security) //
                         .addTo(manager);
 
-        new OpenDialogAction(owner, Messages.SecurityMenuSell) //
+        new OpenDialogAction(owner, Messages.SecurityMenuSell + "...") //$NON-NLS-1$
                         .type(SecurityTransactionDialog.class) //
                         .parameters(PortfolioTransaction.Type.SELL) //
                         .with(portfolio) //
                         .with(security) //
                         .addTo(manager);
 
-        new OpenDialogAction(owner, Messages.SecurityMenuDividends) //
+        new OpenDialogAction(owner, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.DIVIDENDS) //
                         .with(portfolio != null ? portfolio.getReferenceAccount() : null) //

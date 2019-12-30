@@ -3,6 +3,8 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 import javax.inject.Inject;
 
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
@@ -15,6 +17,8 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.util.ColorConversion;
 
 /* package */class PieChartViewer extends AbstractChartPage
 {
@@ -27,6 +31,19 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
     }
 
     @Override
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        super.configMenuAboutToShow(manager);
+
+        Action action = new SimpleAction(Messages.LabelIncludeSecuritiesInPieChart, a -> {
+            getModel().setExcludeSecuritiesInPieChart(!getModel().isSecuritiesInPieChartExcluded());
+            onConfigChanged();
+        });
+        action.setChecked(!getModel().isSecuritiesInPieChartExcluded());
+        manager.add(action);
+    }
+
+    @Override
     public Control createControl(Composite container)
     {
         browser = new EmbeddedBrowser("/META-INF/html/flare.html"); //$NON-NLS-1$
@@ -35,11 +52,15 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
     @Override
     public void beforePage()
-    {}
+    {
+        // nothing to do
+    }
 
     @Override
     public void afterPage()
-    {}
+    {
+        // nothing to do
+    }
 
     @Override
     public void nodeChange(TaxonomyNode node)
@@ -68,7 +89,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                 TaxonomyNode root = getModel().getChartRenderingRootNode();
 
                 StringBuilder buffer = new StringBuilder();
-                printNode(buffer, root, root.getActual());
+                printNode(buffer, root, "", root.getActual(), getModel().isSecuritiesInPieChartExcluded()); //$NON-NLS-1$
                 return buffer.toString();
             }
             catch (Throwable e) // NOSONAR
@@ -79,7 +100,8 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
         }
 
         @SuppressWarnings("nls")
-        private void printNode(StringBuilder buffer, TaxonomyNode node, Money total)
+        private void printNode(StringBuilder buffer, TaxonomyNode node, String nodeColor, Money total,
+                        boolean excludeSecurities)
         {
             String name = StringEscapeUtils.escapeJson(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
@@ -90,13 +112,44 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                 totalPercentage = "; " + MessageFormat.format(Messages.LabelTotalValuePercent,
                                 Values.Percent2.format(actual / (double) total.getAmount()));
 
-            buffer.append("{\"name\":\"").append(name);
-            buffer.append("\",\"caption\":\"");
-            buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
-                            .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
-                            .append(")\",");
-            buffer.append("\"value\":").append(node.getActual().getAmount());
-            buffer.append(",\"color\":\"").append(node.getColor()).append("\"");
+            if (excludeSecurities && node.isAssignment())
+            {
+                buffer.append("{\"name\":\"\",\"caption\":\"\",");
+                buffer.append("\"value\":").append(node.getActual().getAmount());
+                buffer.append(",\"color\":\"#FFFFFF\"");
+            }
+            else
+            {
+                buffer.append("{\"name\":\"").append(name);
+                buffer.append("\",\"caption\":\"");
+                buffer.append(name).append(" ").append(Values.Amount.format(actual)).append(" (")
+                                .append(Values.Percent2.format(actual / (double) base)).append(totalPercentage)
+                                .append(")\",");
+                buffer.append("\"value\":").append(node.getActual().getAmount());
+                buffer.append(",\"color\":\"")
+                                .append(node.isAssignment() ? ColorConversion.brighter(nodeColor) : node.getColor())
+                                .append("\"");
+            }
+
+            addChildren(buffer, node, node.getColor(), total, excludeSecurities);
+
+            buffer.append("}");
+        }
+
+        private void addChildren(StringBuilder buffer, TaxonomyNode node, String nodeColor, Money total,
+                        boolean excludeSecurities)
+        {
+            // iterate over children if
+            // a) all are shown anyway or
+            // b) if the children contain at least one classification (which
+            // means if securities are not show we do not go over the children
+            // as there are only securities)
+
+            boolean iterateChildren = !excludeSecurities
+                            || node.getChildren().stream().anyMatch(n -> !n.isAssignment());
+
+            if (!iterateChildren)
+                return;
 
             boolean isFirst = true;
             for (TaxonomyNode child : node.getChildren())
@@ -105,19 +158,16 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
                     continue;
 
                 if (isFirst)
-                    buffer.append(",\"children\": [");
+                    buffer.append(",\"children\": ["); //$NON-NLS-1$
                 else
-                    buffer.append(",");
+                    buffer.append(","); //$NON-NLS-1$
 
-                printNode(buffer, child, total);
+                printNode(buffer, child, nodeColor, total, excludeSecurities);
                 isFirst = false;
             }
 
             if (!isFirst)
-                buffer.append("]");
-
-            buffer.append("}");
+                buffer.append("]"); //$NON-NLS-1$
         }
-
     }
 }

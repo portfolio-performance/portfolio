@@ -1,12 +1,19 @@
 package name.abuchen.portfolio.ui.addons;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 import org.eclipse.core.commands.Command;
+import org.eclipse.core.commands.IParameter;
+import org.eclipse.core.commands.Parameterization;
 import org.eclipse.core.commands.ParameterizedCommand;
+import org.eclipse.core.commands.common.NotDefinedException;
 import org.eclipse.e4.core.commands.ECommandService;
 import org.eclipse.e4.core.commands.EHandlerService;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -15,6 +22,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
 
 @SuppressWarnings("restriction")
 public class OSXStartupAddon
@@ -45,6 +54,20 @@ public class OSXStartupAddon
                         executeCommand("name.abuchen.portfolio.ui.command.updateproduct"); //$NON-NLS-1$
                     }
                 });
+
+                MenuItem changelogMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                changelogMenuItem.setText(Messages.SystemMenuChangelog);
+                changelogMenuItem.addSelectionListener(new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent event)
+                    {
+                        executeCommand("name.abuchen.portfolio.ui.command.openBrowser", //$NON-NLS-1$
+                                        UIConstants.Parameter.URL,
+                                        "https://www.portfolio-performance.info/portfolio/versions.html"); //$NON-NLS-1$
+                    }
+                });
+
             }
         }
     }
@@ -60,13 +83,31 @@ public class OSXStartupAddon
         return null;
     }
 
-    private void executeCommand(String command)
+    private void executeCommand(String command, String... parameters)
     {
-        Command cmd = commandService.getCommand(command);
-        ParameterizedCommand pCmd = new ParameterizedCommand(cmd, null);
-        if (handlerService.canExecute(pCmd))
+        try
         {
-            handlerService.executeHandler(pCmd);
+            Command cmd = commandService.getCommand(command);
+
+            List<Parameterization> parameterizations = new ArrayList<>();
+            if (parameters != null)
+            {
+                for (int ii = 0; ii < parameters.length; ii = ii + 2)
+                {
+                    IParameter p = cmd.getParameter(parameters[ii]);
+                    parameterizations.add(new Parameterization(p, parameters[ii + 1]));
+                }
+            }
+
+            ParameterizedCommand pCmd = new ParameterizedCommand(cmd,
+                            parameterizations.toArray(new Parameterization[0]));
+            if (handlerService.canExecute(pCmd))
+                handlerService.executeHandler(pCmd);
+        }
+        catch (NotDefinedException e)
+        {
+            PortfolioPlugin.log(e);
+            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
         }
     }
 }

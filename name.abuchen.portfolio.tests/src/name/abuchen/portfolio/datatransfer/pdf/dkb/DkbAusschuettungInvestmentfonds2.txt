@@ -1,0 +1,52 @@
+PDF Author: '' 
+PDFBox Version: 1.8.13
+-----------------------------------------
+10919 Berlin Seite 1
+Depotnummer 111111
+Kundennummer 1111111
+Max Mustermann
+Abrechnungsnr. 11111
+Herrn Datum 10.01.2019
+Max Mustermann
+Musterstraße 11
+11111 Musterstadt
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 16,3517 VANGUARD FTSE EM.MARKETS U.ETF IE00B3VVMM84 (A1JX51)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 09.01.2019 Ausschüttung pro St. 0,211571000 USD
+Bestandsstichtag 24.12.2018 mit Teilfreistellung (Aktien-
+Ex-Tag 27.12.2018 fonds) 0,148099700 USD
+Geschäftsjahr 01.07.2018 - 30.06.2019 Herkunftsland Irland
+Devisenkurs EUR / USD 1,1560
+Devisenkursdatum 10.01.2019
+Ausschüttung 3,46 USD 2,99+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 1,04 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 2,42 USD
+Umrechnung in EUR 2,09 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 2,09 EUR
+Kapitalertragsteuer 25 % auf 2,09 EUR 0,52- EUR
+Solidaritätszuschlag 5,5 % auf 0,52 EUR 0,02- EUR
+Ausmachender Betrag 2,45+ EUR
+Lagerstelle Clearstream Banking FFM (849000 / 40030000)
+Den Betrag buchen wir mit Wertstellung 11.01.2019 zu Gunsten des Kontos 111111 (IBAN DE11 1111 0000 1111
+1111 11), BLZ 111 100 00 (BIC BYLADEM1111).
+Keine Steuerbescheinigung.
+Bitte ggf. Rückseite beachten.
+0883.01110101.0008447ER03
+
+Seite 2
+Depotnummer 1111111
+Kundennummer 11111111
+Abrechnungsnr. 11111111
+Datum 10.01.2019
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2019 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 0,00
+Ertrag 0,00 0,00 0,00 0,00 2,09
+Nachher 0,00 0,00 0,00 0,00 2,09
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.01111111.0008448ER03

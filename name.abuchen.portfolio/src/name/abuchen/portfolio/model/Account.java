@@ -1,12 +1,13 @@
 package name.abuchen.portfolio.model;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 
-public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle
+public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
 {
     private String uuid;
     private String name;
@@ -15,6 +16,8 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     private boolean isRetired = false;
 
     private List<AccountTransaction> transactions = new ArrayList<>();
+
+    private Attributes attributes;
 
     public Account()
     {
@@ -75,14 +78,30 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
         this.note = note;
     }
 
+    @Override
     public boolean isRetired()
     {
         return isRetired;
     }
 
+    @Override
     public void setRetired(boolean isRetired)
     {
         this.isRetired = isRetired;
+    }
+
+    @Override
+    public Attributes getAttributes()
+    {
+        if (attributes == null)
+            attributes = new Attributes();
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        this.attributes = attributes;
     }
 
     @Override
@@ -94,6 +113,9 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     @Override
     public void addTransaction(AccountTransaction transaction)
     {
+        if (!currencyCode.equals(transaction.getCurrencyCode()))
+            throw new IllegalArgumentException();
+
         this.transactions.add(transaction);
     }
 
@@ -101,31 +123,35 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void shallowDeleteTransaction(AccountTransaction transaction, Client client)
     {
         this.transactions.remove(transaction);
+        client.getPlans().stream().forEach(plan -> plan.removeTransaction(transaction));
     }
 
-    public long getCurrentAmount()
+    public long getCurrentAmount(LocalDateTime date)
     {
-        return transactions.stream().mapToLong(t -> {
-            switch (t.getType())
-            {
-                case DEPOSIT:
-                case DIVIDENDS:
-                case INTEREST:
-                case SELL:
-                case TRANSFER_IN:
-                case TAX_REFUND:
-                    return t.getAmount();
-                case FEES:
-                case INTEREST_CHARGE:
-                case TAXES:
-                case REMOVAL:
-                case BUY:
-                case TRANSFER_OUT:
-                    return -t.getAmount();
-                default:
-                    throw new UnsupportedOperationException();
-            }
-        }).sum();
+        return transactions.stream() //
+                        .filter(t -> t.getDateTime().isBefore(date)) //
+                        .mapToLong(t -> {
+                            switch (t.getType())
+                            {
+                                case DEPOSIT:
+                                case DIVIDENDS:
+                                case INTEREST:
+                                case SELL:
+                                case TRANSFER_IN:
+                                case TAX_REFUND:
+                                case FEES_REFUND:
+                                    return t.getAmount();
+                                case FEES:
+                                case INTEREST_CHARGE:
+                                case TAXES:
+                                case REMOVAL:
+                                case BUY:
+                                case TRANSFER_OUT:
+                                    return -t.getAmount();
+                                default:
+                                    throw new UnsupportedOperationException();
+                            }
+                        }).sum();
     }
 
     @Override
