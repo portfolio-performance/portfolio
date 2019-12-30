@@ -58,8 +58,7 @@ public class SutorPDFExtractorTest
         securities.forEach(security -> assertNull(security.getIsin()));
 
         assertThat(securities.get(0).getName(), is("iShares Core MSCI Emerging Markets"));
-        // FIXME should be Lyxor Core Stoxx Europe 600 acc
-        assertThat(securities.get(1).getName(), is("Lyxor Core Stoxx Europe"));
+        assertThat(securities.get(1).getName(), is("Lyxor Core Stoxx Europe 600 acc"));
         assertThat(securities.get(2).getName(), is("Dimensional European Value Fund"));
     }
 

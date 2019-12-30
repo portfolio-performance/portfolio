@@ -83,7 +83,7 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name").match("^.* Kauf (?<name>[^\\d]*) .*")
+                        .section("name").match("^.* Kauf (?<name>[^,]*) .*")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date").match(REGEX_DATE).assign((t, v) -> t.setDate(asDate(v.get("date"))))
@@ -117,7 +117,7 @@ public class SutorPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name").match("^.* Gebührentilgung (?<name>[^\\d]*) .*")
+                        .section("name").match("^.* Gebührentilgung (?<name>[^,]*) .*")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("date").match(REGEX_DATE).assign((t, v) -> t.setDate(asDate(v.get("date"))))
