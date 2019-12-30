@@ -52,18 +52,8 @@ public class AttributeType
     {
         private final DecimalFormat full;
 
-        private Values<LimitPrice> values;
-
         public LimitPriceConverter()
         {
-            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
-            this.full.setParseBigDecimal(true);
-        }
-        
-        public LimitPriceConverter(Values<LimitPrice> values)
-        {
-            this.values = values;
-            
             this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
             this.full.setParseBigDecimal(true);
         }
@@ -71,7 +61,6 @@ public class AttributeType
         @Override
         public String toString(Object object)
         {
-            //return object != null ? values.format((LimitPrice) object) : ""; //$NON-NLS-1$
             return object != null ? ((LimitPrice) object).toString() : ""; //$NON-NLS-1$
         }
 
@@ -120,7 +109,9 @@ public class AttributeType
                     
                 BigDecimal v = (BigDecimal) full.parse(input);
                 //long price = v.multiply(BigDecimal.valueOf(values.factor())).longValue();
-                long price = v.longValue();
+                long price = v.multiply(BigDecimal.valueOf(10000)).longValue();
+                
+                //long price = v.longValue();
                 
                 return new LimitPrice(cType, price);
             }

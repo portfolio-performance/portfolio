@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
@@ -129,12 +128,13 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
-            // TODO: element -> Security.class
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
-            if (attributable == null)
+            Security security = Adaptor.adapt(Security.class, element);
+            if (security == null)
                 return null;
 
-            Attributes attributes = attributable.getAttributes();
+            Attributes attributes = security.getAttributes();
+            if (attributes == null)
+                return null;
 
             Object value = attributes.get(attribute);
             return attribute.getConverter().toString(value);
