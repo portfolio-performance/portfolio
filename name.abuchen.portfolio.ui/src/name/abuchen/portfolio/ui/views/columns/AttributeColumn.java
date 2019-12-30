@@ -10,14 +10,19 @@ import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.LimitPrice;
+import name.abuchen.portfolio.money.LimitPrice.CompareType;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
@@ -134,31 +139,41 @@ public class AttributeColumn extends Column
             Object value = attributes.get(attribute);
             return attribute.getConverter().toString(value);
         }
-
-        /*@Override
-        public Image getImage(Object element)
-        {
-            return getValue(element).map(b -> Boolean.TRUE.equals(b) ? Images.CHECK.image() : Images.XMARK.image())
-                            .orElse(null);
-        }*/
-
-        private Optional<LimitPrice> getValue(Object element)
-        {
-            // TODO!
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
-            if (attributable == null)
-                return Optional.empty();
-            Attributes attributes = attributable.getAttributes();
-            return Optional.empty();
+        
+        @Override
+        public Color getBackground(Object element) {
+            Security security = Adaptor.adapt(Security.class, element);
+            if(security == null)
+                return null;
             
-            /*
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
-            if (attributable == null)
-                return Optional.empty();
+            Attributes attributes = security.getAttributes();
 
-            Attributes attributes = attributable.getAttributes();
-            return Optional.ofNullable((Boolean) attributes.get(attribute));
-            */
+            LimitPrice limit = (LimitPrice) attributes.get(attribute);
+            if(limit == null)
+                return null;
+            
+            if(limit.getCompareType() == CompareType.GREATER_OR_EQUAL)
+            {
+                if(security.getLatest().getValue() >= limit.getLimitPrice())
+                    return new Color(Display.getCurrent(), 0, 255, 0);
+            }
+            else if(limit.getCompareType() == CompareType.SMALLER_OR_EQUAL)
+            {
+                if(security.getLatest().getValue() <= limit.getLimitPrice())
+                    return new Color(Display.getCurrent(), 255, 0, 0);
+            }
+            else if(limit.getCompareType() == CompareType.GREATER)
+            {
+                if(security.getLatest().getValue() > limit.getLimitPrice())
+                    return new Color(Display.getCurrent(), 0, 255, 0);
+            }
+            else if(limit.getCompareType() == CompareType.SMALLER)
+            {
+                if(security.getLatest().getValue() < limit.getLimitPrice())
+                    return new Color(Display.getCurrent(), 255, 0, 0);
+            }
+            
+            return null;
         }
     }
 
