@@ -181,14 +181,15 @@ public class IBFlexStatementExtractor implements Extractor
             AccountTransaction transaction = new AccountTransaction();
 
             //New Format dateTime has now also Time, since that I prefer reportDate, without Time
-            //if (element.hasAttribute("reportDate"))
-            //{
-            //    transaction.setDateTime(convertDate(element.getAttribute("reportDate")));
-            //}
-            //else
-            //{
-            transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
-            //}
+            //otherwise I cut Time from string
+            if (element.hasAttribute("reportDate"))
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("reportDate")));
+            }
+            else
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
+            }
 
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
