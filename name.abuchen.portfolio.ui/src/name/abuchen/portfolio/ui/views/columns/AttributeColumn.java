@@ -12,7 +12,6 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
@@ -24,6 +23,7 @@ import name.abuchen.portfolio.money.LimitPrice;
 import name.abuchen.portfolio.money.LimitPrice.CompareType;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -155,22 +155,22 @@ public class AttributeColumn extends Column
             if(limit.getCompareType() == CompareType.GREATER_OR_EQUAL)
             {
                 if(security.getLatest().getValue() >= limit.getLimitPrice())
-                    return new Color(Display.getCurrent(), 0, 255, 0);
+                    return Colors.GREEN;
             }
             else if(limit.getCompareType() == CompareType.SMALLER_OR_EQUAL)
             {
                 if(security.getLatest().getValue() <= limit.getLimitPrice())
-                    return new Color(Display.getCurrent(), 255, 0, 0);
+                    return Colors.RED;
             }
             else if(limit.getCompareType() == CompareType.GREATER)
             {
                 if(security.getLatest().getValue() > limit.getLimitPrice())
-                    return new Color(Display.getCurrent(), 0, 255, 0);
+                    return Colors.GREEN;
             }
             else if(limit.getCompareType() == CompareType.SMALLER)
             {
                 if(security.getLatest().getValue() < limit.getLimitPrice())
-                    return new Color(Display.getCurrent(), 255, 0, 0);
+                    return Colors.RED;
             }
             
             return null;

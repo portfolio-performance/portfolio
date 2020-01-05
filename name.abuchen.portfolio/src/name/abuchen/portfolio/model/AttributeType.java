@@ -68,35 +68,39 @@ public class AttributeType
         public Object fromString(String value)
         {
             try
-            {
+            {                
                 String input = value.trim();
                 input = input.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                if (input.length() == 0 || !startsWithValidComparatorString(input))
+                
+                if(input.length() == 0)
+                    return null;
+                
+                if(!startsWithValidComparatorString(input))
                     throw new IllegalArgumentException(Messages.MsgNotAComparator);
 
                 Matcher m = LIMIT_PRICE_PATTERN.matcher(input);
-                if (!m.matches())
+                if(!m.matches())
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
 
                 CompareType cType;
-                if(input.startsWith(">=")) //$NON-NLS-1$
+                if(input.startsWith(CompareType.GREATER_OR_EQUAL.getCompareString()))
                 {
-                    input = input.replace(">=", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    input = input.replace(CompareType.GREATER_OR_EQUAL.getCompareString(), ""); //$NON-NLS-1$
                     cType = CompareType.GREATER_OR_EQUAL;
                 }
-                else if(input.startsWith("<=")) //$NON-NLS-1$
+                else if(input.startsWith(CompareType.SMALLER_OR_EQUAL.getCompareString()))
                 {
-                    input = input.replace("<=", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    input = input.replace(CompareType.SMALLER_OR_EQUAL.getCompareString(), ""); //$NON-NLS-1$
                     cType = CompareType.SMALLER_OR_EQUAL;
                 }
-                else if(input.startsWith(">")) //$NON-NLS-1$
+                else if(input.startsWith(CompareType.GREATER.getCompareString()))
                 {
-                    input = input.replace(">", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    input = input.replace(CompareType.GREATER.getCompareString(), ""); //$NON-NLS-1$
                     cType = CompareType.GREATER;
                 }
-                else if(input.startsWith("<")) //$NON-NLS-1$
+                else if(input.startsWith(CompareType.SMALLER.getCompareString()))
                 {
-                    input = input.replace("<", ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    input = input.replace(CompareType.SMALLER.getCompareString(), ""); //$NON-NLS-1$
                     cType = CompareType.SMALLER;
                 }
                 else 
@@ -104,15 +108,12 @@ public class AttributeType
                     throw new IllegalArgumentException(Messages.MsgNotAComparator);
                 }
                 
-                if (input.length() == 0)
+                if(input.length() == 0)
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
                     
                 BigDecimal v = (BigDecimal) full.parse(input);
-                //long price = v.multiply(BigDecimal.valueOf(values.factor())).longValue();
-                long price = v.multiply(BigDecimal.valueOf(10000)).longValue();
                 
-                //long price = v.longValue();
-                
+                long price = v.multiply(BigDecimal.valueOf(Values.Quote.factor())).longValue();
                 return new LimitPrice(cType, price);
             }
             catch (ParseException e)
@@ -123,10 +124,10 @@ public class AttributeType
         
         private boolean startsWithValidComparatorString(String str)
         {
-            if(str.startsWith(">=") || //$NON-NLS-1$
-               str.startsWith("<=") || //$NON-NLS-1$
-               str.startsWith(">") || //$NON-NLS-1$
-               str.startsWith("<")) //$NON-NLS-1$
+            if(str.startsWith(CompareType.GREATER_OR_EQUAL.getCompareString()) ||
+               str.startsWith(CompareType.SMALLER_OR_EQUAL.getCompareString()) ||
+               str.startsWith(CompareType.GREATER.getCompareString()) ||
+               str.startsWith(CompareType.SMALLER.getCompareString()))
                 return true;
             return false;
         }
