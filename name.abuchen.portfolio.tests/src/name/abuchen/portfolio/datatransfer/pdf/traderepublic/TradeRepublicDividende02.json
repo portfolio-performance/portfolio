@@ -1,0 +1,43 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2019-12-23",
+			"currency": "EUR",
+			"amount": 2.2,
+			"shares": 1.0,
+			"security": {
+				"name": "Blackrock Inc.",
+				"isin": "US09247X1019",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"fxAmount": 3.3,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.11435
+				},
+				{
+					"type": "TAX",
+					"amount": 0.28
+				},
+				{
+					"type": "TAX",
+					"amount": 0.01
+				},
+				{
+					"type": "TAX",
+					"amount": 0.02
+				},
+				{
+					"type": "TAX",
+					"fxAmount": 0.5,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.11435
+				}
+			]
+		}
+	]
+}
