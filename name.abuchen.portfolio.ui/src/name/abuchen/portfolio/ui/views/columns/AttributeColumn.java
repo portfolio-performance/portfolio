@@ -18,9 +18,9 @@ import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.LimitPrice;
-import name.abuchen.portfolio.money.LimitPrice.CompareType;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
@@ -141,39 +141,34 @@ public class AttributeColumn extends Column
         }
         
         @Override
-        public Color getBackground(Object element) {
+        public Color getBackground(Object element)
+        {
             Security security = Adaptor.adapt(Security.class, element);
             if(security == null)
                 return null;
             
             Attributes attributes = security.getAttributes();
-
             LimitPrice limit = (LimitPrice) attributes.get(attribute);
             if(limit == null)
                 return null;
             
-            if(limit.getCompareType() == CompareType.GREATER_OR_EQUAL)
-            {
-                if(security.getLatest().getValue() >= limit.getLimitPrice())
-                    return Colors.GREEN;
-            }
-            else if(limit.getCompareType() == CompareType.SMALLER_OR_EQUAL)
-            {
-                if(security.getLatest().getValue() <= limit.getLimitPrice())
-                    return Colors.RED;
-            }
-            else if(limit.getCompareType() == CompareType.GREATER)
-            {
-                if(security.getLatest().getValue() > limit.getLimitPrice())
-                    return Colors.GREEN;
-            }
-            else if(limit.getCompareType() == CompareType.SMALLER)
-            {
-                if(security.getLatest().getValue() < limit.getLimitPrice())
-                    return Colors.RED;
-            }
+            SecurityPrice latestSecurityPrice = security.getSecurityPrice(LocalDate.now());
+            if(latestSecurityPrice == null)
+                return null;
             
-            return null;
+            switch(limit.getCompareType())
+            {
+                case GREATER_OR_EQUAL:
+                    return (latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null);
+                case SMALLER_OR_EQUAL:
+                    return (latestSecurityPrice.getValue() >= limit.getValue() ? Colors.RED : null);
+                case GREATER:
+                    return (latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null);
+                case SMALLER:
+                    return (latestSecurityPrice.getValue() >= limit.getValue() ? Colors.RED : null);
+                default:
+                    return null;
+            }
         }
     }
 

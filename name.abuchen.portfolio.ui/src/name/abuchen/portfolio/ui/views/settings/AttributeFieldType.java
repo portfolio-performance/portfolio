@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.AttributeType.AmountConverter;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
@@ -15,7 +16,6 @@ import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.model.AttributeType.LimitPriceConverter;
-import name.abuchen.portfolio.money.LimitPrice;
 
 public enum AttributeFieldType
 {

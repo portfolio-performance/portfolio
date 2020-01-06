@@ -1,6 +1,8 @@
-package name.abuchen.portfolio.money;
+package name.abuchen.portfolio.model;
 
 import java.util.Objects;
+
+import name.abuchen.portfolio.money.Values;
 
 public class LimitPrice implements Comparable<LimitPrice>
 {
@@ -23,12 +25,12 @@ public class LimitPrice implements Comparable<LimitPrice>
     }
     
     private CompareType compareType = null;
-    private long limitPrice;
+    private long value;
     
-    public LimitPrice(CompareType type, long price)
+    public LimitPrice(CompareType type, long value)
     {
         this.compareType = type;
-        this.limitPrice = price;
+        this.value = value;
     }
     
     public CompareType getCompareType()
@@ -36,15 +38,15 @@ public class LimitPrice implements Comparable<LimitPrice>
         return compareType;
     }
 
-    public long getLimitPrice()
+    public long getValue()
     {
-        return limitPrice;
+        return value;
     }
     
     @Override
     public int hashCode()
     {
-        return Objects.hash(compareType, limitPrice);
+        return Objects.hash(compareType, value);
     }
     
     @Override
@@ -58,7 +60,7 @@ public class LimitPrice implements Comparable<LimitPrice>
             return false;
 
         LimitPrice other = (LimitPrice) obj;
-        if (limitPrice != other.limitPrice)
+        if (value != other.value)
             return false;
         return Objects.equals(compareType.getCompareString(), other.compareType.getCompareString());
     }
@@ -69,12 +71,12 @@ public class LimitPrice implements Comparable<LimitPrice>
         int compare = compareType.getCompareString().compareTo(other.getCompareType().getCompareString());
         if (compare != 0)
             return compare;
-        return (int) (limitPrice - other.getLimitPrice());
+        return (int) (value - other.getValue());
     }
 
     @Override
     public String toString()
     {
-        return (compareType != null ? compareType.getCompareString() + Values.Quote.format(limitPrice) : ""); //$NON-NLS-1$
+        return (compareType != null ? compareType.getCompareString() + Values.Quote.format(value) : ""); //$NON-NLS-1$
     }
 }

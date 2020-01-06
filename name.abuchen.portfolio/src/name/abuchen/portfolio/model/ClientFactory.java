@@ -574,7 +574,9 @@ public class ClientFactory
                 // added tax units to interest transaction
             case 42:
                 // added data map to classification and assignemnt
-
+            case 43:
+                // added LimitPrice as attribute type
+                
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -1097,6 +1099,8 @@ public class ClientFactory
             xstream.useAttributeFor(SecurityPrice.class, "value");
             xstream.aliasField("v", SecurityPrice.class, "value");
 
+            xstream.alias("limitPrice", LimitPrice.class);
+            
             xstream.alias("cpi", ConsumerPriceIndex.class);
             xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
             xstream.aliasField("y", ConsumerPriceIndex.class, "year");

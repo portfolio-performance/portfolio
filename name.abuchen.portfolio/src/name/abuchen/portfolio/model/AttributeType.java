@@ -15,8 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.money.LimitPrice;
-import name.abuchen.portfolio.money.LimitPrice.CompareType;
+import name.abuchen.portfolio.model.LimitPrice.CompareType;
 import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
