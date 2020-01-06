@@ -21,7 +21,7 @@ import name.abuchen.portfolio.money.Values;
 public class AttributeType
 {
     private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
-    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^(\\s*(<=?|>=?)\\s*\\d*(,?)\\d*)$"); //$NON-NLS-1$
+    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -67,68 +67,23 @@ public class AttributeType
         public Object fromString(String value)
         {
             try
-            {                
-                String input = value.trim();
-                input = input.replace(" ", ""); //$NON-NLS-1$ //$NON-NLS-2$
-                
-                if(input.length() == 0)
+            {              
+                if(value.length() == 0)
                     return null;
-                
-                if(!startsWithValidComparatorString(input))
-                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
 
-                Matcher m = LIMIT_PRICE_PATTERN.matcher(input);
+                Matcher m = LIMIT_PRICE_PATTERN.matcher(value);
                 if(!m.matches())
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
-
-                CompareType cType;
-                if(input.startsWith(CompareType.GREATER_OR_EQUAL.getCompareString()))
-                {
-                    input = input.replace(CompareType.GREATER_OR_EQUAL.getCompareString(), ""); //$NON-NLS-1$
-                    cType = CompareType.GREATER_OR_EQUAL;
-                }
-                else if(input.startsWith(CompareType.SMALLER_OR_EQUAL.getCompareString()))
-                {
-                    input = input.replace(CompareType.SMALLER_OR_EQUAL.getCompareString(), ""); //$NON-NLS-1$
-                    cType = CompareType.SMALLER_OR_EQUAL;
-                }
-                else if(input.startsWith(CompareType.GREATER.getCompareString()))
-                {
-                    input = input.replace(CompareType.GREATER.getCompareString(), ""); //$NON-NLS-1$
-                    cType = CompareType.GREATER;
-                }
-                else if(input.startsWith(CompareType.SMALLER.getCompareString()))
-                {
-                    input = input.replace(CompareType.SMALLER.getCompareString(), ""); //$NON-NLS-1$
-                    cType = CompareType.SMALLER;
-                }
-                else 
-                {
                     throw new IllegalArgumentException(Messages.MsgNotAComparator);
-                }
-                
-                if(input.length() == 0)
-                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, input));
-                    
-                BigDecimal v = (BigDecimal) full.parse(input);
-                
-                long price = v.multiply(BigDecimal.valueOf(Values.Quote.factor())).longValue();
-                return new LimitPrice(cType, price);
+
+                String compare = m.group(1);
+                long price = ((BigDecimal) full.parse(m.group(2))).multiply(Values.Quote.getBigDecimalFactor()).longValue();
+
+                return new LimitPrice(CompareType.valueOf(compare), price);
             }
             catch (ParseException e)
             {
                 throw new IllegalArgumentException(e);
             }
-        }
-        
-        private boolean startsWithValidComparatorString(String str)
-        {
-            if(str.startsWith(CompareType.GREATER_OR_EQUAL.getCompareString()) ||
-               str.startsWith(CompareType.SMALLER_OR_EQUAL.getCompareString()) ||
-               str.startsWith(CompareType.GREATER.getCompareString()) ||
-               str.startsWith(CompareType.SMALLER.getCompareString()))
-                return true;
-            return false;
         }
     }
 
