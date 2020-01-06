@@ -17,6 +17,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerComparator;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -34,7 +35,7 @@ public class ListSelectionDialog extends Dialog
         public void setSearchPattern(String pattern)
         {
             if (pattern != null)
-                filterPattern = Pattern.compile(".*" + pattern + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                filterPattern = Pattern.compile(".*" + Pattern.quote(pattern) + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
             else
                 filterPattern = null;
         }
@@ -57,6 +58,9 @@ public class ListSelectionDialog extends Dialog
     private String title;
     private String message = ""; //$NON-NLS-1$
     private boolean isMultiSelection = true;
+
+    private String propertyLabel;
+    private String property = ""; //$NON-NLS-1$
 
     private Object[] elements;
     private Object[] selected;
@@ -96,6 +100,16 @@ public class ListSelectionDialog extends Dialog
         return selected;
     }
 
+    public String getProperty()
+    {
+        return property;
+    }
+
+    public void setPropertyLabel(String propertyLabel)
+    {
+        this.propertyLabel = propertyLabel;
+    }
+
     @Override
     protected void setShellStyle(int newShellStyle)
     {
@@ -117,18 +131,30 @@ public class ListSelectionDialog extends Dialog
 
         Composite container = new Composite(composite, SWT.None);
         GridDataFactory.fillDefaults().grab(true, true).hint(400, 300).applyTo(container);
-        GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(2).applyTo(container);
+
+        if (propertyLabel != null)
+        {
+            Label label = new Label(container, SWT.NONE);
+            label.setText(propertyLabel);
+
+            Text input = new Text(container, SWT.BORDER);
+            input.setText(property);
+            input.addFocusListener(FocusListener.focusGainedAdapter(e -> input.selectAll()));
+            input.addModifyListener(e -> property = input.getText());
+            GridDataFactory.fillDefaults().grab(true, false).applyTo(input);
+        }
 
         Label label = new Label(container, SWT.None);
         label.setText(this.message);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(label);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(label);
 
         searchText = new Text(container, SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
-        GridDataFactory.fillDefaults().grab(true, false).applyTo(searchText);
+        GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(searchText);
         searchText.setFocus();
 
         Composite tableArea = new Composite(container, SWT.NONE);
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(tableArea);
+        GridDataFactory.fillDefaults().span(2, 1).grab(false, true).applyTo(tableArea);
         tableArea.setLayout(new FillLayout());
 
         TableColumnLayout layout = new TableColumnLayout();

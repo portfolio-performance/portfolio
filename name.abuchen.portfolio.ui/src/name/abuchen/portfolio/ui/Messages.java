@@ -483,7 +483,10 @@ public class Messages extends NLS
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
     public static String LabelClientFilter;
+    public static String LabelClientFilterEditTooltip;
+    public static String LabelClientFilterManage;
     public static String LabelClientFilterNew;
+    public static String LabelClientFilterNoCustomFilterExisting;
     public static String LabelClose;
     public static String LabelColorSchema;
     public static String LabelColumns;
