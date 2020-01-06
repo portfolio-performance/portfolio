@@ -156,16 +156,16 @@ public class AttributeColumn extends Column
             if (latestSecurityPrice == null)
                 return null;
 
-            switch (limit.getCompareType())
+            switch (limit.getRelationalOperator())
             {
                 case GREATER_OR_EQUAL:
                     return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null;
                 case SMALLER_OR_EQUAL:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.RED : null;
+                    return latestSecurityPrice.getValue() <= limit.getValue() ? Colors.RED : null;
                 case GREATER:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.GREEN : null;
+                    return latestSecurityPrice.getValue() > limit.getValue() ? Colors.GREEN : null;
                 case SMALLER:
-                    return latestSecurityPrice.getValue() >= limit.getValue() ? Colors.RED : null;
+                    return latestSecurityPrice.getValue() < limit.getValue() ? Colors.RED : null;
                 default:
                     return null;
             }
@@ -190,6 +190,7 @@ public class AttributeColumn extends Column
         }
         else if (attribute.getType() == LimitPrice.class)
         {
+            setStyle(SWT.RIGHT);
             setLabelProvider(new LimitPriceLabelProvider(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
         }

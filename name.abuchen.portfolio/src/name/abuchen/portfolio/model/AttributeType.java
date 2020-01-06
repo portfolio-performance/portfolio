@@ -11,11 +11,12 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.LimitPrice.CompareType;
+import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
 import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
@@ -75,11 +76,16 @@ public class AttributeType
                 if (!m.matches())
                     throw new IllegalArgumentException(Messages.MsgNotAComparator);
 
-                String compare = m.group(1);
+                Optional<RelationalOperator> operator = RelationalOperator.findByOperator(m.group(1));
+
+                // should not happen b/c regex pattern check
+                if (!operator.isPresent())
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
                 long price = ((BigDecimal) full.parse(m.group(2))).multiply(Values.Quote.getBigDecimalFactor())
                                 .longValue();
 
-                return new LimitPrice(CompareType.valueOf(compare), price);
+                return new LimitPrice(operator.get(), price);
             }
             catch (ParseException e)
             {

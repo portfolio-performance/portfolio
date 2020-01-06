@@ -1,43 +1,55 @@
 package name.abuchen.portfolio.model;
 
 import java.util.Objects;
+import java.util.Optional;
 
 import name.abuchen.portfolio.money.Values;
 
 public class LimitPrice implements Comparable<LimitPrice>
 {
-    public enum CompareType
+    public enum RelationalOperator
     {
         GREATER_OR_EQUAL(">="), //$NON-NLS-1$
         SMALLER_OR_EQUAL("<="), //$NON-NLS-1$
         GREATER(">"), //$NON-NLS-1$
         SMALLER("<"); //$NON-NLS-1$
 
-        private String str;
+        private String operatorString;
 
-        CompareType(String compareString)
+        RelationalOperator(String operator)
         {
-            this.str = compareString;
+            this.operatorString = operator;
         }
 
-        public String getCompareString()
+        public String getOperatorString()
         {
-            return str;
+            return operatorString;
+        }
+
+        public static Optional<RelationalOperator> findByOperator(String op)
+        {
+            for (RelationalOperator t : RelationalOperator.values())
+            {
+                if (t.getOperatorString().equals(op))
+                    return Optional.of(t);
+            }
+
+            return Optional.empty();
         }
     }
 
-    private CompareType compareType = null;
+    private RelationalOperator operator = null;
     private long value;
 
-    public LimitPrice(CompareType type, long value)
+    public LimitPrice(RelationalOperator operator, long value)
     {
-        this.compareType = type;
+        this.operator = Objects.requireNonNull(operator);
         this.value = value;
     }
 
-    public CompareType getCompareType()
+    public RelationalOperator getRelationalOperator()
     {
-        return compareType;
+        return operator;
     }
 
     public long getValue()
@@ -48,7 +60,7 @@ public class LimitPrice implements Comparable<LimitPrice>
     @Override
     public int hashCode()
     {
-        return Objects.hash(compareType, value);
+        return Objects.hash(operator, value);
     }
 
     @Override
@@ -64,13 +76,13 @@ public class LimitPrice implements Comparable<LimitPrice>
         LimitPrice other = (LimitPrice) obj;
         if (value != other.value)
             return false;
-        return Objects.equals(compareType.getCompareString(), other.compareType.getCompareString());
+        return operator == other.operator;
     }
 
     @Override
     public int compareTo(LimitPrice other)
     {
-        int compare = compareType.getCompareString().compareTo(other.getCompareType().getCompareString());
+        int compare = operator.getOperatorString().compareTo(other.getRelationalOperator().getOperatorString());
         if (compare != 0)
             return compare;
         return (int) (value - other.getValue());
@@ -79,6 +91,6 @@ public class LimitPrice implements Comparable<LimitPrice>
     @Override
     public String toString()
     {
-        return (compareType != null ? compareType.getCompareString() + Values.Quote.format(value) : ""); //$NON-NLS-1$
+        return operator.getOperatorString() + " " + Values.Quote.format(value); //$NON-NLS-1$
     }
 }

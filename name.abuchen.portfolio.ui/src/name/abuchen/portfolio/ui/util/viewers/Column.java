@@ -164,6 +164,11 @@ public class Column
         return style;
     }
 
+    protected void setStyle(int style)
+    {
+        this.style = style;
+    }
+
     /* package */int getDefaultWidth()
     {
         return defaultWidth;
