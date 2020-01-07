@@ -180,7 +180,9 @@ public class IBFlexStatementExtractor implements Extractor
         private Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
-            transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
+            //New Format dateTime has now also Time, I cut Time from string, Quapla 7.1.20
+            transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
+
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
@@ -284,16 +286,24 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 180819
-            if (element.hasAttribute("tradeTime"))
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 18.08.19
+            // New format is stored in orderTime (has old Flexstatements, too, take care for double imports). Quapla 7.1.20
+            if (element.hasAttribute("orderTime"))
             {
-                transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                transaction.setDate(convertDate(element.getAttribute("orderTime").substring(0,8), element.getAttribute("orderTime").substring(9,15)));
             }
             else
             {
-                transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
+                if (element.hasAttribute("tradeTime"))
+                {
+                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                }
+                else
+                {
+                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
+                }
             }
-
+            
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
