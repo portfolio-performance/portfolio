@@ -102,6 +102,9 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
 
             for (AttributeFieldType fieldType : AttributeFieldType.values())
             {
+                if (!fieldType.supports(mode.getType()))
+                    continue;
+
                 menuListener.add(new Action(fieldType.toString())
                 {
                     @Override

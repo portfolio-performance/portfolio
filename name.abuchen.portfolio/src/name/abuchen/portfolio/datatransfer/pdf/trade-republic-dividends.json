@@ -1,6 +1,6 @@
 {
 	"version": 1,
-	"name": "Deutsche Bank - Kaufbuchungen",
+	"name": "Trade Republic - Dividendenbuchung",
 	"locale": "de",
 	"pattern": [
 		"TRADE REPUBLIC",
@@ -69,6 +69,16 @@
 						"type": "TAX"
 					}
 				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Kirchensteuer -(?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},					
 				{
 					"context": "UNIT",
 					"isOptional": true,

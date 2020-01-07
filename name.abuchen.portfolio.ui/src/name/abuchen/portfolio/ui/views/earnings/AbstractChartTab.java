@@ -45,24 +45,22 @@ public abstract class AbstractChartTab implements EarningsTab
         }
     }
 
-    private static final int[][] FIVE_COLORS = new int[][] { //
-                    new int[] { 114, 124, 201 }, //
-                    new int[] { 250, 115, 92 }, //
-                    new int[] { 253, 182, 103 }, //
-                    new int[] { 143, 207, 112 }, //
-                    new int[] { 87, 207, 253 } }; //
-
-    private static final int[][] TEN_COLORS = new int[][] { //
-                    new int[] { 31, 119, 180 }, //
-                    new int[] { 255, 127, 14 }, //
-                    new int[] { 44, 160, 44 }, //
-                    new int[] { 214, 39, 40 }, //
-                    new int[] { 148, 103, 189 }, //
+    private static final int[][] COLORS = new int[][] { //
                     new int[] { 140, 86, 75 }, //
                     new int[] { 227, 119, 194 }, //
                     new int[] { 127, 127, 127 }, //
                     new int[] { 188, 189, 34 }, //
-                    new int[] { 23, 190, 207 } }; //
+                    new int[] { 23, 190, 207 }, //
+                    new int[] { 114, 124, 201 }, //
+                    new int[] { 250, 115, 92 }, //
+                    new int[] { 253, 182, 103 }, //
+                    new int[] { 143, 207, 112 }, //
+                    new int[] { 87, 207, 253 }, //
+                    new int[] { 31, 119, 180 }, //
+                    new int[] { 255, 127, 14 }, //
+                    new int[] { 44, 160, 44 }, //
+                    new int[] { 214, 39, 40 }, //
+                    new int[] { 148, 103, 189 } }; //
 
     @Inject
     protected EarningsViewModel model;
@@ -131,11 +129,9 @@ public abstract class AbstractChartTab implements EarningsTab
 
     protected Color getColor(int year)
     {
-        int[][] colors = model.getNoOfMonths() / 12 > 4 ? TEN_COLORS : FIVE_COLORS;
-
-        RGB rgb = new RGB(colors[year % colors.length][0], //
-                        colors[year % colors.length][1], //
-                        colors[year % colors.length][2]);
+        RGB rgb = new RGB(COLORS[year % COLORS.length][0], //
+                        COLORS[year % COLORS.length][1], //
+                        COLORS[year % COLORS.length][2]);
         return resources.createColor(ColorDescriptor.createFrom(rgb));
     }
 
