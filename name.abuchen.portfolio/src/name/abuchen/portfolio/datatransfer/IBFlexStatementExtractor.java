@@ -287,10 +287,10 @@ public class IBFlexStatementExtractor implements Extractor
             }
 
             // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 18.08.19
-            // New format is stored in orderTime (has old Flexstatements, too, take care for double imports). Quapla 7.1.20
-            if (element.hasAttribute("orderTime"))
+            // New format is stored in dateTime, take care for double imports). Quapla 7.1.20
+            if (element.hasAttribute("dateTime"))
             {
-                transaction.setDate(convertDate(element.getAttribute("orderTime").substring(0,8), element.getAttribute("orderTime").substring(9,15)));
+                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
             }
             else
             {
