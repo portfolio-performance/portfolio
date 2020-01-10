@@ -47,7 +47,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung: Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Scalable Capital Vermögensverw.GmbH");
+        Block block = new Block(".* Portfolio: .*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -66,7 +66,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("date", "amount", "currency")
                         .match("Zu Lasten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
-                        .find("Handelsdatum Handelsuhrzeit")
+                        .find("Handelsdatum *Handelsuhrzeit")
                         .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) \\d{2}:\\d{2}:\\d{2}:\\d{2}$")
                         .assign((t, v) -> {
                             t.setDate(asDate(v.get("date")));                            
@@ -81,7 +81,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
