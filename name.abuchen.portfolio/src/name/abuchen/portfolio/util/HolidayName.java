@@ -5,7 +5,9 @@ import java.util.ResourceBundle;
 
 /* package */ enum HolidayName
 {
+    ASCENSION_DAY,
     BANK_HOLIDAY,
+    BERCHTOLDSTAG,
     BOXING_DAY,
     CHRISTMAS,
     CHRISTMAS_EVE,
@@ -20,6 +22,7 @@ import java.util.ResourceBundle;
     MARTIN_LUTHER_KING,
     MEMORIAL,
     NEW_YEAR,
+    NATION_DAY,
     REFORMATION_DAY,
     REMEMBERANCE_OF_PRESIDENT_FORD,
     SECOND_CHRISTMAS_DAY,
