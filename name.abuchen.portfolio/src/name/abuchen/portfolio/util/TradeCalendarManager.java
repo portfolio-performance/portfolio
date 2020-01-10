@@ -111,7 +111,7 @@ public class TradeCalendarManager
 
         // see six trading days on their official website:
         // https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
-        tc = new TradeCalendar("six"), Messages.LabelTradeCalendarSix); //$NON-NLS-1$
+        tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix); //$NON-NLS-1$
         tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
         tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2));
         tc.add(easter(GOOD_FRIDAY, -2));
