@@ -1,0 +1,46 @@
+Seite 1/1
+München
+11.12.2019
+Herrn
+Scalable Capital 
+Max Mustermann Vermögensverwaltung GmbH 
+Prinzregentenstr. 48
+Musterstr. 131
+80538 München
+9999 Musterhausen service@scalable.capital
+Max Mustermann
+Stamm-Nr.: 1099999    Portfolio: 1
+Depot-Nr.: 1099999001
+Vorgangs-Nr.: 12999999
+Referenz-Nr.: 43999999
+Wertpapierabrechnung: Kauf
+Auftragsdatum: 10.12.2019 Ausführungsplatz: OTC Deutschland
+Auftragszeit: 12:26:41:34
+Nominale ISIN: LU0677077884 WKN: DBX0MB Kurs 
+STK 2 Xtr.II USD Emerging Markets Bd EUR 14,09
+Inhaber-Anteile 2D USD o.N.
+Auftraggeber: ext.Vermögensverw.
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 28,18
+Zu Lasten Konto 1099999008 Valuta: 12.12.2019 EUR 28,18
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handelsdatum Handelsuhrzeit
+10.12.2019 12:58:54:00
+Verwahrart: Girosammelverwahrung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 100 MIC des Ausführungsplatzes: ODEU
+Lagerland: Deutschland
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+Scalable Capital Vermögensverwaltung GmbH | Geschäftsführung: Erik Podzuweit, Florian Prucker | HRB 217778, Amtsgericht München |
+USt-IdNr. DE300434774 | www.scalable.capital 
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen. 
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-051.108
