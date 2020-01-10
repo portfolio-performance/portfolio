@@ -2,6 +2,7 @@ package name.abuchen.portfolio.datatransfer.actions;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Predicate;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.ImportAction;
@@ -65,9 +66,27 @@ public class DetectDuplicatesAction implements ImportAction
 
     private Status check(PortfolioTransaction subject, List<PortfolioTransaction> transactions)
     {
+        Predicate<PortfolioTransaction> equivalentTypes;
+
+        switch (subject.getType())
+        {
+            case BUY:
+            case DELIVERY_INBOUND:
+                equivalentTypes = t -> t.getType() == PortfolioTransaction.Type.BUY
+                                || t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND;
+                break;
+            case SELL:
+            case DELIVERY_OUTBOUND:
+                equivalentTypes = t -> t.getType() == PortfolioTransaction.Type.SELL
+                                || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+                break;
+            default:
+                equivalentTypes = t -> subject.getType() == t.getType();
+        }
+
         for (PortfolioTransaction t : transactions)
         {
-            if (subject.getType() != t.getType())
+            if (!equivalentTypes.test(t))
                 continue;
 
             if (isPotentialDuplicate(subject, t))
@@ -91,7 +110,7 @@ public class DetectDuplicatesAction implements ImportAction
         if (other.getShares() != subject.getShares())
             return false;
 
-        if (!Objects.equals(other.getSecurity(), subject.getSecurity()))
+        if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
             return false;
 
         return true;
