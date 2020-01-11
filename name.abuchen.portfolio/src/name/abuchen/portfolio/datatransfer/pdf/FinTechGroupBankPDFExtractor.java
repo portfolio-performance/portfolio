@@ -410,7 +410,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Dividendengutschrift für ausländische Wertpapiere", (context, lines) -> {
             Pattern pCurrency = Pattern.compile(".* Endbetrag .* (?<currency>\\w{3})$");
             Pattern pCurrencyFx = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
-            Pattern pExchangeRate = Pattern.compile("Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
+            Pattern pExchangeRate = Pattern.compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
             // read the current context here
             for (String line : lines)
             {
