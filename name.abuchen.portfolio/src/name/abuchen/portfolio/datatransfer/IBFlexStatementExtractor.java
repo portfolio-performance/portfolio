@@ -180,9 +180,17 @@ public class IBFlexStatementExtractor implements Extractor
         private Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
-            //New Format dateTime has now also Time, I cut Time from string, Quapla 7.1.20
-            transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
-
+            //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
+            //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
+            if (element.getAttribute("dateTime").length() == 15)
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
+            }
+            else
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
+            }
+            
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
