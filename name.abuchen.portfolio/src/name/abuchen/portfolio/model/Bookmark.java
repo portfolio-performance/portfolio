@@ -15,10 +15,15 @@ public class Bookmark
     private String label;
     private String pattern;
 
+    public Bookmark(String pattern)
+    {
+        this(pattern, pattern);
+    }
+
     public Bookmark(String label, String pattern)
     {
-        this.label = label;
-        this.pattern = pattern;
+        this.label = Objects.requireNonNull(label);
+        this.pattern = Objects.requireNonNull(pattern);
     }
 
     public void setLabel(String label)

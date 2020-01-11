@@ -9,7 +9,11 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Stream;
+
+import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
@@ -537,6 +541,26 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+    }
+
+    /**
+     * Gets all URLs contained in the notes.
+     * 
+     * @return list of URLs
+     */
+    public Stream<Bookmark> getCustomBookmarks()
+    {
+        if (Strings.isNullOrEmpty(note))
+            return Stream.empty();
+
+        List<Bookmark> bookmarks = new ArrayList<>();
+
+        Pattern urlPattern = Pattern.compile("(https?\\:\\/\\/[^ \\t\\r\\n]+)", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+        Matcher m = urlPattern.matcher(note);
+        while (m.find())
+            bookmarks.add(new Bookmark(m.group()));
+
+        return bookmarks.stream();
     }
 
     public List<TransactionPair<?>> getTransactions(Client client)
