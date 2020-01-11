@@ -60,6 +60,8 @@ public class ClientSettings
                         "http://www.morningstar.de/de/funds/SecuritySearchResults.aspx?type=ALL&search={isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("extraETF.com", //$NON-NLS-1$
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
+        answer.add(new Bookmark("Alle Aktien Kennzahlen", //$NON-NLS-1$
+                        "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
 
         return answer;
     }
