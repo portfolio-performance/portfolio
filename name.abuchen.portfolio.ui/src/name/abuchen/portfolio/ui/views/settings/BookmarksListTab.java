@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.settings;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -28,6 +29,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ContextMenu;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -58,19 +60,33 @@ public class BookmarksListTab implements AbstractTabbedView.Tab, ModificationLis
     @Override
     public void addButtons(ToolBarManager manager)
     {
-        Action add = new SimpleAction(a -> {
-            Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
+        manager.add(new DropDown(Messages.BookmarksListView_NewBookmark, Images.PLUS, SWT.NONE, menuListener -> {
 
-            client.getSettings().getBookmarks().add(wl);
-            client.touch();
+            menuListener.add(new SimpleAction(Messages.BookmarksListView_NewBookmark, a -> {
+                Bookmark wl = new Bookmark(Messages.BookmarksListView_NewBookmark, DEFAULT_URL);
 
-            bookmarks.setInput(client.getSettings().getBookmarks());
-            bookmarks.editElement(wl, 0);
-        });
-        
-        add.setImageDescriptor(Images.PLUS.descriptor());
+                client.getSettings().getBookmarks().add(wl);
+                client.touch();
 
-        manager.add(add);
+                bookmarks.setInput(client.getSettings().getBookmarks());
+                bookmarks.editElement(wl, 0);
+            }));
+
+            menuListener.add(new Separator());
+            menuListener.add(new LabelOnly(Messages.LabelTaxonomyTemplates));
+
+            List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
+            Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
+
+            templates.forEach(bm -> menuListener.add(new SimpleAction(bm.getLabel(), a -> {
+                client.getSettings().getBookmarks().add(bm);
+                client.touch();
+
+                bookmarks.setInput(client.getSettings().getBookmarks());
+                bookmarks.editElement(bm, 0);
+            })));
+
+        }));
     }
 
     @Override
