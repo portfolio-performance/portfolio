@@ -73,13 +73,19 @@ public class PortfolioClientFilter implements ClientFilter
 
         Set<Security> usedSecurities = new HashSet<>();
 
+        // keep track of transactions processed for a portfolio where the
+        // reference account is not included in the filter (otherwise if
+        // multiple portfolio share the same reference account, transactions are
+        // included multiple times)
+        Set<AccountTransaction> processedSecurityTx = new HashSet<>();
+
         for (Portfolio portfolio : portfolios)
         {
             adaptPortfolioTransactions(portfolio, portfolio2pseudo, account2pseudo, usedSecurities);
 
             if (!accounts.contains(portfolio.getReferenceAccount()))
                 collectSecurityRelevantTx(portfolio, account2pseudo.get(portfolio.getReferenceAccount()),
-                                usedSecurities);
+                                usedSecurities, processedSecurityTx);
         }
 
         for (Account account : accounts)
@@ -164,7 +170,7 @@ public class PortfolioClientFilter implements ClientFilter
     }
 
     private void collectSecurityRelevantTx(Portfolio portfolio, ReadOnlyAccount pseudoAccount,
-                    Set<Security> usedSecurities)
+                    Set<Security> usedSecurities, Set<AccountTransaction> processedDividendTx)
     {
         if (portfolio.getReferenceAccount() == null)
             return;
@@ -184,15 +190,23 @@ public class PortfolioClientFilter implements ClientFilter
                     // security must be non-null -> tax refund is relevant for
                     // performance of security
                 case DIVIDENDS:
-                    pseudoAccount.internalAddTransaction(t);
-                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    t.getAmount(), null, AccountTransaction.Type.REMOVAL));
+                    if (!processedDividendTx.contains(t))
+                    {
+                        pseudoAccount.internalAddTransaction(t);
+                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.REMOVAL));
+                        processedDividendTx.add(t);
+                    }
                     break;
                 case TAXES:
                 case FEES:
-                    pseudoAccount.internalAddTransaction(t);
-                    pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(), t.getCurrencyCode(),
-                                    t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
+                    if (!processedDividendTx.contains(t))
+                    {
+                        pseudoAccount.internalAddTransaction(t);
+                        pseudoAccount.internalAddTransaction(new AccountTransaction(t.getDateTime(),
+                                        t.getCurrencyCode(), t.getAmount(), null, AccountTransaction.Type.DEPOSIT));
+                        processedDividendTx.add(t);
+                    }
                     break;
                 case BUY:
                 case TRANSFER_IN:

@@ -8,6 +8,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -274,4 +276,29 @@ public class PortfolioClientFilterTest
                         .filter(t -> t.getDateTime().equals(LocalDateTime.parse("2016-04-01T00:00"))).findAny()
                         .isPresent(), is(true));
     }
+
+    @Test
+    public void testThatDividendsAreNotIncludedMultipleTimesIfPortfoliosHaveSameReferenceAccount()
+    {
+        Portfolio portfolioA = client.getPortfolios().get(0);
+        Portfolio portfolioB = client.getPortfolios().get(1);
+
+        portfolioB.getReferenceAccount().getTransactions().stream()
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS)
+                        .forEach(t -> portfolioA.getReferenceAccount().addTransaction(t));
+
+        portfolioB.setReferenceAccount(portfolioA.getReferenceAccount());
+
+        Client result = new PortfolioClientFilter(Arrays.asList(portfolioA, portfolioB), Collections.emptyList())
+                        .filter(client);
+
+        assertThat(result.getPortfolios().size(), is(2));
+        assertThat(result.getAccounts().size(), is(1));
+
+        List<AccountTransaction> dividendTx = result.getAccounts().stream().flatMap(a -> a.getTransactions().stream())
+                        .filter(t -> t.getType() == AccountTransaction.Type.DIVIDENDS).collect(Collectors.toList());
+
+        assertThat(dividendTx.size(), is(2));
+    }
+
 }
