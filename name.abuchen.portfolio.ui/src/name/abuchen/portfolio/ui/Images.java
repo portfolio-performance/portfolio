@@ -34,6 +34,7 @@ public enum Images
     INVESTMENTPLAN("investmentplan.png"), //$NON-NLS-1$
     NOTE("note.png"), //$NON-NLS-1$
     BOOKMARK("bookmark.png"), //$NON-NLS-1$
+    BOOKMARK_OPEN("bookmark_open.png"), //$NON-NLS-1$
 
     // buttons
 

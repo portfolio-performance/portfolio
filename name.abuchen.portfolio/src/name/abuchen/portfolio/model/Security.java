@@ -550,15 +550,21 @@ public final class Security implements Attributable, InvestmentVehicle
      */
     public Stream<Bookmark> getCustomBookmarks()
     {
-        if (Strings.isNullOrEmpty(note))
-            return Stream.empty();
-
         List<Bookmark> bookmarks = new ArrayList<>();
 
-        Pattern urlPattern = Pattern.compile("(https?\\:\\/\\/[^ \\t\\r\\n]+)", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
-        Matcher m = urlPattern.matcher(note);
-        while (m.find())
-            bookmarks.add(new Bookmark(m.group()));
+        // extract bookmarks from attributes
+
+        getAttributes().getAllValues().filter(v -> v instanceof Bookmark).forEach(v -> bookmarks.add((Bookmark) v));
+
+        // extract bookmarks from notes
+        
+        if (!Strings.isNullOrEmpty(note))
+        {
+            Pattern urlPattern = Pattern.compile("(https?\\:\\/\\/[^ \\t\\r\\n]+)", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$
+            Matcher m = urlPattern.matcher(note);
+            while (m.find())
+                bookmarks.add(new Bookmark(m.group()));
+        }
 
         return bookmarks.stream();
     }

@@ -289,6 +289,52 @@ public class AttributeType
         }
     }
 
+    public static class BookmarkConverter implements Converter
+    {
+        public static final Pattern PLAIN = Pattern.compile("^(?<link>https?\\:\\/\\/[^ \\t\\r\\n]+)$", //$NON-NLS-1$
+                        Pattern.CASE_INSENSITIVE);
+        public static final Pattern MARKDOWN = Pattern
+                        .compile("^\\[(?<label>[^\\]]*)\\]\\((?<link>[^ \\t\\r\\n\\)]*)\\)$"); //$NON-NLS-1$
+
+        @Override
+        public String toString(Object object)
+        {
+            if (object == null)
+            {
+                return ""; //$NON-NLS-1$
+            }
+            else
+            {
+                Bookmark bookmark = (Bookmark) object;
+                return bookmark.getLabel().equals(bookmark.getPattern()) ? bookmark.getPattern()
+                                : String.format("[%s](%s)", bookmark.getLabel(), bookmark.getPattern()); //$NON-NLS-1$
+            }
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            String trimmed = value.trim();
+
+            if (trimmed.isEmpty())
+                return null;
+
+            Matcher matcher = MARKDOWN.matcher(trimmed);
+            if (matcher.matches())
+            {
+                return new Bookmark(matcher.group("label"), matcher.group("link")); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            matcher = PLAIN.matcher(value);
+            if (matcher.matches())
+            {
+                return new Bookmark(matcher.group("link"), matcher.group("link")); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorInvalidURL, trimmed));
+        }
+    }
+
     private final String id;
     private String name;
     private String columnLabel;
