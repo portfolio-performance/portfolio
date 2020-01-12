@@ -180,7 +180,17 @@ public class IBFlexStatementExtractor implements Extractor
         private Function<Element, Item> buildAccountTransaction = element -> {
             AccountTransaction transaction = new AccountTransaction();
 
-            transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
+            //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
+            //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
+            if (element.getAttribute("dateTime").length() == 15)
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
+            }
+            else
+            {
+                transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
+            }
+            
             Double amount = Double.parseDouble(element.getAttribute("amount"));
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
@@ -284,16 +294,24 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 180819
-            if (element.hasAttribute("tradeTime"))
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 18.08.19
+            // New format is stored in dateTime, take care for double imports). Quapla 7.1.20
+            if (element.hasAttribute("dateTime"))
             {
-                transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
             }
             else
             {
-                transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
+                if (element.hasAttribute("tradeTime"))
+                {
+                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), element.getAttribute("tradeTime")));
+                }
+                else
+                {
+                    transaction.setDate(convertDate(element.getAttribute("tradeDate"), "000000"));
+                }
             }
-
+            
             // transaction currency
             String currency = asCurrencyUnit(element.getAttribute("currency"));
 
