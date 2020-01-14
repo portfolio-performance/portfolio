@@ -489,7 +489,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // EUR
                                 Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
                                 BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
-                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN).setScale(0, RoundingMode.HALF_DOWN);
                                 Money mAmountGrossFxInEUR = Money.of(currencyCode, amountGrossFxInEUR.longValue());
                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
                                                 inverseRate));
@@ -523,7 +523,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // EUR
                                 Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("amountFx")));
                                 BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate,
-                                                10, RoundingMode.HALF_DOWN);
+                                                10, RoundingMode.HALF_DOWN).setScale(0, RoundingMode.HALF_DOWN);
                                 Money mTaxesFxInEUR = Money.of(currencyCode, taxesFxInEUR.longValue());
                                 t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
                             }
