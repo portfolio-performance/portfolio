@@ -3,13 +3,12 @@
 	"name": "Trade Republic - Dividendenbuchung",
 	"locale": "de",
 	"pattern": [
-		"TRADE REPUBLIC",
-		"DIVIDENDE"
+		"TRADE REPUBLIC"
 	],
 	"transactions": [
 		{
 			"type": "DIVIDEND",
-			"startWith": "DIVIDENDE",
+			"startWith": "DIVIDENDE|AUSSCHÜTTUNG",
 			"sections": [
 				{
 					"context": "SECURITY",
@@ -78,7 +77,7 @@
 					"attributes": {
 						"type": "TAX"
 					}
-				},					
+				},
 				{
 					"context": "UNIT",
 					"isOptional": true,
