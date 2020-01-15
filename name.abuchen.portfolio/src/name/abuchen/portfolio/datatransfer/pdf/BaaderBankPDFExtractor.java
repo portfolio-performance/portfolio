@@ -47,7 +47,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapierabrechnung: Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapierabrechnung: Kauf.*");
+        Block block = new Block(".* Portfolio: .*");
         type.addBlock(block);
         block.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
@@ -81,7 +81,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
