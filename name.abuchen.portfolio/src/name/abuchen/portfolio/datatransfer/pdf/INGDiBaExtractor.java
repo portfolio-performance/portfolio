@@ -233,12 +233,19 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .section("amount", "currency") //
-                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) (?<currency>\\w{3}+) (?<amount>(- )?[\\d.]+,\\d+)") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                            if (v.get("amount").startsWith("-"))
+                            {
+                                t.setAmount(0L);
+                            }
+                            else
+                            {
+                                t.setAmount(asAmount(v.get("amount")));
+                            }
                         })
-
+                        
                         .wrap(TransactionItem::new);
         
         addTaxSectionToAccountTransaction(type, transaction);
