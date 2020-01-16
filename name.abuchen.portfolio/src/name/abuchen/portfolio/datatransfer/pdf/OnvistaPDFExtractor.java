@@ -48,6 +48,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
         addAccountStatementTransaction();
         addAccountStatementTransaction2017();
         addRegistrationFeeTransaction();
+        addTaxVorabpauschaleTransaction();
     }
 
     private void addBuyTransaction()
@@ -1587,6 +1588,48 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .wrap(TransactionItem::new));
     }
 
+    private void addTaxVorabpauschaleTransaction()
+    {
+        DocumentType type = new DocumentType("Steuerpflichtige Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Steuerpflichtige Vorabpauschale(.*)");
+        type.addBlock(block);
+
+        Transaction<AccountTransaction> taxVorabpauschaleTransaction = new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("name", "isin") //
+                        .find("Gattungsbezeichnung ISIN") //
+                        .match("(?<name>.*) (?<isin>[^ ]\\S*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("tax", "currency").optional()
+                        .match("^Wert Konto-Nr. Betrag zu Ihren Lasten")
+                        .match("(\\d+\\.\\d+\\.\\d{4}+) .* (?<currency>\\w{3}+) (?<tax>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("tax")));
+                        })
+
+                        .section("date").optional()
+                        .match("^Nominal Ex-Tag Zahltag Jahreswert Vorabpauschale pro Stück")
+                        // STK 1.212,000 02.01.2020 02.01.2020 EUR 0,1019
+                        .match("STK .* (?<exdate>\\d+\\.\\d+\\.\\d{4}+) (?<date>\\d+\\.\\d+\\.\\d{4}+) (\\w{3}+) .*")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+
+        block.set(taxVorabpauschaleTransaction);
+    }
+    
     @Override
     public String getLabel()
     {
