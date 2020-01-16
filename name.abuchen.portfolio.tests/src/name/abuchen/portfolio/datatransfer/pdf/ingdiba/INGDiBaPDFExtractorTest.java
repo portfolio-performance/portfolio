@@ -489,23 +489,21 @@ public class INGDiBaPDFExtractorTest
         assertThat(results.size(), is(2));
 
         // check security
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getIsin(), is("IE00B53QG562"));
         assertThat(security.getWkn(), is("A0YEDX"));
         assertThat(security.getName(), is("iShs VII-Core MSCI EMU UCI.ETF"));
 
         // check buy sell transaction
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
-                        .findFirst().get().getSubject();
+                        .findFirst().orElseThrow(IllegalArgumentException::new).getSubject();
 
-        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(t.getType(), is(AccountTransaction.Type.TAXES));
 
-        assertThat(t.getAmount(), is(Values.Amount.factorize(0)));
+        assertThat(t.getAmount(), is(Values.Amount.factorize(17.65 + 1.41 + 0.97)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(304)));
-
-        assertThat(t.getGrossValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(20.03))));
-        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(17.65 + 1.41+0.97))));
     }
 
     @Test
