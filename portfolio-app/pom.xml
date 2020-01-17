@@ -25,10 +25,6 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
-	<prerequisites>
-		<maven>3.5.2</maven>
-	</prerequisites>
-
 	<modules>
 		<module>../portfolio-target-definition</module>
 		<module>../name.abuchen.portfolio</module>
@@ -114,19 +110,9 @@
 							<arch>x86_64</arch>
 						</environment>
 						<environment>
-							<os>linux</os>
-							<ws>gtk</ws>
-							<arch>x86</arch>
-						</environment>
-						<environment>
 							<os>macosx</os>
 							<ws>cocoa</ws>
 							<arch>x86_64</arch>
-						</environment>
-						<environment>
-							<os>win32</os>
-							<ws>win32</ws>
-							<arch>x86</arch>
 						</environment>
 						<environment>
 							<os>win32</os>
