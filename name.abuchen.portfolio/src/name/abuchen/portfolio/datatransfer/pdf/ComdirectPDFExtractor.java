@@ -25,6 +25,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addDividendTransaction();
+        addInvestmentAusschuettungTransaction();
         addTaxTransaction();
         addSellTransaction();
         addExpireTransaction();
@@ -164,6 +165,56 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             if (unit.getAmount().getCurrencyCode().equals(t.getCurrencyCode()))
                                 t.addUnit(unit);
                         })
+
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addInvestmentAusschuettungTransaction()
+    {
+        DocumentType dividende = new DocumentType("Investment-Ausschüttung");
+        this.addDocumentTyp(dividende);
+
+        Block block = new Block(
+                        "Steuerliche Behandlung: Ausländische Investment-Ausschüttung.*");
+        dividende.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
+
+                        .section("wkn", "name", "isin", "shares") //
+                        .match("^Stk\\. *(?<shares>[\\d.,]+) *(?<name>.*) , WKN / ISIN: (?<wkn>[A-Z0-9]*) * / (?<isin>[A-Z0-9]*) *$") //
+                        .assign((t, v) -> {
+                            v.put("isin", stripBlanks(v.get("isin")));
+                            v.put("wkn", stripBlanks(v.get("wkn")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                        })
+
+                        .section("currency", "amount") //
+                        .find(" *Z *u *I *h *r *e *n *G *u *n *s *t *e *n *n *a *c *h *S *t *e *u *e *r *n *: *(?<currency>[A-Z ]+)  *(?<amount>[\\d., ]+) *$") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(stripBlanks(v.get("currency"))));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        })
+
+                        .section("currency", "tax") //
+                        .find(" *a *b *g *e *f *ü *h *r *t *e *S *t *e *u *e *r *n *   (?<currency>[A-Z _]+) *(?<tax>[\\d., _]+) *")
+                        .assign((t, v) -> {
+                            long tax = asAmount(stripBlanksAndUnderscores(v.get("tax")));
+
+                            if (tax > 0)
+                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(
+                                                asCurrencyCode(stripBlanksAndUnderscores(v.get("currency"))), tax)));
+                        })
+
+                        .section("date") //
+                        .find("Die Gutschrift erfolgt mit Valuta (?<date>\\d+.\\d+.\\d+) .*")
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         .wrap(TransactionItem::new));
     }

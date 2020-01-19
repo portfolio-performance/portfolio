@@ -812,4 +812,36 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7)));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
     }
+
+    @Test
+    public void testInvestmentAusschuettung01()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(),
+                        "comdirectInvestmentAusschüttung01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("IE00B0M63284"));
+        assertThat(security.getName(), is("IS EUR.PROP.YI.U.ETF EOD"));
+        assertThat(security.getWkn(), is("A0HGV5"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findAny().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // dividend
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-27T00:00")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.98)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.01)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(15.558)));
+    }
+
 }
