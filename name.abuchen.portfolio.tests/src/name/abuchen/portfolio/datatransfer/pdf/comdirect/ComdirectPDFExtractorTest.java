@@ -843,5 +843,43 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.01)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15.558)));
     }
+    
+    @Test
+    public void testVorabsteuerpauschale() throws IOException
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectVorabsteuerpauschale.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("IE00BP3QZJ36"));
+        assertThat(security.getName(), is("ISIV-MSCI FRAN. U.ETF EOA"));
+        assertThat(security.getWkn(), is("A12ATD"));
+        
+        List<AccountTransaction> items = results.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .map(i -> (AccountTransaction) i.getSubject())
+                        .collect(Collectors.toList());
+        assertThat(items.size(), is(1));
+        
+        // tax
+        Optional<AccountTransaction> oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.TAXES.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        AccountTransaction transaction = oTransaction.get();
+        
+        assertThat(transaction.getShares(), is(Values.Share.factorize(11.486)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00")));
+        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 0_07 + 2)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.09)));
+    }
 
 }
