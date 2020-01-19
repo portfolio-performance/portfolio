@@ -1,0 +1,37 @@
+PDF Author: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Consorsbank • 90318 Nürnberg
+Depotnummer 12345
+123456789/00
+Hans Mustermann
+Musterstr. 1
+12345 Musterstadt Vermerk der Bank 100002
+ORDERABRECHNUNG
+KAUF AM 15.01.2020  UM 12:00:56 STUTTGART NR. 123456.001
+Bezeichnung WKN ISIN
+SPDR S+P P.AS.DIV.ARI.ETF A1T8GC IE00B9KNR336
+Einheit Umsatz
+ST 210,00000
+Kurs 46,200000 EUR P.ST.  
+Kurswert EUR 9.702,00
+Börsenplatzgebühr EUR 2,50
+Transaktionsentgelt EUR 11,54
+Provision EUR 24,26
+Grundgebühr EUR 4,95
+Wert 17.01.2020 EUR 9.745,25
+zulasten Konto-Nr. 12345678
+Bestand zugunsten Wertpapierrechnung Großbritannien
+CBL 62126
+Limitkurs  46,200000 EUR
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
