@@ -444,6 +444,7 @@ public class Messages extends NLS
     public static String LabelAllTransactions;
     public static String LabelAssetChart;
     public static String LabelAvailableAttributes;
+    public static String LabelAverageHoldingPeriod;
     public static String LabelBenchmarks;
     public static String LabelCategoryOtherMovements;
     public static String LabelChartDetailChartScaling;
@@ -620,6 +621,11 @@ public class Messages extends NLS
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;
     public static String LabelMetricCheckInterval;
+    public static String LabelMetric;
+    public static String LabelMetricDays;
+    public static String LabelMetricDaysFormatter;
+    public static String LabelMetricYears;
+    public static String LabelMetricYearsFormatter;
     public static String LabelStartTyping;
     public static String LabelStatementOfAssets;
     public static String LabelStatementOfAssetsHistory;
@@ -932,6 +938,7 @@ public class Messages extends NLS
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
+    public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;
