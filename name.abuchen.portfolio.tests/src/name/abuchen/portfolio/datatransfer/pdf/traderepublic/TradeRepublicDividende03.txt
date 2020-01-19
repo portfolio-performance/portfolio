@@ -1,0 +1,26 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+My Name SEITE 1 von 1
+My Street 1 DATUM 14.01.2020
+D XXXX Town DEPOT 1234
+AUSSCHÜTTUNG
+ÜBERSICHT
+Ausschüttung mit dem Ex-Tag 15.01.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+iSh.ST.Gl.Sel.Div.100 U.ETF DE 8 Stk. 0,204 EUR 1,630 EUR
+Inhaber-Anteile
+ISIN: DE000A0F5UH1
+GESAMT 1,630 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DEXXX 15.01.2020 1,630 EUR
+iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-01-14 / 76746883 / 0f6c-8914

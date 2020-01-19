@@ -28,11 +28,15 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.TreeViewerColumn;
 import org.eclipse.jface.viewers.ViewerColumn;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Client;
@@ -118,6 +122,13 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
         public void setChangeListener(org.eclipse.swt.widgets.Listener changeListener)
         {
             this.changeListener = changeListener;
+        }
+
+        String wordwrap(String text)
+        {
+            // other platforms such as Mac and Linux natively wrap tool tip
+            // labels, but not Windows
+            return Platform.OS_WIN32.equals(Platform.getOS()) ? TextUtil.wordwrap(text) : text;
         }
     }
 
@@ -216,13 +227,32 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             layout.setColumnData(tableColumn, new ColumnPixelData(width));
 
             setCommonParameters(column, col, direction);
+
+            if (column.getLabelProvider() instanceof CellItemImageClickedListener)
+                setupImageClickedListener(column, tableColumn);
         }
 
-        private String wordwrap(String text)
+        private void setupImageClickedListener(Column column, TableColumn tableColumn)
         {
-            // other platforms such as Mac and Linux natively wrap tool tip
-            // labels, but not Windows
-            return Platform.OS_WIN32.equals(Platform.getOS()) ? TextUtil.wordwrap(text) : text;
+            org.eclipse.swt.widgets.Listener listener = event -> {
+
+                int columnIndex = table.getTable().indexOf(tableColumn);
+                if (columnIndex == -1)
+                    return;
+
+                Point pt = new Point(event.x, event.y);
+
+                TableItem tableItem = table.getTable().getItem(pt);
+                if (tableItem == null)
+                    return;
+
+                Rectangle rect = tableItem.getImageBounds(columnIndex);
+                if (rect.contains(pt))
+                    ((CellItemImageClickedListener) column.getLabelProvider()).onImageClicked(tableItem.getData());
+            };
+
+            table.getTable().addListener(SWT.MouseUp, listener);
+            tableColumn.addDisposeListener(e -> table.getTable().removeListener(SWT.MouseUp, listener));
         }
     }
 
@@ -313,14 +343,40 @@ public class ShowHideColumnHelper implements IMenuListener, ConfigurationStoreOw
             {
                 treeColumn.setText(column.getOptions().getColumnLabel(option));
                 String description = column.getOptions().getDescription(option);
-                treeColumn.setToolTipText(description != null ? description : column.getToolTipText());
+                treeColumn.setToolTipText(wordwrap(description != null ? description : column.getToolTipText()));
                 treeColumn.setData(OPTIONS_KEY, option);
             }
 
             layout.setColumnData(treeColumn, new ColumnPixelData(width));
 
             setCommonParameters(column, col, direction);
+
+            if (column.getLabelProvider() instanceof CellItemImageClickedListener)
+                setupImageClickedListener(column, treeColumn);
         }
+
+        private void setupImageClickedListener(Column column, TreeColumn treeColumn)
+        {
+            org.eclipse.swt.widgets.Listener listener = event -> {
+
+                int columnIndex = tree.getTree().indexOf(treeColumn);
+                if (columnIndex == -1)
+                    return;
+
+                Point pt = new Point(event.x, event.y);
+                TreeItem treeItem = tree.getTree().getItem(pt);
+                if (treeItem == null)
+                    return;
+
+                Rectangle rect = treeItem.getImageBounds(columnIndex);
+                if (rect.contains(pt))
+                    ((CellItemImageClickedListener) column.getLabelProvider()).onImageClicked(treeItem.getData());
+            };
+
+            tree.getTree().addListener(SWT.MouseUp, listener);
+            treeColumn.addDisposeListener(e -> tree.getTree().removeListener(SWT.MouseUp, listener));
+        }
+
     }
 
     /* package */static final String OPTIONS_KEY = Column.class.getName() + "_OPTION"; //$NON-NLS-1$

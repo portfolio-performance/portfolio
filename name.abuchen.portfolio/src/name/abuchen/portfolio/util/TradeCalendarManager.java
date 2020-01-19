@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.util;
 
+import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BANK_HOLIDAY;
+import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS;
 import static name.abuchen.portfolio.util.HolidayName.CHRISTMAS_EVE;
@@ -13,6 +15,7 @@ import static name.abuchen.portfolio.util.HolidayName.INDEPENDENCE;
 import static name.abuchen.portfolio.util.HolidayName.LABOUR_DAY;
 import static name.abuchen.portfolio.util.HolidayName.MARTIN_LUTHER_KING;
 import static name.abuchen.portfolio.util.HolidayName.MEMORIAL;
+import static name.abuchen.portfolio.util.HolidayName.NATION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEAR;
 import static name.abuchen.portfolio.util.HolidayName.NEW_YEARS_EVE;
 import static name.abuchen.portfolio.util.HolidayName.REFORMATION_DAY;
@@ -104,6 +107,23 @@ public class TradeCalendarManager
         tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
         tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
         tc.add(fixed(BOXING_DAY, Month.DECEMBER, 26));
+        CACHE.put(tc.getCode(), tc);
+
+        // see six trading days on their official website:
+        // https://six-group.com/exchanges/exchange_traded_products/trading/trading_and_settlement_calendar_de.html
+        tc = new TradeCalendar("six", Messages.LabelTradeCalendarSix); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(fixed(BERCHTOLDSTAG, Month.JANUARY, 2));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(easter(ASCENSION_DAY, 39));
+        tc.add(easter(WHIT_MONDAY, 50));
+        tc.add(fixed(NATION_DAY, Month.AUGUST, 1));
+        tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
+        tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
 
         tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);

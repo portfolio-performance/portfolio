@@ -67,6 +67,13 @@ public class SecurityContextMenu
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(owner, AccountTransaction.Type.TAXES + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAXES) //
+                        .with(portfolio != null ? portfolio.getReferenceAccount() : null) //
+                        .with(security) //
+                        .addTo(manager);
+
         new OpenDialogAction(owner, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
                         .type(AccountTransactionDialog.class) //
                         .parameters(AccountTransaction.Type.TAX_REFUND) //

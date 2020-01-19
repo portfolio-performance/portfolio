@@ -31,7 +31,7 @@ public class DetectDuplicatesActionTest
 {
     @SuppressWarnings("nls")
     @Test
-    public void testDuplicateDetection4AccountTransaction() throws Exception
+    public void testDuplicateDetection4AccountTransaction() throws IntrospectionException, ReflectiveOperationException
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
 
@@ -43,7 +43,8 @@ public class DetectDuplicatesActionTest
 
     @SuppressWarnings("nls")
     @Test
-    public void testDuplicateDetection4PortfolioTransaction() throws Exception
+    public void testDuplicateDetection4PortfolioTransaction()
+                    throws IntrospectionException, ReflectiveOperationException
     {
         DetectDuplicatesAction action = new DetectDuplicatesAction();
 
@@ -54,6 +55,39 @@ public class DetectDuplicatesActionTest
                                         .after((name, o, c) -> assertThat(name,
                                                         action.process(o, portfolio(c)).getCode(), is(Code.OK)))
                                         .run();
+    }
+
+    @SuppressWarnings("nls")
+    @Test
+    public void testDuplicateDetectionWithPurchaseAndDeliveryPairs()
+                    throws IntrospectionException, ReflectiveOperationException
+    {
+        DetectDuplicatesAction action = new DetectDuplicatesAction();
+
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
+                        "monetaryAmount") //
+                                        .before((name, o, c) -> {
+                                            o.setType(PortfolioTransaction.Type.BUY);
+                                            c.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+                                            assertThat(name, action.process(o, portfolio(c)).getCode(),
+                                                            is(Code.WARNING));
+                                        }) //
+                                        .after((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.OK)))
+                                        .run();
+
+        new PropertyChecker<PortfolioTransaction>(PortfolioTransaction.class, "type", "fees", "taxes", "note", "forex",
+                        "monetaryAmount") //
+                                        .before((name, o, c) -> {
+                                            o.setType(PortfolioTransaction.Type.SELL);
+                                            c.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+                                            assertThat(name, action.process(o, portfolio(c)).getCode(),
+                                                            is(Code.WARNING));
+                                        }) //
+                                        .after((name, o, c) -> assertThat(name,
+                                                        action.process(o, portfolio(c)).getCode(), is(Code.OK)))
+                                        .run();
+
     }
 
     private Account account(AccountTransaction t)
@@ -82,7 +116,7 @@ public class DetectDuplicatesActionTest
         private Random random = new Random();
 
         private Class<T> type;
-        private List<PropertyDescriptor> properties = new ArrayList<PropertyDescriptor>();
+        private List<PropertyDescriptor> properties = new ArrayList<>();
 
         private Consumer<T> before;
         private Consumer<T> after;
@@ -90,10 +124,10 @@ public class DetectDuplicatesActionTest
         public PropertyChecker(Class<T> type, String... excludes) throws IntrospectionException
         {
             this.type = type;
-            Set<String> excludedSet = new HashSet<String>(Arrays.asList(excludes));
+            Set<String> excludedSet = new HashSet<>(Arrays.asList(excludes));
 
             BeanInfo info = Introspector.getBeanInfo(type);
-            for (PropertyDescriptor p : info.getPropertyDescriptors())
+            for (PropertyDescriptor p : info.getPropertyDescriptors()) // NOSONAR
             {
                 if (excludedSet.contains(p.getName()))
                     continue;
@@ -117,13 +151,13 @@ public class DetectDuplicatesActionTest
             return this;
         }
 
-        public void run() throws Exception
+        public void run() throws ReflectiveOperationException
         {
             for (PropertyDescriptor p : properties)
                 check(p);
         }
 
-        private void check(PropertyDescriptor change) throws Exception
+        private void check(PropertyDescriptor change) throws ReflectiveOperationException
         {
             T instance = type.getDeclaredConstructor().newInstance();
             T other = type.getDeclaredConstructor().newInstance();

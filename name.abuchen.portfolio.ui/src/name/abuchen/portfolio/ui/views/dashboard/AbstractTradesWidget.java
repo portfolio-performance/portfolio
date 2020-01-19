@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views.dashboard;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -94,30 +95,53 @@ import name.abuchen.portfolio.util.TextUtil;
         ClientFilter clientFilter = get(ClientFilterConfig.class).getSelectedFilter();
         CacheKey key = new CacheKey(TradeCollector.class, clientFilter, interval);
 
-        return () -> (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key, k -> {
+        return () -> {
+            TradeDetailsView.Input input = (TradeDetailsView.Input) getDashboardData().getCache().computeIfAbsent(key,
+                            k -> {
 
-            Client filteredClient = clientFilter.filter(getClient());
-            TradeCollector collector = new TradeCollector(filteredClient, getDashboardData().getCurrencyConverter());
+                                Client filteredClient = clientFilter.filter(getClient());
+                                TradeCollector collector = new TradeCollector(filteredClient,
+                                                getDashboardData().getCurrencyConverter());
 
-            List<Trade> trades = new ArrayList<>();
-            List<TradeCollectorException> errors = new ArrayList<>();
+                                List<Trade> trades = new ArrayList<>();
+                                List<TradeCollectorException> errors = new ArrayList<>();
 
-            getClient().getSecurities().forEach(s -> {
-                try
-                {
-                    trades.addAll(collector.collect(s));
-                }
-                catch (TradeCollectorException error)
-                {
-                    errors.add(error);
-                }
-            });
+                                getClient().getSecurities().forEach(s -> {
+                                    try
+                                    {
+                                        trades.addAll(collector.collect(s));
+                                    }
+                                    catch (TradeCollectorException error)
+                                    {
+                                        errors.add(error);
+                                    }
+                                });
 
-            List<Trade> filteredTrades = trades.stream().filter(t -> t.getEnd().isPresent())
-                            .filter(t -> interval.contains(t.getEnd().get())).collect(Collectors.toList());
+                                return new TradeDetailsView.Input(interval, trades, errors);
+                            });
 
-            return new TradeDetailsView.Input(interval, filteredTrades, errors);
-        });
+            // filter trades on the *cached* result (which includes all trades)
+            // because widgets apply different filter on the result
+
+            return new TradeDetailsView.Input(input.getInterval(),
+                            input.getTrades().stream().filter(getFilter(interval)).collect(Collectors.toList()),
+                            input.getErrors());
+        };
+    }
+
+    /**
+     * Constructs the predicate the filters the Trades for the widget. The
+     * default implementation includes all closed trades which have been closed
+     * in the reporting interval.
+     */
+    protected Predicate<Trade> getFilter(Interval interval)
+    {
+        return t -> {
+            if (!t.getEnd().isPresent())
+                return false;
+
+            return interval.contains(t.getEnd().get());
+        };
     }
 
 }

@@ -1,10 +1,10 @@
 package name.abuchen.portfolio.ui.handlers;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import javax.inject.Named;
 
@@ -114,17 +114,17 @@ public class OpenBookmarksHandler
 
     private void openPopup(Shell shell, SelectionService selectionService, Client client)
     {
-        if (client.getSettings().getBookmarks().isEmpty())
-            return;
-
         Optional<SecuritySelection> selection = selectionService.getSelection(client);
         if (!selection.isPresent())
             return;
 
         Security security = selection.get().getSecurity();
 
-        List<Bookmark> bookmarks = client.getSettings().getBookmarks().stream().filter(b -> !b.isSeparator())
-                        .collect(Collectors.toList());
+        List<Bookmark> bookmarks = new ArrayList<>();
+
+        client.getSettings().getBookmarks().stream().filter(b -> !b.isSeparator()).forEach(bookmarks::add);
+
+        security.getCustomBookmarks().forEach(bookmarks::add);
 
         BookmarkPopup<Bookmark> popup = new BookmarkPopup<>(shell, //
                         security.getName(), //

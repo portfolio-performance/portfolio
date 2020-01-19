@@ -149,6 +149,7 @@ public class Messages extends NLS
     public static String LabelTradeCalendarGermany;
     public static String LabelTradeCalendarLSE;
     public static String LabelTradeCalendarNYSE;
+    public static String LabelTradeCalendarSix;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarEmpty;
     public static String LabelTransferAccount;
@@ -185,6 +186,7 @@ public class Messages extends NLS
     public static String MsgErrorDuplicateWKN;
     public static String MsgErrorEncrypting;
     public static String MsgErrorIllegalForexUnit;
+    public static String MsgErrorInvalidURL;
     public static String MsgErrorMissingDate;
     public static String MsgErrorMissingKeyValueInJSON;
     public static String MsgErrorMissingValueMatches;

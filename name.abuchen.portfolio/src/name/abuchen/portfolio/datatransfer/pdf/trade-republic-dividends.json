@@ -3,13 +3,12 @@
 	"name": "Trade Republic - Dividendenbuchung",
 	"locale": "de",
 	"pattern": [
-		"TRADE REPUBLIC",
-		"DIVIDENDE"
+		"TRADE REPUBLIC"
 	],
 	"transactions": [
 		{
 			"type": "DIVIDEND",
-			"startWith": "DIVIDENDE",
+			"startWith": "DIVIDENDE|AUSSCHÜTTUNG",
 			"sections": [
 				{
 					"context": "SECURITY",
@@ -21,6 +20,13 @@
 					]
 				},
 				{
+					"pattern": [
+						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
+					]
+				},
+				{
+					"comment": "If the document contains taxes then there are two GESAMT pattern and we need to pick the second one",
+					"isOptional": true,
 					"pattern": [
 						"GESAMT ([\\d+,.]*) (\\w{3}+)",
 						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
@@ -78,7 +84,7 @@
 					"attributes": {
 						"type": "TAX"
 					}
-				},					
+				},
 				{
 					"context": "UNIT",
 					"isOptional": true,

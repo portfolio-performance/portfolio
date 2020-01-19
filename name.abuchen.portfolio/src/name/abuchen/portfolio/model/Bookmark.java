@@ -5,20 +5,26 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Bookmark
+public class Bookmark implements Comparable<Bookmark>
 {
     private static final Pattern REPLACEMENT_PATTERN = Pattern.compile("\\{([^}]*)\\}"); //$NON-NLS-1$
 
     private String label;
     private String pattern;
 
+    public Bookmark(String pattern)
+    {
+        this(pattern, pattern);
+    }
+
     public Bookmark(String label, String pattern)
     {
-        this.label = label;
-        this.pattern = pattern;
+        this.label = Objects.requireNonNull(label);
+        this.pattern = Objects.requireNonNull(pattern);
     }
 
     public void setLabel(String label)
@@ -44,6 +50,36 @@ public class Bookmark
     public boolean isSeparator()
     {
         return "-".equals(label); //$NON-NLS-1$
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Objects.hash(label, pattern);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        Bookmark other = (Bookmark) obj;
+
+        if (!Objects.equals(label, other.label))
+            return false;
+
+        return Objects.equals(pattern, other.pattern);
+    }
+
+    @Override
+    public int compareTo(Bookmark other)
+    {
+        return label.compareTo(other.label);
     }
 
     public String constructURL(Client client, Security security)

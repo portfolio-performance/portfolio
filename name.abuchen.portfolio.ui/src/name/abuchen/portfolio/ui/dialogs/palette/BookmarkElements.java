@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.ui.dialogs.palette;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
@@ -69,9 +69,19 @@ import name.abuchen.portfolio.ui.util.DesktopAPI;
         if (!selection.isPresent())
             return Collections.emptyList();
 
-        return client.getSettings().getBookmarks().stream() //
+        SecuritySelection security = selection.get();
+
+        List<Element> answer = new ArrayList<>();
+
+        client.getSettings().getBookmarks().stream() //
                         .filter(b -> !b.isSeparator()) //
-                        .map(b -> new BookmarkElement(b, selection.get())) //
-                        .collect(Collectors.toList());
+                        .map(b -> new BookmarkElement(b, security)) //
+                        .forEach(answer::add);
+
+        security.getSecurity().getCustomBookmarks()//
+                        .map(bm -> new BookmarkElement(bm, security)) //
+                        .forEach(answer::add);
+
+        return answer;
     }
 }

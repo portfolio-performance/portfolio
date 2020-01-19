@@ -232,16 +232,38 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
                         .match("Zahltag (?<date>\\d+.\\d+.\\d{4}+)") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
-                        .section("amount", "currency") //
-                        .match("Gesamtbetrag zu Ihren Gunsten (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .section("currency") //
+                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) (?<currency>\\w{3}+) .*") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
-                        })
+                        });
 
+        // make sure that tax elements are parsed *before* the total amount so
+        // that we can convert to a TAX transaction if necessary
+        addTaxSectionToAccountTransaction(type, transaction);
+
+        transaction.section("amount") //
+                        .match("Gesamtbetrag zu Ihren (Gunsten|Lasten) \\w{3}+ (?<amount>(- )?[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            if (v.get("amount").startsWith("-"))
+                            {
+                                // create a tax transaction as the amount is
+                                // negative
+                                
+                                Money amount = t.getUnitSum(Unit.Type.TAX);
+
+                                t.setType(AccountTransaction.Type.TAXES);
+                                t.clearUnits();
+                                t.setMonetaryAmount(amount);
+                            }
+                            else
+                            {
+                                t.setAmount(asAmount(v.get("amount")));
+                            }
+                        })
+                        
                         .wrap(TransactionItem::new);
         
-        addTaxSectionToAccountTransaction(type, transaction);
         block.set(transaction);
     }
 
