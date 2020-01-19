@@ -29,6 +29,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addTaxTransaction();
         addSellTransaction();
         addExpireTransaction();
+        addVorabsteuerTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -497,6 +498,81 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addFeesSection(pdfTransaction);
         
         block.set(pdfTransaction);
+    }
+    
+    @SuppressWarnings("nls")
+    private void addVorabsteuerTransaction()
+    {
+        DocumentType type = new DocumentType("Vorabpauschale");
+
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAXES);
+                            return t;
+                        })
+
+                        .section("wkn", "name", "isin", "shares").optional() //
+                        .match("^(Stk.)\\W*(?<shares>\\d[\\d .,]*)(?<name>.*),\\W*(WKN / ISIN:)(?<wkn>.*)/(?<isin>.*)$") //
+                        .assign((t, v) -> {
+                            v.put("isin", stripBlanks(v.get("isin")));
+                            v.put("wkn", stripBlanks(v.get("wkn")));
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                        })
+
+                        .section("date") //
+                        .match("^.*Die Belastung erfolgt mit Valuta\\s+(?<date>\\d{2}.\\d{2}.\\d{4}).*$") //
+                        .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
+
+                        .section("tax", "currency").optional() // Kapitalertragsteuer
+                        .match("^\\s*(K\\s*a\\s*p\\s*i\\s*t\\s*a\\s*l\\s*e\\s*r\\s*t\\s*r\\s*a\\s*g\\s*s\\s*t\\s*e\\s*u\\s*e\\s*r)"
+                                        + //
+                                        "(?<currency>[A-Z\\s]+)(?<tax>[\\d\\s,-]+)$") //
+                        .assign((t, v) -> {
+                            v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                            v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                        })
+
+                        .section("tax", "currency").optional() // Kirchensteuer
+                        .match("^\\s*(K\\s*i\\s*r\\s*c\\s*h\\s*e\\s*n\\s*s\\s*t\\s*e\\s*u\\s*e\\s*r)"
+                                        + "(?<currency>[A-Z\\s_]+)(?<tax>[\\d\\s,-_]+)$")
+                        .assign((t, v) -> {
+                            v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                            v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                        })
+
+                        .section("tax", "currency").optional() // Solidaritätszuschlag
+                        .match("^\\s*(S\\s*o\\s*l\\s*i\\s*d\\s*a\\s*r\\s*i\\s*t\\s*ä\\s*t\\s*s\\s*z\\s*u\\s*s\\s*c\\s*h\\s*l\\s*a\\s*g)"
+                                        + "(?<currency>[A-Z\\s_]+)(?<tax>[\\d\\s,-_]+)$")
+                        .assign((t, v) -> {
+                            v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                            v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX,
+                                            Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")))));
+                        })
+
+                        .section("tax", "currency") // abgeführte Steuern
+                        .match("^\\s*(a\\s*b\\s*g\\s*e\\s*f\\s*ü\\s*h\\s*r\\s*t\\s*e\\s*S\\s*t\\s*e\\s*u\\s*er\\s*n)"
+                                        + "(?<currency>[A-Z\\s_]+)(?<tax>[\\d\\s,-_]+)$")
+                        .assign((t, v) -> {
+                            v.put("currency", stripBlanksAndUnderscores(v.get("currency")));
+                            v.put("tax", stripBlanksAndUnderscores(v.get("tax")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("tax")));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
