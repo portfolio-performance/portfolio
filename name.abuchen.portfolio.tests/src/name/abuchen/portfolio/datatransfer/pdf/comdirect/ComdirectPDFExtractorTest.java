@@ -821,7 +821,7 @@ public class ComdirectPDFExtractorTest
         List<Exception> errors = new ArrayList<>();
 
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(),
-                        "comdirectInvestmentAusschüttung01.txt"), errors);
+                        "comdirectInvestmentAusschuettung01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
