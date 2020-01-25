@@ -26,11 +26,11 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -68,6 +68,7 @@ import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
@@ -659,7 +660,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
         support.createColumns();
@@ -679,33 +681,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         Security security = (Security) prices.getData(Security.class.toString());
         if (security != null)
         {
-            manager.add(new Action(Messages.SecurityMenuAddPrice)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security == null)
-                        return;
+            manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
+                Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), getClient(), security);
 
-                    SecurityPrice price = new SecurityPrice();
-                    price.setDate(LocalDate.now());
+                if (dialog.open() != Window.OK)
+                    return;
 
-                    security.addPrice(price);
+                markDirty();
 
-                    markDirty();
-
-                    prices.setInput(security.getPrices());
-                    latest.setInput(security);
-                    metrics.setInput(security);
-                    transactions.setInput(security.getTransactions(getClient()));
-                    events.setInput(security.getEvents());
-                    chart.updateChart(security);
-
-                    prices.setSelection(new StructuredSelection(price), true);
-                    prices.editElement(price, 0);
-                }
-            });
+                prices.setInput(security.getPrices());
+                latest.setInput(security);
+                metrics.setInput(security);
+                transactions.setInput(security.getTransactions(getClient()));
+                events.setInput(security.getEvents());
+                chart.updateChart(security);
+            }));
             manager.add(new Separator());
         }
 

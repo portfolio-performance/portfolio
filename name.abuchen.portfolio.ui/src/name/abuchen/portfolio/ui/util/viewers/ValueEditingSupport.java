@@ -1,11 +1,16 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.util.function.Predicate;
+
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import com.ibm.icu.text.MessageFormat;
+
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.CurrencyToStringConverter;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 import name.abuchen.portfolio.ui.util.StringToCurrencyConverter;
@@ -15,9 +20,14 @@ public class ValueEditingSupport extends PropertyEditingSupport
     private final StringToCurrencyConverter stringToLong;
     private final CurrencyToStringConverter longToString;
 
-    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType)
+    private final Predicate<Number> validator;
+
+    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType,
+                    Predicate<Number> validator)
     {
         super(subjectType, attributeName);
+
+        this.validator = validator;
 
         Class<?> propertyType = descriptor().getPropertyType();
         if (!long.class.isAssignableFrom(propertyType) && !int.class.isAssignableFrom(propertyType))
@@ -26,6 +36,11 @@ public class ValueEditingSupport extends PropertyEditingSupport
 
         this.stringToLong = new StringToCurrencyConverter(valueType);
         this.longToString = new CurrencyToStringConverter(valueType);
+    }
+
+    public ValueEditingSupport(Class<?> subjectType, String attributeName, Values<? extends Number> valueType)
+    {
+        this(subjectType, attributeName, valueType, null);
     }
 
     @Override
@@ -53,6 +68,10 @@ public class ValueEditingSupport extends PropertyEditingSupport
         if (int.class.isAssignableFrom(descriptor().getPropertyType())
                         || Integer.class.isAssignableFrom(descriptor().getPropertyType()))
             newValue = Integer.valueOf(newValue.intValue());
+
+        if (validator != null && !validator.test(newValue))
+            throw new IllegalArgumentException(
+                            MessageFormat.format(Messages.MsgDialogInputRequired, descriptor().getDisplayName()));
 
         Number oldValue = (Number) descriptor().getReadMethod().invoke(subject);
 
