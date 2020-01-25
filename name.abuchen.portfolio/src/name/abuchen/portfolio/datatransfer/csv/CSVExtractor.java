@@ -167,8 +167,17 @@ public abstract class CSVExtractor implements Extractor
         if (value == null)
             return null;
 
-        Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
-        return BigDecimal.valueOf(num.doubleValue());
+        try
+        {
+            Number num = (Number) field2column.get(name).getFormat().getFormat().parseObject(value);
+            return BigDecimal.valueOf(num.doubleValue());
+        }
+        catch (ParseException e)
+        {
+            // Improve error message by adding context
+            throw new ParseException(MessageFormat.format(Messages.MsgErrorParseErrorWithGivenPattern, value,
+                            field2column.get(name).getFormat().toPattern()), e.getErrorOffset());
+        }
     }
 
     protected final Long getShares(String name, String[] rawValues, Map<String, Column> field2column)
@@ -189,10 +198,19 @@ public abstract class CSVExtractor implements Extractor
             return null;
         FieldFormat ff = field2column.get(name).getFormat();
 
-        if (ff != null && ff.getFormat() != null)
-            return (E) ff.getFormat().parseObject(value);
-        else
-            return Enum.valueOf(type, value);
+        try
+        {
+            if (ff != null && ff.getFormat() != null)
+                return (E) ff.getFormat().parseObject(value);
+            else
+                return Enum.valueOf(type, value);
+        }
+        catch (ParseException e)
+        {
+            // Improve error message by adding context
+            throw new ParseException(MessageFormat.format(Messages.MsgErrorParseErrorWithGivenPattern, value,
+                            field2column.get(name).getFormat().toPattern()), e.getErrorOffset());
+        }
     }
 
     protected final Account getAccount(Client client, String[] rawValues, Map<String, Column> field2column)

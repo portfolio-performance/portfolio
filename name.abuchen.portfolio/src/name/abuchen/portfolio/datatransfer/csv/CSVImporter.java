@@ -147,6 +147,8 @@ public final class CSVImporter
                 return ((DecimalFormat) format).toPattern();
             else if (format instanceof ISINFormat)
                 return Isin.PATTERN;
+            else if (format instanceof EnumMapFormat)
+                return ((EnumMapFormat<?>) format).map().toString();
 
             return null;
         }
