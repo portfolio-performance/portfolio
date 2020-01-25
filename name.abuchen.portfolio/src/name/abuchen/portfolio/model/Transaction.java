@@ -58,21 +58,45 @@ public abstract class Transaction implements Annotated, Adaptable
 
         public Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate)
         {
+            this(type, amount, forex, exchangeRate, true);
+        }
+
+        private Unit(Type type, Money amount, Money forex, BigDecimal exchangeRate, boolean doValidityCheck)
+        {
             this.type = Objects.requireNonNull(type);
             this.amount = Objects.requireNonNull(amount);
             this.forex = Objects.requireNonNull(forex);
             this.exchangeRate = Objects.requireNonNull(exchangeRate);
 
-            // check whether given amount is in range of converted amount
-            long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
-            long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.001))
-                            .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+            if (doValidityCheck)
+            {
+                // check whether given amount is in range of converted amount
+                long upper = Math.round(exchangeRate.add(BigDecimal.valueOf(0.003))
+                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
+                long lower = Math.round(exchangeRate.add(BigDecimal.valueOf(-0.003))
+                                .multiply(BigDecimal.valueOf(forex.getAmount())).doubleValue());
 
-            if (amount.getAmount() < lower || amount.getAmount() > upper)
-                throw new IllegalArgumentException(
-                                MessageFormat.format(Messages.MsgErrorIllegalForexUnit, type.toString(),
-                                                Values.Money.format(forex), exchangeRate, Values.Money.format(amount)));
+                if (amount.getAmount() < lower || amount.getAmount() > upper)
+                    throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorIllegalForexUnit,
+                                    type.toString(), Values.Money.format(forex), exchangeRate,
+                                    Values.Money.format(amount)));
+            }
+        }
+
+        public Unit split(double weight)
+        {
+            Money newAmount = Money.of(amount.getCurrencyCode(), Math.round(amount.getAmount() * weight));
+
+            if (forex == null)
+                return new Unit(type, newAmount);
+
+            // when splitting units with forex currency values, small amounts
+            // can lead to rounding errors for which the validity check in the
+            // constructor would throw an exception. We accept the rounding
+            // errors when splitting an unit, e.g. when grouping by taxonomy
+
+            Money newForex = Money.of(forex.getCurrencyCode(), Math.round(forex.getAmount() * weight));
+            return new Unit(type, newAmount, newForex, exchangeRate, false);
         }
 
         public Type getType()

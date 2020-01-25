@@ -322,6 +322,40 @@ public class SecurityPositionTest
     }
     
     @Test
+    public void testSplittingPositionsWithRoundingErrorsInSmallForexUnits()
+    {
+        Security security = new Security("", CurrencyUnit.EUR);
+
+        SecurityPrice price = new SecurityPrice(LocalDate.of(2020, Month.JANUARY, 25), Values.Quote.factorize(13.22));
+
+        PortfolioTransaction inbound = new PortfolioTransaction();
+        inbound.setType(PortfolioTransaction.Type.DELIVERY_INBOUND);
+        inbound.setDateTime(LocalDateTime.parse("2020-01-25T00:00"));
+        inbound.setSecurity(security);
+        inbound.setMonetaryAmount(Money.of("DKK", Values.Amount.factorize(750.7)));
+        inbound.setShares(Values.Share.factorize(1));
+
+        Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, //
+                        Money.of("DKK", Values.Amount.factorize(750.7)),
+                        Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.2)), BigDecimal.valueOf(7.492));
+
+        inbound.addUnit(grossValue);
+
+        SecurityPosition position = new SecurityPosition(security, new TestCurrencyConverter(), price,
+                        Arrays.asList(inbound));
+
+        SecurityPosition third = SecurityPosition.split(position, 8 * Values.Weight.factor()); // 8%
+
+        // 110.2 EUR * 0.08 = 8.02 EUR
+        assertThat(third.getFIFOPurchaseValue(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.02))));
+        assertThat(third.getFIFOPurchaseValue(),
+                        is(Money.of(CurrencyUnit.EUR, Math.round(position.getFIFOPurchaseValue().getAmount() * 0.08))));
+
+        assertThat(third.getMovingAveragePurchaseValue(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.02))));
+    }
+
+    @Test
     public void testFIFOPurchasePriceWithOnlySell()
     {
         List<PortfolioTransaction> tx = new ArrayList<PortfolioTransaction>();

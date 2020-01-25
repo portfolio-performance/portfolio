@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,7 +16,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -343,51 +340,7 @@ public class SecurityPosition
             t2.setAmount(Math.round(t.getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
             t2.setShares(Math.round(t.getShares() * weight / (double) Classification.ONE_HUNDRED_PERCENT));
 
-            t.getUnits().forEach(u -> {
-                long splitAmount = Math.round(
-                                u.getAmount().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
-
-                if (u.getForex() == null)
-                {
-                    t2.addUnit(new Unit(u.getType(), //
-                                    Money.of(u.getAmount().getCurrencyCode(), splitAmount)));
-                }
-                else
-                {
-                    long splitForex = Math.round(
-                                    u.getForex().getAmount() * weight / (double) Classification.ONE_HUNDRED_PERCENT);
-
-                    try
-                    {
-                        t2.addUnit(new Unit(u.getType(), //
-                                        Money.of(u.getAmount().getCurrencyCode(), splitAmount),
-                                        Money.of(u.getForex().getCurrencyCode(), splitForex), //
-                                        u.getExchangeRate()));
-                    }
-                    catch (IllegalArgumentException e)
-                    {
-                        // issue: splitting the transaction unit can lead to
-                        // rounding errors in such a way that AMOUNT x EXCHANGE
-                        // RATE != FOREX AMOUNT.
-
-                        // fix: calculate forex value using the exchange rate
-
-                        // because the exchange rate typically has "only" 4
-                        // decimal digits, let's continue to use the simple
-                        // division for all those values for which it works
-
-                        splitForex = BigDecimal.ONE.divide(u.getExchangeRate(), 10, RoundingMode.HALF_UP)
-                                        .multiply(BigDecimal.valueOf(splitAmount)).setScale(0, RoundingMode.HALF_UP)
-                                        .longValue();
-
-                        t2.addUnit(new Unit(u.getType(), //
-                                        Money.of(u.getAmount().getCurrencyCode(), splitAmount),
-                                        Money.of(u.getForex().getCurrencyCode(), splitForex), //
-                                        u.getExchangeRate()));
-
-                    }
-                }
-            });
+            t.getUnits().forEach(u -> t2.addUnit(u.split(weight / (double) Classification.ONE_HUNDRED_PERCENT)));
 
             splitTransactions.add(t2);
         }

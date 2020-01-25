@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.snapshot.trades;
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,11 +15,8 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
 public class TradeCollector
@@ -241,7 +236,7 @@ public class TradeCollector
         copy.setShares(Math.round(t.getShares() * weight));
         copy.setAmount(Math.round(t.getAmount() * weight));
 
-        copyUnits(t, copy.getPortfolioTransaction(), weight);
+        t.getUnits().forEach(unit -> copy.getPortfolioTransaction().addUnit(unit.split(weight)));
 
         return new TransactionPair<>(entry.getPortfolio(), copy.getPortfolioTransaction());
     }
@@ -259,33 +254,9 @@ public class TradeCollector
         newTransaction.setShares(Math.round(transaction.getShares() * weight));
         newTransaction.setAmount(Math.round(transaction.getAmount() * weight));
 
-        copyUnits(transaction, newTransaction, weight);
+        transaction.getUnits().forEach(unit -> newTransaction.addUnit(unit.split(weight)));
 
         return new TransactionPair<>(portfolio, newTransaction);
-    }
-
-    private void copyUnits(Transaction source, Transaction target, double weight)
-    {
-        source.getUnits().forEach(unit -> {
-            Money newAmount = Money.of(unit.getAmount().getCurrencyCode(),
-                            Math.round(unit.getAmount().getAmount() * weight));
-            if (unit.getForex() == null)
-            {
-                target.addUnit(new Unit(unit.getType(), newAmount));
-            }
-            else
-            {
-                // calculate forex amount using the exchange rate to avoid
-                // rounding errors to be reported
-
-                Money newForex = Money.of(unit.getForex().getCurrencyCode(),
-                                BigDecimal.valueOf(newAmount.getAmount())
-                                                .divide(unit.getExchangeRate(), 10, RoundingMode.HALF_DOWN)
-                                                .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                target.addUnit(new Unit(unit.getType(), newAmount, newForex, unit.getExchangeRate()));
-            }
-        });
     }
 
 }
