@@ -1,0 +1,41 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+FRAU
+MAXIME MITTELNAME MUSTERMANN
+MUSTERSTR.1
+12345 MUSTERHAUSEN
+Depotnummer 010175316543
+........................................................................................................................................................................................................
+Effektenabrechnung 22.01.2020
+Rechnungsnummer: BGH-2020-0223620085-0000068
+MAXIME MUSTERMANN
+Transaktionstyp Verkauf
+Stück 10,0000
+Wertpapier an0tHer vERy FNcY NaMe
+WKN / ISIN ZYX987 / LU0000ZYX987
+Fondsgesellschaft XXX Fonds 11elf
+Handelsplatz Fondsgesellschaft
+Preis vom 10. Januar 2020 123,90 EUR
+Schlusstag 10.01.2020
+Auftragsart Bestens
+Verwahrart GS Deutschland
+Neuer Bestand 0,0000
+Geschäftsnummer 0298735DH0293422
+Referenznummer 0291235DH0293422
+Kurswert 1.239,00 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 23. Januar 2020
+Konto-Nr. 0101753165 1.239,00 EUR
+Wiederanlage Fonds
+Kommissionsgeschäft
+Dieses Produkt ist keine Bankeinlage. Es unterliegt nicht der Einlagensicherung. Die vergangene Performance lässt
+keine Rückschlüsse auf die zukünftige Wertentwicklung zu. Der Wert der Anlage kann schwanken. Ein teilweiser oder
+ganzer Verlust ist möglich. Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Vorstand: Pascal Laugel (Vorsitzender); Jürgen Lieberknecht; Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel - Sitz der Gesellschaft: Düsseldorf - Handelsregister Amtsgericht Düsseldorf HRB 83351
+USt-ID-Nr.: DE 811 285 485; USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326 
+GH.20190514.021633.5022.0001.8120 X 0 R
