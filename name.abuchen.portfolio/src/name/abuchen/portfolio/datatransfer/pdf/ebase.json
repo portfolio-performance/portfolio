@@ -41,12 +41,12 @@
 		},
 		{
 			"type": "PURCHASE",
-			"startWith": "^Kauf .* mit Kursdatum .*",
+			"startWith": "^(Kauf|Ansparplan) .* mit Kursdatum .*",
 			"sections": [
 				{
 					"context": "SECURITY",
 					"pattern": [
-						"^Kauf .*",
+						"^(Kauf|Ansparplan) .*",
 						"^(?<name>.*)$",
 						".*",
 						"^ISIN .*",
@@ -67,7 +67,7 @@
 				},
 				{
 					"pattern": [
-						"^Kauf .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+						"^(Kauf|Ansparplan) .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
 					]
 				},
 				{
@@ -90,6 +90,80 @@
 					"attributes": {
 						"type": "FEE"
 					}
+				}
+			]
+		},
+		{
+			"type": "DIVIDEND",
+			"startWith": "Fondsertrag .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Fondsertrag .*",
+						"^(?<name>.*)$",
+						"^(.*)$",
+						"^ISIN Anteil.*$",
+						"^(?<isin>[^ ]*) .*(?<currency>\\w{3}+).*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteil.*$",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kapitalertragsteuer .*",
+						".* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"startWith": "^Wiederanlage .* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Wiederanlage .*",
+						"^(?<name>.*)$",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) .*$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^Wiederanlage .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
 				}
 			]
 		}

@@ -1,0 +1,53 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2020-01-02",
+			"currency": "EUR",
+			"amount": 50.0,
+			"shares": 1.70586,
+			"security": {
+				"name": "iSh.ST.Gl.Sel.Div.100 U.ETF DE Inhaber-Anteile",
+				"isin": "DE000A0F5UH1",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 0.1
+				}
+			]
+		},
+		{
+			"type": "DIVIDEND",
+			"date": "2020-01-02",
+			"currency": "USD",
+			"amount": 1.79,
+			"shares": 7.332986,
+			"security": {
+				"name": "Vanguard FTSE All-World U.ETF Registered Shares USD Dis.oN",
+				"isin": "IE00B3RBWM25",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "TAX",
+					"amount": 0.39
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-01-20",
+			"currency": "EUR",
+			"amount": 0.37,
+			"shares": 0.005395,
+			"security": {
+				"name": "iSh.DJ U.S.Select Div.U.ETF DE Inhaber-Anteile",
+				"isin": "DE000A0D8Q49",
+				"currency": "EUR"
+			}
+		}
+	]
+}
