@@ -40,6 +40,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
         addRemoveNewFormatTransaction();
         addOverdraftinterestTransaction();
         addTaxoptimisationTransaction();
+        addVorabpauschaleTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -1108,6 +1109,61 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         }));
     }
     
+    @SuppressWarnings("nls")
+    private void addVorabpauschaleTransaction()
+    {
+        final DocumentType type = new DocumentType("Wertpapierabrechnung Vorabpauschale", (context, lines) -> {
+            Pattern pDate = Pattern.compile("Buchungsdatum +(?<date>\\d+.\\d+.\\d{4}+) *");
+            for (String line : lines)
+            {
+                Matcher m = pDate.matcher(line);
+                if (m.matches())
+                    context.put("buchungsdatum", m.group("date"));
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wertpapierabrechnung Vorabpauschale .*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.TAXES);
+                            return t;
+                        })
+
+                        .section("wkn", "isin", "name") //
+                        .match("^Depotinhaber: .*") //
+                        .match("^(?<name>.*) +(?<isin>[^ ]+)/(?<wkn>[^ ]+) *$")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("amount", "currency")
+                        .match(".* Einbeh. Steuer * (?<amount>[\\d.,]+) (?<currency>\\w{3}+) *") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode("currency"));
+                        })
+                        
+                        .section("date") //
+                        .match("Gesamtbestand .*zum +(?<date>\\d+.\\d+.\\d{4}+) *")
+                        .assign((t,v) -> {
+                            // prefer "buchungsdatum" over "date" if available
+                            String buchungsdatum = type.getCurrentContext().get("buchungsdatum");
+                            t.setDateTime(asDate(buchungsdatum != null ? buchungsdatum : v.get("date")));
+                        })
+
+                        .section("shares") //
+                        .match("Gesamtbestand * (?<shares>[\\d,.]+) St.*") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .wrap(t -> {
+                            if (t.getAmount() != 0)
+                                return new TransactionItem(t);
+                            return null;
+                        }));
+    }
+
     @Override
     public String getLabel()
     {

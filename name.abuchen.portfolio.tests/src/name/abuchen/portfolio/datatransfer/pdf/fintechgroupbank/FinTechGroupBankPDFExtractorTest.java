@@ -1428,6 +1428,35 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getCurrencyCode(), is("EUR"));
     }
 
+    @Test
+    public void testVorabpauschale01()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexVorabpauschale01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // security
+        Security security = checkSecurity(results, "IE00BKM4GZ66", "A111X9", "ISHS MSCI EM USD-AC", CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAXES));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.69))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(476)));
+    }
+
     private Security checkSecurity(List<Item> results, String isin, String wkn, String name, String currencyUnit)
     {
         return checkSecurity(results, isin, wkn, name, currencyUnit, 0);
