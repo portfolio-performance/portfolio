@@ -15,6 +15,7 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
@@ -203,7 +204,17 @@ public class ClientInput
         }
 
         dialog.setFileName(fileNameProposal);
-        dialog.setFilterPath(clientFile != null ? clientFile.getAbsolutePath() : System.getProperty("user.home")); //$NON-NLS-1$
+
+        // On macOS, the save as dialog does not seem to accept the existing
+        // directory path. However, when using the user home directory, it
+        // works. Something to do with the sandbox? Or requires a newer version
+        // of SWT?
+
+        if (Platform.OS_MACOSX.equals(Platform.getOS()))
+            dialog.setFilterPath(System.getProperty("user.home")); //$NON-NLS-1$
+        else
+            dialog.setFilterPath(clientFile != null ? clientFile.getAbsoluteFile().getParent()
+                            : System.getProperty("user.home")); //$NON-NLS-1$
 
         String path = dialog.open();
         if (path == null)
