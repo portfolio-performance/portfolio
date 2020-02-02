@@ -1,0 +1,50 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+Seite 1/1
+München
+30.01.2020
+DonauCapital Wertpapier GmbH
+GRATISBROKER GmbH 
+wg. GRATISBROKER GmbH service@gratisbroker.de
+Passauer Str. 5
+Vorname Nachname
+94161 Ruderting Stamm-Nr.: 1111111    Portfolio: 1
+Depot-Nr.: 1111111111
+Vorgangs-Nr.: 13924926
+Referenz-Nr.: 47085371
+Wertpapierabrechnung: Kauf KOPIE
+Auftragsdatum: 29.01.2020 Ausführungsplatz: GETTEX - MM Munich
+Auftragszeit: 15:49:20:08
+Nominale ISIN: US5021751020 WKN: 884625 Kurs 
+STK 12 LTC Properties Inc. EUR 42,80
+Registered Shares DL -,01
+Auftraggeber: Depotinhaber
+Art der Auftragserteilung: Orderroutingssystem
+Kurswert EUR 513,60
+Zu Lasten Konto 1111111111 Valuta: 31.01.2020 EUR 513,60
+Die Wertpapiere buchen wir zu Gunsten Ihres Depots.
+Details zur Ausführung:
+Handels- Handels- 
+Nominale Kurs Ausführungsplatz datum uhrzeit
+STK   12 EUR 42,80 GETTEX - MM Munich 29.01.2020 15:49:21:12
+Verwahrart: Wertpapierrechnung Zeitzone der Handelsuhrzeit: MEZ/MESZ
+Lagerstelle: 1679 MIC des Ausführungsplatzes: MUNC
+Lagerland: USA
+Für die Ausführung dieses Auftrags gelten die Usancen des jeweiligen Ausführungsplatzes.
+Bitte prüfen Sie diese Auftragsbestätigung/Abrechnung auf Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese 
+Auftragsbestätigung/Abrechnung müssen nach Zugang unverzüglich bei der Baader Bank AG erhoben werden.
+Dieser Auftrag erfolgte ohne Empfehlung der Bank. Es wurde keine Anlageberatung und keine individuelle Aufklärung durch die Bank 
+erbracht.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Die Aushändigung des Fondsprospektes/Offering Memorandum sowie des aktuellen Rechenschaftsberichtes durch die Bank ist im 
+Rahmen eines Vermögensverwaltungsmandats nicht erforderlich.
+Sofern Sie jedoch trotzdem ein Fondsprospekt wünschen, wenden Sie sich bitte direkt an Ihren Vermögensverwalter.
+Einkünfte aus Kapitalvermögen im Sinne von § 20 EStG sind einkommensteuerpflichtig.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+GRATISBROKER GmbH | Geschäftsführer: Malte Rubruck, Stefan Mross, Philipp Röben | HRB 242583 Amtsgericht München | USt-IdNr. DE319411410
+GRATISBROKER GmbH erbringt Anlagevermittlung als vertraglich gebundener Vermittler der DonauCapital Wertpapier GmbH
+Baader Bank Aktiengesellschaft Weihenstephaner Straße 4 85716 Unterschleißheim Deutschland T 00800 00 222 337* F +49 89 5150 2442
+service@baaderbank.de www.baaderbank.de 
+* Kostenfreie Telefonnummer aus dem (inter-) nationalen Festnetz. Für Anrufe aus anderen Netzen können Gebühren anfallen.
+Herausgeberin und verantwortlich für den Inhalt ist die Baader Bank Aktiengesellschaft. WPABRECHNUNG-051.108

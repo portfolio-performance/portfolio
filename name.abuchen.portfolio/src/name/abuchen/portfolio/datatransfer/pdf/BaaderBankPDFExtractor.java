@@ -25,6 +25,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         // read with PDFBox and the sort-option set to true. Therefore, we currently have to rely on the Baader Bank identifier.
         addBankIdentifier("Baader Bank"); //$NON-NLS-1$
         addBankIdentifier("Scalable Capital"); //$NON-NLS-1$
+        addBankIdentifier("GRATISBROKER GmbH"); //$NON-NLS-1$
 
         addBuyTransaction();
         addSellTransaction();
@@ -64,12 +65,23 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .match("STK *(?<shares>[\\.\\d]+[,\\d]*) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
-                        .section("date", "amount", "currency")
-                        .match("Zu Lasten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .section("date","time").optional()
                         .find("Handelsdatum *Handelsuhrzeit")
-                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) \\d{2}:\\d{2}:\\d{2}:\\d{2}$")
+                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));                            
+                            t.setDate(asDate(v.get("date"),v.get("time")));   
+                        })
+                        
+                        .section("date","time").optional()
+                        .find("Nominale Kurs Ausführungsplatz datum uhrzeit")
+                        .match("^STK .* (?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*")
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date"),v.get("time")));   
+                        })
+                        
+                        .section("amount", "currency")
+                        .match("Zu Lasten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
