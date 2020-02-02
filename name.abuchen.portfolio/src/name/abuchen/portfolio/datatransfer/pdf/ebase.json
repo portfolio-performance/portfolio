@@ -1,0 +1,97 @@
+{
+	"version": 1,
+	"name": "ebase - Depot-Auszug",
+	"locale": "de",
+	"pattern": [
+		"European Bank for Financial Services GmbH"
+	],
+	"transactions": [
+		{
+			"type": "INBOUND_DELIVERY",
+			"startWith": "Eingang externer Übertrag.*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"Eingang externer Übertrag.*",
+						"^(?<name>.*)$",
+						"^(.*)$",
+						"^ISIN Anteile$",
+						"^(?<isin>[^ ]*) .*",
+						"^Gegenwert der Anteile: ([\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile$",
+						"^([^ ]*) (?<shares>[\\d.,]+)"
+					]
+				},
+				{
+					"pattern": [
+						"^Gegenwert der Anteile: (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"startWith": "^Kauf .* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Kauf .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) (.*)$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Abwicklung .*",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^Kauf .* mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional" : true,
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) ([\\d.,]+) ([\\d.,]+) (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"ETF-Transaktionsentgelt (?<amount>[\\d.,]+) (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		}
+	]
+}
