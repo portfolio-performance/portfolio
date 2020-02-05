@@ -77,6 +77,9 @@ public final class TextUtil
      */
     public static String strip(String value)
     {
+        if (value == null)
+            return null;
+
         int len = value.length();
         int st = 0;
 

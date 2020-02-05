@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class JSONPDFExtractor extends AbstractPDFExtractor
 {
@@ -164,7 +165,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     private void setValuesToSecurity(JTransaction t, Map<String, String> v)
     {
         JSecurity security = new JSecurity();
-        security.setName(v.get("name")); //$NON-NLS-1$
+        security.setName(TextUtil.strip(v.get("name"))); //$NON-NLS-1$
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$

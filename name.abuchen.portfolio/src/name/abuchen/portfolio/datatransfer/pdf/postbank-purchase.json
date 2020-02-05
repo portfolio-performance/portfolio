@@ -1,0 +1,80 @@
+{
+	"version": 1,
+	"name": "Postbank - Kaufbuchungen",
+	"locale": "de",
+	"pattern": [
+		"Postbank",
+		"Abrechnung Kauf"
+	],
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"startWith": "Wertpapier Abrechnung Kauf.*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Nominale Wertpapierbezeichnung .*",
+						"^Stück [\\d.,]+ (?<name>.*) (?<isin>[^ ]*) \\((?<wkn>[^ ]*)\\)$",
+						"^Ausführungskurs [\\d.,]+ (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						"^Stück (?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^Ausmachender Betrag (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					]
+				},
+				{
+					"pattern": [
+						"^Schlusstag/-Zeit (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+):.*"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"Provision (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Abwicklungskosten Börse (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Transaktionsentgelt Börse (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Übertragungs-/Liefergebühr (?<amount>[\\d.,]+)- (?<currency>\\w{3}+)"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				}
+			]
+		}
+	]
+}
