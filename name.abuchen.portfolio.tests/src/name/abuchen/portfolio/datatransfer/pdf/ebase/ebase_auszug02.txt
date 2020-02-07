@@ -34,3 +34,19 @@ ISIN Anteile Abrechnungskurs Betrag
 DE000A0D8Q49 0,005395 68,580000 EUR 0,37 EUR
 Zahlungsbetrag 0,37 EUR
 
+Vorabpauschale zum Stichtag 31.12.2019 aus Depotposition XXXXXXXXXX.05
+Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 24.01.2020
+ISIN Betrag je Anteil
+LU0592215403 0,005674390 EUR
+Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer
+0,14 EUR 0,00 EUR 0,00 EUR
+Belastung der angefallenen Steuern in Höhe von 0,14 EUR erfolgt durch Verkauf aus Depotposition XXXXXXXXXX.05 mit Ref. Nr.
+XXXXXXXXXX/XXXXXXXXXX
+
+Verkauf wegen Vorabpauschale 0,14 EUR mit Kursdatum 27.01.2020 aus Depotposition XXXXXXXXXX.05
+Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N.
+Ref. Nr. XXXXXXXXXX/XXXXXXXXXX, Buchungsdatum 28.01.2020
+Belastung der angefallenen Steuern aus Depotposition XXXXXXXXXX.05 mit Ref. Nr. XXXXXXXXXX/XXXXXXXXXX (Vorabpauschale)
+ISIN Anteile Abrechnungskurs Devisenkurs Betrag
+LU0592215403 -0,084735 1,824200 USD 1,104100 0,14 EUR

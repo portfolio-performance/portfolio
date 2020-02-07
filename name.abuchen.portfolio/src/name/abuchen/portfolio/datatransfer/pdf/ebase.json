@@ -166,6 +166,58 @@
 					]
 				}
 			]
-		}
+		},
+		{
+			"type": "OUTBOUND_DELIVERY",
+			"startWith": "^Verkauf wegen Vorabpauschale .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Verkauf .*",
+						"^(?<name>.*)$",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*) .* (?<currency>\\w{3}+) .*$"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^([^ ]*) -(?<shares>[\\d.,]+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^.* (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				},
+				{
+					"context": "UNIT",
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^[^ ]* -[\\d.,]+ [\\d.,]+ (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) \\w{3}+$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"pattern": [
+						"^ISIN Anteile .*",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}	
 	]
 }

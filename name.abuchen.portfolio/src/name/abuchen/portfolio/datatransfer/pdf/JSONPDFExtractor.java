@@ -106,6 +106,9 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                 case INBOUND_DELIVERY:
                     pdftx.wrap(t -> wrapPortfolioTransaction(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
                     break;
+                case OUTBOUND_DELIVERY:
+                    pdftx.wrap(t -> wrapPortfolioTransaction(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
+                    break;
                 default:
                     throw new IllegalArgumentException();
             }

@@ -48,6 +48,30 @@
 				"isin": "DE000A0D8Q49",
 				"currency": "EUR"
 			}
+		},
+		{
+			"type": "OUTBOUND_DELIVERY",
+			"date": "2020-01-28",
+			"currency": "EUR",
+			"amount": 0.0,
+			"shares": 0.084735,
+			"security": {
+				"name": "Xtrackers MSCI Philippines Inhaber-Anteile 1C-USD o.N.",
+				"isin": "LU0592215403",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 0.14,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.1041
+				},
+				{
+					"type": "TAX",
+					"amount": 0.14
+				}
+			]
 		}
 	]
 }
