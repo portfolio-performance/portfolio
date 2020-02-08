@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
@@ -216,4 +217,11 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
     {
         model().setSource(plan);
     }
+
+    @Override
+    public void setSecurity(Security security)
+    {
+        model().setSecurity(security);
+    }
+
 }

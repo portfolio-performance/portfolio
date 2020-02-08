@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -54,6 +55,7 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
@@ -802,7 +804,7 @@ public final class SecuritiesTable implements ModificationListener
                             MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,
                                             selection.getFirstElement()),
                             Messages.SecurityMenuDeleteMultipleSecurityConfirm, selection,
-                            (s, a) -> deleteSecurity(selection, a)));
+                            (s, a) -> deleteSecurity(selection)));
         }
         else
         {
@@ -880,10 +882,16 @@ public final class SecuritiesTable implements ModificationListener
                         .with(security) //
                         .addTo(manager);
 
+        new OpenDialogAction(view, Messages.InvestmentPlanMenuCreate) //
+                        .type(InvestmentPlanDialog.class) //
+                        .parameters(PortfolioTransaction.class) //
+                        .with(security) //
+                        .addTo(manager);
+
         manager.add(new Separator());
     }
 
-    private void deleteSecurity(IStructuredSelection selection, Action action)
+    private void deleteSecurity(IStructuredSelection selection)
     {
         boolean isDirty = false;
         List<Security> withTransactions = new ArrayList<>();
@@ -936,7 +944,7 @@ public final class SecuritiesTable implements ModificationListener
                 return;
 
             Dialog dialog = createDialog(security);
-            if (dialog.open() == Dialog.OK)
+            if (dialog.open() == Window.OK)
                 performFinish(security);
         }
 
