@@ -490,7 +490,7 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
-    public void testErtragsgutschriftDividende4_withExistingSecurityInTransactionCurrency() // NONAME
+    public void testErtragsgutschriftDividende4_withExistingSecurityInTransactionCurrency() // NOSONAR
     {
         Client client = new Client();
         Security security = new Security("Novo-Nordisk", CurrencyUnit.EUR);
