@@ -58,26 +58,28 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
 
                         .section("isin", "wkn", "name")
                         .match("Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*) *Kurs *")
-                        .match("STK [^ ]* (?<name>.*) EUR [\\d.,]+,\\d{2,}+")
+                        .match("STK [^ ]* (?<name>.*) (?<currency>\\w{3}) [\\d.,]+,\\d{2,}+")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                         
                         .section("shares")
                         .match("STK *(?<shares>[\\.\\d]+[,\\d]*) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
-                        .section("date","time").optional()
-                        .find("Handelsdatum *Handelsuhrzeit")
-                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*$")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date"),v.get("time")));   
-                        })
-                        
-                        .section("date","time").optional()
-                        .find("Nominale Kurs Ausführungsplatz datum uhrzeit")
-                        .match("^STK .* (?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*")
-                        .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date"),v.get("time")));   
-                        })
+                        .oneOf(
+
+                                        section -> section.attributes("date", "time")
+                                                        .find("Handelsdatum *Handelsuhrzeit")
+                                                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*$")
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
+
+                                        section -> section.attributes("date", "time")
+                                                        .find("Nominale Kurs Ausführungsplatz datum uhrzeit")
+                                                        .match("^STK .* (?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*")
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time"))))
+
+                        )
                         
                         .section("amount", "currency")
                         .match("Zu Lasten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
@@ -108,24 +110,38 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
             return entry;
         })
                         
-                        .section("isin", "wkn")
+                        .section("name", "isin", "wkn", "currency")
                         .match("Nominale *ISIN: *(?<isin>[^ ]*) *WKN: *(?<wkn>[^ ]*) .*")
+                        .match("STK [^ ]+ +(?<name>.*) (?<currency>\\w{3}) [\\d.,]+")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
                         
                         .section("shares")
                         .match("STK *(?<shares>[\\.\\d]+[,\\d]*) .*")
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
                         
-                        .section("date", "amount", "currency")
+                        .oneOf(
+
+                                        section -> section.attributes("date", "time")
+                                                        .find("Handelsdatum *Handelsuhrzeit")
+                                                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*$")
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time")))),
+
+                                        section -> section.attributes("date", "time")
+                                                        .find("Nominale Kurs Ausführungsplatz datum uhrzeit")
+                                                        .match("^STK .* (?<date>\\d+\\.\\d+\\.\\d{4}) (?<time>\\d+:\\d+).*")
+                                                        .assign((t, v) -> t
+                                                                        .setDate(asDate(v.get("date"), v.get("time"))))
+
+                        )
+
+                        .section("amount", "currency")
                         .match("Zu Gunsten Konto \\d+ Valuta: \\d+\\.\\d+\\.\\d{4} *(?<currency>\\w{3}) *(?<amount>[\\d.]+,\\d{2})")
-                        .find("Handelsdatum Handelsuhrzeit")
-                        .match("^(?<date>\\d+\\.\\d+\\.\\d{4}) \\d{2}:\\d{2}:\\d{2}:\\d{2}$")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
-                        
+
                         .section("tax", "currency").optional() 
                         .match("Kapitalertragsteuer (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
