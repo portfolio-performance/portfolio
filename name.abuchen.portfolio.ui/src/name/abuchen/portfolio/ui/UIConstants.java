@@ -126,6 +126,8 @@ public interface UIConstants
         String ALPHAVANTAGE_API_KEY = "ALPHAVANTAGE_API_KEY"; //$NON-NLS-1$
         String ALPHAVANTAGE_CALL_FREQUENCY_LIMIT = "ALPHAVANTAGE_CALL_FREQUENCY_LIMIT"; //$NON-NLS-1$
 
+        String QUANDL_API_KEY = "QUANDL_API_KEY"; //$NON-NLS-1$
+
         /**
          * Preference key whether to store settings (standard calendar)
          */

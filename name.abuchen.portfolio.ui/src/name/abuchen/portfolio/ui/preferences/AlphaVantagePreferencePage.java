@@ -13,10 +13,10 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
-public class APIKeysPreferencePage extends FieldEditorPreferencePage
+public class AlphaVantagePreferencePage extends FieldEditorPreferencePage
 {
 
-    public APIKeysPreferencePage()
+    public AlphaVantagePreferencePage()
     {
         super(GRID);
 

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -515,6 +516,12 @@ public final class Security implements Attributable, InvestmentVehicle
         return properties.stream();
     }
 
+    public Optional<String> getPropertyValue(SecurityProperty.Type type, String name)
+    {
+        return getProperties().filter(p -> p.getType() == type && name.equals(p.getName()))
+                        .map(SecurityProperty::getValue).findAny();
+    }
+
     public void addProperty(SecurityProperty data)
     {
         if (properties == null)
@@ -527,6 +534,17 @@ public final class Security implements Attributable, InvestmentVehicle
         if (properties == null)
             properties = new ArrayList<>();
         return this.properties.remove(data);
+    }
+
+    /**
+     * Removes all of the SecurityProperties that satisfy the given predicate.
+     */
+    public boolean removePropertyIf(Predicate<SecurityProperty> filter)
+    {
+        if (properties != null)
+            return properties.removeIf(filter);
+        else
+            return false;
     }
 
     @Override
@@ -557,7 +575,7 @@ public final class Security implements Attributable, InvestmentVehicle
         getAttributes().getAllValues().filter(v -> v instanceof Bookmark).forEach(v -> bookmarks.add((Bookmark) v));
 
         // extract bookmarks from notes
-        
+
         if (!Strings.isNullOrEmpty(note))
         {
             Pattern urlPattern = Pattern.compile("(https?\\:\\/\\/[^ \\t\\r\\n]+)", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$

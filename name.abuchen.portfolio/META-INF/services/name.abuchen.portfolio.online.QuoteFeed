@@ -7,3 +7,4 @@ name.abuchen.portfolio.online.impl.KrakenQuoteFeed
 name.abuchen.portfolio.online.impl.BitfinexQuoteFeed
 name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed
 name.abuchen.portfolio.online.impl.CSQuoteFeed
+name.abuchen.portfolio.online.impl.QuandlQuoteFeed

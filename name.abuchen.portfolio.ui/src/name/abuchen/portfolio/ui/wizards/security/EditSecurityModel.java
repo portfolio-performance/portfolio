@@ -5,12 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -195,6 +198,8 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
     private List<TaxonomyDesignation> taxonomies = new ArrayList<>();
     private List<AttributeDesignation> attributes = new ArrayList<>();
 
+    private Map<String, String> feedProperties = new HashMap<>();
+
     public EditSecurityModel(Client client, Security security)
     {
         super(client);
@@ -228,6 +233,9 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
                             AttributeDesignation designation = new AttributeDesignation(a, securityAttributes.get(a));
                             attributes.add(designation);
                         });
+
+        security.getProperties().filter(p -> p.getType() == SecurityProperty.Type.FEED)
+                        .forEach(p -> feedProperties.put(p.getName(), p.getValue()));
     }
 
     public String getName()
@@ -402,6 +410,16 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         return attributes;
     }
 
+    public String getFeedProperty(String name)
+    {
+        return feedProperties.get(name);
+    }
+
+    public void setFeedProperty(String name, String value)
+    {
+        feedProperties.put(name, value);
+    }
+
     public Security getSecurity()
     {
         return security;
@@ -444,5 +462,11 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
         for (AttributeDesignation attribute : attributes)
             a.put(attribute.getType(), attribute.getValue());
         security.setAttributes(a);
+
+        security.removePropertyIf(p -> p.getType() == SecurityProperty.Type.FEED);
+
+        feedProperties.entrySet().stream().filter(entry -> !StringUtils.isEmpty(entry.getValue()))
+                        .forEach(entry -> security.addProperty(new SecurityProperty(SecurityProperty.Type.FEED,
+                                        entry.getKey(), entry.getValue())));
     }
 }
