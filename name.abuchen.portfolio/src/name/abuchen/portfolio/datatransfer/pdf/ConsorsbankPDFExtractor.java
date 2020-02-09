@@ -413,7 +413,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("currency", "expenses").optional()
                         .match("(^.*)(Eig. Spesen) (?<currency>\\w{3}+) (?<expenses>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
-                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("expenses"))))));
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("expenses"))))))
+
+                        .section("currency", "tax").optional()
+                        .match("^Franzoesische Finanztransaktionssteuer .* (?<currency>\\w{3}) (?<tax>[\\d,.]+)$")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))));
     }
     
     @SuppressWarnings("nls")
