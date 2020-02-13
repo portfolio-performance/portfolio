@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
+import org.eclipse.jface.fieldassist.ControlDecoration;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -25,6 +27,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -137,6 +140,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private Text textFeedURL;
     private Text textTicker;
     private Text textQuandlCode;
+    private Label labelQuandlCloseColumnName;
+    private Text textQuandlCloseColumnName;
 
     private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
 
@@ -209,8 +214,14 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         .equals(model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME)))
         {
             String code = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME);
-            if (code != null)
-                textQuandlCode.setText(code);
+            textQuandlCode.setText(code != null ? code : ""); //$NON-NLS-1$
+        }
+
+        if (textQuandlCloseColumnName != null && !textQuandlCloseColumnName.getText()
+                        .equals(model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME)))
+        {
+            String columnName = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
+            textQuandlCloseColumnName.setText(columnName != null ? columnName : ""); //$NON-NLS-1$
         }
     }
 
@@ -344,6 +355,18 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textQuandlCode = null;
         }
 
+        if (labelQuandlCloseColumnName != null)
+        {
+            labelQuandlCloseColumnName.dispose();
+            labelQuandlCloseColumnName = null;
+        }
+
+        if (textQuandlCloseColumnName != null)
+        {
+            textQuandlCloseColumnName.dispose();
+            textQuandlCloseColumnName = null;
+        }
+
         if (dropDown)
         {
             labelDetailData.setText(Messages.LabelExchange);
@@ -392,8 +415,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             textQuandlCode = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textQuandlCode);
-
             textQuandlCode.addModifyListener(e -> onQuandlCodeChanged());
+
+            labelQuandlCloseColumnName = new Label(grpQuoteFeed, SWT.NONE);
+            labelQuandlCloseColumnName.setText(Messages.LabelQuandlColumnNameQuote);
+
+            textQuandlCloseColumnName = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textQuandlCloseColumnName);
+
+            Image image = FieldDecorationRegistry.getDefault()
+                            .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage();
+            ControlDecoration deco = new ControlDecoration(textQuandlCloseColumnName, SWT.TOP | SWT.LEFT);
+            deco.setDescriptionText(Messages.LabelQuandlColumnNameQuoteHint);
+            deco.setImage(image);
+            deco.show();
+
+            textQuandlCloseColumnName.addModifyListener(e -> onQuandlColumnNameChanged());
         }
         else
         {
@@ -433,6 +470,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String code = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME);
             if (code != null)
                 textQuandlCode.setText(code);
+
+            String columnName = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
+            if (columnName != null)
+                textQuandlCloseColumnName.setText(columnName);
         }
     }
 
@@ -495,6 +536,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String code = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME);
             if (code != null)
                 textQuandlCode.setText(code);
+
+            String columnName = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
+            if (columnName != null)
+                textQuandlCloseColumnName.setText(columnName);
         }
         else
         {
@@ -582,4 +627,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             setStatus(null);
         }
     }
+
+    private void onQuandlColumnNameChanged()
+    {
+        String closeColumnName = textQuandlCloseColumnName.getText();
+
+        model.setFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME,
+                        closeColumnName.isEmpty() ? null : closeColumnName);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
 }

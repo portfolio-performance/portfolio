@@ -29,6 +29,11 @@ public final class QuandlQuoteFeed implements QuoteFeed
     public static final String ID = "QUANDL-DATASETS"; //$NON-NLS-1$
     public static final String QUANDL_CODE_PROPERTY_NAME = "QUANDLCODE"; //$NON-NLS-1$
 
+    /**
+     * Property that holds the column name that contains the "close" value
+     */
+    public static final String QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME = "QUANDLCLOSE"; //$NON-NLS-1$
+
     private String apiKey;
 
     @Override
@@ -142,12 +147,19 @@ public final class QuandlQuoteFeed implements QuoteFeed
                 return Collections.emptyList();
             }
 
-            int[] mapping = extractColumnMapping(columnNames);
+            int[] mapping = extractColumnMapping(security, columnNames);
 
             if (mapping[0] == -1)
             {
                 errors.add(new IOException(
                                 MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names[data]"))); //$NON-NLS-1$
+                return Collections.emptyList();
+            }
+
+            if (mapping[4] == -1)
+            {
+                errors.add(new IOException(
+                                MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names[close]"))); //$NON-NLS-1$
                 return Collections.emptyList();
             }
 
@@ -169,20 +181,23 @@ public final class QuandlQuoteFeed implements QuoteFeed
                     long close = mapping[4] == -1 ? -1 : YahooHelper.asPrice(String.valueOf(row.get(mapping[4])));
                     int volume = mapping[5] == -1 ? -1 : YahooHelper.asNumber(String.valueOf(row.get(mapping[5])));
 
-                    T price = klass.getConstructor().newInstance();
-                    price.setDate(date);
-                    price.setValue(close);
-
-                    if (price instanceof LatestSecurityPrice)
+                    if (close > 0)
                     {
-                        LatestSecurityPrice lsp = (LatestSecurityPrice) price;
-                        lsp.setHigh(high);
-                        lsp.setLow(low);
-                        lsp.setVolume(volume);
-                        lsp.setPreviousClose(open);
-                    }
+                        T price = klass.getConstructor().newInstance();
+                        price.setDate(date);
+                        price.setValue(close);
 
-                    prices.add(price);
+                        if (price instanceof LatestSecurityPrice)
+                        {
+                            LatestSecurityPrice lsp = (LatestSecurityPrice) price;
+                            lsp.setHigh(high);
+                            lsp.setLow(low);
+                            lsp.setVolume(volume);
+                            lsp.setPreviousClose(open);
+                        }
+
+                        prices.add(price);
+                    }
                 }
                 catch (ReflectiveOperationException | ParseException | IllegalArgumentException | SecurityException ex)
                 {
@@ -205,14 +220,16 @@ public final class QuandlQuoteFeed implements QuoteFeed
      * data. -1 indicates that the data is not available.
      */
     @SuppressWarnings("nls")
-    private int[] extractColumnMapping(JSONArray columnNames)
+    private int[] extractColumnMapping(Security security, JSONArray columnNames)
     {
         int[] mapping = new int[6];
         Arrays.fill(mapping, -1);
 
-        int size = columnNames.size();
+        int columnSize = columnNames.size();
 
-        for (int index = 0; index < size; index++)
+        // first: attempt a default mapping of columns to security prices
+
+        for (int index = 0; index < columnSize; index++)
         {
             String name = columnNames.get(index).toString();
 
@@ -235,8 +252,6 @@ public final class QuandlQuoteFeed implements QuoteFeed
                     break;
 
                 case "Net Asset Value":
-                    mapping[4] = index;
-                    break;
                 case "Close":
                     mapping[4] = index;
                     break;
@@ -248,6 +263,23 @@ public final class QuandlQuoteFeed implements QuoteFeed
                 default:
             }
         }
+
+        // second: if a close column name is configured, try to map
+
+        Optional<String> closeColumnName = security.getPropertyValue(SecurityProperty.Type.FEED,
+                        QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
+
+        closeColumnName.ifPresent(columnName -> {
+            for (int index = 0; index < columnSize; index++)
+            {
+                String name = columnNames.get(index).toString();
+                if (name.equals(columnName))
+                {
+                    mapping[4] = index;
+                    break;
+                }
+            }
+        });
 
         return mapping;
     }
