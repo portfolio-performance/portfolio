@@ -382,6 +382,7 @@ public class Messages extends NLS
     public static String IntroLabelSamples;
     public static String IntroLabelTranslation;
     public static String IntroLabelTranslationInfo;
+    public static String IntroNewAndNoteworthyText;
     public static String IntroNewFile;
     public static String IntroNewFileText;
     public static String IntroOpenDaxSample;
@@ -940,6 +941,7 @@ public class Messages extends NLS
     public static String SplitWizardReviewTransactionsTitle;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;
+    public static String SystemMenuNewAndNoteworthy;
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
     public static String TitlePasswordDialog;
