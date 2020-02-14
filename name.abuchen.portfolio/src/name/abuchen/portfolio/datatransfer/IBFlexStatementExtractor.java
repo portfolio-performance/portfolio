@@ -182,13 +182,14 @@ public class IBFlexStatementExtractor implements Extractor
 
             //New Format dateTime has now also Time [YYYYMMDD;HHMMSS], I cut Date from string [YYYYMMDD]
             //Checks for old format [YYYY-MM-DD, HH:MM:SS], too. Quapla 11.1.20
-            if (element.getAttribute("dateTime").length() == 15)
+            //Changed from dateTime to reportDate, Quapla 14.2.20
+            if (element.getAttribute("reportDate").length() == 15)
             {
-                transaction.setDateTime(convertDate(element.getAttribute("dateTime").substring(0, 8)));
+                transaction.setDateTime(convertDate(element.getAttribute("reportDate").substring(0, 8)));
             }
             else
             {
-                transaction.setDateTime(convertDate(element.getAttribute("dateTime")));
+                transaction.setDateTime(convertDate(element.getAttribute("reportDate")));
             }
             
             Double amount = Double.parseDouble(element.getAttribute("amount"));
