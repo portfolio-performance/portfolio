@@ -9,7 +9,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"startWith": "^Splittkauf .*",
+			"startsWith": "^Splittkauf .*",
 			"sections": [
 				{
 					"context": "SECURITY",
@@ -62,7 +62,7 @@
 		},
 		{
 			"type": "PURCHASE",
-			"startWith": "^Wiederanlage .*",
+			"startsWith": "^Wiederanlage .*",
 			"sections": [
 				{
 					"context": "SECURITY",

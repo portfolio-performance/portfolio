@@ -9,7 +9,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"startWith": "Wertpapier Abrechnung (Kauf|Ausgabe Investmentfonds).*",
+			"startsWith": "Wertpapier Abrechnung (Kauf|Ausgabe Investmentfonds).*",
 			"sections": [
 				{
 					"context": "SECURITY",

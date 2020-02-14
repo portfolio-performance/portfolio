@@ -78,24 +78,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             // reset context and parse it from this file
             context.clear();
-            parseContext(context, filename, lines);
+            parseContext(context, lines);
 
             for (Block block : blocks)
                 block.parse(filename, items, lines);
         }
 
         /**
-         * Parses the current context and could be overridden in a subclass to
-         * fill the context.
+         * Parses the current context.
          * 
          * @param context
          *            context map
-         * @param filename
-         *            current filename
          * @param lines
          *            content lines of the file
          */
-        protected void parseContext(Map<String, String> context, String filename, String[] lines)
+        private void parseContext(Map<String, String> context, String[] lines)
         {
             // if a context provider is given call it, else parse the current
             // context in a subclass
@@ -108,12 +105,21 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
     /* package */static class Block
     {
-        private Pattern marker;
+        private Pattern startsWith;
+        private Pattern endsWith;
         private Transaction<?> transaction;
 
-        public Block(String marker)
+        public Block(String startsWith)
         {
-            this.marker = Pattern.compile(marker);
+            this(startsWith, null);
+        }
+
+        public Block(String startsWith, String endsWith)
+        {
+            this.startsWith = Pattern.compile(startsWith);
+
+            if (endsWith != null)
+                this.endsWith = Pattern.compile(endsWith);
         }
 
         public void set(Transaction<?> transaction)
@@ -127,7 +133,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
             for (int ii = 0; ii < lines.length; ii++)
             {
-                Matcher matcher = marker.matcher(lines[ii]);
+                Matcher matcher = startsWith.matcher(lines[ii]);
                 if (matcher.matches())
                     blocks.add(ii);
             }
@@ -137,8 +143,29 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 int startLine = blocks.get(ii);
                 int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
 
+                // if an "endsWith" pattern exists, check if the block might end earlier
+                
+                if (endsWith != null)
+                {
+                    endLine = findBlockEnd(lines, startLine, endLine);
+                    if (endLine == -1)
+                        continue;
+                }
+
                 transaction.parse(filename, items, lines, startLine, endLine);
             }
+        }
+
+        private int findBlockEnd(String[] lines, int startLine, int endLine)
+        {
+            for (int lineNo = startLine; lineNo <= endLine; lineNo++)
+            {
+                Matcher matcher = endsWith.matcher(lines[lineNo]);
+                if (matcher.matches())
+                    return lineNo;
+            }
+
+            return -1;
         }
     }
 
@@ -196,7 +223,8 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     }
 
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNoneOfSubSectionsMatched,
-                                    String.valueOf(subSections.size()), String.join("; ", errors))); //$NON-NLS-1$
+                                    String.valueOf(subSections.size()), String.join("; ", errors), lineNo + 1, //$NON-NLS-1$
+                                    lineNoEnd + 1));
                 }
             });
             return this;
@@ -296,12 +324,13 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                     return;
 
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
-                                patternNo, pattern.size(), pattern.toString(), filename));
+                                patternNo, pattern.size(), pattern.toString(), filename, lineNo + 1, lineNoEnd + 1));
             }
 
             if (values.size() != attributes.length)
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
-                                values.keySet().toString(), Arrays.toString(attributes), filename));
+                                values.keySet().toString(), Arrays.toString(attributes), filename, lineNo + 1,
+                                lineNoEnd + 1));
 
             if (assignment == null)
                 throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$

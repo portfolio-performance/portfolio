@@ -78,7 +78,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         for (JTransactionMatcher jtx : definition.getTransactions())
         {
-            Block block = new Block(jtx.getStartWith());
+            Block block = new Block(jtx.getStartsWith(), jtx.getEndsWith());
             document.addBlock(block);
 
             PDFParser.Transaction<JTransaction> pdftx = new PDFParser.Transaction<>();

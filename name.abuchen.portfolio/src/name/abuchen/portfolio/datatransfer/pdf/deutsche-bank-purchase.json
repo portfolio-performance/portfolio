@@ -9,7 +9,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"startWith": "Abrechnung: Kauf von Wertpapieren",
+			"startsWith": "Abrechnung: Kauf von Wertpapieren",
 			"sections": [
 				{
 					"context": "SECURITY",

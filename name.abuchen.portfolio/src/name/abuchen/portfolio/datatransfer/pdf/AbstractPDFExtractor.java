@@ -237,7 +237,7 @@ public abstract class AbstractPDFExtractor implements Extractor
 
     /* protected */LocalDateTime asDate(String value)
     {
-        return LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
+        return value == null ? null : LocalDate.parse(value, DATE_FORMAT).atStartOfDay();
     }
 
     /* protected */LocalTime asTime(String value)

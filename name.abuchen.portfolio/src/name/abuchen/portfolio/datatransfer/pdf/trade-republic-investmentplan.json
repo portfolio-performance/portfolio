@@ -9,7 +9,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"startWith": "WERTPAPIERABRECHNUNG SPARPLAN",
+			"startsWith": "WERTPAPIERABRECHNUNG SPARPLAN",
 			"sections": [
 				{
 					"context": "SECURITY",

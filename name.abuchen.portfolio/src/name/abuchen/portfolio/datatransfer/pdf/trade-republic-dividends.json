@@ -8,7 +8,7 @@
 	"transactions": [
 		{
 			"type": "DIVIDEND",
-			"startWith": "DIVIDENDE|AUSSCHÜTTUNG",
+			"startsWith": "DIVIDENDE|AUSSCHÜTTUNG",
 			"sections": [
 				{
 					"context": "SECURITY",

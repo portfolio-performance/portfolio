@@ -9,7 +9,7 @@
 	"transactions": [
 		{
 			"type": "SALE",
-			"startWith": "Abrechnung: Verkauf von Wertpapieren",
+			"startsWith": "Abrechnung: Verkauf von Wertpapieren",
 			"sections": [
 				{
 					"context": "SECURITY",

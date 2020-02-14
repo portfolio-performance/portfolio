@@ -7,13 +7,19 @@ public class JPDFExtractorDefinition
 {
     public static class JTransactionMatcher
     {
-        private String startWith;
+        private String startsWith;
+        private String endsWith;
         private JTransaction.Type type;
         private List<JSection> sections;
 
-        public String getStartWith()
+        public String getStartsWith()
         {
-            return startWith;
+            return startsWith;
+        }
+
+        public String getEndsWith()
+        {
+            return endsWith;
         }
 
         public JTransaction.Type getType()
