@@ -15,6 +15,7 @@
 			"units": [
 				{
 					"type": "GROSS_VALUE",
+					"amount": 2.96,
 					"fxAmount": 3.3,
 					"fxCurrency": "USD",
 					"fxRateToBase": 1.11435
@@ -33,6 +34,7 @@
 				},
 				{
 					"type": "TAX",
+					"amount": 0.45,
 					"fxAmount": 0.5,
 					"fxCurrency": "USD",
 					"fxRateToBase": 1.11435

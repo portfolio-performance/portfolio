@@ -186,7 +186,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         asDouble(v.get("fxRateToBase")).ifPresent(d -> unit.setFxRateToBase(BigDecimal.valueOf(d))); //$NON-NLS-1$
 
         if (v.containsKey("fxCurrency")) //$NON-NLS-1$
-            unit.setFxCurrency(v.get("fxCurrency")); //$NON-NLS-1$
+            unit.setFxCurrency(asCurrencyCode(v.get("fxCurrency"))); //$NON-NLS-1$
 
         t.addUnit(unit);
     }
@@ -324,6 +324,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
             double value = BigDecimal.valueOf(junit.getFxAmount())
                             .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
 
+            junit.setAmount(value);
             amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(value));
         }
         else
@@ -333,7 +334,12 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE
                         && (junit.getFxAmount() == null || junit.getFxAmount() == 0d))
+        {
+            junit.setFxAmount(null);
+            junit.setFxCurrency(null);
+            junit.setFxRateToBase(null);
             return new Transaction.Unit(junit.getType(), amount);
+        }
 
         // check currency
         if (Strings.isNullOrEmpty(junit.getFxCurrency()))
