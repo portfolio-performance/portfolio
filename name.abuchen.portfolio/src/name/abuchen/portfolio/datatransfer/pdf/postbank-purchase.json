@@ -4,12 +4,12 @@
 	"locale": "de",
 	"pattern": [
 		"Postbank",
-		"Abrechnung Kauf"
+		"Abrechnung (Kauf|Ausgabe Investmentfonds)"
 	],
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"startWith": "Wertpapier Abrechnung Kauf.*",
+			"startWith": "Wertpapier Abrechnung (Kauf|Ausgabe Investmentfonds).*",
 			"sections": [
 				{
 					"context": "SECURITY",
@@ -30,8 +30,16 @@
 					]
 				},
 				{
+					"comment" : "One of the two patterns must match to identiy the date; currently no way to express in JSON extractor definition",
+					"isOptional": true,
 					"pattern": [
 						"^Schlusstag/-Zeit (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+):.*"
+					]
+				},
+				{
+					"isOptional": true,
+					"pattern": [
+						"^Schlusstag (?<date>\\d+.\\d+.\\d{4}+)$"
 					]
 				},
 				{

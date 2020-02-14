@@ -1,0 +1,38 @@
+PDF Author: 'Deutsche Postbank AG'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Postbank Köln · 51222 Köln    
+Depotnummer
+ 123456789
+ Kundennummer 0987654321
+Max Mustermann
+ Auftragsnummer 242816/24.00
+Frau und Herrn Datum 05.02.2020
+Vorname Name und Rechnungsnummer W00860-0000241774/20
+Vorname Name Umsatzsteuer-ID DE111111111   
+Strasse Hausnummer
+12345 Musterort
+ 
+Wertpapier Abrechnung Ausgabe Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 36,7701 ISHSIV-EDGE MSCI WO.MULT.U.ETF     IE00BZ0PKT83 (A14YPA)
+REGISTERED SHARES USD (ACC)O.N     
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 05.02.2020
+Ausführungskurs 6,799 EUR
+Wertpapierrechnung Lagerland Irland
+Kurswert 250,00- EUR
+Provision 0,90- EUR
+Ausmachender Betrag 250,90- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 07.02.2020 zu Lasten des Kontos xxxxxxxxxx
+(IBAN DExx xxxx xxxx xxxx xxxx xx), BLZ xxxxxxxx (BIC PBNKDEFFXXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Gegenpartei bei diesem Geschäft war BÖRSE QUOTRIX
+ABR. OHNE AUSGABEAUFSCHLAG
+IHR ETF-SPARPLAN NR.     21
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+xxxx.xxxxxxxx.xxxxxxxxBxx

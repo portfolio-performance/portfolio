@@ -132,17 +132,24 @@ public class PDFImportAssistant
         List<Item> items = null;
         for (Extractor extractor : extractors)
         {
-            items = extractor.extract(securityCache, inputFile, errors);
+            List<Exception> warnings = new ArrayList<>();
+            items = extractor.extract(securityCache, inputFile, warnings);
+
             if (!items.isEmpty())
+            {
+                // we extracted items; remove all errors from all other
+                // extractors that
+                // did not find any transactions in this text
+                errors.clear();
+                errors.addAll(warnings);
                 break;
+            }
+
+            errors.addAll(warnings);
         }
 
         if (items == null || items.isEmpty())
             return Collections.emptyList();
-
-        // we extracted items; remove all errors from all other extractors that
-        // did not find any transactions in this text
-        errors.removeIf(e -> e instanceof UnsupportedOperationException);
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
         itemsByExtractor.put(extractors.get(0), items);
