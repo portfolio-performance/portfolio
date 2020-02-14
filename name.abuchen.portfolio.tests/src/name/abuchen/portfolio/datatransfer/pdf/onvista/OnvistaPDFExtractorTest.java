@@ -450,6 +450,77 @@ public class OnvistaPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschriftDividende4()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftDividende4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Security security = results.stream()
+                        .filter(i -> i instanceof Extractor.SecurityItem)
+                        .findAny().orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getIsin(), is("DK0060534915"));
+        assertThat(security.getName(), is("Novo-Nordisk AS Navne-Aktier B DK -,20"));
+
+        AccountTransaction transaction = results.stream() //
+                        .filter(i -> i instanceof Extractor.TransactionItem) //
+                        .map(i -> (AccountTransaction) ((Extractor.TransactionItem) i).getSubject()) //
+                        .findFirst().orElseThrow(IllegalArgumentException::new);
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-26T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+
+        Money taxes = transaction.getUnitSum(Unit.Type.TAX);
+        assertThat(taxes, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.34 / 7.483))));
+
+        Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
+        assertThat(grossValue.getAmount(),
+                        is(Money.of(CurrencyUnit.EUR, transaction.getAmount() + taxes.getAmount())));
+        assertThat(grossValue.getForex(), is(Money.of("DKK", Values.Amount.factorize(3.02 * 7.483 + 8.34))));
+    }
+
+    @Test
+    public void testErtragsgutschriftDividende4_withExistingSecurityInTransactionCurrency() // NOSONAR
+    {
+        Client client = new Client();
+        Security security = new Security("Novo-Nordisk", CurrencyUnit.EUR);
+        security.setIsin("DK0060534915");
+        client.addSecurity(security);
+
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftDividende4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        AccountTransaction transaction = (AccountTransaction) results.get(0).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-03-26T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3.02))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(6)));
+
+        Money taxes = transaction.getUnitSum(Unit.Type.TAX);
+        assertThat(taxes, is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(8.34 / 7.483))));
+    }
+
+    @Test
     public void testErtragsgutschriftKupon() throws IOException
     {
         OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());

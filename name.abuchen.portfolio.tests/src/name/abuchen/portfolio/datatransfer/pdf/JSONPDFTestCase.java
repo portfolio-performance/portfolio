@@ -82,7 +82,7 @@ public class JSONPDFTestCase
         List<JTransaction> expectedTransactions = JClient.from(this.path + EXT_JSON).getTransactions()
                         .collect(Collectors.toList());
 
-        assertThat(actualTransactions.size(), is(expectedTransactions.size()));
+        assertThat("# of transactions must match", actualTransactions.size(), is(expectedTransactions.size())); //$NON-NLS-1$
 
         for (JTransaction tx : actualTransactions)
         {

@@ -88,6 +88,10 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_BvUYkBiQEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help.updateproduct" label="%command.update.name" tooltip="%command.update.tooltip" command="_59FgcBiREeOR1rNFCzC82A">
           <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_PRn4cLdsEeO8D7SW8YS2SA" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
         </children>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_CchYcE4mEeq_p5qm8jwYiw" elementId="name.abuchen.portfolio.ui.menu.help.newandnoteworthy" label="%command.openbrowser.newandnoteworthy.name" tooltip="%command.openbrowser.newandnoteworthy.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
+          <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_N5UWcE4nEeq_p5qm8jwYiw" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
+          <parameters xmi:id="_Cch_gU4mEeq_p5qm8jwYiw" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last"/>
+        </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_l5AcMC4xEemmmuRo8le1zg" elementId="name.abuchen.portfolio.ui.menu.help.changelog" label="%command.openbrowser.changelog.name" tooltip="%command.openbrowser.changelog.tooltip" command="_dYDXQLOiEeWe1a5u3oOf1Q">
           <visibleWhen xsi:type="ui:CoreExpression" xmi:id="_JLq4kC4yEemmmuRo8le1zg" coreExpressionId="name.abuchen.portfolio.ui.expression.IsNotMacOSX"/>
           <parameters xmi:id="_l5AcMS4xEemmmuRo8le1zg" elementId="" name="name.abuchen.portfolio.ui.param.url" value="https://www.portfolio-performance.info/portfolio/versions.html"/>

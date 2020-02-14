@@ -55,12 +55,20 @@ public class TradeCollectorTest2
         assertThat(secondTrade.getStart(), is(LocalDateTime.parse("2018-10-23T00:00")));
         assertThat(secondTrade.getEnd().isPresent(), is(false));
 
+        // the first transaction has been partially closed by the first trade
+
+        // shares bought = 0.859
+        // shares sold = 0.802
+
+        double percentageRemainingShares = ((0.859 - 0.802) / 0.859);
+
         PortfolioTransaction tx = secondTrade.getTransactions().get(0).getTransaction();
         Unit grossValue = tx.getUnit(Unit.Type.GROSS_VALUE).orElseThrow(IllegalArgumentException::new);
         assertThat(grossValue.getAmount(),
-                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.63 * ((0.859 - 0.802) / 0.859)))));
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(24.63 * percentageRemainingShares))));
         assertThat(grossValue.getExchangeRate(), is(BigDecimal.valueOf(0.8712319219)));
-        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(1.87))));
+        assertThat(grossValue.getForex(),
+                        is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(28.27 * percentageRemainingShares))));
     }
 
 }

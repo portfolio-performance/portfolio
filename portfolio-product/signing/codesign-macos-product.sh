@@ -32,6 +32,16 @@ find $APP_BUNDLE -type f -name '*.dylib' \
   --entitlement $PROJECT_BASEIDR/signing/entitlements.plist \
   --force -vvvv {} \;
 
+# sign so
+
+find $APP_BUNDLE -type f -name '*.so' \
+  -exec codesign \
+  -s "$CODESIGN_ID" \
+  --deep --timestamp \
+  --options runtime \
+  --entitlement $PROJECT_BASEIDR/signing/entitlements.plist \
+  --force -vvvv {} \;
+
 # sign executables
 
 find $APP_BUNDLE -perm +111 -type f \

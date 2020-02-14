@@ -7,6 +7,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
@@ -28,6 +29,13 @@ public class Preference2EnvAddon
                         .getQuoteFeedProvider(AlphavantageQuoteFeed.ID);
         quoteFeed.setApiKey(alphavantageApiKey);
         quoteFeed.setCallFrequencyLimit(callFrequencyLimit);
+    }
+
+    @Inject
+    @Optional
+    public void setQuandlApiKey(@Preference(value = UIConstants.Preferences.QUANDL_API_KEY) String quandlApiKey)
+    {
+        ((QuandlQuoteFeed) Factory.getQuoteFeedProvider(QuandlQuoteFeed.ID)).setApiKey(quandlApiKey);
     }
 
     @Inject

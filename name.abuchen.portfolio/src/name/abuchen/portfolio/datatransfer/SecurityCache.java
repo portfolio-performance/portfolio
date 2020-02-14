@@ -53,17 +53,27 @@ public class SecurityCache
     {
         List<String> attributes = Arrays.asList(isin, tickerSymbol, wkn, name);
 
+        int idOfAttributeWithDuplicateSecurities = -1;
+
         // first: check the identifying attributes (ISIN, Ticker, WKN)
         for (int ii = 0; ii < 3; ii++)
         {
             String attribute = attributes.get(ii);
 
             Security security = localMaps.get(ii).get(attribute);
-            if (security == DUPLICATE_SECURITY_MARKER)
-                throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(ii), attribute));
-            if (security != null)
+            if (security != null && security != DUPLICATE_SECURITY_MARKER)
                 return security;
+
+            if (idOfAttributeWithDuplicateSecurities < 0 && security == DUPLICATE_SECURITY_MARKER)
+                idOfAttributeWithDuplicateSecurities = ii;
         }
+
+        // if we detect duplicate securities for one attribute, the error
+        // message is only returned to the user if the other attributes also did
+        // not match
+        if (idOfAttributeWithDuplicateSecurities >= 0)
+            throw new IllegalArgumentException(MessageFormat.format(MESSAGES.get(idOfAttributeWithDuplicateSecurities),
+                            attributes.get(idOfAttributeWithDuplicateSecurities)));
 
         // second: check the name. But: even if the name matches, we also must
         // check that the identifying attributes do not differ. Why? Investment
@@ -72,7 +82,6 @@ public class SecurityCache
         Security security = lookupSecurityByName(isin, tickerSymbol, wkn, name);
         if (security != null)
             return security;
-
 
         security = creationFunction.get();
         security.setIsin(isin);

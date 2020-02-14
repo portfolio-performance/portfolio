@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
@@ -111,6 +112,16 @@ public abstract class AbstractPDFExtractor implements Extractor
         catch (IllegalArgumentException e)
         {
             errors.add(new IllegalArgumentException(e.getMessage() + " @ " + filename, e)); //$NON-NLS-1$
+            return Collections.emptyList();
+        }
+        catch (NullPointerException e)
+        {
+            // NPE should not block further processing. Print full stack trace
+            // to error log to enable further investigation
+
+            IllegalArgumentException error = new IllegalArgumentException("NullPointerException @ " + filename, e); //$NON-NLS-1$
+            PortfolioLog.error(error);
+            errors.add(error);
             return Collections.emptyList();
         }
         catch (UnsupportedOperationException e)

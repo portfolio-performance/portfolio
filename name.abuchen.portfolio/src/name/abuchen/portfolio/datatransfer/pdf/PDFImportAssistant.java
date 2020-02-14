@@ -48,6 +48,7 @@ public class PDFImportAssistant
         extractors.add(new UnicreditPDFExtractor(client));
         extractors.add(new HelloBankPDFExtractor(client));
         extractors.add(new ViacPDFExtractor(client));
+        extractors.add(new TargobankPDFExtractor(client));
         extractors.add(new TradeRepublicPDFExtractor(client));
         extractors.add(new PostfinancePDFExtractor(client));
         extractors.add(new SutorPDFExtractor(client));
@@ -58,6 +59,8 @@ public class PDFImportAssistant
         extractors.add(new JSONPDFExtractor(client, "ffb-purchase.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-dividends.json")); //$NON-NLS-1$
         extractors.add(new JSONPDFExtractor(client, "trade-republic-investmentplan.json")); //$NON-NLS-1$
+        extractors.add(new JSONPDFExtractor(client, "ebase.json")); //$NON-NLS-1$
+        extractors.add(new JSONPDFExtractor(client, "postbank-purchase.json")); //$NON-NLS-1$
     }
 
     public Map<Extractor, List<Item>> run(IProgressMonitor monitor, Map<File, List<Exception>> errors)

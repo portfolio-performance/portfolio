@@ -13,7 +13,12 @@ public class SecurityProperty
         /**
          * Property type to store a market (e.g. exchange) and symbol pair.
          */
-        MARKET
+        MARKET,
+
+        /**
+         * Properties related to loading data from a quote feed.
+         */
+        FEED;
     }
 
     private final Type type;

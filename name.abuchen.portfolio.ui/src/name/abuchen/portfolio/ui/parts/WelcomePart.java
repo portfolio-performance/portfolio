@@ -144,6 +144,9 @@ public class WelcomePart
         addLink(links, "action:daxsample", Messages.IntroOpenDaxSample, Messages.IntroOpenDaxSampleText); //$NON-NLS-1$
 
         addSectionLabel(boldFont, links, Messages.IntroLabelHelp);
+        addLink(links, "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last", //$NON-NLS-1$
+                        Messages.SystemMenuNewAndNoteworthy, Messages.IntroNewAndNoteworthyText);
+
         addLink(links, "https://forum.portfolio-performance.info", //$NON-NLS-1$
                         Messages.IntroOpenForum, Messages.IntroOpenForumText);
         addLink(links, "https://forum.portfolio-performance.info/c/how-to", //$NON-NLS-1$

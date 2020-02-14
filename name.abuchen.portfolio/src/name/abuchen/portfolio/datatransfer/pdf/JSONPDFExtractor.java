@@ -42,6 +42,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class JSONPDFExtractor extends AbstractPDFExtractor
 {
@@ -100,7 +101,13 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                     pdftx.wrap(t -> wrapBuySell(t, PortfolioTransaction.Type.SELL));
                     break;
                 case DIVIDEND:
-                    pdftx.wrap(this::wrapDividend);
+                    pdftx.wrap(t -> wrapAccountTransaction(t, AccountTransaction.Type.DIVIDENDS));
+                    break;
+                case INBOUND_DELIVERY:
+                    pdftx.wrap(t -> wrapPortfolioTransaction(t, PortfolioTransaction.Type.DELIVERY_INBOUND));
+                    break;
+                case OUTBOUND_DELIVERY:
+                    pdftx.wrap(t -> wrapPortfolioTransaction(t, PortfolioTransaction.Type.DELIVERY_OUTBOUND));
                     break;
                 default:
                     throw new IllegalArgumentException();
@@ -161,7 +168,7 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
     private void setValuesToSecurity(JTransaction t, Map<String, String> v)
     {
         JSecurity security = new JSecurity();
-        security.setName(v.get("name")); //$NON-NLS-1$
+        security.setName(TextUtil.strip(v.get("name"))); //$NON-NLS-1$
         security.setIsin(v.get("isin")); //$NON-NLS-1$
         security.setTicker(v.get("ticker")); //$NON-NLS-1$
         security.setWkn(v.get("wkn")); //$NON-NLS-1$
@@ -249,11 +256,32 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         return item;
     }
 
-    private Extractor.Item wrapDividend(JTransaction t)
+    private Extractor.Item wrapAccountTransaction(JTransaction t, AccountTransaction.Type type)
     {
         AccountTransaction tx = new AccountTransaction();
-        tx.setType(AccountTransaction.Type.DIVIDENDS);
+        tx.setType(type);
 
+        fillIn(t, tx);
+
+        TransactionItem item = new TransactionItem(tx);
+        item.setData(t);
+        return item;
+    }
+
+    private Extractor.Item wrapPortfolioTransaction(JTransaction t, PortfolioTransaction.Type type)
+    {
+        PortfolioTransaction tx = new PortfolioTransaction();
+        tx.setType(type);
+
+        fillIn(t, tx);
+
+        TransactionItem item = new TransactionItem(tx);
+        item.setData(t);
+        return item;
+    }
+
+    private void fillIn(JTransaction t, Transaction tx)
+    {
         tx.setAmount(Values.Amount.factorize(t.getAmount()));
         tx.setCurrencyCode(t.getCurrency());
         tx.setShares(Values.Share.factorize(t.getShares()));
@@ -267,10 +295,6 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         tx.setSecurity(security);
 
         t.getUnits().map(u -> convertToUnit(security, t, u)).filter(Objects::nonNull).forEach(tx::addUnit);
-
-        TransactionItem item = new TransactionItem(tx);
-        item.setData(t);
-        return item;
     }
 
     private Security convertToSecurity(JTransaction t)
@@ -366,10 +390,11 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
             // likely use indirect quotation
             BigDecimal fxRateToBase = BigDecimal.ONE.divide(junit.getFxRateToBase(), 10, RoundingMode.HALF_DOWN);
 
-            forexAmount = BigDecimal.valueOf(amount.getAmount()).multiply(fxRateToBase)
+            forexAmount = BigDecimal.valueOf(amount.getAmount()).multiply(junit.getFxRateToBase())
                             .setScale(0, RoundingMode.HALF_DOWN).longValue();
 
-            return new Transaction.Unit(junit.getType(), amount, Money.of(fxCurrency, forexAmount), fxRateToBase);
+            return new Transaction.Unit(junit.getType(), amount, Money.of(fxCurrency, forexAmount),
+                            fxRateToBase);
         }
         else
         {

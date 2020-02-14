@@ -55,7 +55,20 @@ public class OSXStartupAddon
                     }
                 });
 
-                MenuItem changelogMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                MenuItem noteworthyMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 2);
+                noteworthyMenuItem.setText(Messages.SystemMenuNewAndNoteworthy);
+                noteworthyMenuItem.addSelectionListener(new SelectionAdapter()
+                {
+                    @Override
+                    public void widgetSelected(SelectionEvent event)
+                    {
+                        executeCommand("name.abuchen.portfolio.ui.command.openBrowser", //$NON-NLS-1$
+                                        UIConstants.Parameter.URL,
+                                        "https://forum.portfolio-performance.info/t/sunny-neues-nennenswertes/23/last"); //$NON-NLS-1$
+                    }
+                });
+
+                MenuItem changelogMenuItem = new MenuItem(systemMenu, SWT.CASCADE, prefsIndex + 3);
                 changelogMenuItem.setText(Messages.SystemMenuChangelog);
                 changelogMenuItem.addSelectionListener(new SelectionAdapter()
                 {

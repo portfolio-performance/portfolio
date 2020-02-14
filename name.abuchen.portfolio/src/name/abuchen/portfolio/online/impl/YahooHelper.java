@@ -26,7 +26,7 @@ import name.abuchen.portfolio.money.Values;
 
     static long asPrice(String s) throws ParseException
     {
-        if ("N/A".equals(s)) //$NON-NLS-1$
+        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
             return -1;
         BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
         return v.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
@@ -34,7 +34,7 @@ import name.abuchen.portfolio.money.Values;
 
     static int asNumber(String s) throws ParseException
     {
-        if ("N/A".equals(s)) //$NON-NLS-1$
+        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
             return -1;
         return FMT_PRICE.get().parse(s).intValue();
     }
