@@ -60,6 +60,13 @@
 					]
 				},
 				{
+					"isOptional": true,
+					"pattern": [
+						"^Zahlungsbetrag aus Überweisung (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"isOptional": true,
 					"pattern": [
 						"^Abwicklung .*",
 						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
@@ -72,7 +79,7 @@
 				},
 				{
 					"context": "UNIT",
-					"isOptional" : true,
+					"isOptional": true,
 					"pattern": [
 						"^ISIN Anteile .*",
 						"^([^ ]*) ([\\d.,]+) ([\\d.,]+) (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
@@ -96,6 +103,7 @@
 		{
 			"type": "DIVIDEND",
 			"startsWith": "Fondsertrag .*",
+			"endsWith": "^Zahlungsbetrag (nach Währungskonvertierung mit Devisenkurs [\\d.,]+ )?[\\d.,]+ \\w{3}$",
 			"sections": [
 				{
 					"context": "SECURITY",
@@ -109,26 +117,58 @@
 				},
 				{
 					"pattern": [
+						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+					]
+				},
+				{
+					"pattern": [
 						"^ISIN Anteil.*$",
 						"^([^ ]*) (?<shares>[\\d.,]+) .*"
 					]
 				},
 				{
+					"isOptional": true,
 					"pattern": [
-						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+						"^Zahlungsbetrag (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
 					]
 				},
 				{
+					"isOptional": true,
 					"pattern": [
-						".* Buchungsdatum (?<date>\\d+.\\d+.\\d{4}+)"
+						"^Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs [\\d.,]+ (?<amount>[\\d.,]+) (?<currency>\\w{3})$"
 					]
 				},
 				{
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
+						"^ISIN Anteil.*$",
+						"^([^ ]*) [\\d.,]+ [\\d.,]+ \\w{3} (?<fxAmount>[\\d.,]+) (?<fxCurrency>\\w{3})$",
+						"^Zahlungsbetrag nach Währungskonvertierung mit Devisenkurs (?<fxRateToBase>[\\d.,]+) [\\d.,]+ \\w{3}$"
+					],
+					"attributes": {
+						"type": "GROSS_VALUE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
 						"^Kapitalertragsteuer .*",
-						".* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+						".* (?<amount>[\\d.,]+) \\w{3}$",
+						"^Zahlungsbetrag [\\d.,]+ (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^Kapitalertragsteuer .*",
+						".* \\w{3} (?<fxRateToBase>[\\d.,]+) (?<fxAmount>[\\d.,]+) \\w{3}$",
+						"^Zahlungsbetrag in Fremdwährung [\\d.,]+ (?<fxCurrency>\\w{3})$"
 					],
 					"attributes": {
 						"type": "TAX"
@@ -199,9 +239,10 @@
 				},
 				{
 					"context": "UNIT",
+					"isOptional": true,
 					"pattern": [
 						"^ISIN Anteile .*",
-						"^[^ ]* -[\\d.,]+ [\\d.,]+ (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) \\w{3}+$"
+						"^[^ ]* -[\\d.,]+ [\\d.,]+ (?<fxCurrency>\\w{3}) (?<fxRateToBase>[\\d.,]+) (?<amount>[\\d.,]+) \\w{3}$"
 					],
 					"attributes": {
 						"type": "GROSS_VALUE"
