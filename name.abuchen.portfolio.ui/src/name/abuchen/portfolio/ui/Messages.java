@@ -515,6 +515,7 @@ public class Messages extends NLS
     public static String LabelEarningsPerYear;
     public static String LabelEarningsSelectStartYear;
     public static String LabelEarningsExpenses;
+    public static String LabelEarningsCapitalizedGain;
     public static String LabelExpenses;
     public static String LabelError;
     public static String LabelEurostatRegion;

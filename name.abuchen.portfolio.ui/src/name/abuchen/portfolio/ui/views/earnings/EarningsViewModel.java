@@ -22,6 +22,9 @@ import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.snapshot.trades.Trade;
+import name.abuchen.portfolio.snapshot.trades.TradeCollector;
+import name.abuchen.portfolio.snapshot.trades.TradeCollectorException;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.util.Interval;
@@ -39,6 +42,10 @@ public class EarningsViewModel
                         AccountTransaction.Type.TAX_REFUND), //
         FEES(Messages.ColumnFees, AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST,
                         AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.FEES,
+                        AccountTransaction.Type.FEES_REFUND), //
+        CAPITALIZEDGAIN(Messages.LabelEarningsCapitalizedGain, AccountTransaction.Type.DIVIDENDS,
+                        AccountTransaction.Type.INTEREST, AccountTransaction.Type.INTEREST_CHARGE,
+                        AccountTransaction.Type.TAXES, AccountTransaction.Type.TAX_REFUND, AccountTransaction.Type.FEES,
                         AccountTransaction.Type.FEES_REFUND), //
         ALL("\u2211", AccountTransaction.Type.DIVIDENDS, AccountTransaction.Type.INTEREST, //$NON-NLS-1$
                         AccountTransaction.Type.INTEREST_CHARGE, AccountTransaction.Type.TAXES,
@@ -237,6 +244,7 @@ public class EarningsViewModel
 
         Interval interval = Interval.of(LocalDate.of(startYear - 1, Month.DECEMBER, 31), now);
         Predicate<Transaction> checkIsInInterval = t -> interval.contains(t.getDateTime());
+        Predicate<Trade> checkIsInIntervalTrade = t -> interval.contains(t.getEnd().get());
 
         Map<InvestmentVehicle, Line> vehicle2line = new HashMap<>();
 
@@ -245,40 +253,41 @@ public class EarningsViewModel
 
         Client filteredClient = clientFilter.getSelectedFilter().filter(client);
 
-        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.TAXES, Mode.FEES, Mode.ALL);
-        if (processPorfolioTx.contains(mode))
+        EnumSet<Mode> processGainTx = EnumSet.of(Mode.CAPITALIZEDGAIN, Mode.ALL);
+        if (processGainTx.contains(mode))
         {
-            for (Portfolio portfolio : filteredClient.getPortfolios())
+            List<Trade> trades = null;
+
+            switch (mode)
             {
-                for (PortfolioTransaction t : portfolio.getTransactions())
+                case CAPITALIZEDGAIN:
+                    trades = collectTrade(filteredClient);
+                    break;
+                case ALL:
+                    trades = collectTrade(filteredClient);
+                    break;
+                default:
+
+            }
+
+            if (trades != null)
+            {
+                for (Trade trade : trades)
                 {
-                    if (!checkIsInInterval.test(t))
+                    if (!trade.getEnd().isPresent())
+                        continue;
+                    if (!checkIsInIntervalTrade.test(trade))
                         continue;
 
                     long value = 0;
-                    switch (mode)
-                    {
-                        case TAXES:
-                            value -= t.getUnitSum(Unit.Type.TAX).with(converter.at(t.getDateTime())).getAmount();
-                            break;
-                        case FEES:
-                            value -= t.getUnitSum(Unit.Type.FEE).with(converter.at(t.getDateTime())).getAmount();
-                            break;
-                        case ALL:
-                            value -= t.getUnitSum(Unit.Type.TAX).with(converter.at(t.getDateTime())).getAmount();
-                            value -= t.getUnitSum(Unit.Type.FEE).with(converter.at(t.getDateTime())).getAmount();
-                            break;
-
-                        default:
-                    }
+                    value = trade.getProfitLoss().getAmount();
 
                     if (value != 0)
                     {
-                        transactions.add(new TransactionPair<>(portfolio, t));
+                        int index = (trade.getEnd().get().getYear() - startYear) * 12
+                                        + trade.getEnd().get().getMonthValue() - 1;
+                        Line line = vehicle2line.computeIfAbsent(trade.getSecurity(), s -> new Line(s, noOfmonths));
 
-                        int index = (t.getDateTime().getYear() - startYear) * 12 + t.getDateTime().getMonthValue() - 1;
-
-                        Line line = vehicle2line.computeIfAbsent(t.getSecurity(), s -> new Line(s, noOfmonths));
                         line.values[index] += value;
                         line.sum += value;
 
@@ -289,70 +298,133 @@ public class EarningsViewModel
             }
         }
 
-        for (Account account : filteredClient.getAccounts())
+        EnumSet<Mode> processPorfolioTx = EnumSet.of(Mode.TAXES, Mode.FEES, Mode.ALL);
+        if (processPorfolioTx.contains(mode))
         {
-            for (AccountTransaction t : account.getTransactions()) // NOSONAR
+            for (Portfolio portfolio : filteredClient.getPortfolios())
             {
-                if (!mode.isAccountTxIncluded(t))
-                    continue;
-
-                if (!checkIsInInterval.test(t))
-                    continue;
-
-                long value = 0;
-                switch (mode)
+                for (PortfolioTransaction transaction : portfolio.getTransactions())
                 {
-                    case TAXES:
-                        if (t.getType() == AccountTransaction.Type.TAXES
-                                        || t.getType() == AccountTransaction.Type.TAX_REFUND)
-                        {
-                            value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                            if (t.getType().isDebit())
-                                value *= -1;
-                        }
-                        else
-                        {
-                            value -= t.getUnitSum(Unit.Type.TAX).with(converter.at(t.getDateTime())).getAmount();
-                        }
-                        break;
-                    case FEES:
-                        if (t.getType() == AccountTransaction.Type.FEES
-                                        || t.getType() == AccountTransaction.Type.FEES_REFUND)
-                        {
-                            value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                            if (t.getType().isDebit())
-                                value *= -1;
-                        }
-                        else
-                        {
-                            value -= t.getUnitSum(Unit.Type.FEE).with(converter.at(t.getDateTime())).getAmount();
-                        }
-                        break;
-                    case ALL:
-                        value = t.getMonetaryAmount().with(converter.at(t.getDateTime())).getAmount();
-                        if (t.getType().isDebit())
-                            value *= -1;
-                        break;
-                    default:
-                        value = (useGrossValue ? t.getGrossValue() : t.getMonetaryAmount())
-                                        .with(converter.at(t.getDateTime())).getAmount();
-                        if (t.getType().isDebit())
-                            value *= -1;
+                    if (!checkIsInInterval.test(transaction))
+                        continue;
+
+                    long value = 0;
+                    switch (mode)
+                    {
+                        case TAXES:
+                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
+                            break;
+                        case FEES:
+                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
+                            break;
+                        case ALL:
+                            value -= transaction.getUnitSum(Unit.Type.TAX).with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
+                            value -= transaction.getUnitSum(Unit.Type.FEE).with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
+                            break;
+
+                        default:
+                    }
+
+                    if (value != 0)
+                    {
+                        transactions.add(new TransactionPair<>(portfolio, transaction));
+
+                        int index = (transaction.getDateTime().getYear() - startYear) * 12
+                                        + transaction.getDateTime().getMonthValue() - 1;
+
+                        Line line = vehicle2line.computeIfAbsent(transaction.getSecurity(),
+                                        s -> new Line(s, noOfmonths));
+                        line.values[index] += value;
+                        line.sum += value;
+
+                        sum.values[index] += value;
+                        sum.sum += value;
+                    }
                 }
+            }
+        }
 
-                if (value != 0)
+        EnumSet<Mode> processAccountTx = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS, Mode.ALL);
+        if (processAccountTx.contains(mode))
+        {
+            for (Account account : filteredClient.getAccounts())
+            {
+                for (AccountTransaction transaction : account.getTransactions()) // NOSONAR
                 {
-                    transactions.add(new TransactionPair<>(account, t));
+                    if (!mode.isAccountTxIncluded(transaction))
+                        continue;
 
-                    int index = (t.getDateTime().getYear() - startYear) * 12 + t.getDateTime().getMonthValue() - 1;
+                    if (!checkIsInInterval.test(transaction))
+                        continue;
 
-                    InvestmentVehicle vehicle = t.getSecurity() != null ? t.getSecurity() : account;
-                    Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, noOfmonths));
-                    line.values[index] += value;
-                    line.sum += value;
+                    long value = 0;
+                    switch (mode)
+                    {
+                        case TAXES:
+                            if (transaction.getType() == AccountTransaction.Type.TAXES
+                                            || transaction.getType() == AccountTransaction.Type.TAX_REFUND)
+                            {
+                                value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                                                .getAmount();
+                                if (transaction.getType().isDebit())
+                                    value *= -1;
+                            }
+                            else
+                            {
+                                value -= transaction.getUnitSum(Unit.Type.TAX)
+                                                .with(converter.at(transaction.getDateTime())).getAmount();
+                            }
+                            break;
+                        case FEES:
+                            if (transaction.getType() == AccountTransaction.Type.FEES
+                                            || transaction.getType() == AccountTransaction.Type.FEES_REFUND)
+                            {
+                                value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                                                .getAmount();
+                                if (transaction.getType().isDebit())
+                                    value *= -1;
+                            }
+                            else
+                            {
+                                value -= transaction.getUnitSum(Unit.Type.FEE)
+                                                .with(converter.at(transaction.getDateTime())).getAmount();
+                            }
+                            break;
+                        case CAPITALIZEDGAIN:
+                            break;
+                        case ALL:
+                            value = transaction.getMonetaryAmount().with(converter.at(transaction.getDateTime()))
+                                            .getAmount();
+                            if (transaction.getType().isDebit())
+                                value *= -1;
+                            break;
+                        default:
+                            value = (useGrossValue ? transaction.getGrossValue() : transaction.getMonetaryAmount())
+                                            .with(converter.at(transaction.getDateTime())).getAmount();
+                            if (transaction.getType().isDebit())
+                                value *= -1;
+                    }
 
-                    sum.values[index] += value;
-                    sum.sum += value;
+                    if (value != 0)
+                    {
+                        transactions.add(new TransactionPair<>(account, transaction));
+
+                        int index = (transaction.getDateTime().getYear() - startYear) * 12
+                                        + transaction.getDateTime().getMonthValue() - 1;
+
+                        InvestmentVehicle vehicle = transaction.getSecurity() != null ? transaction.getSecurity()
+                                        : account;
+                        Line line = vehicle2line.computeIfAbsent(vehicle, s -> new Line(s, noOfmonths));
+                        line.values[index] += value;
+                        line.sum += value;
+
+                        sum.values[index] += value;
+                        sum.sum += value;
+                    }
                 }
             }
         }
@@ -367,5 +439,23 @@ public class EarningsViewModel
     protected void fireUpdateChange()
     {
         this.listeners.stream().forEach(UpdateListener::onUpdate);
+    }
+
+    public List<Trade> collectTrade(Client filteredClient)
+    {
+        TradeCollector collector = new TradeCollector(filteredClient, converter);
+        List<Trade> trades = new ArrayList<>();
+        List<TradeCollectorException> errors = new ArrayList<>();
+        getClient().getSecurities().forEach(s -> {
+            try
+            {
+                trades.addAll(collector.collect(s));
+            }
+            catch (TradeCollectorException e)
+            {
+                errors.add(e);
+            }
+        });
+        return trades;
     }
 }
