@@ -1150,7 +1150,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .oneOf(
                                         section -> section.attributes("nameP2", "isin")
                                         // Holding SE DE000PAH0038 Girosammelverwahrung 59,3400
-                                        .match("(?<nameP2>.* )(?<isin>\\w{12}+) (.*)")
+                                                        .match("(?<nameP2>.* )(?<isin>\\w{12}) *([0-9.]{10} )?Girosammelverwahrung .*")
                                         .assign((t, v) -> {
                                             type.getCurrentContext().put("nameP2", v.get("nameP2"));
                                             type.getCurrentContext().put("isin", v.get("isin"));
@@ -1178,7 +1178,8 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                                         })
                         )
 
-                        .section("nameP4").optional().find("^(.*) (\\w{12}+) (.*)")
+                        .section("nameP4").optional() //
+                        .find("^(.*) (\\w{12}+) (.*)")
                         // en o.St.o.N
                         .match("^(?<nameP4>^.*\\.*)$")
                         .assign((t, v) -> type.getCurrentContext().put("nameP4", v.get("nameP4")))
