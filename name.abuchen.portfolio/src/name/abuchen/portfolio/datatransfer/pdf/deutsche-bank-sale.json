@@ -56,7 +56,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Solidaritätszuschlag auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<amount>[\\d.-]+,\\d+)"
+						"Solidarit.*tszuschlag auf Kapitalertragsteuer (?<currency>\\w{3}+) (?<amount>[\\d.-]+,\\d+)"
 					],
 					"attributes": {
 						"type": "TAX"
@@ -96,7 +96,7 @@
 					"context": "UNIT",
 					"isOptional": true,
 					"pattern": [
-						"Weitere Provision der Bank bei der börslichen Orderausf.*hrung (?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
+						"Weitere Provision der Bank bei der b.*rslichen Orderausf.*hrung (?<currency>\\w{3}+) -(?<amount>[\\d.]+,\\d+)"
 					],
 					"attributes": {
 						"type": "FEE"
