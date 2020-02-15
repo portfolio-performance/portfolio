@@ -857,8 +857,10 @@ public class Messages extends NLS
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefDescriptionAlphaVantage;
+    public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
+    public static String PrefFinnhubAPIKey;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
@@ -874,11 +876,13 @@ public class Messages extends NLS
     public static String PrefUpdateSite;
     public static String PrefTitle;
     public static String PrefTitleAlphaVantage;
+    public static String PrefTitleAPIKeys;
     public static String PrefTitleGeneral;
     public static String PrefTitleLanguage;
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String PrefTitleCalendar;
+    public static String PrefTitleFinnhub;
     public static String PrefTitleQuandl;
     public static String SecurityFilter;
     public static String SecurityFilterSharesHeldEqualZero;

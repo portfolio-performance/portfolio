@@ -101,7 +101,7 @@ public final class QuandlQuoteFeed implements QuoteFeed
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
-        return getHistoricalQuotes(LatestSecurityPrice.class, security, null, errors);
+        return getHistoricalQuotes(LatestSecurityPrice.class, security, a -> a.addParameter("limit", "100"), errors); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("unchecked")

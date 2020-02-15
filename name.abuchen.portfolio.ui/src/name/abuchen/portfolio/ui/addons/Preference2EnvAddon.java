@@ -7,6 +7,7 @@ import org.eclipse.e4.core.di.extensions.Preference;
 
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
+import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -36,6 +37,13 @@ public class Preference2EnvAddon
     public void setQuandlApiKey(@Preference(value = UIConstants.Preferences.QUANDL_API_KEY) String quandlApiKey)
     {
         ((QuandlQuoteFeed) Factory.getQuoteFeedProvider(QuandlQuoteFeed.ID)).setApiKey(quandlApiKey);
+    }
+
+    @Inject
+    @Optional
+    public void setFinnhubApiKey(@Preference(value = UIConstants.Preferences.FINNHUB_API_KEY) String finnhubApiKey)
+    {
+        ((FinnhubQuoteFeed) Factory.getQuoteFeedProvider(FinnhubQuoteFeed.ID)).setApiKey(finnhubApiKey);
     }
 
     @Inject

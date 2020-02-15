@@ -7,13 +7,17 @@ import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.preference.PreferenceManager;
 import org.eclipse.jface.preference.PreferenceNode;
-import org.eclipse.jface.viewers.ViewerComparator;
+import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.preferences.AlphaVantagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.CalendarPreferencePage;
+import name.abuchen.portfolio.ui.preferences.FinnhubPreferencePage;
 import name.abuchen.portfolio.ui.preferences.GeneralPreferencePage;
 import name.abuchen.portfolio.ui.preferences.LanguagePreferencePage;
 import name.abuchen.portfolio.ui.preferences.PresentationPreferencePage;
@@ -23,18 +27,36 @@ import name.abuchen.portfolio.ui.preferences.UpdatePreferencePage;
 
 public class OpenPreferenceDialogHandler
 {
+    public static class APIKeyPreferencePage extends PreferencePage
+    {
+        public APIKeyPreferencePage()
+        {
+            setTitle(Messages.PrefTitleAPIKeys);
+        }
+
+        @Override
+        protected Control createContents(Composite parent)
+        {
+            return new Composite(parent, SWT.None);
+        }
+    }
+
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
         PreferenceManager pm = new PreferenceManager('/');
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".updates", new UpdatePreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".language", new LanguagePreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".proxy", new ProxyPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".presentation", new PresentationPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".general", new GeneralPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".quandl", new QuandlPreferencePage())); //$NON-NLS-1$
-        pm.addToRoot(new PreferenceNode(PortfolioPlugin.PLUGIN_ID + ".calendar", new CalendarPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("general", new GeneralPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("language", new LanguagePreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("presentation", new PresentationPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("calendar", new CalendarPreferencePage())); //$NON-NLS-1$
+
+        pm.addToRoot(new PreferenceNode("api", new APIKeyPreferencePage())); //$NON-NLS-1$
+        pm.addTo("api", new PreferenceNode("alphavantage", new AlphaVantagePreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("quandl", new QuandlPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+        pm.addTo("api", new PreferenceNode("finnhub", new FinnhubPreferencePage())); //$NON-NLS-1$ //$NON-NLS-2$
+
+        pm.addToRoot(new PreferenceNode("proxy", new ProxyPreferencePage())); //$NON-NLS-1$
+        pm.addToRoot(new PreferenceNode("updates", new UpdatePreferencePage())); //$NON-NLS-1$
 
         PreferenceDialog dialog = new PreferenceDialog(shell, pm)
         {
@@ -52,7 +74,6 @@ public class OpenPreferenceDialogHandler
 
         dialog.setPreferenceStore(PortfolioPlugin.getDefault().getPreferenceStore());
         dialog.create();
-        dialog.getTreeViewer().setComparator(new ViewerComparator());
         dialog.getTreeViewer().expandAll();
         dialog.open();
     }

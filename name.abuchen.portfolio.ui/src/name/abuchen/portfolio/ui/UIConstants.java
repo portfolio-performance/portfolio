@@ -128,6 +128,8 @@ public interface UIConstants
 
         String QUANDL_API_KEY = "QUANDL_API_KEY"; //$NON-NLS-1$
 
+        String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
+
         /**
          * Preference key whether to store settings (standard calendar)
          */
