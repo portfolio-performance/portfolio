@@ -131,7 +131,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         tableSampleData.setInput(null);
         tableSampleData.refresh();
     }
-    
+
     private Object buildCacheKey(Exchange exchange)
     {
         if (exchange != null)
@@ -141,9 +141,10 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
             return new Pair<String, String>(FinnhubQuoteFeed.ID, getModel().getTickerSymbol());
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
-            return new Pair<String, String>(QuandlQuoteFeed.ID, String
-                            .valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
-                            + String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME)));
+            return new Pair<String, String>(QuandlQuoteFeed.ID,
+                            String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
+                                            + String.valueOf(getModel().getFeedProperty(
+                                                            QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME)));
         else
             return getModel().getFeedURL();
     }
@@ -152,7 +153,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void showSampleQuotes(QuoteFeed feed, Exchange exchange)
     {
         Object cacheKey = buildCacheKey(exchange);
-        
+
         List<LatestSecurityPrice> quotes = cacheQuotes.get(cacheKey);
 
         if (quotes != null)
