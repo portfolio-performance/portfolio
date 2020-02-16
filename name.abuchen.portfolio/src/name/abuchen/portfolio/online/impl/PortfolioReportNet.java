@@ -21,7 +21,7 @@ import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
-import name.abuchen.portfolio.util.WebAccess;;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class PortfolioReportNet
 {
@@ -216,6 +216,8 @@ public class PortfolioReportNet
         if (type != null)
         {
             html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
+                            .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
+                                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                             .addParameter("securityType", //$NON-NLS-1$
                                             type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
                             .get();
@@ -223,7 +225,10 @@ public class PortfolioReportNet
         }
         else
         {
-            html = new WebAccess(HOST, "/api/securities/search/" + query).get(); //$NON-NLS-1$
+            html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
+                            .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
+                                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
+                            .get();
         }
 
         return readItems(html);
@@ -233,6 +238,8 @@ public class PortfolioReportNet
     {
         @SuppressWarnings("nls")
         String html = new WebAccess(HOST, "/api/securities/uuid/" + onlineId)
+                        .addUserAgent("PortfolioPerformance/"
+                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
                         .addHeader("X-Source",
                                         "Portfolio Peformance " + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                         .getVersion().toString())
