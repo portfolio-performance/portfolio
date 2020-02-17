@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.model;
 
+import java.util.Objects;
+
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamConverter;
 import com.thoughtworks.xstream.converters.extended.ToAttributedValueConverter;
@@ -27,9 +29,9 @@ public class SecurityProperty
 
     public SecurityProperty(Type type, String name, String value)
     {
-        this.type = type;
-        this.name = name;
-        this.value = value;
+        this.type = Objects.requireNonNull(type);
+        this.name = Objects.requireNonNull(name);
+        this.value = Objects.requireNonNull(value);
     }
 
     public Type getType()
@@ -45,5 +47,11 @@ public class SecurityProperty
     public String getValue()
     {
         return value;
+    }
+
+    @Override
+    public String toString()
+    {
+        return String.join(",", type.toString(), name, value); //$NON-NLS-1$
     }
 }

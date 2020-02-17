@@ -32,7 +32,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.QuotesTableViewer;
-import name.abuchen.portfolio.util.Pair;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
@@ -135,18 +134,18 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     private Object buildCacheKey(Exchange exchange)
     {
         if (exchange != null)
-            return exchange;
+            return getFeed() + exchange.getId();
         else if (AlphavantageQuoteFeed.ID.equals(getFeed()))
-            return new Pair<String, String>(AlphavantageQuoteFeed.ID, getModel().getTickerSymbol());
+            return AlphavantageQuoteFeed.ID + getModel().getTickerSymbol();
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
-            return new Pair<String, String>(FinnhubQuoteFeed.ID, getModel().getTickerSymbol());
+            return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
-            return new Pair<String, String>(QuandlQuoteFeed.ID,
+            return QuandlQuoteFeed.ID +
                             String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
                                             + String.valueOf(getModel().getFeedProperty(
-                                                            QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME)));
+                                            QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME));
         else
-            return getModel().getFeedURL();
+            return getFeed() + getModel().getFeedURL();
     }
 
     @Override

@@ -522,6 +522,43 @@ public final class Security implements Attributable, InvestmentVehicle
                         .map(SecurityProperty::getValue).findAny();
     }
 
+    /**
+     * Sets the property values. If the value is null, the property is removed
+     * if it exists. Returns <tt>true</tt> if the property was updated.
+     */
+    public boolean setPropertyValue(SecurityProperty.Type type, String name, String value)
+    {
+        if (properties == null)
+            properties = new ArrayList<>();
+
+        Optional<SecurityProperty> prop = properties.stream()
+                        .filter(p -> p.getType() == type && name.equals(p.getName())).findAny();
+
+        if (prop.isPresent())
+        {
+            boolean isEqual = Objects.equals(prop.get().getValue(), value);
+
+            if (!isEqual)
+            {
+                properties.remove(prop.get());
+
+                if (value != null)
+                    properties.add(new SecurityProperty(type, name, value));
+            }
+
+            return !isEqual;
+        }
+        else if (value != null)
+        {
+            properties.add(new SecurityProperty(type, name, value));
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public void addProperty(SecurityProperty data)
     {
         if (properties == null)
@@ -529,10 +566,15 @@ public final class Security implements Attributable, InvestmentVehicle
         this.properties.add(data);
     }
 
+    /**
+     * Removes the given property, if it is present. Returns <tt>true</tt> if
+     * the properties contained the specified property (or equivalently, if this
+     * list changed as a result of the call).
+     */
     public boolean removeProperty(SecurityProperty data)
     {
         if (properties == null)
-            properties = new ArrayList<>();
+            return false;
         return this.properties.remove(data);
     }
 

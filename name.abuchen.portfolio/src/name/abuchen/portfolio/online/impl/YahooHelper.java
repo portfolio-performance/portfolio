@@ -46,6 +46,13 @@ import name.abuchen.portfolio.money.Values;
         return LocalDate.parse(s, DateTimeFormatter.ofPattern("\"M/d/yyyy\"")); //$NON-NLS-1$
     }
 
+    static LocalDate fromISODate(String s)
+    {
+        if (s == null || "\"N/A\"".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        return LocalDate.parse(s);
+    }
+
     static String stripQuotes(String s)
     {
         return s.substring(1, s.length() - 1);

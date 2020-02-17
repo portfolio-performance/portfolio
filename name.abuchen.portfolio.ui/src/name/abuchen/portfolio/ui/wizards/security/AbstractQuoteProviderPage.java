@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.beans.PropertyChangeListener;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,7 @@ import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -97,11 +99,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                             {
                                 comboExchange.setInput(exchanges);
 
+                                String code = feed.getId().equals(PortfolioReportQuoteFeed.ID)
+                                                ? model.getFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME)
+                                                : model.getTickerSymbol();
+
                                 // if ticker symbol matches any of the
                                 // exchanges, select this exchange in the
                                 // combo list
                                 exchanges.stream() //
-                                                .filter(e -> e.getId().equals(model.getTickerSymbol())) //
+                                                .filter(e -> e.getId().equals(code)) //
                                                 .findAny() //
                                                 .ifPresent(e -> comboExchange.setSelection(new StructuredSelection(e)));
                             }
@@ -199,18 +205,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             reinitCaches();
 
             new LoadExchangesJob().schedule();
-
-            QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
-
-            if (feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
-            {
-                if (getFeedURL() == null || getFeedURL().length() == 0)
-                    clearSampleQuotes();
-                else
-                    showSampleQuotes(feed, null);
-            }
         }
 
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        if (feed != null && feed.getId() != null && feed.getId().indexOf(HTML) >= 0)
+        {
+            if (getFeedURL() == null || getFeedURL().length() == 0)
+                clearSampleQuotes();
+            else
+                showSampleQuotes(feed, null);
+        }
+        
         if (textQuandlCode != null && !textQuandlCode.getText()
                         .equals(model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME)))
         {
@@ -242,6 +247,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 tickerSymbol = exchange.getId();
                 setFeedURL(null);
             }
+        }
+        else if (comboExchange != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
+        {
+            Exchange exchange = (Exchange) ((IStructuredSelection) comboExchange.getSelection()).getFirstElement();
+            model.setFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                            exchange != null ? exchange.getId() : null);
         }
         else if (textFeedURL != null)
         {
@@ -323,9 +334,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private void createDetailDataWidgets(QuoteFeed feed)
     {
         boolean dropDown = feed != null && feed.getId() != null
-                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID));
+                        && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
+                                        || feed.getId().equals(PortfolioReportQuoteFeed.ID));
+
         boolean feedURL = feed != null && feed.getId() != null
                         && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID));
+
         boolean needsTicker = feed != null && feed.getId() != null
                         && (feed.getId().equals(AlphavantageQuoteFeed.ID) || feed.getId().equals(FinnhubQuoteFeed.ID));
 
@@ -463,6 +477,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             comboExchange.setInput(input);
             comboExchange.setSelection(new StructuredSelection(exchange));
         }
+        else if (feed != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
+        {
+            String code = model.getFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME);
+
+            if (code != null)
+            {
+                Exchange exchange = new Exchange(code, code);
+                comboExchange.setInput(Arrays.asList(exchange));
+                comboExchange.setSelection(new StructuredSelection(exchange));
+            }
+        }
         else if (textFeedURL != null)
         {
             textFeedURL.setText(getFeedURL());
@@ -495,6 +520,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         }
 
         QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) event.getSelection()).getFirstElement();
+        if (feed != null)
+            setFeed(feed.getId());
 
         createDetailDataWidgets(feed);
 
@@ -519,6 +546,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         break;
                     }
                 }
+            }
+
+            if (!exchangeSelected && exchanges != null && exchanges.size() == 1)
+            {
+                comboExchange.setSelection(new StructuredSelection(exchanges.get(0)));
+                exchangeSelected = true;
             }
 
             if (!exchangeSelected)

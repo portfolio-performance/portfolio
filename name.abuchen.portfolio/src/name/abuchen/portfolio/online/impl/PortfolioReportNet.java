@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -16,6 +17,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.osgi.framework.FrameworkUtil;
 
+import com.google.gson.Gson;
+
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.model.SecurityProperty.Type;
@@ -25,14 +28,14 @@ import name.abuchen.portfolio.util.WebAccess;
 
 public class PortfolioReportNet
 {
-    /* package */ static class Market
+    /* package */ static class SymbolInfo
     {
         private static final String SYMBOL_KEY = "symbol"; //$NON-NLS-1$
 
-        private String name;
+        private String exchange;
         private String symbol;
 
-        static List<Market> from(JSONObject json)
+        static List<SymbolInfo> from(JSONObject json)
         {
             if (json == null)
                 return Collections.emptyList();
@@ -43,9 +46,9 @@ public class PortfolioReportNet
             return set.stream() //
                             .filter(entry -> entry.getKey().toString().startsWith(SYMBOL_KEY)) //
                             .map(entry -> {
-                                Market m = new Market();
+                                SymbolInfo m = new SymbolInfo();
                                 String key = entry.getKey().toString();
-                                m.name = key.substring(SYMBOL_KEY.length()).toUpperCase(Locale.US);
+                                m.exchange = key.substring(SYMBOL_KEY.length()).toUpperCase(Locale.US);
                                 m.symbol = entry.getValue() == null ? null : entry.getValue().toString();
                                 return m;
                             }) //
@@ -53,18 +56,72 @@ public class PortfolioReportNet
                             .collect(Collectors.toList());
         }
 
-        private Market()
+        private SymbolInfo()
         {
         }
 
-        public String getName()
+        public String getExchange()
         {
-            return name;
+            return exchange;
         }
 
         public String getSymbol()
         {
             return symbol;
+        }
+    }
+
+    /* package */ static class MarketInfo
+    {
+        private String marketCode;
+        private String currencyCode;
+        private LocalDate firstPriceDate;
+        private LocalDate lastPriceDate;
+
+        static List<MarketInfo> from(JSONArray json)
+        {
+            if (json == null)
+                return Collections.emptyList();
+
+            List<MarketInfo> answer = new ArrayList<>();
+
+            for (Object obj : json)
+            {
+                JSONObject market = (JSONObject) obj;
+
+                MarketInfo info = new MarketInfo();
+                info.marketCode = (String) market.get("marketCode"); //$NON-NLS-1$
+                info.currencyCode = (String) market.get("currencyCode"); //$NON-NLS-1$
+                info.firstPriceDate = YahooHelper.fromISODate((String) market.get("firstPriceDate")); //$NON-NLS-1$
+                info.lastPriceDate = YahooHelper.fromISODate((String) market.get("lastPriceDate")); //$NON-NLS-1$
+                answer.add(info);
+            }
+
+            return answer;
+        }
+
+        private MarketInfo()
+        {
+        }
+
+        public String getMarketCode()
+        {
+            return marketCode;
+        }
+
+        public String getCurrencyCode()
+        {
+            return currencyCode;
+        }
+
+        public LocalDate getFirstPriceDate()
+        {
+            return firstPriceDate;
+        }
+
+        public LocalDate getLastPriceDate()
+        {
+            return lastPriceDate;
         }
     }
 
@@ -76,7 +133,8 @@ public class PortfolioReportNet
 
         private String isin;
         private String wkn;
-        private List<Market> markets;
+        private List<SymbolInfo> symbols;
+        private List<MarketInfo> markets;
 
         /* package */ static OnlineItem from(JSONObject jsonObject)
         {
@@ -94,7 +152,8 @@ public class PortfolioReportNet
 
             vehicle.isin = (String) jsonObject.get("isin"); //$NON-NLS-1$
             vehicle.wkn = (String) jsonObject.get("wkn"); //$NON-NLS-1$
-            vehicle.markets = Market.from(jsonObject);
+            vehicle.symbols = SymbolInfo.from(jsonObject);
+            vehicle.markets = MarketInfo.from((JSONArray) jsonObject.get("markets")); //$NON-NLS-1$
             return vehicle;
         }
 
@@ -129,7 +188,7 @@ public class PortfolioReportNet
         @Override
         public String getSymbol()
         {
-            return markets.stream().map(Market::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$
+            return symbols.stream().map(SymbolInfo::getSymbol).reduce((r, l) -> r + "," + l).orElse(null); //$NON-NLS-1$
         }
 
         @Override
@@ -153,9 +212,12 @@ public class PortfolioReportNet
 
             security.setIsin(isin);
             security.setWkn(wkn);
-            security.setTickerSymbol(markets.stream().map(Market::getSymbol).findAny().orElse(null));
-            markets.forEach(market -> security.addProperty(
-                            new SecurityProperty(SecurityProperty.Type.MARKET, market.getName(), market.getSymbol())));
+            security.setTickerSymbol(symbols.stream().map(SymbolInfo::getSymbol).findAny().orElse(null));
+            symbols.forEach(symbolInfo -> security.addProperty(new SecurityProperty(SecurityProperty.Type.MARKET,
+                            symbolInfo.getExchange(), symbolInfo.getSymbol())));
+
+            security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
+                            markets.isEmpty() ? null : new Gson().toJson(markets));
         }
 
         public boolean update(Security security)
@@ -180,7 +242,8 @@ public class PortfolioReportNet
 
             // we can collect the list into a map because the original JSON data
             // structure is actually a map
-            Map<String, String> remote = markets.stream().collect(Collectors.toMap(Market::getName, Market::getSymbol));
+            Map<String, String> remote = symbols.stream()
+                            .collect(Collectors.toMap(SymbolInfo::getExchange, SymbolInfo::getSymbol));
 
             for (SecurityProperty property : local)
             {
@@ -199,6 +262,10 @@ public class PortfolioReportNet
             }
 
             remote.forEach((k, v) -> security.addProperty(new SecurityProperty(Type.MARKET, k, v)));
+
+            if (security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
+                            markets.isEmpty() ? null : new Gson().toJson(markets)))
+                isDirty = true;
 
             return isDirty || !remote.isEmpty();
         }

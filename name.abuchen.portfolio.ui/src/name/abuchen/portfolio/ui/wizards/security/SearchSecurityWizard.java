@@ -1,12 +1,23 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.PortfolioReportNet;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public class SearchSecurityWizard extends Wizard
 {
@@ -40,7 +51,34 @@ public class SearchSecurityWizard extends Wizard
 
         Security security = new Security();
         item.applyTo(security);
+
+        if (security.getOnlineId() != null)
+            completePortfolioReportData(security);
+
         return security;
+    }
+
+    private void completePortfolioReportData(Security security)
+    {
+        try
+        {
+            new PortfolioReportNet().getUpdatedValues(security.getOnlineId())
+                            .ifPresent(item -> PortfolioReportNet.updateWith(security, item));
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(PortfolioReportQuoteFeed.ID);
+            List<Exchange> exchanges = feed.getExchanges(security, new ArrayList<>());
+
+            if (!exchanges.isEmpty())
+            {
+                security.setFeed(feed.getId());
+                security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                                exchanges.get(0).getId());
+            }
+        }
+        catch (IOException e)
+        {
+            PortfolioPlugin.log(e);
+        }
     }
 
     @Override

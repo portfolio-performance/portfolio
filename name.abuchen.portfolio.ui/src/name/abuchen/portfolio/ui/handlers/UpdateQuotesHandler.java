@@ -11,6 +11,7 @@ import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 
@@ -36,6 +37,7 @@ public class UpdateQuotesHandler
             else
             {
                 new UpdateQuotesJob(client, EnumSet.allOf(UpdateQuotesJob.Target.class)).schedule();
+                new SyncOnlineSecuritiesJob(client).schedule(2000);
             }
         });
     }
