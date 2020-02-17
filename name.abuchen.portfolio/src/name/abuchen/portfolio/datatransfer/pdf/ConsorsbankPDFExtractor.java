@@ -518,22 +518,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             return t;
                         })
 
-                        .oneOf( //
-                                        section -> section.attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wertpapierbezeichnung WKN ISIN") //
-                                                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
-                                                        .match("Dividende pro Stück ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }),
-
-                                        section -> section.attributes("name", "wkn", "isin", "currency") //
-                                                        .find("Wertpapierbezeichnung WKN ISIN") //
-                                                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
-                                                        .match("Ertragsausschüttung je Anteil ([\\d.]+,\\d+) (?<currency>\\w{3}+).*")
-                                                        .assign((t, v) -> {
-                                                            t.setSecurity(getOrCreateSecurity(v));
-                                                        }))
+                        .section("name", "wkn", "isin", "currency") //
+                        .find("Wertpapierbezeichnung WKN ISIN") //
+                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .match("(Dividende pro Stück|Ertragsausschüttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
+                        .assign((t, v) -> {
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
 
                         .section("amount", "currency") //
                         .match("Netto zugunsten IBAN (.*) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
