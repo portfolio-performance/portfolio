@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
@@ -16,6 +15,7 @@ import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.json.simple.JSONObject;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -167,7 +167,7 @@ public class HoldingsPieChartView extends AbstractFinanceView
                                 .sorted((l, r) -> Long.compare(r.getValuation().getAmount(),
                                                 l.getValuation().getAmount())) //
                                 .forEach(p -> {
-                                    String name = StringEscapeUtils.escapeJson(p.getDescription());
+                                    String name = JSONObject.escape(p.getDescription());
                                     String percentage = Values.Percent2.format(p.getShare());
                                     joiner.add(String.format(ENTRY, name, //
                                                     p.getValuation().getAmount(), //

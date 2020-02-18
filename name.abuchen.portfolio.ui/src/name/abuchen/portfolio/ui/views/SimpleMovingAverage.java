@@ -6,7 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.ArrayUtils;
+import com.google.common.primitives.Doubles;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -87,10 +87,7 @@ public class SimpleMovingAverage
             datesSMA.add(date);
         }
         
-        LocalDate[] tmpDates = datesSMA.toArray(new LocalDate[0]);
-        Double[] tmpPrices = valuesSMA.toArray(new Double[0]);
-
-        result.setDates(TimelineChart.toJavaUtilDate(tmpDates));
-        result.setValues(ArrayUtils.toPrimitive(tmpPrices));
+        result.setDates(TimelineChart.toJavaUtilDate(datesSMA.toArray(new LocalDate[0])));
+        result.setValues(Doubles.toArray(valuesSMA));
     }
 }

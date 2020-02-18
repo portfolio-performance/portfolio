@@ -2,13 +2,13 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.json.simple.JSONObject;
 
 import com.ibm.icu.text.MessageFormat;
 
@@ -103,7 +103,7 @@ import name.abuchen.portfolio.util.ColorConversion;
         private void printNode(StringBuilder buffer, TaxonomyNode node, String nodeColor, Money total,
                         boolean excludeSecurities)
         {
-            String name = StringEscapeUtils.escapeJson(node.getName());
+            String name = JSONObject.escape(node.getName());
             long actual = node.isRoot() ? total.getAmount() : node.getActual().getAmount();
             long base = node.isRoot() ? total.getAmount() : node.getParent().getActual().getAmount();
 

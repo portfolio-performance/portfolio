@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.lang3.RandomStringUtils;
 import org.junit.Test;
 
 import name.abuchen.portfolio.datatransfer.ImportAction.Status.Code;
@@ -219,7 +218,15 @@ public class DetectDuplicatesActionTest
         {
             if (propertyType == String.class)
             {
-                return RandomStringUtils.random(10);
+                char start = ' ';
+                char end = 'z';
+                int range = end - start;
+
+                StringBuilder builder = new StringBuilder();
+                for (int ii = 0; ii < 10; ii++)
+                    builder.append((char) (random.nextInt(range) + start));
+
+                return builder.toString();
             }
             else if (propertyType == long.class)
             {

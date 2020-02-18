@@ -7,18 +7,17 @@ Bundle-RequiredExecutionEnvironment: JavaSE-1.8
 Bundle-ActivationPolicy: lazy
 Bundle-Activator: name.abuchen.portfolio.ui.PortfolioPlugin
 Bundle-Vendor: %Bundle-Vendor
-Import-Package: com.google.common.collect;version="23.5.0",
- com.google.gson;version="2.8.5",
- com.google.gson.reflect;version="2.8.5",
+Import-Package: com.google.common.base,
+ com.google.common.collect,
+ com.google.common.primitives,
+ com.google.gson,
+ com.google.gson.reflect,
  de.engehausen.treemap,
  de.engehausen.treemap.impl,
  de.engehausen.treemap.swt,
  javax.annotation,
  javax.inject,
  org.apache.commons.csv,
- org.apache.commons.lang3,
- org.apache.commons.lang3.exception,
- org.apache.commons.lang3.tuple;version="3.4.0",
  org.apache.pdfbox.pdmodel,
  org.apache.pdfbox.util,
  org.eclipse.core.commands,

@@ -5,10 +5,11 @@ package name.abuchen.portfolio.ui.views;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
+import com.google.common.primitives.Doubles;
 
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -133,17 +134,15 @@ public class BollingerBands
             valuesBollingerBandsUpperBands.add(valueBollingerBandsUpperBands);
             datesBollingerBands.add(date);
         }
-        LocalDate[] tmpDates = datesBollingerBands.toArray(new LocalDate[0]);
-        Double[] tmpPricesLower = valuesBollingerBandsLowerBands.toArray(new Double[0]);
-        Double[] tmpPricesMiddle = valuesBollingerBandsMiddleBands.toArray(new Double[0]);
-        Double[] tmpPricesUpper = valuesBollingerBandsUpperBands.toArray(new Double[0]);
 
-        this.BollingerBandsLowerBand.setDates(TimelineChart.toJavaUtilDate(tmpDates));
-        this.BollingerBandsLowerBand.setValues(ArrayUtils.toPrimitive(tmpPricesLower));
-        this.BollingerBandsMiddleBand.setDates(TimelineChart.toJavaUtilDate(tmpDates));
-        this.BollingerBandsMiddleBand.setValues(ArrayUtils.toPrimitive(tmpPricesMiddle));
-        this.BollingerBandsUpperBand.setDates(TimelineChart.toJavaUtilDate(tmpDates));
-        this.BollingerBandsUpperBand.setValues(ArrayUtils.toPrimitive(tmpPricesUpper));
+        Date[] tmpDates = TimelineChart.toJavaUtilDate(datesBollingerBands.toArray(new LocalDate[0]));
+
+        this.BollingerBandsLowerBand.setDates(tmpDates);
+        this.BollingerBandsLowerBand.setValues(Doubles.toArray(valuesBollingerBandsLowerBands));
+        this.BollingerBandsMiddleBand.setDates(tmpDates);
+        this.BollingerBandsMiddleBand.setValues(Doubles.toArray(valuesBollingerBandsMiddleBands));
+        this.BollingerBandsUpperBand.setDates(tmpDates);
+        this.BollingerBandsUpperBand.setValues(Doubles.toArray(valuesBollingerBandsUpperBands));
     }
 
     public int getMinimumDaysForBollingerBands()

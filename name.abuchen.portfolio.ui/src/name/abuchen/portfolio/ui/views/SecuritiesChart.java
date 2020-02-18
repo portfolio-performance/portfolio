@@ -19,7 +19,6 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.ArrayUtils;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -47,6 +46,7 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
+import com.google.common.primitives.Doubles;
 import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -1169,7 +1169,7 @@ public class SecuritiesChart
         series.enableStep(true);
 
         configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
-                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorFifoPurchasePrice, 2,
+                        Doubles.toArray(values), colorFifoPurchasePrice, 2,
                         LineStyle.SOLID, false, seriesCounter == 0);
     }
 
@@ -1263,7 +1263,7 @@ public class SecuritiesChart
         series.enableStep(true);
 
         configureSeriesPainter(series, TimelineChart.toJavaUtilDate(dates.toArray(new LocalDate[0])),
-                        ArrayUtils.toPrimitive(values.toArray(new Double[0])), colorMovingAveragePurchasePrice, 2,
+                        Doubles.toArray(values), colorMovingAveragePurchasePrice, 2,
                         LineStyle.SOLID, false, seriesCounter == 0);
     }
 

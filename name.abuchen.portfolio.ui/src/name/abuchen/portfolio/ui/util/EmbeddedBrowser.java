@@ -10,7 +10,6 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -25,6 +24,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
+
+import com.google.common.base.Throwables;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -65,7 +66,7 @@ public class EmbeddedBrowser
             // if creation of embedded browser fails, provide some hints
             PortfolioPlugin.log(e);
 
-            String stacktrace = ExceptionUtils.getStackTrace(e);
+            String stacktrace = Throwables.getStackTraceAsString(e);
 
             Text text = new Text(container, SWT.WRAP);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(text);

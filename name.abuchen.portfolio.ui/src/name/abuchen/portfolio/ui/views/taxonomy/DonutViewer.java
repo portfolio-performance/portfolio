@@ -7,11 +7,11 @@ import java.util.StringJoiner;
 
 import javax.inject.Inject;
 
-import org.apache.commons.lang3.StringEscapeUtils;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.browser.BrowserFunction;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.json.simple.JSONObject;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.money.Values;
@@ -133,7 +133,7 @@ import name.abuchen.portfolio.ui.util.EmbeddedBrowser;
 
         private void addAssignment(StringJoiner joiner, TaxonomyNode node, String color, long total)
         {
-            String name = StringEscapeUtils.escapeJson(node.getName());
+            String name = JSONObject.escape(node.getName());
             String percentage = Values.Percent2.format(node.getActual().getAmount() / (double) total);
             // get classification nodes
             TaxonomyNode taxn = getClassificationNode(node);

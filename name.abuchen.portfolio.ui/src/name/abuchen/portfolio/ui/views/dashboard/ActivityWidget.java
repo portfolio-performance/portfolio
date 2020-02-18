@@ -9,7 +9,6 @@ import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -43,6 +42,7 @@ import name.abuchen.portfolio.ui.util.CacheKey;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
@@ -97,13 +97,13 @@ public class ActivityWidget extends WidgetDelegate<List<TransactionPair<?>>>
             IAxis xAxis = chart.getAxisSet().getXAxis(0);
 
             List<Pair<Integer, Integer>> years = new ArrayList<>();
-            years.add(Pair.of(yearMonths.get(0).getYear(), xAxis.getPixelCoordinate(0)));
+            years.add(new Pair<>(yearMonths.get(0).getYear(), xAxis.getPixelCoordinate(0)));
             for (int index = 1; index < yearMonths.size(); index++)
             {
                 YearMonth yearMonth = yearMonths.get(index);
                 if (yearMonth.getYear() == years.get(years.size() - 1).getKey())
                     continue;
-                years.add(Pair.of(yearMonths.get(index).getYear(), xAxis.getPixelCoordinate(index)));
+                years.add(new Pair<>(yearMonths.get(index).getYear(), xAxis.getPixelCoordinate(index)));
             }
 
             // draw marker per year

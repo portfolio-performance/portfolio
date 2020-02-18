@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
+import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
@@ -465,7 +465,7 @@ import name.abuchen.portfolio.ui.util.BindingHelper;
 
         security.removePropertyIf(p -> p.getType() == SecurityProperty.Type.FEED);
 
-        feedProperties.entrySet().stream().filter(entry -> !StringUtils.isEmpty(entry.getValue()))
+        feedProperties.entrySet().stream().filter(entry -> !Strings.isNullOrEmpty(entry.getValue()))
                         .forEach(entry -> security.addProperty(new SecurityProperty(SecurityProperty.Type.FEED,
                                         entry.getKey(), entry.getValue())));
     }
