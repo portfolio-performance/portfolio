@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.commons.csv.CSVStrategy;
+import org.apache.commons.csv.CSVFormat;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -15,8 +15,8 @@ import name.abuchen.portfolio.util.TextUtil;
 
 public abstract class AbstractCSVExporter
 {
-    protected static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
-                    CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+    protected static final CSVFormat STRATEGY = CSVFormat //
+                    .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
 
     protected abstract Shell getShell();
 

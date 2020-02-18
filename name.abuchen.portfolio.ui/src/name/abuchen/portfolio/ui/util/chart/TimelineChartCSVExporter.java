@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -59,11 +58,9 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             ISeries[] series = chart.getSeriesSet().getSeries();
 
             // write header

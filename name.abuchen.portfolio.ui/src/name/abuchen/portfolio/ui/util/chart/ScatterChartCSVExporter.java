@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -41,11 +40,9 @@ public class ScatterChartCSVExporter extends AbstractCSVExporter
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             // write header
             printer.print(Messages.ColumnDataSeries);
             printer.print(chart.getAxisSet().getXAxis(0).getTitle().getText());

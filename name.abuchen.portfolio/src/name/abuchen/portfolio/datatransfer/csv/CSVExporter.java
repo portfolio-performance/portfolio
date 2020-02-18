@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -12,8 +11,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVStrategy;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
@@ -30,17 +29,15 @@ import name.abuchen.portfolio.money.Values;
 /* not thread safe */
 public class CSVExporter
 {
-    /* package */static final CSVStrategy STRATEGY = new CSVStrategy(';', '"', CSVStrategy.COMMENTS_DISABLED,
-                    CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+    /* package */static final CSVFormat STRATEGY = CSVFormat //
+                    .newFormat(';').withQuote('"').withRecordSeparator("\r\n").withAllowDuplicateHeaderNames(); //$NON-NLS-1$
 
     public void exportAccountTransactions(File file, Account account) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
-            printer.println(new String[] { Messages.CSVColumn_Date, //
+            printer.printRecord(Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_TransactionCurrency, //
@@ -50,7 +47,7 @@ public class CSVExporter
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
-                            Messages.CSVColumn_Note });
+                            Messages.CSVColumn_Note);
 
             for (AccountTransaction t : account.getTransactions())
             {
@@ -59,7 +56,8 @@ public class CSVExporter
                 printer.print(Values.Amount.format(t.getType().isDebit() ? -t.getAmount() : t.getAmount()));
                 printer.print(t.getCurrencyCode());
                 printer.print(t.getType() == AccountTransaction.Type.DIVIDENDS
-                                ? Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount()) : ""); //$NON-NLS-1$
+                                ? Values.Amount.format(t.getUnitSum(Unit.Type.TAX).getAmount())
+                                : ""); //$NON-NLS-1$
                 printer.print(t.getShares() != 0 ? Values.Share.format(t.getShares()) : ""); //$NON-NLS-1$
 
                 printSecurityInfo(printer, t);
@@ -78,12 +76,10 @@ public class CSVExporter
 
     public void exportPortfolioTransactions(File file, Portfolio portfolio) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
-            printer.println(new String[] { Messages.CSVColumn_Date, //
+            printer.printRecord(Messages.CSVColumn_Date, //
                             Messages.CSVColumn_Type, //
                             Messages.CSVColumn_Value, //
                             Messages.CSVColumn_TransactionCurrency, //
@@ -97,7 +93,7 @@ public class CSVExporter
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
-                            Messages.CSVColumn_Note });
+                            Messages.CSVColumn_Note);
 
             for (PortfolioTransaction t : portfolio.getTransactions())
             {
@@ -135,7 +131,7 @@ public class CSVExporter
         }
     }
 
-    private void printSecurityInfo(CSVPrinter printer, Transaction t)
+    private void printSecurityInfo(CSVPrinter printer, Transaction t) throws IOException
     {
         Security security = t.getSecurity();
         if (security != null)
@@ -162,16 +158,15 @@ public class CSVExporter
 
     public void exportSecurityMasterData(File file, List<Security> securities) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
-            printer.println(new String[] { Messages.CSVColumn_ISIN, //
+            printer.printRecord(Messages.CSVColumn_ISIN, //
                             Messages.CSVColumn_WKN, //
                             Messages.CSVColumn_TickerSymbol, //
                             Messages.CSVColumn_SecurityName, //
-                            Messages.CSVColumn_Currency, Messages.CSVColumn_Note });
+                            Messages.CSVColumn_Currency, //
+                            Messages.CSVColumn_Note);
 
             for (Security s : securities)
             {
@@ -188,12 +183,10 @@ public class CSVExporter
 
     public void exportSecurityPrices(File file, Security security) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
-            printer.println(new String[] { Messages.CSVColumn_Date, Messages.CSVColumn_Quote });
+            printer.printRecord(Messages.CSVColumn_Date, Messages.CSVColumn_Quote);
 
             for (SecurityPrice p : security.getPrices())
             {
@@ -214,7 +207,7 @@ public class CSVExporter
     {
         // prepare: (a) find earliest date (b) ignore securities w/o quotes
         LocalDate earliestDate = null;
-        List<Security> export = new ArrayList<Security>(securities.size());
+        List<Security> export = new ArrayList<>(securities.size());
 
         for (Security s : securities)
         {
@@ -231,11 +224,9 @@ public class CSVExporter
             }
         }
 
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             // write header
             printer.print(Messages.CSVColumn_Date);
             for (Security security : export)

@@ -43,8 +43,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVStrategy;
+import org.apache.commons.csv.CSVRecord;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -710,52 +711,67 @@ public final class CSVImporter
     {
         Reader reader = new InputStreamReader(stream, encoding);
 
-        CSVStrategy strategy = new CSVStrategy(delimiter, '"', CSVStrategy.COMMENTS_DISABLED,
-                        CSVStrategy.ESCAPE_DISABLED, false, false, false, false);
+        CSVFormat strategy = CSVFormat.newFormat(delimiter).withQuote('"').withRecordSeparator("\r\n"); //$NON-NLS-1$
 
-        CSVParser parser = new CSVParser(reader, strategy);
-
-        for (int ii = 0; ii < skipLines; ii++)
-            parser.getLine();
-
-        List<String[]> input = new ArrayList<>();
-        String[] header = null;
-        String[] line = parser.getLine();
-
-        // no more data available after skipping lines
-        if (line == null)
+        try
         {
-            this.values = Collections.emptyList();
+            CSVParser parser = CSVParser.parse(reader, strategy);
+            Iterator<CSVRecord> records = parser.iterator();
+            for (int ii = 0; ii < skipLines && records.hasNext(); ii++)
+                records.next();
+            List<String[]> input = new ArrayList<>();
+            String[] header = null;
+            CSVRecord line = records.hasNext() ? records.next() : null;
+            // no more data available after skipping lines
+            if (line == null)
+            {
+                this.values = Collections.emptyList();
+                if (remap)
+                    this.columns = new Column[0];
+                return;
+            }
+            if (isFirstLineHeader)
+            {
+                header = toStringArray(line);
+            }
+            else
+            {
+                header = new String[line.size()];
+                for (int ii = 0; ii < header.length; ii++)
+                    header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
+                input.add(toStringArray(line));
+            }
+            while (records.hasNext())
+                input.add(toStringArray(records.next()));
+            this.values = input;
+            if (this.columns == null || remap)
+            {
+                this.columns = new CSVImporter.Column[header.length];
+                for (int ii = 0; ii < header.length; ii++)
+                    this.columns[ii] = new Column(ii, header[ii]);
+
+                mapToImportDefinition();
+            }
+        }
+        catch (IllegalStateException e)
+        {
+            PortfolioLog.error(e);
+
             if (remap)
-                this.columns = new Column[0];
-            return;
+                this.columns = new Column[] { new Column(0, Messages.LabelError) };
+
+            List<String[]> reply = new ArrayList<>();
+            reply.add(new String[] { e.getMessage() });
+            this.values = reply;
         }
+    }
 
-        if (isFirstLineHeader)
-        {
-            header = line;
-        }
-        else
-        {
-            header = new String[line.length];
-            for (int ii = 0; ii < header.length; ii++)
-                header[ii] = MessageFormat.format(Messages.CSVImportGenericColumnLabel, ii + 1);
-            input.add(line);
-        }
-
-        while ((line = parser.getLine()) != null)
-            input.add(line);
-
-        this.values = input;
-
-        if (this.columns == null || remap)
-        {
-            this.columns = new CSVImporter.Column[header.length];
-            for (int ii = 0; ii < header.length; ii++)
-                this.columns[ii] = new Column(ii, header[ii]);
-
-            mapToImportDefinition();
-        }
+    private String[] toStringArray(CSVRecord line)
+    {
+        String[] answer = new String[line.size()];
+        for (int ii = 0; ii < answer.length; ii++)
+            answer[ii] = line.get(ii);
+        return answer;
     }
 
     public void processFile(boolean remap) throws IOException

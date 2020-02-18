@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 
@@ -37,11 +36,9 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             ITreeContentProvider provider = (ITreeContentProvider) viewer.getContentProvider();
 
             int depth = depth(provider);
@@ -106,7 +103,7 @@ public class TreeViewerCSVExporter extends AbstractCSVExporter
     }
 
     private void writeLine(CSVPrinter printer, ITreeContentProvider provider, ILabelProvider[] labels, final int depth,
-                    LinkedList<String> path, Object element)
+                    LinkedList<String> path, Object element) throws IOException
     {
         path.add(labels[0].getText(element));
 
