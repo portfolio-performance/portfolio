@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Widget;
 
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public final class ColumnViewerSorter
@@ -135,6 +136,8 @@ public final class ColumnViewerSorter
                 type = 7;
             else if (returnType.isAssignableFrom(Money.class))
                 type = 8;
+            else if (returnType.isAssignableFrom(Quote.class))
+                type = 9;
             else
                 type = 0;
         }
@@ -203,6 +206,8 @@ public final class ColumnViewerSorter
                         return ((Boolean) attribute1).compareTo((Boolean) attribute2);
                     case 8:
                         return ((Money) attribute1).compareTo((Money) attribute2);
+                    case 9:
+                        return ((Quote) attribute1).compareTo((Quote) attribute2);
                     default:
                         return String.valueOf(attribute1).compareToIgnoreCase(String.valueOf(attribute2));
                 }
