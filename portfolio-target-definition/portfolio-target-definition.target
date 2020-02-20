@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="portfolio-target-definition" sequenceNumber="23">
+<target name="portfolio-target-definition" sequenceNumber="24">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.200.v20180906-1121"/>
@@ -30,14 +30,16 @@
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
 		<unit id="org.mockito" version="2.23.0.v20190527-1420"/>
 		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
+		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
+		<unit id="org.slf4j.api" version="1.7.10.v20170428-1633"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="https://download.eclipse.org/nebula/releases/2.3.0"/>
 		<unit id="org.eclipse.nebula.widgets.cdatetime.feature.feature.group" version="1.4.0.201912241810"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
-		<repository location="https://buchen.github.io/portfolio-deps/1.1.0"/>
-		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.1.0"/>
+		<repository location="https://buchen.github.io/portfolio-deps/1.2.0"/>
+		<unit id="name.abuchen.portfolio.dependencies.feature.feature.group" version="1.2.0"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<repository location="http://download.eclipse.org/technology/babel/update-site/R0.17.0/photon/"/>

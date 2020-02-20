@@ -12,6 +12,7 @@
     <booleanAttribute key="clearwslog" value="false"/>
     <stringAttribute key="configLocation" value="${workspace_loc}/.metadata/.plugins/org.eclipse.pde.core/Portfolio Performance Java11"/>
     <booleanAttribute key="default" value="false"/>
+    <setAttribute key="deselected_workspace_bundles"/>
     <booleanAttribute key="includeOptional" value="true"/>
     <stringAttribute key="location" value="${workspace_loc}/../runtime-name.abuchen.portfolio.product"/>
     <booleanAttribute key="org.eclipse.jdt.launching.ATTR_USE_START_ON_FIRST_THREAD" value="true"/>
@@ -28,19 +29,21 @@
         <setEntry value="com.google.guava@default:default"/>
         <setEntry value="com.googlecode.json-simple@default:default"/>
         <setEntry value="com.ibm.icu@default:default"/>
-        <setEntry value="com.springsource.org.apache.commons.csv@default:default"/>
+        <setEntry value="com.jayway.jsonpath.json-path@default:default"/>
         <setEntry value="de.engehausen.treemap.swt@default:default"/>
         <setEntry value="de.engehausen.treemap@default:default"/>
         <setEntry value="javax.annotation@default:default"/>
         <setEntry value="javax.inject@default:default"/>
+        <setEntry value="net.minidev.accessors-smart@default:default"/>
+        <setEntry value="net.minidev.json-smart@default:default"/>
         <setEntry value="org.apache.batik.constants@default:default"/>
         <setEntry value="org.apache.batik.css@default:default"/>
         <setEntry value="org.apache.batik.i18n@default:default"/>
         <setEntry value="org.apache.batik.util@default:default"/>
         <setEntry value="org.apache.commons.codec@default:default"/>
+        <setEntry value="org.apache.commons.commons-csv@default:default"/>
         <setEntry value="org.apache.commons.io@default:default"/>
         <setEntry value="org.apache.commons.jxpath@default:default"/>
-        <setEntry value="org.apache.commons.lang3@default:default"/>
         <setEntry value="org.apache.commons.logging@default:default"/>
         <setEntry value="org.apache.felix.gogo.command@default:default"/>
         <setEntry value="org.apache.felix.gogo.runtime@default:default"/>
@@ -145,8 +148,10 @@
         <setEntry value="org.eclipse.swt@default:default"/>
         <setEntry value="org.eclipse.ui.forms@default:default"/>
         <setEntry value="org.jsoup@default:default"/>
+        <setEntry value="org.objectweb.asm@default:default"/>
         <setEntry value="org.sat4j.core@default:default"/>
         <setEntry value="org.sat4j.pb@default:default"/>
+        <setEntry value="org.slf4j.api@default:default"/>
         <setEntry value="org.swtchart@default:default"/>
         <setEntry value="org.tukaani.xz@default:default"/>
         <setEntry value="org.w3c.css.sac@default:default"/>
