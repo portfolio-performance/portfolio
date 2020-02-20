@@ -27,6 +27,7 @@ import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
+import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -140,10 +141,14 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         else if (FinnhubQuoteFeed.ID.equals(getFeed()))
             return FinnhubQuoteFeed.ID + getModel().getTickerSymbol();
         else if (QuandlQuoteFeed.ID.equals(getFeed()))
-            return QuandlQuoteFeed.ID +
-                            String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
-                                            + String.valueOf(getModel().getFeedProperty(
-                                            QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME));
+            return QuandlQuoteFeed.ID
+                            + String.valueOf(getModel().getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME))
+                            + String.valueOf(getModel()
+                                            .getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME));
+        else if (GenericJSONQuoteFeed.ID.equals(getFeed()))
+            return GenericJSONQuoteFeed.ID + getModel().getFeedURL()
+                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME))
+                            + String.valueOf(getModel().getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME));
         else
             return getFeed() + getModel().getFeedURL();
     }

@@ -621,6 +621,9 @@ public class Messages extends NLS
     public static String LabelHeatmapEarnings;
     public static String LabelHeatmapOrnament;
     public static String LabelHistoricalReturnsAndVolatiltity;
+    public static String LabelJSONPathHint;
+    public static String LabelJSONPathToClose;
+    public static String LabelJSONPathToDate;
     public static String LabelKeyIndicators;
     public static String LabelMaxDrawdown;
     public static String LabelMaxDrawdownDuration;

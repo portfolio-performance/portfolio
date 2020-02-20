@@ -34,6 +34,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
@@ -46,6 +47,7 @@ import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.CSQuoteFeed;
 import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
+import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
@@ -146,9 +148,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
     private ComboViewer comboExchange;
     private Text textFeedURL;
     private Text textTicker;
+
     private Text textQuandlCode;
     private Label labelQuandlCloseColumnName;
     private Text textQuandlCloseColumnName;
+
+    private Label labelJsonPathDate;
+    private Text textJsonPathDate;
+    private Label labelJsonPathClose;
+    private Text textJsonPathClose;
 
     private PropertyChangeListener tickerSymbolPropertyChangeListener = e -> onTickerSymbolChanged();
 
@@ -215,7 +223,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             else
                 showSampleQuotes(feed, null);
         }
-        
+
         if (textQuandlCode != null && !textQuandlCode.getText()
                         .equals(model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME)))
         {
@@ -228,6 +236,20 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         {
             String columnName = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
             textQuandlCloseColumnName.setText(columnName != null ? columnName : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonPathDate != null && !textJsonPathDate.getText()
+                        .equals(model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME)))
+        {
+            String path = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            textJsonPathDate.setText(path != null ? path : ""); //$NON-NLS-1$
+        }
+
+        if (textJsonPathClose != null && !textJsonPathClose.getText()
+                        .equals(model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME)))
+        {
+            String path = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            textJsonPathClose.setText(path != null ? path : ""); //$NON-NLS-1$
         }
     }
 
@@ -337,13 +359,15 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                         && (feed.getId().startsWith(YAHOO) || feed.getId().equals(EurostatHICPQuoteFeed.ID)
                                         || feed.getId().equals(PortfolioReportQuoteFeed.ID));
 
-        boolean feedURL = feed != null && feed.getId() != null
-                        && (feed.getId().equals(HTMLTableQuoteFeed.ID) || feed.getId().equals(CSQuoteFeed.ID));
+        boolean feedURL = feed != null && feed.getId() != null && (feed.getId().equals(HTMLTableQuoteFeed.ID)
+                        || feed.getId().equals(CSQuoteFeed.ID) || feed.getId().equals(GenericJSONQuoteFeed.ID));
 
         boolean needsTicker = feed != null && feed.getId() != null
                         && (feed.getId().equals(AlphavantageQuoteFeed.ID) || feed.getId().equals(FinnhubQuoteFeed.ID));
 
         boolean needsQuandlCode = feed != null && feed.getId() != null && feed.getId().equals(QuandlQuoteFeed.ID);
+
+        boolean needsJsonPath = feed != null && feed.getId() != null && feed.getId().equals(GenericJSONQuoteFeed.ID);
 
         if (textFeedURL != null)
         {
@@ -383,6 +407,11 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textQuandlCloseColumnName = null;
         }
 
+        labelJsonPathDate = disposeIf(labelJsonPathDate);
+        textJsonPathDate = disposeIf(textJsonPathDate);
+        labelJsonPathClose = disposeIf(labelJsonPathClose);
+        textJsonPathClose = disposeIf(textJsonPathClose);
+
         if (dropDown)
         {
             labelDetailData.setText(Messages.LabelExchange);
@@ -402,7 +431,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             comboExchange.addSelectionChangedListener(this::onExchangeChanged);
         }
-        else if (feedURL)
+
+        if (feedURL)
         {
             labelDetailData.setText(Messages.EditWizardQuoteFeedLabelFeedURL);
 
@@ -411,7 +441,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             textFeedURL.addModifyListener(e -> onFeedURLChanged());
         }
-        else if (needsTicker)
+
+        if (needsTicker)
         {
             labelDetailData.setText(Messages.ColumnTicker);
 
@@ -425,7 +456,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             model.addPropertyChangeListener("tickerSymbol", tickerSymbolPropertyChangeListener); //$NON-NLS-1$
         }
-        else if (needsQuandlCode)
+
+        if (needsQuandlCode)
         {
             labelDetailData.setText(Messages.LabelQuandlCode);
 
@@ -448,13 +480,52 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             textQuandlCloseColumnName.addModifyListener(e -> onQuandlColumnNameChanged());
         }
-        else
+
+        if (needsJsonPath)
+        {
+            labelJsonPathDate = new Label(grpQuoteFeed, SWT.BORDER);
+            labelJsonPathDate.setText(Messages.LabelJSONPathToDate);
+
+            textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
+            textJsonPathDate.addModifyListener(e -> onJsonPathDateChanged());
+
+            Image image = FieldDecorationRegistry.getDefault()
+                            .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage();
+            ControlDecoration deco = new ControlDecoration(textJsonPathDate, SWT.TOP | SWT.LEFT);
+            deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(image);
+            deco.show();
+
+            labelJsonPathClose = new Label(grpQuoteFeed, SWT.BORDER);
+            labelJsonPathClose.setText(Messages.LabelJSONPathToClose);
+
+            textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
+            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
+            textJsonPathClose.addModifyListener(e -> onJsonPathCloseChanged());
+
+            image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
+                            .getImage();
+            deco = new ControlDecoration(textJsonPathClose, SWT.TOP | SWT.LEFT);
+            deco.setDescriptionText(Messages.LabelJSONPathHint);
+            deco.setImage(image);
+            deco.show();
+        }
+
+        if (!dropDown && !feedURL && !needsTicker && !needsQuandlCode && !needsJsonPath)
         {
             labelDetailData.setText(""); //$NON-NLS-1$
         }
 
         grpQuoteFeed.layout(true);
         grpQuoteFeed.getParent().layout();
+    }
+
+    private <T extends Control> T disposeIf(T control)
+    {
+        if (control != null && !control.isDisposed())
+            control.dispose();
+        return null;
     }
 
     private void setupInitialData()
@@ -477,7 +548,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             comboExchange.setInput(input);
             comboExchange.setSelection(new StructuredSelection(exchange));
         }
-        else if (feed != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
+
+        if (feed != null && feed.getId() != null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
         {
             String code = model.getFeedProperty(PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME);
 
@@ -488,11 +560,13 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                 comboExchange.setSelection(new StructuredSelection(exchange));
             }
         }
-        else if (textFeedURL != null)
+
+        if (textFeedURL != null && getFeedURL() != null)
         {
             textFeedURL.setText(getFeedURL());
         }
-        else if (textQuandlCode != null)
+
+        if (textQuandlCode != null)
         {
             String code = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME);
             if (code != null)
@@ -501,6 +575,17 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             String columnName = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CLOSE_COLUMN_NAME_PROPERTY_NAME);
             if (columnName != null)
                 textQuandlCloseColumnName.setText(columnName);
+        }
+
+        if (textJsonPathDate != null)
+        {
+            String datePath = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            if (datePath != null)
+                textJsonPathDate.setText(datePath);
+
+            String closePath = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            if (closePath != null)
+                textJsonPathClose.setText(closePath);
         }
     }
 
@@ -559,7 +644,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             setStatus(exchangeSelected ? null : MessageFormat.format(Messages.MsgErrorExchangeMissing, getTitle()));
         }
-        else if (textFeedURL != null)
+
+        if (textFeedURL != null)
         {
             boolean hasURL = getFeedURL() != null && getFeedURL().length() > 0;
 
@@ -568,7 +654,8 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
             setStatus(hasURL ? null : MessageFormat.format(Messages.EditWizardQuoteFeedMsgErrorMissingURL, getTitle()));
         }
-        else if (textQuandlCode != null)
+
+        if (textQuandlCode != null)
         {
             String code = model.getFeedProperty(QuandlQuoteFeed.QUANDL_CODE_PROPERTY_NAME);
             if (code != null)
@@ -578,7 +665,19 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             if (columnName != null)
                 textQuandlCloseColumnName.setText(columnName);
         }
-        else
+
+        if (textJsonPathDate != null)
+        {
+            String datePath = model.getFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME);
+            if (datePath != null)
+                textJsonPathDate.setText(datePath);
+
+            String closePath = model.getFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME);
+            if (closePath != null)
+                textJsonPathClose.setText(closePath);
+        }
+
+        if (comboExchange == null && textFeedURL == null && textQuandlCode == null && textJsonPathDate == null)
         {
             // get sample quotes?
             if (feed != null)
@@ -677,4 +776,25 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         setStatus(null);
     }
 
+    private void onJsonPathDateChanged()
+    {
+        String datePath = textJsonPathDate.getText();
+
+        model.setFeedProperty(GenericJSONQuoteFeed.DATE_PROPERTY_NAME, datePath.isEmpty() ? null : datePath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
+
+    private void onJsonPathCloseChanged()
+    {
+        String closePath = textJsonPathClose.getText();
+
+        model.setFeedProperty(GenericJSONQuoteFeed.CLOSE_PROPERTY_NAME, closePath.isEmpty() ? null : closePath);
+
+        QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+        showSampleQuotes(feed, null);
+        setStatus(null);
+    }
 }
