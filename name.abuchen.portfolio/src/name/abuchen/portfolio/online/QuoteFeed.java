@@ -2,6 +2,7 @@ package name.abuchen.portfolio.online;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
@@ -20,6 +21,14 @@ public interface QuoteFeed
      * Returns the display name of the quote feed.
      */
     String getName();
+
+    /**
+     * Returns the help URL to be shown to the user.
+     */
+    default Optional<String> getHelpURL()
+    {
+        return Optional.empty();
+    }
 
     /**
      * Update the latest quote of the given securities.

@@ -17,6 +17,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.SortedSet;
@@ -273,6 +274,12 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     public String getName()
     {
         return Messages.LabelHTMLTable;
+    }
+
+    @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/kursdaten_laden/#tabelle-auf-einer-webseite"); //$NON-NLS-1$
     }
 
     @Override

@@ -1,11 +1,15 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.beans.PropertyChangeListener;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -28,6 +32,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -38,6 +43,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Exchange;
@@ -54,6 +60,7 @@ import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
@@ -329,7 +336,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         formData.top = new FormAttachment(0, 5);
         formData.left = new FormAttachment(0, 10);
         grpQuoteFeed.setLayoutData(formData);
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(5, 5).applyTo(grpQuoteFeed);
+        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(grpQuoteFeed);
 
         Label lblProvider = new Label(grpQuoteFeed, SWT.NONE);
         lblProvider.setText(Messages.LabelQuoteFeedProvider);
@@ -346,6 +353,31 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         });
         comboProvider.setInput(getAvailableFeeds());
         GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboProvider.getControl());
+
+        Link link = new Link(grpQuoteFeed, SWT.UNDERLINE_LINK);
+        link.setText("<a>" + Messages.IntroLabelHelp + "</a>"); //$NON-NLS-1$ //$NON-NLS-2$
+        link.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+            try
+            {
+                QuoteFeed feed = (QuoteFeed) ((IStructuredSelection) comboProvider.getSelection()).getFirstElement();
+
+                String url = "https://help.portfolio-performance.info/kursdaten_laden/"; //$NON-NLS-1$
+
+                if (feed != null && feed.getHelpURL().isPresent())
+                    url = feed.getHelpURL().get();
+
+                // Use Google translate for non-German users (as the help pages are
+                // currently only available in German). Taking care to encode the #.
+                if (!Locale.getDefault().getLanguage().equals(Locale.GERMAN.getLanguage()))
+                    url = MessageFormat.format(Messages.HelpURL, URLEncoder.encode(url, StandardCharsets.UTF_8.name()));
+
+                DesktopAPI.browse(url);
+            }
+            catch (UnsupportedEncodingException ignore)
+            {
+                // UTF-8 is supported
+            }
+        }));
 
         labelDetailData = new Label(grpQuoteFeed, SWT.NONE);
         GridDataFactory.fillDefaults().indent(0, 5).applyTo(labelDetailData);
@@ -427,7 +459,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
                     return MessageFormat.format("{0} ({1})", exchange.getId(), exchange.getName()); //$NON-NLS-1$
                 }
             });
-            GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
+            GridDataFactory.fillDefaults().span(2, 1).hint(300, SWT.DEFAULT).applyTo(comboExchange.getControl());
 
             comboExchange.addSelectionChangedListener(this::onExchangeChanged);
         }
@@ -437,7 +469,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelDetailData.setText(Messages.EditWizardQuoteFeedLabelFeedURL);
 
             textFeedURL = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(300, SWT.DEFAULT).applyTo(textFeedURL);
+            GridDataFactory.fillDefaults().span(2, 1).hint(300, SWT.DEFAULT).applyTo(textFeedURL);
 
             textFeedURL.addModifyListener(e -> onFeedURLChanged());
         }
@@ -447,7 +479,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelDetailData.setText(Messages.ColumnTicker);
 
             textTicker = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textTicker);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textTicker);
 
             IObservableValue<?> observeText = WidgetProperties.text(SWT.Modify).observe(textTicker);
             @SuppressWarnings("unchecked")
@@ -462,14 +494,14 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelDetailData.setText(Messages.LabelQuandlCode);
 
             textQuandlCode = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textQuandlCode);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textQuandlCode);
             textQuandlCode.addModifyListener(e -> onQuandlCodeChanged());
 
             labelQuandlCloseColumnName = new Label(grpQuoteFeed, SWT.NONE);
             labelQuandlCloseColumnName.setText(Messages.LabelQuandlColumnNameQuote);
 
             textQuandlCloseColumnName = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textQuandlCloseColumnName);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textQuandlCloseColumnName);
 
             Image image = FieldDecorationRegistry.getDefault()
                             .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage();
@@ -487,7 +519,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelJsonPathDate.setText(Messages.LabelJSONPathToDate);
 
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
             textJsonPathDate.addModifyListener(e -> onJsonPathDateChanged());
 
             Image image = FieldDecorationRegistry.getDefault()
@@ -501,7 +533,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             labelJsonPathClose.setText(Messages.LabelJSONPathToClose);
 
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
-            GridDataFactory.fillDefaults().hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
+            GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
             textJsonPathClose.addModifyListener(e -> onJsonPathCloseChanged());
 
             image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
