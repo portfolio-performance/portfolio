@@ -178,4 +178,13 @@ import name.abuchen.portfolio.ui.util.swt.StyledLabel;
             buffer.append("\n\n"); //$NON-NLS-1$
         }
     }
+
+    @Override
+    protected void createButtonsForButtonBar(Composite parent)
+    {
+        super.createButtonsForButtonBar(parent);
+
+        if (newVersion.doPreventUpdate())
+            this.getButton(IDialogConstants.OK_ID).setEnabled(false);
+    }
 }

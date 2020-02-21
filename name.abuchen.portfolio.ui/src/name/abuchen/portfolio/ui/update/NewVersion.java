@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 import org.eclipse.core.runtime.Platform;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.osgi.framework.Version;
 
 import name.abuchen.portfolio.ui.Messages;
@@ -67,6 +68,11 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
                 return false;
             }
+            else if ("$version".equals(property)) //$NON-NLS-1$
+            {
+                String value = FrameworkUtil.getBundle(NewVersion.class).getVersion().toString();
+                return pattern.matcher(value).matches();
+            }
             else
             {
                 String value = System.getProperty(property);
@@ -102,6 +108,9 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
 
         public boolean isApplicable()
         {
+            if (expressions.isEmpty())
+                return false;
+
             for (Expression e : expressions)
                 if (!e.isApplicable())
                     return false;
@@ -119,6 +128,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
     private String minimumJavaVersionRequired;
     private String header;
     private List<Release> releases = new ArrayList<>();
+    private List<ConditionalMessage> preventUpdateIf = new ArrayList<>();
 
     public NewVersion(String version)
     {
@@ -197,7 +207,7 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
                     conditionalMessage = new ConditionalMessage(condition);
                     release.messages.add(conditionalMessage);
                 }
-                catch (IllegalArgumentException | IndexOutOfBoundsException e)
+                catch (RuntimeException e)
                 {
                     PortfolioPlugin.log(e);
 
@@ -253,5 +263,31 @@ import name.abuchen.portfolio.ui.PortfolioPlugin;
         double required = Double.parseDouble(minimumJavaVersionRequired);
 
         return required > current;
+    }
+
+    public void addPreventUpdateCondition(String condition)
+    {
+        try
+        {
+            preventUpdateIf.add(new ConditionalMessage(condition));
+        }
+        catch (RuntimeException e)
+        {
+            PortfolioPlugin.log(e);
+
+            // ignore -> lines will be added to regular release message
+        }
+    }
+
+    public boolean doPreventUpdate()
+    {
+        if (preventUpdateIf.isEmpty())
+            return false;
+
+        for (ConditionalMessage test : preventUpdateIf)
+            if (test.isApplicable())
+                return true;
+
+        return false;
     }
 }

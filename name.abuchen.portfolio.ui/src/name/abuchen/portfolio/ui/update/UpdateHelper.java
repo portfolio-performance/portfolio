@@ -48,6 +48,7 @@ public final class UpdateHelper
 
     private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
     private static final String HEADER = "header"; //$NON-NLS-1$
+    private static final String PREVENT_UPDATE_CONDITION_PREFIX = "latest.changes.preventUpdate."; //$NON-NLS-1$
 
     private final IWorkbench workbench;
     private final EPartService partService;
@@ -255,6 +256,17 @@ public final class UpdateHelper
                 header = update.replacement.getProperty(HEADER, null);
             if (header != null)
                 v.setHeader(header);
+
+            int index = 0;
+            while (true)
+            {
+                String condition = update.replacement.getProperty(PREVENT_UPDATE_CONDITION_PREFIX + index);
+                if (condition == null)
+                    break;
+                v.addPreventUpdateCondition(condition);
+
+                index++;
+            }
 
             return v;
         }
