@@ -269,6 +269,7 @@ public class Messages extends NLS
     public static String ColumnTaxes_Description;
     public static String ColumnTaxonomy;
     public static String ColumnTermCurrency;
+    public static String ColumnThereofForeignCurrencyGains;
     public static String ColumnTicker;
     public static String ColumnTotal;
     public static String ColumnTransactionType;

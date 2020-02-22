@@ -97,16 +97,18 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         // used to detect if we need to re-create the full table
         title.setData(layout);
 
+        int count = ClientPerformanceSnapshot.CategoryType.values().length;
+
         switch (layout)
         {
             case FULL:
-                createTable(ClientPerformanceSnapshot.CategoryType.values().length);
+                createTable(count);
                 break;
             case REDUCED:
-                createTable(5);
+                createTable(5); // show first 2 and last 2 items
                 break;
             case RELEVANT:
-                createTable(7);
+                createTable(8);
                 break;
             default:
                 throw new IllegalArgumentException();
@@ -212,7 +214,7 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
                         Values.Date.format(startDate));
         labels[0].setText(header);
 
-        for (int i = 1; i < 6; i++)
+        for (int i = 1; i < 7; i++)
         {
             ClientPerformanceSnapshot.Category category = categories.get(i);
             signs[i].setText(category.getSign());
@@ -221,16 +223,16 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
         }
 
         // footer
-        signs[6].setText("="); //$NON-NLS-1$
+        signs[7].setText("="); //$NON-NLS-1$
 
         LocalDate endDate = snapshot.getEndClientSnapshot().getTime();
         String footer = MessageFormat.format(Messages.PerformanceRelevantTransactionsFooter,
                         Values.Date.format(endDate));
-        labels[6].setText(footer);
+        labels[7].setText(footer);
 
         Money totalRelevantTransactions = sumCategoryValuations(
                         snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(), categories.subList(1, 6));
-        values[6].setText(Values.Money.format(totalRelevantTransactions, getClient().getBaseCurrency()));
+        values[7].setText(Values.Money.format(totalRelevantTransactions, getClient().getBaseCurrency()));
     }
 
     /**
@@ -281,15 +283,19 @@ public class PerformanceCalculationWidget extends WidgetDelegate<ClientPerforman
     {
         List<ClientPerformanceSnapshot.Category> categories = snapshot.getCategories();
 
+        int count = ClientPerformanceSnapshot.CategoryType.values().length;
+        int showFirstXItems = 3;
+        int showLastXItems = 2;
+
         Money misc = sumCategoryValuations(snapshot.getValue(CategoryType.INITIAL_VALUE).getCurrencyCode(),
-                        categories.subList(2, 6));
+                        categories.subList(showFirstXItems, count - showLastXItems));
 
-        filInValues(0, categories.subList(0, 2));
+        filInValues(0, categories.subList(0, showFirstXItems));
 
-        signs[2].setText("+"); //$NON-NLS-1$
-        labels[2].setText(Messages.LabelCategoryOtherMovements);
-        values[2].setText(Values.Money.format(misc, getClient().getBaseCurrency()));
+        signs[showFirstXItems].setText("+"); //$NON-NLS-1$
+        labels[showFirstXItems].setText(Messages.LabelCategoryOtherMovements);
+        values[showFirstXItems].setText(Values.Money.format(misc, getClient().getBaseCurrency()));
 
-        filInValues(3, categories.subList(categories.size() - 2, categories.size()));
+        filInValues(showFirstXItems + 1, categories.subList(categories.size() - showLastXItems, categories.size()));
     }
 }

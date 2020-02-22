@@ -71,7 +71,7 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     {
     }
 
-    public final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
+    /* package */ final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
     {
         for (Transaction t : transactions)
         {

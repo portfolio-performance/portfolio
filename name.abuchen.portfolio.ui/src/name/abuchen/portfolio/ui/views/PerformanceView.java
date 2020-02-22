@@ -196,7 +196,7 @@ public class PerformanceView extends AbstractHistoricView
 
         final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
 
         Column column = new NameColumn("label", Messages.ColumnLabel, SWT.NONE, 350); //$NON-NLS-1$
@@ -272,7 +272,7 @@ public class PerformanceView extends AbstractHistoricView
                 else if (element instanceof ClientPerformanceSnapshot.Position)
                 {
                     ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                    return Values.Money.format(pos.getValuation(), getClient().getBaseCurrency());
+                    return Values.Money.format(pos.getValue(), getClient().getBaseCurrency());
                 }
                 return null;
             }
@@ -283,6 +283,48 @@ public class PerformanceView extends AbstractHistoricView
                 if (element instanceof ClientPerformanceSnapshot.Category)
                     return boldFont;
                 return null;
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                if (!(element instanceof ClientPerformanceSnapshot.Position))
+                    return null;
+                ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
+                if (pos.getStart() == null || pos.getStart().isZero())
+                    return null;
+
+                return String.join("\n", pos.getStart().toString(), pos.getGain().toString(), //$NON-NLS-1$
+                                pos.getForexGain().toString(), pos.getEnd().toString());
+            }
+        });
+        support.addColumn(column);
+
+        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                if (element instanceof ClientPerformanceSnapshot.Position)
+                {
+                    ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
+                    return Values.Money.formatNonZero(pos.getForexGain(), getClient().getBaseCurrency());
+                }
+                return null;
+            }
+
+            @Override
+            public String getToolTipText(Object element)
+            {
+                if (!(element instanceof ClientPerformanceSnapshot.Position))
+                    return null;
+                ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
+                if (pos.getForexGain() == null || pos.getForexGain().isZero())
+                    return null;
+
+                return String.join("\n", pos.getStart().toString(), pos.getGain().toString(), //$NON-NLS-1$
+                                pos.getForexGain().toString(), pos.getEnd().toString());
             }
         });
         support.addColumn(column);

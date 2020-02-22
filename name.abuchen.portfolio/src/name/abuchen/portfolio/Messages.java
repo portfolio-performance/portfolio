@@ -130,6 +130,7 @@ public class Messages extends NLS
     public static String LabelNoCurrency;
     public static String LabelNoCurrencyDescription;
     public static String LabelPotentialDuplicate;
+    public static String LabelRealizedCapitalGains;
     public static String LabelRemovals;
     public static String LabelReportingPeriodCurrentMonth;
     public static String LabelReportingPeriodFromXtoY;
@@ -160,6 +161,7 @@ public class Messages extends NLS
     public static String LabelYahooFinanceAdjustedClose;
     public static String LabelEurostatHICP;
     public static String LabelExchangeRateSeriesBasedOnSecurity;
+    public static String LabelOtherCategory;
     public static String LabelXwithCurrencyY;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;

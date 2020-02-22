@@ -34,19 +34,19 @@ public abstract class Values<E>
         @Override
         public String formatNonZero(Money amount)
         {
-            return amount.isZero() ? null : format(amount);
+            return amount == null || amount.isZero() ? null : format(amount);
         }
 
         @Override
         public String formatNonZero(Money amount, double threshold)
         {
-            boolean isNotZero = Math.abs(amount.getAmount()) >= threshold;
+            boolean isNotZero = amount != null && Math.abs(amount.getAmount()) >= threshold;
             return isNotZero ? format(amount) : null;
         }
 
         public String formatNonZero(Money amount, String skipCurrencyCode)
         {
-            return amount.isZero() ? null : format(amount, skipCurrencyCode);
+            return amount == null || amount.isZero() ? null : format(amount, skipCurrencyCode);
         }
     }
 

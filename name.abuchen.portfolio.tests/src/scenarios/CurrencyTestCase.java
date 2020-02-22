@@ -162,7 +162,8 @@ public class CurrencyTestCase
                                         .subtract(performance.getValue(CategoryType.INITIAL_VALUE))));
 
         assertThat(performance.getValue(CategoryType.CAPITAL_GAINS)
-                        .add(performance.getValue(CategoryType.CURRENCY_GAINS)),
+                        .add(performance.getValue(CategoryType.CURRENCY_GAINS)
+                                        .add(performance.getValue(CategoryType.REALIZED_CAPITAL_GAINS))),
                         is(performance.getValue(CategoryType.FINAL_VALUE)
                                         .subtract(performance.getValue(CategoryType.INITIAL_VALUE))));
 

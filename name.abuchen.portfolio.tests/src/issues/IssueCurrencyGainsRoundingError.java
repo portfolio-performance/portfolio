@@ -35,6 +35,7 @@ public class IssueCurrencyGainsRoundingError
         MutableMoney currencyGains = MutableMoney.of(converter.getTermCurrency());
         currencyGains.subtract(snapshot.getValue(CategoryType.INITIAL_VALUE));
         currencyGains.subtract(snapshot.getValue(CategoryType.CAPITAL_GAINS));
+        currencyGains.subtract(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS));
         currencyGains.subtract(snapshot.getValue(CategoryType.EARNINGS));
         currencyGains.add(snapshot.getValue(CategoryType.FEES));
         currencyGains.add(snapshot.getValue(CategoryType.TAXES));
