@@ -372,6 +372,41 @@ public class ComdirectPDFExtractorTest
                         is(Money.of("EUR", Values.Amount.factorize(0.74))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.805)));
     }
+    
+    @Test
+    public void testWertpapierKauf10()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "comdirectWertpapierabrechnung_Kauf10.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getName(), is("Toromont Industries Ltd. Registered Shares o.N."));
+        assertThat(security.getIsin(), is("CA8911021050"));
+        assertThat(security.getWkn(), is("914305"));
+
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(1686.80)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-21T15:43")));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of("EUR", Values.Amount.factorize(20.80))));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(34)));
+    }
 
     @Test
     public void testWertpapierVerkauf()
