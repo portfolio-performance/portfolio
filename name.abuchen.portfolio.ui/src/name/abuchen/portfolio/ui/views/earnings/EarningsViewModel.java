@@ -126,6 +126,7 @@ public class EarningsViewModel
 
     private Mode mode = Mode.ALL;
     private boolean useGrossValue = true;
+    private boolean useGrossValueCapitalizedGain = false;
 
     public EarningsViewModel(IPreferenceStore preferences, CurrencyConverter converter, Client client)
     {
@@ -145,11 +146,12 @@ public class EarningsViewModel
                         this.clientFilter.getSelectedItem().getUUIDs()));
     }
 
-    public void configure(int startYear, Mode mode, boolean useGrossValue)
+    public void configure(int startYear, Mode mode, boolean useGrossValue, boolean useGrossValueCapitalizedGain)
     {
         this.startYear = startYear;
         this.mode = mode;
         this.useGrossValue = useGrossValue;
+        this.useGrossValueCapitalizedGain = useGrossValueCapitalizedGain;
 
         recalculate();
     }
@@ -203,6 +205,17 @@ public class EarningsViewModel
     public void setUseGrossValue(boolean useGrossValue)
     {
         this.useGrossValue = useGrossValue;
+        recalculate();
+    }
+
+    public boolean usesGrossValueCapitalizedGain()
+    {
+        return useGrossValueCapitalizedGain;
+    }
+
+    public void setUseGrossValueCapitalizedGain(boolean useGrossValueCapitalizedGain)
+    {
+        this.useGrossValueCapitalizedGain = useGrossValueCapitalizedGain;
         recalculate();
     }
 
@@ -280,7 +293,9 @@ public class EarningsViewModel
                         continue;
 
                     long value = 0;
-                    value = trade.getProfitLoss().getAmount();
+                    value = useGrossValueCapitalizedGain && mode == Mode.CAPITALIZEDGAIN
+                                    ? trade.getGrossProfitLoss().getAmount()
+                                    : trade.getProfitLoss().getAmount();
 
                     if (value != 0)
                     {

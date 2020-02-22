@@ -35,6 +35,8 @@ public class EarningsView extends AbstractFinanceView
     private static final String KEY_YEAR = EarningsView.class.getSimpleName() + "-year"; //$NON-NLS-1$
     private static final String KEY_MODE = EarningsView.class.getSimpleName() + "-mode"; //$NON-NLS-1$
     private static final String KEY_USE_GROSS_VALUE = EarningsView.class.getSimpleName() + "-use-gross-value"; //$NON-NLS-1$
+    private static final String KEY_USE_GROSS_VALUE_CAPITALIZEDGAIN = EarningsView.class.getSimpleName()
+                    + "-use-gross-value-capitalized-gain"; //$NON-NLS-1$
 
     @Inject
     private Client client;
@@ -75,13 +77,15 @@ public class EarningsView extends AbstractFinanceView
         }
 
         boolean useGrossValue = preferences.getBoolean(KEY_USE_GROSS_VALUE);
+        boolean useGrossValueCapitalizedGain = preferences.getBoolean(KEY_USE_GROSS_VALUE_CAPITALIZEDGAIN);
 
-        model.configure(year, mode, useGrossValue);
+        model.configure(year, mode, useGrossValue, useGrossValueCapitalizedGain);
 
         model.addUpdateListener(() -> {
             preferences.setValue(KEY_YEAR, model.getStartYear());
             preferences.setValue(KEY_MODE, model.getMode().name());
             preferences.setValue(KEY_USE_GROSS_VALUE, model.usesGrossValue());
+            preferences.setValue(KEY_USE_GROSS_VALUE_CAPITALIZEDGAIN, model.usesGrossValueCapitalizedGain());
         });
     }
 
@@ -149,7 +153,7 @@ public class EarningsView extends AbstractFinanceView
         }));
 
         toolBar.add(new DropDown(Messages.MenuConfigureView, Images.CONFIG, SWT.NONE, manager -> {
-            
+
             EnumSet<Mode> supportGrossValue = EnumSet.of(Mode.DIVIDENDS, Mode.INTEREST, Mode.EARNINGS);
             if (supportGrossValue.contains(model.getMode()))
             {
@@ -159,6 +163,14 @@ public class EarningsView extends AbstractFinanceView
                 manager.add(action);
             }
 
+            EnumSet<Mode> supportGrossValueCapitalizedGain = EnumSet.of(Mode.CAPITALIZEDGAIN);
+            if (supportGrossValueCapitalizedGain.contains(model.getMode()))
+            {
+                Action action = new SimpleAction(Messages.LabelUseGrossValue,
+                                a -> model.setUseGrossValueCapitalizedGain(!model.usesGrossValueCapitalizedGain()));
+                action.setChecked(model.usesGrossValueCapitalizedGain());
+                manager.add(action);
+            }
             EarningsTab tab = (EarningsTab) folder.getSelection().getData();
             if (tab != null)
             {
