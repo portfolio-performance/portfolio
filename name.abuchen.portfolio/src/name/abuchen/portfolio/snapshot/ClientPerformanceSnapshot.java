@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
@@ -28,46 +29,47 @@ import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.trail.Trail;
+import name.abuchen.portfolio.snapshot.trail.TrailProvider;
+import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
 
 public class ClientPerformanceSnapshot
 {
-    public static class Position
+    public static class Position implements TrailProvider
     {
+        public static final String TRAIL_VALUE = "value"; //$NON-NLS-1$
+
         private final String label;
         private final Security security;
         private final Money value;
-
-        private final Money start;
-        private final Money gain;
         private final Money forexGain;
-        private final Money end;
 
-        private Position(Security security, Money value)
+        private final TrailRecord trail;
+
+        private Position(Security security, Money value, TrailRecord trail)
         {
-            this(security.getName(), security, value, null, null, null, null);
+            this(security.getName(), security, value, null, trail);
         }
 
-        private Position(Security security, Money value, Money start, Money gain, Money forexGain, Money end)
+        private Position(Security security, Money value, Money forexGain, TrailRecord trail)
         {
-            this(security.getName(), security, value, start, gain, forexGain, end);
+            this(security.getName(), security, value, forexGain, trail);
         }
 
-        private Position(String label, Money value)
+        private Position(String label, Money value, TrailRecord trail)
         {
-            this(label, null, value, null, null, null, null);
+            this(label, null, value, null, trail);
         }
 
-        private Position(String label, Security security, Money value, Money start, Money gain, Money forexGain,
-                        Money end)
+        private Position(String label, Security security, Money value, Money forexGain, TrailRecord trail)
         {
             this.label = label;
             this.security = security;
             this.value = value;
-            this.start = start;
-            this.gain = gain;
             this.forexGain = forexGain;
-            this.end = end;
+
+            this.trail = trail;
         }
 
         public Money getValue()
@@ -85,24 +87,15 @@ public class ClientPerformanceSnapshot
             return security;
         }
 
-        public Money getStart()
-        {
-            return start;
-        }
-
-        public Money getGain()
-        {
-            return gain;
-        }
-
         public Money getForexGain()
         {
             return forexGain;
         }
 
-        public Money getEnd()
+        @Override
+        public Optional<Trail> explain(String key)
         {
-            return end;
+            return TRAIL_VALUE.equals(key) && trail != null ? Optional.of(new Trail(label, trail)) : Optional.empty();
         }
 
         public Position combine(Position other)
@@ -112,10 +105,8 @@ public class ClientPerformanceSnapshot
 
             return new Position(security, //
                             value.add(other.value), //
-                            start.add(other.start), //
-                            gain.add(other.gain), //
                             forexGain.add(other.forexGain), //
-                            end.add(other.end));
+                            trail.add(other.trail));
         }
     }
 
@@ -166,11 +157,22 @@ public class ClientPerformanceSnapshot
         private LocalDate date;
         private long value;
 
-        public LineItem(long shares, LocalDate date, long value)
+        private final TrailRecord trail;
+
+        /**
+         * Holds the original number of shares (of the transaction). The
+         * original shares are needed to calculate fractions if the transaction
+         * is split up multiple times
+         */
+        private final long originalShares;
+
+        public LineItem(long shares, LocalDate date, long value, TrailRecord trail)
         {
             this.shares = shares;
             this.date = Objects.requireNonNull(date);
             this.value = value;
+            this.trail = trail;
+            this.originalShares = shares;
         }
     }
 
@@ -325,13 +327,21 @@ public class ClientPerformanceSnapshot
         for (Security s : client.getSecurities())
         {
             security2fifo.put(s, new ArrayList<>());
-            security2realizedGain.put(s, new Position(s, zero, zero, zero, zero, zero));
+            security2realizedGain.put(s, new Position(s, zero, zero, TrailRecord.empty()));
         }
 
-        snapshotStart.getJointPortfolio().getPositions().stream()
-                        .forEach(p -> security2fifo.get(p.getInvestmentVehicle()).add(new LineItem(p.getShares(),
-                                        snapshotStart.getTime(),
-                                        p.calculateValue().with(converter.at(snapshotStart.getTime())).getAmount())));
+        snapshotStart.getJointPortfolio().getPositions().stream().forEach(p -> {
+
+            Money value = p.calculateValue();
+            Money converted = value.with(converter.at(snapshotStart.getTime()));
+
+            TrailRecord trail = TrailRecord.ofSnapshot(snapshotStart, p);
+            if (!value.getCurrencyCode().equals(converter.getTermCurrency()))
+                trail = trail.convert(converted, converter.getRate(snapshotStart.getTime(), value.getCurrencyCode()));
+
+            security2fifo.get(p.getInvestmentVehicle())
+                            .add(new LineItem(p.getShares(), snapshotStart.getTime(), converted.getAmount(), trail));
+        });
 
         // sort transactions to prepare for FIFO calculation
         List<PortfolioTransaction> tx = snapshotStart.getJointPortfolio().getSource().getTransactions();
@@ -342,18 +352,30 @@ public class ClientPerformanceSnapshot
             if (!period.contains(t.getDateTime()))
                 continue;
 
+            if (t.getType() == PortfolioTransaction.Type.TRANSFER_IN
+                            || t.getType() == PortfolioTransaction.Type.TRANSFER_OUT)
+                continue;
+
+            Money grossValue = t.getGrossValue();
+            Money convertedGrossValue = grossValue.with(converter.at(t.getDateTime()));
+
+            TrailRecord trail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
+            if (!grossValue.getCurrencyCode().equals(converter.getTermCurrency()))
+                trail = trail.convert(convertedGrossValue,
+                                converter.getRate(snapshotStart.getTime(), grossValue.getCurrencyCode()));
+
             switch (t.getType())
             {
                 case BUY:
                 case DELIVERY_INBOUND:
                     security2fifo.get(t.getSecurity()).add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(),
-                                    t.getGrossValue().with(converter.at(t.getDateTime())).getAmount()));
+                                    convertedGrossValue.getAmount(), trail));
                     break;
 
                 case SELL:
                 case DELIVERY_OUTBOUND:
 
-                    long value = t.getGrossValue().with(converter.at(t.getDateTime())).getAmount();
+                    long value = convertedGrossValue.getAmount();
                     List<LineItem> fifo = security2fifo.get(t.getSecurity());
 
                     long sold = t.getShares();
@@ -370,7 +392,6 @@ public class ClientPerformanceSnapshot
                         long start = Math.round((double) soldShares / item.shares * item.value);
                         long end = Math.round((double) soldShares / t.getShares() * value);
 
-                        long gain = end - start;
                         long forexGain = 0L;
 
                         if (!termCurrency.equals(t.getSecurity().getCurrencyCode()))
@@ -384,16 +405,14 @@ public class ClientPerformanceSnapshot
                             forexGain = converter.with(t.getSecurity().getCurrencyCode())
                                             .convert(item.date, Money.of(termCurrency, start))
                                             .with(converter.at(t.getDateTime())).getAmount() - start;
-
-                            gain = end - start - forexGain;
                         }
 
                         Position p = new Position(t.getSecurity(), //
                                         Money.of(termCurrency, end - start), //
-                                        Money.of(termCurrency, start), //
-                                        Money.of(termCurrency, gain), //
                                         Money.of(termCurrency, forexGain), //
-                                        Money.of(termCurrency, end));
+                                        trail.fraction(Money.of(termCurrency, end), soldShares, t.getShares())
+                                                        .substract(item.trail.fraction(Money.of(termCurrency, start),
+                                                                        soldShares, item.originalShares)));
 
                         security2realizedGain.put(t.getSecurity(),
                                         security2realizedGain.get(t.getSecurity()).combine(p));
@@ -416,9 +435,6 @@ public class ClientPerformanceSnapshot
 
                 case TRANSFER_OUT:
                 case TRANSFER_IN:
-                    // do nothing for internal transfers
-                    break;
-
                 default:
                     throw new UnsupportedOperationException();
             }
@@ -450,6 +466,9 @@ public class ClientPerformanceSnapshot
 
                             SecurityPosition positionAtEnd = security2end.get(entry.getKey());
 
+                            if (start == 0L && positionAtEnd == null)
+                                return new Position(entry.getKey(), zero, TrailRecord.empty());
+
                             if (start != 0L && positionAtEnd == null)
                             {
                                 PortfolioLog.warning(MessageFormat.format(
@@ -458,14 +477,13 @@ public class ClientPerformanceSnapshot
                                                 entry.getKey().getName(),
                                                 entry.getValue().stream().map(item -> Values.Date.format(item.date))
                                                                 .collect(Collectors.joining(",")))); //$NON-NLS-1$
-                                return new Position(entry.getKey(), zero);
+                                return new Position(entry.getKey(), zero, TrailRecord.empty());
                             }
 
-                            long end = positionAtEnd == null ? 0L
-                                            : positionAtEnd.calculateValue().with(converter.at(snapshotEnd.getTime()))
-                                                            .getAmount();
+                            Money endValue = positionAtEnd.calculateValue();
+                            Money convertedEndValue = endValue.with(converter.at(snapshotEnd.getTime()));
 
-                            long gain = end - start;
+                            long end = convertedEndValue.getAmount();
                             long forexGain = 0L;
 
                             if (!termCurrency.equals(entry.getKey().getCurrencyCode()))
@@ -480,16 +498,25 @@ public class ClientPerformanceSnapshot
                                                                 Money.of(termCurrency, item.value)))
                                                 .collect(MoneyCollectors.sum(entry.getKey().getCurrencyCode()))
                                                 .with(converter.at(snapshotEnd.getTime())).getAmount() - start;
-
-                                gain = end - start - forexGain;
                             }
+
+                            // build trail
+
+                            TrailRecord trail = TrailRecord.ofSnapshot(snapshotEnd, positionAtEnd);
+                            if (!endValue.getCurrencyCode().equals(converter.getTermCurrency()))
+                                trail = trail.convert(convertedEndValue,
+                                                converter.getRate(snapshotEnd.getTime(), endValue.getCurrencyCode()));
+
+                            trail = trail.substract(TrailRecord.of(entry.getValue().stream()
+                                            .filter(item -> item.shares > 0)
+                                            .map(item -> item.trail.fraction(Money.of(termCurrency, item.value),
+                                                            item.shares, item.originalShares))
+                                            .collect(Collectors.toList())));
 
                             return new Position(entry.getKey(), //
                                             Money.of(termCurrency, end - start), //
-                                            Money.of(termCurrency, start), //
-                                            Money.of(termCurrency, gain), //
                                             Money.of(termCurrency, forexGain), //
-                                            Money.of(termCurrency, end));
+                                            trail);
                         }) //
                         .filter(p -> !p.getValue().isZero())
                         .sorted((p1, p2) -> p1.getLabel().compareToIgnoreCase(p2.getLabel())) //
@@ -620,8 +647,9 @@ public class ClientPerformanceSnapshot
         BiFunction<Map<Security, MutableMoney>, String, List<Position>> asPositions = (map, otherLabel) -> map
                         .entrySet().stream() //
                         .filter(entry -> !entry.getValue().isZero()) //
-                        .map(entry -> entry.getKey() == null ? new Position(otherLabel, entry.getValue().toMoney())
-                                        : new Position(entry.getKey(), entry.getValue().toMoney()))
+                        .map(entry -> entry.getKey() == null
+                                        ? new Position(otherLabel, entry.getValue().toMoney(), null)
+                                        : new Position(entry.getKey(), entry.getValue().toMoney(), null))
                         .sorted((p1, p2) -> {
                             if (p1.getSecurity() == null)
                                 return p2.getSecurity() == null ? 0 : 1;
@@ -642,8 +670,10 @@ public class ClientPerformanceSnapshot
         categories.get(CategoryType.TAXES).positions = asPositions.apply(taxesBySecurity, Messages.LabelOtherCategory);
 
         categories.get(CategoryType.TRANSFERS).valuation = mDeposits.toMoney().subtract(mRemovals.toMoney());
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelDeposits, mDeposits.toMoney()));
-        categories.get(CategoryType.TRANSFERS).positions.add(new Position(Messages.LabelRemovals, mRemovals.toMoney()));
+        categories.get(CategoryType.TRANSFERS).positions
+                        .add(new Position(Messages.LabelDeposits, mDeposits.toMoney(), null));
+        categories.get(CategoryType.TRANSFERS).positions
+                        .add(new Position(Messages.LabelRemovals, mRemovals.toMoney(), null));
     }
 
     private void addEarningTransaction(Account account, AccountTransaction transaction, MutableMoney mEarnings,
@@ -730,7 +760,7 @@ public class ClientPerformanceSnapshot
         Category currencyGains = categories.get(CategoryType.CURRENCY_GAINS);
         currency2money.forEach((currency, money) -> {
             currencyGains.valuation = currencyGains.valuation.add(money.toMoney());
-            currencyGains.positions.add(new Position(currency, money.toMoney()));
+            currencyGains.positions.add(new Position(currency, money.toMoney(), null));
         });
         Collections.sort(currencyGains.positions, (p1, p2) -> p1.getLabel().compareTo(p2.getLabel()));
     }

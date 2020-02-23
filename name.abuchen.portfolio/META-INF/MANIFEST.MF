@@ -20,6 +20,7 @@ Export-Package: name.abuchen.portfolio.checks,
  name.abuchen.portfolio.snapshot.filter,
  name.abuchen.portfolio.snapshot.security,
  name.abuchen.portfolio.snapshot.trades,
+ name.abuchen.portfolio.snapshot.trail,
  name.abuchen.portfolio.util
 Import-Package: com.google.common.base,
  com.google.common.io,

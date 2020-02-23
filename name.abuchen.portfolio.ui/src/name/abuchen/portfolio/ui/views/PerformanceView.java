@@ -58,6 +58,7 @@ import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
@@ -192,7 +193,7 @@ public class PerformanceView extends AbstractHistoricView
 
         calculation = new TreeViewer(container, SWT.FULL_SELECTION);
 
-        ColumnViewerToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
+        MoneyTrailToolTipSupport.enableFor(calculation, ToolTip.NO_RECREATE);
 
         final Font boldFont = JFaceResources.getFontRegistry().getBold(container.getFont().getFontData()[0].getName());
 
@@ -290,12 +291,12 @@ public class PerformanceView extends AbstractHistoricView
             {
                 if (!(element instanceof ClientPerformanceSnapshot.Position))
                     return null;
-                ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                if (pos.getStart() == null || pos.getStart().isZero())
-                    return null;
 
-                return String.join("\n", pos.getStart().toString(), pos.getGain().toString(), //$NON-NLS-1$
-                                pos.getForexGain().toString(), pos.getEnd().toString());
+                ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
+
+                return position.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE).isPresent()
+                                ? ClientPerformanceSnapshot.Position.TRAIL_VALUE
+                                : null;
             }
         });
         support.addColumn(column);
@@ -312,19 +313,6 @@ public class PerformanceView extends AbstractHistoricView
                     return Values.Money.formatNonZero(pos.getForexGain(), getClient().getBaseCurrency());
                 }
                 return null;
-            }
-
-            @Override
-            public String getToolTipText(Object element)
-            {
-                if (!(element instanceof ClientPerformanceSnapshot.Position))
-                    return null;
-                ClientPerformanceSnapshot.Position pos = (ClientPerformanceSnapshot.Position) element;
-                if (pos.getForexGain() == null || pos.getForexGain().isZero())
-                    return null;
-
-                return String.join("\n", pos.getStart().toString(), pos.getGain().toString(), //$NON-NLS-1$
-                                pos.getForexGain().toString(), pos.getEnd().toString());
             }
         });
         support.addColumn(column);

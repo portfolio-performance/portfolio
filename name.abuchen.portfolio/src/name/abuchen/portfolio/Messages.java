@@ -119,6 +119,7 @@ public class Messages extends NLS
     public static String LabelCreditSuisseHTMLTable;
     public static String LabelDefaultReferenceAccountName;
     public static String LabelDeposits;
+    public static String LabelDifference;
     public static String LabelError;
     public static String LabelEuropeanCentralBank;
     public static String LabelHTMLTable;
@@ -145,7 +146,9 @@ public class Messages extends NLS
     public static String LabelSearchShare;
     public static String LabelSecurity;
     public static String LabelSecurityPrice;
+    public static String LabelStatementOfAssets;
     public static String LabelSuffixEntryCorrected;
+    public static String LabelSum;
     public static String LabelTradeCalendarDefault;
     public static String LabelTradeCalendarEuronext;
     public static String LabelTradeCalendarGermany;
@@ -154,6 +157,8 @@ public class Messages extends NLS
     public static String LabelTradeCalendarSix;
     public static String LabelTradeCalendarUseDefault;
     public static String LabelTradeCalendarEmpty;
+    public static String LabelTrailWithoutTaxesAndFees;
+    public static String LabelTrailXofYShares;
     public static String LabelTransferAccount;
     public static String LabelTransferPortfolio;
     public static String LabelWithoutClassification;
