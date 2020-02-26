@@ -47,7 +47,7 @@ import name.abuchen.portfolio.ui.views.dashboard.DashboardView;
 import name.abuchen.portfolio.ui.views.earnings.EarningsView;
 import name.abuchen.portfolio.ui.views.settings.SettingsView;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyView;
-import name.abuchen.portfolio.ui.views.trades.TradeDetailsView;
+import name.abuchen.portfolio.ui.views.trades.TradeView;
 
 public final class Navigation
 {
@@ -433,10 +433,7 @@ public final class Navigation
         performance.add(new Item(Messages.ClientEditorLabelReturnsVolatility, ReturnsVolatilityChartView.class));
         performance.add(new Item(Messages.LabelSecurities, SecuritiesPerformanceView.class));
         performance.add(new Item(Messages.LabelEarningsExpenses, EarningsView.class));
-
-        Item allTrades = new Item(Messages.LabelTrades, TradeDetailsView.class);
-        allTrades.addTag(Tag.HIDE);
-        performance.add(allTrades);
+        performance.add(new Item(Messages.LabelTrades, TradeView.class));
     }
 
     private void createTaxonomyDataSection(Client client)
