@@ -73,7 +73,7 @@ public abstract class SharesLabelProvider extends OwnerDrawLabelProvider
             s = s.substring(0, p);
 
         TextLayout textLayout = getSharedTextLayout(event.display);
-        textLayout.setText(s + ",000"); //$NON-NLS-1$
+        textLayout.setText(s + ",000 "); //$NON-NLS-1$
 
         return textLayout.getBounds();
     }
