@@ -654,9 +654,9 @@ public class IBFlexStatementExtractor implements Extractor
             double amount = Double.parseDouble(element.getAttribute("amount"));
 
             // Regex Pattern matches the Dividend per Share and calculate number
-            // of
-            // shares
-            Pattern dividendPattern = Pattern.compile("DIVIDEND ([0-9]*\\.[0-9]*) .*");
+            // of shares
+            // Quapla Regex angepasst, 28.2.20
+            Pattern dividendPattern = Pattern.compile(".*DIVIDEND.* ([0-9]*\\.[0-9]*) .*");
             Matcher tagmatch = dividendPattern.matcher(desc);
             if (tagmatch.find())
             {
