@@ -310,8 +310,8 @@ public class IBFlexStatementExtractor implements Extractor
                 throw new IllegalArgumentException();
             }
 
-            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". Quapla 18.08.19
-            // New format is stored in dateTime, take care for double imports). Quapla 7.1.20
+            // Sometimes IB-FlexStatement doesn't include "tradeDate" - in this case tradeDate will be replaced by "000000". 
+            // New format is stored in dateTime, take care for double imports). 
             if (element.hasAttribute("dateTime"))
             {
                 transaction.setDate(convertDate(element.getAttribute("dateTime").substring(0,8), element.getAttribute("dateTime").substring(9,15)));
@@ -612,17 +612,25 @@ public class IBFlexStatementExtractor implements Extractor
                 quoteFeed = AlphavantageQuoteFeed.ID;
             }
 
+            Security s2 = null;
+            
             for (Security s : allSecurities)
             {
-                // Find security with same conID or isin or yahooSymbol
+                // Find security with same conID or isin & currency or yahooSymbol
                 if (conID != null && conID.length() > 0 && conID.equals(s.getWkn()))
                     return s;
                 if (isin.length() > 0 && isin.equals(s.getIsin()))
-                    return s;
+                    if (currency.equals(s.getCurrencyCode()))
+                        return s;
+                    else
+                        s2 = s;
                 if (computedTickerSymbol.isPresent() && computedTickerSymbol.get().equals(s.getTickerSymbol()))
                     return s;
             }
 
+            if (s2 != null)
+                return s2;
+            
             if (!doCreate)
                 return null;
 
@@ -655,7 +663,6 @@ public class IBFlexStatementExtractor implements Extractor
 
             // Regex Pattern matches the Dividend per Share and calculate number
             // of shares
-            // Quapla Regex angepasst, 28.2.20
             Pattern dividendPattern = Pattern.compile(".*DIVIDEND.* ([0-9]*\\.[0-9]*) .*");
             Matcher tagmatch = dividendPattern.matcher(desc);
             if (tagmatch.find())
