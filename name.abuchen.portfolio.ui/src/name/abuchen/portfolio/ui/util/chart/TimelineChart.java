@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.util.chart;
 
-import java.text.DecimalFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -22,7 +21,6 @@ import org.eclipse.swt.widgets.Display;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
-import org.swtchart.IAxisTick;
 import org.swtchart.IBarSeries;
 import org.swtchart.ICustomPaintListener;
 import org.swtchart.ILineSeries;
@@ -97,10 +95,7 @@ public class TimelineChart extends Chart // NOSONAR
         yAxis.getTitle().setVisible(false);
         yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
-        
-        IAxisTick yTick = getAxisSet().getYAxis(0).getTick();
-        yTick.setFormat(new DecimalFormat("#,###")); //$NON-NLS-1$
-        
+
         // 2nd y axis
         int axisId = getAxisSet().createYAxis();
         IAxis y2Axis = getAxisSet().getYAxis(axisId);
