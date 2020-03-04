@@ -143,8 +143,9 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 int startLine = blocks.get(ii);
                 int endLine = ii + 1 < blocks.size() ? blocks.get(ii + 1) - 1 : lines.length - 1;
 
-                // if an "endsWith" pattern exists, check if the block might end earlier
-                
+                // if an "endsWith" pattern exists, check if the block might end
+                // earlier
+
                 if (endsWith != null)
                 {
                     endLine = findBlockEnd(lines, startLine, endLine);
@@ -255,6 +256,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
     /* package */static class Section<T>
     {
         private boolean isOptional = false;
+        private boolean isMultipleTimes = false;
         private Transaction<T> transaction;
         private String[] attributes;
         private List<Pattern> pattern = new ArrayList<>();
@@ -275,6 +277,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
         public Section<T> optional()
         {
             this.isOptional = true;
+            return this;
+        }
+
+        public Section<T> multipleTimes()
+        {
+            this.isMultipleTimes = true;
             return this;
         }
 
@@ -301,23 +309,50 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             Map<String, String> values = new HashMap<>();
 
             int patternNo = 0;
+            boolean patternFound = false;
             for (int ii = lineNo; ii <= lineNoEnd; ii++)
             {
                 Pattern p = pattern.get(patternNo);
                 Matcher m = p.matcher(lines[ii]);
                 if (m.matches())
                 {
+
                     // extract attributes
                     extractAttributes(values, p, m);
+
+                    patternFound = true;
 
                     // next pattern?
                     patternNo++;
                     if (patternNo >= pattern.size())
-                        break;
+                    {
+                        if (values.size() != attributes.length)
+                            throw new IllegalArgumentException(MessageFormat.format(
+                                            Messages.MsgErrorMissingValueMatches, values.keySet().toString(),
+                                            Arrays.toString(attributes), filename, lineNo + 1, lineNoEnd + 1));
+
+                        if (assignment == null)
+                            throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
+
+                        assignment.accept(target, values);
+
+                        // if there might be multiple occurrences that match,
+                        // the found values need to be added and the search
+                        // continues through all lines with the same patterns
+                        if (isMultipleTimes)
+                        {
+                            // continue searching with first pattern
+                            patternNo = 0;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
                 }
             }
 
-            if (patternNo < pattern.size())
+            if (!patternFound)
             {
                 // if section is optional, ignore if patterns do not match
                 if (isOptional)
@@ -326,16 +361,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAllPatternMatched,
                                 patternNo, pattern.size(), pattern.toString(), filename, lineNo + 1, lineNoEnd + 1));
             }
-
-            if (values.size() != attributes.length)
-                throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorMissingValueMatches,
-                                values.keySet().toString(), Arrays.toString(attributes), filename, lineNo + 1,
-                                lineNoEnd + 1));
-
-            if (assignment == null)
-                throw new IllegalArgumentException("Assignment function missing"); //$NON-NLS-1$
-
-            assignment.accept(target, values);
         }
 
         private void extractAttributes(Map<String, String> values, Pattern p, Matcher m)
