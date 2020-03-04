@@ -309,7 +309,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
             Map<String, String> values = new HashMap<>();
 
             int patternNo = 0;
-            boolean patternFound = false;
+            boolean patternsFound = false;
             for (int ii = lineNo; ii <= lineNoEnd; ii++)
             {
                 Pattern p = pattern.get(patternNo);
@@ -319,8 +319,6 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
 
                     // extract attributes
                     extractAttributes(values, p, m);
-
-                    patternFound = true;
 
                     // next pattern?
                     patternNo++;
@@ -342,6 +340,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                         if (isMultipleTimes)
                         {
                             // continue searching with first pattern
+                            patternsFound = true;
                             patternNo = 0;
                         }
                         else
@@ -352,7 +351,7 @@ import name.abuchen.portfolio.datatransfer.Extractor.Item;
                 }
             }
 
-            if (!patternFound)
+            if (patternNo < pattern.size() && !patternsFound)
             {
                 // if section is optional, ignore if patterns do not match
                 if (isOptional)
