@@ -249,12 +249,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("kapst", "currency").optional()
+                        .section("kapst", "currency").optional().multipleTimes()
                         .match("KAPST .*(?<currency>\\w{3}+) *(?<kapst>[\\d.]+,\\d+) *")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("kapst"))))))
 
-                        .section("solz", "currency").optional()
+                        .section("solz", "currency").optional().multipleTimes()
                         .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             String currency = asCurrencyCode(v.get("currency"));
@@ -326,7 +326,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private <T extends Transaction<?>> void addTaxesSectionsTransaction(T pdfTransaction)
     {
-        pdfTransaction.section("tax", "currency").optional()
+        pdfTransaction.section("tax", "currency").optional().multipleTimes()
                         .match("KAPST .*(?<currency>\\w{3}+) *(?<tax>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             if (t instanceof name.abuchen.portfolio.model.Transaction)
@@ -341,8 +341,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                                 asAmount(v.get("tax")))));
                             }
                         })
-
-                        .section("solz", "currency").optional()
+                        
+                        .section("solz", "currency").optional().multipleTimes()
                         .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             if (t instanceof name.abuchen.portfolio.model.Transaction)
@@ -358,7 +358,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("kirchenst", "currency").optional()
+                        .section("kirchenst", "currency").optional().multipleTimes()
                         .match("KIST .*(?<currency>\\w{3}+) *(?<kirchenst>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
                             if (t instanceof name.abuchen.portfolio.model.Transaction)
