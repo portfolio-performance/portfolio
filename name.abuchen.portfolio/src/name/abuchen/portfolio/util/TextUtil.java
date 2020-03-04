@@ -49,6 +49,16 @@ public final class TextUtil
         return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
+    /**
+     * Adds a space before and after the text. Typically used for tool tips
+     * where the label background is colored according to the data series. On
+     * Windows the labels do not look right without padding.
+     */
+    public static final String pad(String text)
+    {
+        return text == null ? null : " " + text + " "; //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
     public static final String sanitizeFilename(String label)
     {
         // https://stackoverflow.com/a/10151795/1158146

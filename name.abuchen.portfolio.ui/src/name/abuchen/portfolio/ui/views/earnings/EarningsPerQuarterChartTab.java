@@ -74,7 +74,7 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor();
                 label.setBackground(color);
                 label.setForeground(Colors.getTextColor(color));
-                label.setText(String.valueOf(model.getStartYear() + year));
+                label.setText(TextUtil.pad(String.valueOf(model.getStartYear() + year)));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
             }
 
@@ -91,7 +91,7 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                         value += line.getValue(mQuarter);
                     l = new Label(container, SWT.RIGHT);
                     l.setForeground(foregroundColor);
-                    l.setText(Values.Amount.format(value));
+                    l.setText(TextUtil.pad(Values.Amount.format(value)));
                     GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
                 }
             });
@@ -110,7 +110,7 @@ public class EarningsPerQuarterChartTab extends AbstractChartTab
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
                 l.setBackground(color);
                 l.setForeground(Colors.getTextColor(color));
-                l.setText(Values.Amount.format(value));
+                l.setText(TextUtil.pad(Values.Amount.format(value)));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(l);
             }
         }
