@@ -46,7 +46,8 @@ public final class TextUtil
 
     public static final String tooltip(String text)
     {
-        return text == null ? null : text.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
+        String extendedText = " " + text + " "; //$NON-NLS-1$ //$NON-NLS-2$
+        return text == null ? null : extendedText.replace("&", "&&"); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     public static final String sanitizeFilename(String label)

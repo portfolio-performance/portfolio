@@ -65,12 +65,12 @@ public class EarningsPerYearChartTab extends AbstractChartTab
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setForeground(foregroundColor);
-            topLeft.setText(Messages.ColumnSecurity);
+            topLeft.setText(TextUtil.tooltip(Messages.ColumnSecurity));
 
             Label label = new Label(container, SWT.CENTER);
             label.setBackground(barSeries.getBarColor());
             label.setForeground(Colors.getTextColor(barSeries.getBarColor()));
-            label.setText(String.valueOf(model.getStartYear() + year));
+            label.setText(TextUtil.tooltip(String.valueOf(model.getStartYear() + year)));
             GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
 
             lines.forEach(line -> {
@@ -84,13 +84,13 @@ public class EarningsPerYearChartTab extends AbstractChartTab
 
                 l = new Label(container, SWT.RIGHT);
                 l.setForeground(foregroundColor);
-                l.setText(Values.Amount.format(value));
+                l.setText(TextUtil.tooltip(Values.Amount.format(value)));
                 GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
             });
 
             Label l = new Label(container, SWT.NONE);
             l.setForeground(foregroundColor);
-            l.setText(Messages.ColumnSum);
+            l.setText(TextUtil.tooltip(Messages.ColumnSum));
 
             long value = 0;
             for (int m = year * 12; m < (year + 1) * 12 && m < totalNoOfMonths; m += 1)
@@ -99,7 +99,7 @@ public class EarningsPerYearChartTab extends AbstractChartTab
             l = new Label(container, SWT.RIGHT);
             l.setBackground(barSeries.getBarColor());
             l.setForeground(Colors.getTextColor(barSeries.getBarColor()));
-            l.setText(Values.Amount.format(value));
+            l.setText(TextUtil.tooltip(Values.Amount.format(value)));
         }
     }
 

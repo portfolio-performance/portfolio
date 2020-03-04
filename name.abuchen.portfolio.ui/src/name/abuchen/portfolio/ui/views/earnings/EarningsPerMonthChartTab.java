@@ -63,7 +63,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
 
             Label topLeft = new Label(container, SWT.NONE);
             topLeft.setForeground(foregroundColor);
-            topLeft.setText(Messages.ColumnSecurity);
+            topLeft.setText(TextUtil.tooltip(Messages.ColumnSecurity));
 
             for (int year = 0; year < noOfYears; year++)
             {
@@ -72,7 +72,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[year]).getBarColor();
                 label.setBackground(color);
                 label.setForeground(Colors.getTextColor(color));
-                label.setText(String.valueOf(model.getStartYear() + year));
+                label.setText(TextUtil.tooltip(String.valueOf(model.getStartYear() + year)));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(label);
             }
 
@@ -85,14 +85,14 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
                 {
                     l = new Label(container, SWT.RIGHT);
                     l.setForeground(foregroundColor);
-                    l.setText(Values.Amount.format(line.getValue(m)));
+                    l.setText(TextUtil.tooltip(Values.Amount.format(line.getValue(m))));
                     GridDataFactory.fillDefaults().align(SWT.END, SWT.FILL).applyTo(l);
                 }
             });
 
             Label l = new Label(container, SWT.NONE);
             l.setForeground(foregroundColor);
-            l.setText(Messages.ColumnSum);
+            l.setText(TextUtil.tooltip(Messages.ColumnSum));
 
             for (int m = month; m < totalNoOfMonths; m += 12)
             {
@@ -100,7 +100,7 @@ public class EarningsPerMonthChartTab extends AbstractChartTab
                 Color color = ((IBarSeries) getChart().getSeriesSet().getSeries()[m / 12]).getBarColor();
                 l.setBackground(color);
                 l.setForeground(Colors.getTextColor(color));
-                l.setText(Values.Amount.format(model.getSum().getValue(m)));
+                l.setText(TextUtil.tooltip(Values.Amount.format(model.getSum().getValue(m))));
                 GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).applyTo(l);
             }
 
