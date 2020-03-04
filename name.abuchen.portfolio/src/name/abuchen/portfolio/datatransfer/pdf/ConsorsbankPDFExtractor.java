@@ -607,6 +607,13 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
+                        .section("tax", "currency").optional() //
+                        .match("abzgl. Kapitalertragsteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .assign((t, v) -> {
+                            Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
+                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                        })
+
                         .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
 
     }
