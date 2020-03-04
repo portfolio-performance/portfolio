@@ -207,7 +207,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Ertragsgutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Ertragsgutschrift");
+        Block block = new Block("Ertragsgutschrift.*");
         type.addBlock(block);
         Transaction<AccountTransaction> transaction = new Transaction<AccountTransaction>()
 
@@ -273,7 +273,7 @@ public class INGDiBaExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Zinsgutschrift", isJointAccount);
         this.addDocumentTyp(type);
 
-        Block block = new Block("Zinsgutschrift");
+        Block block = new Block("Zinsgutschrift.*");
         type.addBlock(block);
         Transaction<AccountTransaction> transaction = new Transaction<AccountTransaction>()
 
