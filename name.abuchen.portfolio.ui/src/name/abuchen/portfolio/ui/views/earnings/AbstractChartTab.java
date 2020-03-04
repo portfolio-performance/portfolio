@@ -81,7 +81,7 @@ public abstract class AbstractChartTab implements EarningsTab
     }
 
     @Override
-    public final Control createControl(Composite parent)
+    public Control createControl(Composite parent)
     {
         resources = new LocalResourceManager(JFaceResources.getResources(), parent);
 

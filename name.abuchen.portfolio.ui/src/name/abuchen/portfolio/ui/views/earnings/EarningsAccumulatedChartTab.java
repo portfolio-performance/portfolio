@@ -4,12 +4,15 @@ import java.time.LocalDate;
 import java.time.Month;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.swtchart.ILineSeries;
 import org.swtchart.ILineSeries.PlotSymbolType;
 import org.swtchart.ISeries.SeriesType;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 
 public class EarningsAccumulatedChartTab extends AbstractChartTab
 {
@@ -17,6 +20,16 @@ public class EarningsAccumulatedChartTab extends AbstractChartTab
     public String getLabel()
     {
         return Messages.LabelAccumulatedEarnings;
+    }
+
+    @Override
+    public Control createControl(Composite parent)
+    {
+        Control control = super.createControl(parent);
+
+        getChart().getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
+
+        return control;
     }
 
     @Override

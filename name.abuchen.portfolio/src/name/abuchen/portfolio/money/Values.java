@@ -54,14 +54,8 @@ public abstract class Values<E>
     {
         private static final String QUOTE_PATTERN = "#,##0.00##"; //$NON-NLS-1$
 
-        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = new ThreadLocal<DecimalFormat>()
-        {
-            @Override
-            protected DecimalFormat initialValue()
-            {
-                return new DecimalFormat(QUOTE_PATTERN);
-            }
-        };
+        private static final ThreadLocal<DecimalFormat> QUOTE_FORMAT = ThreadLocal // NOSONAR
+                        .withInitial(() -> new DecimalFormat(QUOTE_PATTERN));
 
         private QuoteValues()
         {
@@ -127,7 +121,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final MoneyValues Money = new MoneyValues();
+    public static final MoneyValues Money = new MoneyValues(); // NOSONAR
 
     public static final Values<Long> AmountFraction = new Values<Long>("#,##0.00###", 100000D, 100000) //$NON-NLS-1$
     {
@@ -177,7 +171,7 @@ public abstract class Values<E>
         }
     };
 
-    public static final QuoteValues Quote = new QuoteValues();
+    public static final QuoteValues Quote = new QuoteValues(); // NOSONAR
 
     public static final Values<BigDecimal> ExchangeRate = new Values<BigDecimal>("#,##0.0000", 1D, 1)//$NON-NLS-1$
     {
@@ -219,6 +213,18 @@ public abstract class Values<E>
                 return Values.Date.format(date.toLocalDate());
             else
                 return formatter.format(date);
+        }
+    };
+
+    public static final Values<Double> Thousands = new Values<Double>("0.###k", 1D, 1) //$NON-NLS-1$
+    {
+        private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR
+                        .withInitial(() -> new DecimalFormat("0.###k")); //$NON-NLS-1$
+
+        @Override
+        public String format(Double value)
+        {
+            return numberFormatter.get().format(value / 1000);
         }
     };
 
@@ -266,7 +272,7 @@ public abstract class Values<E>
             return String.format("%,.2f%%", weight / divider()); //$NON-NLS-1$
         }
     };
-                    
+
     public static final Values<Double> Percent2 = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
     {
         @Override

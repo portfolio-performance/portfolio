@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.util.chart;
 
+import java.text.FieldPosition;
+import java.text.Format;
+import java.text.ParsePosition;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
@@ -29,6 +32,8 @@ import org.swtchart.IPlotArea;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
+
+import name.abuchen.portfolio.money.Values;
 
 public class TimelineChart extends Chart // NOSONAR
 {
@@ -67,6 +72,27 @@ public class TimelineChart extends Chart // NOSONAR
         public long getTimeMillis()
         {
             return Date.from(date.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant()).getTime();
+        }
+    }
+
+    public static class ThousandsNumberFormat extends Format
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos)
+        {
+            if (!(obj instanceof Number))
+                throw new IllegalArgumentException();
+
+            return toAppendTo.append(Values.Thousands.format(((Number) obj).doubleValue()));
+        }
+
+        @Override
+        public Object parseObject(String source, ParsePosition pos)
+        {
+            pos.setErrorIndex(0);
+            return null;
         }
     }
 

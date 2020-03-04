@@ -21,6 +21,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.chart.TimelineChart;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartCSVExporter;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
 import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
@@ -92,6 +93,8 @@ public class StatementOfAssetsHistoryView extends AbstractHistoricView
         chart = new TimelineChart(composite);
         chart.getTitle().setVisible(false);
         chart.getToolTip().reverseLabels(true);
+
+        chart.getAxisSet().getYAxis(0).getTick().setFormat(new ThousandsNumberFormat());
 
         DataSeriesCache cache = make(DataSeriesCache.class);
         seriesBuilder = new StatementOfAssetsSeriesBuilder(chart, cache);
