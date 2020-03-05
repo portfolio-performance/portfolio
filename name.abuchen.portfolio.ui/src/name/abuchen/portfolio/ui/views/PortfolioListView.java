@@ -320,9 +320,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
             {
                 Client client = getClient();
                 Shell shell  = Display.getDefault().getActiveShell();
-                String filterPath = (getPart().getClientFileName() == null?System.getProperty("user.dir"):getPart().getClientFileName().getParent().toString()); //$NON-NLS-1$
 
-                ImportPDFHandler.runImport(getPart(), shell, client, filterPath, portfolio.getReferenceAccount(), portfolio);
+                ImportPDFHandler.runImport(getPart(), shell, client, System.getProperty("user.dir"), portfolio.getReferenceAccount(), portfolio);
             }
 
         });
