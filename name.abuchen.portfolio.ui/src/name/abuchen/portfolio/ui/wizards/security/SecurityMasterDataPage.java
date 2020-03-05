@@ -108,11 +108,12 @@ public class SecurityMasterDataPage extends AbstractPage
         }
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
-        Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
-                        .getImage();
-        ControlDecoration deco = new ControlDecoration(control, SWT.TOP | SWT.LEFT);
+
+        ControlDecoration deco = new ControlDecoration(control, SWT.CENTER | SWT.RIGHT);
         deco.setDescriptionText(Messages.MsgInfoRetiredSecurities);
-        deco.setImage(image);
+        deco.setImage(Images.INFO.image());
+        deco.setMarginWidth(5);
+        deco.setShowOnlyOnFocus(false);
         deco.show();
 
         Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", //$NON-NLS-1$
