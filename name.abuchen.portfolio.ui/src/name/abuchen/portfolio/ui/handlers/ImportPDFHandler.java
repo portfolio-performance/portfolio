@@ -30,7 +30,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
@@ -58,8 +60,14 @@ public class ImportPDFHandler
 
     private void runImport(MPart part, Shell shell, Client client)
     {
+        runImport((PortfolioPart) part.getObject(), shell, client, "", null, null);  //$NON-NLS-1$
+    }
+
+    static public void runImport(PortfolioPart part, Shell shell, Client client, String filterPath, Account account, Portfolio portfolio)
+    {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
+        fileDialog.setFilterPath(filterPath);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
         fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
         fileDialog.open();
@@ -73,7 +81,7 @@ public class ImportPDFHandler
         for (String filename : filenames)
             files.add(new File(fileDialog.getFilterPath(), filename));
 
-        IPreferenceStore preferences = ((PortfolioPart) part.getObject()).getPreferenceStore();
+        IPreferenceStore preferences = part.getPreferenceStore();
 
         try
         {
@@ -93,7 +101,11 @@ public class ImportPDFHandler
                     protected IStatus run(IProgressMonitor monitor)
                     {
                         shell.getDisplay().asyncExec(() -> {
-                            Wizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
+                            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
+                            if (account != null)
+                                wizard.setTarget(account);
+                            if (portfolio != null)
+                                wizard.setTarget(portfolio);
                             Dialog wizwardDialog = new WizardDialog(shell, wizard);
                             wizwardDialog.open();
                         });

@@ -14,7 +14,9 @@ import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.actions.InsertAction;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
@@ -28,6 +30,11 @@ public final class ImportExtractedItemsWizard extends Wizard
     private Map<File, List<Exception>> errors;
 
     private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
+    /**
+     * If a target account is given, then account is preselected to be imported
+     */
+    private Account account;
+    private Portfolio portfolio;
 
     public ImportExtractedItemsWizard(Client client, IPreferenceStore preferences, Map<Extractor, List<Item>> result,
                     Map<File, List<Exception>> errors)
@@ -39,6 +46,16 @@ public final class ImportExtractedItemsWizard extends Wizard
 
         setWindowTitle(Messages.PDFImportWizardTitle);
         setNeedsProgressMonitor(false);
+    }
+
+    public void setTarget(Account target)
+    {
+        this.account = target;
+    }
+
+    public void setTarget(Portfolio target)
+    {
+        this.portfolio = target;
     }
 
     @Override
@@ -88,6 +105,10 @@ public final class ImportExtractedItemsWizard extends Wizard
                         .forEach(extractor -> {
                             ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
                                             Collections.emptyList());
+                            if (account != null)
+                                page.setAccount(account);
+                            if (portfolio != null)
+                                page.setPortfolio(portfolio);
                             pages.add(page);
                             addPage(page);
                         });

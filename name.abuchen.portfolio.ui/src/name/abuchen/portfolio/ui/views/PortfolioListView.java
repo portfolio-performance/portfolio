@@ -27,8 +27,10 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -38,6 +40,7 @@ import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
@@ -309,6 +312,20 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
 
         manager.add(new Separator());
+
+        manager.add(new Action(Messages.AccountMenuImportPDF)
+        {
+            @Override
+            public void run()
+            {
+                Client client = getClient();
+                Shell shell  = Display.getDefault().getActiveShell();
+                String filterPath = (getPart().getClientFileName() == null?System.getProperty("user.dir"):getPart().getClientFileName().getParent().toString()); //$NON-NLS-1$
+
+                ImportPDFHandler.runImport(getPart(), shell, client, filterPath, portfolio.getReferenceAccount(), portfolio);
+            }
+
+        });
 
         manager.add(new SimpleAction(
                         portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate,
