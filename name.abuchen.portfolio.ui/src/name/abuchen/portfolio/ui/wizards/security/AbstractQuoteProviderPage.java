@@ -57,6 +57,7 @@ import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -521,12 +522,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathDate);
             textJsonPathDate.addModifyListener(e -> onJsonPathDateChanged());
-
-            Image image = FieldDecorationRegistry.getDefault()
-                            .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage();
-            ControlDecoration deco = new ControlDecoration(textJsonPathDate, SWT.TOP | SWT.LEFT);
+           
+            ControlDecoration deco = new ControlDecoration(textJsonPathDate, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
-            deco.setImage(image);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(8);
+            deco.setShowOnlyOnFocus(false);
             deco.show();
 
             labelJsonPathClose = new Label(grpQuoteFeed, SWT.NONE);
@@ -535,12 +536,12 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textJsonPathClose);
             textJsonPathClose.addModifyListener(e -> onJsonPathCloseChanged());
-
-            image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
-                            .getImage();
-            deco = new ControlDecoration(textJsonPathClose, SWT.TOP | SWT.LEFT);
+            
+            deco = new ControlDecoration(textJsonPathClose, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
-            deco.setImage(image);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(8);
+            deco.setShowOnlyOnFocus(false);
             deco.show();
         }
 
