@@ -102,6 +102,8 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
     private final Extractor extractor;
     private final IPreferenceStore preferences;
     private List<Extractor.InputFile> files;
+    private Account account;
+    private Portfolio portfolio;
 
     private List<ExtractedEntry> allEntries = new ArrayList<>();
 
@@ -262,7 +264,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         List<Account> activeAccounts = client.getActiveAccounts();
         if (!activeAccounts.isEmpty())
         {
-            String uuid = preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel());
+            String uuid = (account != null?account.getUUID():preferences.getString(IMPORT_TARGET_ACCOUNT + extractor.getLabel()));
 
             // do not trigger selection listener (-> do not user #setSelection)
             primaryAccount.getCombo().select(IntStream.range(0, activeAccounts.size())
@@ -273,7 +275,7 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         List<Portfolio> activePortfolios = client.getActivePortfolios();
         if (!activePortfolios.isEmpty())
         {
-            String uuid = preferences.getString(IMPORT_TARGET_PORTFOLIO + extractor.getLabel());
+            String uuid = (portfolio != null?portfolio.getUUID():preferences.getString(IMPORT_TARGET_PORTFOLIO + extractor.getLabel()));
             // do not trigger selection listener (-> do not user #setSelection)
             primaryPortfolio.getCombo().select(IntStream.range(0, activePortfolios.size())
                             .filter(i -> activePortfolios.get(i).getUUID().equals(uuid)).findAny().orElse(0));
@@ -640,6 +642,16 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         preferences.setValue(IMPORT_TARGET_PORTFOLIO + extractor.getLabel(), getPortfolio().getUUID());
     }
 
+    public void setAccount(Account account)
+    {
+        this.account = account;
+    }
+
+    public void setPortfolio(Portfolio portfolio)
+    {
+        this.portfolio = portfolio;
+    }
+
     private void setResults(List<ExtractedEntry> entries, List<Exception> errors)
     {
         checkEntries(entries);
@@ -726,3 +738,4 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 }
+

@@ -13,6 +13,7 @@ public class Messages extends NLS
     public static String AccountMenuDelete;
     public static String AccountMenuDeleteConfirm;
     public static String AccountMenuDeleteTransaction;
+    public static String AccountMenuImportPDF;
     public static String AccountMenuTransfer;
     public static String Balance;
     public static String BaseCurrencyCue;
