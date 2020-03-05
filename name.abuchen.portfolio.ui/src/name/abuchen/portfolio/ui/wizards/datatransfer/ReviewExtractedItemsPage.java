@@ -726,3 +726,4 @@ public class ReviewExtractedItemsPage extends AbstractWizardPage implements Impo
         }
     }
 }
+
