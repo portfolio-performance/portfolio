@@ -515,7 +515,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         if (needsJsonPath)
         {
-            labelJsonPathDate = new Label(grpQuoteFeed, SWT.BORDER);
+            labelJsonPathDate = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathDate.setText(Messages.LabelJSONPathToDate);
 
             textJsonPathDate = new Text(grpQuoteFeed, SWT.BORDER);
@@ -529,7 +529,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco.setImage(image);
             deco.show();
 
-            labelJsonPathClose = new Label(grpQuoteFeed, SWT.BORDER);
+            labelJsonPathClose = new Label(grpQuoteFeed, SWT.NONE);
             labelJsonPathClose.setText(Messages.LabelJSONPathToClose);
 
             textJsonPathClose = new Text(grpQuoteFeed, SWT.BORDER);
