@@ -3,4 +3,5 @@ name.abuchen.portfolio.money.impl.ExchangeRateProviderGBX
 name.abuchen.portfolio.money.impl.ExchangeRateProviderILA
 name.abuchen.portfolio.money.impl.ExchangeRateProviderAED
 name.abuchen.portfolio.money.impl.ExchangeRateProviderDEM
+name.abuchen.portfolio.money.impl.ExchangeRateProviderATS
 name.abuchen.portfolio.money.impl.SecurityBasedExchangeRateProvider
