@@ -108,17 +108,26 @@ public class QuoteQualityMetrics
             currentDay = currentDay.plusDays(1);
         }
 
-        missingIntervals = conflate(missingDays);
+        missingIntervals = conflate(missingDays, tradeCalendar);
     }
 
-    private List<Interval> conflate(List<LocalDate> dates)
+    private List<Interval> conflate(List<LocalDate> dates, TradeCalendar tradeCalendar)
     {
         List<Interval> answer = new ArrayList<>();
 
         Interval interval = null;
         for (LocalDate date : dates)
         {
-            if (interval != null && interval.getEnd().plusDays(1).equals(date))
+            boolean haveBridgeDates = false;
+            if (interval != null)
+            {
+                LocalDate bridgeDate = interval.getEnd().plusDays(1);
+                while (!bridgeDate.equals(date) && tradeCalendar.isHoliday(bridgeDate))
+                    bridgeDate = bridgeDate.plusDays(1);
+                if (bridgeDate.equals(date))
+                    haveBridgeDates = true;
+            }
+            if (haveBridgeDates)
             {
                 interval = Interval.of(interval.getStart(), date);
                 answer.set(answer.size() - 1, interval);
@@ -133,3 +142,4 @@ public class QuoteQualityMetrics
         return answer;
     }
 }
+
