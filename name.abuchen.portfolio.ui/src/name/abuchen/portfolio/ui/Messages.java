@@ -476,6 +476,15 @@ public class Messages extends NLS
     public static String LabelChartDetailMovingAverage_90days;
     public static String LabelChartDetailMovingAverage_100days;
     public static String LabelChartDetailMovingAverage_200days;
+    public static String LabelChartDetailExponentialMovingAverage;
+    public static String LabelChartDetailExponentialMovingAverage_50days;
+    public static String LabelChartDetailExponentialMovingAverage_5days;
+    public static String LabelChartDetailExponentialMovingAverage_20days;
+    public static String LabelChartDetailExponentialMovingAverage_30days;
+    public static String LabelChartDetailExponentialMovingAverage_38days;
+    public static String LabelChartDetailExponentialMovingAverage_90days;
+    public static String LabelChartDetailExponentialMovingAverage_100days;
+    public static String LabelChartDetailExponentialMovingAverage_200days;
     public static String LabelChartDetailSettings;
     public static String LabelChartDetailSettingsShowMarkerLines;
     public static String LabelChartDetailSettingsShowDataLabel;

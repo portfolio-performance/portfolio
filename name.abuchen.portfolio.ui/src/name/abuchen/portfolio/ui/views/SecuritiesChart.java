@@ -139,6 +139,14 @@ public class SecuritiesChart
         SMA_90DAYS(Messages.LabelChartDetailMovingAverage_90days), //
         SMA_100DAYS(Messages.LabelChartDetailMovingAverage_100days), //
         SMA_200DAYS(Messages.LabelChartDetailMovingAverage_200days), //
+        EMA_5DAYS(Messages.LabelChartDetailExponentialMovingAverage_5days), //
+        EMA_20DAYS(Messages.LabelChartDetailExponentialMovingAverage_20days), //
+        EMA_30DAYS(Messages.LabelChartDetailExponentialMovingAverage_30days), //
+        EMA_38DAYS(Messages.LabelChartDetailExponentialMovingAverage_38days), //
+        EMA_50DAYS(Messages.LabelChartDetailExponentialMovingAverage_50days), //
+        EMA_90DAYS(Messages.LabelChartDetailExponentialMovingAverage_90days), //
+        EMA_100DAYS(Messages.LabelChartDetailExponentialMovingAverage_100days), //
+        EMA_200DAYS(Messages.LabelChartDetailExponentialMovingAverage_200days), //
         SHOW_MARKER_LINES(Messages.LabelChartDetailSettingsShowMarkerLines), //
         SHOW_DATA_LABELS(Messages.LabelChartDetailSettingsShowDataLabel), //
         SHOW_MISSING_TRADING_DAYS(Messages.LabelChartDetailSettingsShowMissingTradingDays);
@@ -244,6 +252,14 @@ public class SecuritiesChart
     private Color colorSMA5 = Colors.getColor(107, 155, 179); // #6B9BB3
     private Color colorSMA6 = Colors.getColor(119, 107, 179); // #776BB3
     private Color colorSMA7 = Colors.getColor(179, 107, 179); // #B36BB3
+
+    private Color colorEMA1 = Colors.getColor(200, 107, 107); // #C86B6B
+    private Color colorEMA2 = Colors.getColor(200, 167, 107); // #C8A76B
+    private Color colorEMA3 = Colors.getColor(131, 200, 107); // #83C86B
+    private Color colorEMA4 = Colors.getColor(107, 200, 143); // #6BC88F
+    private Color colorEMA5 = Colors.getColor(107, 155, 200); // #6B9BC8
+    private Color colorEMA6 = Colors.getColor(119, 107, 200); // #776BC8
+    private Color colorEMA7 = Colors.getColor(200, 107, 200); // #C86BB3
 
     private Color colorAreaPositive = Colors.getColor(90, 114, 226);
     private Color colorAreaNegative = Colors.getColor(226, 91, 90);
@@ -490,6 +506,7 @@ public class SecuritiesChart
         MenuManager subMenuChartMarker = new MenuManager(Messages.LabelChartDetailMarker, null);
         MenuManager subMenuChartIndicator = new MenuManager(Messages.LabelChartDetailIndicator, null);
         MenuManager subMenuChartMovingAverage = new MenuManager(Messages.LabelChartDetailMovingAverage, null);
+        MenuManager subMenuChartExponentialMovingAverage = new MenuManager(Messages.LabelChartDetailExponentialMovingAverage, null);
         MenuManager subMenuChartSettings = new MenuManager(Messages.LabelChartDetailSettings, null);
 
         subMenuChartScaling.add(addMenuAction(ChartDetails.SCALING_LINEAR));
@@ -510,6 +527,14 @@ public class SecuritiesChart
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_90DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_100DAYS));
         subMenuChartMovingAverage.add(addMenuAction(ChartDetails.SMA_200DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_5DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_20DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_30DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_38DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_50DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_90DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_100DAYS));
+        subMenuChartExponentialMovingAverage.add(addMenuAction(ChartDetails.EMA_200DAYS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MARKER_LINES));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_DATA_LABELS));
         subMenuChartSettings.add(addMenuAction(ChartDetails.SHOW_MISSING_TRADING_DAYS));
@@ -518,6 +543,7 @@ public class SecuritiesChart
         manager.add(subMenuChartMarker);
         manager.add(subMenuChartIndicator);
         manager.add(subMenuChartMovingAverage);
+        manager.add(subMenuChartExponentialMovingAverage);
         manager.add(subMenuChartSettings);
     }
 
@@ -795,6 +821,37 @@ public class SecuritiesChart
             addSMAMarkerLines(chartInterval, Messages.LabelChartDetailMovingAverage,
                             Messages.LabelChartDetailMovingAverage_200days, 200, colorSMA7);
 
+        if (chartConfig.contains(ChartDetails.EMA_5DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_5days, 5, colorEMA1);
+
+        if (chartConfig.contains(ChartDetails.EMA_20DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_20days, 20, colorEMA2);
+
+        if (chartConfig.contains(ChartDetails.EMA_30DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_30days, 30, colorEMA3);
+
+        if (chartConfig.contains(ChartDetails.EMA_38DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_38days, 38, colorEMA4);
+
+        if (chartConfig.contains(ChartDetails.EMA_50DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_50days, 50, colorEMA4);
+
+        if (chartConfig.contains(ChartDetails.EMA_90DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_90days, 90, colorEMA5);
+
+        if (chartConfig.contains(ChartDetails.EMA_100DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_100days, 100, colorEMA6);
+
+        if (chartConfig.contains(ChartDetails.EMA_200DAYS))
+            addEMAMarkerLines(chartInterval, Messages.LabelChartDetailExponentialMovingAverage,
+                            Messages.LabelChartDetailExponentialMovingAverage_200days, 200, colorEMA7);
     }
 
     private void addChartMarkerForeground(ChartInterval chartInterval)
@@ -835,6 +892,28 @@ public class SecuritiesChart
         lineSeriesSMA.setLineColor(smaColor);
         lineSeriesSMA.setYAxisId(0);
         lineSeriesSMA.setVisibleInLegend(true);
+    }
+
+    private void addEMAMarkerLines(ChartInterval chartInterval, String emaSeries, String emaDaysWording, int emaDays,
+                    Color emaColor)
+    {
+        ChartLineSeriesAxes emaLines = new ExponentialMovingAverage(emaDays, this.security, chartInterval).getEMA();
+        if (emaLines == null || emaLines.getValues() == null || emaLines.getDates() == null)
+            return;
+
+        @SuppressWarnings("nls")
+        String lineID = emaSeries + " (" + emaDaysWording + ")";
+
+        ILineSeries lineSeriesEMA = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, lineID);
+        lineSeriesEMA.setXDateSeries(emaLines.getDates());
+        lineSeriesEMA.setLineWidth(2);
+        lineSeriesEMA.enableArea(false);
+        lineSeriesEMA.setSymbolType(PlotSymbolType.NONE);
+        lineSeriesEMA.setYSeries(emaLines.getValues());
+        lineSeriesEMA.setAntialias(swtAntialias);
+        lineSeriesEMA.setLineColor(emaColor);
+        lineSeriesEMA.setYAxisId(0);
+        lineSeriesEMA.setVisibleInLegend(true);
     }
 
     private void addInvestmentMarkerLines(ChartInterval chartInterval)
