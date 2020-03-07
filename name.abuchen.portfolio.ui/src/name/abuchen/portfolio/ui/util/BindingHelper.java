@@ -511,7 +511,6 @@ public class BindingHelper
         l.setText(label);
 
         final Button btnCheckbox = new Button(editArea, SWT.CHECK);
-        GridDataFactory.fillDefaults().align(SWT.FILL, SWT.FILL).grab(true, false).applyTo(btnCheckbox);
 
         IObservableValue<?> targetObservable = WidgetProperties.selection().observe(btnCheckbox);
         @SuppressWarnings("unchecked")

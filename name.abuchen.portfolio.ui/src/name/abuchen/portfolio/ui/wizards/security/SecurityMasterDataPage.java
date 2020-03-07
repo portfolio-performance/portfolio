@@ -1,13 +1,13 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -108,11 +108,17 @@ public class SecurityMasterDataPage extends AbstractPage
         }
 
         Control control = bindings.bindBooleanInput(container, Messages.ColumnRetired, "retired"); //$NON-NLS-1$
-        Image image = FieldDecorationRegistry.getDefault().getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION)
-                        .getImage();
-        ControlDecoration deco = new ControlDecoration(control, SWT.TOP | SWT.LEFT);
+
+        int margin = 2;
+        Image info = Images.INFO.image();
+        Rectangle bounds = info.getBounds();
+
+        GridDataFactory.fillDefaults().indent(bounds.width + margin, 0).applyTo(control);
+
+        ControlDecoration deco = new ControlDecoration(control, SWT.CENTER | SWT.LEFT);
         deco.setDescriptionText(Messages.MsgInfoRetiredSecurities);
-        deco.setImage(image);
+        deco.setImage(info);
+        deco.setMarginWidth(margin);
         deco.show();
 
         Text valueNote = bindings.bindStringInput(container, Messages.ColumnNote, "note", //$NON-NLS-1$
