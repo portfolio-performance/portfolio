@@ -190,7 +190,8 @@ public class TimelineChartToolTip extends AbstractChartToolTip
 
         Label left = new Label(data, SWT.NONE);
         left.setForeground(foregroundColor);
-        left.setText(categoryEnabled ? getChart().getAxisSet().getXAxis(0).getTitle().getText() : Messages.ColumnDate);
+        left.setText(TextUtil.pad(categoryEnabled ? getChart().getAxisSet().getXAxis(0).getTitle().getText()
+                        : Messages.ColumnDate));
 
         Label right = new Label(data, SWT.NONE);
         right.setForeground(foregroundColor);
@@ -214,7 +215,7 @@ public class TimelineChartToolTip extends AbstractChartToolTip
             left = new Label(data, SWT.NONE);
             left.setBackground(color);
             left.setForeground(Colors.getTextColor(color));
-            left.setText(TextUtil.tooltip(series.getId()));
+            left.setText(TextUtil.pad(TextUtil.tooltip(series.getId())));
             GridDataFactory.fillDefaults().grab(true, false).applyTo(left);
 
             right = new Label(data, SWT.RIGHT);

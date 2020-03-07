@@ -12,7 +12,7 @@ import org.swtchart.ILineSeries;
 import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 
-public class ScatterChart extends Chart
+public class ScatterChart extends Chart // NOSONAR
 {
     private ChartContextMenu contextMenu;
 
