@@ -27,10 +27,8 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -311,20 +309,15 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         new SecurityContextMenu(this).menuAboutToShow(manager, null, portfolio);
 
-        manager.add(new Separator());
-
-        manager.add(new Action(Messages.AccountMenuImportPDF)
+        if (!portfolio.isRetired())
         {
-            @Override
-            public void run()
-            {
-                Client client = getClient();
-                Shell shell  = Display.getDefault().getActiveShell();
+            manager.add(new Separator());
+            manager.add(new SimpleAction(Messages.AccountMenuImportPDF,
+                            a -> ImportPDFHandler.runImport(getPart(), Display.getDefault().getActiveShell(),
+                                            getClient(), portfolio.getReferenceAccount(), portfolio)));
+        }
 
-                ImportPDFHandler.runImport(getPart(), shell, client, System.getProperty("user.dir"), portfolio.getReferenceAccount(), portfolio);
-            }
-
-        });
+        manager.add(new Separator());
 
         manager.add(new SimpleAction(
                         portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate,

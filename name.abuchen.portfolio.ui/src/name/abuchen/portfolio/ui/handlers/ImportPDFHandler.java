@@ -22,7 +22,6 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.preference.IPreferenceStore;
-import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
@@ -60,14 +59,13 @@ public class ImportPDFHandler
 
     private void runImport(MPart part, Shell shell, Client client)
     {
-        runImport((PortfolioPart) part.getObject(), shell, client, "", null, null);  //$NON-NLS-1$
+        runImport((PortfolioPart) part.getObject(), shell, client, null, null); // $NON-NLS-1$
     }
 
-    static public void runImport(PortfolioPart part, Shell shell, Client client, String filterPath, Account account, Portfolio portfolio)
+    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
-        fileDialog.setFilterPath(filterPath);
         fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
         fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
         fileDialog.open();
@@ -101,7 +99,8 @@ public class ImportPDFHandler
                     protected IStatus run(IProgressMonitor monitor)
                     {
                         shell.getDisplay().asyncExec(() -> {
-                            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences, result, errors);
+                            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
+                                            result, errors);
                             if (account != null)
                                 wizard.setTarget(account);
                             if (portfolio != null)
