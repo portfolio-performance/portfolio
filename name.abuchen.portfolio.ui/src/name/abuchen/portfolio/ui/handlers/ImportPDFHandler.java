@@ -54,12 +54,7 @@ public class ImportPDFHandler
 
     /* package */ void doExecute(MPart part, Shell shell)
     {
-        MenuHelper.getActiveClient(part).ifPresent(client -> runImport(part, shell, client));
-    }
-
-    private void runImport(MPart part, Shell shell, Client client)
-    {
-        runImport((PortfolioPart) part.getObject(), shell, client, null, null); // $NON-NLS-1$
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport((PortfolioPart) part, shell, client, null, null));
     }
 
     public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)

@@ -255,6 +255,11 @@ public abstract class AbstractFinanceView
         ContextInjectionFactory.inject(object, context);
     }
 
+    public final IEclipseContext getContext()
+    {
+        return context;
+    }
+
     public <T> T getFromContext(Class<T> clazz)
     {
         return context.get(clazz);
