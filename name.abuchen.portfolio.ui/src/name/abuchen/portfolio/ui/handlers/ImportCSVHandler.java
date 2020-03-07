@@ -7,6 +7,8 @@ import java.util.Optional;
 
 import javax.inject.Named;
 
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
 import org.eclipse.e4.core.di.annotations.CanExecute;
@@ -22,7 +24,9 @@ import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.datatransfer.csv.CSVConfig;
 import name.abuchen.portfolio.datatransfer.csv.CSVConfigManager;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.wizards.datatransfer.CSVImportWizard;
@@ -42,23 +46,32 @@ public class ImportCSVHandler
                     CSVConfigManager configManager,
                     @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index)
     {
-        Optional<Client> client = MenuHelper.getActiveClient(part);
-        if (!client.isPresent())
-            return;
+        doExecute(part, shell, context, configManager, index);
+    }
 
+    /* package */ void doExecute(MPart part, Shell shell, IEclipseContext context, CSVConfigManager configManager, @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index)
+    {
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport((PortfolioPart) part, shell, context, configManager, index, client, null, null));
+    }
+
+    static public IStatus runImport(PortfolioPart part, Shell shell, IEclipseContext context, CSVConfigManager configManager, @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index, Client client, Account account, Portfolio portfolio)
+    {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN);
         fileDialog.setFilterNames(new String[] { Messages.CSVImportLabelFileCSV, Messages.CSVImportLabelFileAll });
         fileDialog.setFilterExtensions(new String[] { "*.csv", "*.*" }); //$NON-NLS-1$ //$NON-NLS-2$
         String fileName = fileDialog.open();
 
         if (fileName == null)
-            return;
+            return Status.CANCEL_STATUS;
 
-        PortfolioPart portfolioPart = (PortfolioPart) part.getObject();
-        IPreferenceStore preferences = portfolioPart.getPreferenceStore();
+        IPreferenceStore preferences = part.getPreferenceStore();
 
-        CSVImportWizard wizard = new CSVImportWizard(client.get(), preferences, new File(fileName));
+        CSVImportWizard wizard = new CSVImportWizard(client, preferences, new File(fileName));
         ContextInjectionFactory.inject(wizard, context);
+        if (account != null)
+            wizard.setTarget(account);
+        if (portfolio != null)
+            wizard.setTarget(portfolio);
 
         if (index != null)
         {
@@ -75,6 +88,8 @@ public class ImportCSVHandler
         }
 
         Dialog wizwardDialog = new WizardDialog(shell, wizard);
-        wizwardDialog.open();
+        if (wizwardDialog.open() != Dialog.OK)
+            return Status.CANCEL_STATUS;
+        return Status.OK_STATUS;
     }
 }

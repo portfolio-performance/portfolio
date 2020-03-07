@@ -12,6 +12,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -35,12 +36,14 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
 import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Money;
@@ -57,6 +60,8 @@ import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
+import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -309,6 +314,36 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         accountMenu.menuAboutToShow(manager, account, null);
         manager.add(new Separator());
+
+        manager.add(new Action(Messages.AccountMenuImportCSV)
+        {
+            @Override
+            public void run()
+            {
+                Client client = getClient();
+                Shell shell  = Display.getDefault().getActiveShell();
+
+                if (ImportCSVHandler.runImport(getPart(), shell, getContext(), null, null, client, account, null) == Status.OK_STATUS)
+                {
+                    markDirty();
+                    resetInput();
+                }
+            }
+
+        });
+
+        manager.add(new Action(Messages.AccountMenuImportPDF)
+        {
+            @Override
+            public void run()
+            {
+                Client client = getClient();
+                Shell shell  = Display.getDefault().getActiveShell();
+
+                ImportPDFHandler.runImport(getPart(), shell, client, account, null);
+            }
+
+        });
 
         manager.add(new Action(account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate)
         {

@@ -54,15 +54,10 @@ public class ImportPDFHandler
 
     /* package */ void doExecute(MPart part, Shell shell)
     {
-        MenuHelper.getActiveClient(part).ifPresent(client -> runImport(part, shell, client));
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport((PortfolioPart) part, shell, client, null, null));
     }
 
-    private void runImport(MPart part, Shell shell, Client client)
-    {
-        runImport((PortfolioPart) part.getObject(), shell, client, null, null); // $NON-NLS-1$
-    }
-
-    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    static public IStatus runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
     {
         FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
         fileDialog.setText(Messages.PDFImportWizardAssistant);
@@ -73,7 +68,7 @@ public class ImportPDFHandler
         String[] filenames = fileDialog.getFileNames();
 
         if (filenames.length == 0)
-            return;
+            return Status.CANCEL_STATUS;
 
         List<File> files = new ArrayList<>();
         for (String filename : filenames)
@@ -121,6 +116,8 @@ public class ImportPDFHandler
             PortfolioPlugin.log(e);
             String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
             MessageDialog.openError(shell, Messages.LabelError, message);
+            return Status.CANCEL_STATUS;
         }
+        return Status.OK_STATUS;
     }
 }
