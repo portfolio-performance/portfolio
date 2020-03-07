@@ -219,7 +219,7 @@ public abstract class Values<E>
     public static final Values<Double> Thousands = new Values<Double>("0.###k", 1D, 1) //$NON-NLS-1$
     {
         private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR
-                        .withInitial(() -> new DecimalFormat("0.###k")); //$NON-NLS-1$
+                        .withInitial(() -> new DecimalFormat("#,##0.###k")); //$NON-NLS-1$
 
         @Override
         public String format(Double value)
