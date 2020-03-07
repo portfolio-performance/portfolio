@@ -60,6 +60,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public abstract class AbstractQuoteProviderPage extends AbstractPage
 {
@@ -340,7 +341,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         Label lblProvider = new Label(grpQuoteFeed, SWT.NONE);
         lblProvider.setText(Messages.LabelQuoteFeedProvider);
 
-        comboProvider = new ComboViewer(grpQuoteFeed, SWT.READ_ONLY);
+        comboProvider = SWTHelper.createComboViewer(grpQuoteFeed);
         comboProvider.setContentProvider(ArrayContentProvider.getInstance());
         comboProvider.setLabelProvider(new LabelProvider()
         {
