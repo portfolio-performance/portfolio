@@ -22,7 +22,6 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.fieldassist.ControlDecoration;
-import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -33,7 +32,6 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -337,7 +335,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         formData.top = new FormAttachment(0, 5);
         formData.left = new FormAttachment(0, 10);
         grpQuoteFeed.setLayoutData(formData);
-        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(grpQuoteFeed);
+        GridLayoutFactory.fillDefaults().numColumns(3).extendedMargins(5, 15, 5, 5).applyTo(grpQuoteFeed);
 
         Label lblProvider = new Label(grpQuoteFeed, SWT.NONE);
         lblProvider.setText(Messages.LabelQuoteFeedProvider);
@@ -504,11 +502,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             textQuandlCloseColumnName = new Text(grpQuoteFeed, SWT.BORDER);
             GridDataFactory.fillDefaults().span(2, 1).hint(100, SWT.DEFAULT).applyTo(textQuandlCloseColumnName);
 
-            Image image = FieldDecorationRegistry.getDefault()
-                            .getFieldDecoration(FieldDecorationRegistry.DEC_INFORMATION).getImage();
-            ControlDecoration deco = new ControlDecoration(textQuandlCloseColumnName, SWT.TOP | SWT.LEFT);
+            ControlDecoration deco = new ControlDecoration(textQuandlCloseColumnName, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelQuandlColumnNameQuoteHint);
-            deco.setImage(image);
+            deco.setImage(Images.INFO.image());
+            deco.setMarginWidth(2);
             deco.show();
 
             textQuandlCloseColumnName.addModifyListener(e -> onQuandlColumnNameChanged());
@@ -526,8 +523,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             ControlDecoration deco = new ControlDecoration(textJsonPathDate, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
             deco.setImage(Images.INFO.image());
-            deco.setMarginWidth(8);
-            deco.setShowOnlyOnFocus(false);
+            deco.setMarginWidth(2);
             deco.show();
 
             labelJsonPathClose = new Label(grpQuoteFeed, SWT.NONE);
@@ -540,8 +536,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
             deco = new ControlDecoration(textJsonPathClose, SWT.CENTER | SWT.RIGHT);
             deco.setDescriptionText(Messages.LabelJSONPathHint);
             deco.setImage(Images.INFO.image());
-            deco.setMarginWidth(8);
-            deco.setShowOnlyOnFocus(false);
+            deco.setMarginWidth(2);
             deco.show();
         }
 
