@@ -17,6 +17,7 @@ import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 {
@@ -57,11 +58,13 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         int depth = depth(1, trail.getRecord());
 
         Composite composite = new Composite(parent, SWT.NONE);
+        composite.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
         GridLayoutFactory.swtDefaults().numColumns(depth + 3).applyTo(composite);
 
         Label heading = new Label(composite, SWT.NONE);
-        GridDataFactory.fillDefaults().span(depth + 3, 1).applyTo(heading);
+        heading.setBackground(composite.getBackground());
         heading.setText(trail.getLabel());
+        GridDataFactory.fillDefaults().span(depth + 3, 1).applyTo(heading);
 
         addRow(composite, trail.getRecord(), depth - 1, depth);
 
@@ -74,13 +77,16 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
             addRow(composite, child, level - 1, depth);
 
         Label date = new Label(composite, SWT.NONE);
+        date.setBackground(composite.getBackground());
         if (trail.getDate() != null)
             date.setText(Values.Date.format(trail.getDate()));
 
         Label label = new Label(composite, SWT.NONE);
+        label.setBackground(composite.getBackground());
         label.setText(trail.getLabel());
 
         Label shares = new Label(composite, SWT.RIGHT);
+        shares.setBackground(composite.getBackground());
         GridDataFactory.fillDefaults().applyTo(shares);
         if (trail.getShares() != null)
             shares.setText(Values.Share.format(trail.getShares()));
@@ -88,6 +94,7 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         for (int index = 0; index < depth; index++)
         {
             Label column = new Label(composite, SWT.RIGHT);
+            column.setBackground(composite.getBackground());
             GridDataFactory.fillDefaults().applyTo(column);
 
             if (index == level)

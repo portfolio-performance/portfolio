@@ -5,6 +5,7 @@ import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.junit.Test;
 
@@ -12,9 +13,11 @@ import name.abuchen.portfolio.TestCurrencyConverter;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
+import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
 public class IssueCurrencyGainsRoundingError
@@ -43,5 +46,15 @@ public class IssueCurrencyGainsRoundingError
         currencyGains.add(snapshot.getValue(CategoryType.FINAL_VALUE));
 
         assertThat(snapshot.getCategoryByType(CategoryType.CURRENCY_GAINS).getValuation(), is(currencyGains.toMoney()));
+
+        snapshot.getCategories().stream().flatMap(c -> c.getPositions().stream()).forEach(p -> {
+            Money value = p.getValue();
+            Optional<Trail> valueTrail = p.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE);
+            valueTrail.ifPresent(t -> assertThat(t.getRecord().getValue(), is(value)));
+
+            Money gain = p.getForexGain();
+            Optional<Trail> gainTrail = p.explain(ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN);
+            gainTrail.ifPresent(t -> assertThat(t.getRecord().getValue(), is(gain)));
+        });
     }
 }

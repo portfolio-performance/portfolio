@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.hamcrest.number.IsCloseTo;
 import org.junit.BeforeClass;
@@ -31,6 +32,7 @@ import name.abuchen.portfolio.snapshot.GroupByTaxonomy;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.trail.Trail;
 import name.abuchen.portfolio.util.Interval;
 
 @SuppressWarnings("nls")
@@ -169,6 +171,16 @@ public class CurrencyTestCase
 
         // compare with result calculated by Excel's XIRR function
         assertThat(performance.getPerformanceIRR(), IsCloseTo.closeTo(0.505460984, 0.00000001));
+
+        performance.getCategories().stream().flatMap(c -> c.getPositions().stream()).forEach(p -> {
+            Money value = p.getValue();
+            Optional<Trail> valueTrail = p.explain(ClientPerformanceSnapshot.Position.TRAIL_VALUE);
+            valueTrail.ifPresent(t -> assertThat(t.getRecord().getValue(), is(value)));
+
+            Money gain = p.getForexGain();
+            Optional<Trail> gainTrail = p.explain(ClientPerformanceSnapshot.Position.TRAIL_FOREX_GAIN);
+            gainTrail.ifPresent(t -> assertThat(t.getRecord().getValue(), is(gain)));
+        });
     }
 
     @Test

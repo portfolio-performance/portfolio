@@ -50,6 +50,11 @@ public interface TrailRecord
 
     Money getValue();
 
+    default boolean isEmpty()
+    {
+        return getValue() == null;
+    }
+
     default List<TrailRecord> getInputs()
     {
         return Collections.emptyList();

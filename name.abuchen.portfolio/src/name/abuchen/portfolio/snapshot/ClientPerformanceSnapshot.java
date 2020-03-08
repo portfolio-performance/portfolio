@@ -39,37 +39,41 @@ public class ClientPerformanceSnapshot
     public static class Position implements TrailProvider
     {
         public static final String TRAIL_VALUE = "value"; //$NON-NLS-1$
+        public static final String TRAIL_FOREX_GAIN = "forexGain"; //$NON-NLS-1$
 
         private final String label;
         private final Security security;
         private final Money value;
+        private final TrailRecord valueTrail;
         private final Money forexGain;
-
-        private final TrailRecord trail;
+        private final TrailRecord forexGainTrail;
 
         private Position(Security security, Money value, TrailRecord trail)
         {
-            this(security.getName(), security, value, null, trail);
+            this(security.getName(), security, value, trail, null, null);
         }
 
-        private Position(Security security, Money value, Money forexGain, TrailRecord trail)
+        private Position(Security security, Money value, TrailRecord trail, Money forexGain, TrailRecord forexGainTrail)
         {
-            this(security.getName(), security, value, forexGain, trail);
+            this(security.getName(), security, value, trail, forexGain, forexGainTrail);
         }
 
         private Position(String label, Money value, TrailRecord trail)
         {
-            this(label, null, value, null, trail);
+            this(label, null, value, trail, null, null);
         }
 
-        private Position(String label, Security security, Money value, Money forexGain, TrailRecord trail)
+        private Position(String label, Security security, Money value, TrailRecord valueTrail, Money forexGain,
+                        TrailRecord forexGainTrail)
         {
             this.label = label;
             this.security = security;
-            this.value = value;
-            this.forexGain = forexGain;
 
-            this.trail = trail;
+            this.value = value;
+            this.valueTrail = valueTrail;
+
+            this.forexGain = forexGain;
+            this.forexGainTrail = forexGainTrail;
         }
 
         public Money getValue()
@@ -95,7 +99,15 @@ public class ClientPerformanceSnapshot
         @Override
         public Optional<Trail> explain(String key)
         {
-            return TRAIL_VALUE.equals(key) && trail != null ? Optional.of(new Trail(label, trail)) : Optional.empty();
+            switch (key)
+            {
+                case TRAIL_VALUE:
+                    return Trail.of(label, valueTrail);
+                case TRAIL_FOREX_GAIN:
+                    return Trail.of(label, forexGainTrail);
+                default:
+                    return Optional.empty();
+            }
         }
 
         public Position combine(Position other)
@@ -105,8 +117,9 @@ public class ClientPerformanceSnapshot
 
             return new Position(security, //
                             value.add(other.value), //
+                            valueTrail.add(other.valueTrail), //
                             forexGain.add(other.forexGain), //
-                            trail.add(other.trail));
+                            forexGainTrail.add(other.forexGainTrail));
         }
     }
 
@@ -327,7 +340,7 @@ public class ClientPerformanceSnapshot
         for (Security s : client.getSecurities())
         {
             security2fifo.put(s, new ArrayList<>());
-            security2realizedGain.put(s, new Position(s, zero, zero, TrailRecord.empty()));
+            security2realizedGain.put(s, new Position(s, zero, TrailRecord.empty(), zero, TrailRecord.empty()));
         }
 
         snapshotStart.getJointPortfolio().getPositions().stream().forEach(p -> {
@@ -359,9 +372,9 @@ public class ClientPerformanceSnapshot
             Money grossValue = t.getGrossValue();
             Money convertedGrossValue = grossValue.with(converter.at(t.getDateTime()));
 
-            TrailRecord trail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
+            TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
             if (!grossValue.getCurrencyCode().equals(converter.getTermCurrency()))
-                trail = trail.convert(convertedGrossValue,
+                txTrail = txTrail.convert(convertedGrossValue,
                                 converter.getRate(snapshotStart.getTime(), grossValue.getCurrencyCode()));
 
             switch (t.getType())
@@ -369,7 +382,7 @@ public class ClientPerformanceSnapshot
                 case BUY:
                 case DELIVERY_INBOUND:
                     security2fifo.get(t.getSecurity()).add(new LineItem(t.getShares(), t.getDateTime().toLocalDate(),
-                                    convertedGrossValue.getAmount(), trail));
+                                    convertedGrossValue.getAmount(), txTrail));
                     break;
 
                 case SELL:
@@ -392,7 +405,11 @@ public class ClientPerformanceSnapshot
                         long start = Math.round((double) soldShares / item.shares * item.value);
                         long end = Math.round((double) soldShares / t.getShares() * value);
 
+                        TrailRecord startTrail = item.trail.fraction(Money.of(termCurrency, start), soldShares,
+                                        item.originalShares);
+
                         long forexGain = 0L;
+                        TrailRecord forexGainTrail = TrailRecord.empty();
 
                         if (!termCurrency.equals(t.getSecurity().getCurrencyCode()))
                         {
@@ -402,17 +419,27 @@ public class ClientPerformanceSnapshot
                             // rate at the end of the period (equivalent to
                             // holding the money as cash in forex currency)
 
-                            forexGain = converter.with(t.getSecurity().getCurrencyCode())
-                                            .convert(item.date, Money.of(termCurrency, start))
-                                            .with(converter.at(t.getDateTime())).getAmount() - start;
+                            CurrencyConverter convert2forex = converter.with(t.getSecurity().getCurrencyCode());
+
+                            Money forex = convert2forex.convert(item.date, Money.of(termCurrency, start));
+                            Money back = forex.with(converter.at(t.getDateTime()));
+                            forexGain = back.getAmount() - start;
+
+                            forexGainTrail = startTrail //
+                                            .convert(forex, convert2forex.getRate(item.date, termCurrency)) //
+                                            .convert(back, converter.getRate(t.getDateTime(),
+                                                            t.getSecurity().getCurrencyCode()))
+                                            .substract(startTrail);
                         }
 
                         Position p = new Position(t.getSecurity(), //
                                         Money.of(termCurrency, end - start), //
+                                        txTrail //
+                                                        .fraction(Money.of(termCurrency, end), soldShares,
+                                                                        t.getShares())
+                                                        .substract(startTrail),
                                         Money.of(termCurrency, forexGain), //
-                                        trail.fraction(Money.of(termCurrency, end), soldShares, t.getShares())
-                                                        .substract(item.trail.fraction(Money.of(termCurrency, start),
-                                                                        soldShares, item.originalShares)));
+                                        forexGainTrail);
 
                         security2realizedGain.put(t.getSecurity(),
                                         security2realizedGain.get(t.getSecurity()).combine(p));
@@ -480,43 +507,70 @@ public class ClientPerformanceSnapshot
                                 return new Position(entry.getKey(), zero, TrailRecord.empty());
                             }
 
+                            TrailRecord startTrail = TrailRecord.of(entry.getValue().stream()
+                                            .filter(item -> item.shares > 0)
+                                            .map(item -> item.trail.fraction(Money.of(termCurrency, item.value),
+                                                            item.shares, item.originalShares))
+                                            .collect(Collectors.toList()));
+
                             Money endValue = positionAtEnd.calculateValue();
                             Money convertedEndValue = endValue.with(converter.at(snapshotEnd.getTime()));
 
                             long end = convertedEndValue.getAmount();
                             long forexGain = 0L;
+                            TrailRecord forexGainTrail = TrailRecord.empty();
 
                             if (!termCurrency.equals(entry.getKey().getCurrencyCode()))
                             {
                                 // calculate forex gains: use exchange rate of
                                 // each date of investment
 
-                                CurrencyConverter toForex = converter.with(entry.getKey().getCurrencyCode());
+                                CurrencyConverter convert2Forex = converter.with(entry.getKey().getCurrencyCode());
 
-                                forexGain = entry.getValue().stream().filter(item -> item.value != 0)
-                                                .map(item -> toForex.convert(item.date,
+                                Money forex = entry.getValue().stream() //
+                                                .filter(item -> item.value != 0) //
+                                                .map(item -> convert2Forex.convert(item.date,
                                                                 Money.of(termCurrency, item.value)))
-                                                .collect(MoneyCollectors.sum(entry.getKey().getCurrencyCode()))
-                                                .with(converter.at(snapshotEnd.getTime())).getAmount() - start;
+                                                .collect(MoneyCollectors.sum(entry.getKey().getCurrencyCode()));
+
+                                Money back = forex.with(converter.at(snapshotEnd.getTime()));
+
+                                forexGain = back.getAmount() - start;
+
+                                // collect all start values and convert to forex
+                                // using the start date
+
+                                forexGainTrail = TrailRecord.of(entry.getValue().stream()
+                                                .filter(item -> item.value != 0)
+                                                .map(item -> item.trail
+                                                                .fraction(Money.of(termCurrency, item.value),
+                                                                                item.shares, item.originalShares)
+                                                                .convert(convert2Forex.convert(item.date,
+                                                                                Money.of(termCurrency, item.value)),
+                                                                                convert2Forex.getRate(item.date,
+                                                                                                termCurrency)))
+                                                .collect(Collectors.toList()));
+
+                                // convert the forex amount back with the
+                                // exchange rate at the end (=snapshot end) and
+                                // substract start value
+
+                                forexGainTrail = forexGainTrail
+                                                .convert(back, converter.getRate(snapshotEnd.getTime(),
+                                                                entry.getKey().getCurrencyCode()))
+                                                .substract(startTrail);
                             }
 
                             // build trail
 
-                            TrailRecord trail = TrailRecord.ofSnapshot(snapshotEnd, positionAtEnd);
+                            TrailRecord endTrail = TrailRecord.ofSnapshot(snapshotEnd, positionAtEnd);
                             if (!endValue.getCurrencyCode().equals(converter.getTermCurrency()))
-                                trail = trail.convert(convertedEndValue,
+                                endTrail = endTrail.convert(convertedEndValue,
                                                 converter.getRate(snapshotEnd.getTime(), endValue.getCurrencyCode()));
 
-                            trail = trail.substract(TrailRecord.of(entry.getValue().stream()
-                                            .filter(item -> item.shares > 0)
-                                            .map(item -> item.trail.fraction(Money.of(termCurrency, item.value),
-                                                            item.shares, item.originalShares))
-                                            .collect(Collectors.toList())));
-
                             return new Position(entry.getKey(), //
-                                            Money.of(termCurrency, end - start), //
-                                            Money.of(termCurrency, forexGain), //
-                                            trail);
+                                            Money.of(termCurrency, end - start), endTrail.substract(startTrail), //
+                                            Money.of(termCurrency, forexGain), forexGainTrail);
                         }) //
                         .filter(p -> !p.getValue().isZero())
                         .sorted((p1, p2) -> p1.getLabel().compareToIgnoreCase(p2.getLabel())) //
