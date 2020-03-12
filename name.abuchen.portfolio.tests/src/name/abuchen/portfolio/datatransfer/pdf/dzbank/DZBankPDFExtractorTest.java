@@ -5,6 +5,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
 import static org.junit.Assert.assertThat;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import org.junit.Test;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.DZBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.model.AccountTransaction;
@@ -101,6 +103,43 @@ public class DZBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of("EUR", Values.Amount.factorize(10.05))));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
+    }
+    
+
+    @Test
+    public void testAusschuettung1()
+    {
+        DZBankPDFExtractor extractor = new DZBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "DZBankAusschuettung1.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        Optional<Item> item;
+
+        // security
+        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF"));
+        assertThat(security.getIsin(), is("IE00B3RBWM25"));
+        assertThat(security.getWkn(), is("A1JX52"));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findAny().orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // dividend
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-31T00:00")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(26.48)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(2.45)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(100)));
+        
     }
 
 }

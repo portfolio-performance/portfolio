@@ -1,8 +1,10 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
+import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -19,6 +21,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("NIBC Direct Depotservice"); //$NON-NLS-1$
 
         addBuyTransaction();
+        addAusschuettungTransaction();
     }
 
     @Override
@@ -51,7 +54,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("shares", "name", "isin", "wkn")
                         .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
-                        .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*) [ +] (?<isin>.*) \\((?<wkn>.*)\\).*")
+                        .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
                         .assign((t, v) -> {
                             v.put("isin", v.get("isin"));
                             v.put("wkn", v.get("wkn"));
@@ -85,5 +88,59 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
 
         block.set(pdfTransaction);
 
+    }
+    
+    @SuppressWarnings("nls")
+    private void addAusschuettungTransaction()
+    {
+        DocumentType dividende = new DocumentType("Ausschüttung Investmentfonds");
+        this.addDocumentTyp(dividende);
+
+        Block block = new Block(
+                        "Aussch.ttung Investmentfonds.*");
+        dividende.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DIVIDENDS);
+                            return t;
+                        })
+
+                        .section("date")
+                        .match(".*(Wertstellung) (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+                        
+                        .section("shares", "name", "isin", "wkn")
+                        .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
+                        .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
+                        .assign((t, v) -> {
+                            v.put("isin", v.get("isin"));
+                            v.put("wkn", v.get("wkn"));
+                            v.put("name", v.get("name"));                            
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                        
+                        .section("currency", "amount") //
+                        .find("^(Aussch.ttung) (?<amountfx>[\\d.]+(,[\\d]+)?) (USD) (?<amount>[\\d.]+(,[\\d]+)?)\\+ (?<currency>.*)$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+                        
+                        .section("currency", "amountaftertax") //
+                        .find(".*(Ausmachender Betrag) (?<amountaftertax>[\\d.]+(,[\\d]+)?)\\+ (?<currency>.*)$")
+                        .assign((t, v) -> {
+                            long gross = t.getAmount();
+                            long tax = gross - asAmount(v.get("amountaftertax"));
+                            
+                            if (tax > 0)
+                                t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
+                        })
+
+                        .wrap(TransactionItem::new));
     }
 }
