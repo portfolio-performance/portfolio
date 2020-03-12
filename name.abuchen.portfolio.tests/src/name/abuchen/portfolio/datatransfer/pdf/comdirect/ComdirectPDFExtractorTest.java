@@ -807,11 +807,10 @@ public class ComdirectPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt",
-                        "comdirectDividende3_Steuer.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(3));
+        assertThat(results.size(), is(2));
 
         // security
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
@@ -824,7 +823,7 @@ public class ComdirectPDFExtractorTest
         List<AccountTransaction> items = results.stream()
                         .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
                         .map(i -> (AccountTransaction) i.getSubject()).collect(Collectors.toList());
-        assertThat(items.size(), is(2));
+        assertThat(items.size(), is(1));
 
         // dividend
         Optional<AccountTransaction> oTransaction = items.stream()
@@ -837,15 +836,6 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
 
-        // tax
-        oTransaction = items.stream().filter(t -> AccountTransaction.Type.TAXES.equals(t.getType())).findFirst();
-        assertThat(oTransaction.isPresent(), is(true));
-        transaction = oTransaction.orElseThrow(IllegalArgumentException::new);
-
-        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
-        assertThat(transaction.getUnitSum(Type.TAX), is(Money.of("EUR", 1_37 + 7L)));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.44)));
     }
 
     @Test
@@ -917,4 +907,178 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.09)));
     }
 
+    @Test
+    public void testDividendeAusSteuermitteilung1()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectSteuermitteilung_Dividende01.txt"),
+                        errors);
+
+        assertThat(errors, empty()); 
+        assertThat(results.size(), is(2)); 
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("US7427181091"));
+        assertThat(security.getName(), is("PROCTER GAMBLE"));
+        assertThat(security.getWkn(), is("852062"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(302.55)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(53.40)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(518)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-20T00:00")));
+    }
+
+    @Test
+    public void testDividendeAusSteuermitteilung2()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectSteuermitteilung_Dividende02.txt"),
+                        errors);
+
+        assertThat(errors, empty()); 
+        assertThat(results.size(), is(2)); 
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("AN8068571086"));
+        assertThat(security.getName(), is("SCHLUMBERGER   DL-,01"));
+        assertThat(security.getWkn(), is("853390"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(58.44)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.00)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(130)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-01-14T00:00")));
+    }
+
+    @Test
+    public void testInvestmentAusschuettung02()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectInvestmentAusschuettung02.txt"),
+                        errors);
+
+        assertThat(errors, empty()); 
+        assertThat(results.size(), is(2)); 
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000ETF7011"));
+        assertThat(security.getName(), is("CS VERMOEG.STRATE.U.ETF I"));
+        assertThat(security.getWkn(), is("ETF701"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(0.05)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.01)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(0.088)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-10-31T00:00")));
+    }
+
+    @Test
+    public void testDividendeAusSteuermitteilung3()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectSteuermitteilung_Dividende03.txt"),
+                        errors);
+
+        assertThat(errors, empty()); 
+        assertThat(results.size(), is(2)); 
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("US1266501006"));
+        assertThat(security.getName(), is("CVS HEALTH CORP.   DL-,01"));
+        assertThat(security.getWkn(), is("859034"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.21)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(3.49)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
+    }
+    
+    @Test
+    public void testDividendeAusSteuermitteilung4()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectSteuermitteilung_Dividende04.txt"),
+                        errors);
+
+        assertThat(errors, empty()); 
+        assertThat(results.size(), is(2)); 
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0006766504"));
+        assertThat(security.getName(), is("AURUBIS AG"));
+        assertThat(security.getWkn(), is("676650"));
+
+        item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        assertThat(item.orElseThrow(IllegalArgumentException::new).getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(45.12)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(17.38)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-03-03T00:00")));
+    }
 }
