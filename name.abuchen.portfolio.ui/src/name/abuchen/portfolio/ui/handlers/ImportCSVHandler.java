@@ -43,7 +43,7 @@ public class ImportCSVHandler
                     CSVConfigManager configManager,
                     @org.eclipse.e4.core.di.annotations.Optional @Named("name.abuchen.portfolio.ui.param.name") String index)
     {
-        MenuHelper.getActiveClient(part).ifPresent(client -> runImport((PortfolioPart) part, shell, context,
+        MenuHelper.getActiveClient(part).ifPresent(client -> runImport((PortfolioPart) part.getObject(), shell, context,
                         configManager, index, client, null, null));
     }
 
