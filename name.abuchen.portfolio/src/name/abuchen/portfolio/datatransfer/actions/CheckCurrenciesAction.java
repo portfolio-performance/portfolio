@@ -80,13 +80,13 @@ public class CheckCurrenciesAction implements ImportAction
         if (status.getCode() != Status.Code.OK)
             return status;
 
-        if (transaction.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND
-                        || transaction.getType() == PortfolioTransaction.Type.SELL)
+        if (transaction.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                        || transaction.getType() == PortfolioTransaction.Type.BUY)
         {
             // tax + fees must be < than transaction amount
             Money taxAndFees = transaction.getUnits() //
                             .filter(u -> u.getType() == Unit.Type.TAX || u.getType() == Unit.Type.FEE) //
-                            .map(u -> u.getAmount()) //
+                            .map(Unit::getAmount) //
                             .collect(MoneyCollectors.sum(transaction.getCurrencyCode()));
 
             if (!transaction.getMonetaryAmount().isGreaterOrEqualThan(taxAndFees))

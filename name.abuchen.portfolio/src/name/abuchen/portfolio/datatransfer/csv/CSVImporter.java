@@ -41,6 +41,7 @@ import java.util.StringJoiner;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVFormat;
@@ -492,15 +493,23 @@ public final class CSVImporter
                 }
             }
 
-            // second: try partial matches
+            // second: try as pattern
 
             for (Map.Entry<M, String> entry : enumMap.entrySet())
             {
-                int p = source.indexOf(entry.getValue());
-                if (p >= 0)
+                try
                 {
-                    pos.setIndex(source.length());
-                    return entry.getKey();
+                    Pattern p = Pattern.compile(entry.getValue());
+
+                    if (p.matcher(source).find())
+                    {
+                        pos.setIndex(source.length());
+                        return entry.getKey();
+                    }
+                }
+                catch (PatternSyntaxException e)
+                {
+                    PortfolioLog.error(e);
                 }
             }
 

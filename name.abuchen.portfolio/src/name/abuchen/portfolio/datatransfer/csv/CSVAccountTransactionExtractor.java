@@ -47,6 +47,7 @@ import name.abuchen.portfolio.money.Money;
         fields.add(new AmountField("shares", Messages.CSVColumn_Shares).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("note", Messages.CSVColumn_Note).setOptional(true)); //$NON-NLS-1$
         fields.add(new AmountField("taxes", Messages.CSVColumn_Taxes).setOptional(true)); //$NON-NLS-1$
+        fields.add(new AmountField("fees", Messages.CSVColumn_Fees).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("account", Messages.CSVColumn_AccountName).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("account2nd", Messages.CSVColumn_AccountName2nd).setOptional(true)); //$NON-NLS-1$
         fields.add(new Field("portfolio", Messages.CSVColumn_PortfolioName).setOptional(true)); //$NON-NLS-1$
@@ -78,6 +79,7 @@ import name.abuchen.portfolio.money.Money;
         String note = getText(Messages.CSVColumn_Note, rawValues, field2column);
         Long shares = getShares(Messages.CSVColumn_Shares, rawValues, field2column);
         Long taxes = getAmount(Messages.CSVColumn_Taxes, rawValues, field2column);
+        Long fees = getAmount(Messages.CSVColumn_Fees, rawValues, field2column);
 
         Account account = getAccount(getClient(), rawValues, field2column);
         Account account2nd = getAccount(getClient(), rawValues, field2column, true);
@@ -116,7 +118,27 @@ import name.abuchen.portfolio.money.Money;
                 buySellEntry.setSecurity(security);
                 buySellEntry.setDate(date);
                 buySellEntry.setNote(note);
-                item = new BuySellEntryItem(buySellEntry);
+
+                if (taxes != null && taxes.longValue() != 0)
+                    buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, Money
+                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(taxes))));
+
+                if (fees != null && fees.longValue() != 0)
+                    buySellEntry.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE, Money
+                                    .of(buySellEntry.getPortfolioTransaction().getCurrencyCode(), Math.abs(fees))));
+
+                if (buySellEntry.getPortfolioTransaction().getAmount() == 0L
+                                && buySellEntry.getPortfolioTransaction().getType() == PortfolioTransaction.Type.SELL)
+                {
+                    // convert to outbound delivery if amount is 0
+                    PortfolioTransaction tx = buySellEntry.getPortfolioTransaction();
+                    item = new TransactionItem(convertToOutboundDelivery(tx));
+                }
+                else
+                {
+                    item = new BuySellEntryItem(buySellEntry);
+                }
+
                 break;
             case DIVIDENDS: // NOSONAR
                 // dividends must have a security
@@ -138,7 +160,8 @@ import name.abuchen.portfolio.money.Money;
                 t.setType(type);
                 t.setAmount(Math.abs(amount.getAmount()));
                 t.setCurrencyCode(amount.getCurrencyCode());
-                if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES || type == Type.FEES_REFUND)
+                if (type == Type.DIVIDENDS || type == Type.TAXES || type == Type.TAX_REFUND || type == Type.FEES
+                                || type == Type.FEES_REFUND)
                     t.setSecurity(security);
                 t.setDateTime(date.withHour(0).withMinute(0));
                 t.setNote(note);
@@ -157,6 +180,20 @@ import name.abuchen.portfolio.money.Money;
         item.setPortfolioPrimary(portfolio);
 
         items.add(item);
+    }
+
+    private PortfolioTransaction convertToOutboundDelivery(PortfolioTransaction tx)
+    {
+        PortfolioTransaction delivery = new PortfolioTransaction();
+        delivery.setType(PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+        delivery.setDateTime(tx.getDateTime());
+        delivery.setAmount(tx.getAmount());
+        delivery.setCurrencyCode(tx.getCurrencyCode());
+        delivery.setShares(tx.getShares());
+        delivery.setSecurity(tx.getSecurity());
+        delivery.setNote(tx.getNote());
+        delivery.addUnits(tx.getUnits());
+        return delivery;
     }
 
     private Type inferType(String[] rawValues, Map<String, Column> field2column, Security security, Money amount)

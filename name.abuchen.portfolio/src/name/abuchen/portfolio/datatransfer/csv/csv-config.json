@@ -298,4 +298,134 @@
             "label": "Wirtschaftsraum (Detail)"
         }
     ]
+},
+{
+    "delimiter": ";",
+    "encoding": "UTF-8",
+    "isFirstLineHeader": true,
+    "label": "ebase Kontoauszug",
+    "skipLines": 0,
+    "target": "account-transaction",
+    "columns": [
+        {
+            "label": "Depotnummer"
+        },
+        {
+            "label": "Depotposition"
+        },
+        {
+            "field": "date",
+            "format": "yyyy-MM-dd",
+            "label": "Datum"
+        },
+        {
+            "label": "Ref. Nr."
+        },
+        {
+            "field": "date",
+            "format": "yyyy-MM-dd",
+            "label": "Buchungsdatum"
+        },
+        {
+            "field": "type",
+            "format": "DEPOSIT=Einlage;REMOVAL=Entnahme;INTEREST=Zinsen;INTEREST_CHARGE=Zinsbelastung;DIVIDENDS=^Fondsertrag$;FEES=Gebühren;FEES_REFUND=Gebührenerstattung;TAXES=Steuern;TAX_REFUND=Steuerrückerstattung;BUY=Kauf|Ansparplan|Wiederanlage;SELL=Verkauf;TRANSFER_IN=Umbuchung (Eingang);TRANSFER_OUT=Umbuchung (Ausgang)",
+            "label": "Umsatzart"
+        },
+        {
+            "label": "Teilumsatz"
+        },
+        {
+            "field": "name",
+            "label": "Fonds"
+        },
+        {
+            "field": "isin",
+            "label": "ISIN"
+        },
+        {
+            "field": "value",
+            "format": "0.000,00",
+            "label": "Zahlungsbetrag in ZW"
+        },
+        {
+            "field": "currency",
+            "label": "Zahlungswährung (ZW)"
+        },
+        {
+            "field": "shares",
+            "format": "0.000,00",
+            "label": "Anteile"
+        },
+        {
+            "label": "Abrechnungskurs in FW"
+        },
+        {
+            "label": "Fondswährung (FW)"
+        },
+        {
+            "label": "Kursdatum"
+        },
+        {
+            "label": "Devisenkurs  (ZW/FW)"
+        },
+        {
+            "label": "Anlagebetrag in ZW"
+        },
+        {
+            "label": "Vertriebsprovision in ZW (im Abrechnungskurs enthalten)"
+        },
+        {
+            "label": "KVG Einbehalt in ZW (im Abrechnungskurs enthalten)"
+        },
+        {
+            "label": "Gegenwert der Anteile in ZW"
+        },
+        {
+            "label": "Anteile zum Bestandsdatum"
+        },
+        {
+            "label": "Barausschüttung/Steuerliquidität je Anteil in EW"
+        },
+        {
+            "label": "Ertragswährung (EW)"
+        },
+        {
+            "label": "Bestandsdatum"
+        },
+        {
+            "label": "Devisenkurs (ZW/EW)"
+        },
+        {
+            "label": "Barausschüttung/Steuerliquidität in ZW"
+        },
+        {
+            "label": "Entgelt in ZW"
+        },
+        {
+            "field": "fees",
+            "format": "0.000,00",
+            "label": "Entgelt in EUR"
+        },
+        {
+            "label": "Steuern in ZW"
+        },
+        {
+            "field": "taxes",
+            "format": "0.000,00",
+            "label": "Steuern in EUR"
+        },
+        {
+            "label": "Devisenkurs (EUR/ZW)"
+        },
+        {
+            "label": "Art des Steuereinbehalts"
+        },
+        {
+            "label": "Steuereinbehalt in EUR"
+        },
+        {
+            "field": "note",
+            "label": "Orderinfo"
+        }
+    ]
 }]
