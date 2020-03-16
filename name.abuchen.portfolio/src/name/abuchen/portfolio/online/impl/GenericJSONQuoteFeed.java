@@ -54,6 +54,12 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     @Override
+    public Optional<String> getHelpURL()
+    {
+        return Optional.of("https://help.portfolio-performance.info/kursdaten_laden/#json"); //$NON-NLS-1$
+    }
+
+    @Override
     public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
         return false;
