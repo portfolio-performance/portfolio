@@ -10,6 +10,8 @@ import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -29,6 +31,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.BindingHelper.Model;
@@ -163,12 +166,15 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
     private CurrencyConverterModel model;
     private BindingHelper bindings;
+    private String baseCurrency, termCurrency;
 
     @PostConstruct
     private void createModel(ExchangeRateProviderFactory factory)
     {
         this.model = new CurrencyConverterModel(factory);
         this.bindings = new BindingHelper(model);
+        this.baseCurrency = model.getBaseCurrency();
+        this.termCurrency = model.getTermCurrency();
     }
 
     @Override
@@ -193,9 +199,19 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
         bindings.createErrorLabel(editArea);
         bindings.bindMandatoryAmountInput(editArea, Messages.ColumnAmount, "baseValue", SWT.NONE, 10); //$NON-NLS-1$
-        bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnBaseCurrency, "baseCurrency", false); //$NON-NLS-1$
+        bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnBaseCurrency, "baseCurrency", false).addSelectionChangedListener(event -> { //$NON-NLS-1$
+            if(model.getBaseCurrency().equals(model.getTermCurrency())) {
+                model.setTermCurrency(baseCurrency);
+            }      
+            baseCurrency = model.getBaseCurrency();
+        });;
         bindings.bindMandatoryAmountInput(editArea, Messages.ColumnConvertedAmount, "termValue", SWT.READ_ONLY, 10); //$NON-NLS-1$
-        bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnTermCurrency, "termCurrency", false); //$NON-NLS-1$
+        bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnTermCurrency, "termCurrency", false).addSelectionChangedListener(event -> { //$NON-NLS-1$
+            if(model.getBaseCurrency().equals(model.getTermCurrency())) {
+                model.setBaseCurrency(termCurrency);  
+            }
+            termCurrency = model.getTermCurrency();
+        });;
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date").setBackground(Colors.WHITE); //$NON-NLS-1$
 
         Composite tree = createTree(container);
@@ -203,6 +219,22 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         startingWith(editArea).thenBelow(tree).width(420).height(200);
 
         return container;
+    }
+
+    @Override
+    public void addButtons(ToolBarManager toolBar)
+    {
+        Action switchCurrencies = new Action()
+        {
+            @Override
+            public void run()
+            {
+                model.setBaseCurrency(model.getTermCurrency()); //Triggers Changelistener to switch the other
+            }
+        };
+        switchCurrencies.setImageDescriptor(Images.INVERT_EXCHANGE_RATE.descriptor());
+        switchCurrencies.setToolTipText(Messages.MenuSwitchCurrencies);
+        toolBar.add(switchCurrencies);
     }
 
     private Composite createTree(Composite container)
