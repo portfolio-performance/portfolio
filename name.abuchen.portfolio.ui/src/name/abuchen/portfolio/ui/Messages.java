@@ -754,6 +754,7 @@ public class Messages extends NLS
     public static String MenuShow;
     public static String MenuShowHideColumns;
     public static String MenuShowSidebar;
+    public static String MenuSwitchCurrencies;
     public static String MenuTaxonomyAssignmentRemove;
     public static String MenuTaxonomyClassificationCreate;
     public static String MenuTaxonomyClassificationDelete;

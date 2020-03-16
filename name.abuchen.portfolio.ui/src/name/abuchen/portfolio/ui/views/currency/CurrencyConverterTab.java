@@ -17,8 +17,11 @@ import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -29,6 +32,7 @@ import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.ExchangeRateTimeSeries;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.BindingHelper.Model;
@@ -128,6 +132,18 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
             firePropertyChange("date", this.date, this.date = date); // NOSONAR //$NON-NLS-1$
             convert();
         }
+
+        public void flipCurrencies()
+        {
+            String oldBaseCurrency = this.baseCurrency;
+            String oldTermCurrency = this.termCurrency;
+
+            this.baseCurrency = oldTermCurrency;
+            this.termCurrency = oldBaseCurrency;
+
+            firePropertyChange("baseCurrency", oldBaseCurrency, this.baseCurrency); // NOSONAR //$NON-NLS-1$
+            firePropertyChange("termCurrency", oldTermCurrency, this.termCurrency); // NOSONAR //$NON-NLS-1$
+        }
     }
 
     private static class ExchangeRateTimeSeriesContentProvider implements ITreeContentProvider
@@ -197,6 +213,12 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
         bindings.bindMandatoryAmountInput(editArea, Messages.ColumnConvertedAmount, "termValue", SWT.READ_ONLY, 10); //$NON-NLS-1$
         bindings.bindCurrencyCodeCombo(editArea, Messages.ColumnTermCurrency, "termCurrency", false); //$NON-NLS-1$
         bindings.bindDatePicker(editArea, Messages.ColumnDate, "date").setBackground(Colors.WHITE); //$NON-NLS-1$
+
+        new Label(editArea, SWT.NONE);
+        Button b = new Button(editArea, SWT.PUSH | SWT.FLAT);
+        b.setImage(Images.INVERT_EXCHANGE_RATE.image());
+        b.setToolTipText(Messages.MenuSwitchCurrencies);
+        b.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> model.flipCurrencies()));
 
         Composite tree = createTree(container);
 
