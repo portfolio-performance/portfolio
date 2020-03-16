@@ -110,9 +110,10 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         {
             @SuppressWarnings("nls")
             String response = new WebAccess("www.portfolio-report.net",
-                            "/api/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()).addUserAgent(
-                                            "PortfolioPerformance/" + FrameworkUtil.getBundle(PortfolioReportNet.class)
-                                                            .getVersion().toString())
+                            "/api/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()) //
+                                            .addUserAgent("PortfolioPerformance/"
+                                                            + FrameworkUtil.getBundle(PortfolioReportNet.class)
+                                                                            .getVersion().toString())
                                             .addParameter("from", start.toString()).get();
 
             JSONObject json = (JSONObject) JSONValue.parse(response);

@@ -278,27 +278,24 @@ public class PortfolioReportNet
 
     public List<ResultItem> search(String query, SecuritySearchProvider.Type type) throws IOException
     {
-        String html;
+        WebAccess webAccess = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
+                        .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
+                                        + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString());
 
-        if (type != null)
+        switch (type)
         {
-            html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
-                            .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
-                            .addParameter("securityType", //$NON-NLS-1$
-                                            type == SecuritySearchProvider.Type.SHARE ? TYPE_SHARE : TYPE_BOND)
-                            .get();
-
-        }
-        else
-        {
-            html = new WebAccess(HOST, "/api/securities/search/" + query) //$NON-NLS-1$
-                            .addUserAgent("PortfolioPerformance/" //$NON-NLS-1$
-                                            + FrameworkUtil.getBundle(PortfolioReportNet.class).getVersion().toString())
-                            .get();
+            case SHARE:
+                webAccess.addParameter("securityType", TYPE_SHARE); //$NON-NLS-1$
+                break;
+            case BOND:
+                webAccess.addParameter("securityType", TYPE_BOND); //$NON-NLS-1$
+                break;
+            case ALL:
+            default:
+                // do nothing
         }
 
-        return readItems(html);
+        return readItems(webAccess.get());
     }
 
     public Optional<ResultItem> getUpdatedValues(String onlineId) throws IOException
