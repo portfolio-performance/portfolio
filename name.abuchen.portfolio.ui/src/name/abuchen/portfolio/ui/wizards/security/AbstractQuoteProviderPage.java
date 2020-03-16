@@ -564,7 +564,7 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         if (feed != null)
             comboProvider.setSelection(new StructuredSelection(feed));
         else
-            comboProvider.getCombo().select(0);
+            comboProvider.setSelection(new StructuredSelection(getAvailableFeeds().get(0)));
 
         createDetailDataWidgets(feed);
 
