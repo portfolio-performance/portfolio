@@ -36,7 +36,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapier Abrechnung Kauf.");
+        Block block = new Block("Wertpapier Abrechnung Kauf.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -46,10 +46,13 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date")
-                        .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .section("date", "time")
+                        .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+).*")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
                         })
                         
                         .section("shares", "name", "isin", "wkn")
