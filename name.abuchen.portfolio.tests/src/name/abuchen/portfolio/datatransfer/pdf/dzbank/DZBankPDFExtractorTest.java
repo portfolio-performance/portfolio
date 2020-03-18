@@ -158,11 +158,6 @@ public class DZBankPDFExtractorTest
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        Optional<Item> item;
-
-        // security
-        item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
-
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertThat(security.getName(), is("VANGUARD FTSE ALL-WORLD U.ETF"));
