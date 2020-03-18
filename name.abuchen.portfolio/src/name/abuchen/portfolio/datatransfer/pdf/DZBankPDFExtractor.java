@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -147,6 +147,22 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                         
+                        // Kapitalertragsteuer
+                        .section("tax", "currency") //
+                        .optional() //
+                        .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+                        // Soli
+                        .section("tax", "currency") //
+                        .optional() //
+                        .match("(Solidaritätszuschlag) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
