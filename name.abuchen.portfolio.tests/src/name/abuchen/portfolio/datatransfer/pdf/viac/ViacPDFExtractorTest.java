@@ -402,4 +402,45 @@ public class ViacPDFExtractorTest
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of("CAD", Values.Amount.factorize(0.20))));
         assertThat(transaction.getUnit(Unit.Type.GROSS_VALUE).get().getExchangeRate().doubleValue(), IsCloseTo.closeTo(0.7466, 0.000001));
     }
+    
+    @Test
+    public void testVerkauf01()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VIACVerkauf1.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("CH0032400670"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+        assertThat(security.getName(), is("CSIF World ex CH"));
+
+        // check transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(45.66))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.03)));
+
+        Unit gross = entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(gross.getAmount(), is(Money.of("CHF", Values.Amount.factorize(45.66))));
+        assertThat(gross.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(45.71))));
+    }
 }
