@@ -1,0 +1,70 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+Volksbank Stuttgart eG · Postfach 200333 · 70372 Stuttgart Seite 1 von 2
+Depotnummer
+ 5052257500
+ Kundennummer 50544500
+Max Mustermann
+ Auftragsnummer 141781/85.00
+Max Mustermann Datum 13.08.2019
+Straßenname-Str. 15 Rechnungsnummer W07101-0000004973/19
+70372 Stuttgart Steuernummer 24210508812   
+Onlinedepot
+ 
+Wertpapier Abrechnung Verkauf 
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 2 NEW WORK SE                        DE000NWRK013 (NWRK01)
+NAMENS-AKTIEN O.N.                 
+Handels-/Ausführungsplatz Tradegate (gemäß Weisung)
+Börsensegment XGAT
+Stop-Limit-Order
+Stoplimit 291,00 EUR Limit 290,00 EUR 
+Schlusstag/-Zeit 13.08.2019 15:16:51 Auftraggeber Max Mustermann
+Ausführungskurs 294,00 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 588,00 EUR
+Provision 9,95- EUR
+Übertragungs-/Liefergebühr 0,10- EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsverlust 112,10- EUR
+Eingebuchte Aktienverluste 112,10 EUR
+Ausmachender Betrag 577,95 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 15.08.2019 zu Gunsten des Kontos 5072251000
+(IBAN DE27 8509 0000 5072 2510 00), BLZ 85090000 (BIC GENODEF1DRS).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Steuerliche Ausgleichrechnung
+Verrechnete Aktienverluste 112,10- EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 112,10 EUR
+7202.08131750.0000008OR07
+Seite 2 von 2
+Depotnummer 5072258500
+Kundennummer 50722500
+Auftragsnummer 111757/85.00
+Datum 13.08.2019
+Kapitalertragsteuer 25,00% auf 112,10 EUR 28,03 EUR
+Solidaritätszuschlag 5,50% auf 28,03 EUR 1,54 EUR
+Ausmachender Betrag 29,57 EUR
+ 
+Den Gegenwert buchen wir mit Valuta 13.08.2019 zu Gunsten des Kontos 5052258000
+(IBAN DE27 9509 0000 3074 2520 00), BLZ 60090100 (BIC VOBADESS).
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.212,30
+Verkauf 112,10 0,00 0,00 0,00 0,00
+Steuerausgleich 112,10- 0,00 0,00 0,00 112,10-
+Nachher 0,00 0,00 0,00 0,00 1.100,20
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Kauf 7429811200 04.06.2019 Stück 2,0000 690,05- 577,95 112,10- (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 112,10-
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+7202.08739750.0000009OR07

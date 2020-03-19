@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
-import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -21,6 +21,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         addBankIdentifier("NIBC Direct Depotservice"); //$NON-NLS-1$
 
         addBuyTransaction();
+        addSellTransaction();
         addAusschuettungTransaction();
     }
 
@@ -36,7 +37,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         DocumentType type = new DocumentType("Wertpapier Abrechnung Kauf");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapier Abrechnung Kauf.");
+        Block block = new Block("Wertpapier Abrechnung Kauf.*");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
 
@@ -46,10 +47,13 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("date")
-                        .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+).*")
+                        .section("date", "time")
+                        .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+).*")
                         .assign((t, v) -> {
-                            t.setDate(asDate(v.get("date")));
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
                         })
                         
                         .section("shares", "name", "isin", "wkn")
@@ -80,6 +84,85 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
                         
+                        .wrap(t -> {
+                            if (t.getPortfolioTransaction().getDateTime() == null)
+                                throw new IllegalArgumentException("Missing date");
+                            return new BuySellEntryItem(t);
+                        });
+
+        block.set(pdfTransaction);
+
+    }
+    
+    @SuppressWarnings("nls")
+    private void addSellTransaction()
+    {
+        DocumentType type = new DocumentType("Wertpapier Abrechnung Verkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Wertpapier Abrechnung Verkauf.*");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.SELL);
+                            return entry;
+                        })
+
+                        .section("date", "time")
+                        .match("(Schlusstag/-Zeit) (?<date>\\d+.\\d+.\\d{4}+) (?<time>\\d+:\\d+).*")
+                        .assign((t, v) -> {
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
+                        })
+                        
+                        .section("shares", "name", "isin", "wkn")
+                        .match("(Nominale Wertpapierbezeichnung ISIN \\(WKN\\))")
+                        .match("(St.ck) (?<shares>[\\d.]+(,\\d+)?) (?<name>.*)\\s+(?<isin>.*) \\((?<wkn>.*)\\).*")
+                        .assign((t, v) -> {
+                            v.put("isin", v.get("isin"));
+                            v.put("wkn", v.get("wkn"));
+                            v.put("name", v.get("name"));                            
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(v.get("shares")));
+                        })
+                        
+                        .section("amount", "currency")
+                        .match("(Ausmachender Betrag)[ ]*(?<amount>(\\d)*(\\.)?(\\d)*,(\\d)*).* (?<currency>\\w{3}+).*")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+                        
+                        .section("fee", "currency").optional()
+                        .match("(Provision)[ ]*(?<fee>(\\d)*(\\.)?(\\d)*,(\\d)*).* (?<currency>\\w{3}+).*")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match("(Übertragungs-/Liefergeb.hr)[ ]*(?<fee>(\\d)*(\\.)?(\\d)*,(\\d)*).* (?<currency>\\w{3}+).*") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+                        
+                        // Kapitalertragsteuer
+                        .section("tax", "currency") //
+                        .optional() //
+                        .match("(Kapitalertragsteuer) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
+                        // Soli
+                        .section("tax", "currency") //
+                        .optional() //
+                        .match("(Solidaritätszuschlag) [\\d+,\\%]* auf [\\d,]* EUR (?<tax>[\\d+,.]*)- (?<currency>\\w{3}+)")
+                        .assign((t, v) -> t.getPortfolioTransaction()
+                                        .addUnit(new Unit(Unit.Type.TAX,
+                                                        Money.of(asCurrencyCode(v.get("currency")),
+                                                                        asAmount(v.get("tax"))))))
                         .wrap(t -> {
                             if (t.getPortfolioTransaction().getDateTime() == null)
                                 throw new IllegalArgumentException("Missing date");
