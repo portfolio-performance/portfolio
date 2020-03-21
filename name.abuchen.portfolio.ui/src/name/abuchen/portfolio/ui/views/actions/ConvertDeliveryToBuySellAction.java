@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.ui.views.actions;
 
 import java.text.MessageFormat;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.eclipse.jface.action.Action;
@@ -21,17 +21,7 @@ public class ConvertDeliveryToBuySellAction extends Action
 
     public ConvertDeliveryToBuySellAction(Client client, TransactionPair<PortfolioTransaction> transaction)
     {
-        this.client = client;
-        this.transactionList = new ArrayList<TransactionPair<PortfolioTransaction>>();
-        transactionList.add(transaction);
-
-        if (transaction.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_INBOUND
-                        && transaction.getTransaction().getType() != PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-            throw new IllegalArgumentException();
-
-        setText(transaction.getTransaction().getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                        ? Messages.MenuConvertToBuy
-                        : Messages.MenuConvertToSell);
+        this(client, Arrays.asList(transaction));
     }
 
     public ConvertDeliveryToBuySellAction(Client client, Collection<TransactionPair<PortfolioTransaction>> transactionList)
