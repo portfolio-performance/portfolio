@@ -46,6 +46,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_es.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.8.0.v20190713101254"/>
 	</location>
 </locations>
 </target>
