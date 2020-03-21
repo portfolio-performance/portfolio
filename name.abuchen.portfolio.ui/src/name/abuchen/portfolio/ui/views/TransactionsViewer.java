@@ -517,7 +517,9 @@ public final class TransactionsViewer implements ModificationListener
                 foo.withPortfolioTransaction().ifPresent(tx -> txCollection.add(tx));
             }
             
-            fillContextMenuPortfolioTxList(manager, txCollection);
+            if(!txCollection.isEmpty()) {
+                fillContextMenuPortfolioTxList(manager, txCollection);
+            }
             
             manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
                 for (Object tx : selection.toArray())
