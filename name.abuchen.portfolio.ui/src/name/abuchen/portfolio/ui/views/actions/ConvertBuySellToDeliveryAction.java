@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.views.actions;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 import org.eclipse.jface.action.Action;
 
 import name.abuchen.portfolio.model.Client;
@@ -10,41 +13,65 @@ import name.abuchen.portfolio.ui.Messages;
 public class ConvertBuySellToDeliveryAction extends Action
 {
     private final Client client;
-    private final TransactionPair<PortfolioTransaction> transaction;
+    private final Collection<TransactionPair<PortfolioTransaction>> transactionList;
 
     public ConvertBuySellToDeliveryAction(Client client, TransactionPair<PortfolioTransaction> transaction)
     {
+        this(client, Arrays.asList(transaction));
+    }
+
+    public ConvertBuySellToDeliveryAction(Client client,
+                    Collection<TransactionPair<PortfolioTransaction>> transactionList)
+    {
         this.client = client;
-        this.transaction = transaction;
+        this.transactionList = transactionList;
 
-        if (transaction.getTransaction().getType() != PortfolioTransaction.Type.BUY
-                        && transaction.getTransaction().getType() != PortfolioTransaction.Type.SELL)
-            throw new IllegalArgumentException();
+        boolean allBuy = true;
+        boolean allSell = true;
 
-        setText(transaction.getTransaction().getType() == PortfolioTransaction.Type.BUY
-                        ? Messages.MenuConvertToInboundDelivery : Messages.MenuConvertToOutboundDelivery);
+        for (TransactionPair<PortfolioTransaction> tx : transactionList)
+        {
+            if (tx.getTransaction().getType() != PortfolioTransaction.Type.BUY
+                            && tx.getTransaction().getType() != PortfolioTransaction.Type.SELL)
+                throw new IllegalArgumentException();
+
+            allBuy &= tx.getTransaction().getType() == PortfolioTransaction.Type.BUY;
+            allSell &= tx.getTransaction().getType() == PortfolioTransaction.Type.SELL;
+
+        }
+
+        if (allBuy)
+            setText(Messages.MenuConvertToInboundDelivery);
+        else if (allSell)
+            setText(Messages.MenuConvertToOutboundDelivery);
+        else
+            setText(Messages.MenuConvertToDelivery);
     }
 
     @Override
     public void run()
     {
-        // delete existing transaction
-        PortfolioTransaction buySellTransaction = transaction.getTransaction();
-        transaction.getOwner().deleteTransaction(buySellTransaction, client);
+        for (TransactionPair<PortfolioTransaction> transaction : transactionList)
+        {
+            // delete existing transaction
+            PortfolioTransaction buySellTransaction = transaction.getTransaction();
+            transaction.getOwner().deleteTransaction(buySellTransaction, client);
 
-        // create new delivery
-        PortfolioTransaction delivery = new PortfolioTransaction();
-        delivery.setType(buySellTransaction.getType() == PortfolioTransaction.Type.BUY
-                        ? PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
-        delivery.setDateTime(buySellTransaction.getDateTime());
-        delivery.setMonetaryAmount(buySellTransaction.getMonetaryAmount());
-        delivery.setSecurity(buySellTransaction.getSecurity());
-        delivery.setNote(buySellTransaction.getNote());
-        delivery.setShares(buySellTransaction.getShares());
+            // create new delivery
+            PortfolioTransaction delivery = new PortfolioTransaction();
+            delivery.setType(buySellTransaction.getType() == PortfolioTransaction.Type.BUY
+                            ? PortfolioTransaction.Type.DELIVERY_INBOUND
+                            : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            delivery.setDateTime(buySellTransaction.getDateTime());
+            delivery.setMonetaryAmount(buySellTransaction.getMonetaryAmount());
+            delivery.setSecurity(buySellTransaction.getSecurity());
+            delivery.setNote(buySellTransaction.getNote());
+            delivery.setShares(buySellTransaction.getShares());
 
-        buySellTransaction.getUnits().forEach(delivery::addUnit);
+            buySellTransaction.getUnits().forEach(delivery::addUnit);
 
-        transaction.getOwner().addTransaction(delivery);
+            transaction.getOwner().addTransaction(delivery);
+        }
 
         client.markDirty();
     }

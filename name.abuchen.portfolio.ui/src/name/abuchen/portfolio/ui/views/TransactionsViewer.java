@@ -1,6 +1,9 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -507,12 +510,52 @@ public final class TransactionsViewer implements ModificationListener
 
         if (!selection.isEmpty())
         {
+            if (fullContextMenu)
+                fillContextMenuPortfolioTxList(manager, selection);
+
             manager.add(new SimpleAction(Messages.MenuTransactionDelete, a -> {
                 for (Object tx : selection.toArray())
                     ((TransactionPair<?>) tx).deleteTransaction(owner.getClient());
 
                 owner.markDirty();
             }));
+        }
+    }
+
+    private void fillContextMenuPortfolioTxList(IMenuManager manager, IStructuredSelection selection)
+    {
+        Collection<TransactionPair<PortfolioTransaction>> txCollection = new ArrayList<>(selection.size());
+        Iterator<?> it = selection.iterator();
+        while (it.hasNext())
+        {
+            TransactionPair<?> foo = (TransactionPair<?>) it.next();
+            foo.withPortfolioTransaction().ifPresent(txCollection::add);
+        }
+
+        boolean allBuyOrSellType = true;
+        boolean allDelivery = true;
+
+        for (TransactionPair<PortfolioTransaction> tx : txCollection)
+        {
+            PortfolioTransaction ptx = tx.getTransaction();
+
+            allBuyOrSellType &= ptx.getType() == PortfolioTransaction.Type.BUY
+                            || ptx.getType() == PortfolioTransaction.Type.SELL;
+
+            allDelivery &= ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                            || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND;
+        }
+
+        if (allBuyOrSellType)
+        {
+            manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), txCollection));
+            manager.add(new Separator());
+        }
+
+        if (allDelivery)
+        {
+            manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), txCollection));
+            manager.add(new Separator());
         }
     }
 
@@ -538,20 +581,6 @@ public final class TransactionsViewer implements ModificationListener
         editAction.setAccelerator(SWT.MOD1 | 'E');
         manager.add(editAction);
         manager.add(new Separator());
-
-        if (fullContextMenu && (ptx.getType() == PortfolioTransaction.Type.BUY
-                        || ptx.getType() == PortfolioTransaction.Type.SELL))
-        {
-            manager.add(new ConvertBuySellToDeliveryAction(owner.getClient(), tx));
-            manager.add(new Separator());
-        }
-
-        if (fullContextMenu && (ptx.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
-                        || ptx.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND))
-        {
-            manager.add(new ConvertDeliveryToBuySellAction(owner.getClient(), tx));
-            manager.add(new Separator());
-        }
 
         if (fullContextMenu)
             new SecurityContextMenu(owner).menuAboutToShow(manager, ptx.getSecurity(), (Portfolio) tx.getOwner());
