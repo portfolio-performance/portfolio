@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.util.Locale;
 
 public abstract class Values<E>
 {
@@ -193,7 +194,9 @@ public abstract class Values<E>
 
     public static final Values<LocalDate> Date = new Values<LocalDate>("yyyy-MM-dd", 1D, 1) //$NON-NLS-1$
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+        DateTimeFormatter formatter = DateTimeFormatter
+                        .ofLocalizedDate(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                                        .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM);
 
         @Override
         public String format(LocalDate date)
@@ -204,7 +207,9 @@ public abstract class Values<E>
 
     public static final Values<LocalDateTime> DateTime = new Values<LocalDateTime>("yyyy-MM-dd HH:mm", 1D, 1) //$NON-NLS-1$
     {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM, FormatStyle.SHORT);
+        DateTimeFormatter formatter = DateTimeFormatter
+                        .ofLocalizedDateTime(new Locale("pt").getLanguage().equals(Locale.getDefault() //$NON-NLS-1$
+                                        .getLanguage()) ? FormatStyle.SHORT : FormatStyle.MEDIUM, FormatStyle.SHORT);
 
         @Override
         public String format(LocalDateTime date)
