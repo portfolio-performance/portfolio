@@ -531,6 +531,9 @@ public final class TransactionsViewer implements ModificationListener
             TransactionPair<?> foo = (TransactionPair<?>) it.next();
             foo.withPortfolioTransaction().ifPresent(txCollection::add);
         }
+        
+        if (txCollection.isEmpty())
+            return;
 
         boolean allBuyOrSellType = true;
         boolean allDelivery = true;
