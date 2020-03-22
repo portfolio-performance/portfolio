@@ -97,8 +97,15 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
         public void setBaseCurrency(String baseCurrency)
         {
-            firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); // NOSONAR //$NON-NLS-1$
-            convert();
+            if (baseCurrency.equals(termCurrency))
+            {
+                flipCurrencies();
+            }
+            else
+            {
+                firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); // NOSONAR //$NON-NLS-1$
+                convert();
+            }
         }
 
         public long getTermValue()
@@ -118,8 +125,15 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
         public void setTermCurrency(String termCurrency)
         {
-            firePropertyChange("termCurrency", this.termCurrency, this.termCurrency = termCurrency); // NOSONAR //$NON-NLS-1$
-            convert();
+            if (termCurrency.equals(baseCurrency))
+            {
+                flipCurrencies();
+            }
+            else
+            {
+                firePropertyChange("termCurrency", this.termCurrency, this.termCurrency = termCurrency); // NOSONAR //$NON-NLS-1$
+                convert();
+            }
         }
 
         public LocalDate getDate()
@@ -143,6 +157,8 @@ public class CurrencyConverterTab implements AbstractTabbedView.Tab
 
             firePropertyChange("baseCurrency", oldBaseCurrency, this.baseCurrency); // NOSONAR //$NON-NLS-1$
             firePropertyChange("termCurrency", oldTermCurrency, this.termCurrency); // NOSONAR //$NON-NLS-1$
+
+            convert();
         }
     }
 
