@@ -507,8 +507,8 @@ public class ClientPerformanceSnapshot
                                 return new Position(entry.getKey(), zero, TrailRecord.empty());
                             }
 
-                            TrailRecord startTrail = TrailRecord.of(entry.getValue().stream()
-                                            .filter(item -> item.shares > 0)
+                            TrailRecord startTrail = TrailRecord.of(entry.getValue().stream() //
+                                            .filter(item -> item.shares != 0)
                                             .map(item -> item.trail.fraction(Money.of(termCurrency, item.value),
                                                             item.shares, item.originalShares))
                                             .collect(Collectors.toList()));
