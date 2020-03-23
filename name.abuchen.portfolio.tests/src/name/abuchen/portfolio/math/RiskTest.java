@@ -53,6 +53,18 @@ public class RiskTest
         assertThat(drawdown.getMaxDrawdown(), closeTo(4d / 3, 0.1e-10));
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void testDrawdownInputArgumentsLengthNotTheSame()
+    {
+        new Drawdown(new double[] { 0, 0.1, 0.2, -1.4 }, getDates(3), 0);
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testDrawdownStartAtIllegalPosition()
+    {
+        new Drawdown(new double[] { 0, 0.1, 0.2, -1.4 }, getDates(4), 4);
+    }
+    
     @Test
     public void testVolatility()
     {
