@@ -29,10 +29,13 @@ public class IsinTest
 
 
     @Test
-    public void testIsinTooLong()
+    public void testIsinInvalidLength()
     {
         String isinTooLong = "CH0244767585222222";
         assertFalse(Isin.isValid(isinTooLong));
+
+        String isinTooShort = "CH02381";
+        assertFalse(Isin.isValid(isinTooShort));
     }
     
     @Test
