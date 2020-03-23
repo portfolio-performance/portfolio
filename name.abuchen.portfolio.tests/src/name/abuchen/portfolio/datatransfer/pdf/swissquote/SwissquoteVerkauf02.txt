@@ -1,0 +1,33 @@
+PDF author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+IBAN: CHXXXXXXXXXXXXXXXXX
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-8000 Musterhausen
+Gland, 05.02.2018
+Börsentransaktion: Verkauf Unsere Referenz: 32474929
+Gemäss Ihrem Verkaufsauftrag vom 08.03.2019 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+VESTAS WIND SYSTEMS ORD ISIN: DK0010268606 Copenhague
+NKN: 1081674
+Anzahl Preis Betrag
+61 580.5 DKK 35'410.50
+Total DKK 35'410.5
+Wechselkurs 14.9827
+4
+CHF 5'305.45
+Kommission Swissquote Bank AG CHF 30.85
+Abgabe (Eidg. Stempelsteuer) CHF 5.80
+Börsengebühren CHF 1.00
+Zu Ihren Gunsten CHF 5'267.8
+Betrag gutgeschrieben auf Ihrer Kontonummer  99999900, Valutadatum 08.03.2019
+Vielen Dank für Ihren Auftrag.
+Im Rahmen dieser Transaktion hat Swissquote Bank Ltd. als Kommissionär gehandelt.
+Dieser Transaktionsbeleg sowie die aufgeführte Transaktion unterliegen unseren Allgemeinen Geschäftsbedingungen und Depotreglement.
+Swissquote Bank AG, 33 chemin de la Crétaux, CH-1196 Gland
+Customer Care : 0848 25 88 88 (Aus dem Ausland +41 44 825 88 88)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.310.079 

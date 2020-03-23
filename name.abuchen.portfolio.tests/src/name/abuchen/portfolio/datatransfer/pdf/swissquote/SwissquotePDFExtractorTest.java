@@ -193,6 +193,48 @@ public class SwissquotePDFExtractorTest
     }
 
     @Test
+    public void testVerkauf02()
+    {
+        Client client = new Client();
+
+        SwissquotePDFExtractor extractor = new SwissquotePDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "SwissquoteVerkauf02.txt"),
+                errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DK0010268606"));
+        assertThat(security.getCurrencyCode(), is("DKK"));
+        assertThat(security.getName(), is("VESTAS WIND SYSTEMS ORD"));
+
+        // check transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(61)));
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-03-08T00:00")));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                is(Money.of("CHF", Values.Amount.factorize(5267.80))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                is(Money.of("CHF", Values.Amount.factorize(31.85))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                is(Money.of("CHF", Values.Amount.factorize(5.80))));
+    }
+
+
+    @Test
     public void testDividende01()
     {
         Client client = new Client();
