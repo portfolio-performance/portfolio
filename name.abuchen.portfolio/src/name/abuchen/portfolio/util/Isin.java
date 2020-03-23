@@ -30,7 +30,7 @@ public class Isin
             if (v >= 10)
             {
                 digit = v / 10 * (even ? 2 : 1);
-                sum += digit > 9 ? digit - 9 : digit;
+                sum += digit;
                 even = !even;
             }
         }
