@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.beans.BeanInfo;
@@ -130,5 +131,23 @@ public class SecurityTest
         latestTwo = security.getLatestTwoSecurityPrices();
         assertThat(latestTwo.orElseThrow(IllegalArgumentException::new), is(new Pair<>(pToday, pYesterday)));
 
+    }
+    
+    @Test
+    public void testExternalIdentifier()
+    {
+        Security security = new Security();
+        
+        security.setName("Apple ORD");
+        assertEquals(security.getExternalIdentifier(), "Apple ORD");
+        
+        security.setWkn("865985");
+        assertEquals(security.getExternalIdentifier(), "865985");
+        
+        security.setTickerSymbol("AAPL");
+        assertEquals(security.getExternalIdentifier(), "AAPL");
+        
+        security.setIsin("US0378331005");
+        assertEquals(security.getExternalIdentifier(), "US0378331005");
     }
 }
