@@ -291,6 +291,7 @@ public class AttributeListTab implements AbstractTabbedView.Tab, ModificationLis
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
+        System.err.println(">>>> AttributeListTab::onModified: element: " + element.toString() + " oldValue " + oldValue.toString() + " ==> newValue: " + newValue.toString());
         client.touch();
     }
 }

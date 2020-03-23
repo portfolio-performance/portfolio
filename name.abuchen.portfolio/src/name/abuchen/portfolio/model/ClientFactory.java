@@ -1092,6 +1092,7 @@ public class ClientFactory
             xstream.alias("watchlist", Watchlist.class);
             xstream.alias("investment-plan", InvestmentPlan.class);
             xstream.alias("attribute-type", AttributeType.class);
+            xstream.alias("client-setting", ClientAttribute.class);
 
             xstream.alias("price", SecurityPrice.class);
             xstream.useAttributeFor(SecurityPrice.class, "date");

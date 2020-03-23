@@ -2,6 +2,8 @@ package name.abuchen.portfolio.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,10 +19,14 @@ import java.util.stream.Stream;
 import javax.crypto.SecretKey;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
+import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
+import name.abuchen.portfolio.model.AttributeType.StringConverter;
+import name.abuchen.portfolio.model.AttributeType.PathConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;
 
-public class Client
+public class Client implements Attributable
 {
     /* package */static final int MAJOR_VERSION = 1;
 
@@ -42,6 +48,7 @@ public class Client
     private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
 
     private String baseCurrency = CurrencyUnit.EUR;
+    private Path backupDirectory;
 
     private List<Security> securities = new ArrayList<>();
     private List<Watchlist> watchlists;
@@ -101,9 +108,51 @@ public class Client
         if (settings == null)
             settings = new ClientSettings();
         else
+        {
             settings.doPostLoadInitialization();
+            if (settings.getClientAttributes().size() < 1)
+            {
+                System.err.println(">>>> Client::doPostLoadInitialization before " + settings.getClientAttributes().toString());
+                addDefaultClientAttributes();
+                System.err.println(">>>> Client::doPostLoadInitialization after " + settings.getClientAttributes().toString());
+            }
+        }
+        if (backupDirectory == null)
+            setBackupDirectory(""); //$NON-NLS-1$
+
     }
 
+    private void addDefaultClientAttributes()
+    {
+        System.err.println(">>>> Client::addDefaultClientAttributes ");
+        ClientAttribute backupDir = new ClientAttribute("backupDirectory"); //$NON-NLS-1$
+        backupDir.setName("BackupDir_ClientSetting"); //$NON-NLS-1$
+        backupDir.setColumnLabel("ColumnLabel_None"); //$NON-NLS-1$
+        backupDir.setParent(this);
+        backupDir.setType(Path.class);
+        backupDir.setConverter(PathConverter.class);
+        backupDir.setEdit(true); //$NON-NLS-1$
+        settings.addClientAttributes(backupDir);
+//
+//        ClientAttribute dummySwitch = new ClientAttribute("dummySwitch"); //$NON-NLS-1$
+//        dummySwitch.setName("Swith_ClientSetting"); //$NON-NLS-1$
+//        dummySwitch.setColumnLabel("ColumnLabel_Other"); //$NON-NLS-1$
+//        dummySwitch.setParent(this);
+//        dummySwitch.setType(Boolean.class);
+//        dummySwitch.setConverter(BooleanConverter.class);
+//        dummySwitch.setValue(true);
+//        settings.addClientAttributes(dummySwitch);
+//
+//        ClientAttribute dummyNumber = new ClientAttribute("dummyNumber"); //$NON-NLS-1$
+//        dummyNumber.setName("Number_ClientSetting"); //$NON-NLS-1$
+//        dummyNumber.setColumnLabel("ColumnLabel_Number"); //$NON-NLS-1$
+//        dummyNumber.setParent(this);
+//        dummyNumber.setType(Double.class);
+//        dummyNumber.setConverter(DoubleConverter.class);
+//        dummyNumber.setValue(Double.valueOf("0.42")); //$NON-NLS-1$
+//        settings.addClientAttributes(dummyNumber);        
+    }
+ 
     /* package */int getVersion()
     {
         return version;
@@ -133,6 +182,64 @@ public class Client
     public void setBaseCurrency(String baseCurrency)
     {
         propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
+    }
+
+    @Override
+    public Attributes getAttributes()
+    {
+        Attributes attributes = new Attributes();
+        List<ClientAttribute> clientAttributeList = settings.getClientAttributes();
+        System.err.println(">>>> Client::getAttributes: clientAttributeList: " + clientAttributeList.toString());
+        for (ClientAttribute attrib : clientAttributeList)
+        {
+            attributes.put(attrib, attrib.getValue());
+        }
+        System.err.println(">>>> Client::getAttributes: attributes: " + attributes.toString());
+        return attributes;
+    }
+
+    @Override
+    public void setAttributes(Attributes attributes)
+    {
+        System.err.println(">>>> Client::setAttributes Attributes: "  + attributes.toString());
+        List<ClientAttribute> clientAttributeList = settings.getClientAttributes();
+        System.err.println(">>>> Client::setAttributes: clientAttributeList: " + clientAttributeList.toString());
+        for (ClientAttribute attrib : clientAttributeList)
+        {
+            System.err.println(">>>> Client::setAttributes: type: " + attrib.getType().toString() + "  value " + attributes.get(attrib).toString());
+            attrib.setValue(attributes.get(attrib));
+        }
+    }
+
+    public void setAttribute(String directory)
+    {
+        System.err.println(">>>> Client::setAttributes parameter: "  + directory);
+    }
+    
+    public String getAttribute()
+    {
+        System.err.println(">>>> Client::getAttributes parameter: <null>");
+        return null;
+    }
+    
+    public Path getBackupDirectory()
+    {
+        System.err.println(">>>> Client::getBackupDirectory backupDirectory:" + (backupDirectory == null?"<null>":backupDirectory));
+        return backupDirectory;
+    }
+
+    public void setBackupDirectory(String directory)
+    {
+        setBackupDirectory(Paths.get(directory));
+    }
+
+    public void setBackupDirectory(Path path)
+    {
+        System.err.println(">>>> Client::setBackupDirectory directory: PRE " + (backupDirectory != null?getBackupDirectory().toString():"<none>"));
+        System.err.println(">>>> Client::setBackupDirectory directory: SET " + path.toString());
+        backupDirectory = path;
+        System.err.println(">>>> Client::setBackupDirectory directory: POST" + getBackupDirectory().toString());
+        ;
     }
 
     public List<InvestmentPlan> getPlans()

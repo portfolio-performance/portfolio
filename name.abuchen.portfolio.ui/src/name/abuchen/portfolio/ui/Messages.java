@@ -952,6 +952,10 @@ public class Messages extends NLS
     public static String SecurityTabHistoricalQuotes;
     public static String SecurityTabTrades;
     public static String SecurityTabTransactions;
+    public static String SettingsListView_setting;
+    public static String SettingsListView_title;
+    public static String SettingsListView_type;
+    public static String SettingsListView_value;
     public static String SplitWizardDefinitionDescription;
     public static String SplitWizardDefinitionTitle;
     public static String SplitWizardErrorNewAndOldMustNotBeEqual;

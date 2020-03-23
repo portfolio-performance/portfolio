@@ -12,6 +12,8 @@ import org.eclipse.jface.viewers.EditingSupport;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
+
 public class ColumnEditingSupportWrapper extends EditingSupport
 {
     private ColumnViewer viewer;
@@ -28,8 +30,12 @@ public class ColumnEditingSupportWrapper extends EditingSupport
     @Override
     protected CellEditor getCellEditor(Object element)
     {
+        System.err.println(">>>> ColumnEditingSupportWrapper::getCellEditor: element " + element.toString() + " Proxy: " + proxy.toString());
         if (editor == null)
-            editor = proxy.createEditor((Composite) viewer.getControl());
+            if (proxy instanceof AttributeEditingSupport)
+                editor = ((AttributeEditingSupport) proxy).createEditor((Composite) viewer.getControl(), element);
+            else
+                editor = proxy.createEditor((Composite) viewer.getControl());
         proxy.prepareEditor(element);
         return editor;
     }
@@ -37,19 +43,23 @@ public class ColumnEditingSupportWrapper extends EditingSupport
     @Override
     protected boolean canEdit(Object element)
     {
+        System.err.println(">>>> ColumnEdutingSupportWrapper::canEdit: element " + element.toString());
         return proxy.canEdit(element);
     }
 
     @Override
     protected Object getValue(Object element)
     {
+        System.err.println(">>>> ColumnEdutingSupportWrapper::getValue: element " + element.toString());
+        System.err.println(">>>> ColumnEdutingSupportWrapper::getValue: proxy " + proxy.toString());
         try
         {
             return proxy.getValue(element);
         }
         catch (Exception e)
         {
-            throw new RuntimeException(e);
+           // throw new RuntimeException(e);
+            return null;
         }
     }
 

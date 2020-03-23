@@ -229,14 +229,15 @@ public class AttributeColumn extends Column
     {
         super(ID + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
                         attribute.isNumber() ? SWT.RIGHT : SWT.LEFT, 80);
-
+        System.err.println(">>>> AttributeColumn::AttributeColumn: attribute " + attribute.toString());
         setMenuLabel(attribute.getName());
         setGroupLabel(Messages.GroupLabelAttributes);
         setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
-
+        
         if (attribute.getType() == Boolean.class)
         {
             setLabelProvider(new BooleanLabelProvider(attribute));
+            System.err.println(">>>> AttributeColumn::AttributeColumn: type BOOLEAN" + attribute.getType().toString());
             new BooleanAttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == LimitPrice.class)
@@ -253,34 +254,43 @@ public class AttributeColumn extends Column
         else
         {
             setLabelProvider(new AttributeLabelProvider(attribute));
+            System.err.println(">>>> AttributeColumn::AttributeColumn: type OTHER " + attribute.getType().toString());
             new AttributeEditingSupport(attribute).attachTo(this);
         }
 
     }
 
+    public AttributeColumn(String uuid, String label, int style, int defaultWidth)
+    {
+        super(ID + uuid, label, style, defaultWidth);
+    }
+
     public static Stream<Column> createFor(Client client, Class<? extends Attributable> target)
     {
-        return client.getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(target)) //
-                        .flatMap(attribute -> {
+        return createFor(client.getSettings().getAttributeTypes(), target);
+    }
 
-                            List<Column> columns = new ArrayList<>();
+    public static Stream<Column> createFor(Stream<? extends AttributeType> stream, Class<? extends Attributable> target)
+    {
+        return stream.filter(a -> a.supports(target)) //
+                .flatMap(attribute -> {
 
-                            // primary column
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
-                            columns.add(column);
+                    List<Column> columns = new ArrayList<>();
 
-                            // secondary column - if applicable
-                            if (attribute.getType() == LocalDate.class)
-                            {
-                                column = createDaysLeftColumn(attribute);
-                                columns.add(column);
-                            }
+                    // primary column
+                    Column column = new AttributeColumn(attribute);
+                    column.setVisible(false);
+                    columns.add(column);
 
-                            return columns.stream();
-                        });
+                    // secondary column - if applicable
+                    if (attribute.getType() == LocalDate.class)
+                    {
+                        column = createDaysLeftColumn(attribute);
+                        columns.add(column);
+                    }
+
+                    return columns.stream();
+                });
     }
 
     private static Column createDaysLeftColumn(AttributeType attribute)

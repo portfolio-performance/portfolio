@@ -33,6 +33,7 @@ public abstract class PropertyEditingSupport extends ColumnEditingSupport
     @Override
     public boolean canEdit(Object element)
     {
+        System.err.println(">>>> PropertyEditingSupport::canEdit: element " + element.toString());
         return adapt(element) != null && (canEditCheck == null || canEditCheck.test(element));
     }
 

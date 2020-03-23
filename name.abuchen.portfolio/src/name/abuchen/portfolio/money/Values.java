@@ -233,6 +233,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Double> Double = new Values<Double>("0.00", 1D, 1) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Double dbl)
+        {
+            return String.format("%,.4f", dbl); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Double> Percent = new Values<Double>("0.00%", 1D, 1) //$NON-NLS-1$
     {
         @Override

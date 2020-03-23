@@ -21,6 +21,7 @@ public class SettingsView extends AbstractTabbedView<AbstractTabbedView.Tab>
                         make(AttributeListTab.class, AttributeListTab.Mode.SECURITY),
                         make(AttributeListTab.class, AttributeListTab.Mode.ACCOUNT),
                         make(AttributeListTab.class, AttributeListTab.Mode.PORTFOLIO),
-                        make(AttributeListTab.class, AttributeListTab.Mode.INVESTMENT_PLAN));
+                        make(AttributeListTab.class, AttributeListTab.Mode.INVESTMENT_PLAN),
+                        make(ClientSettingsListTab.class));
     }
 }

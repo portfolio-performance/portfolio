@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views.settings;
 
 import java.time.LocalDate;
 import java.util.ResourceBundle;
+import java.nio.file.Path;
 
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
@@ -11,7 +12,9 @@ import name.abuchen.portfolio.model.AttributeType.BookmarkConverter;
 import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.DateConverter;
+import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
 import name.abuchen.portfolio.model.AttributeType.LimitPriceConverter;
+import name.abuchen.portfolio.model.AttributeType.PathConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
@@ -26,11 +29,13 @@ public enum AttributeFieldType
     STRING(String.class, StringConverter.class), //
     AMOUNT(Long.class, AmountConverter.class), //
     AMOUNTPLAIN(Long.class, AmountPlainConverter.class), //
+    PATH(Path.class, PathConverter.class), //
     PERCENT(Double.class, PercentConverter.class), //
     PERCENTPLAIN(Double.class, PercentPlainConverter.class), //
     QUOTE(Long.class, QuoteConverter.class), //
     SHARE(Long.class, ShareConverter.class), //
     DATE(LocalDate.class, DateConverter.class), //
+    DOUBLE(Double.class, DoubleConverter.class), //
     BOOLEAN(Boolean.class, BooleanConverter.class), //
     LIMIT_PRICE(LimitPrice.class, LimitPriceConverter.class, Security.class), //
     BOOKMARK(Bookmark.class, BookmarkConverter.class);

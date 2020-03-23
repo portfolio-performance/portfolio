@@ -35,6 +35,7 @@ public enum Images
     NOTE("note.png"), //$NON-NLS-1$
     BOOKMARK("bookmark.png"), //$NON-NLS-1$
     BOOKMARK_OPEN("bookmark_open.png"), //$NON-NLS-1$
+    SETTING("config.png"), //$NON-NLS-1$
 
     // buttons
 

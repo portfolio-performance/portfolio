@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -277,7 +278,18 @@ public class ClientInput
                             : filename + '.' + suffix;
 
             Path sourceFile = file.toPath();
-            Path backupFile = sourceFile.resolveSibling(backupName);
+            Path backupPath; 
+            System.err.println(">>>> ClientInput::createBackup sourceFile: "  + sourceFile.getParent() + " Suffix : " + suffix);
+            if (client != null && client.getBackupDirectory() != null && client.getBackupDirectory().toString().length() > 1)
+            {
+                System.err.println(">>>> ClientInput::createBackup backupDirectory: "  + client.getBackupDirectory());
+                backupPath = Paths.get(client.getBackupDirectory().toString(), sourceFile.getFileName().toString());
+            }
+            else
+                backupPath = sourceFile; 
+            System.err.println(">>>> ClientInput::createBackup backupDirectory: "  + backupPath.toString());
+            Path backupFile = backupPath.resolveSibling(backupName);
+            System.err.println(">>>> ClientInput::createBackup backupFile: "  + backupFile);
             Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)
