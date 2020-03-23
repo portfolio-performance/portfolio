@@ -105,4 +105,15 @@ public class RiskTest
         assertThat(volatility.getStandardDeviation(), is(0d));
         assertThat(volatility.getSemiDeviation(), is(0d));
     }
+    
+    @Test
+    public void testVolatilityEmpty()
+    {
+        double[] returns = new double[0];
+        Arrays.fill(returns, 0.1);
+
+        Volatility volatility = new Volatility(returns, index -> true);
+        assertThat(volatility.getStandardDeviation(), is(0d));
+        assertThat(volatility.getSemiDeviation(), is(0d));
+    }
 }
