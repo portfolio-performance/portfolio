@@ -94,6 +94,31 @@ public class SecurityTest
     }
     
     @Test
+    public void testAddPrice()
+    {
+        Security security = new Security();
+        LatestSecurityPrice one = new LatestSecurityPrice(LocalDate.parse("2020-02-28"), 100);
+        
+        assertThat(security.addPrice(one), is(true));
+        assertThat(security.getPrices().size(), is(1));
+        
+        LatestSecurityPrice two = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 100);
+
+        assertThat(security.addPrice(two), is(true));
+        assertThat(security.getPrices().size(), is(2));
+        
+        LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 100);
+        assertThat(security.addPrice(same), is(false));
+        
+        assertThat(security.getPrices().size(), is(2));
+        
+        LatestSecurityPrice sameButDifferentPrice = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 101);
+        
+        assertThat(security.addPrice(sameButDifferentPrice), is(true));
+        assertThat(security.getPrices().size(), is(2));
+    }
+    
+    @Test
     public void testGetPricesIncludingLatest()
     {
         Security security = new Security();
