@@ -237,7 +237,11 @@ public class ClientInput
             password = pwdDialog.getPassword().toCharArray();
         }
 
+        System.err.println(">>>> ClientInput::doSaveAs   directory: clientFile " + (clientFile != null?clientFile.toURI().toString():"<null>") + " => Paths " +  (clientFile != null?Paths.get(clientFile.toURI()).getParent().toString():"<null>") + " vs. " + client.getBackupDirectory().toString());
+        if (clientFile == null || Paths.get(clientFile.toURI()).getParent().equals(client.getBackupDirectory()))
+            client.setBackupDirectory(Paths.get(localFile.toURI()).getParent());
         clientFile = localFile;
+        System.err.println("                                        clientFile " + clientFile.toURI().toString() + " vs. " + client.getBackupDirectory().toString());
         label = localFile.getName();
         char[] pwd = password;
 
