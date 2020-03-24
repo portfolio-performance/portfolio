@@ -20,8 +20,6 @@ import javax.crypto.SecretKey;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
-import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
-import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.model.AttributeType.PathConverter;
 import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.money.CurrencyUnit;

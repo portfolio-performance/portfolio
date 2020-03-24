@@ -58,8 +58,7 @@ public class ColumnEditingSupportWrapper extends EditingSupport
         }
         catch (Exception e)
         {
-           // throw new RuntimeException(e);
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
