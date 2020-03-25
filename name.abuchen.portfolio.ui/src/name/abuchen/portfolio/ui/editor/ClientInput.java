@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.jobs.AutosaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
@@ -461,6 +462,10 @@ public class ClientInput
             int sixHours = 1000 * 60 * 60 * 6;
             job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
             job.schedule(sixHours);
+            regularJobs.add(job);
+
+            job = new AutosaveJob(this).repeatEvery(60000);
+            job.schedule(25000);
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(2000);

@@ -46,7 +46,7 @@ public class Client implements Attributable
     private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
 
     private String baseCurrency = CurrencyUnit.EUR;
-    private Path backupDirectory;
+    private String backupDirectory;
 
     private List<Security> securities = new ArrayList<>();
     private List<Watchlist> watchlists;
@@ -223,21 +223,21 @@ public class Client implements Attributable
     public Path getBackupDirectory()
     {
         System.err.println(">>>> Client::getBackupDirectory backupDirectory:" + (backupDirectory == null?"<null>":backupDirectory));
-        return backupDirectory;
+        return Paths.get(backupDirectory);
     }
 
     public void setBackupDirectory(String directory)
     {
-        setBackupDirectory(Paths.get(directory));
+        System.err.println(">>>> Client::setBackupDirectory directory: PRE " + (backupDirectory != null?getBackupDirectory().toString():"<none>"));
+        System.err.println(">>>> Client::setBackupDirectory directory: SET " + directory.toString());
+        backupDirectory = directory;
+        System.err.println(">>>> Client::setBackupDirectory directory: POST" + getBackupDirectory().toString());
     }
 
     public void setBackupDirectory(Path path)
     {
-        System.err.println(">>>> Client::setBackupDirectory directory: PRE " + (backupDirectory != null?getBackupDirectory().toString():"<none>"));
-        System.err.println(">>>> Client::setBackupDirectory directory: SET " + path.toString());
-        backupDirectory = path;
-        System.err.println(">>>> Client::setBackupDirectory directory: POST" + getBackupDirectory().toString());
-        ;
+        System.err.println(">>>> Client::setBackupDirectory directory: Bridgehead " + (backupDirectory != null?getBackupDirectory().toString():"<none>"));
+        setBackupDirectory(path.toUri().toString());
     }
 
     public List<InvestmentPlan> getPlans()
