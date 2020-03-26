@@ -62,6 +62,15 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     @Override
     public boolean updateLatestQuotes(Security security, List<Exception> errors)
     {
+        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, LocalDate.now(), errors);
+
+        for (LatestSecurityPrice p : prices)
+        {
+            if (p.getDate().isEqual(LocalDate.now()))
+            {
+                return security.setLatest(p);
+            }
+        }
         return false;
     }
 
