@@ -18,9 +18,7 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.core.services.events.IEventBroker;
 import org.eclipse.e4.ui.di.UIEventTopic;
-import org.eclipse.e4.ui.workbench.IWorkbench;
 import org.eclipse.e4.ui.workbench.UIEvents;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.resource.JFaceResources;
@@ -131,7 +129,6 @@ public class StartupAddon
     @Inject
     @Optional
     public void checkForUpdates(@UIEventTopic(UIEvents.UILifeCycle.APP_STARTUP_COMPLETE) Event event, // NOSONAR
-                    final IWorkbench workbench, final EPartService partService,
                     @Preference(value = UIConstants.Preferences.AUTO_UPDATE) boolean autoUpdate)
     {
         if (autoUpdate)
@@ -145,7 +142,7 @@ public class StartupAddon
                     try
                     {
                         monitor.beginTask(Messages.JobMsgCheckingForUpdates, 200);
-                        UpdateHelper updateHelper = new UpdateHelper(workbench, partService);
+                        UpdateHelper updateHelper = new UpdateHelper();
                         updateHelper.runUpdate(monitor, true);
                     }
                     catch (CoreException e) // NOSONAR
