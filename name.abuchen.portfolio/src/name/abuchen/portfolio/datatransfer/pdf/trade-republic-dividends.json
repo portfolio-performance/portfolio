@@ -12,11 +12,24 @@
 			"sections": [
 				{
 					"context": "SECURITY",
+					"isOptional": true,
 					"pattern": [
 						"POSITION ANZAHL ERTRÄGNIS BETRAG",
 						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
 						".*",
 						"(ISIN: )?(?<isin>.*)"
+					]
+				},
+				{
+					"context": "SECURITY",
+					"isOptional": true,
+					"pattern": [
+						"POSITION ANZAHL ERTRÄGNIS BETRAG",
+						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
+						".*",
+						"(ISIN: )?(?<isin>.*)",
+						"GESAMT ([\\d+,.]*) (\\w{3}+)",
+						"GESAMT ([\\d+,.]*) (?<currency>\\w{3}+)?"
 					]
 				},
 				{
