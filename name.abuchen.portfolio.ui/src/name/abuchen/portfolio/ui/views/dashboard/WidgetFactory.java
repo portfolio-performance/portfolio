@@ -10,7 +10,6 @@ import name.abuchen.portfolio.math.Risk.Drawdown;
 import name.abuchen.portfolio.math.Risk.Volatility;
 import name.abuchen.portfolio.model.Dashboard;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.views.dashboard.heatmap.EarningsHeatmapWidget;
@@ -59,14 +58,44 @@ public enum WidgetFactory
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
 
-    DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
+    DELTA(Messages.LabelDelta,
+                    Messages.LabelStatementOfAssets, //
                     (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
                                     .with(Values.Amount) //
                                     .with((ds, period) -> {
-                                        ClientPerformanceSnapshot snapshot = data.calculate(ds, period)
-                                                        .getClientPerformanceSnapshot()
-                                                        .orElseThrow(IllegalArgumentException::new);
-                                        return snapshot.getAbsoluteDelta().getAmount();
+                                        long[] d = data.calculate(ds, period).calculateDelta();
+                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
+    ABSOLUTE_DELTA(Messages.LabelAbsoluteDelta, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        long[] d = data.calculate(ds, period).calculateAbsoluteDelta();
+                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
+    INVESTED_CAPITAL(Messages.LabelInvestedCapital, Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        long[] d = data.calculate(ds, period).calculateInvestedCapital();
+                                        return d.length > 0 ? d[d.length - 1] : 0L;
+                                    }) //
+                                    .withBenchmarkDataSeries(false) //
+                                    .build()),
+
+    ABSOLUTE_INVESTED_CAPITAL(Messages.LabelAbsoluteInvestedCapital,
+                    Messages.LabelStatementOfAssets, //
+                    (widget, data) -> IndicatorWidget.<Long>create(widget, data) //
+                                    .with(Values.Amount) //
+                                    .with((ds, period) -> {
+                                        long[] d = data.calculate(ds, period).calculateAbsoluteInvestedCapital();
+                                        return d.length > 0 ? d[d.length - 1] : 0L;
                                     }) //
                                     .withBenchmarkDataSeries(false) //
                                     .build()),
