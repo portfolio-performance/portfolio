@@ -1,0 +1,33 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Muster SEITE 1 von 1
+Musterstraße 4 DATUM 14.02.2020
+D 12345 Musterstadt DEPOT 123456789
+DIVIDENDE
+ÜBERSICHT
+Dividende mit dem Ex-Tag 30.01.2020.
+POSITION ANZAHL ERTRÄGNIS BETRAG
+Tanger Fact.Outlet Centrs Inc. 142 Stk. 0,355 USD 50,41 USD
+Registered Shares DL -,01
+ISIN: US8754651060
+GESAMT 50,41 USD
+ABRECHNUNG
+POSITION BETRAG
+Quellensteuer DE für US-Emittent -7,56 USD
+Zwischensumme 42,85 USD
+Zwischensumme 1,0927 EUR/USD 39,21 EUR
+GESAMT 39,21 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE40110101008887654321 14.02.2020 39,21 EUR
+Tanger Fact.Outlet Centrs Inc. Registered Shares DL -,01 in Wertpapierrechnung.
+Lagerland: USA
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2020-02-14 / 81652143 / 230a-7bf0
