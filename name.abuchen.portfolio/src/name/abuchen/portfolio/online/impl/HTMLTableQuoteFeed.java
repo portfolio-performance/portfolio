@@ -10,8 +10,11 @@ import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.Year;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -133,7 +136,10 @@ public class HTMLTableQuoteFeed implements QuoteFeed
             super(patterns);
 
             formatters = new DateTimeFormatter[] { DateTimeFormatter.ofPattern("y-M-d"),
-                            DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+                            // https://stackoverflow.com/a/29496149/1158146
+                            new DateTimeFormatterBuilder().appendPattern("d.M.")
+                                            .appendValueReduced(ChronoField.YEAR, 2, 2, Year.now().getValue() - 80)
+                                            .toFormatter(),
                             DateTimeFormatter.ofPattern("d.M.y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMM y"), //$NON-NLS-1$
                             DateTimeFormatter.ofPattern("d. MMMM y"), //$NON-NLS-1$
