@@ -33,6 +33,7 @@ import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.util.BindingHelper;
@@ -213,11 +214,14 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         List<QuoteFeed> feeds = new ArrayList<>();
         feeds.add(EMTPY_QUOTE_FEED);
 
-        for (QuoteFeed feed : Factory.getQuoteFeedProvider())
+        for (QuoteFeed feed : Factory.getQuoteFeedProvider()) // NOSONAR
         {
             // do not include adjusted close (the difference between close and
             // adjusted close are only relevant for historical quotes)
             if (feed.getId().equals("YAHOO-ADJUSTEDCLOSE")) //$NON-NLS-1$
+                continue;
+
+            if (getModel().getSecurity().getOnlineId() == null && feed.getId().equals(PortfolioReportQuoteFeed.ID))
                 continue;
 
             feeds.add(feed);

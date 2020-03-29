@@ -28,6 +28,7 @@ import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
+import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.online.impl.QuandlQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -99,7 +100,13 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     @Override
     protected List<QuoteFeed> getAvailableFeeds()
     {
-        return Factory.getQuoteFeedProvider();
+        List<QuoteFeed> feeds = new ArrayList<>();
+        feeds.addAll(Factory.getQuoteFeedProvider());
+
+        if (getModel().getSecurity().getOnlineId() == null)
+            feeds.remove(Factory.getQuoteFeedProvider(PortfolioReportQuoteFeed.ID));
+
+        return feeds;
     }
 
     @Override
