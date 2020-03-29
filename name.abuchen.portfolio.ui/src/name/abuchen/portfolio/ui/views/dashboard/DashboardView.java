@@ -397,6 +397,7 @@ public class DashboardView extends AbstractHistoricView
         scrolledComposite = new ScrolledComposite(parent, SWT.V_SCROLL);
 
         container = new Composite(scrolledComposite, SWT.NONE);
+        container.setLayout(new DashboardLayout());
         container.setBackground(Colors.WHITE);
 
         selectDashboard(dashboard);
@@ -459,7 +460,6 @@ public class DashboardView extends AbstractHistoricView
         columnControl.setData(column);
 
         GridLayoutFactory.fillDefaults().numColumns(1).spacing(0, 0).applyTo(columnControl);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(columnControl);
 
         addDropListener(columnControl);
 
@@ -517,6 +517,17 @@ public class DashboardView extends AbstractHistoricView
                         a -> createNewColumn(column, columnControl, SWT.RIGHT)));
         manager.add(new SimpleAction(Messages.MenuDuplicateDashboardColumn,
                         a -> duplicateColumn(column, columnControl)));
+
+        MenuManager columnWidth = new MenuManager(Messages.MenuDashboardColumnWidth);
+        manager.add(columnWidth);
+        columnWidth.add(new SimpleAction(Messages.MenuDashboardColumnWidthIncrease, a -> {
+            column.increaseWeight();
+            container.layout(true);
+        }));
+        columnWidth.add(new SimpleAction(Messages.MenuDashboardColumnWidthDecrease, a -> {
+            column.decreaseWeight();
+            container.layout(true);
+        }));
 
         MenuManager applyToAll = new MenuManager(Messages.MenuApplyToAllWidgets);
         manager.add(applyToAll);
@@ -684,9 +695,6 @@ public class DashboardView extends AbstractHistoricView
 
         buildColumns();
 
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()) //
-                        .equalWidth(true).spacing(10, 10).applyTo(container);
-
         container.layout(true);
         updateScrolledCompositeMinSize();
 
@@ -775,8 +783,6 @@ public class DashboardView extends AbstractHistoricView
 
         buildColumn(container, column);
 
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
-                        .applyTo(container);
         container.layout(true);
         updateScrolledCompositeMinSize();
     }
@@ -798,8 +804,6 @@ public class DashboardView extends AbstractHistoricView
         else
             c.moveAbove(referenceColumnControl);
 
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
-                        .applyTo(container);
         container.layout(true);
         updateScrolledCompositeMinSize();
     }
@@ -823,8 +827,6 @@ public class DashboardView extends AbstractHistoricView
 
         buildColumn(container, newColumn).moveBelow(columnControl);
 
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
-                        .applyTo(container);
         container.layout(true);
         updateScrolledCompositeMinSize();
 
@@ -840,8 +842,6 @@ public class DashboardView extends AbstractHistoricView
 
         columnControl.dispose();
 
-        GridLayoutFactory.fillDefaults().numColumns(dashboard.getColumns().size()).equalWidth(true).spacing(10, 10)
-                        .applyTo(container);
         container.layout(true);
         updateScrolledCompositeMinSize();
     }

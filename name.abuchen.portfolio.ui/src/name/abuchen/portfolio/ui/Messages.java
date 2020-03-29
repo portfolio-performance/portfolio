@@ -32,6 +32,9 @@ public class Messages extends NLS
     public static String BookmarksListView_LabelAttributeReplacements;
     public static String BookmarksListView_LabelDefaultReplacements;
     public static String BookmarksListView_LabelReplaceFirstAvailable;
+    public static String MenuDashboardColumnWidth;
+    public static String MenuDashboardColumnWidthDecrease;
+    public static String MenuDashboardColumnWidthIncrease;
     public static String MenuDuplicateDashboardColumn;
     public static String MenuMoveDown;
     public static String MenuMoveUp;

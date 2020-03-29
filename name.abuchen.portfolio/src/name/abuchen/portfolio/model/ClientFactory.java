@@ -576,7 +576,10 @@ public class ClientFactory
                 // added data map to classification and assignemnt
             case 43:
                 // added LimitPrice as attribute type
-                
+            case 44:
+                // added weights to dashboard columns
+                fixDashboardColumnWeights(client);
+
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
             case Client.CURRENT_VERSION:
@@ -1058,6 +1061,11 @@ public class ClientFactory
         }
     }
 
+    private static void fixDashboardColumnWeights(Client client)
+    {
+        client.getDashboards().flatMap(d -> d.getColumns().stream()).forEach(c -> c.setWeight(1));
+    }
+
     @SuppressWarnings("nls")
     private static synchronized XStream xstream()
     {
@@ -1100,7 +1108,7 @@ public class ClientFactory
             xstream.aliasField("v", SecurityPrice.class, "value");
 
             xstream.alias("limitPrice", LimitPrice.class);
-            
+
             xstream.alias("cpi", ConsumerPriceIndex.class);
             xstream.useAttributeFor(ConsumerPriceIndex.class, "year");
             xstream.aliasField("y", ConsumerPriceIndex.class, "year");
