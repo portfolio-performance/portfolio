@@ -550,7 +550,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
     private boolean hasTax(TransactionItem i)
     {
-        return !((AccountTransaction)i.getSubject()).getUnit(Type.TAX).isEmpty();
+        return ((AccountTransaction)i.getSubject()).getUnit(Type.TAX).isPresent();
     }
 
     
