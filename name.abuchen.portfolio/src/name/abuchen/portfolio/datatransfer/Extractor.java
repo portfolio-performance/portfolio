@@ -595,10 +595,14 @@ public interface Extractor
                         .collect(Collectors.toList());
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
-        itemsByExtractor.put(this, result);
+        itemsByExtractor.put(this, removeDuplicateDividendsWithoutTax(result));
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
+        return result;
+    }
+
+    default List<Item> removeDuplicateDividendsWithoutTax(List<Item> result) {
         return result;
     }
 

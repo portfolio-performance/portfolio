@@ -1,7 +1,11 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
@@ -11,7 +15,9 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.Transaction.Unit.Type;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MutableMoney;
 
@@ -30,6 +36,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addVorabsteuerTransaction();
         addDividendTransactionFromSteuermitteilungPDF();
     }
+    
+    
+
+    
+
+
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
@@ -514,6 +526,31 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
                         
                         .wrap(TransactionItem::new));
+    }
+    
+    @Override
+    public List<Item> removeDuplicateDividendsWithoutTax(List<Item> items)
+    {
+     
+        // group dividends into tax + nontax
+       Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
+            .filter(i -> "Dividend".equals(i.getTypeInformation())) //$NON-NLS-1$
+            .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
+
+       
+       // only for divs, where additional tax-doc exists...
+       items.removeIf(i -> "Dividend".equals(i.getTypeInformation()) &&  //$NON-NLS-1$
+                           !hasTax((TransactionItem)i) && 
+                           dividends.get(i.getDate()).get(i.getSecurity()).size() == 2);    
+        
+        return items;
+    }
+
+
+
+    private boolean hasTax(TransactionItem i)
+    {
+        return !((AccountTransaction)i.getSubject()).getUnit(Type.TAX).isEmpty();
     }
 
     
