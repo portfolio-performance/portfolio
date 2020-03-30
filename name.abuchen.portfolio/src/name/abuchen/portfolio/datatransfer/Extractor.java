@@ -595,10 +595,15 @@ public interface Extractor
                         .collect(Collectors.toList());
 
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
-        itemsByExtractor.put(this, result);
+        itemsByExtractor.put(this, postProcessing(result));
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
+        return result;
+    }
+
+    default List<Item> postProcessing(List<Item> result)
+    {
         return result;
     }
 

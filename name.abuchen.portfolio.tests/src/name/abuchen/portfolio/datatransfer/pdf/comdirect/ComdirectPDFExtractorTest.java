@@ -807,7 +807,8 @@ public class ComdirectPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectDividende3.txt",
+                        "comdirectSteuermitteilung_Dividende03.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -833,8 +834,9 @@ public class ComdirectPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2017-11-07T00:00")));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.65)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.21)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(3.49)));
 
     }
 

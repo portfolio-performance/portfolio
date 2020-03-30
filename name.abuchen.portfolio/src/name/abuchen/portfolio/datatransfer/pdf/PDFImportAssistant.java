@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -114,6 +115,11 @@ public class PDFImportAssistant
             monitor.worked(1);
         }
 
+        // post processing
+        itemsByExtractor.entrySet().stream() //
+                        .collect(Collectors.toMap(Entry<Extractor, List<Item>>::getKey,
+                                        e -> e.getKey().postProcessing(e.getValue())));
+
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
         return itemsByExtractor;
@@ -143,6 +149,9 @@ public class PDFImportAssistant
                 // did not find any transactions in this text
                 errors.clear();
                 errors.addAll(warnings);
+                
+                items = extractor.postProcessing(items);
+                
                 break;
             }
 
@@ -151,7 +160,7 @@ public class PDFImportAssistant
 
         if (items == null || items.isEmpty())
             return Collections.emptyList();
-
+        
         Map<Extractor, List<Item>> itemsByExtractor = new HashMap<>();
         itemsByExtractor.put(extractors.get(0), items);
         securityCache.addMissingSecurityItems(itemsByExtractor);
