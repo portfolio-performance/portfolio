@@ -12,6 +12,7 @@ import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
@@ -36,12 +37,6 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
         addVorabsteuerTransaction();
         addDividendTransactionFromSteuermitteilungPDF();
     }
-    
-    
-
-    
-
-
 
     @SuppressWarnings("nls")
     private void addBuyTransaction()
@@ -64,7 +59,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
-                        
+
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> {
@@ -77,7 +72,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                 t.setDate(asDate(v.get("date")));
                             }
                         })
-                        
+
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
@@ -180,8 +175,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
-    
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
@@ -203,7 +197,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
-                        
+
                         .section("date") //
                         .match("Geschäftstag *: (?<date>\\d+.\\d+.\\d{4}+) .*") //
                         .assign((t, v) -> {
@@ -298,9 +292,9 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .match(".*Umschreibeentgelt *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")), 
+                                                        Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
-                        
+
                         .section("fee", "currency").optional()
                         .match(".*Variable B.rsenspesen *: *(?<currency>\\w{3}+) *(?<fee>[\\d.-]+,\\d+)-? *") //
                         .assign((t, v) -> t.getPortfolioTransaction()
@@ -346,11 +340,12 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(t -> t.getAmount() == 0L ? null : new TransactionItem(t)));
     }
-    
+
     @SuppressWarnings("nls")
     private void addExpireTransaction()
     {
-        DocumentType type = new DocumentType("A *b *r *e *c *h *n *u *n *g *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *e *");
+        DocumentType type = new DocumentType(
+                        "A *b *r *e *c *h *n *u *n *g *f *ä *l *l *i *g *e *r *W *e *r *t *p *a *p *i *e *r *e *");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Einlösung *");
@@ -388,10 +383,10 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new);
 
         addFeesSection(pdfTransaction);
-        
+
         block.set(pdfTransaction);
     }
-    
+
     @SuppressWarnings("nls")
     private void addVorabsteuerTransaction()
     {
@@ -466,18 +461,17 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(TransactionItem::new));
     }
-    
-    
 
     @SuppressWarnings("nls")
     private void addDividendTransactionFromSteuermitteilungPDF()
     {
-        
-        DocumentType type = new DocumentType("Steuerliche Behandlung: (Aus|In)ländische (Dividende|Investment-Aussch.ttung)");
+
+        DocumentType type = new DocumentType(
+                        "Steuerliche Behandlung: (Aus|In)ländische (Dividende|Investment-Aussch.ttung)");
 
         this.addDocumentTyp(type);
-        Block block = new Block("^\\s*Steuerliche Behandlung:.*");        
-        
+        Block block = new Block("^\\s*Steuerliche Behandlung:.*");
+
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -511,7 +505,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             long gross1 = asAmount(stripBlanks(v.get("gross1")));
                             long gross2 = asAmount(stripBlanks(v.get("gross2")));
                             long tax = 0;
-                            
+
                             if (gross1 > gross2)
                                 tax = gross1 - amount; // Betrag vor Steuern > Steuerbemessungsgrundlage
                             else 
@@ -520,42 +514,46 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                             if (tax > 0)
                                 t.addUnit(new Unit(Unit.Type.TAX, Money.of(asCurrencyCode(v.get("currency")), tax)));
                         })
-                        
+
                         .section("date") //
                         .match("^(Die Gutschrift erfolgt mit Valuta) (?<date>\\d+.\\d+.\\d{4}+).*")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
-                        
+
                         .wrap(TransactionItem::new));
     }
-    
+
     @Override
-    public List<Item> removeDuplicateDividendsWithoutTax(List<Item> items)
+    public List<Item> postProcessing(List<Item> items)
     {
-     
+
         // group dividends into tax + nontax
-       Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
-            .filter(TransactionItem.class::isInstance)
-            .map(TransactionItem.class::cast)
-            .filter(i -> i.getSubject() instanceof AccountTransaction)
-            .filter(i -> AccountTransaction.Type.DIVIDENDS.equals(((AccountTransaction) i.getSubject()).getType()))
-            .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
-       
-       // only for divs, where additional tax-doc exists...
-       items.removeIf(i -> "Dividend".equals(i.getTypeInformation()) &&  //$NON-NLS-1$
-                           !hasTax((TransactionItem)i) && 
-                           dividends.get(i.getDate()).get(i.getSecurity()).size() == 2);    
-        
+        Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
+                        .filter(TransactionItem.class::isInstance).map(TransactionItem.class::cast)
+                        .filter(i -> i.getSubject() instanceof AccountTransaction)
+                        .filter(i -> AccountTransaction.Type.DIVIDENDS
+                                        .equals(((AccountTransaction) i.getSubject()).getType()))
+                        .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
+
+        // only remove non-tax-dividends, where additional tax-dividend exists...
+        items.removeIf(i -> isDividendTransactionWithoutTax(i)
+                        && dividends.get(i.getDate()).get(i.getSecurity()).size() == 2);
+
         return items;
     }
 
-
-
-    private boolean hasTax(TransactionItem i)
+    private boolean isDividendTransactionWithoutTax(Item i)
     {
-        return ((AccountTransaction)i.getSubject()).getUnit(Type.TAX).isPresent();
+        if (i instanceof TransactionItem)
+        {
+            Annotated s = ((TransactionItem) i).getSubject();
+            if (s instanceof AccountTransaction)
+            {
+                AccountTransaction a = (AccountTransaction) s;
+                return AccountTransaction.Type.DIVIDENDS.equals(a.getType()) && !a.getUnit(Type.TAX).isPresent();
+            }
+        }
+        return false;
     }
-
-    
 
     @SuppressWarnings("nls")
     private Unit createTaxUnit(String taxString)

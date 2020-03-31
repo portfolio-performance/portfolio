@@ -113,6 +113,12 @@ public class PDFImportAssistant
 
             monitor.worked(1);
         }
+        
+        // postprocessing 
+        itemsByExtractor.entrySet().stream()
+            .collect(Collectors.toMap(
+                            e -> e.getKey(), 
+                            e -> e.getKey().postProcessing(e.getValue())));
 
         securityCache.addMissingSecurityItems(itemsByExtractor);
 
