@@ -534,9 +534,11 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
      
         // group dividends into tax + nontax
        Map<LocalDateTime, Map<Security, List<Item>>> dividends = items.stream()
-            .filter(i -> "Dividend".equals(i.getTypeInformation())) //$NON-NLS-1$
+            .filter(TransactionItem.class::isInstance)
+            .map(TransactionItem.class::cast)
+            .filter(i -> i.getSubject() instanceof AccountTransaction)
+            .filter(i -> AccountTransaction.Type.DIVIDENDS.equals(((AccountTransaction) i.getSubject()).getType()))
             .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
-
        
        // only for divs, where additional tax-doc exists...
        items.removeIf(i -> "Dividend".equals(i.getTypeInformation()) &&  //$NON-NLS-1$
