@@ -968,7 +968,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
     
     private void addFusionTransaction()
     {
-        DocumentType type = new DocumentType("Fusion");
+        DocumentType type = new DocumentType("(Fusion|Einstellung der Zertifizierung)");
         this.addDocumentTyp(type);
 
         Block block = new Block("(Aus|Ein)buchung:(.*)");
