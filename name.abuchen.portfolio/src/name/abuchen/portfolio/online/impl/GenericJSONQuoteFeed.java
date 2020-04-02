@@ -196,7 +196,9 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
                 if (object instanceof String)
                     price.setDate(YahooHelper.fromISODate((String) object));
                 else if (object instanceof Long)
-                    price.setDate(LocalDateTime.ofEpochSecond((Long) object, 0, ZoneOffset.UTC).toLocalDate());
+                    price.setDate(parseDateTimestamp((Long) object));
+                else if (object instanceof Integer)
+                    price.setDate(parseDateTimestamp(Long.valueOf((Integer) object)));
                 else if (object instanceof LocalDate)
                     price.setDate((LocalDate) object);
 
@@ -231,5 +233,23 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     public List<Exchange> getExchanges(Security security, List<Exception> errors)
     {
         return Collections.emptyList();
+    }
+
+    private LocalDate parseDateTimestamp(Long object)
+    {
+        Long futureEpoch = LocalDateTime.of(2200, 1, 1, 0, 0, 0, 0).toEpochSecond(ZoneOffset.UTC);
+
+        if (object > futureEpoch) {
+            // if the timestamp represents a date further than year 2200, then it is probably in milliseconds
+            // Note: This means that millisecond timestamps before 1970-03-26 00:08:38 can't be parsed by this method
+            object = object / 1000;
+
+        } else if (object < futureEpoch / (24*60*60)) {
+            // if the timestamp is smaller than the number of days between 1970 and 2200, then it is probably in days
+            // Note: This means that second timestamps before 1970-01-01 23:20:06 can't be parsed by this method
+            object = object * 24*60*60;
+        }
+
+        return LocalDateTime.ofEpochSecond(object, 0, ZoneOffset.UTC).toLocalDate();
     }
 }
