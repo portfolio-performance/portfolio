@@ -33,7 +33,7 @@ import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class GenericJSONQuoteFeed implements QuoteFeed
+public class GenericJSONQuoteFeed implements QuoteFeed
 {
     public static final String ID = "GENERIC-JSON"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME = "GENERIC-JSON-DATE"; //$NON-NLS-1$
@@ -77,7 +77,7 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     @Override
     public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
     {
-        List<SecurityPrice> prices = getHistoricalQuotes(security, security.getFeedURL(), errors).stream()
+        List<SecurityPrice> prices = getHistoricalQuotes(security, feedURL(security), errors).stream()
                         .map(p -> new SecurityPrice(p.getDate(), p.getValue())).collect(Collectors.toList());
 
         boolean isUpdated = false;
@@ -95,7 +95,7 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     @Override
     public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
     {
-        return getHistoricalQuotes(security, security.getFeedURL(), errors).stream()
+        return getHistoricalQuotes(security, feedURL(security), errors).stream()
                         .map(p -> new LatestSecurityPrice(p.getDate(), p.getValue(), LatestSecurityPrice.NOT_AVAILABLE,
                                         LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE))
                         .collect(Collectors.toList());
@@ -103,8 +103,8 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
 
     public List<SecurityPrice> getHistoricalQuotes(Security security, String feedURL, List<Exception> errors)
     {
-        Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME);
-        Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME);
+        Optional<String> dateProperty = dateProperty(security);
+        Optional<String> closeProperty = closeProperty(security);
 
         if (!dateProperty.isPresent() || !closeProperty.isPresent())
         {
@@ -231,5 +231,20 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     public List<Exchange> getExchanges(Security security, List<Exception> errors)
     {
         return Collections.emptyList();
+    }
+
+    protected String feedURL(Security security)
+    {
+        return security.getFeedURL();
+    }
+
+    protected Optional<String> dateProperty(Security security)
+    {
+        return security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME);
+    }
+
+    protected Optional<String> closeProperty(Security security)
+    {
+        return security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME);
     }
 }
