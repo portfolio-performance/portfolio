@@ -67,7 +67,7 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
         for (LatestSecurityPrice p : prices)
         {
             if (p.getDate().isEqual(LocalDate.now()))
-            { return security.setLatest(p); }
+                return security.setLatest(p);
         }
         return false;
     }
