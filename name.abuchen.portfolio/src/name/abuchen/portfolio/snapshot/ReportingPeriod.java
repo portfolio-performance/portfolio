@@ -7,6 +7,8 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
 import java.util.function.Predicate;
 
+import com.google.common.base.Objects;
+
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.util.Interval;
@@ -115,6 +117,25 @@ public abstract class ReportingPeriod
 
             return buf.toString();
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(years, months);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastX other = (LastX) obj;
+            return years == other.years && months == other.months;
+        }
     }
 
     public static class LastXDays extends ReportingPeriod
@@ -149,6 +170,25 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return MessageFormat.format(Messages.LabelReportingPeriodLastXDays, days);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(days);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastXDays other = (LastXDays) obj;
+            return days == other.days;
         }
     }
 
@@ -206,6 +246,25 @@ public abstract class ReportingPeriod
         {
             return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(tradingDays);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastXTradingDays other = (LastXTradingDays) obj;
+            return tradingDays == other.tradingDays;
+        }
     }
 
     public static class FromXtoY extends ReportingPeriod
@@ -250,6 +309,25 @@ public abstract class ReportingPeriod
             return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, startDate.format(DATE_FORMATTER),
                             endDate.format(DATE_FORMATTER));
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(startDate, endDate);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FromXtoY other = (FromXtoY) obj;
+            return startDate == other.startDate && endDate == other.endDate;
+        }
     }
 
     public static class SinceX extends ReportingPeriod
@@ -289,6 +367,24 @@ public abstract class ReportingPeriod
             return MessageFormat.format(Messages.LabelReportingPeriodSince, startDate.format(DATE_FORMATTER));
         }
 
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(startDate);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SinceX other = (SinceX) obj;
+            return startDate == other.startDate;
+        }
     }
 
     public static class YearX extends ReportingPeriod
@@ -324,6 +420,25 @@ public abstract class ReportingPeriod
         {
             return String.valueOf(year);
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(year);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            YearX other = (YearX) obj;
+            return year == other.year;
+        }
     }
 
     public static class CurrentMonth extends ReportingPeriod
@@ -352,6 +467,22 @@ public abstract class ReportingPeriod
         {
             return Messages.LabelReportingPeriodCurrentMonth;
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
     }
 
     public static class YearToDate extends ReportingPeriod
@@ -379,6 +510,22 @@ public abstract class ReportingPeriod
         public String toString()
         {
             return Messages.LabelReportingPeriodYTD;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
         }
     }
 }

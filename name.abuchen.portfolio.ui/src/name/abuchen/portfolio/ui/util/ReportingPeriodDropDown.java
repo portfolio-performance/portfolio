@@ -1,14 +1,14 @@
 package name.abuchen.portfolio.ui.util;
 
 import java.time.LocalDate;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Display;
 
@@ -30,7 +30,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
     private final ReportingPeriodListener listener;
 
     private ReportingPeriod selected;
-    private LinkedList<ReportingPeriod> periods;
+    private List<ReportingPeriod> periods;
 
     public ReportingPeriodDropDown(final PortfolioPart part, ReportingPeriodListener listener)
     {
@@ -49,35 +49,28 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        Action action = createActionFor(selected);
-        action.setChecked(true);
-        manager.add(action);
-
-        for (final ReportingPeriod period : periods)
+        for (ReportingPeriod period : periods)
         {
-            if (period.equals(selected))
-                continue;
-            manager.add(createActionFor(period));
+            Action action = createActionFor(period);
+            action.setChecked(period.equals(selected));
+            manager.add(action);
         }
 
         manager.add(new Separator());
         manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
             ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
-                            periods.getFirst());
+                            selected);
 
-            if (dialog.open() == Dialog.OK)
+            if (dialog.open() == Window.OK)
             {
                 ReportingPeriod period = dialog.getReportingPeriod();
 
                 doSelect(period);
 
-                periods.addFirst(period);
+                periods.add(period);
 
                 if (listener != null)
                     listener.reportingPeriodUpdated();
-
-                if (periods.size() > 20)
-                    periods.removeLast();
             }
         }));
 
@@ -85,7 +78,7 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
             EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(Display.getDefault().getActiveShell());
             dialog.setReportingPeriods(periods);
 
-            if (dialog.open() == Dialog.OK)
+            if (dialog.open() == Window.OK)
             {
                 periods.clear();
                 periods.addAll(dialog.getReportingPeriods());
@@ -93,10 +86,10 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
                 // make sure at least one entry exists
                 if (periods.isEmpty())
                     periods.add(selected);
-
-                if (!selected.equals(periods.getFirst()))
+                
+                if (!periods.contains(selected))
                 {
-                    doSelect(periods.getFirst());
+                    doSelect(periods.get(0));
                     listener.reportingPeriodUpdated();
                 }
             }
@@ -115,9 +108,6 @@ public final class ReportingPeriodDropDown extends DropDown implements IMenuList
     {
         return new SimpleAction(period.toString(), a -> {
             doSelect(period);
-
-            periods.remove(period);
-            periods.addFirst(period);
 
             if (listener != null)
                 listener.reportingPeriodUpdated();

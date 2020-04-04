@@ -3,7 +3,7 @@ package name.abuchen.portfolio.ui.editor;
 import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -421,7 +421,7 @@ public class PortfolioPart implements ClientInputListener
         return clientInput.getPreferenceStore();
     }
 
-    public LinkedList<ReportingPeriod> getReportingPeriods() // NOSONAR
+    public List<ReportingPeriod> getReportingPeriods()
     {
         return clientInput.getReportingPeriods();
     }
@@ -453,7 +453,10 @@ public class PortfolioPart implements ClientInputListener
         }
 
         if (selectedPeriod == null)
-            selectedPeriod = clientInput.getReportingPeriods().getFirst();
+        {
+            List<ReportingPeriod> periods = clientInput.getReportingPeriods();
+            selectedPeriod = periods.isEmpty() ? new ReportingPeriod.LastX(1, 0) : periods.get(0);
+        }
 
         return selectedPeriod;
     }
