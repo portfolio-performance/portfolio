@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.ClientFactory;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 
 public final class AutosaveJob extends AbstractClientJob
 {
