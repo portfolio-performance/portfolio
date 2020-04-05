@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.ParseException;
@@ -30,6 +29,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
@@ -37,6 +37,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -57,9 +58,8 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-
         try
         {
             @SuppressWarnings("nls")
@@ -70,7 +70,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             int startIndex = html.indexOf("quoteResponse"); //$NON-NLS-1$
             if (startIndex < 0)
-                return false;
+                return Optional.empty();
 
             LatestSecurityPrice price = new LatestSecurityPrice();
 
@@ -103,17 +103,18 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
             if (price.getDate() == null || price.getValue() <= 0)
             {
-                errors.add(new IOException(html));
-                return false;
+                PortfolioLog.error(html);
+                return Optional.empty();
             }
-
-            security.setLatest(price);
-            return true;
+            else
+            {
+                return Optional.of(price);
+            }
         }
         catch (IOException | ParseException e)
         {
-            errors.add(e);
-            return false;
+            PortfolioLog.error(e);
+            return Optional.empty();
         }
     }
 
@@ -132,22 +133,10 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         LocalDate start = caculateStart(security);
-
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start, errors);
-
-        boolean isUpdated = false;
-        if (quotes != null)
-        {
-            for (SecurityPrice p : quotes)
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
+        return internalGetQuotes(security, start);
     }
 
     /**
@@ -167,39 +156,29 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start,
-                    List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
+        return internalGetQuotes(security, LocalDate.now().minusMonths(2));
     }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        return extractQuotes(LatestSecurityPrice.class, response, errors);
-    }
-
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, LocalDate startDate,
-                    List<Exception> errors)
+    private QuoteFeedData internalGetQuotes(Security security, LocalDate startDate)
     {
         if (security.getTickerSymbol() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
 
         try
         {
             String responseBody = requestData(security, startDate);
-            return extractQuotes(klass, responseBody, errors);
+            return extractQuotes(responseBody);
         }
         catch (IOException e)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1,
+            return QuoteFeedData.withError(new IOException(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1,
                             security.getTickerSymbol(), e.getMessage()), e));
         }
-
-        return Collections.emptyList();
     }
 
     @SuppressWarnings("nls")
@@ -229,9 +208,9 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
 
     }
 
-    private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)
+    /* package */ QuoteFeedData extractQuotes(String responseBody)
     {
-        List<T> answer = new ArrayList<>();
+        List<LatestSecurityPrice> answer = new ArrayList<>();
 
         try
         {
@@ -274,23 +253,23 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
                 Long ts = (Long) timestamp.get(index);
                 Double q = (Double) quotes.get(index);
 
-                if (ts != null && q != null)
+                if (ts != null && q != null && q.doubleValue() > 0)
                 {
-                    T price = klass.getDeclaredConstructor().newInstance();
+                    LatestSecurityPrice price = new LatestSecurityPrice();
                     price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
                     price.setValue(Values.Quote.factorize(q));
                     answer.add(price);
                 }
             }
         }
-        catch (IOException | InstantiationException | IllegalAccessException | IndexOutOfBoundsException
-                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                        | SecurityException e)
+        catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e)
         {
-            errors.add(e);
+            return QuoteFeedData.withError(e);
         }
 
-        return answer;
+        QuoteFeedData data = new QuoteFeedData();
+        data.getLatestPrices().addAll(answer);
+        return data;
     }
 
     protected JSONArray extractQuotesArray(JSONObject indicators) throws IOException

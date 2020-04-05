@@ -1,12 +1,11 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -16,12 +15,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;
 
 public final class QuandlQuoteFeed implements QuoteFeed
@@ -54,27 +52,15 @@ public final class QuandlQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(LatestSecurityPrice.class, security,
-                        a -> a.addParameter("limit", "1"), errors); //$NON-NLS-1$ //$NON-NLS-2$
-
-        if (prices.isEmpty())
-        {
-            return false;
-        }
-        else
-        {
-            LatestSecurityPrice price = prices.get(prices.size() - 1);
-            if (price.getValue() != 0)
-                security.setLatest(price);
-
-            return true;
-        }
+        QuoteFeedData data = getHistoricalQuotes(security, a -> a.addParameter("limit", "1")); //$NON-NLS-1$ //$NON-NLS-2$
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         Consumer<WebAccess> parameters = null;
 
@@ -84,29 +70,17 @@ public final class QuandlQuoteFeed implements QuoteFeed
             parameters = a -> a.addParameter("start_date", startDate.toString()); //$NON-NLS-1$
         }
 
-        List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, parameters, errors);
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : prices)
-        {
-            if (p.getDate().isBefore(LocalDate.now()))
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
+        return getHistoricalQuotes(security, parameters);
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(LatestSecurityPrice.class, security, a -> a.addParameter("limit", "100"), errors); //$NON-NLS-1$ //$NON-NLS-2$
+        return getHistoricalQuotes(security, a -> a.addParameter("limit", "100")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security,
-                    Consumer<WebAccess> parameters, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security, Consumer<WebAccess> parameters)
     {
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgErrorQuandlMissingAPIKey);
@@ -115,10 +89,11 @@ public final class QuandlQuoteFeed implements QuoteFeed
 
         if (!quandlCode.isPresent())
         {
-            errors.add(new IOException(
+            return QuoteFeedData.withError(new IOException(
                             MessageFormat.format(Messages.MsgErrorQuandlMissingCode, security.getName())));
-            return Collections.emptyList();
         }
+
+        QuoteFeedData data = new QuoteFeedData();
 
         try
         {
@@ -131,51 +106,51 @@ public final class QuandlQuoteFeed implements QuoteFeed
 
             String response = webaccess.get();
 
+            data.addResponse(webaccess.getURL(), response);
+
             JSONObject json = (JSONObject) JSONValue.parse(response);
 
             JSONObject dataset = (JSONObject) json.get("dataset_data"); //$NON-NLS-1$
             if (dataset == null)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "dataset"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                data.addError(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "dataset"))); //$NON-NLS-1$
+                return data;
             }
 
             JSONArray columnNames = (JSONArray) dataset.get("column_names"); //$NON-NLS-1$
             if (columnNames == null)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                data.addError(new IOException(
+                                MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names"))); //$NON-NLS-1$
+                return data;
             }
 
             int[] mapping = extractColumnMapping(security, columnNames);
 
             if (mapping[0] == -1)
             {
-                errors.add(new IOException(
+                data.addError(new IOException(
                                 MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names[data]"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                return data;
             }
 
             if (mapping[4] == -1)
             {
-                errors.add(new IOException(
+                data.addError(new IOException(
                                 MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "column_names[close]"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                return data;
             }
 
-            JSONArray data = (JSONArray) dataset.get("data"); //$NON-NLS-1$
-            if (data == null)
-                return Collections.emptyList();
+            JSONArray jsondata = (JSONArray) dataset.get("data"); //$NON-NLS-1$
+            if (jsondata == null)
+                return data;
 
-            List<T> prices = new ArrayList<>();
-
-            data.forEach(entry -> {
+            jsondata.forEach(entry -> {
                 try
                 {
                     JSONArray row = (JSONArray) entry;
                     LocalDate date = LocalDate.parse(row.get(mapping[0]).toString());
 
-                    long open = mapping[1] == -1 ? -1 : YahooHelper.asPrice(String.valueOf(row.get(mapping[1])));
                     long high = mapping[2] == -1 ? -1 : YahooHelper.asPrice(String.valueOf(row.get(mapping[2])));
                     long low = mapping[3] == -1 ? -1 : YahooHelper.asPrice(String.valueOf(row.get(mapping[3])));
                     long close = mapping[4] == -1 ? -1 : YahooHelper.asPrice(String.valueOf(row.get(mapping[4])));
@@ -183,35 +158,29 @@ public final class QuandlQuoteFeed implements QuoteFeed
 
                     if (close > 0)
                     {
-                        T price = klass.getConstructor().newInstance();
+                        LatestSecurityPrice price = new LatestSecurityPrice();
                         price.setDate(date);
                         price.setValue(close);
+                        price.setHigh(high);
+                        price.setLow(low);
+                        price.setVolume(volume);
 
-                        if (price instanceof LatestSecurityPrice)
-                        {
-                            LatestSecurityPrice lsp = (LatestSecurityPrice) price;
-                            lsp.setHigh(high);
-                            lsp.setLow(low);
-                            lsp.setVolume(volume);
-                            lsp.setPreviousClose(open);
-                        }
-
-                        prices.add(price);
+                        data.addPrice(price);
                     }
                 }
-                catch (ReflectiveOperationException | ParseException | IllegalArgumentException | SecurityException ex)
+                catch (ParseException | IllegalArgumentException ex)
                 {
-                    errors.add(ex);
+                    data.addError(ex);
                 }
             });
-            return prices;
 
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
-            errors.add(e);
-            return Collections.emptyList();
+            data.addError(e);
         }
+
+        return data;
     }
 
     /**
@@ -283,17 +252,4 @@ public final class QuandlQuoteFeed implements QuoteFeed
 
         return mapping;
     }
-
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
-    {
-        return Collections.emptyList();
-    }
-
 }

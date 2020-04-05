@@ -2,9 +2,9 @@ package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -22,10 +22,10 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.PortfolioReportNet.MarketInfo;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -48,133 +48,100 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        return false;
+        return Optional.empty();
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         LocalDate start = null;
 
         if (!security.getPrices().isEmpty())
-        {
             start = security.getPrices().get(security.getPrices().size() - 1).getDate();
-        }
         else
-        {
             start = LocalDate.of(2000, 1, 1);
-        }
 
-        List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, start, errors);
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : prices)
-        {
-            if (p.getDate().isBefore(LocalDate.now()))
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
+        return getHistoricalQuotes(security, start);
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(LatestSecurityPrice.class, security, start, errors);
+        return getHistoricalQuotes(security, LocalDate.now().minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
-    public <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security, LocalDate start,
-                    List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security, LocalDate start)
     {
         if (security.getOnlineId() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingOnlineId, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(new IOException(
+                            MessageFormat.format(Messages.MsgErrorMissingOnlineId, security.getName())));
         }
 
         Optional<String> market = security.getPropertyValue(SecurityProperty.Type.FEED, MARKET_PROPERTY_NAME);
 
         if (!market.isPresent())
         {
-            errors.add(new IOException(
+            return QuoteFeedData.withError(new IOException(
                             MessageFormat.format(Messages.MsgErrorMissingPortfolioReportMarket, security.getName())));
-            return Collections.emptyList();
         }
+
+        QuoteFeedData data = new QuoteFeedData();
 
         try
         {
             @SuppressWarnings("nls")
-            String response = new WebAccess("www.portfolio-report.net",
+            WebAccess webaccess = new WebAccess("www.portfolio-report.net",
                             "/api/securities/uuid/" + security.getOnlineId() + "/markets/" + market.get()) //
                                             .addUserAgent("PortfolioPerformance/"
                                                             + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                                             .getVersion().toString())
-                                            .addParameter("from", start.toString()).get();
+                                            .addParameter("from", start.toString());
+            String response = webaccess.get();
+
+            data.addResponse(webaccess.getURL(), response);
 
             JSONObject json = (JSONObject) JSONValue.parse(response);
 
-            JSONArray data = (JSONArray) json.get("prices"); //$NON-NLS-1$
-            if (data == null)
+            JSONArray pricesJson = (JSONArray) json.get("prices"); //$NON-NLS-1$
+            if (pricesJson == null)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "prices"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                data.addError(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "prices"))); //$NON-NLS-1$
+                return data;
             }
 
-            List<T> prices = new ArrayList<>();
+            pricesJson.forEach(entry -> {
+                JSONObject row = (JSONObject) entry;
 
-            data.forEach(entry -> {
-                try
+                LocalDate date = LocalDate.parse(row.get("date").toString()); //$NON-NLS-1$
+
+                Number c = (Number) row.get("close"); //$NON-NLS-1$
+                long close = c == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(c.doubleValue());
+
+                if (close > 0)
                 {
-                    JSONObject row = (JSONObject) entry;
+                    LatestSecurityPrice price = new LatestSecurityPrice();
+                    price.setDate(date);
+                    price.setValue(close);
 
-                    LocalDate date = LocalDate.parse(row.get("date").toString()); //$NON-NLS-1$
+                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
 
-                    Number c = (Number) row.get("close"); //$NON-NLS-1$
-                    long close = c == null ? LatestSecurityPrice.NOT_AVAILABLE
-                                    : Values.Quote.factorize(c.doubleValue());
-
-                    if (close > 0)
-                    {
-                        T price = klass.getConstructor().newInstance();
-                        price.setDate(date);
-                        price.setValue(close);
-
-                        if (price instanceof LatestSecurityPrice)
-                        {
-                            LatestSecurityPrice lsp = (LatestSecurityPrice) price;
-                            lsp.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
-                            lsp.setLow(LatestSecurityPrice.NOT_AVAILABLE);
-                            lsp.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
-                            lsp.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
-                        }
-
-                        prices.add(price);
-                    }
-                }
-                catch (ReflectiveOperationException | IllegalArgumentException | SecurityException ex)
-                {
-                    errors.add(ex);
+                    data.addPrice(price);
                 }
             });
-            return prices;
 
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
-            errors.add(e);
-            return Collections.emptyList();
+            data.addError(e);
         }
-    }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
+        return data;
     }
 
     @Override

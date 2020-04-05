@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,6 +24,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.AlphavantageQuoteFeed;
 import name.abuchen.portfolio.online.impl.FinnhubQuoteFeed;
 import name.abuchen.portfolio.online.impl.GenericJSONQuoteFeed;
@@ -210,20 +210,17 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
 
-                // last 2 months as sample
-                LocalDate t = LocalDate.now().minusMonths(2);
-
-                final List<LatestSecurityPrice> quotes = feed.getHistoricalQuotes(s, t, new ArrayList<Exception>());
-
+                QuoteFeedData data = feed.previewHistoricalQuotes(s);
+                
                 Display.getDefault().asyncExec(() -> {
                     if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         HistoricalQuoteProviderPage.this.currentJob = null;
-                        cacheQuotes.put(cacheKey, quotes);
+                        cacheQuotes.put(cacheKey, data.getLatestPrices());
                         if (!tableSampleData.getControl().isDisposed())
                         {
-                            tableSampleData.setInput(quotes);
+                            tableSampleData.setInput(data.getLatestPrices());
                             tableSampleData.refresh();
                         }
                     }

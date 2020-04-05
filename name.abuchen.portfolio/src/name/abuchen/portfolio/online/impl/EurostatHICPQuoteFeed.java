@@ -1,7 +1,7 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
+import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.MessageFormat;
@@ -13,6 +13,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -21,9 +22,9 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.WebAccess;;
 
 public final class EurostatHICPQuoteFeed implements QuoteFeed
@@ -48,102 +49,58 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        return false;
+        return Optional.empty();
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
-    {
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, errors);
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : quotes)
-        {
-            if (p.getDate().isBefore(LocalDate.now()))
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
-    }
-
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
-    {
-        return internalGetQuotes(LatestSecurityPrice.class, security, errors);
-    }
-
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
-    {
-        List<Exchange> answer = new ArrayList<>();
-
-        Enumeration<String> enumeration = EurostatHICPLabels.getKeys();
-        while (enumeration.hasMoreElements())
-        {
-            String key = enumeration.nextElement();
-            String hicpRegion = key.substring("region.".length()); //$NON-NLS-1$
-            answer.add(new Exchange(hicpRegion, EurostatHICPLabels.getString(key)));
-        }
-
-        Collections.sort(answer, (r, l) -> r.getName().compareTo(l.getName()));
-
-        return answer;
-    }
-
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security,
-                    List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         if (security.getTickerSymbol() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
+
+        QuoteFeedData data = new QuoteFeedData();
 
         try
         {
-            String responseBody = requestData(security);
-            return extractQuotes(klass, responseBody, errors);
+            String responseBody = requestData(security, data);
+            extractQuotes(responseBody, data);
         }
-        catch (IOException e)
+        catch (IOException | URISyntaxException e)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorDownloadEurostatHICP, 1,
+            data.addError(new IOException(MessageFormat.format(Messages.MsgErrorDownloadEurostatHICP, 1,
                             security.getTickerSymbol(), e.getMessage()), e));
         }
 
-        return Collections.emptyList();
+        return data;
     }
 
     @SuppressWarnings("nls")
-    private String requestData(Security security) throws IOException
+    private String requestData(Security security, QuoteFeedData data) throws IOException, URISyntaxException
     {
-        return new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
+        WebAccess webaccess = new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
                         .withScheme("http") //
                         .addParameter("filterNonGeo", "1") //
-                        .addParameter("precision", "1")
-                        .addParameter("geo",
-                                        security.getTickerSymbol().toUpperCase())
-                        .addParameter("unit", "I15") //
+                        .addParameter("precision", "1") //
+                        .addParameter("geo", security.getTickerSymbol().toUpperCase()).addParameter("unit", "I15") //
                         .addParameter("unitLabel", "code") //
                         .addParameter("coicop", "CP00") //
                         .addParameter("groupedIndicators", "1") //
-                        .addParameter("shortLabel", "1") //
-                        .get();
+                        .addParameter("shortLabel", "1");
+
+        String text = webaccess.get();
+
+        data.addResponse(webaccess.getURL(), text);
+
+        return text;
     }
 
-    private <T extends SecurityPrice> List<T> extractQuotes(Class<T> klass, String responseBody, List<Exception> errors)
+    private void extractQuotes(String responseBody, QuoteFeedData data)
     {
-        List<T> answer = new ArrayList<>();
-
         try
         {
             JSONObject responseData = (JSONObject) JSONValue.parse(responseBody);
@@ -180,21 +137,22 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
                 if (q != null)
                 {
-                    T price = klass.getDeclaredConstructor().newInstance();
+                    LatestSecurityPrice price = new LatestSecurityPrice();
                     price.setDate(ts);
                     price.setValue(Values.Quote.factorize(q));
-                    answer.add(price);
+                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+
+                    if (price.getValue() > 0)
+                        data.addPrice(price);
                 }
             }
         }
-        catch (IOException | InstantiationException | IllegalAccessException | IndexOutOfBoundsException
-                        | IllegalArgumentException | InvocationTargetException | NoSuchMethodException
-                        | SecurityException e)
+        catch (IOException | IndexOutOfBoundsException | IllegalArgumentException | SecurityException e)
         {
-            errors.add(e);
+            data.addError(e);
         }
-
-        return answer;
     }
 
     private Double parseIndex(String text) throws IOException
@@ -211,4 +169,21 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
         }
     }
 
+    @Override
+    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
+    {
+        List<Exchange> answer = new ArrayList<>();
+
+        Enumeration<String> enumeration = EurostatHICPLabels.getKeys();
+        while (enumeration.hasMoreElements())
+        {
+            String key = enumeration.nextElement();
+            String hicpRegion = key.substring("region.".length()); //$NON-NLS-1$
+            answer.add(new Exchange(hicpRegion, EurostatHICPLabels.getString(key)));
+        }
+
+        Collections.sort(answer, (r, l) -> r.getName().compareTo(l.getName()));
+
+        return answer;
+    }
 }

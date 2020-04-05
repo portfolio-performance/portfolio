@@ -28,21 +28,24 @@ import java.util.TreeSet;
 import java.util.regex.Pattern;
 
 import org.jsoup.Jsoup;
+import org.jsoup.UncheckedIOException;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.safety.Whitelist;
 import org.jsoup.select.Elements;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 import name.abuchen.portfolio.util.OnlineHelper;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -268,7 +271,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     private static final Column[] COLUMNS = new Column[] { new DateColumn(), new CloseColumn(), new HighColumn(),
                     new LowColumn() };
 
-    private final PageCache<List<LatestSecurityPrice>> cache = new PageCache<>();
+    private final PageCache<Pair<String, List<LatestSecurityPrice>>> cache = new PageCache<>();
 
     @Override
     public String getId()
@@ -289,59 +292,54 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        boolean isUpdated = false;
-
         // if latestFeed is null, then the policy is 'use same configuration
         // as historic quotes'
         String feedURL = security.getLatestFeed() == null ? security.getFeedURL() : security.getLatestFeedURL();
 
-        List<LatestSecurityPrice> quotes = internalGetQuotes(security, feedURL, errors);
-        int size = quotes.size();
-        if (size > 0)
-        {
-            Collections.sort(quotes);
+        QuoteFeedData data = internalGetQuotes(security, feedURL, false);
 
-            LatestSecurityPrice latest = quotes.get(size - 1);
-            LatestSecurityPrice previous = size > 1 ? quotes.get(size - 2) : null;
-            latest.setPreviousClose(previous != null ? previous.getValue() : latest.getValue());
-            latest.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
+        if (!data.getErrors().isEmpty())
+            PortfolioLog.error(data.getErrors());
 
-            isUpdated = security.setLatest(latest);
-        }
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
+        if (prices.isEmpty())
+            return Optional.empty();
 
-        return isUpdated;
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        return Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
-        List<LatestSecurityPrice> quotes = internalGetQuotes(security, security.getFeedURL(), errors);
+        return internalGetQuotes(security, security.getFeedURL(), false);
+    }
 
-        boolean isUpdated = false;
-        for (LatestSecurityPrice quote : quotes)
-        {
-            boolean isAdded = security.addPrice(new SecurityPrice(quote.getDate(), quote.getValue()));
-            isUpdated = isUpdated || isAdded;
-        }
-
-        return isUpdated;
+    public QuoteFeedData getHistoricalQuotes(String html)
+    {
+        QuoteFeedData data = new QuoteFeedData();
+        data.addAllPrices(parseFromHTML(html, data));
+        return data;
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return internalGetQuotes(security, security.getFeedURL(), errors);
+        return internalGetQuotes(security, security.getFeedURL(), true);
     }
 
-    private List<LatestSecurityPrice> internalGetQuotes(Security security, String feedURL, List<Exception> errors)
+    private QuoteFeedData internalGetQuotes(Security security, String feedURL, boolean isPreview)
     {
         if (feedURL == null || feedURL.length() == 0)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
         }
+
+        QuoteFeedData data = new QuoteFeedData();
 
         VariableURL variableURL = Factory.fromString(feedURL);
         variableURL.setSecurity(security);
@@ -350,40 +348,35 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         long failedAttempts = 0;
         long maxFailedAttempts = variableURL.getMaxFailedAttempts();
 
-        for (String url : variableURL)
+        for (String url : variableURL) // NOSONAR
         {
-            List<LatestSecurityPrice> answer = cache.lookup(url);
+            Pair<String, List<LatestSecurityPrice>> answer = cache.lookup(url);
 
             if (answer == null)
             {
-                answer = parseFromURL(url, errors);
+                answer = parseFromURL(url, data);
 
-                if (!answer.isEmpty())
+                if (!answer.getRight().isEmpty())
                     cache.put(url, answer);
             }
 
+            data.addResponse(url, answer.getLeft());
+
             int sizeBefore = newPricesByDate.size();
-            newPricesByDate.addAll(answer);
+            newPricesByDate.addAll(answer.getRight());
 
             if (newPricesByDate.size() > sizeBefore)
                 failedAttempts = 0;
             else if (++failedAttempts > maxFailedAttempts)
                 break;
+
+            if (isPreview && newPricesByDate.size() >= 100)
+                break;
         }
 
-        return new ArrayList<>(newPricesByDate);
-    }
+        data.addAllPrices(newPricesByDate);
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        return parseFromHTML(response, errors);
-    }
-
-    @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
-    {
-        return Collections.emptyList();
+        return data;
     }
 
     protected String getUserAgent()
@@ -391,28 +384,32 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         return OnlineHelper.getUserAgent();
     }
 
-    protected List<LatestSecurityPrice> parseFromURL(String url, List<Exception> errors)
+    protected Pair<String, List<LatestSecurityPrice>> parseFromURL(String url, QuoteFeedData data)
     {
         try
         {
-            Document document = Jsoup.parse(new WebAccess(url) //
+            String html = new WebAccess(url) //
                             .addUserAgent(getUserAgent()) //
-                            .get());
-            return parse(url, document, errors);
+                            .get();
+
+            Document document = Jsoup.parse(html);
+            List<LatestSecurityPrice> prices = parse(url, document, data);
+
+            return new Pair<>(html, prices);
         }
-        catch (URISyntaxException | IOException | Error e)
+        catch (URISyntaxException | IOException | UncheckedIOException e)
         {
-            errors.add(new IOException(url + '\n' + e.getMessage(), e));
-            return Collections.emptyList();
+            data.addError(new IOException(url + '\n' + e.getMessage(), e));
+            return new Pair<>(e.getMessage(), Collections.emptyList());
         }
     }
 
-    protected List<LatestSecurityPrice> parseFromHTML(String html, List<Exception> errors)
+    protected List<LatestSecurityPrice> parseFromHTML(String html, QuoteFeedData data)
     {
-        return parse("n/a", Jsoup.parse(html), errors); //$NON-NLS-1$
+        return parse("n/a", Jsoup.parse(html), data); //$NON-NLS-1$
     }
 
-    private List<LatestSecurityPrice> parse(String url, Document document, List<Exception> errors)
+    private List<LatestSecurityPrice> parse(String url, Document document, QuoteFeedData data)
     {
         // check if language is provided
         String language = document.select("html").attr("lang"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -448,7 +445,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
                         }
                         catch (Exception e)
                         {
-                            errors.add(new IOException(url + '\n' + e.getMessage(), e));
+                            data.addError(new IOException(url + '\n' + e.getMessage(), e));
                         }
                     }
 
@@ -460,7 +457,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
 
         // if no quotes could be extract, log HTML for further analysis
         if (prices.isEmpty())
-            errors.add(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
+            data.addError(new IOException(MessageFormat.format(Messages.MsgNoQuotesFoundInHTML, url,
                             Jsoup.clean(document.html(), Whitelist.relaxed()))));
 
         return prices;
@@ -602,26 +599,26 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         writer.println(source);
         writer.println("--------");
 
-        List<LatestSecurityPrice> prices;
-        List<Exception> errors = new ArrayList<>();
+        Pair<String, List<LatestSecurityPrice>> result;
+        QuoteFeedData data = new QuoteFeedData();
 
         if (source.startsWith("http"))
         {
-            prices = parseFromURL(source, errors);
+            result = parseFromURL(source, data);
         }
         else
         {
             try (Scanner scanner = new Scanner(new File(source), StandardCharsets.UTF_8.name()))
             {
                 String html = scanner.useDelimiter("\\A").next();
-                prices = new HTMLTableQuoteFeed().parseFromHTML(html, errors);
+                result = new Pair<>(html, new HTMLTableQuoteFeed().parseFromHTML(html, data));
             }
         }
 
-        for (Exception error : errors)
+        for (Exception error : data.getErrors())
             error.printStackTrace(writer); // NOSONAR
 
-        for (LatestSecurityPrice p : prices)
+        for (LatestSecurityPrice p : result.getRight())
         {
             writer.print(Values.Date.format(p.getDate()));
             writer.print("\t");

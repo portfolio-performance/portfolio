@@ -22,6 +22,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.HTMLTableQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
@@ -226,14 +227,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
             {
                 try
                 {
-                    ArrayList<Exception> exceptions = new ArrayList<>();
-
-                    if (feed.updateLatestQuotes(security, exceptions))
-                        dirtyable.markDirty();
-
-                    if (!exceptions.isEmpty())
-                        PortfolioPlugin.log(createErrorStatus(feed.getName(), exceptions));
-
+                    feed.getLatestQuote(security).ifPresent(p -> {
+                        if (security.setLatest(p))
+                            dirtyable.markDirty();
+                    });
+                    
                     return Status.OK_STATUS;
                 }
                 catch (RateLimitExceededException e)
@@ -264,13 +262,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
                         if (feed == null)
                             return Status.OK_STATUS;
 
-                        ArrayList<Exception> exceptions = new ArrayList<>();
-
-                        if (feed.updateHistoricalQuotes(security, exceptions))
+                        QuoteFeedData data = feed.getHistoricalQuotes(security);
+                        
+                        if (security.addAllPrices(data.getPrices()))
                             dirtyable.markDirty();
-
-                        if (!exceptions.isEmpty())
-                            PortfolioPlugin.log(createErrorStatus(security.getName(), exceptions));
+                        
+                        if (!data.getErrors().isEmpty())
+                            PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
 
                         return Status.OK_STATUS;
                     }

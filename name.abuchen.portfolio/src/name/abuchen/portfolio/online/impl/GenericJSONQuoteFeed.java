@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 import com.jayway.jsonpath.Configuration;
 import com.jayway.jsonpath.JsonPath;
@@ -22,13 +21,13 @@ import com.jayway.jsonpath.Option;
 import com.jayway.jsonpath.ReadContext;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 import name.abuchen.portfolio.util.WebAccess;
@@ -60,71 +59,44 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, LocalDate.now(), errors);
-
-        for (LatestSecurityPrice p : prices)
-        {
-            if (p.getDate().isEqual(LocalDate.now()))
-                return security.setLatest(p);
-        }
-        return false;
+        return getHistoricalQuotes(security, security.getFeedURL(), false);
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        List<SecurityPrice> prices = getHistoricalQuotes(security, security.getFeedURL(), errors).stream()
-                        .map(p -> new SecurityPrice(p.getDate(), p.getValue())).collect(Collectors.toList());
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : prices)
-        {
-            if (p.getDate().isBefore(LocalDate.now()))
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
+        return getHistoricalQuotes(security, security.getFeedURL(), true);
     }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
-    {
-        return getHistoricalQuotes(security, security.getFeedURL(), errors).stream()
-                        .map(p -> new LatestSecurityPrice(p.getDate(), p.getValue(), LatestSecurityPrice.NOT_AVAILABLE,
-                                        LatestSecurityPrice.NOT_AVAILABLE, LatestSecurityPrice.NOT_AVAILABLE))
-                        .collect(Collectors.toList());
-    }
-
-    public List<SecurityPrice> getHistoricalQuotes(Security security, String feedURL, List<Exception> errors)
+    private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean isPreview)
     {
         Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME);
         Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME);
 
         if (!dateProperty.isPresent() || !closeProperty.isPresent())
         {
-            errors.add(new IOException(
+            return QuoteFeedData.withError(new IOException(
                             MessageFormat.format(Messages.MsgErrorMissingPathToDateOrClose, security.getName())));
-            return Collections.emptyList();
         }
 
         if (feedURL == null || feedURL.length() == 0)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingFeedURL, security.getName())));
         }
 
         VariableURL variableURL = Factory.fromString(feedURL);
         variableURL.setSecurity(security);
 
-        SortedSet<SecurityPrice> newPricesByDate = new TreeSet<>(new SecurityPrice.ByDate());
+        QuoteFeedData data = new QuoteFeedData();
+
+        SortedSet<LatestSecurityPrice> newPricesByDate = new TreeSet<>(new SecurityPrice.ByDate());
         long failedAttempts = 0;
         long maxFailedAttempts = variableURL.getMaxFailedAttempts();
 
-        for (String url : variableURL)
+        for (String url : variableURL) // NOSONAR
         {
             String json = cache.lookup(url);
 
@@ -136,29 +108,35 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
                 }
                 catch (IOException | URISyntaxException e)
                 {
-                    errors.add(new IOException(url + '\n' + e.getMessage(), e));
+                    data.addError(new IOException(url + '\n' + e.getMessage(), e));
                 }
 
                 if (json != null)
                     cache.put(url, json);
             }
 
+            data.addResponse(url, json);
+
             int sizeBefore = newPricesByDate.size();
 
             if (json != null)
-                newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), errors));
+                newPricesByDate.addAll(parse(url, json, dateProperty.get(), closeProperty.get(), data));
 
             if (newPricesByDate.size() > sizeBefore)
                 failedAttempts = 0;
             else if (++failedAttempts > maxFailedAttempts)
                 break;
+
+            if (isPreview && newPricesByDate.size() >= 100)
+                break;
         }
 
-        return new ArrayList<>(newPricesByDate);
+        data.addAllPrices(newPricesByDate);
+        return data;
     }
 
-    protected List<SecurityPrice> parse(String url, String json, String datePath, String closePath,
-                    List<Exception> errors)
+    protected List<LatestSecurityPrice> parse(String url, String json, String datePath, String closePath,
+                    QuoteFeedData data)
     {
         try
         {
@@ -175,18 +153,18 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
 
             if (dates.size() != close.size())
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorNumberOfDateAndCloseRecordsDoNotMatch,
-                                dates.size(), close.size())));
+                data.addError(new IOException(MessageFormat.format(
+                                Messages.MsgErrorNumberOfDateAndCloseRecordsDoNotMatch, dates.size(), close.size())));
                 return Collections.emptyList();
             }
 
-            List<SecurityPrice> prices = new ArrayList<>();
+            List<LatestSecurityPrice> prices = new ArrayList<>();
 
             int size = dates.size();
 
             for (int index = 0; index < size; index++)
             {
-                SecurityPrice price = new SecurityPrice();
+                LatestSecurityPrice price = new LatestSecurityPrice();
 
                 // date
                 Object object = dates.get(index);
@@ -209,28 +187,21 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
                     price.setValue(YahooHelper.asPrice((String) object));
 
                 if (price.getDate() != null && price.getValue() > 0)
+                {
+                    price.setHigh(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setLow(LatestSecurityPrice.NOT_AVAILABLE);
+                    price.setVolume(LatestSecurityPrice.NOT_AVAILABLE);
                     prices.add(price);
+                }
             }
 
             return prices;
         }
         catch (JsonPathException | ParseException e)
         {
-            errors.add(new IOException(url + '\n' + e.getMessage(), e));
+            data.addError(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
         }
-    }
-
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public List<Exchange> getExchanges(Security security, List<Exception> errors)
-    {
-        return Collections.emptyList();
     }
 
     private LocalDate parseDateTimestamp(Long object)

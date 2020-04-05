@@ -1,25 +1,26 @@
 package name.abuchen.portfolio.online.impl;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.WebAccess;
 
@@ -47,26 +48,21 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        List<LatestSecurityPrice> prices = getHistoricalQuotes(LatestSecurityPrice.class, security, 5, errors);
+        QuoteFeedData data = getHistoricalQuotes(security, 5);
 
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())
-        {
-            return false;
-        }
-        else
-        {
-            LatestSecurityPrice price = prices.get(prices.size() - 1);
-            if (price.getValue() != 0)
-                security.setLatest(price);
+            return Optional.empty();
 
-            return true;
-        }
+        Collections.sort(prices, new SecurityPrice.ByDate());
+
+        return Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         int count = 20000;
 
@@ -76,34 +72,24 @@ public final class FinnhubQuoteFeed implements QuoteFeed
             count = Dates.daysBetween(startDate, LocalDate.now()) + 5;
         }
 
-        List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, count, errors);
-
-        boolean isUpdated = false;
-        for (SecurityPrice p : prices)
-        {
-            if (p.getDate().isBefore(LocalDate.now()))
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-        }
-        return isUpdated;
+        return getHistoricalQuotes(security, count);
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(LatestSecurityPrice.class, security, 100, errors);
+        return getHistoricalQuotes(security, 100);
     }
 
-    public <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security, int count,
-                    List<Exception> errors)
+    private QuoteFeedData getHistoricalQuotes(Security security, int count)
     {
         if (security.getTickerSymbol() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
+
+        QuoteFeedData data = new QuoteFeedData();
 
         try
         {
@@ -117,11 +103,13 @@ public final class FinnhubQuoteFeed implements QuoteFeed
 
             String response = webaccess.get();
 
+            data.addResponse(webaccess.getURL(), response);
+
             JSONObject json = (JSONObject) JSONValue.parse(response);
 
             String status = (String) json.get("s"); //$NON-NLS-1$
             if ("no_data".equals(status)) //$NON-NLS-1$
-                return Collections.emptyList();
+                return data;
 
             JSONArray timestamps = (JSONArray) json.get("t"); //$NON-NLS-1$
             JSONArray high = (JSONArray) json.get("h"); //$NON-NLS-1$
@@ -131,68 +119,45 @@ public final class FinnhubQuoteFeed implements QuoteFeed
 
             if (timestamps == null)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "t"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                data.addError(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "t"))); //$NON-NLS-1$
+                return data;
             }
 
             if (close == null)
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "c"))); //$NON-NLS-1$
-                return Collections.emptyList();
+                data.addError(new IOException(MessageFormat.format(Messages.MsgErrorMissingKeyValueInJSON, "c"))); //$NON-NLS-1$
+                return data;
             }
-
-            List<T> prices = new ArrayList<>();
 
             int size = timestamps.size();
 
             for (int index = 0; index < size; index++)
             {
-                T price = klass.getConstructor().newInstance();
+                LatestSecurityPrice price = new LatestSecurityPrice();
                 price.setDate(LocalDateTime.ofEpochSecond((Long) timestamps.get(index), 0, ZoneOffset.UTC)
                                 .toLocalDate());
 
                 Number c = (Number) close.get(index);
                 price.setValue(c == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(c.doubleValue()));
 
-                if (price instanceof LatestSecurityPrice)
-                {
-                    LatestSecurityPrice lsp = (LatestSecurityPrice) price;
+                Number h = (Number) high.get(index);
+                price.setHigh(h == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(h.doubleValue()));
 
-                    Number h = (Number) high.get(index);
-                    lsp.setHigh(h == null ? LatestSecurityPrice.NOT_AVAILABLE
-                                    : Values.Quote.factorize(h.doubleValue()));
+                Number l = (Number) low.get(index);
+                price.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
 
-                    Number l = (Number) low.get(index);
-                    lsp.setLow(l == null ? LatestSecurityPrice.NOT_AVAILABLE : Values.Quote.factorize(l.doubleValue()));
-
-                    Number v = (Number) volume.get(index);
-                    lsp.setVolume(v == null ? LatestSecurityPrice.NOT_AVAILABLE : v.longValue());
-                }
+                Number v = (Number) volume.get(index);
+                price.setVolume(v == null ? LatestSecurityPrice.NOT_AVAILABLE : v.longValue());
 
                 if (price.getValue() > 0)
-                    prices.add(price);
+                    data.addPrice(price);
             }
-
-            return prices;
-
         }
-        catch (ReflectiveOperationException | SecurityException | IOException e)
+        catch (IOException | URISyntaxException e)
         {
-            errors.add(e);
-            return Collections.emptyList();
+            data.addError(e);
         }
-    }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
+        return data;
     }
-
-    @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
-    {
-        return Collections.emptyList();
-    }
-
 }

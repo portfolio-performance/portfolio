@@ -3,24 +3,22 @@ package name.abuchen.portfolio.online.impl;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 
 import com.google.common.util.concurrent.RateLimiter;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
 import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.RateLimitExceededException;
 import name.abuchen.portfolio.util.WebAccess;
@@ -81,12 +79,12 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public boolean updateLatestQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         if (security.getTickerSymbol() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return false;
+            PortfolioLog.error(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName()));
+            return Optional.empty();
         }
 
         if (apiKey == null)
@@ -109,13 +107,13 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
-                return false;
+                return Optional.empty();
 
             // poor man's check
             if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
-                return false;
+                PortfolioLog.error(MessageFormat.format(Messages.MsgUnexpectedHeader, html));
+                return Optional.empty();
             }
 
             String line = lines[1];
@@ -136,19 +134,18 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
             if (price.getValue() != 0)
-                security.setLatest(price);
-
-            return true;
+                return Optional.of(price);
         }
         catch (IOException | ParseException e)
         {
-            errors.add(e);
-            return false;
+            PortfolioLog.error(e);
         }
+
+        return Optional.empty();
     }
 
     @Override
-    public boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public QuoteFeedData getHistoricalQuotes(Security security)
     {
         OutputSize outputSize = OutputSize.FULL;
 
@@ -159,56 +156,30 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             outputSize = days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT;
         }
 
-        try
-        {
-            List<SecurityPrice> prices = getHistoricalQuotes(SecurityPrice.class, security, outputSize, errors);
-
-            boolean isUpdated = false;
-            for (SecurityPrice p : prices)
-            {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
-            }
-            return isUpdated;
-        }
-        catch (InvocationTargetException | NoSuchMethodException e)
-        {
-            errors.add(e);
-            return false;
-        }
+        return getHistoricalQuotes(security, outputSize);
     }
 
     @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(Security security, LocalDate start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        try
-        {
-            int days = Dates.daysBetween(start, LocalDate.now());
-            return getHistoricalQuotes(LatestSecurityPrice.class, security,
-                            days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT, errors);
-        }
-        catch (InvocationTargetException | NoSuchMethodException e)
-        {
-            errors.add(e);
-            return Collections.emptyList();
-        }
+        LocalDate now = LocalDate.now();
+        int days = Dates.daysBetween(now.minusMonths(2), now);
+        return getHistoricalQuotes(security, days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT);
     }
 
-    private <T extends SecurityPrice> List<T> getHistoricalQuotes(Class<T> klass, Security security,
-                    OutputSize outputSize, List<Exception> errors)
-                    throws InvocationTargetException, NoSuchMethodException
+    private QuoteFeedData getHistoricalQuotes(Security security, OutputSize outputSize)
     {
         if (security.getTickerSymbol() == null)
-        {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return Collections.emptyList();
-        }
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
 
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgAlphaVantageAPIKeyMissing);
 
         if (!rateLimiter.tryAcquire())
             throw new RateLimitExceededException(Messages.MsgAlphaVantageRateLimitExceeded);
+
+        QuoteFeedData data = new QuoteFeedData();
 
         try
         {
@@ -223,18 +194,16 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
-                return Collections.emptyList();
+                return data;
 
             // poor man's check
             if (!"timestamp,open,high,low,close,volume".equals(lines[0])) //$NON-NLS-1$
             {
-                errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
-                return Collections.emptyList();
+                data.addError(new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, html)));
+                return data;
             }
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd"); //$NON-NLS-1$
-
-            List<T> prices = new ArrayList<>();
 
             for (int ii = 1; ii < lines.length; ii++)
             {
@@ -244,7 +213,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 if (values.length != 6)
                     throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
 
-                T price = klass.getConstructor().newInstance();
+                LatestSecurityPrice price = new LatestSecurityPrice();
 
                 if (values[0].length() > 10)
                     values[0] = values[0].substring(0, 10);
@@ -252,38 +221,21 @@ public class AlphavantageQuoteFeed implements QuoteFeed
                 price.setDate(LocalDate.parse(values[0], formatter));
                 price.setValue(asPrice(values[4]));
 
-                if (price instanceof LatestSecurityPrice)
-                {
-                    LatestSecurityPrice lsp = (LatestSecurityPrice) price;
-                    lsp.setHigh(asPrice(values[2]));
-                    lsp.setLow(asPrice(values[3]));
-                    lsp.setVolume(Long.parseLong(values[5]));
-                    lsp.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
-                }
+                price.setHigh(asPrice(values[2]));
+                price.setLow(asPrice(values[3]));
+                price.setVolume(Long.parseLong(values[5]));
+                price.setPreviousClose(LatestSecurityPrice.NOT_AVAILABLE);
 
                 if (price.getValue() != 0)
-                    prices.add(price);
+                    data.addPrice(price);
             }
 
-            return prices;
         }
-        catch (IOException | ParseException | InstantiationException | IllegalAccessException e)
+        catch (IOException | ParseException e)
         {
-            errors.add(e);
-            return Collections.emptyList();
+            data.addError(e);
         }
-    }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
+        return data;
     }
-
-    @Override
-    public List<Exchange> getExchanges(Security subject, List<Exception> errors)
-    {
-        return Collections.emptyList();
-    }
-
 }
