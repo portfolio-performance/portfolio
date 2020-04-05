@@ -106,6 +106,18 @@ public interface UIConstants
         String CREATE_BACKUP_BEFORE_SAVING = "CREATE_BACKUP_BEFORE_SAVING"; //$NON-NLS-1$
 
         /**
+         * Preference key which period the autosave function has
+         * Value is given in minutes.
+         */
+        String AUTOSAVE_WITH_DATESTAMP = "AUTOSAVE_WITH_DATESTAMP"; //$NON-NLS-1$
+
+        /**
+         * Preference key which period the autosave function has
+         * Value is given in minutes.
+         */
+
+        String AUTOSAVE_PERIOD = "AUTOSAVE_PERIOD"; //$NON-NLS-1$
+        /**
          * Preference key to store a comma-separated list of recent files
          */
         String RECENT_FILES = "RECENT_FILES"; //$NON-NLS-1$
