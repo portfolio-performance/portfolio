@@ -118,7 +118,7 @@ public final class AutosaveJob extends AbstractClientJob
             }
             catch (IOException e)
             {
-            	return new Status(IStatus.WARNING, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+            	return new Status(IStatus.WARNING, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
             }
         }
 
