@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.preferences;
 
 import org.eclipse.jface.preference.BooleanFieldEditor;
 import org.eclipse.jface.preference.FieldEditorPreferencePage;
+import org.eclipse.jface.preference.IntegerFieldEditor;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
@@ -26,6 +27,7 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.AUTOSAVE_WITH_DATESTAMP, //
                         Messages.PrefLabelAutosaveWithDatestamp, getFieldEditorParent()));
+
 
         addField(new BooleanFieldEditor(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, //
                         Messages.PrefUpdateQuotesAfterFileOpen, getFieldEditorParent()));

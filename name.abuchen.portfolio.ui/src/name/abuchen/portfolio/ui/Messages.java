@@ -417,6 +417,7 @@ public class Messages extends NLS
     public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String InvestmentPlanTypeBuyDelivery;
     public static String InvestmentPlanTypeDeposit;
+    public static String JobLabelAutosave;
     public static String JobLabelSyncSecuritiesOnline;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
@@ -882,6 +883,8 @@ public class Messages extends NLS
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
     public static String PrefFinnhubAPIKey;
+    public static String PrefLabelAutosavePeriod;
+    public static String PrefLabelAutosaveWithDatestamp;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
     public static String PrefLabelProxyPort;
