@@ -229,7 +229,6 @@ public class AttributeColumn extends Column
     {
         super(ID + attribute.getId(), attribute.getColumnLabel(), // $NON-NLS-1$
                         attribute.isNumber() ? SWT.RIGHT : SWT.LEFT, 80);
-        System.err.println(">>>> AttributeColumn::AttributeColumn: attribute " + attribute.toString());
         setMenuLabel(attribute.getName());
         setGroupLabel(Messages.GroupLabelAttributes);
         setSorter(ColumnViewerSorter.create(new AttributeComparator(attribute)));
@@ -237,7 +236,6 @@ public class AttributeColumn extends Column
         if (attribute.getType() == Boolean.class)
         {
             setLabelProvider(new BooleanLabelProvider(attribute));
-            System.err.println(">>>> AttributeColumn::AttributeColumn: type BOOLEAN" + attribute.getType().toString());
             new BooleanAttributeEditingSupport(attribute).attachTo(this);
         }
         else if (attribute.getType() == LimitPrice.class)
@@ -254,7 +252,6 @@ public class AttributeColumn extends Column
         else
         {
             setLabelProvider(new AttributeLabelProvider(attribute));
-            System.err.println(">>>> AttributeColumn::AttributeColumn: type OTHER " + attribute.getType().toString());
             new AttributeEditingSupport(attribute).attachTo(this);
         }
 

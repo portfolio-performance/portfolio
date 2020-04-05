@@ -221,6 +221,17 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Long> TimePeriod = new Values<Long>("#,##0.##", 1D, 1) //$NON-NLS-1$
+    {
+        private final DecimalFormat format = new DecimalFormat(pattern());
+
+        @Override
+        public String format(Long amount)
+        {
+            return format.format(amount / divider());
+        }
+    };
+
     public static final Values<Double> Thousands = new Values<Double>("0.###k", 1D, 1) //$NON-NLS-1$
     {
         private ThreadLocal<DecimalFormat> numberFormatter = ThreadLocal // NOSONAR

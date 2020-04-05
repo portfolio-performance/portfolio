@@ -973,6 +973,7 @@ public class Messages extends NLS
     public static String SystemMenuNewAndNoteworthy;
     public static String TabAccountBalanceChart;
     public static String TabTransactions;
+    public static String TitleDirectoryDialog;
     public static String TitlePasswordDialog;
     public static String TooltipAverageHoldingPeriod;
     public static String TooltipDateOfExchangeRate;

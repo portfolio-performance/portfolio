@@ -46,7 +46,6 @@ public abstract class ColumnEditingSupport
 
     public CellEditor createEditor(Composite composite)
     {
-        System.err.println(">>>> ColumnEditingSupport::createEditor:");
         return new TextCellEditor(composite);
     }
 
@@ -71,7 +70,6 @@ public abstract class ColumnEditingSupport
         if (listeners == null)
             listeners = new ArrayList<>();
         listeners.add(listener);
-        System.err.println(">>>> ColumnEditingSupport::addListener: listener: " + (listeners == null?"<null>":listeners.toString()));
         return this;
     }
 
@@ -82,7 +80,6 @@ public abstract class ColumnEditingSupport
 
     protected final void notify(Object element, Object newValue, Object oldValue)
     {
-        System.err.println(">>>> ColumnEditingSupport::notify: element: " + element.toString() + " oldValue " + (oldValue == null?"<null>":oldValue.toString()) + " ==> newValue: " + (newValue == null?"<null>":newValue.toString()) + " listener: " + (listeners == null?"<null>":listeners.toString()));
         if (listeners != null)
         {
             for (ModificationListener listener : listeners)

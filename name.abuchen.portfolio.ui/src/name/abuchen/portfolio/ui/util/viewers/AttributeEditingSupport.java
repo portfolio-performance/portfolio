@@ -1,11 +1,10 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
-import java.io.File;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.SWT;
@@ -20,8 +19,9 @@ import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Attributes;
-import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.ClientAttribute;
+import name.abuchen.portfolio.model.ClientAttribute.BooleanConverter;
+import name.abuchen.portfolio.model.ClientAttribute.ListConverter;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.NumberVerifyListener;
 
@@ -44,19 +44,12 @@ public class AttributeEditingSupport extends ColumnEditingSupport
 
     private AttributeType getAttributeType(Object element)
     {
-        System.err.println(">>>> AttributeEditingSupport::getAttributeType: element " + ((ClientAttribute) element).toString());
         return (AttributeType) (attribute != null?this.attribute:element);
     }
 
     private Object getAttributable(Object element)
     {
-        System.err.println(">>>> AttributeEditingSupport::getAttributable: element " + element.toString());
-        if (element instanceof ClientAttribute)
-            System.err.println(">>>> AttributeEditingSupport::getAttributable: parent " + ((ClientAttribute) element).getParent().toString());
-
         Attributable attributable = Adaptor.adapt(Attributable.class, (element instanceof ClientAttribute?((ClientAttribute) element).getParent():element));
-        if (attributable != null)
-            System.err.println(">>>> AttributeEditingSupport::getAttributable: attributable " + attributable.toString());
         return attributable;
     }
 
@@ -69,46 +62,38 @@ public class AttributeEditingSupport extends ColumnEditingSupport
     public CellEditor createEditor(Composite composite, Object element)
     {
         AttributeType attribute = getAttributeType(element);
-        System.err.println(">>>> AttributeEditingSupport::createEditor: Attribute " + attribute.toString() + " Id: " + attribute.getId());
-        System.err.println("                                              element " + element.toString() + " Class: " + element.getClass().toString());
         if (attribute.getType() == Path.class)
         {
-            System.err.println(">>>> AttributeEditingSupport::createEditor-DialogCellEditor: composite " + composite.toString());
-            DialogCellEditor dialogEditor = new DialogCellEditor(composite) {
-                protected Object openDialogBox(Control cellEditorWindow) {
+            DialogCellEditor dialogEditor = new DialogCellEditor(composite)
+            {
+                @Override
+                protected Object openDialogBox(Control cellEditorWindow)
+                {
                     Shell shell  = Display.getDefault().getActiveShell();
-                    System.err.println(">>>> AttributeEditingSupport::DialogCellEditor: oldValue " + getValue());
                     String path = (String) getValue();
                     
                     // taken from on http://www.java2s.com/Code/Java/SWT-JFace-Eclipse/DemonstratestheDirectoryDialogclass.htm
                     DirectoryDialog dlg = new DirectoryDialog(shell);
-
-                    // Set the initial filter path according
-                    // to anything they've selected or typed in
                     dlg.setFilterPath(path);
-
-                    // Change the title bar text
-                    dlg.setText("SWT's DirectoryDialog");
-
+                    dlg.setText(Messages.TitleDirectoryDialog);
                     // Customizable message displayed in the dialog
-                    dlg.setMessage("Select a directory");
-
-                    // Calling open() will open and run the dialog.
-                    // It will return the selected directory, or
-                    // null if user cancels
+                    //dlg.setMessage("");
                     String dir = dlg.open();
-                    if (dir != null) {
-                      // Set the text box to the new selection
-                        System.err.println(">>>> AttributeEditingSupport::getDirectory "  + dir);
+                    if (dir != null)
                         return dir;
-                    }
                     else
-                    {
-                        return "<none>";
-                    }
+                        return ""; //$NON-NLS-1$
                 }
             };
             return dialogEditor;
+        }
+        else if (attribute instanceof ClientAttribute && attribute.getConverter() instanceof ListConverter)
+        {
+            Object value = ((ClientAttribute) attribute).getValue();
+            ComboBoxCellEditor comboEditor = new ComboBoxCellEditor(composite, ((ClientAttribute) attribute).getOptions(), SWT.READ_ONLY);
+            ListConverter converter = (ListConverter) ((ClientAttribute) attribute).getConverter();
+            comboEditor.setValue((Integer) ((ListConverter) converter).toIndex(value));
+            return comboEditor;
         }
         else
         {
@@ -122,21 +107,25 @@ public class AttributeEditingSupport extends ColumnEditingSupport
     @Override
     public boolean canEdit(Object element)
     {
-        System.err.println(">>>> AttributeEditingSupport::canEdit: element " + element.toString());
-        System.err.println(">>>> AttributeEditingSupport::canEdit: class " + element.getClass().toString());
+        if (element instanceof ClientAttribute && !((ClientAttribute) element).canEdit())
+           return ((ClientAttribute) element).canEdit();
         Attributable attributable = Adaptor.adapt(Attributable.class, getAttributable(element));
         if (attributable == null)
             return false;
-
         return getAttributeType(element).supports(attributable.getClass());
     }
 
     @Override
     public Object getValue(Object element) throws Exception
     {
-        System.err.println(">>>> AttributeEditingSupport::getValue: element " + element.toString());
+        AttributeType elementType = getAttributeType(element);
         Attributes attribs = Adaptor.adapt(Attributable.class, getAttributable(element)).getAttributes();
-        return getAttributeType(element).getConverter().toString(attribs.get(getAttributeType(element)));
+        AttributeType.Converter converter = elementType.getConverter();
+        Object object = attribs.get(elementType);
+        if (converter instanceof ListConverter)
+            return ((ListConverter) converter).toIndex(object);
+        else
+            return converter.toString(object);
     }
 
     @Override
@@ -144,13 +133,15 @@ public class AttributeEditingSupport extends ColumnEditingSupport
     {
         AttributeType elementType = getAttributeType(element);
         Object elementAttributable = getAttributable(element);
-        System.err.println(">>>> AttributeEditingSupport::setValue: element " + element.toString() + " value: " + value.toString());
         Attributes attribs = Adaptor.adapt(Attributable.class, elementAttributable).getAttributes();
 
-        Object newValue = elementType.getConverter().fromString(String.valueOf(value));
+        AttributeType.Converter converter = elementType.getConverter();
+        Object newValue;
+        if (converter instanceof BooleanConverter)
+            newValue = ((BooleanConverter) converter).fromIndex(Integer.valueOf(String.valueOf(value)));
+        else
+            newValue = converter.fromString(String.valueOf(value));
         Object oldValue = attribs.get(elementType);
-
-        System.err.println(">>>> AttributeEditingSupport::setValue: oldValue " + (oldValue == null?"<null>":oldValue.toString()) + " ==> newValue: " + (newValue == null?"<null>":newValue.toString()));
 
         // update the value
         // * if it has non null value and the value actually changed

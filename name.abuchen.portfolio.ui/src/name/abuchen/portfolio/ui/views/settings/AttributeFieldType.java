@@ -9,18 +9,19 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.AttributeType.AmountConverter;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.BookmarkConverter;
-import name.abuchen.portfolio.model.AttributeType.BooleanConverter;
 import name.abuchen.portfolio.model.AttributeType.Converter;
 import name.abuchen.portfolio.model.AttributeType.DateConverter;
 import name.abuchen.portfolio.model.AttributeType.DoubleConverter;
 import name.abuchen.portfolio.model.AttributeType.LimitPriceConverter;
-import name.abuchen.portfolio.model.AttributeType.PathConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.PeriodConverter;
 import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.ClientAttribute.BooleanConverter;
+import name.abuchen.portfolio.model.ClientAttribute.PathConverter;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
 
@@ -32,6 +33,7 @@ public enum AttributeFieldType
     PATH(Path.class, PathConverter.class), //
     PERCENT(Double.class, PercentConverter.class), //
     PERCENTPLAIN(Double.class, PercentPlainConverter.class), //
+    PERIOD(Long.class, PeriodConverter.class), //
     QUOTE(Long.class, QuoteConverter.class), //
     SHARE(Long.class, ShareConverter.class), //
     DATE(LocalDate.class, DateConverter.class), //

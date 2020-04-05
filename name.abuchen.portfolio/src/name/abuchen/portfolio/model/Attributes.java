@@ -25,7 +25,6 @@ public class Attributes
 
     public boolean exists(AttributeType attribute)
     {
-        System.err.println(">>>> Attributest::exists: attribute " + attribute.toString());
         return map.containsKey(attribute.getId());
     }
 

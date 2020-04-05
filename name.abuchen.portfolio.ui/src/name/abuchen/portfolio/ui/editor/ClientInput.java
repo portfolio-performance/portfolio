@@ -238,11 +238,9 @@ public class ClientInput
             password = pwdDialog.getPassword().toCharArray();
         }
 
-        System.err.println(">>>> ClientInput::doSaveAs   directory: clientFile " + (clientFile != null?clientFile.toURI().toString():"<null>") + " => Paths " +  (clientFile != null?Paths.get(clientFile.toURI()).getParent().toString():"<null>") + " vs. " + client.getBackupDirectory().toString());
         if (clientFile == null || Paths.get(clientFile.toURI()).getParent().equals(client.getBackupDirectory()))
             client.setBackupDirectory(Paths.get(localFile.toURI()).getParent());
         clientFile = localFile;
-        System.err.println("                                        clientFile " + clientFile.toURI().toString() + " vs. " + client.getBackupDirectory().toString());
         label = localFile.getName();
         char[] pwd = password;
 
@@ -284,17 +282,13 @@ public class ClientInput
 
             Path sourceFile = file.toPath();
             Path backupPath; 
-            System.err.println(">>>> ClientInput::createBackup sourceFile: "  + sourceFile.getParent() + " Suffix : " + suffix);
             if (client != null && client.getBackupDirectory() != null && client.getBackupDirectory().toString().length() > 1)
             {
-                System.err.println(">>>> ClientInput::createBackup backupDirectory: "  + client.getBackupDirectory());
                 backupPath = Paths.get(client.getBackupDirectory().toString(), sourceFile.getFileName().toString());
             }
             else
                 backupPath = sourceFile; 
-            System.err.println(">>>> ClientInput::createBackup backupDirectory: "  + backupPath.toString());
             Path backupFile = backupPath.resolveSibling(backupName);
-            System.err.println(">>>> ClientInput::createBackup backupFile: "  + backupFile);
             Files.copy(sourceFile, backupFile, StandardCopyOption.REPLACE_EXISTING);
         }
         catch (IOException e)

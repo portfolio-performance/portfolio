@@ -2,8 +2,6 @@ package name.abuchen.portfolio.model;
 
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -171,6 +169,23 @@ public class AttributeType
         }
     }
 
+    public static class PeriodConverter extends LongConverter
+    {
+        private Values<Long> values;
+
+        public PeriodConverter()
+        {
+            super(Values.TimePeriod);
+            this.values = Values.TimePeriod;
+        }
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? values.format((Long) object) : ""; //$NON-NLS-1$
+        }
+    }
+
     public static class DoubleConverter implements Converter
     {
         private final NumberFormat full = new DecimalFormat("#,###.##"); //$NON-NLS-1$
@@ -211,27 +226,6 @@ public class AttributeType
             {
                 throw new IllegalArgumentException(e);
             }
-        }
-    }
-
-    public static class PathConverter implements Converter
-    {
-
-        @Override
-        public String toString(Object object)
-        {
-            System.err.println(">>>> AttributeType::PathConverter: object " + object.toString() + " class: " + object.getClass());
-            return object != null ? ((Path) object).toString() : ""; //$NON-NLS-1$
-        }
-
-        @Override
-        public Object fromString(String value)
-        {
-            if (value.trim().length() == 0)
-                return null;
-
-            System.err.println(">>>> AttributeType::PathConverter: value " + value.toString() + " Path: " + Paths.get(value));
-            return Paths.get(value);
         }
     }
 
@@ -295,25 +289,6 @@ public class AttributeType
                 }
             }
             throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
-        }
-    }
-
-    public static class BooleanConverter implements Converter
-    {
-
-        @Override
-        public String toString(Object object)
-        {
-            return object != null ? ((Boolean) object).toString() : ""; //$NON-NLS-1$
-        }
-
-        @Override
-        public Object fromString(String value)
-        {
-            if (value.trim().length() == 0)
-                return null;
-
-            return Boolean.valueOf(value);
         }
     }
 
@@ -418,7 +393,6 @@ public class AttributeType
 
     public Class<? extends Attributable> getTarget()
     {
-        System.err.println(">>>> AttributeType::getTarget: target " + (target != null?target.toString():"<null>") + " in type : " + this.toString() + " class: " + (this.getClass() != null?this.getClass():"<null>") + " id: " + (this.getId() != null?this.getId():"<null>"));
         return target;
     }
 
@@ -429,10 +403,6 @@ public class AttributeType
 
     public boolean supports(Class<? extends Attributable> type)
     {
-        if (target != null)
-            System.err.println(">>>> AttributeType::supports: type " + type.toString() + " in target: " + target.getClass().toString() + " reply: " + target.isAssignableFrom(type) + " name: " + name);
-        else
-            System.err.println(">>>> AttributeType::supports: type " + type.toString() + " in target: <null>");
         return target == null || target.isAssignableFrom(type);
     }
 
