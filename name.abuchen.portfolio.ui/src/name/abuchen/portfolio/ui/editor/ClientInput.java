@@ -14,7 +14,6 @@ import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -30,7 +29,6 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceStore;
-import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
@@ -45,6 +43,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.jobs.AutosaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
@@ -185,7 +184,7 @@ public class ClientInput
             catch (IOException e)
             {
                 ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
     }
@@ -232,7 +231,7 @@ public class ClientInput
         if (ClientFactory.isEncrypted(localFile))
         {
             PasswordDialog pwdDialog = new PasswordDialog(shell);
-            if (pwdDialog.open() != Window.OK)
+            if (pwdDialog.open() != PasswordDialog.OK)
                 return;
             password = pwdDialog.getPassword().toCharArray();
         }
@@ -255,7 +254,7 @@ public class ClientInput
             {
                 PortfolioPlugin.log(e);
                 ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
     }
@@ -425,6 +424,16 @@ public class ClientInput
         }
     }
 
+    public long getAutosavePeriod()
+    {
+        return preferences.getLong(UIConstants.Preferences.AUTOSAVE_PERIOD, 0L);
+    }
+
+    public Boolean getAutosaveDatestamp()
+    {
+        return preferences.getBoolean(UIConstants.Preferences.AUTOSAVE_WITH_DATESTAMP, false);
+    }
+
     private void scheduleOnlineUpdateJobs()
     {
         if (preferences.getBoolean(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, true))
@@ -446,6 +455,11 @@ public class ClientInput
             int sixHours = 1000 * 60 * 60 * 6;
             job = new UpdateQuotesJob(client, EnumSet.of(UpdateQuotesJob.Target.HISTORIC)).repeatEvery(sixHours);
             job.schedule(sixHours);
+            regularJobs.add(job);
+
+            int fiveMinutes = 1000 * 60 * 5; // HeartBeat
+            job = new AutosaveJob(this).setHeartbeat(fiveMinutes).repeatEvery(this, "autosavePeriod"); //$NON-NLS-1$
+            job.schedule(fiveMinutes);
             regularJobs.add(job);
 
             new SyncOnlineSecuritiesJob(client).schedule(2000);
