@@ -21,6 +21,12 @@ public class GeneralPreferencePage extends FieldEditorPreferencePage
         addField(new BooleanFieldEditor(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, //
                         Messages.PrefCreateBackupBeforeSaving, getFieldEditorParent()));
 
+        addField(new IntegerFieldEditor(UIConstants.Preferences.AUTOSAVE_PERIOD, //
+                        Messages.PrefLabelAutosavePeriod, getFieldEditorParent()));
+
+        addField(new BooleanFieldEditor(UIConstants.Preferences.AUTOSAVE_WITH_DATESTAMP, //
+                        Messages.PrefLabelAutosaveWithDatestamp, getFieldEditorParent()));
+
         addField(new BooleanFieldEditor(UIConstants.Preferences.UPDATE_QUOTES_AFTER_FILE_OPEN, //
                         Messages.PrefUpdateQuotesAfterFileOpen, getFieldEditorParent()));
 
