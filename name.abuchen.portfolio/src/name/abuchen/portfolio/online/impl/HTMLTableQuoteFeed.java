@@ -395,7 +395,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
     {
         try
         {
-            Document document = Jsoup.parse(new WebAccess(url) //
+            Document document = Jsoup.execute.parse(new WebAccess(url) //
                             .addUserAgent(getUserAgent()) //
                             .get());
             return parse(url, document, errors);
