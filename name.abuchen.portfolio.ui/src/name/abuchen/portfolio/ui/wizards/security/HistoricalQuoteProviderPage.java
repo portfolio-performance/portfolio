@@ -16,11 +16,12 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
@@ -37,9 +38,11 @@ import name.abuchen.portfolio.ui.util.QuotesTableViewer;
 
 public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
 {
+    private QuoteFeedData feedData;
     private QuotesTableViewer tableSampleData;
+    private Button showRawResponse;
 
-    private Map<Object, List<LatestSecurityPrice>> cacheQuotes = new HashMap<>();
+    private Map<Object, QuoteFeedData> cacheQuotes = new HashMap<>();
 
     // read and write 'currentJob' only from the UI thread; used to check
     // whether a more recent job has already been started
@@ -116,6 +119,21 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     }
 
     @Override
+    protected void createAdditionalButtons(Composite buttonArea)
+    {
+        showRawResponse = new Button(buttonArea, SWT.NONE);
+        showRawResponse.setText("Raw Response");
+        showRawResponse.setEnabled(false);
+
+        showRawResponse.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {
+            if (feedData == null || feedData.getResponses().isEmpty())
+                return;
+
+            new RawResponsesDialog(Display.getCurrent().getActiveShell(), feedData.getResponses()).open();
+        }));
+    }
+
+    @Override
     protected void createSampleArea(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
@@ -137,6 +155,8 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
         currentJob = null;
         tableSampleData.setInput(null);
         tableSampleData.refresh();
+        feedData = null;
+        showRawResponse.setEnabled(false);
     }
 
     private Object buildCacheKey(Exchange exchange)
@@ -165,17 +185,25 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     {
         Object cacheKey = buildCacheKey(exchange);
 
-        List<LatestSecurityPrice> quotes = cacheQuotes.get(cacheKey);
+        QuoteFeedData data = cacheQuotes.get(cacheKey);
 
-        if (quotes != null)
+        if (data != null)
         {
-            tableSampleData.setInput(quotes);
+            feedData = data;
+
+            tableSampleData.setInput(data.getLatestPrices());
             tableSampleData.refresh();
+
+            showRawResponse.setEnabled(!data.getResponses().isEmpty());
         }
         else
         {
+            feedData = null;
+
             tableSampleData.setMessage(Messages.EditWizardQuoteFeedMsgLoading);
             tableSampleData.refresh();
+
+            showRawResponse.setEnabled(false);
 
             Job job = new LoadHistoricalQuotes(feed, exchange, cacheKey);
             job.setUser(true);
@@ -211,18 +239,20 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                 s.setFeed(feed.getId());
 
                 QuoteFeedData data = feed.previewHistoricalQuotes(s);
-                
+
                 Display.getDefault().asyncExec(() -> {
                     if (LoadHistoricalQuotes.this.equals(HistoricalQuoteProviderPage.this.currentJob)
                                     && !tableSampleData.getControl().isDisposed())
                     {
                         HistoricalQuoteProviderPage.this.currentJob = null;
-                        cacheQuotes.put(cacheKey, data.getLatestPrices());
-                        if (!tableSampleData.getControl().isDisposed())
-                        {
-                            tableSampleData.setInput(data.getLatestPrices());
-                            tableSampleData.refresh();
-                        }
+                        cacheQuotes.put(cacheKey, data);
+
+                        feedData = data;
+
+                        tableSampleData.setInput(data.getLatestPrices());
+                        tableSampleData.refresh();
+
+                        showRawResponse.setEnabled(!data.getResponses().isEmpty());
                     }
                 });
             }
@@ -234,12 +264,16 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
                     {
                         currentJob = null;
 
+                        feedData = null;
+
                         String message = e.getMessage();
                         if (message == null || message.isEmpty())
                             message = Messages.EditWizardQuoteFeedMsgErrorOrNoData;
 
                         tableSampleData.setMessage(message);
                         tableSampleData.refresh();
+
+                        showRawResponse.setEnabled(false);
                     }
                 });
 
