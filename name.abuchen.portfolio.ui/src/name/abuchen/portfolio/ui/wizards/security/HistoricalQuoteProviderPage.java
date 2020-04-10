@@ -122,7 +122,7 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
     protected void createAdditionalButtons(Composite buttonArea)
     {
         showRawResponse = new Button(buttonArea, SWT.NONE);
-        showRawResponse.setText("Raw Response");
+        showRawResponse.setText(Messages.LabelShowRawResponse);
         showRawResponse.setEnabled(false);
 
         showRawResponse.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> {

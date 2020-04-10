@@ -626,6 +626,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
+    public static String LabelShowRawResponse;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
     public static String LabelGreenWhiteRed;
