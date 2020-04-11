@@ -1,0 +1,56 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+10919 Berlin Seite 1 von 2
+Depotnummer 000000000
+Kundennummer 0000000000
+Hans Wurst
+Auftragsnummer 000000/00.00
+Herrn Datum 07.10.2019
+Gerhard Hagerer Rechnungsnummer W0000-0000000000/00
+Buschingstr. 7 Umsatzsteuer-ID DE000000000
+81677 München
+Wertpapier Abrechnung Rücknahme Investmentfonds
+Auftrag vom 04.10.2019 18:02:15 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 0,982 LYXOR NEW ENERGY UCITS ETF FR0010524777 (LYX0CB)
+ACTIONS AU PORT.DIST O.N.
+Handels-/Ausführungsplatz Außerbörslich (gemäß Weisung)
+Schlusstag 07.10.2019 Auftraggeber Hans Wurst
+Ausführungskurs 25,24 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverw. mehrere Sammelurkunden - kein Stückeausdruck -
+Kurswert 24,79 EUR
+Ermittlung steuerrelevante Erträge
+Veräußerungsgewinn (nach Teilfreistellung) 0,41 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 0,41 EUR
+Steuerberechnung
+Kapitalertragsteuer 25,00% auf 0,41 EUR 0,10- EUR
+Ausmachender Betrag 24,69 EUR
+Den Gegenwert buchen wir mit Valuta 09.10.2019 zu Gunsten des Kontos 0000000000
+(IBAN DE00 0000 0000 0000 0000 00), BLZ 00000000 (BIC BYLADEM0000).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+.
+0883.10072106.0035296OR07
+Seite 2 von 2
+Depotnummer 000000000
+Kundennummer 0000000000
+Auftragsnummer 000000/00.00
+Datum 07.10.2019
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Initiator der Besprechung war der Kunde.
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verlustverrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 1.235,52
+Verkauf 0,00 0,00 0,00 0,00 0,41
+Nachher 0,00 0,00 0,00 0,00 1.235,93
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös Teilfrei- ant. Ergebnis
+stellung
+Kauf 0000000000 05.08.2019 Stück 0,9820 24,21- 24,79 0,17- 0,41 (D)
+Summe aller Erträge nach Differenzmethode und/oder Ersatzbemessungsgrundlage 0,41
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0000.00000000.0000000OR00
