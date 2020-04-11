@@ -93,10 +93,10 @@ public class DkbPDFExtractor extends AbstractPDFExtractor
 
     private void addSellTransaction()
     {
-        DocumentType type = new DocumentType("Wertpapier Abrechnung Verkauf");
+        DocumentType type = new DocumentType("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds)");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Wertpapier Abrechnung Verkauf");
+        Block block = new Block("Wertpapier Abrechnung (Verkauf|Rücknahme Investmentfonds)");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         pdfTransaction.subject(() -> {
