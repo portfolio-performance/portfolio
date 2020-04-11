@@ -237,12 +237,21 @@ public class DashboardView extends AbstractHistoricView
                 data.entrySet().stream() //
                                 .filter(entry -> !entry.getKey().getTitleControl().isDisposed()) //
                                 .forEach(entry -> {
-                                    entry.getKey().update(entry.getValue());
+                                    try
+                                    {
+                                        entry.getKey().update(entry.getValue());
 
-                                    if (entry.getValue() == null)
-                                        cache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
-                                    else
-                                        cache.put(entry.getKey().getWidget(), entry.getValue());
+                                        if (entry.getValue() == null)
+                                            cache.put(entry.getKey().getWidget(), DashboardData.EMPTY_RESULT);
+                                        else
+                                            cache.put(entry.getKey().getWidget(), entry.getValue());
+                                    }
+                                    catch (RuntimeException e)
+                                    {
+                                        // log runtime exception when updating a
+                                        // widget, but continue wit the next one
+                                        PortfolioPlugin.log(e);
+                                    }
                                 });
                 updateScrolledCompositeMinSize();
             });
