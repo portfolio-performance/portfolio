@@ -21,7 +21,16 @@ public class PortfolioLog
 
     private static void log(IStatus status)
     {
-        Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class)).log(status);
+        try
+        {
+            Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class)).log(status);
+        }
+        catch (NullPointerException e)
+        {
+            // when running unit tests via Infinitest, the platform log is not
+            // available
+            System.err.println(status); // NOSONAR
+        }
     }
 
     /**

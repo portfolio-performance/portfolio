@@ -502,53 +502,9 @@ public class ClientPerformanceSnapshotTest
     @Test
     public void testRealizedAndUnrealizedForexCapitalGains()
     {
-        Client client = new Client();
-
-        Security security = new SecurityBuilder(CurrencyUnit.USD) //
-                        .addPrice("2015-01-02", Values.Quote.factorize(100)) //
-                        .addPrice("2015-01-08", Values.Quote.factorize(110)) //
-                        .addPrice("2015-12-01", Values.Quote.factorize(120)) //
-                        .addTo(client);
-
-        Account account = new AccountBuilder() //
-                        .deposit_("2014-01-01", Values.Quote.factorize(1000)) //
-                        .addTo(client);
-
-        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
-
         CurrencyConverter converter = new TestCurrencyConverter();
 
-        // create purchase with forex (outside reporting period)
-
-        LocalDate purchaseDate = LocalDate.parse("2015-01-02");
-        Money purchaseAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.0 * 10));
-        BuySellEntry purchase = new BuySellEntry(portfolio, account);
-        purchase.setType(PortfolioTransaction.Type.BUY);
-        purchase.setSecurity(security);
-        purchase.setDate(purchaseDate.atStartOfDay());
-        purchase.setShares(Values.Share.factorize(10));
-        purchase.setMonetaryAmount(purchaseAmount);
-        purchase.getPortfolioTransaction()
-                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, purchaseAmount,
-                                        purchaseAmount.with(converter.with(CurrencyUnit.USD).at(purchaseDate)),
-                                        converter.getRate(purchaseDate, CurrencyUnit.USD).getValue()));
-        purchase.insert();
-
-        // create a partial sell (inside the reporting period)
-
-        LocalDate saleDate = LocalDate.parse("2015-01-09");
-        Money saleAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.0 * 5));
-        BuySellEntry sale = new BuySellEntry(portfolio, account);
-        sale.setType(PortfolioTransaction.Type.SELL);
-        sale.setSecurity(security);
-        sale.setDate(saleDate.atStartOfDay());
-        sale.setShares(Values.Share.factorize(5));
-        sale.setMonetaryAmount(saleAmount);
-        sale.getPortfolioTransaction()
-                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, saleAmount,
-                                        saleAmount.with(converter.with(CurrencyUnit.USD).at(saleDate)),
-                                        converter.getRate(saleDate, CurrencyUnit.USD).getValue()));
-        sale.insert();
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 5);
 
         // code under test
 
@@ -602,6 +558,73 @@ public class ClientPerformanceSnapshotTest
                                         .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
 
         assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    private Client buildClientWithSaleAndPurchaseInForex(CurrencyConverter converter, int noToPurchase, int noToSale)
+    {
+        Client client = new Client();
+
+        Security security = new SecurityBuilder(CurrencyUnit.USD) //
+                        .addPrice("2015-01-02", Values.Quote.factorize(100)) //
+                        .addPrice("2015-01-08", Values.Quote.factorize(110)) //
+                        .addPrice("2015-12-01", Values.Quote.factorize(120)) //
+                        .addTo(client);
+
+        Account account = new AccountBuilder() //
+                        .deposit_("2014-01-01", Values.Quote.factorize(1000)) //
+                        .addTo(client);
+
+        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
+
+        // create purchase with forex (outside reporting period)
+
+        LocalDate purchaseDate = LocalDate.parse("2015-01-02");
+        Money purchaseAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(90.0 * noToPurchase));
+        BuySellEntry purchase = new BuySellEntry(portfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setSecurity(security);
+        purchase.setDate(purchaseDate.atStartOfDay());
+        purchase.setShares(Values.Share.factorize(noToPurchase));
+        purchase.setMonetaryAmount(purchaseAmount);
+        purchase.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, purchaseAmount,
+                                        purchaseAmount.with(converter.with(CurrencyUnit.USD).at(purchaseDate)),
+                                        converter.getRate(purchaseDate, CurrencyUnit.USD).getValue()));
+        purchase.insert();
+
+        // create a partial sell (inside the reporting period)
+
+        LocalDate saleDate = LocalDate.parse("2015-01-09");
+        Money saleAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(100.0 * noToSale));
+        BuySellEntry sale = new BuySellEntry(portfolio, account);
+        sale.setType(PortfolioTransaction.Type.SELL);
+        sale.setSecurity(security);
+        sale.setDate(saleDate.atStartOfDay());
+        sale.setShares(Values.Share.factorize(noToSale));
+        sale.setMonetaryAmount(saleAmount);
+        sale.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, saleAmount,
+                                        saleAmount.with(converter.with(CurrencyUnit.USD).at(saleDate)),
+                                        converter.getRate(saleDate, CurrencyUnit.USD).getValue()));
+        sale.insert();
+        return client;
+    }
+
+    @Test
+    public void testForexCapitalGainsWithShortSale()
+    {
+        CurrencyConverter converter = new TestCurrencyConverter();
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 11);
+
+        // code under test
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2015-01-05"), LocalDate.parse("2016-01-01"));
+
+        // calculation does not work out b/c of the short sale!
+
+        assertThat(snapshot.getEndClientSnapshot().getPositionsByVehicle().get(client.getSecurities().get(0))
+                        .getPosition().getShares(), is(Values.Share.factorize(-1)));
     }
 
     private void assertThatCalculationWorksOut(ClientPerformanceSnapshot snapshot, CurrencyConverter converter)
