@@ -575,6 +575,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void setupInitialData()
     {
+        this.tickerSymbol = model.getTickerSymbol();
+
+        new LoadExchangesJob().schedule();
+
         QuoteFeed feed = getQuoteFeedProvider(getFeed());
 
         if (feed != null)

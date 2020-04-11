@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Exchange;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityProperty;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
 import name.abuchen.portfolio.online.QuoteFeedData;
@@ -235,7 +236,11 @@ public class HistoricalQuoteProviderPage extends AbstractQuoteProviderPage
             {
                 Security s = buildTemporarySecurity();
                 if (exchange != null)
+                {
                     s.setTickerSymbol(exchange.getId());
+                    s.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                                    exchange.getId());
+                }
                 s.setFeed(feed.getId());
 
                 QuoteFeedData data = feed.previewHistoricalQuotes(s);

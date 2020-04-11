@@ -400,7 +400,7 @@ public class HTMLTableQuoteFeed implements QuoteFeed
         catch (URISyntaxException | IOException | UncheckedIOException e)
         {
             data.addError(new IOException(url + '\n' + e.getMessage(), e));
-            return new Pair<>(e.getMessage(), Collections.emptyList());
+            return new Pair<>(String.valueOf(e.getMessage()), Collections.emptyList());
         }
     }
 
