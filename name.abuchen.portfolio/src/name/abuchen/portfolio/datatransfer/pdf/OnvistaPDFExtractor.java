@@ -357,7 +357,7 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("notation", "shares", "date") //
-                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d{3,})?) (\\d+.\\d+.\\d{4}+ )?(?<date>\\d+.\\d+.\\d{4}+) .*")
+                        .match("(?<notation>^\\w{3}+) (?<shares>[\\d.]+(,\\d{3,})?) (\\d+.\\d+.\\d{4}+ )?(?<date>\\d+\\.\\d+\\.\\d{4}+) .*")
                         .assign((t, v) -> {
                             String notation = v.get("notation");
                             if (notation != null && !"STK".equalsIgnoreCase(notation))
@@ -1743,7 +1743,6 @@ public class OnvistaPDFExtractor extends AbstractPDFExtractor
 
         block.set(taxVorabpauschaleTransaction);
     }
-    
     @Override
     public String getLabel()
     {

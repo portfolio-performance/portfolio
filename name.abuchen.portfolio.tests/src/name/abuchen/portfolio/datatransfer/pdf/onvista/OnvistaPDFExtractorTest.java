@@ -1846,4 +1846,40 @@ public class OnvistaPDFExtractorTest
         Security taxReturnSecurity = taxReturnEntry.getSecurity();
         assertThat(((Security) mphSecurity.getSubject()).getIsin(), is(taxReturnSecurity.getIsin()));
     }
+    
+    @Test
+    public void testErtragsgutschriftAnleihe()
+    {
+        OnvistaPDFExtractor extractor = new OnvistaPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "OnvistaErtragsgutschriftAnleihe.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2)); 
+
+        // check security
+        Security security = results.stream() //
+                        .filter(i -> i instanceof Extractor.SecurityItem) //
+                        .map(i -> i.getSecurity()) //
+                        .findFirst().get();
+        assertThat(security.getIsin(), is("XS0162869076"));
+        assertThat(security.getName(), is("5,875% Telefónica Europe B.V."));
+
+        // check transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction transaction = (AccountTransaction) item.get().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-14T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(219.17))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, 7458L)));
+    }
 }
