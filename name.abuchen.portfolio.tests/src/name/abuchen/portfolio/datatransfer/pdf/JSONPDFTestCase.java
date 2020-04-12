@@ -45,15 +45,13 @@ public class JSONPDFTestCase
         // look up test cases in such a way that it works in the Eclipse IDE,
         // with Infinitest, and on the Maven command line
         
-        boolean isLinux = Platform.OS_LINUX.equals(Platform.getOS());
-        if (isLinux)
+        if (Platform.OS_LINUX.equals(Platform.getOS()))
         {
             sClasses = "/classes/";
             sPath = "name/abuchen/portfolio";
         }
 
-        boolean isWin32 = Platform.OS_WIN32.equals(Platform.getOS());
-        if (isWin32)
+        if (Platform.OS_WIN32.equals(Platform.getOS()))
         {
             sClasses = "\\classes\\";
             sPath = "name\\abuchen\\portfolio";
