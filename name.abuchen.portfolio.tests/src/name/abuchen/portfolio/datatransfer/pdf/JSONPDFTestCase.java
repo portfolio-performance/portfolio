@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.eclipse.core.runtime.Platform;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -32,7 +33,9 @@ public class JSONPDFTestCase
 {
     public static final String EXT_JSON = ".json"; //$NON-NLS-1$
     public static final String EXT_TXT = ".txt"; //$NON-NLS-1$
-
+    public static String sPath;
+    public static String sClasses;
+                   
     @Parameters(name = "{index}: {0}")
     public static Collection<Object[]> getFiles() throws IOException, URISyntaxException
     {
@@ -41,15 +44,29 @@ public class JSONPDFTestCase
 
         // look up test cases in such a way that it works in the Eclipse IDE,
         // with Infinitest, and on the Maven command line
+        
+        boolean isLinux = Platform.OS_LINUX.equals(Platform.getOS());
+        if (isLinux)
+        {
+            sClasses = "/classes/";
+            sPath = "name/abuchen/portfolio";
+        }
 
+        boolean isWin32 = Platform.OS_WIN32.equals(Platform.getOS());
+        if (isWin32)
+        {
+            sClasses = "\\classes\\";
+            sPath = "name\\abuchen\\portfolio";
+        }
+        
         try (Stream<Path> fileWalker = Files.walk(testDir, 10))
         {
-            fileWalker.filter(p -> p.toString().endsWith(EXT_JSON)).filter(p -> p.toString().contains("/classes/")) //$NON-NLS-1$
+            fileWalker.filter(p -> p.toString().endsWith(EXT_JSON)).filter(p -> p.toString().contains(sClasses))
                             .map(p -> {
                                 String s = p.toString();
                                 return s.substring(0, s.length() - EXT_JSON.length());
                             }).forEach(p -> params
-                                            .add(new Object[] { p.substring(p.indexOf("name/abuchen/portfolio")), p })); //$NON-NLS-1$
+                                            .add(new Object[] { p.substring(p.indexOf(sPath)), p }));
         }
 
         return params;
