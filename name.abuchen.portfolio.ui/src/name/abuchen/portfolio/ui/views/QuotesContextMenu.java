@@ -101,10 +101,15 @@ public class QuotesContextMenu
                     });
                 });
             }
-            catch (InvocationTargetException | InterruptedException e)
+            catch (InvocationTargetException e)
             {
                 PortfolioPlugin.log(e);
-                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                e.getCause().getMessage());
+            }
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
             }
         });
         action.setEnabled(!QuoteFeed.MANUAL.equals(security.getFeed()));
