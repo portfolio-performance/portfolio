@@ -44,13 +44,23 @@ public class JSONPDFTestCase
 
         try (Stream<Path> fileWalker = Files.walk(testDir, 10))
         {
-            fileWalker.filter(p -> p.toString().endsWith(EXT_JSON)).filter(p -> p.toString().contains("/classes/")) //$NON-NLS-1$
+            fileWalker.filter(p -> p.toString().endsWith(EXT_JSON)) //
+                            .filter(p -> p.toString().contains(File.separatorChar + "classes" + File.separatorChar)) //$NON-NLS-1$
                             .map(p -> {
                                 String s = p.toString();
                                 return s.substring(0, s.length() - EXT_JSON.length());
-                            }).forEach(p -> params
-                                            .add(new Object[] { p.substring(p.indexOf("name/abuchen/portfolio")), p })); //$NON-NLS-1$
+                            }) //
+                            .forEach(p -> {
+                                String label = p.substring(p.indexOf( //
+                                                "name" + File.separatorChar //$NON-NLS-1$
+                                                                + "abuchen" + File.separatorChar //$NON-NLS-1$
+                                                                + "portfolio")); //$NON-NLS-1$
+                                params.add(new Object[] { label, p });
+                            });
         }
+
+        if (params.isEmpty())
+            throw new IOException("Error: no JSON test cases found"); //$NON-NLS-1$
 
         return params;
     }
