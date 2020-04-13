@@ -133,7 +133,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         LocalDate start = caculateStart(security);
         return internalGetQuotes(security, start);

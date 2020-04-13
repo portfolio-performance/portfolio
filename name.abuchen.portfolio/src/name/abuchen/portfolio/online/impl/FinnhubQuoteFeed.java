@@ -50,7 +50,7 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, 5);
+        QuoteFeedData data = getHistoricalQuotes(security, false, 5);
 
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())
@@ -62,7 +62,7 @@ public final class FinnhubQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         int count = 20000;
 
@@ -72,16 +72,16 @@ public final class FinnhubQuoteFeed implements QuoteFeed
             count = Dates.daysBetween(startDate, LocalDate.now()) + 5;
         }
 
-        return getHistoricalQuotes(security, count);
+        return getHistoricalQuotes(security, collectRawResponse, count);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, 100);
+        return getHistoricalQuotes(security, true, 100);
     }
 
-    private QuoteFeedData getHistoricalQuotes(Security security, int count)
+    private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, int count)
     {
         if (security.getTickerSymbol() == null)
         {
@@ -103,7 +103,8 @@ public final class FinnhubQuoteFeed implements QuoteFeed
 
             String response = webaccess.get();
 
-            data.addResponse(webaccess.getURL(), response);
+            if (collectRawResponse)
+                data.addResponse(webaccess.getURL(), response);
 
             JSONObject json = (JSONObject) JSONValue.parse(response);
 

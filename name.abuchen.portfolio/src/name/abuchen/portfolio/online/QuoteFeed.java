@@ -37,17 +37,17 @@ public interface QuoteFeed // NOSONAR
      */
     default Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security);
-        
+        QuoteFeedData data = getHistoricalQuotes(security, false);
+
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
-        
+
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         if (prices.isEmpty())
             return Optional.empty();
-        
+
         Collections.sort(prices, new SecurityPrice.ByDate());
-        
+
         return Optional.of(prices.get(prices.size() - 1));
     }
 
@@ -55,7 +55,7 @@ public interface QuoteFeed // NOSONAR
      * Retrieves the historical quotes of the given security. The quote provider
      * may reduce the response to only include newly updated quotes.
      */
-    QuoteFeedData getHistoricalQuotes(Security security);
+    QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse);
 
     /**
      * Retrieves a sample of historical quotes of the given security. The list
@@ -63,7 +63,7 @@ public interface QuoteFeed // NOSONAR
      */
     default QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security);
+        return getHistoricalQuotes(security, true);
     }
 
     default List<Exchange> getExchanges(Security subject, List<Exception> errors)

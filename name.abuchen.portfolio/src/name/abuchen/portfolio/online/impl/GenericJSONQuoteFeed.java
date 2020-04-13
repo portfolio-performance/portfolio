@@ -59,18 +59,19 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
-        return getHistoricalQuotes(security, security.getFeedURL(), false);
+        return getHistoricalQuotes(security, security.getFeedURL(), collectRawResponse, false);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, security.getFeedURL(), true);
+        return getHistoricalQuotes(security, security.getFeedURL(), true, true);
     }
 
-    private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean isPreview)
+    private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
+                    boolean isPreview)
     {
         Optional<String> dateProperty = security.getPropertyValue(SecurityProperty.Type.FEED, DATE_PROPERTY_NAME);
         Optional<String> closeProperty = security.getPropertyValue(SecurityProperty.Type.FEED, CLOSE_PROPERTY_NAME);
@@ -115,7 +116,8 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
                     cache.put(url, json);
             }
 
-            data.addResponse(url, json);
+            if (collectRawResponse)
+                data.addResponse(url, json);
 
             int sizeBefore = newPricesByDate.size();
 

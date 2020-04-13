@@ -20,7 +20,7 @@ public final class ManualQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         return new QuoteFeedData();
     }

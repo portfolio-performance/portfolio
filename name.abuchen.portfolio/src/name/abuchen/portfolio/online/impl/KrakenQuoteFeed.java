@@ -42,7 +42,7 @@ public final class KrakenQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, LocalDate.now());
+        QuoteFeedData data = getHistoricalQuotes(security, false, LocalDate.now());
 
         if (!data.getErrors().isEmpty())
             PortfolioLog.error(data.getErrors());
@@ -52,24 +52,24 @@ public final class KrakenQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         LocalDate quoteStartDate = LocalDate.MIN;
 
         if (!security.getPrices().isEmpty())
             quoteStartDate = security.getPrices().get(security.getPrices().size() - 1).getDate();
 
-        return getHistoricalQuotes(security, quoteStartDate);
+        return getHistoricalQuotes(security, collectRawResponse, quoteStartDate);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, LocalDate.now().minusMonths(2));
+        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
-    public QuoteFeedData getHistoricalQuotes(Security security, LocalDate start)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
@@ -87,7 +87,8 @@ public final class KrakenQuoteFeed implements QuoteFeed
                             .addParameter("interval", "1440");
             String html = webaccess.get();
 
-            data.addResponse(webaccess.getURL(), html);
+            if (collectRawResponse)
+                data.addResponse(webaccess.getURL(), html);
 
             JSONObject json = (JSONObject) JSONValue.parse(html);
             JSONArray errorItems = (JSONArray) json.get("error"); //$NON-NLS-1$

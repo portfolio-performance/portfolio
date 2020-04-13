@@ -231,7 +231,7 @@ public final class UpdateQuotesJob extends AbstractClientJob
                         if (security.setLatest(p))
                             dirtyable.markDirty();
                     });
-                    
+
                     return Status.OK_STATUS;
                 }
                 catch (RateLimitExceededException e)
@@ -262,11 +262,11 @@ public final class UpdateQuotesJob extends AbstractClientJob
                         if (feed == null)
                             return Status.OK_STATUS;
 
-                        QuoteFeedData data = feed.getHistoricalQuotes(security);
-                        
+                        QuoteFeedData data = feed.getHistoricalQuotes(security, false);
+
                         if (security.addAllPrices(data.getPrices()))
                             dirtyable.markDirty();
-                        
+
                         if (!data.getErrors().isEmpty())
                             PortfolioPlugin.log(createErrorStatus(security.getName(), data.getErrors()));
 

@@ -54,7 +54,7 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         LocalDate start = null;
 
@@ -63,17 +63,17 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
         else
             start = LocalDate.of(2000, 1, 1);
 
-        return getHistoricalQuotes(security, start);
+        return getHistoricalQuotes(security, collectRawResponse, start);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, LocalDate.now().minusMonths(2));
+        return getHistoricalQuotes(security, true, LocalDate.now().minusMonths(2));
     }
 
     @SuppressWarnings("unchecked")
-    public QuoteFeedData getHistoricalQuotes(Security security, LocalDate start)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, LocalDate start)
     {
         if (security.getOnlineId() == null)
         {
@@ -102,7 +102,8 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                                             .addParameter("from", start.toString());
             String response = webaccess.get();
 
-            data.addResponse(webaccess.getURL(), response);
+            if (collectRawResponse)
+                data.addResponse(webaccess.getURL(), response);
 
             JSONObject json = (JSONObject) JSONValue.parse(response);
 

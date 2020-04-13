@@ -54,13 +54,13 @@ public final class QuandlQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        QuoteFeedData data = getHistoricalQuotes(security, a -> a.addParameter("limit", "1")); //$NON-NLS-1$ //$NON-NLS-2$
+        QuoteFeedData data = getHistoricalQuotes(security, false, a -> a.addParameter("limit", "1")); //$NON-NLS-1$ //$NON-NLS-2$
         List<LatestSecurityPrice> prices = data.getLatestPrices();
         return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         Consumer<WebAccess> parameters = null;
 
@@ -70,17 +70,18 @@ public final class QuandlQuoteFeed implements QuoteFeed
             parameters = a -> a.addParameter("start_date", startDate.toString()); //$NON-NLS-1$
         }
 
-        return getHistoricalQuotes(security, parameters);
+        return getHistoricalQuotes(security, collectRawResponse, parameters);
     }
 
     @Override
     public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return getHistoricalQuotes(security, a -> a.addParameter("limit", "100")); //$NON-NLS-1$ //$NON-NLS-2$
+        return getHistoricalQuotes(security, true, a -> a.addParameter("limit", "100")); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     @SuppressWarnings("unchecked")
-    public QuoteFeedData getHistoricalQuotes(Security security, Consumer<WebAccess> parameters)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse,
+                    Consumer<WebAccess> parameters)
     {
         if (apiKey == null)
             throw new IllegalArgumentException(Messages.MsgErrorQuandlMissingAPIKey);
@@ -106,7 +107,8 @@ public final class QuandlQuoteFeed implements QuoteFeed
 
             String response = webaccess.get();
 
-            data.addResponse(webaccess.getURL(), response);
+            if (collectRawResponse)
+                data.addResponse(webaccess.getURL(), response);
 
             JSONObject json = (JSONObject) JSONValue.parse(response);
 

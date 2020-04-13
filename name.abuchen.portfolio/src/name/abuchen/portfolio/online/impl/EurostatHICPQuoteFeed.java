@@ -55,7 +55,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         if (security.getTickerSymbol() == null)
         {
@@ -67,7 +67,7 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
         try
         {
-            String responseBody = requestData(security, data);
+            String responseBody = requestData(security, collectRawResponse, data);
             extractQuotes(responseBody, data);
         }
         catch (IOException | URISyntaxException e)
@@ -80,7 +80,8 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
     }
 
     @SuppressWarnings("nls")
-    private String requestData(Security security, QuoteFeedData data) throws IOException, URISyntaxException
+    private String requestData(Security security, boolean collectRawResponse, QuoteFeedData data)
+                    throws IOException, URISyntaxException
     {
         WebAccess webaccess = new WebAccess(EUROSTAT_HOST, EUROSTAT_PAGE) //
                         .withScheme("http") //
@@ -94,7 +95,8 @@ public final class EurostatHICPQuoteFeed implements QuoteFeed
 
         String text = webaccess.get();
 
-        data.addResponse(webaccess.getURL(), text);
+        if (collectRawResponse)
+            data.addResponse(webaccess.getURL(), text);
 
         return text;
     }

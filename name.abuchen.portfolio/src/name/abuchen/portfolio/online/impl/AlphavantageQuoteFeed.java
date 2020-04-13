@@ -3,6 +3,7 @@ package name.abuchen.portfolio.online.impl;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.text.MessageFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
@@ -145,7 +146,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     }
 
     @Override
-    public QuoteFeedData getHistoricalQuotes(Security security)
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
     {
         OutputSize outputSize = OutputSize.FULL;
 
@@ -156,7 +157,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             outputSize = days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT;
         }
 
-        return getHistoricalQuotes(security, outputSize);
+        return getHistoricalQuotes(security, collectRawResponse, outputSize);
     }
 
     @Override
@@ -164,10 +165,10 @@ public class AlphavantageQuoteFeed implements QuoteFeed
     {
         LocalDate now = LocalDate.now();
         int days = Dates.daysBetween(now.minusMonths(2), now);
-        return getHistoricalQuotes(security, days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT);
+        return getHistoricalQuotes(security, true, days >= DAYS_THRESHOLD ? OutputSize.FULL : OutputSize.COMPACT);
     }
 
-    private QuoteFeedData getHistoricalQuotes(Security security, OutputSize outputSize)
+    private QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse, OutputSize outputSize)
     {
         if (security.getTickerSymbol() == null)
             return QuoteFeedData.withError(
@@ -184,13 +185,16 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         try
         {
             @SuppressWarnings("nls")
-            String html = new WebAccess("www.alphavantage.co", "/query") //
+            WebAccess webaccess = new WebAccess("www.alphavantage.co", "/query") //
                             .addParameter("function", "TIME_SERIES_DAILY") //
                             .addParameter("symbol", security.getTickerSymbol()) //
                             .addParameter("apikey", apiKey) //
                             .addParameter("datatype", "csv") //
-                            .addParameter("outputsize", outputSize.name().toLowerCase(Locale.US)) //
-                            .get();
+                            .addParameter("outputsize", outputSize.name().toLowerCase(Locale.US));
+            String html = webaccess.get();
+
+            if (collectRawResponse)
+                data.addResponse(webaccess.getURL(), html);
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)
@@ -231,7 +235,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
             }
 
         }
-        catch (IOException | ParseException e)
+        catch (IOException | ParseException | URISyntaxException e)
         {
             data.addError(e);
         }

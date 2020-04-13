@@ -52,9 +52,9 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
         {
             return Messages.EditWizardOptionSameAsHistoricalQuoteFeed;
         }
-        
+
         @Override
-        public QuoteFeedData getHistoricalQuotes(Security security)
+        public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
         {
             return new QuoteFeedData();
         }
@@ -85,7 +85,7 @@ public class LatestQuoteProviderPage extends AbstractQuoteProviderPage
                 if (exchange != null)
                     s.setTickerSymbol(exchange.getId());
                 s.setFeed(feed.getId());
-                
+
                 feed.getLatestQuote(s).ifPresent(s::setLatest);
 
                 Display.getDefault().asyncExec(() -> {
