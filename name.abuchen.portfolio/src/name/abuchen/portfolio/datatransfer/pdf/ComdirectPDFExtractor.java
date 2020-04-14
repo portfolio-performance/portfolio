@@ -1,6 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -536,9 +538,29 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                                         .equals(((AccountTransaction) i.getSubject()).getType()))
                         .collect(Collectors.groupingBy(Item::getDate, Collectors.groupingBy(Item::getSecurity)));
 
-        // only remove non-tax-dividends, where additional tax-dividend exists...
-        items.removeIf(i -> isDividendTransactionWithoutTax(i)
-                        && dividends.get(i.getDate()).get(i.getSecurity()).size() == 2);
+        // only remove non-tax-dividends, where additional tax-dividend exists
+        // bugfix for tax-files without taxes (or both entries will be deleted)
+
+        Map<LocalDateTime, Security> deleted = new HashMap<>();
+        Iterator<Item> iterator = items.iterator();
+        while (iterator.hasNext())
+        {
+            Item i = iterator.next();
+            if (isDividendTransactionWithoutTax(i))
+            {
+                List<Item> similarTransactions = dividends.get(i.getDate()).get(i.getSecurity());
+                if (similarTransactions.size() == 2)
+                {
+                    // already deleted once?
+                    if (!(deleted.containsKey(i.getDate()) && i.getSecurity().equals(deleted.get(i.getDate()))))
+                    {
+                        // mark in hashMap and delete it
+                        deleted.put(i.getDate(), i.getSecurity());
+                        iterator.remove();
+                    }
+                }
+            }
+        }
 
         return items;
     }

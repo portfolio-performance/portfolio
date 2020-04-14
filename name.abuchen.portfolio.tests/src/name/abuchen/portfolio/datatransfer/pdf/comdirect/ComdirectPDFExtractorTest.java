@@ -837,7 +837,46 @@ public class ComdirectPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10.21)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(32)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(3.49)));
+    }
+    
+    @Test
+    public void testMergeDividendeWithTaxFileWithoutTax()
+    {
+        ComdirectPDFExtractor extractor = new ComdirectPDFExtractor(new Client());
 
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "comdirectMerge1_Dividende.txt",
+                        "comdirectMerge1_Steuer.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0008404005"));
+        assertThat(security.getName(), is("Al l  i an z   S E"));
+        assertThat(security.getWkn(), is("840400"));
+
+        List<AccountTransaction> items = results.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .map(i -> (AccountTransaction) i.getSubject()).collect(Collectors.toList());
+        assertThat(items.size(), is(1));
+
+        // dividend
+        Optional<AccountTransaction> oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        AccountTransaction transaction = oTransaction.orElseThrow(IllegalArgumentException::new);
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-05-14T00:00")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(128.00)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(16)));
+        assertThat(transaction.getNote(), is("comdirectMerge1_Steuer.txt"));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.0)));
     }
 
     @Test
