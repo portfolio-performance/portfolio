@@ -347,14 +347,22 @@ public final class Security implements Attributable, InvestmentVehicle
 
             if (!replaced.equals(price))
             {
-                // only replace if necessary -> UI might keep reference!
-                prices.set(index, price);
-                return true;
+                if (!replaced.isManualInput()) 
+                {
+                    // only replace if necessary -> UI might keep reference!
+                    prices.set(index, price);
+                    return true;
+                }
             }
             else
             {
-                return false;
+                // if prices are identical and the flag was set, it can be deleted
+                if (replaced.isManualInput()) 
+                {
+                    replaced.setManualInput(false);
+                }
             }
+            return false;
         }
     }
     

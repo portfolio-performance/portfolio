@@ -21,6 +21,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
 
     private LocalDate date;
     private long value;
+    private boolean manualInput;
 
     public SecurityPrice()
     {
@@ -30,6 +31,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     {
         this.value = price;
         this.date = date;
+        this.manualInput = false;
     }
 
     public LocalDate getDate()
@@ -47,9 +49,34 @@ public class SecurityPrice implements Comparable<SecurityPrice>
         return value;
     }
 
+    public long getManualValue()
+    {
+        return value;
+    }
+
     public void setValue(long value)
     {
         this.value = value;
+    }
+
+    /**
+     * Used to mark values as manual input from SecurityListView
+     * @param value security price
+     */
+    public void setManualValue(long value)
+    {
+        this.value = value;
+        this.manualInput = true;
+    }
+
+    public boolean isManualInput()
+    {
+        return manualInput;
+    }
+
+    public void setManualInput(boolean manualInput)
+    {
+        this.manualInput = manualInput;
     }
 
     @Override

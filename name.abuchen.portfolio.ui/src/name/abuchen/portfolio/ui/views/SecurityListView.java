@@ -660,10 +660,29 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
+        // using manualValue uses the setManualValue to set the manually adjusted price and flags it
+        new ValueEditingSupport(SecurityPrice.class, "manualValue", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
         support.addColumn(column);
 
+        /*
+         * column to flag manually changed quotes
+         * 
+         */
+        column = new Column(Messages.ColumnQuoteFixed, SWT.RIGHT, 80); 
+        column.setDescription(Messages.ColumnQuoteFixed_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                SecurityPrice price = (SecurityPrice) element;
+                return price.isManualInput() ? Messages.ColumnQuoteFixedYes : null; 
+            }
+        });
+        support.addColumn(column);
+
+        
         support.createColumns();
 
         prices.getTable().setHeaderVisible(true);
