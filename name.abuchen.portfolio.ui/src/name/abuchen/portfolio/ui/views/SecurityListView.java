@@ -83,6 +83,7 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.util.viewers.CheckBoxEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -669,7 +670,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
          * column to flag manually changed quotes
          * 
          */
-        column = new Column(Messages.ColumnQuoteFixed, SWT.RIGHT, 80); 
+        column = new Column(Messages.ColumnQuoteFixed, SWT.CENTER, 80); 
         column.setDescription(Messages.ColumnQuoteFixed_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
@@ -677,9 +678,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             public String getText(Object element)
             {
                 SecurityPrice price = (SecurityPrice) element;
-                return price.isManualInput() ? Messages.ColumnQuoteFixedYes : null; 
+                return price.isLocked() ? Character.toString((char)0x2611) : Character.toString((char)0x2610); 
             }
+
         });
+        new CheckBoxEditingSupport(SecurityPrice.class, "locked") //$NON-NLS-1$
+            .addListener(this).attachTo(column);
+        
         support.addColumn(column);
 
         

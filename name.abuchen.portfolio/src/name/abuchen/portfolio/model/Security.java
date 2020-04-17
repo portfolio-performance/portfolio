@@ -345,34 +345,26 @@ public final class Security implements Attributable, InvestmentVehicle
         {
             SecurityPrice replaced = prices.get(index);
 
-            if (!replaced.equals(price))
+            if (!replaced.equals(price) && !replaced.isLocked())
             {
-                if (!replaced.isManualInput()) 
-                {
-                    // only replace if necessary -> UI might keep reference!
-                    prices.set(index, price);
-                    return true;
-                }
+                // only replace if necessary -> UI might keep reference!
+                prices.set(index, price);
+                return true;
             }
             else
             {
-                // if prices are identical and the flag was set, it can be deleted
-                if (replaced.isManualInput()) 
-                {
-                    replaced.setManualInput(false);
-                }
+                return false;
             }
-            return false;
         }
     }
-    
+
     public boolean addAllPrices(List<SecurityPrice> prices)
     {
         if (prices.isEmpty())
             return false;
-        
+
         LocalDate now = LocalDate.now();
-        
+
         boolean isUpdated = false;
         for (SecurityPrice p : prices)
         {

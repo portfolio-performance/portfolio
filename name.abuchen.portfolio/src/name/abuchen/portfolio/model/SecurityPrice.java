@@ -21,7 +21,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
 
     private LocalDate date;
     private long value;
-    private boolean manualInput;
+    private boolean locked;
 
     public SecurityPrice()
     {
@@ -31,7 +31,7 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     {
         this.value = price;
         this.date = date;
-        this.manualInput = false;
+        this.locked = false;
     }
 
     public LocalDate getDate()
@@ -66,17 +66,17 @@ public class SecurityPrice implements Comparable<SecurityPrice>
     public void setManualValue(long value)
     {
         this.value = value;
-        this.manualInput = true;
+        this.locked = true;
     }
 
-    public boolean isManualInput()
+    public boolean isLocked()
     {
-        return manualInput;
+        return locked;
     }
 
-    public void setManualInput(boolean manualInput)
+    public void setLocked(boolean locked)
     {
-        this.manualInput = manualInput;
+        this.locked = locked;
     }
 
     @Override
