@@ -492,7 +492,9 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1);
+            // a reporting period is half-open, i.e. it excludes the first day
+            // but includes the last day
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1).minusDays(1);
 
             if (startDate.isBefore(relativeTo))
                 return Interval.of(startDate, relativeTo);
