@@ -106,7 +106,7 @@ public class EarningsViewModel
 
     private List<UpdateListener> listeners = new ArrayList<>();
 
-    private final CurrencyConverter converter;
+    private CurrencyConverter converter;
     private final Client client;
 
     private final ClientFilterMenu clientFilter;
@@ -223,6 +223,9 @@ public class EarningsViewModel
 
     public void recalculate()
     {
+        // the base currency might have changed
+        this.converter = this.converter.with(client.getBaseCurrency());
+
         calculate();
         fireUpdateChange();
     }

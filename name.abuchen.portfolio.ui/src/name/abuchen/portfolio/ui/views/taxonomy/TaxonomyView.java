@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -13,6 +12,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -27,7 +27,6 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -53,10 +52,7 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             Consumer<ClientFilter> listener = filter -> {
                 Client filteredClient = filter.filter(getClient());
-                ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(),
-                                LocalDate.now());
-                model.setClientSnapshot(filteredClient, snapshot);
-                model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                model.updateClientSnapshot(filteredClient);
             };
 
             clientFilterMenu.addListener(listener);
@@ -265,14 +261,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     public void notifyModelUpdated()
     {
         Client filteredClient = this.clientFilter.filter(getClient());
-        ClientSnapshot snapshot = ClientSnapshot.create(filteredClient, model.getCurrencyConverter(), LocalDate.now());
-        model.setClientSnapshot(filteredClient, snapshot);
-        model.fireTaxonomyModelChange(model.getVirtualRootNode());
+        model.updateClientSnapshot(filteredClient);
     }
 
     private void addView(final ToolBarManager toolBar, String label, Images image, final int index)
     {
-        Action showDefinition = new SimpleAction(label, Action.AS_CHECK_BOX, a -> activateView(index));
+        Action showDefinition = new SimpleAction(label, IAction.AS_CHECK_BOX, a -> activateView(index));
         showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
         toolBar.add(showDefinition);

@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.annotations.Creatable;
+
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
@@ -28,12 +30,13 @@ import name.abuchen.portfolio.util.Interval;
 /**
  * Cache for calculation results of DataSeries.
  */
+@Creatable
 public class DataSeriesCache
 {
     private final Client client;
-    private final CurrencyConverter converter;
-
     private final Map<CacheKey, PerformanceIndex> cache = Collections.synchronizedMap(new HashMap<>());
+
+    private CurrencyConverter converter;
 
     @Inject
     public DataSeriesCache(Client client, ExchangeRateProviderFactory factory)
@@ -44,6 +47,9 @@ public class DataSeriesCache
 
     public void clear()
     {
+        // the base currency might have changed
+        this.converter = this.converter.with(client.getBaseCurrency());
+
         this.cache.clear();
     }
 

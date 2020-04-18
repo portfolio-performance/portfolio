@@ -45,7 +45,8 @@ public class DashboardData
     private Dashboard dashboard;
 
     @Inject
-    public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory)
+    public DashboardData(Client client, IPreferenceStore preferences, ExchangeRateProviderFactory factory,
+                    DataSeriesCache dataSeriesCache)
     {
         this.client = client;
         this.preferences = preferences;
@@ -53,7 +54,7 @@ public class DashboardData
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.dataSeriesSet = new DataSeriesSet(client, preferences, DataSeries.UseCase.RETURN_VOLATILITY);
-        this.dataSeriesCache = new DataSeriesCache(client, factory);
+        this.dataSeriesCache = dataSeriesCache;
     }
 
     public Client getClient()

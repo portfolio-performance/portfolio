@@ -3,13 +3,12 @@ package name.abuchen.portfolio.ui.util.viewers;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.util.Colors;
 
 public final class NumberColorLabelProvider<N extends Number> extends ColumnLabelProvider
 {
@@ -36,8 +35,7 @@ public final class NumberColorLabelProvider<N extends Number> extends ColumnLabe
         if (value == null)
             return null;
 
-        return Display.getCurrent()
-                        .getSystemColor(value.doubleValue() >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+        return value.doubleValue() >= 0 ? Colors.DARK_GREEN : Colors.DARK_RED;
     }
 
     @Override
