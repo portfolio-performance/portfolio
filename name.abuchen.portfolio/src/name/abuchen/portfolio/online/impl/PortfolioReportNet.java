@@ -204,8 +204,16 @@ public class PortfolioReportNet
         }
 
         @Override
-        public void applyTo(Security security)
+        public boolean hasPrices()
         {
+            return !markets.isEmpty();
+        }
+
+        @Override
+        public Security create()
+        {
+            Security security = new Security();
+
             security.setOnlineId(id);
 
             security.setName(name);
@@ -218,6 +226,15 @@ public class PortfolioReportNet
 
             security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKETS_PROPERTY_NAME,
                             markets.isEmpty() ? null : new Gson().toJson(markets));
+
+            if (!markets.isEmpty())
+            {
+                security.setFeed(PortfolioReportQuoteFeed.ID);
+                security.setPropertyValue(SecurityProperty.Type.FEED, PortfolioReportQuoteFeed.MARKET_PROPERTY_NAME,
+                                markets.get(0).getMarketCode());
+            }
+
+            return security;
         }
 
         public boolean update(Security security)

@@ -27,7 +27,12 @@ public interface SecuritySearchProvider
             return null;
         }
 
-        void applyTo(Security security);
+        default boolean hasPrices()
+        {
+            return false;
+        }
+
+        Security create();
     }
 
     public enum Type

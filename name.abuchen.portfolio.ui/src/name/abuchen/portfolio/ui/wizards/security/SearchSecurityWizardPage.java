@@ -119,8 +119,7 @@ public class SearchSecurityWizardPage extends WizardPage
         });
 
         Consumer<SelectionEvent> onSearchEvent = e -> doSearch(searchBox.getText(),
-                        (SecuritySearchProvider.Type) typeBox.getStructuredSelection().getFirstElement(),
-                        resultTable);
+                        (SecuritySearchProvider.Type) typeBox.getStructuredSelection().getFirstElement(), resultTable);
 
         searchBox.addSelectionListener(SelectionListener.widgetDefaultSelectedAdapter(onSearchEvent));
         searchButton.addSelectionListener(SelectionListener.widgetSelectedAdapter(onSearchEvent));
@@ -193,7 +192,17 @@ public class SearchSecurityWizardPage extends WizardPage
         @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
-            return columnIndex == 0 && ((ResultItem) element).getOnlineId() != null ? Images.ONLINE.image() : null;
+            if (columnIndex != 0)
+                return null;
+
+            ResultItem item = (ResultItem) element;
+
+            if (item.hasPrices())
+                return Images.VIEW_LINECHART.image();
+            else if (item.getOnlineId() != null)
+                return Images.ONLINE.image();
+            else
+                return null;
         }
 
         @Override
