@@ -59,7 +59,7 @@ public class SecurityMasterDataPage extends AbstractPage
             area.setLayout(layout);
 
             Link link = new Link(area, SWT.UNDERLINE_LINK);
-            link.setText("Verknüpft mit <a>Portfolio Report</a>"); //$NON-NLS-1$
+            link.setText(Messages.LabelLinkedToPortfolioReport);
             link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> DesktopAPI
                             .browse("https://www.portfolio-report.net/securities/" + model.getOnlineId()))); //$NON-NLS-1$
 
