@@ -83,7 +83,6 @@ import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.swt.SashLayout;
 import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
-import name.abuchen.portfolio.ui.util.viewers.CheckBoxEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
@@ -364,7 +363,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         {
             SecurityPrice price = (SecurityPrice) element;
             security.removePrice(price);
-            security.addPrice(price);
+            security.addPrice(price, true);
         }
 
         securities.refresh(security);
@@ -661,33 +660,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
-        // using manualValue uses the setManualValue to set the manually adjusted price and flags it
-        new ValueEditingSupport(SecurityPrice.class, "manualValue", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
                         .addListener(this).attachTo(column);
         support.addColumn(column);
 
-        /*
-         * column to flag manually changed quotes
-         * 
-         */
-        column = new Column(Messages.ColumnQuoteFixed, SWT.CENTER, 80); 
-        column.setDescription(Messages.ColumnQuoteFixed_Description);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object element)
-            {
-                SecurityPrice price = (SecurityPrice) element;
-                return price.isLocked() ? Character.toString((char)0x2611) : Character.toString((char)0x2610); 
-            }
-
-        });
-        new CheckBoxEditingSupport(SecurityPrice.class, "locked") //$NON-NLS-1$
-            .addListener(this).attachTo(column);
-        
-        support.addColumn(column);
-
-        
         support.createColumns();
 
         prices.getTable().setHeaderVisible(true);

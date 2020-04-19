@@ -245,8 +245,6 @@ public class Messages extends NLS
     public static String ColumnPurchaseValueMovingAverage_Description;
     public static String ColumnPurchaseValueMovingAverage_MenuLabel;
     public static String ColumnQuote;
-    public static String ColumnQuoteFixed;
-    public static String ColumnQuoteFixed_Description;
     public static String ColumnQuote_DescriptionEndOfReportingPeriod;
     public static String ColumnQuoteChange;
     public static String ColumnQuoteChange_Description;

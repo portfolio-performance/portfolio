@@ -55,7 +55,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
             try
             {
                 SecurityPrice p = extract(line, field2column);
-                dummy.addPrice(p);
+                dummy.addPrice(p, true);
             }
             catch (ParseException e)
             {

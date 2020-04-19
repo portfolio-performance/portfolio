@@ -39,7 +39,7 @@ public class InsertAction implements ImportAction
     @Override
     public Status process(Security security, SecurityPrice price)
     {
-        security.addPrice(price);
+        security.addPrice(price, true);
         return Status.OK_STATUS;
     }
 

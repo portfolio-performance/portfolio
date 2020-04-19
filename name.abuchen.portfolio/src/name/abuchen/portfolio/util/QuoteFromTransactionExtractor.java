@@ -65,7 +65,7 @@ public class QuoteFromTransactionExtractor
                     q = converter.with(security.getCurrencyCode()).convert(d, q);
                 
                 SecurityPrice price = new SecurityPrice(d, q.getAmount());
-                bChanges |= security.addPrice(price);
+                bChanges |= security.addPrice(price, true);
                 // remember the latest price
                 if ((pLatest == null) || d.isAfter(pLatest.getDate()))
                 {

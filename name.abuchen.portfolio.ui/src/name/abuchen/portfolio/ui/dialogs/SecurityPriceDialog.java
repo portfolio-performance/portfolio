@@ -55,7 +55,7 @@ public class SecurityPriceDialog extends AbstractDialog
         public void applyChanges()
         {
             SecurityPrice p = new SecurityPrice(date, price);
-            security.addPrice(p);
+            security.addPrice(p, true);
         }
     }
 
