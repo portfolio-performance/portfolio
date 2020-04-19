@@ -48,7 +48,7 @@ public class ImportQuotesWizard extends Wizard
         for (LatestSecurityPrice p : quotes)
         {
             SecurityPrice quote = new SecurityPrice(p.getDate(), p.getValue());
-            security.addPrice(quote, true);
+            security.addPrice(quote);
         }
 
         return true;

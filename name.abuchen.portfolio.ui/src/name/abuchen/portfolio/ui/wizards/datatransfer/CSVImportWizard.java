@@ -187,7 +187,7 @@ public class CSVImportWizard extends Wizard
         boolean isDirty = false;
         for (SecurityPrice p : prices)
         {
-            if (security.addPrice(p, true))
+            if (security.addPrice(p))
                 isDirty = true;
         }
         return isDirty;

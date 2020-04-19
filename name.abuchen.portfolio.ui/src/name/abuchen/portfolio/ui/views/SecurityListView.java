@@ -363,7 +363,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         {
             SecurityPrice price = (SecurityPrice) element;
             security.removePrice(price);
-            security.addPrice(price, true);
+            security.addPrice(price);
         }
 
         securities.refresh(security);
