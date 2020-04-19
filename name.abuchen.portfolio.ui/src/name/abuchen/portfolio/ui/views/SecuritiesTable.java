@@ -66,6 +66,7 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.CreateSecurityFromURLDropAdaptor;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -117,6 +118,8 @@ public final class SecuritiesTable implements ModificationListener
         container.setLayout(layout);
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+
+        CreateSecurityFromURLDropAdaptor.attach(this.view, this.securities.getControl());
 
         ColumnEditingSupport.prepare(securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
