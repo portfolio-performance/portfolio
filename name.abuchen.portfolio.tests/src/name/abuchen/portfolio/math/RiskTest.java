@@ -73,36 +73,7 @@ public class RiskTest
         assertThat(maxDrawdownDuration, is(5l));
     }
 
-    @Test
-    public void testDrawdown()
-    {
-        int size = 10;
-        LocalDate[] dates = getDates(size);
-        double[] values = new double[size];
-        for (int i = 0; i < size; i++)
-            values[i] = i;
-
-        Drawdown drawdown = new Drawdown(values, dates, 0);
-        // Every new value is a new peak, so there never is a drawdown and
-        // therefore the magnitude is 0
-        assertThat(drawdown.getMaxDrawdown(), is(0d));
-        // Drawdown duration is the longest duration between peaks. Every value
-        // is a peak, so 1 day is every time the duration. The fact that there
-        // is never a drawdown does not negate the duration
-        assertThat(drawdown.getMaxDrawdownDuration().getDays(), is(1l));
-
-        drawdown = new Drawdown(new double[] { 1, 1, -0.5, 1, 1, 2, 3, 4, 5, 6 }, dates, 0);
-        // the drawdown is from 2 to 0.5 which is 1.5 or 75% of 2
-        assertThat(drawdown.getMaxDrawdown(), is(0.75d));
-        // the first peak is the first 2. The second 2 is not a peak, the next
-        // peak is the 3, which is 5 days later
-        assertThat(drawdown.getMaxDrawdownDuration().getDays(), is(5l));
-
-        drawdown = new Drawdown(new double[] { 0, 0.1, 0.2, -1.4 }, getDates(4), 0);
-        // The drawdown is from 1.2 to -0.4 or 1.6, which is 4/3 from 1.2
-        assertThat(drawdown.getMaxDrawdown(), closeTo(4d / 3, 0.1e-10));
-    }
-
+   
     @Test(expected = IllegalArgumentException.class)
     public void testDrawdownInputArgumentsLengthNotTheSame()
     {
