@@ -16,6 +16,8 @@ public class ReadOnlyClient extends Client
         super();
 
         this.source = Objects.requireNonNull(source);
+
+        super.setBaseCurrency(source.getBaseCurrency());
     }
 
     @Override
@@ -71,6 +73,12 @@ public class ReadOnlyClient extends Client
 
     @Override
     public void setProperty(String key, String value)
+    {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setBaseCurrency(String baseCurrency)
     {
         throw new UnsupportedOperationException();
     }

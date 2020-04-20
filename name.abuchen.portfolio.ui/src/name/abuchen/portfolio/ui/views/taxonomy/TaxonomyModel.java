@@ -76,7 +76,8 @@ public final class TaxonomyModel
 
     private final Taxonomy taxonomy;
     private final Client client;
-    private final CurrencyConverter converter;
+    private final ExchangeRateProviderFactory factory;
+    private CurrencyConverter converter;
 
     /**
      * The Client file which was used to create the ClientSnapshot. When
@@ -107,11 +108,10 @@ public final class TaxonomyModel
     @Inject
     /* package */ TaxonomyModel(ExchangeRateProviderFactory factory, Client client, Taxonomy taxonomy)
     {
-        Objects.requireNonNull(client);
-        Objects.requireNonNull(taxonomy);
+        this.taxonomy = Objects.requireNonNull(taxonomy);
+        this.client = Objects.requireNonNull(client);
+        this.factory = Objects.requireNonNull(factory);
 
-        this.taxonomy = taxonomy;
-        this.client = client;
         this.converter = new CurrencyConverterImpl(factory, client.getBaseCurrency());
 
         this.filteredClient = client;
@@ -362,11 +362,16 @@ public final class TaxonomyModel
         return converter.getTermCurrency();
     }
 
-    public void setClientSnapshot(Client filteredClient, ClientSnapshot newSnapshot)
+    public void updateClientSnapshot(Client filteredClient)
     {
+        if (!filteredClient.getBaseCurrency().equals(converter.getTermCurrency()))
+            this.converter = new CurrencyConverterImpl(factory, filteredClient.getBaseCurrency());
+
         this.filteredClient = filteredClient;
-        this.snapshot = newSnapshot;
+        this.snapshot = ClientSnapshot.create(filteredClient, converter, LocalDate.now());
+
         recalculate();
+        fireTaxonomyModelChange(getVirtualRootNode());
     }
 
     public Client getFilteredClient()

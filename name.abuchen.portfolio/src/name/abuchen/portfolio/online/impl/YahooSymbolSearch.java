@@ -81,11 +81,13 @@ import name.abuchen.portfolio.util.WebAccess;
         }
 
         @Override
-        public void applyTo(Security security)
+        public Security create()
         {
+            Security security = new Security();
             security.setName(name);
             security.setTickerSymbol(symbol);
             security.setFeed(YahooFinanceQuoteFeed.ID);
+            return security;
         }
     }
 

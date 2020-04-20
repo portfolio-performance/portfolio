@@ -14,7 +14,21 @@ public final class Dashboard
 
     public static final class Column
     {
+        private int weight = 1;
         private List<Widget> widgets = new ArrayList<>();
+
+        public int getWeight()
+        {
+            return weight;
+        }
+
+        public void setWeight(int weight)
+        {
+            if (weight <= 0)
+                throw new IllegalArgumentException();
+            
+            this.weight = weight;
+        }
 
         public List<Widget> getWidgets()
         {
@@ -24,6 +38,17 @@ public final class Dashboard
         public void setWidgets(List<Widget> widgets)
         {
             this.widgets = widgets;
+        }
+
+        public void increaseWeight()
+        {
+            weight++;
+        }
+
+        public void decreaseWeight()
+        {
+            if (weight > 1)
+                weight--;
         }
     }
 

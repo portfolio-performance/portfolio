@@ -8,6 +8,7 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
@@ -15,12 +16,12 @@ import name.abuchen.portfolio.ui.Images;
 public final class MoneyColorLabelProvider extends ColumnLabelProvider
 {
     private final Function<Object, Money> provider;
-    private final String baseCurrency;
+    private final Client client;
 
-    public MoneyColorLabelProvider(Function<Object, Money> provider, String baseCurrency)
+    public MoneyColorLabelProvider(Function<Object, Money> provider, Client client)
     {
         this.provider = provider;
-        this.baseCurrency = baseCurrency;
+        this.client = client;
     }
 
     @Override
@@ -50,6 +51,6 @@ public final class MoneyColorLabelProvider extends ColumnLabelProvider
         if (money == null)
             return null;
 
-        return Values.Money.format(money, baseCurrency);
+        return Values.Money.format(money, client.getBaseCurrency());
     }
 }

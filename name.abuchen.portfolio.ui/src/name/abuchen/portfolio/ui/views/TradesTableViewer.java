@@ -178,8 +178,8 @@ public class TradesTableViewer
         support.addColumn(column);
 
         column = new Column("pl", Messages.ColumnProfitLoss, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLoss(),
-                        view.getClient().getBaseCurrency()));
+        column.setLabelProvider(
+                        new MoneyColorLabelProvider(element -> ((Trade) element).getProfitLoss(), view.getClient()));
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getProfitLoss()));
         support.addColumn(column);
 
@@ -220,6 +220,11 @@ public class TradesTableViewer
     public void setInput(List<Trade> trades)
     {
         this.trades.setInput(trades);
+    }
+
+    public Object getInput()
+    {
+        return this.trades.getInput();
     }
 
     public TableViewer getTableViewer()

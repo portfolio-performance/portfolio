@@ -3,6 +3,7 @@ package name.abuchen.portfolio.model;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.beans.BeanInfo;
@@ -11,6 +12,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -19,6 +21,7 @@ import org.junit.Test;
 
 import name.abuchen.portfolio.util.Pair;
 
+@SuppressWarnings("nls")
 public class SecurityTest
 {
 
@@ -91,6 +94,65 @@ public class SecurityTest
         assertThat(security.setLatest(same), is(false));
     }
 
+    @Test
+    public void testAddPrice()
+    {
+        Security security = new Security();
+        LatestSecurityPrice one = new LatestSecurityPrice(LocalDate.parse("2020-02-28"), 100);
+
+        assertThat(security.addPrice(one), is(true));
+        assertThat(security.getPrices().size(), is(1));
+
+        LatestSecurityPrice two = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 100);
+
+        assertThat(security.addPrice(two), is(true));
+        assertThat(security.getPrices().size(), is(2));
+
+        LatestSecurityPrice same = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 100);
+        assertThat(security.addPrice(same), is(false));
+
+        assertThat(security.getPrices().size(), is(2));
+
+        LatestSecurityPrice sameButDifferentPrice = new LatestSecurityPrice(LocalDate.parse("2020-02-29"), 101);
+
+        assertThat(security.addPrice(sameButDifferentPrice), is(true));
+        assertThat(security.getPrices().size(), is(2));
+    }
+
+    @Test
+    public void testGetPricesIncludingLatest()
+    {
+        Security security = new Security();
+
+        // create historical price
+        LatestSecurityPrice historical = new LatestSecurityPrice(LocalDate.parse("2019-02-28"), 100);
+        security.addPrice(historical);
+        List<SecurityPrice> prices = security.getPricesIncludingLatest();
+
+        assertThat(prices.size(), is(1));
+        assertThat(prices.contains(historical), is(true));
+
+        // create latest price same as historical
+        LatestSecurityPrice latest = new LatestSecurityPrice(LocalDate.parse("2019-02-28"), 150);
+        security.setLatest(latest);
+        List<SecurityPrice> prices2 = security.getPricesIncludingLatest();
+
+        assertThat(prices2.size(), is(1));
+        assertThat(prices2.contains(historical), is(true));
+        assertThat(prices2.contains(latest), is(false));
+
+        // create latest with different date
+        LatestSecurityPrice latest2 = new LatestSecurityPrice(LocalDate.parse("2020-02-28"), 150);
+        security.setLatest(latest2);
+
+        List<SecurityPrice> prices3 = security.getPricesIncludingLatest();
+
+        assertThat(prices3.size(), is(2));
+        assertThat(prices2.contains(historical), is(true));
+        assertThat(prices3.contains(latest2), is(true));
+
+    }
+
     @Test(expected = NullPointerException.class)
     public void testThatNullSecurityPriceIsNotAllowed()
     {
@@ -130,5 +192,23 @@ public class SecurityTest
         latestTwo = security.getLatestTwoSecurityPrices();
         assertThat(latestTwo.orElseThrow(IllegalArgumentException::new), is(new Pair<>(pToday, pYesterday)));
 
+    }
+
+    @Test
+    public void testExternalIdentifier()
+    {
+        Security security = new Security();
+
+        security.setName("Apple ORD");
+        assertEquals(security.getExternalIdentifier(), "Apple ORD");
+
+        security.setWkn("865985");
+        assertEquals(security.getExternalIdentifier(), "865985");
+
+        security.setTickerSymbol("AAPL");
+        assertEquals(security.getExternalIdentifier(), "AAPL");
+
+        security.setIsin("US0378331005");
+        assertEquals(security.getExternalIdentifier(), "US0378331005");
     }
 }

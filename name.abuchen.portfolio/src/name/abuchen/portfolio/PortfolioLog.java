@@ -1,5 +1,8 @@
 package name.abuchen.portfolio;
 
+import java.util.List;
+
+import org.eclipse.core.runtime.ILog;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
@@ -18,11 +21,20 @@ public class PortfolioLog
 
     private static void log(IStatus status)
     {
-        Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class)).log(status);
+        try
+        {
+            Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class)).log(status);
+        }
+        catch (NullPointerException e)
+        {
+            // when running unit tests via Infinitest, the platform log is not
+            // available
+            System.err.println(status); // NOSONAR
+        }
     }
 
     /**
-     * Logs the given error status to the application log.
+     * Logs the given error to the application log.
      * 
      * @param t
      *            {@link Throwable}
@@ -33,7 +45,20 @@ public class PortfolioLog
     }
 
     /**
-     * Logs the given error status to the application log.
+     * Logs the given errors to the application log.
+     * 
+     * @param t
+     *            {@link Throwable}
+     */
+    public static void error(List<? extends Throwable> errors)
+    {
+        ILog log = Platform.getLog(FrameworkUtil.getBundle(PortfolioLog.class));
+        for (Throwable t : errors)
+            log.log(new Status(IStatus.ERROR, PLUGIN_ID, t.getMessage(), t));
+    }
+
+    /**
+     * Logs the given error message to the application log.
      * 
      * @param message
      *            error message

@@ -13,9 +13,6 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.core.runtime.jobs.Job;
-import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
 import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
@@ -50,16 +47,8 @@ public final class UpdateHelper
     private static final String HEADER = "header"; //$NON-NLS-1$
     private static final String PREVENT_UPDATE_CONDITION_PREFIX = "latest.changes.preventUpdate."; //$NON-NLS-1$
 
-    private final IWorkbench workbench;
-    private final EPartService partService;
     private IProvisioningAgent agent;
     private UpdateOperation operation;
-
-    public UpdateHelper(IWorkbench workbench, EPartService partService)
-    {
-        this.workbench = workbench;
-        this.partService = partService;
-    }
 
     public void runUpdateWithUIMonitor()
     {
@@ -153,7 +142,8 @@ public final class UpdateHelper
             if (updateNumber >= 101)
                 return;
 
-            CoreException exception = new CoreException(new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID,
+            CoreException exception = new CoreException(new Status(IStatus.ERROR,
+                            PortfolioPlugin.PLUGIN_ID,
                             MessageFormat.format(Messages.MsgJavaVersionTooOldForLetsEncrypt, javaVersion)));
 
             if (silent)
@@ -171,44 +161,12 @@ public final class UpdateHelper
 
     private void promptForRestart()
     {
-        // start a new job before prompting to restart the application to allow
-        // the UI progress monitor to complete. Otherwise the open dialog will
-        // prevent the automatic restart.
+        // automatic restarting seems to have to many problems with users out
+        // there in the wild. Instead, we just open a dialog to inform the user
+        // that a restart is required.
 
-        new Job(Messages.JobMsgCheckingForUpdates)
-        {
-            @Override
-            protected IStatus run(IProgressMonitor monitor)
-            {
-                Display.getDefault().asyncExec(() -> {
-                    MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                    null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
-                                    new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
-
-                    int returnCode = dialog.open();
-
-                    if (returnCode == 0)
-                    {
-                        try
-                        {
-                            boolean successful = partService.saveAll(true);
-
-                            if (successful)
-                                workbench.restart();
-                        }
-                        catch (IllegalStateException e)
-                        {
-                            PortfolioPlugin.log(e);
-                            MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
-                                            Messages.MsgCannotRestartBecauseOfOpenDialog);
-                        }
-                    }
-                });
-
-                return Status.OK_STATUS;
-            }
-
-        }.schedule(500);
+        Display.getDefault().asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                        Messages.LabelInfo, Messages.MsgRestartRequired));
     }
 
     private NewVersion checkForUpdates(IProgressMonitor monitor) throws CoreException
@@ -299,21 +257,27 @@ public final class UpdateHelper
                             .getString(UIConstants.Preferences.UPDATE_SITE);
             URI uri = new URI(updateSite);
 
-            IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent.getService(IMetadataRepositoryManager.SERVICE_NAME);
-            IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent.getService(IArtifactRepositoryManager.SERVICE_NAME);
+            IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent
+                            .getService(IMetadataRepositoryManager.SERVICE_NAME);
+            IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent
+                            .getService(IArtifactRepositoryManager.SERVICE_NAME);
 
-            // remove all repos, this is important if the update site in preferences has been changed
+            // remove all repos, this is important if the update site in
+            // preferences has been changed
             final URI[] metaReposToClean = manager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
             Arrays.stream(metaReposToClean).forEach(manager::removeRepository);
-            final URI[] artifactReposToClean = artifactManager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
+            final URI[] artifactReposToClean = artifactManager
+                            .getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
             Arrays.stream(artifactReposToClean).forEach(artifactManager::removeRepository);
 
             manager.addRepository(uri);
             artifactManager.addRepository(uri);
 
-            // Working around bug https://bugs.eclipse.org/bugs/show_bug.cgi?id=520461
+            // Working around bug
+            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=520461
             // by forcing a refresh of the repositories.
-            // p2 never tries to reconnect if a connection timeout happened like described in 
+            // p2 never tries to reconnect if a connection timeout happened like
+            // described in
             // https://github.com/buchen/portfolio/issues/578#issuecomment-251653225
             manager.refreshRepository(uri, monitor);
             artifactManager.refreshRepository(uri, monitor);

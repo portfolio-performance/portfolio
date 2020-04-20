@@ -9,12 +9,12 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import javax.inject.Inject;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
@@ -30,6 +30,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceStore;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
@@ -63,7 +64,7 @@ public class ClientInput
 
     private PreferenceStore preferenceStore = new PreferenceStore();
     private ExchangeRateProviderFactory exchangeRateProviderFacory;
-    private LinkedList<ReportingPeriod> reportingPeriods;
+    private List<ReportingPeriod> reportingPeriods;
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
@@ -184,7 +185,7 @@ public class ClientInput
             catch (IOException e)
             {
                 ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
     }
@@ -231,7 +232,7 @@ public class ClientInput
         if (ClientFactory.isEncrypted(localFile))
         {
             PasswordDialog pwdDialog = new PasswordDialog(shell);
-            if (pwdDialog.open() != PasswordDialog.OK)
+            if (pwdDialog.open() != Window.OK)
                 return;
             password = pwdDialog.getPassword().toCharArray();
         }
@@ -254,7 +255,7 @@ public class ClientInput
             {
                 PortfolioPlugin.log(e);
                 ErrorDialog.openError(shell, Messages.LabelError, e.getMessage(),
-                                new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
+                                new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e));
             }
         });
     }
@@ -363,12 +364,12 @@ public class ClientInput
         }
     }
 
-    public LinkedList<ReportingPeriod> getReportingPeriods() // NOSONAR
+    public List<ReportingPeriod> getReportingPeriods()
     {
         if (reportingPeriods != null)
             return reportingPeriods;
 
-        LinkedList<ReportingPeriod> answer = new LinkedList<>();
+        List<ReportingPeriod> answer = new ArrayList<>();
 
         String config = getPreferenceStore().getString(REPORTING_PERIODS_KEY);
         if (config != null && config.trim().length() > 0)
@@ -389,7 +390,7 @@ public class ClientInput
 
         if (answer.isEmpty())
         {
-            for (int ii = 1; ii <= 5; ii++)
+            for (int ii = 1; ii <= 3; ii++)
                 answer.add(new ReportingPeriod.LastX(ii, 0));
         }
 

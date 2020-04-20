@@ -63,12 +63,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("Nr.[0-9A-Za-z]*/(\\d*) *Kauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+\\.\\d+\\.\\d{4}+), \\d+:\\d+.+")
+                        .section("shares", "date", "time")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), (?<time>\\d+:\\d+)(.+)?")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
-                            t.setDate(asDate(v.get("date")));
-
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
                         })
 
                         .section("amount", "currency") //
@@ -115,12 +117,14 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match("Nr.(\\d*)/(\\d*) *Verkauf *(?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("shares", "date")
-                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), \\d+:\\d+.+")
+                        .section("shares", "date", "time")
+                        .match("^davon ausgef\\. *: (?<shares>[.\\d]+,\\d*) St\\. *Schlusstag *: *(?<date>\\d+.\\d+.\\d{4}+), (?<time>\\d+:\\d+)(.+)?")
                         .assign((t, v) -> {
                             t.setShares(asShares(v.get("shares")));
-                            t.setDate(asDate(v.get("date")));
-
+                            if (v.get("time") != null)
+                                t.setDate(asDate(v.get("date"), v.get("time")));
+                            else
+                                t.setDate(asDate(v.get("date")));
                         })
 
                         .section("amount", "currency") //

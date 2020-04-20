@@ -13,11 +13,13 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 
 public class SecurityMasterDataPage extends AbstractPage
@@ -51,7 +53,17 @@ public class SecurityMasterDataPage extends AbstractPage
             // empty cell
             new Label(container, SWT.NONE).setText(""); //$NON-NLS-1$
 
-            Button unlink = new Button(container, SWT.PUSH);
+            Composite area = new Composite(container, SWT.NONE);
+            RowLayout layout = new RowLayout();
+            layout.center = true;
+            area.setLayout(layout);
+
+            Link link = new Link(area, SWT.UNDERLINE_LINK);
+            link.setText(Messages.LabelLinkedToPortfolioReport);
+            link.addSelectionListener(SelectionListener.widgetSelectedAdapter(e -> DesktopAPI
+                            .browse("https://www.portfolio-report.net/securities/" + model.getOnlineId()))); //$NON-NLS-1$
+
+            Button unlink = new Button(area, SWT.PUSH);
             unlink.setText(Messages.EditWizardMasterDataUnlink);
             unlink.setToolTipText(Messages.EditWizardMasterDataUnlink_ToolTip);
             unlink.setImage(Images.ONLINE.image());
@@ -59,6 +71,7 @@ public class SecurityMasterDataPage extends AbstractPage
                 model.setOnlineId(null);
                 isin.setEnabled(true);
                 wkn.setEnabled(true);
+                link.setEnabled(false);
                 unlink.setEnabled(false);
             }));
         }

@@ -357,6 +357,25 @@ public final class Security implements Attributable, InvestmentVehicle
             }
         }
     }
+    
+    public boolean addAllPrices(List<SecurityPrice> prices)
+    {
+        if (prices.isEmpty())
+            return false;
+        
+        LocalDate now = LocalDate.now();
+        
+        boolean isUpdated = false;
+        for (SecurityPrice p : prices)
+        {
+            if (p.getDate().isBefore(now))
+            {
+                boolean isAdded = addPrice(p);
+                isUpdated = isUpdated || isAdded;
+            }
+        }
+        return isUpdated;
+    }
 
     public void removePrice(SecurityPrice price)
     {
@@ -472,7 +491,7 @@ public final class Security implements Attributable, InvestmentVehicle
     public boolean setLatest(LatestSecurityPrice latest)
     {
         // only replace if necessary -> UI might keep reference!
-        if ((this.latest != null && !this.latest.equals(latest)) || (this.latest == null && latest != null))
+        if (!Objects.equals(latest, this.latest))
         {
             this.latest = latest;
             return true;

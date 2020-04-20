@@ -32,6 +32,9 @@ public class Messages extends NLS
     public static String BookmarksListView_LabelAttributeReplacements;
     public static String BookmarksListView_LabelDefaultReplacements;
     public static String BookmarksListView_LabelReplaceFirstAvailable;
+    public static String MenuDashboardColumnWidth;
+    public static String MenuDashboardColumnWidthDecrease;
+    public static String MenuDashboardColumnWidthIncrease;
     public static String MenuDuplicateDashboardColumn;
     public static String MenuMoveDown;
     public static String MenuMoveUp;
@@ -493,6 +496,7 @@ public class Messages extends NLS
     public static String LabelChartDetailSettingsShowMissingTradingDays;
     public static String LabelChartShowLabels;
     public static String LabelChartType;
+    public static String LabelCleanHTML;
     public static String LabelClientClearCustomItems;
     public static String LabelClientFilterDialogMessage;
     public static String LabelClientFilterDialogTitle;
@@ -539,6 +543,7 @@ public class Messages extends NLS
     public static String LabelExchangeRate;
     public static String LabelExchangeRates;
     public static String LabelExport;
+    public static String LabelFormatJSON;
     public static String LabelFullClassification;
     public static String LabelIncludeSecuritiesInPieChart;
     public static String LabelIncludeUnassignedCategoryInCharts;
@@ -558,6 +563,7 @@ public class Messages extends NLS
     public static String LabelLayoutRelevant;
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
+    public static String LabelLinkedToPortfolioReport;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -602,6 +608,7 @@ public class Messages extends NLS
     public static String LabelReportingDialogYear;
     public static String LabelReportingDialogYears;
     public static String LabelReportingPeriod;
+    public static String LabelReportingPeriodEditTooltip;
     public static String LabelReportInterval;
     public static String LabelRiskIndicators;
     public static String LabelRiskMetric;
@@ -622,6 +629,7 @@ public class Messages extends NLS
     public static String LabelSemiVolatility;
     public static String LabelSettings;
     public static String LabelShowOnlyOneYear;
+    public static String LabelShowRawResponse;
     public static String LabelDividendPerShare;
     public static String LabelDividends;
     public static String LabelGreenWhiteRed;
@@ -780,7 +788,6 @@ public class Messages extends NLS
     public static String MsgAccountFromMissing;
     public static String MsgAccountMustBeDifferent;
     public static String MsgAccountToMissing;
-    public static String MsgCannotRestartBecauseOfOpenDialog;
     public static String MsgConfirmInstall;
     public static String MsgCreateTransactionsAutomaticallyUponOpening;
     public static String MsgDateIsInTheFuture;
@@ -795,6 +802,7 @@ public class Messages extends NLS
     public static String MsgErrorExchangeMissing;
     public static String MsgErrorMinimumHeightRequired;
     public static String MsgErrorMissingQuandlCode;
+    public static String MsgErrorNoInvestmentVehicleFoundAtURL;
     public static String MsgErrorNotAValidDate;
     public static String MsgErrorOpeningFile;
     public static String MsgErrorSavingIniFile;
@@ -916,6 +924,7 @@ public class Messages extends NLS
     public static String SecurityMenuConfigureOnlineUpdate;
     public static String SecurityMenuCreateManually;
     public static String SecurityMenuCreateQuotesFromTransactions;
+    public static String SecurityMenuDebugGetHistoricalQuotes;
     public static String SecurityMenuDeleteAllPrices;
     public static String SecurityMenuDeletePrice;
     public static String SecurityMenuDeleteSecurity;

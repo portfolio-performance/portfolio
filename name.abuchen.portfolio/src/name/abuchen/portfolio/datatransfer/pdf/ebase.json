@@ -259,6 +259,60 @@
 					}
 				}
 			]
-		}	
+		},
+		{
+			"comment": "Entgelt durch Verkauf",
+			"type": "SALE",
+			"startsWith": "^(Entgelt Verkauf).* mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^(Entgelt Verkauf) .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^(Entgelt Verkauf) mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN .*",
+						"^.*-(?<shares>[\\d+,.]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^(Zahlungsbetrag) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Depotführungsentgelt inkl. \\d*\\% USt) (?<amount>[\\d,.]*) (?<currency>\\w{3}+)$"
+					],
+					"attributes": {
+						"type": "FEE"
+					}
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern)$",
+						"^([\\d,.]* \\w{3} ){3}(?<amount>[\\d,.]*) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
+		}
 	]
 }

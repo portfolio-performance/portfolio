@@ -556,8 +556,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setDescription(Messages.ColumnCapitalGains_Description);
         column.setLabelProvider(new MoneyColorLabelProvider(
-                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(),
-                        getClient().getBaseCurrency()));
+                        element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldings(), getClient()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "capitalGainsOnHoldings")); //$NON-NLS-1$
         recordColumns.addColumn(column);
@@ -577,7 +576,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setDescription(Messages.ColumnCapitalGainsMovingAverage_Description);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getCapitalGainsOnHoldingsMovingAverage(),
-                        getClient().getBaseCurrency()));
+                        getClient()));
         column.setVisible(false);
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class,
                         "capitalGainsOnHoldingsMovingAverage")); //$NON-NLS-1$
@@ -600,7 +599,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setMenuLabel(Messages.ColumnAbsolutePerformance_MenuLabel);
         column.setGroupLabel(Messages.GroupLabelPerformance);
         column.setLabelProvider(new MoneyColorLabelProvider(element -> ((SecurityPerformanceRecord) element).getDelta(),
-                        getClient().getBaseCurrency()));
+                        getClient()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "delta")); //$NON-NLS-1$
         recordColumns.addColumn(column);
 

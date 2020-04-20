@@ -169,4 +169,9 @@ public class WebAccess
             throw new IOException(e);
         }
     }
+    
+    public String getURL() throws URISyntaxException
+    {
+        return builder.build().toASCIIString();
+    }
 }

@@ -36,6 +36,7 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -298,11 +299,22 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
         createProviderGroup(container);
 
+        Composite buttonArea = new Composite(container, SWT.NONE);
+        buttonArea.setLayout(new RowLayout(SWT.VERTICAL));
+        createAdditionalButtons(buttonArea);
+
+        FormData data = new FormData();
+        data.top = new FormAttachment(grpQuoteFeed, 20, SWT.TOP);
+        data.left = new FormAttachment(grpQuoteFeed, 10);
+        data.right = new FormAttachment(100, -10);
+        data.bottom = new FormAttachment(grpQuoteFeed, -10, SWT.BOTTOM);
+        buttonArea.setLayoutData(data);
+
         Composite sampleArea = new Composite(container, SWT.NONE);
         sampleArea.setLayout(new FillLayout());
         createSampleArea(sampleArea);
 
-        FormData data = new FormData();
+        data = new FormData();
         data.top = new FormAttachment(grpQuoteFeed, 5);
         data.left = new FormAttachment(0, 10);
         data.right = new FormAttachment(100, -10);
@@ -312,6 +324,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
         setupInitialData();
 
         comboProvider.addSelectionChangedListener(this::onFeedProviderChanged);
+    }
+
+    protected void createAdditionalButtons(Composite container)
+    {
     }
 
     /**
@@ -559,6 +575,10 @@ public abstract class AbstractQuoteProviderPage extends AbstractPage
 
     private void setupInitialData()
     {
+        this.tickerSymbol = model.getTickerSymbol();
+
+        new LoadExchangesJob().schedule();
+
         QuoteFeed feed = getQuoteFeedProvider(getFeed());
 
         if (feed != null)

@@ -20,6 +20,7 @@ import name.abuchen.portfolio.model.LatestSecurityPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeedData;
 
 @SuppressWarnings("nls")
 public class YahooFinanceQuoteFeedTest
@@ -45,7 +46,7 @@ public class YahooFinanceQuoteFeedTest
     }
     
     @Test
-    public void testParsingHistoricalQuotes() throws IOException
+    public void testParsingHistoricalQuotes()
     {
         String responseBody = null;
         try (Scanner scanner = new Scanner(getClass().getResourceAsStream("response_yahoo_historical.txt"), "UTF-8"))
@@ -57,7 +58,8 @@ public class YahooFinanceQuoteFeedTest
         security.setTickerSymbol("DAI.DE");
 
         YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
-        List<LatestSecurityPrice> prices = feed.getHistoricalQuotes(responseBody, new ArrayList<Exception>());
+        QuoteFeedData data = feed.extractQuotes(responseBody);
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
         Collections.sort(prices, new SecurityPrice.ByDate());
 
         assertThat(prices.size(), is(123));
@@ -90,7 +92,8 @@ public class YahooFinanceQuoteFeedTest
         security.setTickerSymbol("DAI.DE");
 
         YahooFinanceAdjustedCloseQuoteFeed feed = new YahooFinanceAdjustedCloseQuoteFeed();
-        List<LatestSecurityPrice> prices = feed.getHistoricalQuotes(responseBody, new ArrayList<Exception>());
+        QuoteFeedData data = feed.extractQuotes(responseBody);
+        List<LatestSecurityPrice> prices = data.getLatestPrices();
         Collections.sort(prices, new SecurityPrice.ByDate());
 
         assertThat(prices.size(), is(123));

@@ -92,6 +92,22 @@ public class TradeDetailsView extends AbstractFinanceView
     }
 
     @Override
+    public void notifyModelUpdated()
+    {
+        // the base currency might have changed
+        this.converter = this.converter.with(getClient().getBaseCurrency());
+
+        // only update the trades if it is *not* based on a pre-calculated set
+        // of trades, for example when the user navigates from the dashboard to
+        // the detailed trades
+        if (table.getInput() != input.getTrades())
+            updateFrom(collectAllTrades());
+
+        if (!table.getTableViewer().getTable().isDisposed())
+            table.getTableViewer().refresh(true);
+    }
+
+    @Override
     protected void addButtons(ToolBarManager toolBarManager)
     {
         boolean hasPreselectedTrades = input != null;

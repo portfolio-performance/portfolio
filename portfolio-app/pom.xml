@@ -5,7 +5,7 @@
 
 	<groupId>name.abuchen.portfolio</groupId>
 	<artifactId>portfolio-app</artifactId>
-	<version>0.45.2-SNAPSHOT</version>
+	<version>0.46.2-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
 	<name>Portfolio Performance</name>
@@ -24,10 +24,6 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
-
-	<prerequisites>
-		<maven>3.5.2</maven>
-	</prerequisites>
 
 	<modules>
 		<module>../portfolio-target-definition</module>

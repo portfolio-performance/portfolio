@@ -11,8 +11,8 @@ import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdat
 
 /* package */abstract class Page implements TaxonomyModelUpdatedListener
 {
-    private TaxonomyModel model;
-    private TaxonomyNodeRenderer renderer;
+    private final TaxonomyModel model;
+    private final TaxonomyNodeRenderer renderer;
 
     @Inject
     private IPreferenceStore preferenceStore;
