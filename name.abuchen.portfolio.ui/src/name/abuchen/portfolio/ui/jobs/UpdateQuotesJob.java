@@ -144,13 +144,13 @@ public final class UpdateQuotesJob extends AbstractClientJob
         Dirtyable dirtyable = new Dirtyable(getClient());
         List<Job> jobs = new ArrayList<>();
 
-        // include latest quotes
-        if (target.contains(Target.LATEST))
-            addLatestQuotesJobs(dirtyable, jobs);
-
         // include historical quotes
         if (target.contains(Target.HISTORIC))
             addHistoricalQuotesJobs(dirtyable, jobs);
+
+        // include latest quotes
+        if (target.contains(Target.LATEST))
+            addLatestQuotesJobs(dirtyable, jobs);
 
         if (monitor.isCanceled())
             return Status.CANCEL_STATUS;
