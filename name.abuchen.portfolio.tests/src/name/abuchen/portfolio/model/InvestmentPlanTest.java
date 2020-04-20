@@ -11,12 +11,14 @@ import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.AccountBuilder;
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
+import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
@@ -24,22 +26,31 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 @SuppressWarnings("nls")
 public class InvestmentPlanTest
 {
+    Client client;
+    Security security;
+    Account account;
+    Portfolio portfolio;
+    InvestmentPlan investmentPlan;
+    
+    @Before
+    public void setup()
+    {
+        this.client = new Client();
+        this.security = new SecurityBuilder().addTo(client);
+        this.account = new AccountBuilder().addTo(client);
+        this.portfolio = new PortfolioBuilder(account).addTo(client);
+        this.investmentPlan = new InvestmentPlan();
+        this.investmentPlan.setAmount(Values.Amount.factorize(100));
+        this.investmentPlan.setInterval(1);
+    }
 
     @Test
     public void testGenerationOfBuyTransaction()
     {
-        Client client = new Client();
-        Security security = new SecurityBuilder().addTo(client);
-        Account account = new AccountBuilder().addTo(client);
-        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
-
-        InvestmentPlan investmentPlan = new InvestmentPlan();
         investmentPlan.setAccount(account); // set both account and portfolio
         investmentPlan.setPortfolio(portfolio); // causes securities to be
                                                 // bought
         investmentPlan.setSecurity(security);
-        investmentPlan.setAmount(Values.Amount.factorize(100));
-        investmentPlan.setInterval(1);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00:00"));
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
@@ -85,18 +96,10 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDeliveryTransaction()
     {
-        Client client = new Client();
-        Security security = new SecurityBuilder().addTo(client);
-        Account account = new AccountBuilder().addTo(client);
-        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
-
-        InvestmentPlan investmentPlan = new InvestmentPlan();
         // investmentPlan.setAccount(account); // set portfolio only
         investmentPlan.setPortfolio(portfolio); // causes securities to be
                                                 // delivered in
         investmentPlan.setSecurity(security);
-        investmentPlan.setAmount(Values.Amount.factorize(100));
-        investmentPlan.setInterval(1);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
@@ -127,13 +130,7 @@ public class InvestmentPlanTest
     @Test
     public void testGenerationOfDepositTransaction()
     {
-        Client client = new Client();
-        Account account = new AccountBuilder().addTo(client);
-
-        InvestmentPlan investmentPlan = new InvestmentPlan();
         investmentPlan.setAccount(account);
-        investmentPlan.setAmount(Values.Amount.factorize(100));
-        investmentPlan.setInterval(1);
         investmentPlan.setStart(LocalDateTime.parse("2016-01-31T00:00"));
 
         investmentPlan.generateTransactions(new TestCurrencyConverter());
@@ -167,13 +164,7 @@ public class InvestmentPlanTest
     @Test
     public void testNoGenerationWithStartInFuture()
     {
-        Client client = new Client();
-        Account account = new AccountBuilder().addTo(client);
-
-        InvestmentPlan investmentPlan = new InvestmentPlan();
         investmentPlan.setAccount(account);
-        investmentPlan.setAmount(Values.Amount.factorize(100));
-        investmentPlan.setInterval(1);
         investmentPlan.setStart(LocalDate.now().minusMonths(6));
         investmentPlan.setInterval(12);
 
