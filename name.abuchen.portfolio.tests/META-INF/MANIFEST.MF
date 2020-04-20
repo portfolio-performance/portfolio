@@ -14,7 +14,9 @@ Require-Bundle: org.junit,
  org.apache.pdfbox.fontbox,
  org.apache.pdfbox.jempbox,
  org.apache.servicemix.bundles.xpp3,
- org.apache.commons.logging
+ org.apache.commons.logging,
+ org.objenesis,
+ net.bytebuddy.byte-buddy;bundle-version="1.9.0"
 Automatic-Module-Name: name.abuchen.portfolio.tests
 Import-Package: com.google.common.collect
 Export-Package: name.abuchen.portfolio
