@@ -28,16 +28,6 @@ public class ColorConversionTest
         assertEquals(rgb[1], 2);
         assertEquals(rgb[2], 3);
     }
-    
-    @Test
-    public void testToRGB()
-    {
-        String hex = "#010203";
-        int[] rgb = ColorConversion.toRGB(hex);
-        assertEquals(rgb[0], 1);
-        assertEquals(rgb[1], 2);
-        assertEquals(rgb[2], 3);
-    }
 
     @Test
     public void testHex2RGB()
