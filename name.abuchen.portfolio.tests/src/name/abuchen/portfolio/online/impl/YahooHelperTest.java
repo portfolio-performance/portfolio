@@ -3,6 +3,8 @@ package name.abuchen.portfolio.online.impl;
 import static org.junit.Assert.assertEquals;
 
 import java.text.ParseException;
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
@@ -104,4 +106,83 @@ public class YahooHelperTest
 
         long result = YahooHelper.asNumber(priceFromYahoo);
     }    
+    
+    @Test
+    public void asDateNotAvailableTest()
+    {
+        String dateFromYahoo = "\"N/A\"";
+
+        LocalDate result = YahooHelper.asDate(dateFromYahoo);
+        
+        assertEquals(result, null);
+    }    
+    
+    @Test
+    public void asDateSimpleTest()
+    {
+        String dateFromYahoo = "\"04/20/2020\"";
+
+        LocalDate result = YahooHelper.asDate(dateFromYahoo);
+        
+        assertEquals(result, LocalDate.of(2020, 4, 20));
+    }    
+    
+    
+    @Test(expected = DateTimeParseException.class)
+    public void asDateExceptionTest() throws ParseException
+    {
+        String dateFromYahoo = "\"A4/20/2020\"";
+
+        LocalDate result = YahooHelper.asDate(dateFromYahoo);
+    }  
+    
+    
+    @Test
+    public void fromISODateNotAvailableTest()
+    {
+        String isoDateFromYahoo = "\"N/A\"";
+
+        LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
+        
+        assertEquals(result, null);
+    }    
+    
+    
+    @Test
+    public void fromISODateNullTest()
+    {
+        String isoDateFromYahoo = null;
+
+        LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
+        
+        assertEquals(result, null);
+    }   
+    
+    @Test
+    public void fromISODateNullStringTest()
+    {
+        String isoDateFromYahoo = "null";
+
+        LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
+        
+        assertEquals(result, null);
+    }    
+    
+    @Test
+    public void fromISODateSimpleTest()
+    {
+        String isoDateFromYahoo = "2020-04-19";
+
+        LocalDate result = YahooHelper.fromISODate(isoDateFromYahoo);
+        
+        assertEquals(result, LocalDate.of(2020, 4, 19));
+    }    
+
+    @Test(expected = DateTimeParseException.class)
+    public void fromISODateExceptionTest() throws ParseException
+    {
+        String dateFromYahoo = "\"A4/20/2020\"";
+
+        LocalDate result = YahooHelper.fromISODate(dateFromYahoo);
+    } 
 }
