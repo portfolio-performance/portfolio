@@ -33,13 +33,12 @@ public class YahooFinanceQuoteFeedTest
         security.setTickerSymbol("AAPL");
         String response = "{\"quoteResponse\":{\"result\":[{\"language\":\"en-US\",\"region\":\"US\",\"quoteType\":\"EQUITY\",\"quoteSourceName\":\"Nasdaq Real Time Price\",\"triggerable\":true,\"currency\":\"USD\",\"sourceInterval\":15,\"exchangeDataDelayedBy\":0,\"tradeable\":false,\"priceHint\":2,\"exchange\":\"NMS\",\"shortName\":\"Apple Inc.\",\"longName\":\"Apple Inc.\",\"messageBoardId\":\"finmb_24937\",\"exchangeTimezoneName\":\"America/New_York\",\"exchangeTimezoneShortName\":\"EDT\",\"gmtOffSetMilliseconds\":-14400000,\"market\":\"us_market\",\"esgPopulated\":false,\"postMarketChangePercent\":-0.1949872,\"postMarketTime\":1587416695,\"postMarketPrice\":276.39,\"postMarketChange\":-0.539978,\"regularMarketChange\":-5.869995,\"regularMarketChangePercent\":-2.0756702,\"regularMarketTime\":1587412802,\"regularMarketPrice\":276.93,\"regularMarketDayHigh\":281.66,\"regularMarketDayRange\":\"276.85 - 281.66\",\"regularMarketDayLow\":276.85,\"regularMarketVolume\":31089201,\"regularMarketPreviousClose\":282.8,\"bid\":277.14,\"ask\":277.06,\"bidSize\":10,\"askSize\":9,\"fullExchangeName\":\"NasdaqGS\",\"financialCurrency\":\"USD\",\"regularMarketOpen\":277.95,\"averageDailyVolume3Month\":51071277,\"averageDailyVolume10Day\":41379080,\"fiftyTwoWeekLowChange\":106.65999,\"fiftyTwoWeekLowChangePercent\":0.6264168,\"fiftyTwoWeekRange\":\"170.27 - 327.85\",\"fiftyTwoWeekHighChange\":-50.920013,\"fiftyTwoWeekHighChangePercent\":-0.15531497,\"fiftyTwoWeekLow\":170.27,\"fiftyTwoWeekHigh\":327.85,\"dividendDate\":1581552000,\"earningsTimestamp\":1588291200,\"earningsTimestampStart\":1588291200,\"earningsTimestampEnd\":1588291200,\"trailingAnnualDividendRate\":3.04,\"trailingPE\":21.987295,\"trailingAnnualDividendYield\":0.010749646,\"marketState\":\"POST\",\"epsTrailingTwelveMonths\":12.595,\"epsForward\":14.85,\"sharesOutstanding\":4375479808,\"bookValue\":20.418,\"fiftyDayAverage\":263.85883,\"fiftyDayAverageChange\":13.071167,\"fiftyDayAverageChangePercent\":0.049538486,\"twoHundredDayAverage\":275.44904,\"twoHundredDayAverageChange\":1.480957,\"twoHundredDayAverageChangePercent\":0.005376519,\"marketCap\":1211701526528,\"forwardPE\":18.648483,\"priceToBook\":13.563033,\"firstTradeDateMilliseconds\":345479400000,\"symbol\":\"AAPL\"}],\"error\":null}}";
 
-        YahooFinanceQuoteFeed feed = new YahooFinanceQuoteFeed();
-        YahooFinanceQuoteFeed feed1 = Mockito.spy(feed);
+        YahooFinanceQuoteFeed feed = Mockito.spy(new YahooFinanceQuoteFeed());
 
         // we mock the rpc call to return the above string
-        Mockito.doReturn(response).when(feed1).rpcLatestQuote(security);
+        Mockito.doReturn(response).when(feed).rpcLatestQuote(security);
 
-        LatestSecurityPrice price = feed1.getLatestQuote(security).get();
+        LatestSecurityPrice price = feed.getLatestQuote(security).get();
 
         assertThat(price.getDate(), is(LocalDate.of(2020, 4, 20)));
         assertThat(price.getHigh(), is(2816600L));
