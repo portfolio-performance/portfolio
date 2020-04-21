@@ -18,7 +18,7 @@ public class YahooHelperTest
 
         assertEquals(result, -1L);
     }
-    
+
     @Test
     public void testAsPriceNull() throws ParseException
     {
@@ -28,7 +28,7 @@ public class YahooHelperTest
 
         assertEquals(result, -1L);
     }
-    
+
     @Test
     public void testAsPriceSimple() throws ParseException
     {
@@ -38,5 +38,14 @@ public class YahooHelperTest
 
         assertEquals(result, 2775300L);
     }
-   
+
+    @Test
+    public void testAsPriceWithoutFraction() throws ParseException
+    {
+        String priceFromYahoo = "277";
+
+        long result = YahooHelper.asPrice(priceFromYahoo);
+
+        assertEquals(result, 2770000L);
+    }
 }
