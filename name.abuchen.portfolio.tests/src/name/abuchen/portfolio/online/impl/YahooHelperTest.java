@@ -10,7 +10,7 @@ public class YahooHelperTest
 {
 
     @Test
-    public void testAsPriceNotAvailable() throws ParseException
+    public void asPriceNotAvailableTest() throws ParseException
     {
         String priceFromYahoo = "N/A";
 
@@ -20,7 +20,7 @@ public class YahooHelperTest
     }
 
     @Test
-    public void testAsPriceNull() throws ParseException
+    public void asPriceNullTest() throws ParseException
     {
         String priceFromYahoo = "null";
 
@@ -30,7 +30,7 @@ public class YahooHelperTest
     }
 
     @Test
-    public void testAsPriceSimple() throws ParseException
+    public void asPriceSimpleTest() throws ParseException
     {
         String priceFromYahoo = "277.5300";
 
@@ -38,9 +38,9 @@ public class YahooHelperTest
 
         assertEquals(result, 2775300L);
     }
-
+    
     @Test
-    public void testAsPriceWithoutFraction() throws ParseException
+    public void asPriceWithoutFractionTest() throws ParseException
     {
         String priceFromYahoo = "277";
 
