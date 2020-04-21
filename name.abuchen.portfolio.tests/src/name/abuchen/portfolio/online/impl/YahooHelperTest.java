@@ -48,4 +48,60 @@ public class YahooHelperTest
 
         assertEquals(result, 2770000L);
     }
+    
+    @Test(expected = ParseException.class)
+    public void asPriceExceptionTest() throws ParseException
+    {
+        String priceFromYahoo = "a277";
+
+        long result = YahooHelper.asPrice(priceFromYahoo);
+    }
+    
+    @Test
+    public void asNumberNotAvailableTest() throws ParseException
+    {
+        String priceFromYahoo = "N/A";
+
+        int result = YahooHelper.asNumber(priceFromYahoo);
+
+        assertEquals(result, -1);
+    }
+    
+    @Test
+    public void asNumberNullTest() throws ParseException
+    {
+        String priceFromYahoo = "null";
+
+        int result = YahooHelper.asNumber(priceFromYahoo);
+
+        assertEquals(result, -1);
+    }
+    
+    @Test
+    public void asNumberSimpleTest() throws ParseException
+    {
+        String priceFromYahoo = "277";
+
+        int result = YahooHelper.asNumber(priceFromYahoo);
+                        
+        assertEquals(result, 277);
+    }
+    
+    @Test
+    public void asNumberWithFractionTest() throws ParseException
+    {
+        String priceFromYahoo = "277.02";
+
+        int result = YahooHelper.asNumber(priceFromYahoo);
+                        
+        assertEquals(result, 277);
+    }
+    
+    @Test(expected = ParseException.class)
+    public void asNumberExceptionTest() throws ParseException
+    {
+        String priceFromYahoo = "a277";
+
+        long result = YahooHelper.asNumber(priceFromYahoo);
+    }    
 }
