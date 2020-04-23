@@ -160,6 +160,8 @@ import name.abuchen.portfolio.util.Dates;
                     double significance = p.amount.getAmount() / expectedAmount;
                     if (significance > 0.3)
                     {
+                        // check, if dividends were recorded for multiple
+                        // accounts at the same date
                         if (lastDate == null || !p.date.equals(lastDate))
                         {
                             significantCount++;
