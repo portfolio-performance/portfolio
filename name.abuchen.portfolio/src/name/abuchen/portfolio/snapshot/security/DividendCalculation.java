@@ -120,12 +120,14 @@ import name.abuchen.portfolio.util.Dates;
         }
 
         int years = 0;
+        
         // now walk through individual years
         for (int year = firstPayment.getYear(); year <= lastPayment.getYear(); year++)
         {
             years++;
             int countPerYear = 0;
             long sumPerYear = 0;
+            LocalDate lastDate = null;
 
             // first calc sum only for this year
             for (DividendPayment p : payments)
@@ -146,7 +148,7 @@ import name.abuchen.portfolio.util.Dates;
 
             // calc expected amount for this year
             double expectedAmount = sumPerYear / (double) countPerYear;
-
+            
             // then calc significance
             for (DividendPayment p : payments)
             {
@@ -158,8 +160,14 @@ import name.abuchen.portfolio.util.Dates;
                     double significance = p.amount.getAmount() / expectedAmount;
                     if (significance > 0.3)
                     {
-                        significantCount++;
+                        // check, if dividends were recorded for multiple
+                        // accounts at the same date
+                        if (lastDate == null || !p.date.equals(lastDate))
+                        {
+                            significantCount++;
+                        }
                     }
+                    lastDate = p.date;
                 }
             }
         }
