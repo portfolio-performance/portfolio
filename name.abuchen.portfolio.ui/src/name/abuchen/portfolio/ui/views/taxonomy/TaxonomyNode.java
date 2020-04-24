@@ -41,6 +41,18 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public int getThreshold()
+        {
+            return classification.getThreshold();
+        }
+
+        @Override
+        public void setThreshold(int threshold)
+        {
+            classification.setThreshold(threshold);
+        }
+
+        @Override
         public int getWeight()
         {
             return classification.getWeight();
@@ -146,6 +158,19 @@ public abstract class TaxonomyNode implements Adaptable
         {
             return assignment;
         }
+
+        @Override
+        public int getThreshold()
+        {
+            return assignment.getThreshold();
+        }
+
+        @Override
+        public void setThreshold(int threshold)
+        {
+            assignment.setThreshold(threshold);
+        }
+
 
         @Override
         public int getWeight()
@@ -332,6 +357,10 @@ public abstract class TaxonomyNode implements Adaptable
     public abstract String getName();
 
     public abstract void setName(String name);
+
+    public abstract int getThreshold();
+
+    public abstract void setThreshold(int threshold);
 
     public abstract int getWeight();
 

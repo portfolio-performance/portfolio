@@ -139,6 +139,7 @@ public class Messages extends NLS
     public static String ColumnDeltaPercentRelative_Description;
     public static String ColumnDeltaShares;
     public static String ColumnDeltaValue;
+    public static String ColumnDeltaUserThreshold;
     public static String ColumnDesiredAllocation;
     public static String ColumnDesiredAllocation_Description;
     public static String ColumnDetails;

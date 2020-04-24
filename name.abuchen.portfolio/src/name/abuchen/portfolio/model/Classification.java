@@ -19,6 +19,7 @@ public class Classification implements Named
     {
         private InvestmentVehicle investmentVehicle;
         private int weight;
+        private int threshold;
         private int rank;
         private Map<String, Object> data;
 
@@ -36,6 +37,16 @@ public class Classification implements Named
         {
             this.weight = weight;
             this.investmentVehicle = vehicle;
+        }
+
+        public int getThreshold()
+        {
+            return threshold;
+        }
+
+        public void setThreshold(int threshold)
+        {
+            this.threshold = threshold;
         }
 
         public int getWeight()
@@ -97,6 +108,7 @@ public class Classification implements Named
     private List<Assignment> assignments = new ArrayList<>();
 
     private int weight;
+    private int threshold;
     private int rank;
 
     private Map<String, Object> data;
@@ -213,6 +225,11 @@ public class Classification implements Named
         assignments.remove(assignment);
     }
 
+    public int getThreshold()
+    {
+        return threshold;
+    }
+
     public int getWeight()
     {
         return weight;
@@ -224,6 +241,11 @@ public class Classification implements Named
         for (Classification child : children)
             sum += child.getWeight();
         return sum;
+    }
+
+    public void setThreshold(int threshold)
+    {
+        this.threshold = threshold;
     }
 
     public void setWeight(int weight)

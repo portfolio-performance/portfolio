@@ -269,6 +269,15 @@ public abstract class Values<E>
         }
     };
 
+    public static final Values<Integer> Threshold = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
+    {
+        @Override
+        public String format(Integer threshold)
+        {
+            return String.format("%,.2f", threshold / divider()); //$NON-NLS-1$
+        }
+    };
+
     public static final Values<Integer> WeightPercent = new Values<Integer>("#,##0.00", 100D, 100) //$NON-NLS-1$
     {
         @Override

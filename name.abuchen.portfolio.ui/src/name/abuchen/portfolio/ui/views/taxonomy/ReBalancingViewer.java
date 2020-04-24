@@ -96,6 +96,31 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             }
         });
         support.addColumn(column);
+// ColumnDeltaUserThreshold = Delta % Threshold
+        column = new Column("delta%threshold", Messages.ColumnDeltaUserThreshold, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isClassification() ? Values.Threshold.format(node.getThreshold())
+                                : node.isUnassignedCategory() ? Messages.LabelNotAvailable : null;
+            }
+        });
+        new ValueEditingSupport(TaxonomyNode.class, "threshold", Values.Threshold) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (node.isAssignment() || node.isUnassignedCategory())
+                    return false;
+                return super.canEdit(element);
+            }
+
+        }.addListener(this::onModified).attachTo(column);
+        support.addColumn(column);
 
         column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
 
@@ -104,8 +129,12 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
             return node.getTarget() == null ? null
                             : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
         };
+        Function<Object, Double> thresholdProvider = element -> { // NOSONAR
+            TaxonomyNode node = (TaxonomyNode) element;
+            return (double)(node.getThreshold());
+        };
         
-        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider));
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider,thresholdProvider));
         support.addColumn(column);
 
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$

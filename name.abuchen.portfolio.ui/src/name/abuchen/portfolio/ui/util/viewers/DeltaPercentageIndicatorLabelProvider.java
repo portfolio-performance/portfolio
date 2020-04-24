@@ -15,10 +15,12 @@ import name.abuchen.portfolio.ui.util.Colors;
 public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvider
 {
     private Function<Object, Double> percentageProvider;
+    private Function<Object, Double> thresholdProvider;
 
-    public DeltaPercentageIndicatorLabelProvider(Function<Object, Double> percentageProvider) // NOSONAR
+    public DeltaPercentageIndicatorLabelProvider(Function<Object, Double> percentageProvider, Function<Object, Double> thresholdProvider) // NOSONAR
     {
         this.percentageProvider = percentageProvider;
+        this.thresholdProvider = thresholdProvider;
     }
 
     @Override
@@ -31,10 +33,13 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
     protected void paint(Event event, Object element)
     {
         Double percentage = percentageProvider.apply(element);
-
+        Double threshold = thresholdProvider.apply(element);
         if (percentage == null)
             return;
 
+        // old max = 0.1, new max = threshold/2
+        percentage *= 500.0/threshold;
+        
         Color oldForeground = event.gc.getForeground();
 
         Rectangle bounds = getBounds(event.item, event.index);
