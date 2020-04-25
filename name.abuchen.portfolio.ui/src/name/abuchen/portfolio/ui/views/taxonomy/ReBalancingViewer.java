@@ -24,7 +24,6 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.DeltaPercentageIndicatorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -99,13 +98,13 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
 
-        Function<Object, Double> percentageProvider = element -> { // NOSONAR
+        Function<Object, TaxonomyNode> nodeProvider = element -> { // NOSONAR
             TaxonomyNode node = (TaxonomyNode) element;
-            return node.getTarget() == null ? null
-                            : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
+            return node;//.getTarget() == null ? null
+                       //    : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
         };
         
-        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider));
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(nodeProvider));
         support.addColumn(column);
 
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
