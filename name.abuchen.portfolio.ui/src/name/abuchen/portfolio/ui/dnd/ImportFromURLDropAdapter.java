@@ -38,8 +38,7 @@ import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
 public class ImportFromURLDropAdapter extends AbstractDropAdapter
 {
-    private static final Pattern URL_PATTERN = Pattern
-                    .compile("^https://www.portfolio-report.net/securities/([^/]+)/?"); //$NON-NLS-1$
+    public static final Pattern URL_PATTERN = Pattern.compile("^https://www.portfolio-report.net/securities/([^/]+)/?"); //$NON-NLS-1$
 
     private final PortfolioPart part;
 
