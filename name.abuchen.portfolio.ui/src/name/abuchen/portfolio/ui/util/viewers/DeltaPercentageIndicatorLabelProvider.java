@@ -38,7 +38,11 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
             return;
 
         // old max = 0.1, new max = threshold/2
-        percentage *= 500.0/threshold;
+        if (threshold > 0) {
+            percentage *= 500.0/threshold;
+        } else {
+            percentage = 0.1;
+        }
         
         Color oldForeground = event.gc.getForeground();
 
