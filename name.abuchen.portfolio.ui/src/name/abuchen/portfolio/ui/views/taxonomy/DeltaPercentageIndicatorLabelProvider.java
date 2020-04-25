@@ -31,28 +31,25 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
     protected void paint(Event event, Object element)
     {
         TaxonomyNode node = nodeProvider.apply(element);
-        double totalAmount  = node.getTarget() == null ? 0.
-                             : (double)node.getRoot().getActual().getAmount() ;
-
-        if (totalAmount == 0.)
+        if (node.getTarget() == null)
             return;
-
-        double targetAmount = node.getTarget() == null ? 0.
-                             : (double)node.getTarget().getAmount() ;
-        double actualAmount = node.getTarget() == null ? 0.
-                             : (double)node.getActual().getAmount() ;
-        // the Delta % value (previous: percentage)
+        
+        double totalAmount  = (double)node.getRoot().getActual().getAmount() ;
+        double targetAmount = (double)node.getTarget().getAmount() ;
+        double actualAmount = (double)node.getActual().getAmount() ;
+        
+        // the Delta % value (previously: percentage)
         double relativeDeviation = (actualAmount / targetAmount) - 1.;
-        // newly introduced, absolute deviation
+        // newly introduced
         double relativeTargetAmount = targetAmount / totalAmount;
         
         String propertyString = "25.";//Client.getProperty("rebalance_relative_threshold") ;
-        double thRel = Double.valueOf(propertyString);
-        boolean thRelEnabled = Boolean.valueOf("true");
+        double thRel = Double.parseDouble(propertyString);
+        boolean thRelEnabled = Boolean.parseBoolean("true");
         
         propertyString = "5.";//Client.getProperty("rebalance_absolute_threshold") ;
-        double thAbs = Double.valueOf(propertyString) / relativeTargetAmount;
-        boolean thAbsEnabled = Boolean.valueOf("true");
+        double thAbs = Double.parseDouble(propertyString) / relativeTargetAmount;
+        boolean thAbsEnabled = Boolean.parseBoolean("true");
         
         double threshold = 5;  // default case: threshold set to 5%
         // Make the bar 5% longer than relative threshold (which is the maximum threshold that can occur)
