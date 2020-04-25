@@ -59,6 +59,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
+import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -66,7 +68,6 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
-import name.abuchen.portfolio.ui.util.CreateSecurityFromURLDropAdaptor;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -119,7 +120,8 @@ public final class SecuritiesTable implements ModificationListener
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        CreateSecurityFromURLDropAdaptor.attach(this.view, this.securities.getControl());
+        ImportFromURLDropAdapter.attach(this.securities.getControl(), view.getPart());
+        ImportFromFileDropAdapter.attach(this.securities.getControl(), view.getPart());
 
         ColumnEditingSupport.prepare(securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);

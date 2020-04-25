@@ -18,6 +18,8 @@ import org.eclipse.swt.widgets.Control;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
+import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.Navigation.Item;
 import name.abuchen.portfolio.ui.editor.Navigation.Tag;
@@ -106,6 +108,10 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
         };
         editor.getClientInput().getNavigation().addListener(listener);
         sidebar.addDisposeListener(e -> editor.getClientInput().getNavigation().removeListener(listener));
+
+        ImportFromURLDropAdapter.attach(sidebar, editor);
+
+        ImportFromFileDropAdapter.attach(sidebar, editor);
 
         return scrolledComposite;
     }
