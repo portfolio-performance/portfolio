@@ -22,7 +22,7 @@ public class TradesWidget extends AbstractTradesWidget
         this.title.setText(TextUtil.tooltip(getWidget().getLabel()));
 
         List<Trade> trades = input.getTrades();
-        long positive = trades.stream().filter(t -> t.getIRR() > 0).count();
+        long positive = trades.stream().filter(t -> t.getProfitLoss().isPositive()).count();
         String text = MessageFormat.format("{0} <green>↑{1}</green> <red>↓{2}</red>", //$NON-NLS-1$
                         trades.size(), positive, trades.size() - positive);
 
