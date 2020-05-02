@@ -2,10 +2,13 @@ package name.abuchen.portfolio.snapshot.trail;
 
 import java.time.LocalDate;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
+import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
 
 /* package */ class TransactionTrail implements TrailRecord
 {
@@ -29,6 +32,10 @@ import name.abuchen.portfolio.money.Money;
             return ((PortfolioTransaction) transaction).getType().toString();
         else if (transaction instanceof AccountTransaction)
             return ((AccountTransaction) transaction).getType().toString();
+        else if (transaction instanceof DividendInitialTransaction)
+            return Messages.LabelQuotation;
+        else if (transaction instanceof DividendFinalTransaction)
+            return Messages.LabelQuotation;
         else
             return transaction.toString();
     }

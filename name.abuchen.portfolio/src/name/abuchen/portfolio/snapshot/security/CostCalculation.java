@@ -3,6 +3,7 @@ package name.abuchen.portfolio.snapshot.security;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
@@ -12,6 +13,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
 /* package */class CostCalculation extends Calculation
 {
@@ -21,11 +23,22 @@ import name.abuchen.portfolio.money.Values;
         private long grossAmount;
         private long netAmount;
 
-        public LineItem(long shares, long grossAmount, long netAmount)
+        private final TrailRecord trail;
+
+        /**
+         * Holds the original number of shares (of the transaction). The
+         * original shares are needed to calculate fractions if the transaction
+         * is split up multiple times
+         */
+        private final long originalShares;
+
+        public LineItem(long shares, long grossAmount, long netAmount, TrailRecord trail)
         {
             this.shares = shares;
             this.grossAmount = grossAmount;
             this.netAmount = netAmount;
+            this.trail = trail;
+            this.originalShares = shares;
         }
     }
 
@@ -42,7 +55,12 @@ import name.abuchen.portfolio.money.Values;
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
         long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
-        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount));
+        TrailRecord trail = TrailRecord.ofTransaction(t);
+        if (!getTermCurrency().equals(t.getCurrencyCode()))
+            trail = trail.convert(Money.of(getTermCurrency(), amount),
+                            converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+
+        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount, trail));
         movingRelativeCost += amount;
         movingRelativeNetCost += amount;
         heldShares += t.getPosition().getShares();
@@ -62,7 +80,13 @@ import name.abuchen.portfolio.money.Values;
             case DELIVERY_INBOUND:
                 long grossAmount = t.getMonetaryAmount(converter).getAmount();
                 long netAmount = t.getGrossValue(converter).getAmount();
-                fifo.add(new LineItem(t.getShares(), grossAmount, netAmount));
+
+                TrailRecord trail = TrailRecord.ofTransaction(t);
+                if (!getTermCurrency().equals(t.getCurrencyCode()))
+                    trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
+                                    converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+
+                fifo.add(new LineItem(t.getShares(), grossAmount, netAmount, trail));
                 movingRelativeCost += grossAmount;
                 movingRelativeNetCost += netAmount;
                 heldShares += t.getShares();
@@ -100,6 +124,7 @@ import name.abuchen.portfolio.money.Values;
                     entry.shares -= n;
 
                     sold -= n;
+
                 }
 
                 if (sold > 0)
@@ -160,6 +185,14 @@ import name.abuchen.portfolio.money.Values;
         for (LineItem entry : fifo)
             cost += entry.grossAmount;
         return Money.of(getTermCurrency(), cost);
+    }
+
+    public TrailRecord getFifoCostTrail()
+    {
+        return TrailRecord.of(fifo.stream().filter(entry -> entry.grossAmount > 0) //
+                        .map(entry -> entry.trail.fraction(Money.of(getTermCurrency(), entry.grossAmount), entry.shares,
+                                        entry.originalShares))
+                        .collect(Collectors.toList()));
     }
 
     /**
