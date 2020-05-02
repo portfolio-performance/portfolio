@@ -20274,7 +20274,7 @@
                       <classification>
                         <id>15104020</id>
                         <name>Metalle &amp; Bergbau: Diverse</name>
-                        <description>Unternehmen, die sich mit der Produktion oder Extraktion von diversen Metallen und Mineralien befassen und nicht einer der übrigen Branchen angehören. Eingeschlossen sind auch Bergbau von Nichteisenmetall (ausgenommen Aluminium), Salz und Borate, Phosphorit, Hochofenkoks für Stahlproduktion und andere diversifizierte Abbauunternehmungen. Ausgeschlossen sind Eisenerzgruben, die der	„Stahl	Sub-Industrie angehören,	auch Bergbau von Aluminium, welcher der	„Aluminium	Sub-Industrie angehört. Ausgeschlossen sind Unternehmen, die sich mit dem Abbbau von bituminöser (thermischer) Kohle befassen und die der	„Kohle &amp; Nicht erneuerbare Brennstoffe	Sub-Industrie angehören.</description>
+                        <description>Unternehmen, die sich mit der Produktion oder Extraktion von diversen Metallen und Mineralien befassen und nicht einer der übrigen Branchen angehören. Eingeschlossen sind auch Bergbau von Nichteisenmetall (ausgenommen Aluminium), Salz und Borate, Phosphorit, Hochofenkoks für Stahlproduktion und andere diversifizierte Abbauunternehmungen. Ausgeschlossen sind Eisenerzgruben, die der „Stahl Sub-Industrie angehören, auch Bergbau von Aluminium, welcher der „Aluminium Sub-Industrie angehört. Ausgeschlossen sind Unternehmen, die sich mit dem Abbbau von bituminöser (thermischer) Kohle befassen und die der „Kohle &amp; Nicht erneuerbare Brennstoffe Sub-Industrie angehören.</description>
                         <color>#a6d685</color>
                         <parent reference="../../.."/>
                         <children/>
@@ -22054,7 +22054,7 @@
                       <classification>
                         <id>40201020</id>
                         <name>Andere diverse Finanzdienste</name>
-                        <description>Anbieter einer breit gefächerten Palette von Finanzdiensten und/oder mit einigen Anteilen in einer breit gefächerten Palette von Finanzdiensten, darunter Banken, Versicherungen und Kapitalmärkte, wobei kein Geschäftszweig dominierend ist. Ausgeschlossen sind Unternehmen, die den Branchen „Regionale Banken	und „Breit gefächerte Banken	angehören.</description>
+                        <description>Anbieter einer breit gefächerten Palette von Finanzdiensten und/oder mit einigen Anteilen in einer breit gefächerten Palette von Finanzdiensten, darunter Banken, Versicherungen und Kapitalmärkte, wobei kein Geschäftszweig dominierend ist. Ausgeschlossen sind Unternehmen, die den Branchen „Regionale Banken und „Breit gefächerte Banken angehören.</description>
                         <color>#b585d6</color>
                         <parent reference="../../.."/>
                         <children/>
@@ -22076,7 +22076,7 @@
                       <classification>
                         <id>40201040</id>
                         <name>Spezialisierte Finanzdienstleistungen</name>
-                        <description>Anbieter von spezialisierten Finanzdienstleistungen, die keiner anderen Kategorie zugeordnet sind. Unternehmen in dieser Unterkategorie beziehen einen Großteil ihrer Einnahmen aus einer spezialisierten Geschäftssparte.	Einschließlich, aber nicht beschränkt auf gewerbliche Finanzunternehmen, Zentralbanken, Leasing-Gesellschaften, Anbieter von Factoring-Geschäften und Spezialboutiquen. Ausgenommen von Unternehmen in der Unterkategorie Börsen &amp; Daten.</description>
+                        <description>Anbieter von spezialisierten Finanzdienstleistungen, die keiner anderen Kategorie zugeordnet sind. Unternehmen in dieser Unterkategorie beziehen einen Großteil ihrer Einnahmen aus einer spezialisierten Geschäftssparte. Einschließlich, aber nicht beschränkt auf gewerbliche Finanzunternehmen, Zentralbanken, Leasing-Gesellschaften, Anbieter von Factoring-Geschäften und Spezialboutiquen. Ausgenommen von Unternehmen in der Unterkategorie Börsen &amp; Daten.</description>
                         <color>#b585d6</color>
                         <parent reference="../../.."/>
                         <children/>
@@ -22949,7 +22949,7 @@
                       <classification>
                         <id>55105010</id>
                         <name>Unabhängige Energiehersteller und -händler</name>
-                        <description>Unternehmen, die als unabhängige Energiehersteller (IPPs), Erdgas &amp; Energie Marketing- und Handelsspezialisten und/oder integrierte Energiehändler tätig sind. Ausgeschlossen sind Hersteller von Sonnen-, Wasser- und Windkraft für Stromerzeugung.	Ausgeschlossen sind auch Unternehmen für Stromübertragung und Stromverteilung, die der Branche Elektrizitätsunternehmen angehören.</description>
+                        <description>Unternehmen, die als unabhängige Energiehersteller (IPPs), Erdgas &amp; Energie Marketing- und Handelsspezialisten und/oder integrierte Energiehändler tätig sind. Ausgeschlossen sind Hersteller von Sonnen-, Wasser- und Windkraft für Stromerzeugung. Ausgeschlossen sind auch Unternehmen für Stromübertragung und Stromverteilung, die der Branche Elektrizitätsunternehmen angehören.</description>
                         <color>#d6a585</color>
                         <parent reference="../../.."/>
                         <children/>
