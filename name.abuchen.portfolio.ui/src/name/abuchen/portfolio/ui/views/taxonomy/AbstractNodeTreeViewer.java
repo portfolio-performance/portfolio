@@ -40,7 +40,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Classification.Assignment;
@@ -148,7 +147,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             {
                 SecurityTransfer.getTransfer().setSecurities(null);
             }
-            
+
             event.data = nodes;
         }
 
@@ -160,7 +159,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             @SuppressWarnings("unchecked")
             List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
 
-            event.doit = !nodes.stream().filter(n -> n.getParent().isRoot()).findAny().isPresent();
+            event.doit = nodes.stream().noneMatch(n -> n.getParent().isRoot());
         }
     }
 
@@ -192,15 +191,19 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
                     return false;
             }
 
+            // do not allow dragging into virtual root
+            if (target.isRoot() || target.getParent().isRoot())
+                return false;
+
             // do not allow dragging of categories into the "unassigned
             // category" (must be deleted via right-click instead)
-            if (target.getPath().stream().filter(TaxonomyNode::isUnassignedCategory).findAny().isPresent()
-                            && droppedNodes.stream().filter(TaxonomyNode::isClassification).findAny().isPresent())
+            if (target.getPath().stream().anyMatch(TaxonomyNode::isUnassignedCategory)
+                            && droppedNodes.stream().anyMatch(TaxonomyNode::isClassification))
                 return false;
 
             switch (getCurrentLocation())
             {
-                case ViewerDropAdapter.LOCATION_AFTER: // NOSONAR
+                case ViewerDropAdapter.LOCATION_AFTER:
                     TaxonomyNode t = target;
                     for (TaxonomyNode node : droppedNodes)
                     {
@@ -216,9 +219,9 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
                     viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
-                case ViewerDropAdapter.LOCATION_ON: // NOSONAR
+                case ViewerDropAdapter.LOCATION_ON:
                     // do not drag parent into child
-                    if (target.getPath().stream().filter(droppedNodes::contains).findAny().isPresent())
+                    if (target.getPath().stream().anyMatch(droppedNodes::contains))
                         return false;
                     // do not move node into its own parent
                     droppedNodes.stream().filter(n -> !n.getParent().equals(target)).forEach(n -> n.moveTo(target));
@@ -243,7 +246,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             for (TaxonomyNode node : nodes)
             {
                 List<TaxonomyNode> path = node.getPath();
-                if (!path.subList(0, path.size() - 1).stream().filter(nodes::contains).findAny().isPresent())
+                if (path.subList(0, path.size() - 1).stream().noneMatch(nodes::contains))
                     answer.add(node);
             }
             return answer;
@@ -467,8 +470,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public Color getForeground(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return node.isAssignment() && getModel().hasWeightError(node)
-                                ? Display.getDefault().getSystemColor(SWT.COLOR_BLACK) : null;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.BLACK : null;
             }
 
             @Override
@@ -524,7 +526,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
         });
         support.addColumn(column);
 
-        // Column which shows percentage of this asset class in relationship to total assets  
+        // Column which shows percentage of this asset class in relationship to
+        // total assets
         column = new Column("amGV%", Messages.ColumnPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnPctOfTotal_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
@@ -533,7 +536,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                // Divide amount in this asset class by amount of total assets (root of asset class tree)
+                // Divide amount in this asset class by amount of total assets
+                // (root of asset class tree)
                 long actual = node.getActual().getAmount();
                 long total = node.getRoot().getActual().getAmount();
 
@@ -544,8 +548,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
             }
         });
         support.addColumn(column);
-        
-        
+
         column = new Column("act", Messages.ColumnActualValue, SWT.RIGHT, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
