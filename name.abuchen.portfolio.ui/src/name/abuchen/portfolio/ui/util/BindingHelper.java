@@ -284,15 +284,13 @@ public class BindingHelper
         GridDataFactory.fillDefaults().span(1, 1).grab(true, false).applyTo(label);
     }
 
-    public final void bindSpinner(Composite editArea, String label, String property, int min, int max, int selection,
-                    int increment)
+    public final void bindSpinner(Composite editArea, String label, String property, int min, int max, int increment)
     {
         Label l = new Label(editArea, SWT.NONE);
         l.setText(label);
         Spinner spinner = new Spinner(editArea, SWT.BORDER);
         spinner.setMinimum(min);
         spinner.setMaximum(max);
-        spinner.setSelection(selection);
         spinner.setIncrement(increment);
         GridDataFactory.fillDefaults().align(SWT.BEGINNING, SWT.FILL)
                         .hint((int) Math.round(5 * getAverageCharWidth(spinner)), SWT.DEFAULT).applyTo(spinner);

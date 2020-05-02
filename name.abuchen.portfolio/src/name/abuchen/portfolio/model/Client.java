@@ -403,6 +403,24 @@ public class Client
         return properties.get(key);
     }
 
+    /**
+     * Returns the current value of the integer-valued state with the given
+     * name. Returns the value <code>0</code> if there is no value with the
+     * given name, or if the current value cannot be treated as an integer.
+     */
+    public int getPropertyInt(String key)
+    {
+        try
+        {
+            String v = properties.get(key);
+            return v == null ? 0 : Integer.parseInt(v);
+        }
+        catch (NumberFormatException e)
+        {
+            return 0;
+        }
+    }
+
     /* package */void clearProperties()
     {
         properties.clear();

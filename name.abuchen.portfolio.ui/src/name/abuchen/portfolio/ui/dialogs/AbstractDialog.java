@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import name.abuchen.portfolio.ui.util.BindingHelper;
-import name.abuchen.portfolio.ui.util.BindingHelper.Model;
-
 import org.eclipse.core.databinding.AggregateValidationStatus;
 import org.eclipse.core.databinding.DataBindingContext;
 import org.eclipse.core.runtime.IStatus;
@@ -15,7 +12,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
-/* package */abstract class AbstractDialog extends Dialog
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.BindingHelper.Model;
+
+public abstract class AbstractDialog extends Dialog
 {
     private String title;
     private Model model;
@@ -66,8 +66,8 @@ import org.eclipse.swt.widgets.Shell;
     {
         Control answer = super.createContents(parent);
 
-        bindings.onValidationStatusChanged(AggregateValidationStatus.getStatusMaxSeverity(getBindingContext()
-                        .getValidationStatusProviders()));
+        bindings.onValidationStatusChanged(AggregateValidationStatus
+                        .getStatusMaxSeverity(getBindingContext().getValidationStatusProviders()));
 
         return answer;
     }

@@ -1,24 +1,68 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.beans.PropertyChangeListener;
 import java.util.function.Function;
 
 import org.eclipse.jface.viewers.OwnerDrawLabelProvider;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.TreeItem;
 import org.eclipse.swt.widgets.Widget;
 
+import com.ibm.icu.text.MessageFormat;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 
 public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvider
 {
+    private static class Data
+    {
+        long totalAmount;
+        long targetAmount;
+        long actualAmount;
+
+        double absoluteDeviation;
+        double relativeDeviation;
+
+        private static Data from(TaxonomyNode node)
+        {
+            if (node.getTarget() == null || node.getTarget().isZero())
+                return null;
+
+            Data data = new Data();
+
+            data.totalAmount = node.getRoot().getActual().getAmount();
+            data.targetAmount = node.getTarget().getAmount();
+            data.actualAmount = node.getActual().getAmount();
+
+            // calculate deviations
+            data.absoluteDeviation = (data.actualAmount - data.targetAmount) / (double) data.totalAmount;
+            data.relativeDeviation = (data.actualAmount / (double) data.targetAmount) - 1;
+
+            return data;
+        }
+    }
+
     private Function<Object, TaxonomyNode> nodeProvider;
 
-    public DeltaPercentageIndicatorLabelProvider(Function<Object, TaxonomyNode> nodeProvider) // NOSONAR
+    private RebalancingColoringRule coloring;
+
+    public DeltaPercentageIndicatorLabelProvider(Control control, Client client,
+                    Function<Object, TaxonomyNode> nodeProvider) // NOSONAR
     {
         this.nodeProvider = nodeProvider;
+
+        this.coloring = new RebalancingColoringRule(client);
+
+        PropertyChangeListener listener = evt -> this.coloring = new RebalancingColoringRule(client);
+        client.addPropertyChangeListener(listener);
+        control.addDisposeListener(e -> client.removePropertyChangeListener(listener));
     }
 
     @Override
@@ -30,46 +74,12 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
     @Override
     protected void paint(Event event, Object element)
     {
-        TaxonomyNode node = nodeProvider.apply(element);
-        if (node.getTarget() == null)
+        Data data = Data.from(nodeProvider.apply(element));
+        if (data == null)
             return;
-        
-        double totalAmount  = (double)node.getRoot().getActual().getAmount() ;
-        double targetAmount = (double)node.getTarget().getAmount() ;
-        double actualAmount = (double)node.getActual().getAmount() ;
-        
-        // the Delta % value (previously: percentage)
-        double relativeDeviation = (actualAmount / targetAmount) - 1.;
-        // newly introduced
-        double relativeTargetAmount = targetAmount / totalAmount;
-        
-        String propertyString = "25.";//Client.getProperty("rebalance_relative_threshold") ;
-        double thRel = Double.parseDouble(propertyString);
-        boolean thRelEnabled = Boolean.parseBoolean("true");
-        
-        propertyString = "5.";//Client.getProperty("rebalance_absolute_threshold") ;
-        double thAbs = Double.parseDouble(propertyString) / relativeTargetAmount;
-        boolean thAbsEnabled = Boolean.parseBoolean("true");
-        
-        double threshold = 5;  // default case: threshold set to 5%
-        // Make the bar 5% longer than relative threshold (which is the maximum threshold that can occur)
-        // However, special case if no relative threshold is given!
-        double barMaxlength = threshold + 5.;
-        if (thRelEnabled && thAbsEnabled)
-        {
-            threshold = Math.min(thRel,thAbs);
-            barMaxlength = thRel + 5.;
-        }
-        else if (thRelEnabled)
-        {
-            threshold = thRel;
-            barMaxlength = thRel + 5.;
-        }
-        else if (thAbsEnabled)
-            threshold = thAbs; // use default bar length of 10% ?
-        threshold /= 100.;
-        barMaxlength /= 100.;
-        
+
+        boolean isColored = (Math.abs(data.relativeDeviation) > coloring.getRelativeThreshold() / 100d)
+                        || (Math.abs(data.absoluteDeviation) > coloring.getAbsoluteThreshold() / 100d);
 
         Color oldForeground = event.gc.getForeground();
 
@@ -80,12 +90,12 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
         event.gc.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
         event.gc.fillRectangle(bounds.x + center - 1, bounds.y, 3, bounds.height);
 
-        double absolute = Math.abs(relativeDeviation);
+        double absolute = Math.abs(data.relativeDeviation);
 
-        event.gc.setBackground(absolute > threshold ? Colors.ICON_ORANGE : Colors.ICON_BLUE);
+        event.gc.setBackground(isColored ? Colors.ICON_ORANGE : Colors.ICON_BLUE);
 
-        int bar = Math.min(center, (int) Math.round(absolute * (center / barMaxlength)));
-        if (relativeDeviation < 0d)
+        int bar = Math.min(center, (int) Math.round(absolute * (center / (coloring.getBarLength() / 100d))));
+        if (data.relativeDeviation < 0d)
             event.gc.fillRectangle(bounds.x + center - bar, bounds.y + (bounds.height / 2) - 2, bar, 5);
         else
             event.gc.fillRectangle(bounds.x + center, bounds.y + (bounds.height / 2) - 2, bar, 5);
@@ -107,5 +117,22 @@ public class DeltaPercentageIndicatorLabelProvider extends OwnerDrawLabelProvide
             return ((TreeItem) widget).getBounds(index);
         else
             throw new IllegalArgumentException();
+    }
+
+    @Override
+    public String getToolTipText(Object element)
+    {
+        Data data = Data.from(nodeProvider.apply(element));
+        if (data == null)
+            return null;
+
+        return MessageFormat.format(Messages.TooltipRebalancingIndicator, //
+                        coloring.getAbsoluteThreshold(), //
+                        coloring.getRelativeThreshold(), //
+                        Values.Amount.format(data.actualAmount - data.targetAmount), //
+                        Values.Percent2.format(data.absoluteDeviation), //
+                        Values.Amount.format(data.totalAmount), //
+                        Values.Percent2.format(data.relativeDeviation), //
+                        Values.Amount.format(data.targetAmount));
     }
 }
