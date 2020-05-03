@@ -725,6 +725,7 @@ public class Messages extends NLS
     public static String MenuConvertToBuy;
     public static String MenuConvertToBuySell;
     public static String MenuConvertToDelivery;
+    public static String MenuConvertToDepositRemoval;
     public static String MenuConvertToInboundDelivery;
     public static String MenuConvertToOutboundDelivery;
     public static String MenuConvertToSell;
