@@ -47,7 +47,7 @@ public class SBrokerPDFExtractorTest
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0785"));
-        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE"));
+        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -62,6 +62,37 @@ public class SBrokerPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2014-10-01T00:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(16)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 377L)));
+    }
+    @Test
+    public void testWertpapierKauf2() throws IOException
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sBroker_Kauf2.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US5801351017"));
+        assertThat(security.getName(), is("McDonald's Corp. Registered Shares DL-,01"));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1249_30)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2011-11-15T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(18)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, 1090L)));
     }
 
     @Test
@@ -79,7 +110,7 @@ public class SBrokerPDFExtractorTest
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0785"));
-        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE"));
+        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -112,7 +143,7 @@ public class SBrokerPDFExtractorTest
         // check security
         Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
         assertThat(security.getIsin(), is("DE000A0H0785"));
-        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE"));
+        assertThat(security.getName(), is("iS.EO G.B.C.1.5-10.5y.U.ETF DE Inhaber-Anteile"));
 
         // check buy sell transaction
         AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
@@ -123,5 +154,34 @@ public class SBrokerPDFExtractorTest
         assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 12_70)));
         assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-11-17T00:00")));
         assertThat(t.getShares(), is(Values.Share.factorize(16)));
+    }
+
+    @Test
+    public void testErtragsgutschrift2() throws IOException
+    {
+        SBrokerPDFExtractor extractor = new SBrokerPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "sBroker_Ertragsgutschrift2.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("US5801351017"));
+        assertThat(security.getName(), is("McDonald's Corp. Registered Shares DL-,01"));
+
+        // check buy sell transaction
+        AccountTransaction t = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem)
+                        .findFirst().get().getSubject();
+
+        assertThat(t.getType(), is(AccountTransaction.Type.DIVIDENDS));
+
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 52_36)));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2014-12-15T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(103)));
     }
 }
