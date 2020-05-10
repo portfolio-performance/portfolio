@@ -14,7 +14,7 @@
 				{
 					"context": "SECURITY",
 					"pattern": [
-						"POSITION ANZAHL KURS BETRAG",
+						"POSITION ANZAHL (KURS|DURCHSCHNITTSKURS) BETRAG",
 						"(?<name>.*) ([\\d+,.]*) Stk. ([\\d+,.]*) (?<currency>\\w{3}+) ([\\d+,.]*) (\\w{3}+)$",
 						".*",
 						"(ISIN: )?(?<isin>.*)"
@@ -33,7 +33,7 @@
 				},
 				{
 					"pattern": [
-						"POSITION ANZAHL KURS BETRAG",
+						"POSITION ANZAHL (KURS|DURCHSCHNITTSKURS) BETRAG",
 						"(.*) (?<shares>[\\d+,.]*) Stk. ([\\d+,.]*) (\\w{3}+) ([\\d+,.]*) (\\w{3}+)$"
 					]
 				},
