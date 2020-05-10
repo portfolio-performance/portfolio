@@ -15,7 +15,6 @@ public class DividendInitialTransaction extends Transaction
         this.setDateTime(time);
         this.setSecurity(position.getSecurity());
         this.setMonetaryAmount(position.calculateValue());
-        this.setShares(position.getShares());
     }
 
     public SecurityPosition getPosition()

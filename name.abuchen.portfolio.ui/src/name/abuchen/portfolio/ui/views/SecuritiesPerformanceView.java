@@ -80,7 +80,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.MoneyColorLabelProvider;
-import name.abuchen.portfolio.ui.util.viewers.MoneyTrailToolTipSupport;
 import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
@@ -265,7 +264,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addListener(() -> updateTitle(getDefaultTitle()));
         recordColumns.setToolBarManager(getViewToolBarManager());
 
-        MoneyTrailToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
+        ColumnViewerToolTipSupport.enableFor(records, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(records);
 
         createCommonColumns();
@@ -382,14 +381,6 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             {
                 return Values.Money.format(((SecurityPerformanceRecord) r).getFifoCost(),
                                 getClient().getBaseCurrency());
-            }
-
-            @Override
-            public String getToolTipText(Object r)
-            {
-                return ((SecurityPerformanceRecord) r).explain(SecurityPerformanceRecord.Trails.FIFO_COST).isPresent()
-                                ? SecurityPerformanceRecord.Trails.FIFO_COST
-                                : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "fifoCost")); //$NON-NLS-1$
@@ -883,18 +874,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private void setupTabFolderToolBar(CTabFolder folder)
     {
         ToolBarManager toolBarManager = new ToolBarManager(SWT.FLAT | SWT.RIGHT);
-        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, manager -> {
-            CTabItem selection = folder.getSelection();
-            if (selection == null)
-                return;
+        toolBarManager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> {
+                            CTabItem selection = folder.getSelection();
+                            if (selection == null)
+                                return;
 
-            @SuppressWarnings("unchecked")
-            Consumer<IMenuManager> menu = (Consumer<IMenuManager>) selection.getData();
-            if (menu == null)
-                return;
+                            @SuppressWarnings("unchecked")
+                            Consumer<IMenuManager> menu = (Consumer<IMenuManager>) selection.getData();
+                            if (menu == null)
+                                return;
 
-            menu.accept(manager);
-        }));
+                            menu.accept(manager);
+                        }));
         ToolBar toolBar = toolBarManager.createControl(folder);
         toolBar.setBackground(folder.getBackground());
 

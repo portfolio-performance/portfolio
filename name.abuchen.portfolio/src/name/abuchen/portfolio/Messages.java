@@ -167,7 +167,6 @@ public class Messages extends NLS
     public static String LabelEurostatHICP;
     public static String LabelExchangeRateSeriesBasedOnSecurity;
     public static String LabelOtherCategory;
-    public static String LabelQuotation;
     public static String LabelXwithCurrencyY;
     public static String MsgAlphaVantageAPIKeyMissing;
     public static String MsgAlphaVantageRateLimitExceeded;
