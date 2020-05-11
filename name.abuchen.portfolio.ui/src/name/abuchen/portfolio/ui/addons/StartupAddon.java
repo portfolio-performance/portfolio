@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.log.LogEntryCache;
 import name.abuchen.portfolio.ui.update.UpdateHelper;
 import name.abuchen.portfolio.ui.util.ProgressMonitorFactory;
 import name.abuchen.portfolio.ui.util.RecentFilesCache;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
 @SuppressWarnings("restriction")
 public class StartupAddon
@@ -201,5 +202,11 @@ public class StartupAddon
         registry.put(Dialog.DLG_IMG_MESSAGE_ERROR, Images.ERROR.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_WARNING, Images.WARNING.descriptor());
         registry.put(Dialog.DLG_IMG_MESSAGE_INFO, Images.INFO.descriptor());
+    }
+
+    @PostConstruct
+    public void setupActiveShellTracker()
+    {
+        ActiveShell.get();
     }
 }

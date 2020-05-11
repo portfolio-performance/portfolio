@@ -74,13 +74,14 @@ import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
+import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.AttributeComparator;
-import name.abuchen.portfolio.ui.util.CreateSecurityFromURLDropAdaptor;
 import name.abuchen.portfolio.ui.util.LabelOnly;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -183,7 +184,8 @@ public class StatementOfAssetsViewer
         ColumnViewerToolTipSupport.enableFor(assets, ToolTip.NO_RECREATE);
         ColumnEditingSupport.prepare(assets);
 
-        CreateSecurityFromURLDropAdaptor.attach(this.owner, this.assets.getControl());
+        ImportFromURLDropAdapter.attach(this.assets.getControl(), owner.getPart());
+        ImportFromFileDropAdapter.attach(this.assets.getControl(), owner.getPart());
 
         assets.addSelectionChangedListener(event -> {
             Element element = (Element) ((IStructuredSelection) event.getSelection()).getFirstElement();

@@ -177,6 +177,8 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
                     price.setDate(parseDateTimestamp((Long) object));
                 else if (object instanceof Integer)
                     price.setDate(parseDateTimestamp(Long.valueOf((Integer) object)));
+                else if (object instanceof Double)
+                    price.setDate(parseDateTimestamp(((Double) object).longValue()));
                 else if (object instanceof LocalDate)
                     price.setDate((LocalDate) object);
 

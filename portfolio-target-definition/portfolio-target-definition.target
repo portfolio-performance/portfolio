@@ -30,6 +30,10 @@
 		<unit id="org.junit.source" version="4.12.0.v201504281640"/>
 		<unit id="org.mockito" version="2.23.0.v20190527-1420"/>
 		<unit id="org.mockito.source" version="2.23.0.v20190527-1420"/>
+		<unit id="net.bytebuddy.byte-buddy-agent.source" version="1.9.0.v20181106-1534"/>
+		<unit id="net.bytebuddy.byte-buddy.source" version="1.9.0.v20181107-1410"/>
+        <unit id="org.objenesis" version="2.6.0.v20180420-1519"/>
+        <unit id="org.objenesis.source" version="2.6.0.v20180420-1519"/>
 		<unit id="org.objectweb.asm" version="5.0.1.v201404251740"/>
 	</location>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">

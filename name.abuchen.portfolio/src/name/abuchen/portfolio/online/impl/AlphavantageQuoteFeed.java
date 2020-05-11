@@ -79,6 +79,18 @@ public class AlphavantageQuoteFeed implements QuoteFeed
         rateLimiter.setRate((limit - .5) / 60d);
     }
 
+    @SuppressWarnings("nls")
+    public String rpcLatestQuote(Security security) throws IOException
+    {
+        return new WebAccess("www.alphavantage.co", "/query").addParameter("function", "TIME_SERIES_INTRADAY") //
+                        .addParameter("symbol", security.getTickerSymbol()) //
+                        .addParameter("interval", "1min") //
+                        .addParameter("apikey", apiKey) //
+                        .addParameter("datatype", "csv") //
+                        .addParameter("outputsize", "compact") //
+                        .get(); // $NON-NLS-1$
+    }
+
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
@@ -96,15 +108,7 @@ public class AlphavantageQuoteFeed implements QuoteFeed
 
         try
         {
-            @SuppressWarnings("nls")
-            String html = new WebAccess("www.alphavantage.co", "/query")
-                            .addParameter("function", "TIME_SERIES_INTRADAY") //
-                            .addParameter("symbol", security.getTickerSymbol()) //
-                            .addParameter("interval", "1min") //
-                            .addParameter("apikey", apiKey) //
-                            .addParameter("datatype", "csv") //
-                            .addParameter("outputsize", "compact") //
-                            .get(); // $NON-NLS-1$
+            String html = rpcLatestQuote(security);
 
             String[] lines = html.split("\\r?\\n"); //$NON-NLS-1$
             if (lines.length <= 2)

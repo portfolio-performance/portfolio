@@ -1,9 +1,8 @@
-package name.abuchen.portfolio.ui.util;
+package name.abuchen.portfolio.ui.dnd;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +13,6 @@ import org.eclipse.jface.util.Util;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetAdapter;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
@@ -34,88 +32,31 @@ import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.online.impl.PortfolioReportQuoteFeed;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 
-// inspired by the Eclipse Marketplace Client
-// https://github.com/eclipse/epp.mpc/blob/master/org.eclipse.epp.mpc.ui/src/org/eclipse/epp/internal/mpc/ui/wizards/MarketplaceDropAdapter.java
-public class CreateSecurityFromURLDropAdaptor extends DropTargetAdapter
+public class ImportFromURLDropAdapter extends AbstractDropAdapter
 {
-    private static final Pattern URL_PATTERN = Pattern
-                    .compile("^https://www.portfolio-report.net/securities/([^/]+)/?"); //$NON-NLS-1$
+    public static final Pattern URL_PATTERN = Pattern.compile("^https://www.portfolio-report.net/securities/([^/]+)/?"); //$NON-NLS-1$
 
-    private final AbstractFinanceView view;
+    private final PortfolioPart part;
 
-    private CreateSecurityFromURLDropAdaptor(AbstractFinanceView owner)
+    private ImportFromURLDropAdapter(Transfer transfer, Control control, PortfolioPart part)
     {
-        this.view = Objects.requireNonNull(owner);
+        super(transfer, control);
+        this.part = part;
     }
 
-    public static void attach(AbstractFinanceView view, Control control)
+    public static void attach(Control control, PortfolioPart part)
     {
-        Transfer[] transferAgents = new Transfer[] { URLTransfer.getInstance() };
-
-        DropTarget dropTarget = new DropTarget(control,
-                        DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_DEFAULT);
-        dropTarget.setTransfer(transferAgents);
-        dropTarget.addDropListener(new CreateSecurityFromURLDropAdaptor(view));
+        new ImportFromURLDropAdapter(URLTransfer.getInstance(), control, part);
     }
 
     @Override
-    public void dragEnter(DropTargetEvent e)
+    protected boolean isValidEvent(DropTargetEvent e)
     {
-        updateDragDetails(e);
-    }
-
-    @Override
-    public void dragOver(DropTargetEvent e)
-    {
-        updateDragDetails(e);
-    }
-
-    @Override
-    public void dragLeave(DropTargetEvent e)
-    {
-        if (e.detail == DND.DROP_NONE)
-            setDropOperation(e);
-    }
-
-    @Override
-    public void dropAccept(DropTargetEvent e)
-    {
-        updateDragDetails(e);
-    }
-
-    @Override
-    public void dragOperationChanged(DropTargetEvent e)
-    {
-        updateDragDetails(e);
-    }
-
-    private void setDropOperation(DropTargetEvent e)
-    {
-        int allowedOperations = e.operations;
-        for (int op : new int[] { DND.DROP_DEFAULT, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK })
-        {
-            if ((allowedOperations & op) != 0)
-            {
-                e.detail = op;
-                return;
-            }
-        }
-        e.detail = allowedOperations;
-    }
-
-    private void updateDragDetails(DropTargetEvent e)
-    {
-        if (isValidEvent(e))
-            setDropOperation(e);
-    }
-
-    private boolean isValidEvent(DropTargetEvent e)
-    {
-        if (!URLTransfer.getInstance().isSupportedType(e.currentDataType))
+        if (!super.isValidEvent(e))
             return false;
 
         if (Util.isWindows())
@@ -146,22 +87,8 @@ public class CreateSecurityFromURLDropAdaptor extends DropTargetAdapter
     }
 
     @Override
-    public void drop(DropTargetEvent event)
+    public void doDrop(DropTargetEvent event)
     {
-        if (!URLTransfer.getInstance().isSupportedType(event.currentDataType))
-            return;
-        if (event.data == null)
-        {
-            event.detail = DND.DROP_NONE;
-            return;
-        }
-
-        if (!isValidEvent(event))
-        {
-            event.detail = DND.DROP_NONE;
-            return;
-        }
-
         Optional<String> url = getUrlFromEvent(event);
         if (!url.isPresent())
         {
@@ -218,13 +145,13 @@ public class CreateSecurityFromURLDropAdaptor extends DropTargetAdapter
                                 exchanges.get(0).getId());
             }
 
-            Dialog dialog = view.make(EditSecurityDialog.class, newSecurity);
+            Dialog dialog = part.make(EditSecurityDialog.class, newSecurity);
 
             if (dialog.open() == Window.OK)
             {
-                view.getClient().addSecurity(newSecurity);
+                part.getClient().addSecurity(newSecurity);
 
-                new UpdateQuotesJob(view.getClient(), newSecurity).schedule();
+                new UpdateQuotesJob(part.getClient(), newSecurity).schedule();
             }
         }
         catch (IOException e)

@@ -42,7 +42,7 @@
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_sXrYAG_lEeWs-Og7n4Tz9g" elementId="name.abuchen.portfolio.ui.menu.file.saveAll" label="%command.saveAll.name" tooltip="%command.saveAll.tooltip" mnemonics="" command="_xEtu4G_lEeWs-Og7n4Tz9g"/>
         <children xsi:type="menu:MenuSeparator" xmi:id="_Bd9XUBfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menuseparator.0"/>
-        <children xsi:type="menu:Menu" xmi:id="_z1i4EIFWEeqj-NUx6jxeHA" elementId="name.abuchen.portfolio.bootstrap.menu.whrung" label="W&#xe4;hrung">
+        <children xsi:type="menu:Menu" xmi:id="_z1i4EIFWEeqj-NUx6jxeHA" elementId="name.abuchen.portfolio.bootstrap.menu.whrung" label="%command.switchCurrency.name">
           <children xsi:type="menu:DynamicMenuContribution" xmi:id="_1w5xgIFWEeqj-NUx6jxeHA" elementId="name.abuchen.portfolio.bootstrap.dynamicmenucontribution.4" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SelectReportingCurrencyMenuContribution"/>
         </children>
         <children xsi:type="menu:HandledMenuItem" xmi:id="_B_nS4BfWEeOders_POVQHQ" elementId="name.abuchen.portfolio.ui.menu.file.consistencychecks" label="%command.consistencyChecks.name" tooltip="%command.consistencyChecks.tooltip" command="_D9tYMBiPEeOR1rNFCzC82A"/>

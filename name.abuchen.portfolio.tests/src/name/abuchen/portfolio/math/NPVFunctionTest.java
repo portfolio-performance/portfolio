@@ -33,12 +33,14 @@ public class NPVFunctionTest
     @Test
     public void testSimple()
     {
-        NPVFunction f = new NPVFunction(Arrays.asList( //
+        NPVFunction function = new NPVFunction(Arrays.asList( //
                         LocalDate.of(2010, Month.JANUARY, 1), //
                         LocalDate.of(2010, Month.DECEMBER, 31)), //
                         Arrays.asList(-200d, 210d));
+        double doubleRate = 0.05d;
 
-        assertThat(f.compute(0.05d), is(3965.669635841685d));
+        double result = function.compute(doubleRate);
+
+        assertThat(result, is(3965.669635841685d));
     }
-
 }

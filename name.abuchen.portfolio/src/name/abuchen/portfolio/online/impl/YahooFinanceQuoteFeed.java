@@ -57,16 +57,20 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return Messages.LabelYahooFinance;
     }
 
+    public String rpcLatestQuote(Security security) throws IOException
+    {
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/quote") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addParameter("lang", "en-US").addParameter("region", "US") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        .addParameter("corsDomain", "finance.yahoo.com") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addParameter("symbols", security.getTickerSymbol()).get(); //$NON-NLS-1$
+    }
+
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
         try
         {
-            @SuppressWarnings("nls")
-            String html = new WebAccess("query1.finance.yahoo.com", "/v7/finance/quote") //
-                            .addParameter("lang", "en-US").addParameter("region", "US")
-                            .addParameter("corsDomain", "finance.yahoo.com")
-                            .addParameter("symbols", security.getTickerSymbol()).get();
+            String html = this.rpcLatestQuote(security);
 
             int startIndex = html.indexOf("quoteResponse"); //$NON-NLS-1$
             if (startIndex < 0)

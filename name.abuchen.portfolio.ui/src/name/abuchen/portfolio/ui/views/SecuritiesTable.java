@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -9,6 +10,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.regex.Matcher;
 import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
@@ -16,6 +18,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -50,6 +53,8 @@ import name.abuchen.portfolio.model.Watchlist;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.PortfolioReportNet;
 import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Images;
@@ -59,6 +64,8 @@ import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
+import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
 import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
 import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
@@ -66,7 +73,6 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
-import name.abuchen.portfolio.ui.util.CreateSecurityFromURLDropAdaptor;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -90,6 +96,55 @@ import name.abuchen.portfolio.util.Pair;
 
 public final class SecuritiesTable implements ModificationListener
 {
+    private class LinkToPortfolioReport extends Action
+    {
+        private Security security;
+
+        public LinkToPortfolioReport(Security security)
+        {
+            super(Messages.LabelLinkToPortfolioReportNet);
+            this.security = security;
+        }
+
+        @Override
+        public void run()
+        {
+            InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
+                            "Portfolio Report URL", "https://www.portfolio-report.net/", //$NON-NLS-1$//$NON-NLS-2$
+                            newText -> ImportFromURLDropAdapter.URL_PATTERN.matcher(newText).matches() ? null
+                                            : MessageFormat.format(Messages.DesktopAPIIllegalURL, newText));
+            if (dlg.open() != Window.OK)
+                return;
+
+            String url = dlg.getValue();
+
+            Matcher matcher = ImportFromURLDropAdapter.URL_PATTERN.matcher(url);
+            if (!matcher.matches())
+                return;
+
+            String onlineId = matcher.group(1);
+
+            try
+            {
+                Optional<ResultItem> result = new PortfolioReportNet().getUpdatedValues(onlineId);
+                if (!result.isPresent())
+                {
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                    MessageFormat.format(Messages.MsgErrorNoInvestmentVehicleFoundAtURL, url));
+                }
+                else
+                {
+                    security.setOnlineId(onlineId);
+                    PortfolioReportNet.updateWith(security, result.get());
+                }
+            }
+            catch (IOException e)
+            {
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            }
+        }
+    }
+
     private AbstractFinanceView view;
 
     private Watchlist watchlist;
@@ -119,7 +174,8 @@ public final class SecuritiesTable implements ModificationListener
 
         this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        CreateSecurityFromURLDropAdaptor.attach(this.view, this.securities.getControl());
+        ImportFromURLDropAdapter.attach(this.securities.getControl(), view.getPart());
+        ImportFromFileDropAdapter.attach(this.securities.getControl(), view.getPart());
 
         ColumnEditingSupport.prepare(securities);
         ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
@@ -798,6 +854,12 @@ public final class SecuritiesTable implements ModificationListener
 
             manager.add(new Separator());
             manager.add(new BookmarkMenu(view.getPart(), security));
+
+            if (security.getOnlineId() == null)
+            {
+                manager.add(new Separator());
+                manager.add(new LinkToPortfolioReport(security));
+            }
         }
 
         manager.add(new Separator());

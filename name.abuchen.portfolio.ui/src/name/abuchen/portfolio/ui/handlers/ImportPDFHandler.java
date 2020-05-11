@@ -75,6 +75,12 @@ public class ImportPDFHandler
         for (String filename : filenames)
             files.add(new File(fileDialog.getFilterPath(), filename));
 
+        runImportWithFiles(part, shell, client, account, portfolio, files);
+    }
+
+    public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
+                    Portfolio portfolio, List<File> files)
+    {
         IPreferenceStore preferences = part.getPreferenceStore();
 
         try

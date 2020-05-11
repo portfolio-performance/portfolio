@@ -1,17 +1,19 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.time.LocalDate;
-import java.util.function.Function;
 
 import javax.inject.Inject;
 
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+
+import com.ibm.icu.text.MessageFormat;
 
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Security;
@@ -23,8 +25,8 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.DeltaPercentageIndicatorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
@@ -91,21 +93,18 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
-                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                return Display.getCurrent()
+                                .getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                                ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
 
         column = new Column("delta%indicator", Messages.ColumnDeltaPercentIndicator, SWT.LEFT, 60); //$NON-NLS-1$
 
-        Function<Object, Double> percentageProvider = element -> { // NOSONAR
-            TaxonomyNode node = (TaxonomyNode) element;
-            return node.getTarget() == null ? null
-                            : ((double) node.getActual().getAmount() / (double) node.getTarget().getAmount()) - 1;
-        };
-        
-        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(percentageProvider));
+        column.setLabelProvider(new DeltaPercentageIndicatorLabelProvider(getNodeViewer().getControl(),
+                        getModel().getClient(), element -> (TaxonomyNode) element));
         support.addColumn(column);
 
         column = new Column("delta%relative", Messages.ColumnDeltaPercentRelative, SWT.RIGHT, 100); //$NON-NLS-1$
@@ -128,10 +127,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(calculateRelativeDelta(node) >= 0
-                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                return Display.getCurrent().getSystemColor(
+                                calculateRelativeDelta(node) >= 0 ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
             }
-            
+
             private double calculateRelativeDelta(TaxonomyNode node)
             {
                 long actual = node.getActual().getAmount();
@@ -164,8 +163,10 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 TaxonomyNode node = (TaxonomyNode) element;
                 if (node.getTarget() == null)
                     return null;
-                return Display.getCurrent().getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
-                                ? SWT.COLOR_DARK_GREEN : SWT.COLOR_DARK_RED);
+                return Display.getCurrent()
+                                .getSystemColor(node.getActual().isGreaterOrEqualThan(node.getTarget())
+                                                ? SWT.COLOR_DARK_GREEN
+                                                : SWT.COLOR_DARK_RED);
             }
         });
         support.addColumn(column);
@@ -203,7 +204,7 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
                 AssetPosition position = getModel().getClientSnapshot().getPositionsByVehicle().get(security);
                 if (position == null)
                     return null;
-                
+
                 return Math.round(position.getPosition().getShares() * node.getWeight()
                                 / (double) Classification.ONE_HUNDRED_PERCENT);
             }
@@ -305,6 +306,19 @@ public class ReBalancingViewer extends AbstractNodeTreeViewer
 
         }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
+    }
+
+    @Override
+    public void configMenuAboutToShow(IMenuManager manager)
+    {
+        super.configMenuAboutToShow(manager);
+
+        manager.add(new Separator());
+
+        RebalancingColoringRule rule = new RebalancingColoringRule(getModel().getClient());
+        manager.add(new SimpleAction(MessageFormat.format(Messages.MenuConfigureRebalancingIndicator, //
+                        rule.getAbsoluteThreshold(), rule.getRelativeThreshold()),
+                        a -> new EditRebalancingColoringRuleDialog(ActiveShell.get(), rule).open()));
     }
 
     @Override

@@ -251,6 +251,9 @@ public class Messages extends NLS
     public static String ColumnQuoteChange_Option;
     public static String ColumnQuoteFeedHistoric;
     public static String ColumnQuoteFeedLatest;
+    public static String ColumnRebalancingIndicatorAbsoluteThreshold;
+    public static String ColumnRebalancingIndicatorBarLength;
+    public static String ColumnRebalancingIndicatorRelativeThreshold;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
     public static String ColumnSecurity;
@@ -564,6 +567,7 @@ public class Messages extends NLS
     public static String LabelLevelNameNumber;
     public static String LabelLevelNumber;
     public static String LabelLinkedToPortfolioReport;
+    public static String LabelLinkToPortfolioReportNet;
     public static String LabelNamePlusCopy;
     public static String LabelNet;
     public static String LabelNewClassification;
@@ -719,11 +723,13 @@ public class Messages extends NLS
     public static String MenuConfigureChart;
     public static String MenuConfigureCurrentDashboard;
     public static String MenuConfigureDashboards;
+    public static String MenuConfigureRebalancingIndicator;
     public static String MenuConfigureView;
     public static String MenuConfirmDeleteAllTransactions;
     public static String MenuConvertToBuy;
     public static String MenuConvertToBuySell;
     public static String MenuConvertToDelivery;
+    public static String MenuConvertToDepositRemoval;
     public static String MenuConvertToInboundDelivery;
     public static String MenuConvertToOutboundDelivery;
     public static String MenuConvertToSell;
@@ -987,6 +993,7 @@ public class Messages extends NLS
     public static String TooltipMaxDrawdownDurationFromXtoY;
     public static String TooltipMaxDurationLowToHigh;
     public static String TooltipQuoteAtDate;
+    public static String TooltipRebalancingIndicator;
     public static String TooltipSemiVolatility;
     public static String TooltipVolatility;
     public static String WatchlistDelete;

@@ -543,12 +543,17 @@ public class PortfolioPart implements ClientInputListener
         }
     }
 
-    private <T> T make(Class<T> type, Object... parameters)
+    public <T> T make(Class<T> type, Object... parameters)
     {
         IEclipseContext c2 = EclipseContextFactory.create();
         if (parameters != null)
             for (Object param : parameters)
                 c2.set(param.getClass().getName(), param);
         return ContextInjectionFactory.make(type, this.context, c2);
+    }
+
+    public void inject(Object object)
+    {
+        ContextInjectionFactory.inject(object, context);
     }
 }

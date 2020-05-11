@@ -4,8 +4,10 @@ import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +71,7 @@ import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
 import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
 import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
@@ -641,9 +644,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
         Account account = (Account) transactions.getData(Account.class.toString());
         if (account == null)
             return;
-
-        AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions.getSelection())
-                        .getFirstElement();
+        
+        IStructuredSelection selection = (IStructuredSelection) transactions.getSelection();
+        AccountTransaction transaction = (AccountTransaction) selection.getFirstElement();
 
         if (transaction != null)
         {
@@ -655,9 +658,15 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
         accountMenu.menuAboutToShow(manager, account, transaction != null ? transaction.getSecurity() : null);
 
+        if(!selection.isEmpty())
+        {
+            fillTransactionsContextMenuList(manager, selection);
+        }
+        
         if (transaction != null)
         {
             manager.add(new Separator());
+            
             manager.add(new Action(Messages.AccountMenuDeleteTransaction)
             {
                 @Override
@@ -679,6 +688,33 @@ public class AccountListView extends AbstractListView implements ModificationLis
                     transactions.setInput(account.getTransactions());
                 }
             });
+        }
+    }
+    
+    private void fillTransactionsContextMenuList(IMenuManager manager, IStructuredSelection selection)
+    {
+        // create collection with all selected transactions
+        Collection<AccountTransaction> accountTxCollection = new ArrayList<>(selection.size());
+        Iterator<?> it = selection.iterator();
+        while (it.hasNext())
+        {
+            accountTxCollection.add((AccountTransaction) it.next());
+        }
+
+        // check if all transaction are transfer actions
+        boolean allTransfer = true;
+        for (AccountTransaction tx : accountTxCollection)
+        {
+
+            allTransfer &= tx.getType() == AccountTransaction.Type.TRANSFER_IN
+                            || tx.getType() == AccountTransaction.Type.TRANSFER_OUT;
+        }
+
+        // create action to split transfer action into deposit/removal
+        if (allTransfer)
+        {
+            manager.add(new Separator());
+            manager.add(new ConvertTransferToDepositRemovalAction(getClient(), accountTxCollection));
         }
     }
 
