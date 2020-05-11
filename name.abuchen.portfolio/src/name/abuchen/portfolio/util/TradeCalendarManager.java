@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.util;
 
 import static name.abuchen.portfolio.util.HolidayName.ASCENSION_DAY;
+import static name.abuchen.portfolio.util.HolidayName.ASSUMPTION_DAY;
 import static name.abuchen.portfolio.util.HolidayName.BANK_HOLIDAY;
 import static name.abuchen.portfolio.util.HolidayName.BERCHTOLDSTAG;
 import static name.abuchen.portfolio.util.HolidayName.BOXING_DAY;
@@ -126,6 +127,20 @@ public class TradeCalendarManager
         tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
         CACHE.put(tc.getCode(), tc);
 
+        // see Italian Stock Exchange trading days on their official website:
+        // https://www.borsaitaliana.it/borsaitaliana/calendario-e-orari-di-negoziazione/calendario-borsa-orari-di-negoziazione.en.htm
+        tc = new TradeCalendar("ise", Messages.LabelTradeCalendarISE); //$NON-NLS-1$
+        tc.add(fixed(NEW_YEAR, Month.JANUARY, 1));
+        tc.add(easter(GOOD_FRIDAY, -2));
+        tc.add(easter(EASTER_MONDAY, 1));
+        tc.add(fixed(LABOUR_DAY, Month.MAY, 1));
+        tc.add(fixed(ASSUMPTION_DAY, Month.AUGUST, 15));
+        tc.add(fixed(CHRISTMAS_EVE, Month.DECEMBER, 24));
+        tc.add(fixed(FIRST_CHRISTMAS_DAY, Month.DECEMBER, 25));
+        tc.add(fixed(SECOND_CHRISTMAS_DAY, Month.DECEMBER, 26));
+        tc.add(fixed(NEW_YEARS_EVE, Month.DECEMBER, 31));
+        CACHE.put(tc.getCode(), tc);
+        
         tc = new TradeCalendar(TradeCalendar.EMPTY_CODE, Messages.LabelTradeCalendarEmpty);
         CACHE.put(tc.getCode(), tc);
 }
