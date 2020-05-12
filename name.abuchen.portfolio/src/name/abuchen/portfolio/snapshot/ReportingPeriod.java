@@ -211,14 +211,14 @@ public abstract class ReportingPeriod
         @Override
         public Interval toInterval(LocalDate relativeTo)
         {
-            return Interval.of(tradingDaysSince(relativeTo, tradingDays), relativeTo);
+            return Interval.of(tradingDaysUntil(relativeTo, tradingDays), relativeTo);
         }
 
-        /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
+        public static final LocalDate tradingDaysUntil(LocalDate referenceDate, int tradingDays)
         {
             TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
 
-            LocalDate date = start;
+            LocalDate date = referenceDate;
             int daysToGo = tradingDays;
 
             while (daysToGo > 0)
@@ -326,7 +326,7 @@ public abstract class ReportingPeriod
             if (getClass() != obj.getClass())
                 return false;
             FromXtoY other = (FromXtoY) obj;
-            return startDate == other.startDate && endDate == other.endDate;
+            return startDate.equals(other.startDate) && endDate.equals(other.endDate);
         }
     }
 
@@ -383,7 +383,7 @@ public abstract class ReportingPeriod
             if (getClass() != obj.getClass())
                 return false;
             SinceX other = (SinceX) obj;
-            return startDate == other.startDate;
+            return startDate.equals(other.startDate);
         }
     }
 
