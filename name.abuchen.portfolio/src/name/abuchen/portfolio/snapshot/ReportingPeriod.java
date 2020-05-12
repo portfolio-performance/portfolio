@@ -214,7 +214,7 @@ public abstract class ReportingPeriod
             return Interval.of(tradingDaysSince(relativeTo, tradingDays), relativeTo);
         }
 
-        /* testing */ static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
+        public static final LocalDate tradingDaysSince(LocalDate start, int tradingDays)
         {
             TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
 
@@ -326,7 +326,7 @@ public abstract class ReportingPeriod
             if (getClass() != obj.getClass())
                 return false;
             FromXtoY other = (FromXtoY) obj;
-            return startDate == other.startDate && endDate == other.endDate;
+            return startDate.equals(other.startDate) && endDate.equals(other.endDate);
         }
     }
 
@@ -383,7 +383,7 @@ public abstract class ReportingPeriod
             if (getClass() != obj.getClass())
                 return false;
             SinceX other = (SinceX) obj;
-            return startDate == other.startDate;
+            return startDate.isEqual(other.startDate);
         }
     }
 
