@@ -4,8 +4,13 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.util.Locale;
 
+import org.junit.Before;
 import org.junit.Test;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
@@ -14,6 +19,16 @@ import name.abuchen.portfolio.util.Interval;
 
 public class SinceXTest
 {
+    @Before
+    public void setup() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
+    {
+        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.US);
+
+        Field field = ReportingPeriod.class.getDeclaredField("DATE_FORMATTER");
+        field.setAccessible(true);
+        field.set(null, formatter);
+    }
+
     @Test
     public void testContructor() throws IOException
     {
@@ -52,7 +67,7 @@ public class SinceXTest
     public void testToString() throws IOException
     {
         String code = "S2020-04-04";
-        String expceted = "Since 4 Apr 2020";
+        String expceted = "Since Apr 4, 2020";
 
         ReportingPeriod period = ReportingPeriod.from(code);
 
