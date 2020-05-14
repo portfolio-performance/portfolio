@@ -128,8 +128,11 @@ public class PortfolioTransaction extends Transaction
     }
 
     /**
-     * Returns the gross value, i.e. the value excluding taxes and fees. See
-     * {@link #getGrossValue()}.
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. In the case of a buy transaction, that are the gross costs, i.e.
+     * before adding additional taxes and fees. In the case of sell
+     * transactions, that are the gross proceeds before the deduction of taxes
+     * and fees. See {@link #getGrossValue()}.
      */
     public long getGrossValueAmount()
     {
