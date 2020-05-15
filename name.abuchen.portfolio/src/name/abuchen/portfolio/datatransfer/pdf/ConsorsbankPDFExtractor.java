@@ -32,6 +32,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addIncomeTransaction();
         addTaxAdjustmentTransaction();
+        addVorabpauschaleTransaction();
 
         // documents since Q4 2017 look different
         addQ42017DividendTransaction();
@@ -618,6 +619,42 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     }
 
+    @SuppressWarnings("nls")
+    private void addVorabpauschaleTransaction()
+    {
+        DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Vorabpauschale");
+        type.addBlock(block);
+
+        Transaction<AccountTransaction> vorabpauschaleTransaction = new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("name", "wkn", "isin") //
+                        .match("Wertpapierbezeichnung WKN ISIN") //
+                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("tax", "currency", "date").optional()
+                        .match("Netto zulasten .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("tax")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+
+        block.set(vorabpauschaleTransaction);
+    }
+    
     @Override
     public String getLabel()
     {
