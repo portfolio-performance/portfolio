@@ -172,14 +172,11 @@ public class PortfolioTransaction extends Transaction
         {
             Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
 
-            return Money.of(converter.getTermCurrency(),
-                            grossValue.isPresent() ? grossValue.get().getForex().getAmount()
-                                            : getGrossValue().with(converter.at(getDateTime())).getAmount());
+            if (grossValue.isPresent())
+                return Money.of(converter.getTermCurrency(), grossValue.get().getForex().getAmount());
         }
-        else
-        {
-            return converter.convert(getDateTime(), getGrossValue());
-        }
+
+        return converter.convert(getDateTime(), getGrossValue());
     }
 
     /**
@@ -214,15 +211,7 @@ public class PortfolioTransaction extends Transaction
         // transaction currency and not in security currency) we must convert
         // the gross value (instead of checking the unit type GROSS_VALUE)
 
-        // use exchange rate used within the transaction,
-        // not the historical exchange rate
-        Optional<Unit> grossValueUnit = getUnit(Unit.Type.GROSS_VALUE);
-        BigDecimal exchangeRate = grossValueUnit.isPresent() ? grossValueUnit.get().getExchangeRate()
-                        : converter.getRate(getDateTime(), getCurrencyCode()).getValue();
-
-        long grossValue = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
-                        .multiply(BigDecimal.valueOf(getGrossValueAmount())).setScale(0, RoundingMode.HALF_DOWN).longValue();
-        
+        long grossValue = getGrossValue(converter).getAmount();
         double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
         return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
     }
