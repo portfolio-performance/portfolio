@@ -36,7 +36,6 @@ public class SinceXTest
         ReportingPeriod period = ReportingPeriod.from(code);
 
         assertEquals(period.getClass(), SinceX.class);
-        assertEquals(period.getClass(), SinceX.class);
     }
 
     @Test
