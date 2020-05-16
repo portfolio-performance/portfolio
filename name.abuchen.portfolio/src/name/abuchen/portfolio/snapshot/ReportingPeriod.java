@@ -383,7 +383,7 @@ public abstract class ReportingPeriod
             if (getClass() != obj.getClass())
                 return false;
             SinceX other = (SinceX) obj;
-            return startDate.isEqual(other.startDate);
+            return startDate.equals(other.startDate);
         }
     }
 
