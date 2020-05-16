@@ -19,16 +19,6 @@ import name.abuchen.portfolio.util.Interval;
 
 public class FromXtoYTest
 {
-    @Before
-    public void setup() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException
-    {
-        DateTimeFormatter formatter = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM).withLocale(Locale.US);
-
-        Field field = ReportingPeriod.class.getDeclaredField("DATE_FORMATTER");
-        field.setAccessible(true);
-        field.set(null, formatter);
-    }
-
     @Test
     public void testContructor() throws IOException
     {

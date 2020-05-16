@@ -17,7 +17,7 @@ import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public abstract class ReportingPeriod
 {
-    private static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+    private final static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
 
     private ReportingPeriod()
     {
