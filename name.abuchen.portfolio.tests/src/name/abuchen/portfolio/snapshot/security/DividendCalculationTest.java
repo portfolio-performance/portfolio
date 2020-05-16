@@ -1,28 +1,16 @@
 package name.abuchen.portfolio.snapshot.security;
 
-import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.PortfolioBuilder;
-import name.abuchen.portfolio.SecurityBuilder;
 import name.abuchen.portfolio.TestCurrencyConverter;
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyUnit;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord.Periodicity;
 
 import org.junit.Before;
