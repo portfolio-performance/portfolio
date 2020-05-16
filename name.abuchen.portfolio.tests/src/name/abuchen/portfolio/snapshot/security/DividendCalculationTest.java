@@ -52,8 +52,7 @@ public class DividendCalculationTest
     {
         List<Transaction> transactions = new ArrayList<>();
 
-        DividendCalculation dc = Calculation.perform(DividendCalculation.class, converter, security,
-                        transactions);
+        DividendCalculation dc = Calculation.perform(DividendCalculation.class, converter, security, transactions);
 
         assertEquals(0, dc.getNumOfEvents());
         assertEquals(Periodicity.NONE, dc.getPeriodicity());
@@ -182,6 +181,7 @@ public class DividendCalculationTest
         transactions.add(createDividendTransaction(LocalDateTime.of(2020, 01, 15, 12, 00)));
 
         // We need to calculate the costs, in order to get the average return
+        @SuppressWarnings("unused")
         CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
         DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
                         transactions);
