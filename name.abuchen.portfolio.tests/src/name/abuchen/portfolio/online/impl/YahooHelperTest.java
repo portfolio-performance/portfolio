@@ -8,6 +8,7 @@ import java.time.format.DateTimeParseException;
 
 import org.junit.Test;
 
+@SuppressWarnings("nls")
 public class YahooHelperTest
 {
 

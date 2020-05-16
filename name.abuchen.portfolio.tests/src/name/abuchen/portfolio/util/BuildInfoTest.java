@@ -10,6 +10,7 @@ import org.junit.Test;
 /**
  * We can only test the fallback, since we cannot mock the static call to the resource bundle *
  */
+@SuppressWarnings("nls")
 public class BuildInfoTest
 {
 

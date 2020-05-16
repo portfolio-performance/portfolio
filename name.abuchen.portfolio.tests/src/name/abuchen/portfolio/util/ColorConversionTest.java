@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.eclipse.swt.graphics.RGB;
 import org.junit.Test;
 
+@SuppressWarnings("nls")
 public class ColorConversionTest
 {
 
@@ -18,7 +19,7 @@ public class ColorConversionTest
         assertEquals(rgb[1], 0);
         assertEquals(rgb[2], 0);
     }
-    
+
     @Test
     public void testToRGB()
     {

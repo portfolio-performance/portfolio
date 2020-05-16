@@ -6,6 +6,7 @@ import java.net.URISyntaxException;
 
 import org.junit.Test;
 
+@SuppressWarnings("nls")
 public class WebAccessTest
 {
 
@@ -57,5 +58,5 @@ public class WebAccessTest
         WebAccess url = new WebAccess("example.com", "/foo.html").addParameter("limit", "1");
         String url2 = "https://example.com/foo.html?limit=1";
         assertEquals(url.getURL(), url2);
-    }   
+    }
 }
