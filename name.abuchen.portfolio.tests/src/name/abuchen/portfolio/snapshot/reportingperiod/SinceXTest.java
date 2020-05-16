@@ -64,19 +64,6 @@ public class SinceXTest
     }
 
     @Test
-    public void testToString() throws IOException
-    {
-        String code = "S2020-04-04";
-        String expceted = "Since Apr 4, 2020";
-
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testEquals() throws IOException
     {
         ReportingPeriod equal1 = ReportingPeriod.from("S2020-04-04");

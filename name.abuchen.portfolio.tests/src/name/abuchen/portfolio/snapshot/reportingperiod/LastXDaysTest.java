@@ -47,19 +47,6 @@ public class LastXDaysTest
     }
 
     @Test
-    public void testToString() throws IOException
-    {
-        String code = "D90";
-        String expceted = "90 days";
-
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testEquals() throws IOException
     {
         ReportingPeriod equal1 = ReportingPeriod.from("D90");

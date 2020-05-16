@@ -70,19 +70,6 @@ public class LastXTradingDaysTest
     }
 
     @Test
-    public void testToStringFull() throws IOException
-    {
-        String code = "T10";
-        String expceted = "10 trading days";
-
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testEquals() throws IOException
     {
         ReportingPeriod equal1 = ReportingPeriod.from("T10");

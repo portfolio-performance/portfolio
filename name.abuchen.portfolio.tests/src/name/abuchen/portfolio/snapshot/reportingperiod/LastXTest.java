@@ -48,19 +48,6 @@ public class LastXTest
     }
 
     @Test
-    public void testToStringFull() throws IOException
-    {
-        String code = "L2Y6";
-        String expceted = "2 years, 6 months";
-
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testToStringNoYears() throws IOException
     {
         String code = "L0Y6";

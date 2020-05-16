@@ -49,18 +49,6 @@ public class YearXTest
     }
 
     @Test
-    public void testToString() throws IOException
-    {
-        String code = "Y2019";
-        String expceted = "2019";
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testEquals() throws IOException
     {
         ReportingPeriod equal1 = ReportingPeriod.from("Y2019");

@@ -50,18 +50,6 @@ public class CurrentMonthTest
     }
 
     @Test
-    public void testToString() throws IOException
-    {
-        String code = "M";
-        String expceted = "Current Month";
-        ReportingPeriod period = ReportingPeriod.from(code);
-
-        String result = period.toString();
-
-        assertEquals(expceted, result);
-    }
-
-    @Test
     public void testEquals() throws IOException
     {
         ReportingPeriod equal1 = ReportingPeriod.from("M");
