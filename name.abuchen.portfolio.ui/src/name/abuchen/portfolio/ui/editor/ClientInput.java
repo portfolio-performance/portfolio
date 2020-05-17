@@ -45,6 +45,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
@@ -260,6 +261,40 @@ public class ClientInput
         });
     }
 
+    /**
+     * autoSave is called from AutoSaveJob and uses the file generated during startup,
+     * if set in preferences
+     */
+    public void autoSave()
+    {
+        if (clientFile != null)
+        {
+            // generate the same name used when creating the initial autosave file
+            // see @scheduleAutoSaveJob 
+            String suffix = "autosave"; //$NON-NLS-1$
+            String filename = clientFile.getPath();
+            int l = filename.lastIndexOf('.');
+            String backupName = l > 0 ? filename.substring(0, l) + '.' + suffix + filename.substring(l)
+                            : filename + '.' + suffix;
+
+            try
+            {
+                File tempFile = new File(backupName);
+                
+                // file should exist, because a copy is created, during setup of the job
+                if (!tempFile.exists())
+                {
+                    createBackup(clientFile, suffix);
+                }
+                ClientFactory.save(client, tempFile, null, null);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+        }
+    }
+
     public void createBackupAfterOpen()
     {
         if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
@@ -452,6 +487,22 @@ public class ClientInput
         }
     }
 
+    private void scheduleAutoSaveJob()
+    {
+        int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
+        if (delay > 0)
+        {  
+            if (clientFile != null)
+            {
+                createBackup(clientFile, "autosave"); //$NON-NLS-1$
+
+                int delayInMinutes = 1000 * 60 * delay;
+                Job job = new AutoSaveJob(client, this, delayInMinutes);
+                job.schedule(delayInMinutes);
+            }
+        }
+    }
+    
     /* package */ void setErrorMessage(String message)
     {
         this.listeners.forEach(l -> l.onError(message));
@@ -492,6 +543,8 @@ public class ClientInput
         loadPreferences();
 
         scheduleOnlineUpdateJobs();
+        
+        scheduleAutoSaveJob();
 
         this.listeners.forEach(ClientInputListener::onLoaded);
 
