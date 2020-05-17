@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.FileDialog;
 
 import name.abuchen.portfolio.datatransfer.csv.AktienfreundeNetExporter;
 import name.abuchen.portfolio.datatransfer.csv.CSVExporter;
+import name.abuchen.portfolio.datatransfer.csv.VINISExporter;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -97,6 +98,8 @@ public class ExportWizard extends Wizard
                     new CSVExporter().exportMergedSecurityPrices(file, client.getSecurities());
                 else if (Messages.ExportWizardAllTransactionsAktienfreundeNet.equals(exportItem))
                     new AktienfreundeNetExporter().exportAllTransactions(file, client);
+                else if (Messages.ExportWizardVINISApp.equals(exportItem))
+                    new VINISExporter().exportAllValues(file, client);
             }
 
             // historical quotes

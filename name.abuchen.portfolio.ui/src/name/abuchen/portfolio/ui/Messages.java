@@ -373,6 +373,7 @@ public class Messages extends NLS
     public static String ExportWizardSelectDirectory;
     public static String ExportWizardTitle;
     public static String ExportWizardUnsupportedExport;
+    public static String ExportWizardVINISApp;
     public static String GroupLabelAttributes;
     public static String GroupLabelDataQuality;
     public static String GroupLabelDividends;
