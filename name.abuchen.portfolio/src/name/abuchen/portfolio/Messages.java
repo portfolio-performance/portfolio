@@ -48,6 +48,7 @@ public class Messages extends NLS
     public static String CSVColumn_DeltaInPercent;
     public static String CSVColumn_ExchangeRate;
     public static String CSVColumn_GrossAmount;
+    public static String CSVColumn_Name;
     public static String CSVColumn_Note;
     public static String CSVColumn_OutboundTransferals;
     public static String CSVColumn_TransactionCurrency;
@@ -253,6 +254,22 @@ public class Messages extends NLS
     public static String PDFMsgMissingShares;
     public static String QuoteFeedManual;
     public static String SecurityBasedExchangeRateProvider;
+    public static String VINISAppValueCapitalGainsCurrentYear;
+    public static String VINISAppValueCapitalGainsLastYear;
+    public static String VINISAppValueCapitalGainsTotal;
+    public static String VINISAppValueEarningsCurrentYear;
+    public static String VINISAppValueEarningsLastYear;
+    public static String VINISAppValueEarningsTotal;
+    public static String VINISAppValueFundsSum;
+    public static String VINISAppValueRealizedCapitalGainsCurrentYear;
+    public static String VINISAppValueRealizedCapitalGainsLastYear;
+    public static String VINISAppValueRealizedCapitalGainsTotal;
+    public static String VINISAppValueSecuritiesMarket; 
+    public static String VINISAppValueSecuritiesPurchase; 
+    public static String VINISAppValueTotalAssetsMarket;
+    public static String VINISAppValueTotalAssetsPurchase;
+
+  
     static
     {
         // initialize resource bundle
