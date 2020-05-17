@@ -55,7 +55,12 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     public void visit(CurrencyConverter converter, DividendInitialTransaction t)
     {
         long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
-        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount, TrailRecord.ofTransaction(t)));
+        TrailRecord trail = TrailRecord.ofTransaction(t);
+        if (!getTermCurrency().equals(t.getCurrencyCode()))
+            trail = trail.convert(Money.of(getTermCurrency(), amount),
+                            converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+
+        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount, trail));
         movingRelativeCost += amount;
         movingRelativeNetCost += amount;
         heldShares += t.getPosition().getShares();

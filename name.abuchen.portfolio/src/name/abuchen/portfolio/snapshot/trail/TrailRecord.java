@@ -28,7 +28,7 @@ public interface TrailRecord
 
     public static TrailRecord empty()
     {
-        return new EmptyTrail();
+        return EmptyTrail.INSTANCE;
     }
 
     public static TrailRecord of(List<TrailRecord> trails)

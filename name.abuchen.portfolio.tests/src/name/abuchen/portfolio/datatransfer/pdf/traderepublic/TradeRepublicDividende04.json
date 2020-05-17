@@ -1,0 +1,33 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "DIVIDEND",
+			"date": "2020-02-14",
+			"currency": "EUR",
+			"amount": 39.21,
+			"shares": 142.0,
+			"security": {
+				"name": "Tanger Fact.Outlet Centrs Inc.",
+				"isin": "US8754651060",
+				"currency": "USD"
+			},
+			"units": [
+				{
+					"type": "GROSS_VALUE",
+					"amount": 46.13,
+					"fxAmount": 50.41,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.0927
+				},
+				{
+					"type": "TAX",
+					"amount": 6.92,
+					"fxAmount": 7.56,
+					"fxCurrency": "USD",
+					"fxRateToBase": 1.0927
+				}
+			]
+		}
+	]
+}

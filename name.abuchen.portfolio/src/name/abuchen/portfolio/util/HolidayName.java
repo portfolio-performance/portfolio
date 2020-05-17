@@ -6,6 +6,7 @@ import java.util.ResourceBundle;
 /* package */ enum HolidayName
 {
     ASCENSION_DAY,
+    ASSUMPTION_DAY,
     BANK_HOLIDAY,
     BERCHTOLDSTAG,
     BOXING_DAY,

@@ -833,6 +833,36 @@ public class ConsorsbankPDFExtractorTest
         assertThat(item.isPresent(), is(true));
     }
 
+    @Test
+    public void testVorabpauschale01() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "ConsorsbankVorabpauschale01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(AccountTransaction.class));
+        AccountTransaction t = (AccountTransaction) item.get().getSubject();
+
+        assertThat(t.getSecurity().getName(), is("L&G-L&G R.Gbl Robot.Autom.UETF Bearer Shares (Dt. Zert.) o.N."));
+        assertThat(t.getSecurity().getIsin(), is("DE000A12GJD2"));
+        assertThat(t.getSecurity().getWkn(), is("A12GJD"));
+
+        assertThat(t.getType(), is(AccountTransaction.Type.TAXES));
+
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.73))));
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-02T00:00")));
+    }
+
+    
     private void checkCurrency(final String accountCurrency, AccountTransaction transaction)
     {
         Account account = new Account();
