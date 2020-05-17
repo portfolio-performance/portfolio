@@ -117,6 +117,13 @@ public interface UIConstants
         String UPDATE_QUOTES_AFTER_FILE_OPEN = "UPDATE_QUOTES_AFTER_FILE_OPEN"; //$NON-NLS-1$
 
         /**
+         * Preference key whether to automatically update quotes after opening a
+         * data file.
+         */
+        String AUTO_SAVE_FILE = "AUTO_SAVE_FILE"; //$NON-NLS-1$
+        
+        
+        /**
          * Preference key whether to store settings (column width, last expanded
          * tree nodes, etc.) next to the data file as opposed to in the
          * workspace folder
