@@ -1,0 +1,36 @@
+PDF Autor: ‚Consorsbank‘
+PDFBox Version: 1.8.16
+
+Consorsbank • 90318 Nürnberg
+Depotnummer xxxxxxxxxx
+1120282769/00
+xxxxx xxxxxxxxxxx
+xxxxxxx
+xxxxx xxxxxxx Vermerk der Bank 200002
+ORDERABRECHNUNG
+KAUF AM 11.05.2020 UM 15:52:34 NEW YORK NR. 164920718.001
+Bezeichnung WKN ISIN
+VECTO.ACQ.CORP. DL -,0001 A2P1CV US92243N1037
+Einheit Umsatz
+ST 30,00000
+Kurs 18,000000 USD P.ST.
+Kurswert USD 540,00
+umger. zum Devisenkurs USD 1,077900 EUR 500,97
+Provision EUR 5,00
+Grundgebühr EUR 19,95
+Wert 13.05.2020 EUR 525,92
+zulasten Konto-Nr. xxxxxxxxx
+Bestand zugunsten Wertpapierrechnung USA/Kanada
+NY Branch Local
+Limitkurs 18,000000 USD
+Beratungsfreies Geschäft
+Hinweis für Orderabrechnungen und Depotbuchungsanzeigen:
+Einwendungen wegen Unrichtigkeit oder Unvollständigkeit dieser Mitteilung müssen unverzüglich erhoben werden, vgl. Nummer B. Ziffer I. 11 (4) und (5) der
+Allgemeinen Geschäftsbedingungen (AGB Banken).
+Machen Sie Ihre Einwendungen in Textform geltend, genügt die Absendung innerhalb der Sechs-Wochen-Frist an die Consorsbank oder per Fax oder Mail an die
+unten angegebenen Adressen. Das Unterlassen rechtzeitiger Einwendungen gilt als Genehmigung.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+Président du Conseil d‘Administration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur Général (Generaldirektor): Jean-Laurent Bonnafé
