@@ -82,7 +82,33 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+                        
+                        .section("forex", "exchangeRate", "currency", "amount").optional()
+                        .match("umger. zum Devisenkurs *(?<forex>\\w{3}+) *(?<exchangeRate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
 
+                            // read the forex currency, exchange rate, account
+                            // currency and gross amount in account currency
+                            String forex = asCurrencyCode(v.get("forex"));
+                            if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                // gross given in account currency
+                                long amount = asAmount(v.get("amount"));
+                                long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
+                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                                
+                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                                Money.of(asCurrencyCode(v.get("currency")), amount),
+                                                Money.of(forex, fxAmount), reverseRate);
+
+                                t.getPortfolioTransaction().addUnit(grossValue);
+                            }
+                        })
+                       
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
