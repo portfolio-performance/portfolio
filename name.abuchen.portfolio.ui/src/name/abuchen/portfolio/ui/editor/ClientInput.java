@@ -294,6 +294,19 @@ public class ClientInput
             }
         }
     }
+    
+    public long getAutoSavePrefs()
+    {
+        int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
+        if (delay > 0)
+        {
+            long delayInMilliseconds = 1000 * 60 * delay;
+
+            return delayInMilliseconds;
+        }
+        return 0L;
+    }    
+
 
     public void createBackupAfterOpen()
     {
@@ -489,6 +502,7 @@ public class ClientInput
 
     private void scheduleAutoSaveJob()
     {
+        
         int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
         if (delay > 0)
         {  
@@ -496,9 +510,10 @@ public class ClientInput
             {
                 createBackup(clientFile, "autosave"); //$NON-NLS-1$
 
-                int delayInMinutes = 1000 * 60 * delay;
-                Job job = new AutoSaveJob(client, this, delayInMinutes);
-                job.schedule(delayInMinutes);
+                long delayInMilliseconds = 1000 * 60 * delay;
+                long heartBeat = 1000 * 60 * 1; // one minute
+                Job job = new AutoSaveJob(this, delayInMilliseconds, heartBeat);
+                job.schedule(heartBeat);
             }
         }
     }
