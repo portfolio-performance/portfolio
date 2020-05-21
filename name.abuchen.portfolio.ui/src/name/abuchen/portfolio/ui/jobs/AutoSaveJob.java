@@ -24,17 +24,17 @@ public final class AutoSaveJob extends AbstractClientJob
     {
         // 0 means not to autosave at all
         if (delay != 0L)
-            {
+        {
             this.clientInput.autoSave();
             schedule(delay);
         }
         return Status.OK_STATUS;
-            }
+    }
 
     public long getDelay()
-            {
+    {
         return delay;
-        }
+    }
 
     public void setDelay(long delay)
     {
