@@ -9,6 +9,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -504,6 +505,30 @@ public class ClientInput
     {
         
         int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
+        IPreferenceChangeListener listener = new IPreferenceChangeListener()
+        {
+
+            @Override
+            public void preferenceChange(PreferenceChangeEvent event)
+            {
+                if (event.getKey().contentEquals(UIConstants.Preferences.AUTO_SAVE_FILE))
+                {
+
+                    for (Iterator<Job> i = regularJobs.iterator(); i.hasNext();)
+                    {
+                        Job j = i.next();
+                        if (j instanceof AutoSaveJob)
+                        {
+                            ((AutoSaveJob) j).setDelay(getAutoSavePrefs());
+                            ((AutoSaveJob) j).schedule(getAutoSavePrefs());
+                            ((AutoSaveJob) j).wakeUp(getAutoSavePrefs());
+                        }
+                    }
+                }
+            }
+        };
+        preferences.addPreferenceChangeListener(listener);
+
         if (delay > 0)
         {  
             if (clientFile != null)
@@ -511,9 +536,9 @@ public class ClientInput
                 createBackup(clientFile, "autosave"); //$NON-NLS-1$
 
                 long delayInMilliseconds = 1000 * 60 * delay;
-                long heartBeat = 1000 * 60 * 1; // one minute
-                Job job = new AutoSaveJob(this, delayInMilliseconds, heartBeat);
-                job.schedule(heartBeat);
+                Job job = new AutoSaveJob(this, delayInMilliseconds);
+                job.schedule(delay);
+                regularJobs.add(job);
             }
         }
     }

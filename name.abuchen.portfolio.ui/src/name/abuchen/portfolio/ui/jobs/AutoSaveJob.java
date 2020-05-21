@@ -11,43 +11,33 @@ public final class AutoSaveJob extends AbstractClientJob
 {
     private ClientInput clientInput;
     private long delay;
-    private long heartbeat;
-    private long lastRun = 0L;
 
-    public AutoSaveJob(ClientInput clientInput, long delay, long heartbeat)
+    public AutoSaveJob(ClientInput clientInput, long delay)
     {
         super(clientInput.getClient(), Messages.JobLabelAutoSave);
         this.clientInput = clientInput;
         this.delay = delay;
-        this.heartbeat = heartbeat;
     }
 
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        // get value from preferences to check, if the value changed
-        long newDelay = clientInput.getAutoSavePrefs();
-
         // 0 means not to autosave at all
-        if (newDelay != 0L)
-        {
-            // if the value changed, use the new value
-            if (delay != newDelay)
+        if (delay != 0L)
             {
-                delay = newDelay;
+            this.clientInput.autoSave();
+            schedule(delay);
+        }
+        return Status.OK_STATUS;
             }
 
-            // check, if time till last run passed and new run is needed
-            long now = System.currentTimeMillis();
-            long diff = now - this.lastRun;
-            if (diff > delay)
+    public long getDelay()
             {
-                this.clientInput.autoSave();
-                this.lastRun = now;
-            }
+        return delay;
         }
 
-        schedule(heartbeat);
-        return Status.OK_STATUS;
+    public void setDelay(long delay)
+    {
+        this.delay = delay;
     }
 }
