@@ -512,6 +512,7 @@ public class Messages extends NLS
     public static String LabelConsumerPriceIndex;
     public static String LabelConvertBuySellIntoDeliveryTransactions;
     public static String LabelCopyToClipboard;
+    public static String LabelCorrelationMatrix;
     public static String LabelCurrencies;
     public static String LabelCurrencyConverter;
     public static String LabelCurrentDate;
