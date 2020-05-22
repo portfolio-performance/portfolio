@@ -265,15 +265,16 @@ public class ClientInput
     }
 
     /**
-     * autoSave is called from AutoSaveJob and uses the file generated during startup,
-     * if set in preferences
+     * autoSave is called from AutoSaveJob and uses the file generated during
+     * startup, if set in preferences
      */
     public void autoSave()
     {
         if (clientFile != null)
         {
-            // generate the same name used when creating the initial autosave file
-            // see @scheduleAutoSaveJob 
+            // generate the same name used when creating the initial autosave
+            // file
+            // see @scheduleAutoSaveJob
             String suffix = "autosave"; //$NON-NLS-1$
             String filename = clientFile.getPath();
             int l = filename.lastIndexOf('.');
@@ -283,8 +284,9 @@ public class ClientInput
             try
             {
                 File tempFile = new File(backupName);
-                
-                // file should exist, because a copy is created, during setup of the job
+
+                // file should exist, because a copy is created, during setup of
+                // the job
                 if (!tempFile.exists())
                 {
                     createBackup(clientFile, suffix);
@@ -297,8 +299,8 @@ public class ClientInput
             }
         }
     }
-    
-    public long getAutoSavePrefs()
+
+    private long getAutoSavePrefs()
     {
         int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
         if (delay > 0)
@@ -308,11 +310,12 @@ public class ClientInput
             return delayInMilliseconds;
         }
         return 0L;
-    }    
+    }
 
     public void createBackupAfterOpen()
     {
-        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true)
+                        && preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 0) == 0)
             createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
     }
 
@@ -504,8 +507,8 @@ public class ClientInput
 
     private void scheduleAutoSaveJob()
     {
-        
-        int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 15);
+
+        int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
         IPreferenceChangeListener listener = new IPreferenceChangeListener()
         {
 
@@ -530,20 +533,20 @@ public class ClientInput
         };
         preferences.addPreferenceChangeListener(listener);
 
-        if (delay > 0)
-        {  
-            if (clientFile != null)
-            {
-                createBackup(clientFile, "autosave"); //$NON-NLS-1$
+        if (clientFile != null)
+        {
+            createBackup(clientFile, "autosave"); //$NON-NLS-1$
+        }
 
-                long delayInMilliseconds = 1000 * 60 * delay;
-                Job job = new AutoSaveJob(this, delayInMilliseconds);
-                job.schedule(delay);
-                regularJobs.add(job);
-            }
+        long delayInMilliseconds = 1000 * 60 * delay;
+        Job job = new AutoSaveJob(this, delayInMilliseconds);
+        regularJobs.add(job);
+        if (delay > 0)
+        {
+            job.schedule(delay);
         }
     }
-    
+
     /* package */ void setErrorMessage(String message)
     {
         this.listeners.forEach(l -> l.onError(message));
@@ -584,7 +587,7 @@ public class ClientInput
         loadPreferences();
 
         scheduleOnlineUpdateJobs();
-        
+
         scheduleAutoSaveJob();
 
         this.listeners.forEach(ClientInputListener::onLoaded);
