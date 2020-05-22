@@ -106,6 +106,9 @@ public class BasicDataSeriesConfigurator
 
     private void doAddSeries(boolean showOnlyBenchmark)
     {
+
+        final int MAX_CORRELATION_MATRIX_SERIES = 50;
+
         List<DataSeries> list = new ArrayList<>(dataSeriesSet.getAvailableSeries());
 
         // remove items if that do not match the benchmark flag
