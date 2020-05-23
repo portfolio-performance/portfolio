@@ -364,8 +364,6 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         {
             if (junit.getType() == Transaction.Unit.Type.GROSS_VALUE)
                 return null;
-            else
-                new Transaction.Unit(junit.getType(), amount);
         }
 
         // check forex amount
