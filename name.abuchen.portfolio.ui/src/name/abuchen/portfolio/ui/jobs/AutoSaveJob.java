@@ -5,6 +5,7 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.editor.ClientInput;
 
 public final class AutoSaveJob extends AbstractClientJob
@@ -25,6 +26,7 @@ public final class AutoSaveJob extends AbstractClientJob
         // 0 means not to autosave at all
         if (delay != 0L)
         {
+            PortfolioPlugin.info("Auto-saving " + clientInput.getLabel()); //$NON-NLS-1$
             this.clientInput.autoSave();
             schedule(delay);
         }
