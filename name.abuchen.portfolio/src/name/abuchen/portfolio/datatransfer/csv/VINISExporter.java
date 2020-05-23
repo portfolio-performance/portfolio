@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.csv.CSVPrinter;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -41,13 +42,9 @@ public class VINISExporter
         
         LocalDate lastYear = LocalDate.now().minusYears(1);
         LocalDate firstYear = LocalDate.now().minusYears(100);
-        ReportingPeriod periodLastYear = new ReportingPeriod.FromXtoY(lastYear.with(TemporalAdjusters.firstDayOfYear()),
-                        lastYear.with(TemporalAdjusters.lastDayOfYear()));
-        ReportingPeriod periodCurrentYear = new ReportingPeriod.FromXtoY(LocalDate.now().with(TemporalAdjusters.firstDayOfYear()),
-                        LocalDate.now());
+        ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
+        ReportingPeriod periodCurrentYear = new ReportingPeriod.YearToDate();
         ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(firstYear.with(TemporalAdjusters.firstDayOfYear()),
-                        LocalDate.now());
-        ReportingPeriod periodToday = new ReportingPeriod.FromXtoY(LocalDate.now(),
                         LocalDate.now());
         
         ClientPerformanceSnapshot performanceAllYears = new ClientPerformanceSnapshot(client, converter,
@@ -56,9 +53,6 @@ public class VINISExporter
                         periodCurrentYear.toInterval(LocalDate.now()));
         ClientPerformanceSnapshot performanceLastYear = new ClientPerformanceSnapshot(client, converter,
                         periodLastYear.toInterval(LocalDate.now()));
-        ClientPerformanceSnapshot performanceToday = new ClientPerformanceSnapshot(client, converter,
-                        periodToday.toInterval(LocalDate.now()));
-        
         
         Money earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
         Money earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);
@@ -78,7 +72,7 @@ public class VINISExporter
         Money currentTotalValue = Money.of(baseCurrency, 0);
         Money cash = Money.of(baseCurrency, 0);
         
-        List<AssetPosition> assets =  performanceToday.getEndClientSnapshot().getAssetPositions()
+        List<AssetPosition> assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions()
                                         .collect(Collectors.toList());
 
         for (AssetPosition asset : assets)
@@ -122,7 +116,7 @@ public class VINISExporter
             
         }
 
-        for (AccountSnapshot account : performanceToday.getEndClientSnapshot().getAccounts())
+        for (AccountSnapshot account : performanceCurrentYear.getEndClientSnapshot().getAccounts())
             cash = cash.add(account.getFunds());   
         
         
@@ -132,33 +126,34 @@ public class VINISExporter
                         CSVExporter.STRATEGY))
         {
             writeHeader(printer);
+
+            write(printer, Messages.VINISAppValueFundsSum, Values.Amount.format(cash.getAmount()), cash.getCurrencyCode());
             
-            write(printer, "Kontostände Summe", Values.Amount.format(cash.getAmount()));
+            write(printer, Messages.VINISAppValueSecuritiesPurchase, Values.Amount.format(buySecurityValue.getAmount()), buySecurityValue.getCurrencyCode());
+            write(printer, Messages.VINISAppValueSecuritiesMarket, Values.Amount.format(currentSecurityValue.getAmount()), currentSecurityValue.getCurrencyCode());
+             
+            write(printer, Messages.VINISAppValueTotalAssetsPurchase, Values.Amount.format(buyTotalValue.getAmount()), buyTotalValue.getCurrencyCode());
+            write(printer, Messages.VINISAppValueTotalAssetsMarket, Values.Amount.format(currentTotalValue.getAmount()), currentTotalValue.getCurrencyCode());
             
-            write(printer, "Aktien Kaufwert", Values.Amount.format(buySecurityValue.getAmount()));
-            write(printer, "Aktien Marktwert", Values.Amount.format(currentSecurityValue.getAmount()));
+            write(printer, Messages.VINISAppValueEarningsCurrentYear, Values.Amount.format(earningsCurrentYear.getAmount()), earningsCurrentYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueEarningsLastYear, Values.Amount.format(earningsLastYear.getAmount()), earningsLastYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueEarningsTotal, Values.Amount.format(earningsAll.getAmount()), earningsAll.getCurrencyCode());
             
-            write(printer, "Gesamtvermögen Kaufwert", Values.Amount.format(buyTotalValue.getAmount()));
-            write(printer, "Gesamtvermögen Marktwert", Values.Amount.format(currentTotalValue.getAmount()));
+            write(printer, Messages.VINISAppValueCapitalGainsCurrentYear, Values.Amount.format(capitalGainsCurrentYear.getAmount()), capitalGainsCurrentYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueCapitalGainsLastYear, Values.Amount.format(capitalGainsLastYear.getAmount()), capitalGainsLastYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueCapitalGainsTotal, Values.Amount.format(capitalGainsAll.getAmount()), capitalGainsAll.getCurrencyCode());
             
-            write(printer, "Erträge aktuelles Jahr", Values.Amount.format(earningsCurrentYear.getAmount())); 
-            write(printer, "Erträge letztes Jahr", Values.Amount.format(earningsLastYear.getAmount())); 
-            write(printer, "Erträge gesamt", Values.Amount.format(earningsAll.getAmount()));
-            
-            write(printer, "Kurserfolge aktuelles Jahr", Values.Amount.format(capitalGainsCurrentYear.getAmount())); 
-            write(printer, "Kurserfolge letztes Jahr", Values.Amount.format(capitalGainsLastYear.getAmount())); 
-            write(printer, "Kurserfolge gesamt", Values.Amount.format(capitalGainsAll.getAmount()));
-            
-            write(printer, "Realisierte Kurserfolge aktuelles Jahr", Values.Amount.format(realizedCapitalGainsCurrentYear.getAmount())); 
-            write(printer, "Realisierte Kurserfolge letztes Jahr", Values.Amount.format(realizedCapitalGainsLastYear.getAmount())); 
-            write(printer, "Realisierte Kurserfolge gesamt", Values.Amount.format(realizedCapitalGainsAll.getAmount()));       
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsCurrentYear, Values.Amount.format(realizedCapitalGainsCurrentYear.getAmount()), realizedCapitalGainsCurrentYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsLastYear, Values.Amount.format(realizedCapitalGainsLastYear.getAmount()), realizedCapitalGainsLastYear.getCurrencyCode()); 
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsTotal, Values.Amount.format(realizedCapitalGainsAll.getAmount()), realizedCapitalGainsAll.getCurrencyCode());       
         }
     }
 
-    private void write(CSVPrinter printer, String description, String value) throws IOException
+    private void write(CSVPrinter printer, String description, String value, String currency) throws IOException
     {
         printer.print(description);
         printer.print(value);
+        printer.print(currency);
         printer.println();
     }
 
@@ -167,8 +162,10 @@ public class VINISExporter
     @SuppressWarnings("nls")
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        printer.print("Bezeichnung");
-        printer.print("Wert");
+        
+        printer.print(Messages.CSVColumn_Name);
+        printer.print(Messages.CSVColumn_Value);
+        printer.print(Messages.CSVColumn_Currency);
         printer.println();
     }
 }
