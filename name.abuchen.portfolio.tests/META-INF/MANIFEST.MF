@@ -16,7 +16,10 @@ Require-Bundle: org.junit,
  org.apache.servicemix.bundles.xpp3,
  org.apache.commons.logging,
  org.objenesis,
- net.bytebuddy.byte-buddy;bundle-version="1.9.0"
+ net.bytebuddy.byte-buddy,
+ org.slf4j.api,
+ net.minidev.accessors-smart,
+ net.minidev.json-smart
 Automatic-Module-Name: name.abuchen.portfolio.tests
 Import-Package: com.google.common.collect
 Export-Package: name.abuchen.portfolio

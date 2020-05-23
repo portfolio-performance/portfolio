@@ -100,7 +100,7 @@ public class TradeDetailsView extends AbstractFinanceView
         // only update the trades if it is *not* based on a pre-calculated set
         // of trades, for example when the user navigates from the dashboard to
         // the detailed trades
-        if (table.getInput() != input.getTrades())
+        if (input != null && table.getInput().equals(input.getTrades()))
             updateFrom(collectAllTrades());
 
         if (!table.getTableViewer().getTable().isDisposed())

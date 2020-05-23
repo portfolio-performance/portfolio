@@ -170,12 +170,17 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     {
         DocumentType type1 = new DocumentType("Fondsausschüttung");
         DocumentType type2 = new DocumentType("Ertragsthesaurierung");
+        DocumentType type3 = new DocumentType("Dividendenabrechnung");
+        
+        
         this.addDocumentTyp(type1);
         this.addDocumentTyp(type2);
+        this.addDocumentTyp(type3);
 
         Block block = new Block("Ex-Tag.*");
         type1.addBlock(block);
         type2.addBlock(block);
+        type3.addBlock(block);
         block.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.DIVIDENDS);
@@ -210,6 +215,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("tax", "currency").optional() 
                         .match("Solidaritätszuschlag (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
+                        .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
+
+                        .section("tax", "currency").optional() 
+                        .match("US-Quellensteuer (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 

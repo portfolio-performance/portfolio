@@ -421,6 +421,7 @@ public class Messages extends NLS
     public static String InvestmentPlanTxForMultiplePlansCreated;
     public static String InvestmentPlanTypeBuyDelivery;
     public static String InvestmentPlanTypeDeposit;
+    public static String JobLabelAutoSave;
     public static String JobLabelSyncSecuritiesOnline;
     public static String JobLabelUpdateCPI;
     public static String JobLabelUpdateQuotes;
@@ -889,6 +890,7 @@ public class Messages extends NLS
     public static String PrefAlphaVantageCallFrequencyLimit;
     public static String PrefCheckOnStartup;
     public static String PrefCreateBackupBeforeSaving;
+    public static String PrefAutoSaveFrequency;
     public static String PrefDescriptionAlphaVantage;
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionProxy;
