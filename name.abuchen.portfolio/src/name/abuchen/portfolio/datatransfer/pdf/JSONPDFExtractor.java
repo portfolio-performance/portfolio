@@ -352,13 +352,13 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
         // a) fx part of unit is not needed if currency of security and unit
         // match
 
-        boolean transactionAndUnitCurrencyMatch = jtx.getCurrency().equals(fxCurrency);
+        boolean transactionAndUnitCurrencyMatch = security.getCurrencyCode().equals(fxCurrency);
 
         // b) fx part of unit is not needed if the security is configured in the
         // currency of the transactions. However, it is important to check
         // against the resolved security as the parsed currency might differ
 
-        boolean transactionAndSecurityCurrencyMatch = jtx.getCurrency().equals(security.getCurrencyCode());
+        boolean transactionAndSecurityCurrencyMatch = security.getCurrencyCode().equals(jtx.getCurrency());
 
         if (transactionAndUnitCurrencyMatch || transactionAndSecurityCurrencyMatch)
         {
