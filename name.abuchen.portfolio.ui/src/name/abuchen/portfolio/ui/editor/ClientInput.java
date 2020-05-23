@@ -70,6 +70,7 @@ public class ClientInput
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
+    private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
     @Inject
@@ -86,6 +87,21 @@ public class ClientInput
     {
         this.label = label;
         this.clientFile = clientFile;
+    }
+
+    /**
+     * Called when the last editor for a given ClientInput is closed
+     */
+    public void dispose()
+    {
+        for (Job job : regularJobs)
+            job.cancel();
+
+        for (Runnable runnable : disposeJobs)
+            runnable.run();
+
+        this.client = null;
+        this.clientFile = null;
     }
 
     public void addListener(ClientInputListener listener)
@@ -508,6 +524,7 @@ public class ClientInput
             }
         };
         preferences.addPreferenceChangeListener(listener);
+        this.disposeJobs.add(() -> preferences.removePreferenceChangeListener(listener));
 
         long delay = getAutoSavePrefs();
 

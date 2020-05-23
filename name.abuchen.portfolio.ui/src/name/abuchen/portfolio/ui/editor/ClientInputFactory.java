@@ -76,6 +76,8 @@ public class ClientInputFactory
         {
             cache.remove(clientInput);
 
+            clientInput.dispose();
+
             selectionService.getSelection(clientInput.getClient()).ifPresent(s -> selectionService.setSelection(null));
         }
     }
