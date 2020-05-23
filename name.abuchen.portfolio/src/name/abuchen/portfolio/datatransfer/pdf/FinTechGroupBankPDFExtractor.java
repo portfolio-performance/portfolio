@@ -482,7 +482,8 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                             // get foreign currency (should be in Fx)
                             String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                            if (!"EUR".equalsIgnoreCase(currencyCodeFx))
+                            // create a Unit only, if security and transaction currency are different
+                            if (!t.getSecurity().getCurrencyCode().equalsIgnoreCase(currencyCodeFx))
                             {
                                 // get exchange rate (in Fx/EUR) and calculate
                                 // inverse exchange rate (in EUR/Fx)
@@ -499,11 +500,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
                                                 inverseRate));
                             }
-                            else
-                            {
-                                // but if not in Fx but Euro already...
-                                t.setAmount(asAmount(v.get("amountGrossFx")));
-                            }
                         })
 
                         // Quellenst.-satz : 30,00 % Gez. Quellenst. : 7,88 USD
@@ -516,7 +512,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // transaction currency (should be in EUR)
                             String currencyCode = asCurrencyCode(context.get("currency"));
                             String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                            if (!"EUR".equalsIgnoreCase(currencyCodeFx))
+                            if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
                             {
                                 // get exchange rate (in Fx/EUR) and calculate
                                 // inverse exchange rate (in EUR/Fx)
