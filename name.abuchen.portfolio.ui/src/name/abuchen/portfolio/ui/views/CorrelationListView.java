@@ -25,7 +25,6 @@ import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.TableColumn;
@@ -61,7 +60,6 @@ public class CorrelationListView extends AbstractListView implements Modificatio
     private TableViewer correlationMatrix;
     private ShowHideColumnHelper accountColumns;
     private CurrencyConverter converter;
-    protected Font boldFont;
     private Interval period1st;
     private Interval period2nd;
     private int noOfSecurities = 0;
@@ -104,6 +102,28 @@ public class CorrelationListView extends AbstractListView implements Modificatio
     public List<Line> getLines()
     {
         return lines;
+    }
+
+    public static class securityPricesContainer
+    {
+        private InvestmentVehicle vehicle;
+        private Map<LocalDate, Long> securityPrices;
+
+        public securityPricesContainer(InvestmentVehicle vehicle, Map<LocalDate, Long> securityPrices)
+        {
+            this.vehicle = vehicle;
+            this.securityPrices = securityPrices;
+        }
+
+        public InvestmentVehicle getVehicle()
+        {
+            return vehicle;
+        }
+
+        public Map<LocalDate, Long> getPrices()
+        {
+            return securityPrices;
+        }
     }
 
     @Inject
@@ -441,11 +461,23 @@ public class CorrelationListView extends AbstractListView implements Modificatio
         boolean onlyOnePeriod = period1st.equals(period2nd);
 
         Map<InvestmentVehicle, Line> vehicle2line = new LinkedHashMap<>();
+
+        // Preload all scecurity prices to avoide multiple reloads
+        Map<Security, securityPricesContainer> securityPrices2container1st = new LinkedHashMap<>();
+        Map<Security, securityPricesContainer> securityPrices2container2nd = new LinkedHashMap<>();
+        for (Security security : this.correlationSecurities)
+        {
+            Map<LocalDate, Long> prices = getPricesIncludingLatestByInterval(security, period1st);
+            securityPrices2container1st.computeIfAbsent(security, s -> new securityPricesContainer(s, prices));
+            if (!onlyOnePeriod)
+                securityPrices2container2nd.computeIfAbsent(security, s -> new securityPricesContainer(s,
+                                getPricesIncludingLatestByInterval(security, period2nd)));
+        }
+
         noOfSecurities = this.correlationSecurities.size();
         for (Security security1st : this.correlationSecurities)
         {
-            Interval period = period1st;
-            Map<LocalDate, Long> prices1st = getPricesIncludingLatestByInterval(security1st, period);
+            Map<Security, securityPricesContainer> securityPrices2container = securityPrices2container1st;
             Line line = vehicle2line.computeIfAbsent(security1st, s -> new Line(s, noOfSecurities));
             int counter = 0;
             for (Security security2nd : this.correlationSecurities)
@@ -454,15 +486,20 @@ public class CorrelationListView extends AbstractListView implements Modificatio
                 {
                     if (onlyOnePeriod)
                         break;
-                    period = period2nd;
-                    prices1st = getPricesIncludingLatestByInterval(security1st, period);
+                    securityPrices2container = securityPrices2container2nd;
                     counter += 1;
                     continue;
                 }
-                Map<LocalDate, Long> prices2nd = getPricesIncludingLatestByInterval(security2nd, period);
-                if (!prices1st.isEmpty()  && !prices2nd.isEmpty() && (Math.min(prices1st.size(), prices2nd.size()) * 100
-                                / Math.max(prices1st.size(), prices2nd.size()) > 80))
-                    line.values[counter] = calculateCorrelation(prices1st, prices2nd);
+                if (!securityPrices2container.get(security1st).getPrices().isEmpty()
+                                && !securityPrices2container.get(security2nd).getPrices().isEmpty()
+                                && (Math.min(securityPrices2container.get(security1st).getPrices().size(),
+                                                securityPrices2container.get(security2nd).getPrices().size())
+                                                * 100
+                                                / Math.max(securityPrices2container.get(security1st).getPrices().size(),
+                                                                securityPrices2container.get(security2nd).getPrices()
+                                                                                .size()) > 80))
+                    line.values[counter] = calculateCorrelation(securityPrices2container.get(security1st).getPrices(),
+                                    securityPrices2container.get(security2nd).getPrices());
                 counter += 1;
             }
         }
