@@ -18,6 +18,7 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
         super(client);
 
         addBankIdentifier("Volksbank"); //$NON-NLS-1$
+        addBankIdentifier("VRB Oberbayern"); //$NON-NLS-1$
         addBankIdentifier("NIBC Direct Depotservice"); //$NON-NLS-1$
 
         addBuyTransaction();
@@ -76,6 +77,11 @@ public class DZBankPDFExtractor extends AbstractPDFExtractor
                         
                         .section("fee", "currency").optional()
                         .match("(Provision)[ ]*(?<fee>(\\d)*(\\.)?(\\d)*,(\\d)*).* (?<currency>\\w{3}+).*")
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
+
+                        .section("fee", "currency").optional()
+                        .match("(Transaktionsentgelt Börse)[ ]*(?<fee>(\\d)*(\\.)?(\\d)*,(\\d)*).* (?<currency>\\w{3}+).*")
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
