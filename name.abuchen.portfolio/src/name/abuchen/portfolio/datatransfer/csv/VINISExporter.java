@@ -17,7 +17,10 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.MonetaryOperator;
 import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.MutableMoney;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.AccountSnapshot;
 import name.abuchen.portfolio.snapshot.AssetPosition;
@@ -30,96 +33,73 @@ import name.abuchen.portfolio.snapshot.ReportingPeriod;
  */
 public class VINISExporter
 {
-    
     /**
      * Export all values in 'VINIS-App' Format
      */
-    public void exportAllValues(File file, Client client) throws IOException
+    public void exportAllValues(File file, Client client, ExchangeRateProviderFactory factory) throws IOException
     {
         final String baseCurrency = client.getBaseCurrency();
-        ExchangeRateProviderFactory factory = new ExchangeRateProviderFactory(client);
         CurrencyConverter converter = new CurrencyConverterImpl(factory, baseCurrency);
-        
+
         LocalDate lastYear = LocalDate.now().minusYears(1);
         LocalDate firstYear = LocalDate.now().minusYears(100);
-        ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
+
         ReportingPeriod periodCurrentYear = new ReportingPeriod.YearToDate();
-        ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(firstYear.with(TemporalAdjusters.firstDayOfYear()),
-                        LocalDate.now());
-        
+        ReportingPeriod periodLastYear = new ReportingPeriod.YearX(lastYear.getYear());
+        ReportingPeriod periodAllYears = new ReportingPeriod.FromXtoY(
+                        firstYear.with(TemporalAdjusters.firstDayOfYear()), LocalDate.now());
+
         ClientPerformanceSnapshot performanceAllYears = new ClientPerformanceSnapshot(client, converter,
                         periodAllYears.toInterval(LocalDate.now()));
         ClientPerformanceSnapshot performanceCurrentYear = new ClientPerformanceSnapshot(client, converter,
                         periodCurrentYear.toInterval(LocalDate.now()));
         ClientPerformanceSnapshot performanceLastYear = new ClientPerformanceSnapshot(client, converter,
                         periodLastYear.toInterval(LocalDate.now()));
-        
+
         Money earningsCurrentYear = performanceCurrentYear.getValue(CategoryType.EARNINGS);
         Money earningsLastYear = performanceLastYear.getValue(CategoryType.EARNINGS);
         Money earningsAll = performanceAllYears.getValue(CategoryType.EARNINGS);
-        
+
         Money capitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.CAPITAL_GAINS);
         Money capitalGainsLastYear = performanceLastYear.getValue(CategoryType.CAPITAL_GAINS);
         Money capitalGainsAll = performanceAllYears.getValue(CategoryType.CAPITAL_GAINS);
-        
+
         Money realizedCapitalGainsCurrentYear = performanceCurrentYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
         Money realizedCapitalGainsLastYear = performanceLastYear.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
-        Money realizedCapitalGainsAll = performanceAllYears.getValue(CategoryType.REALIZED_CAPITAL_GAINS); 
-        
-        Money buySecurityValue = Money.of(baseCurrency, 0);
-        Money currentSecurityValue = Money.of(baseCurrency, 0);
-        Money buyTotalValue = Money.of(baseCurrency, 0);
-        Money currentTotalValue = Money.of(baseCurrency, 0);
-        Money cash = Money.of(baseCurrency, 0);
-        
+        Money realizedCapitalGainsAll = performanceAllYears.getValue(CategoryType.REALIZED_CAPITAL_GAINS);
+
+        MutableMoney buySecurityValue = MutableMoney.of(baseCurrency);
+        MutableMoney currentSecurityValue = MutableMoney.of(baseCurrency);
+        MutableMoney buyTotalValue = MutableMoney.of(baseCurrency);
+        MutableMoney currentTotalValue = MutableMoney.of(baseCurrency);
+
         List<AssetPosition> assets = performanceCurrentYear.getEndClientSnapshot().getAssetPositions()
-                                        .collect(Collectors.toList());
+                        .collect(Collectors.toList());
+
+        MonetaryOperator toBaseCurrency = converter.at(LocalDate.now());
 
         for (AssetPosition asset : assets)
         {
-            //calc security values
-            if(asset.getPosition() != null && asset.getSecurity() != null)
+            Money fifo = asset.getFIFOPurchaseValue().with(toBaseCurrency);
+            Money valuation = asset.getValuation().with(toBaseCurrency);
+
+            if (asset.getSecurity() != null)
             {
-                if (!asset.getFIFOPurchaseValue().getCurrencyCode().equals(baseCurrency))
-                {
-                    buySecurityValue = buySecurityValue.add(converter.convert(LocalDate.now(), asset.getFIFOPurchaseValue()));
-                    currentSecurityValue = currentSecurityValue.add(converter.convert(LocalDate.now(), asset.getValuation()));
-                }
-                else
-                {
-                    buySecurityValue = buySecurityValue.add(asset.getFIFOPurchaseValue());
-                    currentSecurityValue = currentSecurityValue.add(asset.getValuation());
-                }   
-            }
-            
-            //calc total values
-            if (!asset.getFIFOPurchaseValue().getCurrencyCode().equals(baseCurrency))
-            {
-                //use purchaseValue only for securities, on accounts we only have the valuation 
-                if(asset.getPosition() != null && asset.getSecurity() != null)
-                    buyTotalValue = buyTotalValue.add(converter.convert(LocalDate.now(), asset.getFIFOPurchaseValue()));
-                else
-                    buyTotalValue = buyTotalValue.add(converter.convert(LocalDate.now(), asset.getValuation())); 
-                
-                currentTotalValue = currentTotalValue.add(converter.convert(LocalDate.now(), asset.getValuation()));
+                buySecurityValue.add(fifo);
+                currentSecurityValue.add(valuation);
+                buyTotalValue.add(fifo);
             }
             else
             {
-              //use purchaseValue only for securities, on accounts we only have the valuation  
-                if(asset.getPosition() != null && asset.getSecurity() != null)
-                    buyTotalValue = buyTotalValue.add(asset.getFIFOPurchaseValue());
-                else
-                    buyTotalValue = buyTotalValue.add(asset.getValuation());
-                
-                currentTotalValue = currentTotalValue.add(asset.getValuation());
+                buyTotalValue.add(valuation);
             }
-            
+
+            currentTotalValue.add(valuation);
         }
 
-        for (AccountSnapshot account : performanceCurrentYear.getEndClientSnapshot().getAccounts())
-            cash = cash.add(account.getFunds());   
-        
-        
+        Money cash = performanceCurrentYear.getEndClientSnapshot().getAccounts().stream().map(AccountSnapshot::getFunds)
+                        .collect(MoneyCollectors.sum(baseCurrency));
+
         // write to file
         try (CSVPrinter printer = new CSVPrinter(
                         new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8),
@@ -127,42 +107,38 @@ public class VINISExporter
         {
             writeHeader(printer);
 
-            write(printer, Messages.VINISAppValueFundsSum, Values.Amount.format(cash.getAmount()), cash.getCurrencyCode());
-            
-            write(printer, Messages.VINISAppValueSecuritiesPurchase, Values.Amount.format(buySecurityValue.getAmount()), buySecurityValue.getCurrencyCode());
-            write(printer, Messages.VINISAppValueSecuritiesMarket, Values.Amount.format(currentSecurityValue.getAmount()), currentSecurityValue.getCurrencyCode());
-             
-            write(printer, Messages.VINISAppValueTotalAssetsPurchase, Values.Amount.format(buyTotalValue.getAmount()), buyTotalValue.getCurrencyCode());
-            write(printer, Messages.VINISAppValueTotalAssetsMarket, Values.Amount.format(currentTotalValue.getAmount()), currentTotalValue.getCurrencyCode());
-            
-            write(printer, Messages.VINISAppValueEarningsCurrentYear, Values.Amount.format(earningsCurrentYear.getAmount()), earningsCurrentYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueEarningsLastYear, Values.Amount.format(earningsLastYear.getAmount()), earningsLastYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueEarningsTotal, Values.Amount.format(earningsAll.getAmount()), earningsAll.getCurrencyCode());
-            
-            write(printer, Messages.VINISAppValueCapitalGainsCurrentYear, Values.Amount.format(capitalGainsCurrentYear.getAmount()), capitalGainsCurrentYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueCapitalGainsLastYear, Values.Amount.format(capitalGainsLastYear.getAmount()), capitalGainsLastYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueCapitalGainsTotal, Values.Amount.format(capitalGainsAll.getAmount()), capitalGainsAll.getCurrencyCode());
-            
-            write(printer, Messages.VINISAppValueRealizedCapitalGainsCurrentYear, Values.Amount.format(realizedCapitalGainsCurrentYear.getAmount()), realizedCapitalGainsCurrentYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueRealizedCapitalGainsLastYear, Values.Amount.format(realizedCapitalGainsLastYear.getAmount()), realizedCapitalGainsLastYear.getCurrencyCode()); 
-            write(printer, Messages.VINISAppValueRealizedCapitalGainsTotal, Values.Amount.format(realizedCapitalGainsAll.getAmount()), realizedCapitalGainsAll.getCurrencyCode());       
+            write(printer, Messages.VINISAppValueFundsSum, cash);
+
+            write(printer, Messages.VINISAppValueSecuritiesPurchase, buySecurityValue.toMoney());
+            write(printer, Messages.VINISAppValueSecuritiesMarket, currentSecurityValue.toMoney());
+
+            write(printer, Messages.VINISAppValueTotalAssetsPurchase, buyTotalValue.toMoney());
+            write(printer, Messages.VINISAppValueTotalAssetsMarket, currentTotalValue.toMoney());
+
+            write(printer, Messages.VINISAppValueEarningsCurrentYear, earningsCurrentYear);
+            write(printer, Messages.VINISAppValueEarningsLastYear, earningsLastYear);
+            write(printer, Messages.VINISAppValueEarningsTotal, earningsAll);
+
+            write(printer, Messages.VINISAppValueCapitalGainsCurrentYear, capitalGainsCurrentYear);
+            write(printer, Messages.VINISAppValueCapitalGainsLastYear, capitalGainsLastYear);
+            write(printer, Messages.VINISAppValueCapitalGainsTotal, capitalGainsAll);
+
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsCurrentYear, realizedCapitalGainsCurrentYear);
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsLastYear, realizedCapitalGainsLastYear);
+            write(printer, Messages.VINISAppValueRealizedCapitalGainsTotal, realizedCapitalGainsAll);
         }
     }
 
-    private void write(CSVPrinter printer, String description, String value, String currency) throws IOException
+    private void write(CSVPrinter printer, String description, Money value) throws IOException
     {
         printer.print(description);
-        printer.print(value);
-        printer.print(currency);
+        printer.print(Values.Amount.format(value.getAmount()));
+        printer.print(value.getCurrencyCode());
         printer.println();
     }
 
-
-
-    @SuppressWarnings("nls")
     private void writeHeader(CSVPrinter printer) throws IOException
     {
-        
         printer.print(Messages.CSVColumn_Name);
         printer.print(Messages.CSVColumn_Value);
         printer.print(Messages.CSVColumn_Currency);

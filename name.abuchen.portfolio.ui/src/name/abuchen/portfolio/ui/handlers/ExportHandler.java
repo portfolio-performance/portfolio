@@ -24,7 +24,10 @@ public class ExportHandler
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        MenuHelper.getActiveClient(part).ifPresent(client -> new WizardDialog(shell, new ExportWizard(client)).open());
+        MenuHelper.getActiveClientInput(part)
+                        .ifPresent(input -> new WizardDialog(shell,
+                                        new ExportWizard(input.getClient(), input.getExchangeRateProviderFacory()))
+                                                        .open());
     }
 
 }
