@@ -19,6 +19,7 @@ import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.core.runtime.preferences.IEclipsePreferences;
+import org.eclipse.core.runtime.preferences.IEclipsePreferences.IPreferenceChangeListener;
 import org.eclipse.e4.core.contexts.ContextInjectionFactory;
 import org.eclipse.e4.core.contexts.EclipseContextFactory;
 import org.eclipse.e4.core.contexts.IEclipseContext;
@@ -45,6 +46,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.dialogs.PasswordDialog;
+import name.abuchen.portfolio.ui.jobs.AutoSaveJob;
 import name.abuchen.portfolio.ui.jobs.CreateInvestmentPlanTxJob;
 import name.abuchen.portfolio.ui.jobs.SyncOnlineSecuritiesJob;
 import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
@@ -68,6 +70,7 @@ public class ClientInput
 
     private boolean isDirty = false;
     private List<Job> regularJobs = new ArrayList<>();
+    private List<Runnable> disposeJobs = new ArrayList<>();
     private List<ClientInputListener> listeners = new ArrayList<>();
 
     @Inject
@@ -84,6 +87,21 @@ public class ClientInput
     {
         this.label = label;
         this.clientFile = clientFile;
+    }
+
+    /**
+     * Called when the last editor for a given ClientInput is closed
+     */
+    public void dispose()
+    {
+        for (Job job : regularJobs)
+            job.cancel();
+
+        for (Runnable runnable : disposeJobs)
+            runnable.run();
+
+        this.client = null;
+        this.clientFile = null;
     }
 
     public void addListener(ClientInputListener listener)
@@ -260,9 +278,42 @@ public class ClientInput
         });
     }
 
+    /**
+     * autoSave is called from AutoSaveJob and uses the file generated during
+     * startup, if set in preferences
+     */
+    public void autoSave()
+    {
+        if (clientFile != null)
+        {
+            // generate the same name used when creating the initial autosave
+            // file
+            // see @scheduleAutoSaveJob
+
+            String backupName = constructFilename(clientFile, "autosave"); //$NON-NLS-1$
+            File autosaveFile = clientFile.toPath().resolveSibling(backupName).toFile();
+
+            try
+            {
+                ClientFactory.save(client, autosaveFile, null, null);
+            }
+            catch (IOException e)
+            {
+                PortfolioPlugin.log(e);
+            }
+        }
+    }
+
+    private long getAutoSavePrefs()
+    {
+        int delay = preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 0);
+        return delay > 0 ? 1000 * 60 * delay : 0;
+    }
+
     public void createBackupAfterOpen()
     {
-        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true))
+        if (clientFile != null && preferences.getBoolean(UIConstants.Preferences.CREATE_BACKUP_BEFORE_SAVING, true)
+                        && preferences.getInt(UIConstants.Preferences.AUTO_SAVE_FILE, 0) == 0)
             createBackup(clientFile, "backup-after-open"); //$NON-NLS-1$
     }
 
@@ -272,10 +323,7 @@ public class ClientInput
         {
             // keep original extension in order to be able to open the backup
             // file directly from within PP
-            String filename = file.getName();
-            int l = filename.lastIndexOf('.');
-            String backupName = l > 0 ? filename.substring(0, l) + '.' + suffix + filename.substring(l)
-                            : filename + '.' + suffix;
+            String backupName = constructFilename(file, suffix);
 
             Path sourceFile = file.toPath();
             Path backupFile = sourceFile.resolveSibling(backupName);
@@ -287,6 +335,13 @@ public class ClientInput
             Display.getDefault().asyncExec(() -> MessageDialog.openError(Display.getDefault().getActiveShell(),
                             Messages.LabelError, e.getMessage()));
         }
+    }
+
+    private String constructFilename(File file, String suffix)
+    {
+        String filename = file.getName();
+        int l = filename.lastIndexOf('.');
+        return l > 0 ? filename.substring(0, l) + '.' + suffix + filename.substring(l) : filename + '.' + suffix;
     }
 
     private void storePreferences(boolean forceWrite)
@@ -452,6 +507,33 @@ public class ClientInput
         }
     }
 
+    private void scheduleAutoSaveJob()
+    {
+        IPreferenceChangeListener listener = event -> {
+            if (event.getKey().contentEquals(UIConstants.Preferences.AUTO_SAVE_FILE))
+            {
+                for (Job j : regularJobs)
+                {
+                    if (j instanceof AutoSaveJob)
+                    {
+                        ((AutoSaveJob) j).setDelay(getAutoSavePrefs());
+                        ((AutoSaveJob) j).schedule(getAutoSavePrefs());
+                        ((AutoSaveJob) j).wakeUp(getAutoSavePrefs());
+                    }
+                }
+            }
+        };
+        preferences.addPreferenceChangeListener(listener);
+        this.disposeJobs.add(() -> preferences.removePreferenceChangeListener(listener));
+
+        long delay = getAutoSavePrefs();
+
+        Job job = new AutoSaveJob(this, delay);
+        regularJobs.add(job);
+        if (delay > 0)
+            job.schedule(delay);
+    }
+
     /* package */ void setErrorMessage(String message)
     {
         this.listeners.forEach(l -> l.onError(message));
@@ -492,6 +574,8 @@ public class ClientInput
         loadPreferences();
 
         scheduleOnlineUpdateJobs();
+
+        scheduleAutoSaveJob();
 
         this.listeners.forEach(ClientInputListener::onLoaded);
 

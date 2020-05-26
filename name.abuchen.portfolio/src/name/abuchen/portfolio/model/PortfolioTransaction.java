@@ -128,8 +128,11 @@ public class PortfolioTransaction extends Transaction
     }
 
     /**
-     * Returns the gross value, i.e. the value including taxes and fees. See
-     * {@link #getGrossValue()}.
+     * Returns the gross value, i.e. the value before taxes and fees are
+     * applied. In the case of a buy transaction, that are the gross costs, i.e.
+     * before adding additional taxes and fees. In the case of sell
+     * transactions, that are the gross proceeds before the deduction of taxes
+     * and fees. See {@link #getGrossValue()}.
      */
     public long getGrossValueAmount()
     {
@@ -169,14 +172,11 @@ public class PortfolioTransaction extends Transaction
         {
             Optional<Unit> grossValue = getUnit(Unit.Type.GROSS_VALUE);
 
-            return Money.of(converter.getTermCurrency(),
-                            grossValue.isPresent() ? grossValue.get().getForex().getAmount()
-                                            : getGrossValue().with(converter.at(getDateTime())).getAmount());
+            if (grossValue.isPresent())
+                return Money.of(converter.getTermCurrency(), grossValue.get().getForex().getAmount());
         }
-        else
-        {
-            return converter.convert(getDateTime(), getGrossValue());
-        }
+
+        return converter.convert(getDateTime(), getGrossValue());
     }
 
     /**
@@ -211,7 +211,7 @@ public class PortfolioTransaction extends Transaction
         // transaction currency and not in security currency) we must convert
         // the gross value (instead of checking the unit type GROSS_VALUE)
 
-        long grossValue = getGrossValue().with(converter.at(getDateTime())).getAmount();
+        long grossValue = getGrossValue(converter).getAmount();
         double grossPrice = grossValue * Values.Share.factor() * Values.Quote.factorToMoney() / (double) getShares();
         return Quote.of(converter.getTermCurrency(), Math.round(grossPrice));
     }

@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 
@@ -18,6 +19,7 @@ import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
 import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 
 public class SecurityContextMenu
@@ -129,6 +131,23 @@ public class SecurityContextMenu
                             .parameters(PortfolioTransaction.class) //
                             .with(security));
 
+            manager.add(new Separator());
+
+            manager.add(new Action(Messages.SecurityMenuEditSecurity)
+            {
+                @Override
+                public void run()
+                {
+                    Dialog dialog = owner.make(EditSecurityDialog.class, security);                    
+                    
+                    if (dialog.open() == Window.OK)
+                    {
+                        owner.markDirty();
+                        owner.notifyModelUpdated();
+                    }
+                }
+            });
+            
             manager.add(new Separator());
             manager.add(new BookmarkMenu(owner.getPart(), security));
         }

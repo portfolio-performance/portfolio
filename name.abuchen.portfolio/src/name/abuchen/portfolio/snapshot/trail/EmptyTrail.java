@@ -4,8 +4,14 @@ import java.time.LocalDate;
 
 import name.abuchen.portfolio.money.Money;
 
-/* package */ class EmptyTrail implements TrailRecord
+/* package */ final class EmptyTrail implements TrailRecord
 {
+    /* package */ static final TrailRecord INSTANCE = new EmptyTrail();
+
+    private EmptyTrail()
+    {
+    }
+
     @Override
     public LocalDate getDate()
     {

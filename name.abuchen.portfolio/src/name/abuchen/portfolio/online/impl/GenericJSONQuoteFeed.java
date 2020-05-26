@@ -32,7 +32,7 @@ import name.abuchen.portfolio.online.impl.variableurl.Factory;
 import name.abuchen.portfolio.online.impl.variableurl.urls.VariableURL;
 import name.abuchen.portfolio.util.WebAccess;
 
-public final class GenericJSONQuoteFeed implements QuoteFeed
+public class GenericJSONQuoteFeed implements QuoteFeed
 {
     public static final String ID = "GENERIC-JSON"; //$NON-NLS-1$
     public static final String DATE_PROPERTY_NAME = "GENERIC-JSON-DATE"; //$NON-NLS-1$
@@ -70,6 +70,11 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
         return getHistoricalQuotes(security, security.getFeedURL(), true, true);
     }
 
+    public String getJson(String url) throws IOException, URISyntaxException
+    {
+        return new WebAccess(url).get();
+    }
+
     private QuoteFeedData getHistoricalQuotes(Security security, String feedURL, boolean collectRawResponse,
                     boolean isPreview)
     {
@@ -105,7 +110,7 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
             {
                 try
                 {
-                    json = new WebAccess(url).get();
+                    json = this.getJson(url);
                 }
                 catch (IOException | URISyntaxException e)
                 {
@@ -170,25 +175,11 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
 
                 // date
                 Object object = dates.get(index);
-
-                if (object instanceof String)
-                    price.setDate(YahooHelper.fromISODate((String) object));
-                else if (object instanceof Long)
-                    price.setDate(parseDateTimestamp((Long) object));
-                else if (object instanceof Integer)
-                    price.setDate(parseDateTimestamp(Long.valueOf((Integer) object)));
-                else if (object instanceof Double)
-                    price.setDate(parseDateTimestamp(((Double) object).longValue()));
-                else if (object instanceof LocalDate)
-                    price.setDate((LocalDate) object);
+                price.setDate(this.extractDate(object));
 
                 // close
                 object = close.get(index);
-
-                if (object instanceof Number)
-                    price.setValue(Values.Quote.factorize(((Number) object).doubleValue()));
-                else if (object instanceof String)
-                    price.setValue(YahooHelper.asPrice((String) object));
+                price.setValue(this.extractValue(object));
 
                 if (price.getDate() != null && price.getValue() > 0)
                 {
@@ -206,6 +197,30 @@ public final class GenericJSONQuoteFeed implements QuoteFeed
             data.addError(new IOException(url + '\n' + e.getMessage(), e));
             return Collections.emptyList();
         }
+    }
+
+    /* testing */ long extractValue(Object object) throws ParseException
+    {
+        if (object instanceof Number)
+            return Values.Quote.factorize(((Number) object).doubleValue());
+        else if (object instanceof String)
+            return YahooHelper.asPrice((String) object);
+        return 0;
+    }
+
+    /* testing */ LocalDate extractDate(Object object)
+    {
+        if (object instanceof String)
+            return YahooHelper.fromISODate((String) object);
+        else if (object instanceof Long)
+            return parseDateTimestamp((Long) object);
+        else if (object instanceof Integer)
+            return parseDateTimestamp(Long.valueOf((Integer) object));
+        else if (object instanceof Double)
+            return parseDateTimestamp(((Double) object).longValue());
+        else if (object instanceof LocalDate)
+            return ((LocalDate) object);
+        return null;
     }
 
     private LocalDate parseDateTimestamp(Long object)

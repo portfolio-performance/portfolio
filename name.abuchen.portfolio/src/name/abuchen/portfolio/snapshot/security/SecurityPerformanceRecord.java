@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
@@ -26,9 +27,12 @@ import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.snapshot.trail.Trail;
+import name.abuchen.portfolio.snapshot.trail.TrailProvider;
+import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.util.Interval;
 
-public final class SecurityPerformanceRecord implements Adaptable
+public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 {
     public enum Periodicity
     {
@@ -42,6 +46,11 @@ public final class SecurityPerformanceRecord implements Adaptable
         {
             return RESOURCES.getString("dividends." + name()); //$NON-NLS-1$
         }
+    }
+
+    public interface Trails // NOSONAR
+    {
+        String FIFO_COST = "fifoCost"; //$NON-NLS-1$
     }
 
     private final Client client;
@@ -97,6 +106,7 @@ public final class SecurityPerformanceRecord implements Adaptable
      * fifo cost of shares held {@link #calculateFifoAndMovingAverageCosts()}
      */
     private Money fifoCost;
+    private TrailRecord fifoCostTrail;
 
     /**
      * moving average cost of shares held
@@ -154,7 +164,7 @@ public final class SecurityPerformanceRecord implements Adaptable
      * rate of return per year {@link #calculateDividends()}
      */
     private double rateOfReturnPerYear;
-    
+
     /**
      * market value - fifo cost of shares held
      * {@link #calculateFifoAndMovingAverageCosts()}
@@ -332,7 +342,7 @@ public final class SecurityPerformanceRecord implements Adaptable
     {
         return periodicity.ordinal();
     }
-    
+
     /**
      * Gets the rate of return of dividends per year as a percentage of
      * invested.
@@ -376,6 +386,18 @@ public final class SecurityPerformanceRecord implements Adaptable
             return null;
     }
 
+    @Override
+    public Optional<Trail> explain(String key)
+    {
+        switch (key)
+        {
+            case Trails.FIFO_COST:
+                return Trail.of(getSecurityName(), fifoCostTrail);
+            default:
+                return Optional.empty();
+        }
+    }
+
     /* package */
     void addTransaction(Transaction t)
     {
@@ -402,7 +424,8 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateSharesHeld(CurrencyConverter converter)
     {
-        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions).getSharesHeld();
+        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions)
+                        .getSharesHeld();
     }
 
     private void calculateMarketValue(CurrencyConverter converter, Interval interval)
@@ -441,6 +464,7 @@ public final class SecurityPerformanceRecord implements Adaptable
     {
         CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
         this.fifoCost = cost.getFifoCost();
+        this.fifoCostTrail = cost.getFifoCostTrail();
         this.movingAverageCost = cost.getMovingAverageCost();
 
         Money netFifoCost = cost.getNetFifoCost();
@@ -471,7 +495,8 @@ public final class SecurityPerformanceRecord implements Adaptable
 
     private void calculateDividends(CurrencyConverter converter)
     {
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security, transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        transactions);
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
@@ -481,7 +506,8 @@ public final class SecurityPerformanceRecord implements Adaptable
     private void calculatePeriodicity(CurrencyConverter converter)
     {
         // periodicity is calculated by looking at all dividend transactions, so
-        // collect all of them instead of using just a fraction in the current filter
+        // collect all of them instead of using just a fraction in the current
+        // filter
         List<Transaction> allTransactions = security.getTransactions(client).stream()
                         .filter(t -> t.getTransaction() instanceof AccountTransaction) //
                         .filter(t -> {
@@ -491,7 +517,8 @@ public final class SecurityPerformanceRecord implements Adaptable
                         .map(t -> DividendTransaction.from((AccountTransaction) t.getTransaction()))
                         .collect(Collectors.toList());
 
-        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security, allTransactions);
+        DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security,
+                        allTransactions);
         this.periodicity = allDividends.getPeriodicity();
     }
 }

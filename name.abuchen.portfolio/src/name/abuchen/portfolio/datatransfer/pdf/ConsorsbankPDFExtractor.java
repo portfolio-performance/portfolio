@@ -32,6 +32,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         addDividendTransaction();
         addIncomeTransaction();
         addTaxAdjustmentTransaction();
+        addVorabpauschaleTransaction();
 
         // documents since Q4 2017 look different
         addQ42017DividendTransaction();
@@ -81,7 +82,33 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
+                        
+                        .section("forex", "exchangeRate", "currency", "amount").optional()
+                        .match("umger. zum Devisenkurs *(?<forex>\\w{3}+) *(?<exchangeRate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
+                        .assign((t, v) -> {
 
+                            // read the forex currency, exchange rate, account
+                            // currency and gross amount in account currency
+                            String forex = asCurrencyCode(v.get("forex"));
+                            if (t.getPortfolioTransaction().getSecurity().getCurrencyCode().equals(forex))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                                BigDecimal reverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                RoundingMode.HALF_DOWN);
+
+                                // gross given in account currency
+                                long amount = asAmount(v.get("amount"));
+                                long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
+                                                .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                                
+                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
+                                                Money.of(asCurrencyCode(v.get("currency")), amount),
+                                                Money.of(forex, fxAmount), reverseRate);
+
+                                t.getPortfolioTransaction().addUnit(grossValue);
+                            }
+                        })
+                       
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
@@ -618,6 +645,42 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
     }
 
+    @SuppressWarnings("nls")
+    private void addVorabpauschaleTransaction()
+    {
+        DocumentType type = new DocumentType("Vorabpauschale");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Vorabpauschale");
+        type.addBlock(block);
+
+        Transaction<AccountTransaction> vorabpauschaleTransaction = new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction entry = new AccountTransaction();
+                            entry.setType(AccountTransaction.Type.TAXES);
+                            return entry;
+                        })
+
+                        .section("name", "wkn", "isin") //
+                        .match("Wertpapierbezeichnung WKN ISIN") //
+                        .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("tax", "currency", "date").optional()
+                        .match("Netto zulasten .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
+                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*")
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("tax")));
+                            t.setDateTime(asDate(v.get("date")));
+                        })
+
+                        .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
+
+        block.set(vorabpauschaleTransaction);
+    }
+    
     @Override
     public String getLabel()
     {
