@@ -90,14 +90,16 @@ public class ExponentialMovingAverage
         // see the running EMA with the first value
         double ema = prices.get(index).getValue() / Values.Quote.divider();
 
-        for (; index < prices.size(); index++) // NOSONAR
+        for (int i = 0; i < prices.size(); i++) // NOSONAR
         {
-            LocalDate date = prices.get(index).getDate();
+            LocalDate date = prices.get(i).getDate();
             if (date.isAfter(interval.getEnd()))
                 break;
 
-            ema = (prices.get(index).getValue() / Values.Quote.divider() * smoothingFactor)
-                            + (ema * (1 - smoothingFactor));
+            ema = (prices.get(i).getValue() / Values.Quote.divider() * smoothingFactor) + (ema * (1 - smoothingFactor));
+
+            if (date.isBefore(interval.getStart()))
+                continue;
 
             valuesEMA.add(ema);
             datesEMA.add(date);
