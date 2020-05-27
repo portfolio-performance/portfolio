@@ -21,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
@@ -310,72 +309,111 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
     private Transaction.Unit convertToUnit(Security security, JTransaction jtx, JTransactionUnit junit)
     {
-        Money amount = null;
+        String txCurrency = jtx.getCurrency();
 
-        if (junit.getAmount() == null || junit.getAmount() == 0d)
+        // if transaction currency equals security currency,
+        // then gross value unit must not be set
+        // and other units must not have any forex information
+        if (txCurrency.equals(security.getCurrencyCode()))
         {
-            // if amount is not available, but fxAmount and fxRateToBase is,
-            // calculate the value
-            if (junit.getFxAmount() == null || junit.getFxAmount() == 0d //
-                            || junit.getFxRateToBase() == null
-                            || junit.getFxRateToBase().compareTo(BigDecimal.ZERO) == 0)
-                return null;
+            // distinguish between gross value and Taxes,Fees
+            if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE)
+            {
+                // create unit in transaction currency from junit amount
+                if (junit.getAmount() != null && junit.getAmount() != 0d)
+                {
+                    return new Transaction.Unit(junit.getType(),
+                                    Money.of(txCurrency, Values.Amount.factorize(junit.getAmount())));
+                }
+                else
+                {
+                    // calculate unit in transaction currency, if fxAmount and
+                    // exchange rate are given
+                    if (junit.getFxAmount() != null && junit.getFxAmount() != 0d //
+                                    && junit.getFxRateToBase() != null
+                                    && junit.getFxRateToBase().compareTo(BigDecimal.ZERO) != 0)
+                    {
+                        // if amount is not given, calculate from forex
+                        double value = BigDecimal.valueOf(junit.getFxAmount())
+                                        .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
 
-            double value = BigDecimal.valueOf(junit.getFxAmount())
-                            .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
-
-            junit.setAmount(value);
-            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(value));
+                        Money amount = Money.of(txCurrency, Values.Amount.factorize(value));
+                        return new Transaction.Unit(junit.getType(), amount);
+                    }
+                }
+            }
+            // return null for type gross value or if amount of fee or tax
+            // cannot be calculated in transaction currency from unit
+            return null;
         }
         else
+        // transaction currency differs from security currency!
+        // then gross value must be set
+        // then gross value forex must match security currency
+        // then other units must have matching currency (transaction or security
+        // currency)
         {
-            amount = Money.of(jtx.getCurrency(), Values.Amount.factorize(junit.getAmount()));
-        }
+            // get amount from unit
+            Money amount = junit.getAmount() != null ? Money.of(txCurrency, Values.Amount.factorize(junit.getAmount()))
+                            : Money.of(txCurrency, Values.Amount.factorize(0));
 
-        if (junit.getType() != Transaction.Unit.Type.GROSS_VALUE
-                        && (junit.getFxAmount() == null || junit.getFxAmount() == 0d))
-        {
-            junit.setFxAmount(null);
-            junit.setFxCurrency(null);
-            junit.setFxRateToBase(null);
-            return new Transaction.Unit(junit.getType(), amount);
-        }
+            // calculate amount, if not given in unit - needed in all cases
+            if (amount.isZero())
+            {
+                // calculate unit in transaction currency, if fxAmount and
+                // exchange rate are given
+                if (junit.getFxAmount() != null && junit.getFxAmount() != 0d //
+                                && junit.getFxRateToBase() != null
+                                && junit.getFxRateToBase().compareTo(BigDecimal.ZERO) != 0)
+                {
+                    double value = BigDecimal.valueOf(junit.getFxAmount())
+                                    .divide(junit.getFxRateToBase(), 2, RoundingMode.HALF_DOWN).doubleValue();
+                    // set calculate value to junit as well
+                    junit.setAmount(value);
+                    amount = Money.of(txCurrency, Values.Amount.factorize(value));
+                }
+                else
+                {
+                    // we don't have an amount, this should usually not happen
+                    return null;
+                }
+            }
 
-        // check currency
-        if (Strings.isNullOrEmpty(junit.getFxCurrency()))
-            return null;
+            // without fxcurrency or if fxcurrency is transaction currency, just
+            // create with amount and return
+            String fxCurrency = junit.getFxCurrency();
+            if (fxCurrency == null || fxCurrency.equals(txCurrency))
+            {
+                junit.setFxAmount(null);
+                junit.setFxCurrency(null);
+                junit.setFxRateToBase(null);
+                return new Transaction.Unit(junit.getType(), amount);
+            }
 
-        String fxCurrency = asCurrencyCode(junit.getFxCurrency());
+            // gather other required data - forex amount and exchange rate
 
-        // two reasons to not have a fx unit:
+            // get and check forex amount
+            long forexAmount = junit.getFxAmount() != null ? Values.Amount.factorize(junit.getFxAmount()) : 0;
 
-        // a) fx part of unit is not needed if currency of security and unit
-        // match
+            // forexAmount should be given, as fallback, try to calculate with
+            // amount and exchange rate
+            if (forexAmount == 0L)
+            {
+                if (junit.getFxRateToBase() != null)
+                {
+                    forexAmount = BigDecimal.valueOf(amount.getAmount()).multiply(junit.getFxRateToBase())
+                                    .setScale(0, RoundingMode.HALF_DOWN).longValue();
+                }
+                else
+                {
+                    return null;
+                }
+            }
 
-        boolean transactionAndUnitCurrencyMatch = jtx.getCurrency().equals(fxCurrency);
-
-        // b) fx part of unit is not needed if the security is configured in the
-        // currency of the transactions. However, it is important to check
-        // against the resolved security as the parsed currency might differ
-
-        boolean transactionAndSecurityCurrencyMatch = jtx.getCurrency().equals(security.getCurrencyCode());
-
-        if (transactionAndUnitCurrencyMatch || transactionAndSecurityCurrencyMatch)
-        {
-            if (junit.getType() == Transaction.Unit.Type.GROSS_VALUE)
-                return null;
-            else
-                new Transaction.Unit(junit.getType(), amount);
-        }
-
-        // check forex amount
-
-        long forexAmount = junit.getFxAmount() != null ? Values.Amount.factorize(junit.getFxAmount()) : 0;
-
-        if (forexAmount != 0L)
-        {
+            // create forex
             Money forex = Money.of(fxCurrency, forexAmount);
 
+            // get exchange rate
             BigDecimal fxRateToBase = junit.getFxRateToBase();
             if (fxRateToBase == null)
             {
@@ -387,24 +425,8 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
                 fxRateToBase = BigDecimal.ONE.divide(fxRateToBase, 10, RoundingMode.HALF_DOWN);
             }
 
-            return new Transaction.Unit(junit.getType(), amount, forex, fxRateToBase);
-        }
-        else if (junit.getFxRateToBase() != null)
-        {
-            // of course this depends heavily on the quotation of the exchange
-            // rate in the PDF document, but European PDF documents will most
-            // likely use indirect quotation
-            BigDecimal fxRateToBase = BigDecimal.ONE.divide(junit.getFxRateToBase(), 10, RoundingMode.HALF_DOWN);
+            return new Transaction.Unit(junit.getType(), amount, Money.of(fxCurrency, forexAmount), fxRateToBase);
 
-            forexAmount = BigDecimal.valueOf(amount.getAmount()).multiply(junit.getFxRateToBase())
-                            .setScale(0, RoundingMode.HALF_DOWN).longValue();
-
-            return new Transaction.Unit(junit.getType(), amount, Money.of(fxCurrency, forexAmount),
-                            fxRateToBase);
-        }
-        else
-        {
-            return null;
         }
     }
 
