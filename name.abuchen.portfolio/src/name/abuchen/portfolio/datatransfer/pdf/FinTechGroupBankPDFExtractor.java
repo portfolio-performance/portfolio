@@ -483,7 +483,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                             // get foreign currency (should be in Fx)
                             String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
                             // create a Unit only, if security and transaction currency are different
-                            if (!t.getSecurity().getCurrencyCode().equalsIgnoreCase(currencyCodeFx))
+                            if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
                             {
                                 // get exchange rate (in Fx/EUR) and calculate
                                 // inverse exchange rate (in EUR/Fx)
