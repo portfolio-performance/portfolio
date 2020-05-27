@@ -3,9 +3,12 @@ package name.abuchen.portfolio.util;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.http.Header;
 import org.apache.http.HttpStatus;
@@ -14,8 +17,15 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 
@@ -144,17 +154,36 @@ public class WebAccess
 
     public String get() throws IOException
     {
+
         CloseableHttpResponse response = null;
 
         try
         {
+            final SSLConnectionSocketFactory sslsf;
+            try
+            {
+                sslsf = new SSLConnectionSocketFactory(SSLContext.getDefault(), NoopHostnameVerifier.INSTANCE);
+            }
+            catch (NoSuchAlgorithmException e)
+            {
+                throw new RuntimeException(e);
+            }
+            Registry<ConnectionSocketFactory> registry = RegistryBuilder.<ConnectionSocketFactory>create()
+                            .register("http", new PlainConnectionSocketFactory()) //$NON-NLS-1$
+                            .register("https", sslsf) //$NON-NLS-1$
+                            .build();
+
+            PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager(registry);
+            cm.setMaxTotal(2000);// max connection
+
             CloseableHttpClient client = HttpClientBuilder.create() //
                             .setDefaultRequestConfig(defaultRequestConfig) //
                             .setDefaultHeaders(this.headers) //
                             .setUserAgent(this.userAgent) //
                             .useSystemProperties() //
+                            .setSSLSocketFactory(sslsf) //
+                            .setConnectionManager(cm) //
                             .build();
-
 
             URI uri = builder.build();
             response = client.execute(new HttpGet(uri));
@@ -169,7 +198,7 @@ public class WebAccess
             throw new IOException(e);
         }
     }
-    
+
     public String getURL() throws URISyntaxException
     {
         return builder.build().toASCIIString();
