@@ -24,8 +24,6 @@ import java.util.stream.Collectors;
 import com.google.gson.Gson;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.ImportAction.Status;
-import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.json.JPDFExtractorDefinition;
@@ -35,7 +33,6 @@ import name.abuchen.portfolio.json.JPDFExtractorDefinition.JTransactionMatcher;
 import name.abuchen.portfolio.json.JSecurity;
 import name.abuchen.portfolio.json.JTransaction;
 import name.abuchen.portfolio.json.JTransactionUnit;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -265,15 +262,6 @@ public class JSONPDFExtractor extends AbstractPDFExtractor
 
         fillIn(t, tx);
 
-        CheckCurrenciesAction action = new CheckCurrenciesAction();
-        Account account = new Account();
-        account.setCurrencyCode("EUR"); //$NON-NLS-1$
-        Status s = action.process(tx, account);
-        if (s != null && s != Status.OK_STATUS)
-        {
-            System.out.println(tx.getSecurity().getName() + "\tType:" + type.toString() + " \tCode:" + s.getCode() //$NON-NLS-1$ //$NON-NLS-2$
-                            + "\tMessage:" + s.getMessage()); //$NON-NLS-1$
-        }
         TransactionItem item = new TransactionItem(tx);
         item.setData(t);
         return item;
