@@ -21,21 +21,8 @@
 				},
 				{
 					"pattern": [
-						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
-					]
-				},
-				{
-					"comment": "If the document contains taxes then there are two GESAMT pattern and we need to pick the second one",
-					"isOptional": true,
-					"pattern": [
-						"GESAMT ([\\d+,.]*) (\\w{3}+)",
-						"GESAMT (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
-					]
-				},
-				{
-					"pattern": [
 						"VERRECHNUNGSKONTO VALUTA BETRAG",
-						".* (?<date>\\d+.\\d+.\\d{4}+) ([\\d+,.]*) (\\w{3}+)"
+						".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)"
 					]
 				},
 				{
