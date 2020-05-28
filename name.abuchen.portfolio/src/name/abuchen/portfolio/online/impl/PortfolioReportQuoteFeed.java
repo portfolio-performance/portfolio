@@ -50,7 +50,8 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     @Override
     public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        return Optional.empty();
+        List<LatestSecurityPrice> prices = getHistoricalQuotes(security, true, LocalDate.now()).getLatestPrices();
+        return prices.isEmpty() ? Optional.empty() : Optional.of(prices.get(prices.size() - 1));
     }
 
     @Override
