@@ -605,18 +605,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                 BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                t.addUnit(new Unit(Unit.Type.TAX, txTax));
-
-                                // update gross value if necessary
-                                if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                                {
-                                    Unit grossValue = t.getUnit(Unit.Type.GROSS_VALUE).get();
-
-                                    t.removeUnit(grossValue);
-
-                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, grossValue.getAmount().subtract(txTax),
-                                                    grossValue.getForex().subtract(tax), grossValue.getExchangeRate()));
-                                }
+                                t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, exchangeRate));
                             }
                         })
 
