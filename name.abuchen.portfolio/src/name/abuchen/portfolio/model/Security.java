@@ -393,7 +393,7 @@ public final class Security implements Attributable, InvestmentVehicle
         boolean isUpdated = false;
         for (SecurityPrice p : prices)
         {
-            if (p.getDate().isBefore(now))
+            if (!p.getDate().isAfter(now))
             {
                 boolean doOverwrite = p.getDate().equals(last);
                 boolean isAdded = addPrice(p, doOverwrite);
