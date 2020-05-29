@@ -35,6 +35,8 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
     public static final String MARKETS_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKETS"; //$NON-NLS-1$
     public static final String MARKET_PROPERTY_NAME = "PORTFOLIO-REPORT-MARKET"; //$NON-NLS-1$
 
+    private final PageCache<String> cache = new PageCache<>();
+
     @Override
     public String getId()
     {
@@ -101,7 +103,18 @@ public final class PortfolioReportQuoteFeed implements QuoteFeed
                                                             + FrameworkUtil.getBundle(PortfolioReportNet.class)
                                                                             .getVersion().toString())
                                             .addParameter("from", start.toString());
-            String response = webaccess.get();
+
+            String url = webaccess.getURL();
+
+            String response = cache.lookup(url);
+
+            if (response == null)
+            {
+                response = webaccess.get();
+
+                if (response != null)
+                    cache.put(url, response);
+            }
 
             if (collectRawResponse)
                 data.addResponse(webaccess.getURL(), response);
