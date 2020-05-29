@@ -30,7 +30,7 @@ public class PortfolioSnapshot
     {
         List<SecurityPosition> positions = portfolio.getTransactions() //
                         .stream() //
-                        .filter(t -> !t.getDateTime().toLocalDate().isAfter(date)) //
+                        .filter(t -> t.getDateTime().toLocalDate().isBefore(date)) //
                         .collect(Collectors.groupingBy(PortfolioTransaction::getSecurity)) //
                         .entrySet() //
                         .stream() //
