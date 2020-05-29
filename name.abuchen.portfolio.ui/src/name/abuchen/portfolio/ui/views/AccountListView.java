@@ -468,7 +468,12 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return balance != null ? Values.Money.format(balance, getClient().getBaseCurrency()) : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()));
+
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            Money m1 = transaction2balance.get(o1);
+            Money m2 = transaction2balance.get(o2);
+            return m1.compareTo(m2);
+        }));
         transactionsColumns.addColumn(column);
 
         column = new Column("4", Messages.ColumnSecurity, SWT.None, 250); //$NON-NLS-1$
