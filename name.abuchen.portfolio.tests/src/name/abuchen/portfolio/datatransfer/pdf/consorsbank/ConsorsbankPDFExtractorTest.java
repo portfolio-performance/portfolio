@@ -3,6 +3,7 @@ package name.abuchen.portfolio.datatransfer.pdf.consorsbank;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 import java.io.IOException;
@@ -735,6 +736,42 @@ public class ConsorsbankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getUnit(Unit.Type.GROSS_VALUE).get().getForex(),
                         is(Money.of("USD", 540_00)));
 
+    }
+
+    // @Ignore
+    @Test
+    public void testWertpapierKauf7_2001()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf7_2001.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup: "US3696041033"
+        assertThat(security.getWkn(), is("851144"));
+        assertThat(security.getName(), is("GENERAL ELECTRIC CO. SHARES DL -,06"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        // check buy sell transaction
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1928_74L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2001, 9, 18, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(50_000000L));
+        // assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+        // is(Money.of(CurrencyUnit.EUR, 0L)));
     }
 
     @Test

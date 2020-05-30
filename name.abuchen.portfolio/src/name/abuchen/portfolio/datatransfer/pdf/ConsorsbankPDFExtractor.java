@@ -37,6 +37,9 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         // documents since Q4 2017 look different
         addQ42017DividendTransaction();
         addQ42017IncomeTransaction();
+
+        // old documents look very different
+        addBuyTransaction2001();
     }
 
     @Override
@@ -687,4 +690,47 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         return "Consorsbank"; //$NON-NLS-1$
     }
 
+    @SuppressWarnings("nls")
+    private void addBuyTransaction2001()
+    {
+        DocumentType type = new DocumentType("KAUF");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^      KAUF +AM .*$");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        block.set(pdfTransaction);
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        });
+
+        // note: PDF/txt contains no ISIN
+        pdfTransaction.section("wkn", "name", "nameContinued", "currency") //
+                        // .find(" WERTPAPIERABRECHNUNG") //
+                        .match("^.+WKN: (?<wkn>[0-9a-zA-Z]{6}).*$") //
+                        .match("^ *(?<name>.*)$").match("^ *(?<nameContinued>.*)$")
+                        .match("^ *KURSWERT *(?<currency>\\w{3}+) .*$")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        // .find(" WERTPAPIERABRECHNUNG") //
+                        .match("^ *ST *(?<shares>[\\d.]+(,\\d+)?).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date").match("^ *KAUF +AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+.*$")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), "05:00:00")))
+
+                        .section("amount", "currency")
+                        .match("^ *WERT +\\d+.\\d+.\\d{4}+ +(?<currency>\\w{3}+) +(?<amount>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction(pdfTransaction);
+    }
 }
