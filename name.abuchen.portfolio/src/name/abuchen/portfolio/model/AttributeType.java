@@ -1,20 +1,28 @@
 package name.abuchen.portfolio.model;
 
+import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
+import name.abuchen.portfolio.money.Values;
 
 public class AttributeType
 {
-    private static final Pattern PATTERN = Pattern.compile("^([\\d.]*)(,(\\d*))?$"); //$NON-NLS-1$
+    private static final Pattern PATTERN = Pattern.compile("^([\\d.,-]*)$"); //$NON-NLS-1$
+    private static final Pattern LIMIT_PRICE_PATTERN = Pattern.compile("^\\s*(<=?|>=?)\\s*([0-9,.']+)$"); //$NON-NLS-1$
 
     public interface Converter
     {
@@ -40,15 +48,64 @@ public class AttributeType
 
     }
 
+    public static class LimitPriceConverter implements Converter
+    {
+        private final DecimalFormat full;
+
+        public LimitPriceConverter()
+        {
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
+        }
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? ((LimitPrice) object).toString() : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            try
+            {
+                if (value.length() == 0)
+                    return null;
+
+                Matcher m = LIMIT_PRICE_PATTERN.matcher(value);
+                if (!m.matches())
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
+                Optional<RelationalOperator> operator = RelationalOperator.findByOperator(m.group(1));
+
+                // should not happen b/c regex pattern check
+                if (!operator.isPresent())
+                    throw new IllegalArgumentException(Messages.MsgNotAComparator);
+
+                long price = ((BigDecimal) full.parse(m.group(2))).multiply(Values.Quote.getBigDecimalFactor())
+                                .longValue();
+
+                return new LimitPrice(operator.get(), price);
+            }
+            catch (ParseException e)
+            {
+                throw new IllegalArgumentException(e);
+            }
+        }
+    }
+
     private static class LongConverter implements Converter
     {
-        private final NumberFormat full = new DecimalFormat("#,###"); //$NON-NLS-1$
+        private final DecimalFormat full;
 
         private Values<Long> values;
 
         public LongConverter(Values<Long> values)
         {
             this.values = values;
+
+            this.full = new DecimalFormat("#,###"); //$NON-NLS-1$
+            this.full.setParseBigDecimal(true);
         }
 
         @Override
@@ -69,24 +126,9 @@ public class AttributeType
                 if (!m.matches())
                     throw new IllegalArgumentException(MessageFormat.format(Messages.MsgNotANumber, value));
 
-                String strBefore = m.group(1);
-                Number before = strBefore.trim().length() > 0 ? full.parse(strBefore) : Long.valueOf(0);
+                BigDecimal v = (BigDecimal) full.parse(value);
 
-                String strAfter = m.group(3);
-                int after = 0;
-                if (strAfter != null && strAfter.length() > 0)
-                {
-                    after = Integer.parseInt(strAfter);
-
-                    int length = (int) Math.log10(values.factor());
-                    for (int ii = strAfter.length(); ii > length; ii--)
-                        after /= 10;
-                    for (int ii = strAfter.length(); ii < length; ii++)
-                        after *= 10;
-                }
-
-                long resultValue = before.longValue() * (int) values.factor() + after;
-                return Long.valueOf(resultValue);
+                return v.multiply(BigDecimal.valueOf(values.factor())).longValue();
             }
             catch (ParseException e)
             {
@@ -165,6 +207,21 @@ public class AttributeType
         }
     }
 
+    public static class PercentConverter extends DoubleConverter
+    {
+        public PercentConverter()
+        {
+            super(Values.Percent2);
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            Double v = (Double) super.fromString(value.replace("%", "")); //$NON-NLS-1$ //$NON-NLS-2$
+            return v == null ? null : BigDecimal.valueOf(v).divide(BigDecimal.valueOf(100)).doubleValue();
+        }
+    }
+
     public static class PercentPlainConverter extends DoubleConverter
     {
         public PercentPlainConverter()
@@ -175,11 +232,19 @@ public class AttributeType
 
     public static class DateConverter implements Converter
     {
+        private static final DateTimeFormatter[] formatters = new DateTimeFormatter[] {
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM),
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT), //
+                        DateTimeFormatter.ofLocalizedDate(FormatStyle.LONG), //
+                        DateTimeFormatter.ofPattern("d.M.yyyy"), //$NON-NLS-1$
+                        DateTimeFormatter.ofPattern("d.M.yy"), //$NON-NLS-1$
+                        DateTimeFormatter.ISO_DATE };
+
         @Override
         public String toString(Object object)
         {
             if (object != null)
-                return ((LocalDate) object).toString();
+                return Values.Date.format((LocalDate) object);
             else
                 return ""; //$NON-NLS-1$
         }
@@ -187,17 +252,86 @@ public class AttributeType
         @Override
         public Object fromString(String value)
         {
-            try
-            {
-                if (value.trim().length() == 0)
-                    return null;
+            if (value.trim().length() == 0)
+                return null;
 
-                return LocalDate.parse(value);
-            }
-            catch (DateTimeParseException e)
+            for (DateTimeFormatter formatter : formatters)
             {
-                throw new IllegalArgumentException(e);
+                try
+                {
+                    return LocalDate.parse(value, formatter);
+                }
+                catch (DateTimeParseException ignore)
+                {
+                    // continue with next formatter
+                }
             }
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorNotAValidDate, value));
+        }
+    }
+
+    public static class BooleanConverter implements Converter
+    {
+
+        @Override
+        public String toString(Object object)
+        {
+            return object != null ? ((Boolean) object).toString() : ""; //$NON-NLS-1$
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            if (value.trim().length() == 0)
+                return null;
+
+            return Boolean.valueOf(value);
+        }
+    }
+
+    public static class BookmarkConverter implements Converter
+    {
+        public static final Pattern PLAIN = Pattern.compile("^(?<link>https?\\:\\/\\/[^ \\t\\r\\n]+)$", //$NON-NLS-1$
+                        Pattern.CASE_INSENSITIVE);
+        public static final Pattern MARKDOWN = Pattern
+                        .compile("^\\[(?<label>[^\\]]*)\\]\\((?<link>[^ \\t\\r\\n\\)]*)\\)$"); //$NON-NLS-1$
+
+        @Override
+        public String toString(Object object)
+        {
+            if (object == null)
+            {
+                return ""; //$NON-NLS-1$
+            }
+            else
+            {
+                Bookmark bookmark = (Bookmark) object;
+                return bookmark.getLabel().equals(bookmark.getPattern()) ? bookmark.getPattern()
+                                : String.format("[%s](%s)", bookmark.getLabel(), bookmark.getPattern()); //$NON-NLS-1$
+            }
+        }
+
+        @Override
+        public Object fromString(String value)
+        {
+            String trimmed = value.trim();
+
+            if (trimmed.isEmpty())
+                return null;
+
+            Matcher matcher = MARKDOWN.matcher(trimmed);
+            if (matcher.matches())
+            {
+                return new Bookmark(matcher.group("label"), matcher.group("link")); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            matcher = PLAIN.matcher(value);
+            if (matcher.matches())
+            {
+                return new Bookmark(matcher.group("link"), matcher.group("link")); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+
+            throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorInvalidURL, trimmed));
         }
     }
 
@@ -211,7 +345,7 @@ public class AttributeType
      * Converter. Do not persist (includes formats, etc.) but recreate out of
      * type and value parameters.
      */
-    private transient Converter converter;
+    private transient Converter converter; // NOSONAR
     private String converterClass;
 
     public AttributeType(String id)
@@ -266,7 +400,7 @@ public class AttributeType
 
     public boolean supports(Class<? extends Attributable> type)
     {
-        return target != null ? target.isAssignableFrom(type) : true;
+        return target == null || target.isAssignableFrom(type);
     }
 
     public void setConverter(Class<? extends Converter> converterClass)
@@ -280,11 +414,12 @@ public class AttributeType
         try
         {
             if (converter == null)
-                converter = (Converter) Class.forName(converterClass).newInstance();
+                converter = (Converter) Class.forName(converterClass).getConstructor().newInstance();
         }
-        catch (InstantiationException | IllegalAccessException | ClassNotFoundException e)
+        catch (InstantiationException | IllegalAccessException | ClassNotFoundException | InvocationTargetException
+                        | NoSuchMethodException | SecurityException e)
         {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException(e);
         }
         return converter;
     }
@@ -294,30 +429,25 @@ public class AttributeType
         return Number.class.isAssignableFrom(type);
     }
 
+    @SuppressWarnings("unchecked")
     public Comparator<Object> getComparator()
     {
-        return new Comparator<Object>()
-        {
-            @SuppressWarnings("unchecked")
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                if (o1 == null && o2 == null)
-                    return 0;
-                else if (o1 == null)
-                    return -1;
-                else if (o2 == null)
-                    return 1;
+        return (o1, o2) -> {
+            if (o1 == null && o2 == null)
+                return 0;
+            else if (o1 == null)
+                return -1;
+            else if (o2 == null)
+                return 1;
 
-                if (type == Long.class)
-                    return ((Long) o1).compareTo((Long) o2);
-                else if (type == Double.class)
-                    return ((Double) o1).compareTo((Double) o2);
-                else if (type == String.class)
-                    return ((String) o1).compareTo((String) o2);
-                else
-                    return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
-            }
+            if (type == Long.class)
+                return ((Long) o1).compareTo((Long) o2);
+            else if (type == Double.class)
+                return ((Double) o1).compareTo((Double) o2);
+            else if (type == String.class)
+                return ((String) o1).compareToIgnoreCase((String) o2);
+            else
+                return ((Comparable<Object>) o1).compareTo((Comparable<Object>) o2);
         };
     }
 }

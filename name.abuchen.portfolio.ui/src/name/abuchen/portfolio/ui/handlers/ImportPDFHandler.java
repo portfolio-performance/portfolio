@@ -1,36 +1,41 @@
 package name.abuchen.portfolio.ui.handlers;
 
 import java.io.File;
-import java.io.IOException;
-import java.text.MessageFormat;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.datatransfer.ComdirectPDFExtractor;
-import name.abuchen.portfolio.datatransfer.CommerzbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.ConsorsbankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.DABPDFExctractor;
-import name.abuchen.portfolio.datatransfer.DeutscheBankPDFExctractor;
-import name.abuchen.portfolio.datatransfer.Extractor;
-import name.abuchen.portfolio.datatransfer.FlatexPDFExctractor;
-import name.abuchen.portfolio.datatransfer.IBFlexStatementExtractor;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
-
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.Job;
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.pdf.PDFImportAssistant;
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.wizards.datatransfer.ImportExtractedItemsWizard;
 
 public class ImportPDFHandler
 {
@@ -42,68 +47,82 @@ public class ImportPDFHandler
 
     @Execute
     public void execute(@Named(IServiceConstants.ACTIVE_PART) MPart part,
-                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell,
-                    @Named("name.abuchen.portfolio.ui.param.pdf-type") String type) throws IOException
+                    @Named(IServiceConstants.ACTIVE_SHELL) Shell shell)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        doExecute(part, shell);
+    }
+
+    /* package */ void doExecute(MPart part, Shell shell)
+    {
+        MenuHelper.getActiveClient(part)
+                        .ifPresent(client -> runImport((PortfolioPart) part.getObject(), shell, client, null, null));
+    }
+
+    public static void runImport(PortfolioPart part, Shell shell, Client client, Account account, Portfolio portfolio)
+    {
+        FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
+        fileDialog.setText(Messages.PDFImportWizardAssistant);
+        fileDialog.setFilterNames(new String[] { Messages.PDFImportFilterName });
+        fileDialog.setFilterExtensions(new String[] { "*.pdf" }); //$NON-NLS-1$
+        fileDialog.open();
+
+        String[] filenames = fileDialog.getFileNames();
+
+        if (filenames.length == 0)
             return;
+
+        List<File> files = new ArrayList<>();
+        for (String filename : filenames)
+            files.add(new File(fileDialog.getFilterPath(), filename));
+
+        runImportWithFiles(part, shell, client, account, portfolio, files);
+    }
+
+    public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
+                    Portfolio portfolio, List<File> files)
+    {
+        IPreferenceStore preferences = part.getPreferenceStore();
 
         try
         {
-            // determine extractor class
-            Extractor extractor = createExtractor(type, client);
+            IRunnableWithProgress operation = monitor -> {
 
-            // open file dialog to pick pdf files
+                PDFImportAssistant assistent = new PDFImportAssistant(client, files);
 
-            FileDialog fileDialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-            fileDialog.setText(extractor.getLabel());
-            fileDialog.setFilterNames(new String[] { MessageFormat.format("{0} ({1})", //$NON-NLS-1$
-                            extractor.getLabel(), extractor.getFilterExtension()) });
-            fileDialog.setFilterExtensions(new String[] { extractor.getFilterExtension() });
-            fileDialog.open();
+                Map<File, List<Exception>> errors = new HashMap<>();
 
-            String[] fileNames = fileDialog.getFileNames();
+                Map<Extractor, List<Extractor.Item>> result = assistent.run(monitor, errors);
 
-            if (fileNames.length == 0)
-                return;
+                // if we just run this async, then the main window on macOS does
+                // not regain focus and the menus are not usable
+                new Job("") //$NON-NLS-1$
+                {
+                    @Override
+                    protected IStatus run(IProgressMonitor monitor)
+                    {
+                        shell.getDisplay().asyncExec(() -> {
+                            ImportExtractedItemsWizard wizard = new ImportExtractedItemsWizard(client, preferences,
+                                            result, errors);
+                            if (account != null)
+                                wizard.setTarget(account);
+                            if (portfolio != null)
+                                wizard.setTarget(portfolio);
+                            Dialog wizwardDialog = new WizardDialog(shell, wizard);
+                            wizwardDialog.open();
+                        });
+                        return Status.OK_STATUS;
+                    }
+                }.schedule(50);
+            };
 
-            List<File> files = new ArrayList<File>();
-            for (String file : fileNames)
-                files.add(new File(fileDialog.getFilterPath(), file));
+            new ProgressMonitorDialog(shell).run(true, true, operation);
 
-            // open wizard dialog
-
-            Dialog wizwardDialog = new WizardDialog(shell, new ImportExtractedItemsWizard(client, extractor, files));
-            wizwardDialog.open();
         }
-        catch (IllegalArgumentException e)
+        catch (IllegalArgumentException | InvocationTargetException | InterruptedException e)
         {
             PortfolioPlugin.log(e);
-            MessageDialog.openError(shell, Messages.LabelError, e.getMessage());
-        }
-    }
-
-    private Extractor createExtractor(String type, Client client) throws IOException, IllegalArgumentException
-    {
-        switch (type)
-        {
-            case "comdirect": //$NON-NLS-1$
-                return new ComdirectPDFExtractor(client);
-            case "commerzbank": //$NON-NLS-1$
-                return new CommerzbankPDFExctractor(client);
-            case "consorsbank": //$NON-NLS-1$
-                return new ConsorsbankPDFExctractor(client);
-            case "dab": //$NON-NLS-1$
-                return new DABPDFExctractor(client);
-            case "db": //$NON-NLS-1$
-                return new DeutscheBankPDFExctractor(client);
-            case "flatex": //$NON-NLS-1$
-                return new FlatexPDFExctractor(client);
-            case "ib": //$NON-NLS-1$
-                return new IBFlexStatementExtractor(client);
-            default:
-                throw new UnsupportedOperationException("Unknown pdf type: " + type); //$NON-NLS-1$
+            String message = e.getCause() != null ? e.getCause().getMessage() : e.getMessage();
+            MessageDialog.openError(shell, Messages.LabelError, message);
         }
     }
 }

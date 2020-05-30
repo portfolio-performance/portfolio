@@ -1,74 +1,156 @@
 package name.abuchen.portfolio.ui.wizards.datatransfer;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.wizard.Wizard;
+import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.Extractor.Item;
+import name.abuchen.portfolio.datatransfer.SecurityCache;
+import name.abuchen.portfolio.datatransfer.actions.InsertAction;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.ui.ConsistencyChecksJob;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.jobs.ConsistencyChecksJob;
 import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
-import org.eclipse.jface.wizard.Wizard;
-
-public class ImportExtractedItemsWizard extends Wizard
+public final class ImportExtractedItemsWizard extends Wizard
 {
     private Client client;
-    private Extractor extractor;
-    private List<File> files;
+    private IPreferenceStore preferences;
+    private Map<Extractor, List<Item>> result;
+    private Map<File, List<Exception>> errors;
 
-    private ReviewExtractedItemsPage page;
+    private List<ReviewExtractedItemsPage> pages = new ArrayList<>();
+    /**
+     * If a target account is given, then account is preselected to be imported
+     */
+    private Account account;
+    private Portfolio portfolio;
 
-    public ImportExtractedItemsWizard(Client client, Extractor extractor, List<File> files)
+    public ImportExtractedItemsWizard(Client client, IPreferenceStore preferences, Map<Extractor, List<Item>> result,
+                    Map<File, List<Exception>> errors)
     {
         this.client = client;
-        this.extractor = extractor;
-        this.files = files;
+        this.preferences = preferences;
+        this.result = result;
+        this.errors = errors;
 
         setWindowTitle(Messages.PDFImportWizardTitle);
-        setNeedsProgressMonitor(true);
+        setNeedsProgressMonitor(false);
+    }
+
+    public void setTarget(Account target)
+    {
+        this.account = target;
+    }
+
+    public void setTarget(Portfolio target)
+    {
+        this.portfolio = target;
+    }
+
+    @Override
+    public boolean canFinish()
+    {
+        // allow "Finish" only on the last page
+        return !pages.isEmpty() && getContainer().getCurrentPage() == pages.get(pages.size() - 1);
+    }
+
+    @Override
+    public Image getDefaultPageImage()
+    {
+        return Images.BANNER.image();
     }
 
     @Override
     public void addPages()
     {
-        page = new ReviewExtractedItemsPage(client, extractor, files);
-        addPage(page);
+        if (!errors.isEmpty())
+        {
+            addPage(new ErroneousImportFilesPage(errors));
+        }
+
+        result.entrySet().stream() //
+                        .sorted((r, l) -> r.getKey().getLabel().compareTo(l.getKey().getLabel())) //
+                        .map(entry -> new Extractor()
+                        {
+                            @Override
+                            public String getLabel()
+                            {
+                                return entry.getKey().getLabel();
+                            }
+
+                            @Override
+                            public List<Item> extract(SecurityCache securityCache, InputFile file,
+                                            List<Exception> errors)
+                            {
+                                return entry.getValue();
+                            }
+
+                            @Override
+                            public List<Item> extract(List<InputFile> file, List<Exception> errors)
+                            {
+                                return entry.getValue();
+                            }
+                        }) //
+                        .forEach(extractor -> {
+                            ReviewExtractedItemsPage page = new ReviewExtractedItemsPage(client, extractor, preferences,
+                                            Collections.emptyList());
+                            if (account != null)
+                                page.setAccount(account);
+                            if (portfolio != null)
+                                page.setPortfolio(portfolio);
+                            pages.add(page);
+                            addPage(page);
+                        });
+
         AbstractWizardPage.attachPageListenerTo(getContainer());
     }
 
     @Override
     public boolean performFinish()
     {
-        Portfolio primaryPortfolio = page.getPrimaryPortfolio();
-        Account primaryAccount = page.getPrimaryAccount();
-        Portfolio secondaryPortfolio = page.getSecondaryPortfolio();
-        Account secondaryAccount = page.getSecondaryAccount();
-
-        boolean isDirty = false;
-
-        for (Extractor.Item item : page.getItems())
+        if (!pages.isEmpty())
         {
-            if (item.isImported() && !item.isDuplicate())
+            boolean isDirty = false;
+            for (int index = 0; index < pages.size(); index++)
             {
-                item.insert(client, primaryPortfolio, primaryAccount, secondaryPortfolio, secondaryAccount);
-                isDirty = true;
+                ReviewExtractedItemsPage page = pages.get(index);
+                page.afterPage();
+
+                InsertAction action = new InsertAction(client);
+                action.setConvertBuySellToDelivery(page.doConvertToDelivery());
+
+                for (ExtractedEntry entry : page.getEntries())
+                {
+                    if (entry.isImported())
+                    {
+                        entry.getItem().apply(action, page);
+                        isDirty = true;
+                    }
+                }
             }
-        }
 
-        if (isDirty)
-        {
-            client.markDirty();
+            if (isDirty)
+            {
+                client.markDirty();
 
-            // run consistency checks in case bogus transactions have been
-            // created (say: an outbound delivery of a security where there no
-            // held shares)
-            new ConsistencyChecksJob(client, false).schedule();
+                // run consistency checks in case bogus transactions have been
+                // created (say: an outbound delivery of a security where there
+                // no held shares)
+                new ConsistencyChecksJob(client, false).schedule();
+            }
         }
 
         return true;
     }
-
 }

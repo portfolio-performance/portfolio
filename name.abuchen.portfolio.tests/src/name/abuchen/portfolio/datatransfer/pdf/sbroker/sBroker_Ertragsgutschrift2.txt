@@ -1,0 +1,50 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Erträgnisgutschrift aus Wertpapieren EMAILVERSAND=N
+DEPOTNUMMER=123/4567/890
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=0000
+Dividende für ADRESSZEILE1=Herrn
+01.01.2014 - 31.12.2014 ADRESSZEILE2=John DoeADRESSZEILE3=Schlossallee 1
+Herrn        Depot-Nr. Abrechnungs-Nr. ADRESSZEILE4=99999 Monopoly
+John Doe 123/4567/890 49780306 ADRESSZEILE5=
+Schlossallee 1 ADRESSZEILE6=
+99999 Monopoly BELEGNUMMER=5129
+SEITENNUMMER=1
+Depotinhaber STEUERERSTATTUNG=N
+John Doe
+Dividendengutschrift Wiesbaden, 13.12.2014
+Gattungsbezeichnung ISIN
+McDonald's Corp. Registered Shares DL-,01 US5801351017
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 103,000 26.11.2014 15.12.2014 USD 0,850000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+15.12.2014 12/3456/789 EUR/USD 1,24495 EUR 52,36
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 70,32
+US-Quellensteuer 15% USD 13,13
+davon anrechenbare US-Quellensteuer 15% USD 13,13
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 0,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 28,12
+einbehaltene Kapitalertragsteuer EUR 7,03
+einbehaltener Solidaritätszuschlag EUR 0,38
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 127,77
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 7,02
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt Wiesbaden, Steuernummer 402/200/0073.
+Zahlungstag 15.12.2014
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung     
+Mit freundlichen Grüßen
+S Broker AG & Co. KG
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+           
+3.20/ABREEREIERTR/GDBERTRG/005129/131214/020842
+            

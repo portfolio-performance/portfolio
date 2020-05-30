@@ -1,34 +1,90 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.ResourceBundle;
+
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MoneyCollectors;
+import name.abuchen.portfolio.money.Values;
 
 public class AccountTransaction extends Transaction
 {
     public enum Type
     {
-        DEPOSIT, REMOVAL, INTEREST, DIVIDENDS, FEES, TAXES, TAX_REFUND, BUY, SELL, TRANSFER_IN, TRANSFER_OUT;
+        DEPOSIT(false), REMOVAL(true), //
+        INTEREST(false), INTEREST_CHARGE(true), //
+        DIVIDENDS(false), //
+        FEES(true), FEES_REFUND(false), //
+        TAXES(true), TAX_REFUND(false), //
+        BUY(true), SELL(false), //
+        TRANSFER_IN(false), TRANSFER_OUT(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
+        private final boolean isDebit;
+
+        private Type(boolean isDebit)
+        {
+            this.isDebit = isDebit;
+        }
+
+        public boolean isDebit()
+        {
+            return isDebit;
+        }
+
+        public boolean isCredit()
+        {
+            return !isDebit;
+        }
+
+        @Override
         public String toString()
         {
             return RESOURCES.getString("account." + name()); //$NON-NLS-1$
         }
     }
 
+    /**
+     * Comparator to sort by date, amount, type, and hash code in order to have
+     * a stable enough sort order to calculate the balance per transaction.
+     */
+    public static final class ByDateAmountTypeAndHashCode implements Comparator<AccountTransaction>, Serializable
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public int compare(AccountTransaction t1, AccountTransaction t2)
+        {
+            int compare = t1.getDateTime().compareTo(t2.getDateTime());
+            if (compare != 0)
+                return compare;
+
+            compare = Long.compare(t1.getAmount(), t2.getAmount());
+            if (compare != 0)
+                return compare;
+
+            compare = t1.getType().compareTo(t2.getType());
+            if (compare != 0)
+                return compare;
+
+            return Integer.compare(t1.hashCode(), t2.hashCode());
+        }
+    }
+
     private Type type;
 
-    private long amount;
-
     public AccountTransaction()
-    {}
-
-    public AccountTransaction(Date date, Security security, Type type, long amount)
     {
-        super(date, security);
+        // needed for xstream de-serialization
+    }
+
+    public AccountTransaction(LocalDateTime date, String currencyCode, long amount, Security security, Type type)
+    {
+        super(date, currencyCode, amount, security, 0, null);
         this.type = type;
-        this.amount = amount;
     }
 
     public Type getType()
@@ -41,27 +97,39 @@ public class AccountTransaction extends Transaction
         this.type = type;
     }
 
+    /**
+     * Returns the gross value, i.e. the value including taxes. See
+     * {@link #getGrossValue()}.
+     */
+    public long getGrossValueAmount()
+    {
+        long taxes = getUnits().filter(u -> u.getType() == Unit.Type.TAX)
+                        .collect(MoneyCollectors.sum(getCurrencyCode(), Unit::getAmount)).getAmount();
+
+        return getAmount() + (type.isCredit() ? taxes : -taxes);
+    }
+
+    /**
+     * Returns the gross value, i.e. the value before taxes are applied. At the
+     * moment, only dividend transactions are supported.
+     */
+    public Money getGrossValue()
+    {
+        return Money.of(getCurrencyCode(), getGrossValueAmount());
+    }
+
     @Override
-    public long getAmount()
+    public String toString()
     {
-        return amount;
+        return String.format("%s %-17s %s %9s %s %s", //$NON-NLS-1$
+                        Values.Date.format(getDateTime().toLocalDate()), //
+                        type.name(), //
+                        getCurrencyCode(), //
+                        Values.Amount.format(getAmount()), //
+                        getSecurity() != null ? getSecurity().getName() : "<no Security>", //$NON-NLS-1$
+                        getCrossEntry() != null && getCrossEntry().getCrossOwner(this) != null
+                                        ? getCrossEntry().getCrossOwner(this).toString()
+                                        : "<no XEntry>" //$NON-NLS-1$
+        );
     }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
-    @Override
-    public boolean isPotentialDuplicate(Transaction other)
-    {
-        if (!(other instanceof AccountTransaction))
-            return false;
-
-        if (!super.isPotentialDuplicate(other))
-            return false;
-        
-        return type == ((AccountTransaction) other).getType();
-    }
-
 }

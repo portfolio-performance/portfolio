@@ -2,57 +2,192 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
 
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
+import javax.inject.Inject;
+import javax.inject.Named;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.resource.LocalResourceManager;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.ToolBar;
+
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.snapshot.filter.ClientFilter;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.util.ClientFilterMenu;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 
 public class TaxonomyView extends AbstractFinanceView implements PropertyChangeListener
 {
+    private class FilterDropDown extends DropDown implements IMenuListener
+    {
+        private ClientFilterMenu clientFilterMenu;
+
+        public FilterDropDown(IPreferenceStore preferenceStore)
+        {
+            super(Messages.SecurityFilter, Images.FILTER_OFF, SWT.NONE);
+            setMenuListener(this);
+
+            this.clientFilterMenu = new ClientFilterMenu(getClient(), getPreferenceStore());
+
+            Consumer<ClientFilter> listener = filter -> {
+                Client filteredClient = filter.filter(getClient());
+                model.updateClientSnapshot(filteredClient);
+            };
+
+            clientFilterMenu.addListener(listener);
+            clientFilterMenu.addListener(filter -> updateIcon());
+
+            loadPreselectedFilter(preferenceStore);
+
+            if (clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty())
+                setImage(Images.FILTER_ON);
+
+            // As the taxonomy model is initially calculated in the #init
+            // method, we must recalculate the values if an active filter
+            // exists.
+            clientFilter = clientFilterMenu.getSelectedFilter();
+            if (clientFilterMenu.hasActiveFilter())
+                listener.accept(clientFilterMenu.getSelectedFilter());
+        }
+
+        private void loadPreselectedFilter(IPreferenceStore preferenceStore)
+        {
+            String prefix = TaxonomyView.class.getSimpleName() + "-" + taxonomy.getId(); //$NON-NLS-1$
+
+            // client filter
+            String key = prefix + ClientFilterMenu.PREF_KEY_POSTFIX;
+
+            String selection = preferenceStore.getString(key);
+            if (selection != null)
+                clientFilterMenu.getAllItems().filter(item -> item.getUUIDs().equals(selection)).findAny()
+                                .ifPresent(clientFilterMenu::select);
+
+            clientFilterMenu.addListener(
+                            filter -> preferenceStore.putValue(key, clientFilterMenu.getSelectedItem().getUUIDs()));
+
+            // predicates
+            if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO))
+                model.getNodeFilters().add(TaxonomyModel.FILTER_NON_ZERO);
+
+            if (preferenceStore.getBoolean(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED))
+                model.getNodeFilters().add(TaxonomyModel.FILTER_NOT_RETIRED);
+
+            addDisposeListener(e -> {
+                preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NON_ZERO,
+                                model.getNodeFilters().contains(TaxonomyModel.FILTER_NON_ZERO));
+                preferenceStore.setValue(prefix + TaxonomyModel.KEY_FILTER_NOT_RETIRED,
+                                model.getNodeFilters().contains(TaxonomyModel.FILTER_NOT_RETIRED));
+            });
+        }
+
+        private void updateIcon()
+        {
+            boolean hasActiveFilter = clientFilterMenu.hasActiveFilter() || !model.getNodeFilters().isEmpty();
+            setImage(hasActiveFilter ? Images.FILTER_ON : Images.FILTER_OFF);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            // show the node filter menu only for the tree pages
+            getCurrentPage().filter(p -> p instanceof AbstractNodeTreeViewer).ifPresent(p -> {
+                manager.add(buildNodeFilterAction(Messages.FilterValuationNonZero, TaxonomyModel.FILTER_NON_ZERO));
+                manager.add(buildNodeFilterAction(Messages.FilterNotRetired, TaxonomyModel.FILTER_NOT_RETIRED));
+            });
+
+            manager.add(new Separator());
+            manager.add(new LabelOnly(Messages.MenuChooseClientFilter));
+            clientFilterMenu.menuAboutToShow(manager);
+        }
+
+        private Action buildNodeFilterAction(String label, Predicate<TaxonomyNode> predicate)
+        {
+            Action action = new SimpleAction(label, a -> {
+                boolean isActive = model.getNodeFilters().contains(predicate);
+                if (!isActive)
+                    model.getNodeFilters().add(predicate);
+                else
+                    model.getNodeFilters().remove(predicate);
+
+                model.fireTaxonomyModelChange(model.getVirtualRootNode());
+                updateIcon();
+            });
+
+            action.setChecked(model.getNodeFilters().contains(predicate));
+            return action;
+        }
+    }
+
     /** preference key: store last active view as index */
     private String identifierView;
     /** preference key: include unassigned category in charts */
     private String identifierUnassigned;
+    /** preference key: exclude securities in pie chart */
+    private String identifierExclucdeSecuritiesInPieChart;
     /** preference key: order by taxonomy in stack chart */
     private String identifierOrderByTaxonomy;
+    /** preference key: node expansion state in definition viewer */
+    private String expansionStateDefinition;
+    /** preference key: node expansion state in rebalancing viewer */
+    private String expansionStateReblancing;
 
     private TaxonomyModel model;
     private Taxonomy taxonomy;
+    private ClientFilter clientFilter;
 
     private Composite container;
+    private List<Action> viewActions = new ArrayList<>();
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return taxonomy.getName();
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Taxonomy parameter)
     {
-        super.init(part, parameter);
-        this.taxonomy = (Taxonomy) parameter;
+        this.taxonomy = parameter;
 
         this.identifierView = TaxonomyView.class.getSimpleName() + "-VIEW-" + taxonomy.getId(); //$NON-NLS-1$
         this.identifierUnassigned = TaxonomyView.class.getSimpleName() + "-UNASSIGNED-" + taxonomy.getId(); //$NON-NLS-1$
+        this.identifierExclucdeSecuritiesInPieChart = TaxonomyView.class.getSimpleName() + "-EXCLUDESECURITESPIECHART-" //$NON-NLS-1$
+                        + taxonomy.getId();
         this.identifierOrderByTaxonomy = TaxonomyView.class.getSimpleName() + "-ORDERBYTAXONOMY-" + taxonomy.getId(); //$NON-NLS-1$
+        this.expansionStateDefinition = TaxonomyView.class.getSimpleName() + "-EXPANSION-DEFINITION-" //$NON-NLS-1$
+                        + taxonomy.getId();
+        this.expansionStateReblancing = TaxonomyView.class.getSimpleName() + "-EXPANSION-REBALANCE-" //$NON-NLS-1$
+                        + taxonomy.getId();
 
-        this.model = new TaxonomyModel(getClient(), taxonomy);
-        this.model.setExcludeUnassignedCategoryInCharts(part.getPreferenceStore().getBoolean(identifierUnassigned));
-        this.model.setOrderByTaxonomyInStackChart(part.getPreferenceStore().getBoolean(identifierOrderByTaxonomy));
+        this.model = make(TaxonomyModel.class, taxonomy);
+
+        IPreferenceStore preferences = getPreferenceStore();
+        this.model.setExcludeUnassignedCategoryInCharts(preferences.getBoolean(identifierUnassigned));
+        this.model.setExcludeSecuritiesInPieChart(preferences.getBoolean(identifierExclucdeSecuritiesInPieChart));
+        this.model.setOrderByTaxonomyInStackChart(preferences.getBoolean(identifierOrderByTaxonomy));
+        this.model.setExpansionStateDefinition(preferences.getString(expansionStateDefinition));
+        this.model.setExpansionStateRebalancing(preferences.getString(expansionStateReblancing));
 
         this.taxonomy.addPropertyChangeListener(this);
     }
@@ -60,14 +195,12 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
     @Override
     public void propertyChange(PropertyChangeEvent event)
     {
-        updateTitle();
+        updateTitle(taxonomy.getName());
     }
 
     @Override
     public void dispose()
     {
-        getPreferenceStore().setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
-        getPreferenceStore().setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
         taxonomy.removePropertyChangeListener(this);
 
         Control[] children = container.getChildren();
@@ -77,57 +210,67 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
             page.dispose();
         }
 
+        // store preferences *after* disposing pages -> allow pages to update
+        // the model
+        IPreferenceStore preferences = getPreferenceStore();
+        preferences.setValue(identifierUnassigned, model.isUnassignedCategoryInChartsExcluded());
+        preferences.setValue(identifierExclucdeSecuritiesInPieChart, model.isSecuritiesInPieChartExcluded());
+        preferences.setValue(identifierOrderByTaxonomy, model.isOrderByTaxonomyInStackChart());
+        preferences.setValue(expansionStateDefinition, model.getExpansionStateDefinition());
+        preferences.setValue(expansionStateReblancing, model.getExpansionStateRebalancing());
+
         super.dispose();
     }
 
     @Override
-    protected void addButtons(final ToolBar toolBar)
+    protected void addButtons(final ToolBarManager toolBar)
     {
-        addView(toolBar, Messages.LabelViewTaxonomyDefinition, PortfolioPlugin.IMG_VIEW_TABLE, 0);
-        addView(toolBar, Messages.LabelViewReBalancing, PortfolioPlugin.IMG_VIEW_REBALANCING, 1);
-        addView(toolBar, Messages.LabelViewPieChart, PortfolioPlugin.IMG_VIEW_PIECHART, 2);
-        addView(toolBar, Messages.LabelViewTreeMap, PortfolioPlugin.IMG_VIEW_TREEMAP, 3);
-        addView(toolBar, Messages.LabelViewStackedChart, PortfolioPlugin.IMG_VIEW_STACKEDCHART, 4);
+        addView(toolBar, Messages.LabelViewTaxonomyDefinition, Images.VIEW_TABLE, 0);
+        addView(toolBar, Messages.LabelViewReBalancing, Images.VIEW_REBALANCING, 1);
+        addView(toolBar, Messages.LabelViewPieChart, Images.VIEW_PIECHART, 2);
+        addView(toolBar, Messages.LabelViewDonutChart, Images.VIEW_DONUT, 3);
+        addView(toolBar, Messages.LabelViewTreeMap, Images.VIEW_TREEMAP, 4);
+        addView(toolBar, Messages.LabelViewStackedChart, Images.VIEW_STACKEDCHART, 5);
+
+        toolBar.add(new Separator());
+
+        toolBar.add(new FilterDropDown(getPreferenceStore()));
+        addExportButton(toolBar);
         addConfigButton(toolBar);
     }
 
-    private void addConfigButton(ToolBar toolBar)
+    private void addExportButton(ToolBarManager toolBar)
     {
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                StackLayout layout = (StackLayout) container.getLayout();
-                if (layout.topControl != null)
-                    ((Page) layout.topControl.getData()).showConfigMenu(getActiveShell());
-            }
-        };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
-        config.setToolTipText(Messages.MenuShowHideColumns);
+        toolBar.add(new DropDown(Messages.MenuExportData, Images.EXPORT, SWT.NONE,
+                        manager -> getCurrentPage().ifPresent(p -> p.exportMenuAboutToShow(manager))));
+    }
 
-        new ActionContributionItem(config).fill(toolBar, -1);
+    private void addConfigButton(ToolBarManager toolBar)
+    {
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> getCurrentPage().ifPresent(p -> p.configMenuAboutToShow(manager))));
+    }
+
+    private Optional<Page> getCurrentPage()
+    {
+        StackLayout layout = (StackLayout) container.getLayout();
+        return layout.topControl != null ? Optional.of((Page) layout.topControl.getData()) : Optional.empty();
     }
 
     @Override
     public void notifyModelUpdated()
     {
-        model.fireTaxonomyModelChange(model.getRootNode());
+        Client filteredClient = this.clientFilter.filter(getClient());
+        model.updateClientSnapshot(filteredClient);
     }
 
-    private void addView(final ToolBar toolBar, String label, String image, final int index)
+    private void addView(final ToolBarManager toolBar, String label, Images image, final int index)
     {
-        Action showDefinition = new Action()
-        {
-            @Override
-            public void run()
-            {
-                activateView(index);
-            }
-        };
-        showDefinition.setImageDescriptor(PortfolioPlugin.descriptor(image));
+        Action showDefinition = new SimpleAction(label, IAction.AS_CHECK_BOX, a -> activateView(index));
+        showDefinition.setImageDescriptor(image.descriptor());
         showDefinition.setToolTipText(label);
-        new ActionContributionItem(showDefinition).fill(toolBar, -1);
+        toolBar.add(showDefinition);
+        viewActions.add(showDefinition);
     }
 
     @Override
@@ -141,29 +284,22 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
         StackLayout layout = new StackLayout();
         container.setLayout(layout);
 
-        Page[] pages = new Page[] { new DefinitionViewer(getPart(), model, renderer), //
-                        new ReBalancingViewer(getPart(), model, renderer), //
-                        new PieChartViewer(model, renderer), //
-                        new TreeMapViewer(model, renderer), //
-                        new StackedChartViewer(getPart(), model, renderer) };
+        Page[] pages = new Page[] { make(DefinitionViewer.class, model, renderer), //
+                        make(ReBalancingViewer.class, model, renderer), //
+                        make(PieChartViewer.class, model, renderer), //
+                        make(DonutViewer.class, model, renderer), //
+                        make(TreeMapViewer.class, model, renderer), //
+                        make(StackedChartViewer.class, model, renderer) };
 
         for (Page page : pages)
         {
-            page.setPreferenceStore(getPreferenceStore());
             Control control = page.createControl(container);
             control.setData(page);
         }
 
         activateView(getPart().getPreferenceStore().getInt(identifierView));
 
-        model.addListener(new TaxonomyModelChangeListener()
-        {
-            @Override
-            public void nodeChange(TaxonomyNode node)
-            {
-                markDirty();
-            }
-        });
+        model.addDirtyListener(this::markDirty);
 
         return container;
     }
@@ -182,6 +318,9 @@ public class TaxonomyView extends AbstractFinanceView implements PropertyChangeL
 
             layout.topControl = children[index];
             container.layout();
+
+            for (int ii = 0; ii < viewActions.size(); ii++)
+                viewActions.get(ii).setChecked(index == ii);
 
             getPart().getPreferenceStore().setValue(identifierView, index);
         }

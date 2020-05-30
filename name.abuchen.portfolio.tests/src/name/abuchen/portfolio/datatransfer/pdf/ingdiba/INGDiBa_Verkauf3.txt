@@ -1,0 +1,45 @@
+ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: VORNAME NACHNAME
+Herrn Direkt-Depot Nr.: DEPOTNUMME
+VORNAME NACHNAME Datum: 21.06.2013
+STRASSESTRASSE Seite: 1 von 2
+ORTORTORTORTOR
+Wertpapierabrechnung Verkauf
+Ordernummer 71305394.001
+ISIN (WKN) US0378331005 (865985)
+Wertpapierbezeichnung Apple Inc. Registered Shares o.N.
+Nominale Stück 11,00
+Kurs EUR 311,96
+Handelsplatz Direkthandel
+Ausführungstag / -zeit 21.06.2013 um 17:04:26 Uhr
+Kurswert EUR 3.431,56
+Provision EUR 9,90
+Endbetrag zu Ihren Gunsten EUR 3.421,66
+Abrechnungskonto KONTONUMME
+Valuta 25.06.2013
+Wertpapiere zulasten Girosammelverwahrung.
+Diese Order wurde mit folgendem Limit / -typ erteilt: 310,00 EUR / Dynamisches Stop / Abstand 20,77 EUR
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+Bankgeschäfte einfach unterwegs erledigen - mit der ING-DiBa Smartphone App. Mehr Infos
+unter www.ing-diba.de/mobile-banking .
+ING-DiBa AG Vorsitzender des Aufsichtsrates: Ben Tellings Sitz: Frankfurt am Main Internet www.ing-diba.de
+Theodor-Heuss-Allee 2 Vorstand: Roland Boekhout (Vorsitzender), AG Frankfurt am Main HRB 7727 E-Mail info@ing-diba.de
+60486 Frankfurt am Main Herbert Willius (stellv. Vorsitzender), Bas Brouwers, Steuernummer 047 220 2800 4 BIC: INGDDEFF / BLZ: 500 105 17
+Bernd Geilen, Katharina Herrmann, Martin Krebs USt-IdNr. DE 114 103 475 Mitglied im Einlagensicherungsfonds
+34WAAD8244141030_T
+Depotinhaber: VORNAME NACHNAME
+Direkt-Depot Nr.: DEPOTNUMME
+Datum: 21.06.2013
+Seite: 2 von 2
+Ordernummer 71305394.001
+ISIN (WKN) US0378331005 (865985)
+Veräußerungsverlust nach Differenzmethode 1.588,05- EUR
+Mit Verrechnungstopf Aktien verrechnet 1.588,05 EUR
+Verrechnungstopf Aktien vor Geschäft 1.177,06 EUR
+Verrechnungstopf Aktien nach Geschäft 2.765,11 EUR
+Verrechnungstopf Allgemein vor Geschäft 0,00 EUR
+Verrechnungstopf Allgemein nach Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 0,00 EUR
+Für Fragen stehen wir Ihnen gerne telefonisch 7 Tage die Woche von 7.30 bis 22 Uhr unter 069 / 50 60 30 50
+zur Verfügung.

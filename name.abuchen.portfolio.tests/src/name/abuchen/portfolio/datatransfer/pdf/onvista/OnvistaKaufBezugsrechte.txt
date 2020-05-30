@@ -1,0 +1,42 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Wertpapierabrechnung ADRESSZEILE2=Max MUSTERMANN
+ ADRESSZEILE3=Musterstrasse 2
+ADRESSZEILE4=54321 Musterhausen
+Kauf ADRESSZEILE5=
+Kommissionsgeschäft ADRESSZEILE6=
+Herr BELEGNUMMER=2128SEITENNUMMER=1
+Max MUSTERMANN
+Depot-Nr. Abrechnungs-Nr. STEUERERSTATTUNG=N
+Musterstrasse 2
+54321 Musterhausen 173458000 17910528 / 30.05.2011
+Depotinhaber
+Max MUSTERMANN
+  
+Wir haben für Sie gekauft Frankfurt am Main, 30.05.2011
+  
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Bezugsrechte DE000A1KRCZ2
+Nominal Kurs
+STK 8,000 EUR 0,8000
+  
+Handelstag 30.05.2011  Kurswert                    EUR 6,40-
+Handelszeit 12:19
+Börse Frankfurt - Scoach/EDF
+Verwahrart Girosammelverwahrung
+ 
+Wert  Konto-Nr. Betrag zu Ihren Lasten  
+01.06.2011 172306238 EUR 6,40
+   
+ 
+Wir werden in Ihrem Depot wie angegeben buche n.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+3.31/ABREABHNHANDKF/GAAASAFG/002128/300511/224623

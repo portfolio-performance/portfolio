@@ -1,0 +1,79 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=172418000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Kapitalherabsetzung ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=4602
+54321 Musterhausen 172418000 72847487 / 19.04.2013 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 23.04.2013
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE0008032004
+Nominal Ex-Tag
+STK 55,000 24.04.2013
+Verwahrart
+Girosammelverwahrung
+Einbuchung:
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Teilrechte DE000CBKTLR7
+Nominal
+STK 5,500
+Verwahrart
+Girosammelverwahrung
+Kapitalherabsetzung im Verhältnis 10:1. Weitere Informationen finden Sie im elektronischen Bundesanzeiger
+(www.bundesanzeiger.de) v. 23.04.2013. Für eventuell in Ihrem Depot verbleibende Teilrechte erhalten Sie ein gesondertes
+Anschreiben.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIABKPRD/GDBVKAPU/004602/240413/003504
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=172418000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Kapitalherabsetzung ADRESSZEILE1=Herr
+Durchführungsanzeige ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Ausführungs-Nr.
+Musterstr. 2 BELEGNUMMER=1577
+54321 Musterhausen 172418000 73342188 / 23.04.2013 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 23.04.2013
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Teilrechte DE000CBKTLR7
+Nominal Ex-Tag
+STK 5,000 24.04.2013
+Verwahrart
+Girosammelverwahrung
+Einbuchung:
+Gattungsbezeichnung ISIN
+Commerzbank AG konv.Inhaber-Aktien o.N. DE000CBK1001
+Nominal
+STK 5,000
+Verwahrart
+Girosammelverwahrung
+Umbuchung der Teil- in Vollrechte. Für die eventuell verbleibenden Bruchteile (Nachkommastellen) in den Teilrechten
+erhalten Sie ein gesondertes Anschreiben über die Zukaufmöglichkeit von Teilrechten auf ein Vollrecht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/DUANDEREEREIAUREKPRD/GDBREBE/001577/240413/003504

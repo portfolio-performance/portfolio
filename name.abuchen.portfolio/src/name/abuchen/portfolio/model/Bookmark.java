@@ -3,31 +3,45 @@ package name.abuchen.portfolio.model;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-public class Bookmark
+public class Bookmark implements Comparable<Bookmark>
 {
+    private static final Pattern REPLACEMENT_PATTERN = Pattern.compile("\\{([^}]*)\\}"); //$NON-NLS-1$
+
     private String label;
     private String pattern;
 
-    public Bookmark(String label, String pattern)
+    public Bookmark(String pattern)
     {
-        this.label = label;
-        this.pattern = pattern;
+        this(pattern, pattern);
     }
 
-    public void setLabel(String label){
+    public Bookmark(String label, String pattern)
+    {
+        this.label = Objects.requireNonNull(label);
+        this.pattern = Objects.requireNonNull(pattern);
+    }
+
+    public void setLabel(String label)
+    {
         this.label = label;
     }
-    
+
     public String getLabel()
     {
         return label;
     }
 
-    public void setPattern(String pattern){
+    public void setPattern(String pattern)
+    {
         this.pattern = pattern;
     }
-    
+
     public String getPattern()
     {
         return pattern;
@@ -38,14 +52,77 @@ public class Bookmark
         return "-".equals(label); //$NON-NLS-1$
     }
 
-    public String constructURL(Security security)
+    @Override
+    public int hashCode()
     {
-        String url = pattern.replace("{tickerSymbol}", encode(security.getTickerSymbol())); //$NON-NLS-1$
-        url = url.replace("{isin}", encode(security.getIsin())); //$NON-NLS-1$
-        url = url.replace("{wkn}", encode(security.getWkn()));   //$NON-NLS-1$
-        url = url.replace("{name}", encode(security.getName())); //$NON-NLS-1$
-        
-        return url;
+        return Objects.hash(label, pattern);
+    }
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+
+        Bookmark other = (Bookmark) obj;
+
+        if (!Objects.equals(label, other.label))
+            return false;
+
+        return Objects.equals(pattern, other.pattern);
+    }
+
+    @Override
+    public int compareTo(Bookmark other)
+    {
+        return label.compareTo(other.label);
+    }
+
+    public String constructURL(Client client, Security security)
+    {
+        Map<String, String> types = new HashMap<>();
+        types.put("tickerSymbol", security.getTickerSymbol()); //$NON-NLS-1$
+        types.put("tickerSymbolPrefix", getTickerPrefix(security.getTickerSymbol())); //$NON-NLS-1$
+        types.put("isin", security.getIsin()); //$NON-NLS-1$
+        types.put("wkn", security.getWkn()); //$NON-NLS-1$
+        types.put("name", security.getName()); //$NON-NLS-1$
+
+        client.getSettings().getAttributeTypes() //
+                        .filter(a -> a.supports(Security.class)) //
+                        .filter(a -> !types.containsKey(a.getColumnLabel())) //
+                        .forEach(attrib -> {
+                            Object value = security.getAttributes().get(attrib);
+                            types.put(attrib.getColumnLabel(), attrib.getConverter().toString(value));
+                        });
+
+        StringBuilder answer = new StringBuilder();
+        int position = 0;
+
+        Matcher matcher = REPLACEMENT_PATTERN.matcher(pattern);
+
+        while (matcher.find())
+        {
+            answer.append(pattern.substring(position, matcher.start()));
+            position = matcher.end();
+
+            for (String key : matcher.group(1).split(",")) //$NON-NLS-1$
+            {
+                String replacement = types.get(key);
+                if (replacement != null && !replacement.isEmpty())
+                {
+                    answer.append(encode(replacement));
+                    break;
+                }
+            }
+        }
+
+        answer.append(pattern.substring(position));
+
+        return answer.toString();
     }
 
     private String encode(String s)
@@ -54,10 +131,23 @@ public class Bookmark
         {
             return s == null ? "" : URLEncoder.encode(s, StandardCharsets.UTF_8.name()); //$NON-NLS-1$
         }
-        catch (UnsupportedEncodingException ignore)
+        catch (UnsupportedEncodingException e)
         {
-            // UTF-8 is always supported
-            return s;
+            // should not happen as UTF-8 is always supported
+            throw new UnsupportedOperationException(e);
         }
+    }
+
+    /**
+     * Returns the prefix of a ticker symbol, e.g. without exchange rate suffix.
+     * For example, for "BAS.DE" it would return "BAS".
+     */
+    private String getTickerPrefix(String tickerSymbol)
+    {
+        if (tickerSymbol == null)
+            return null;
+
+        int dot = tickerSymbol.indexOf('.');
+        return dot > 0 ? tickerSymbol.substring(0, dot) : tickerSymbol;
     }
 }

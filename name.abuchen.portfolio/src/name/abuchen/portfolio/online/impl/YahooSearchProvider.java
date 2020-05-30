@@ -1,54 +1,24 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
-import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
-
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.ParseException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
 import name.abuchen.portfolio.online.SecuritySearchProvider;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
+import name.abuchen.portfolio.util.WebAccess;
 
 public class YahooSearchProvider implements SecuritySearchProvider
 {
-    private static final String SEARCH_URL = "https://de.finance.yahoo.com/lookup?s=%s&t=A&b=0&m=ALL"; //$NON-NLS-1$
-    private static final String LOOKUP_URL = "http://finance.yahoo.com/d/quotes.csv?s=%s&f=snl1"; //$NON-NLS-1$
-
-    private static final ThreadLocal<DecimalFormat> FMT_INDEX = new ThreadLocal<DecimalFormat>()
-    {
-        protected DecimalFormat initialValue()
-        {
-            return new DecimalFormat("#,##0.##", new DecimalFormatSymbols(Locale.GERMANY)); //$NON-NLS-1$
-        }
-    };
-
-    public static class YahooResultItem extends ResultItem
-    {
-        @Override
-        public void applyTo(Security security)
-        {
-            super.applyTo(security);
-            security.setFeed(YahooFinanceQuoteFeed.ID);
-        }
-    }
-
     @Override
     public String getName()
     {
@@ -56,128 +26,79 @@ public class YahooSearchProvider implements SecuritySearchProvider
     }
 
     @Override
-    public List<ResultItem> search(String query) throws IOException
+    public List<ResultItem> search(String query, Type type) throws IOException
     {
-        String url = String.format(SEARCH_URL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
-        Document document = Jsoup.connect(url).get();
+        List<ResultItem> answer = new ArrayList<>();
 
-        List<ResultItem> answer = extractFrom(document);
+        // search both the HTML page as well as the symbol search
+        addSearchPage(answer, query);
+        addSymbolSearchResults(answer, query);
 
-        if (answer.isEmpty())
+        // filter the search result using the German terms as we search the
+        // German Yahoo Finance site
+
+        if (type == Type.SHARE)
+            answer = answer.stream().filter(r -> "Aktie".equals(r.getType())).collect(Collectors.toList()); //$NON-NLS-1$
+        if (type == Type.BOND)
+            answer = answer.stream().filter(r -> "Anleihe".equals(r.getType())).collect(Collectors.toList()); //$NON-NLS-1$
+
+        if (answer.size() >= 10)
         {
-            ResultItem item = searchCSV(query);
-
-            if (item == null)
-            {
-                item = new YahooResultItem();
-                item.setName(String.format(Messages.MsgNoResults, query));
-            }
-
-            answer.add(item);
-        }
-        else if (answer.size() == 20)
-        {
-            ResultItem item = new YahooResultItem();
-            item.setName(Messages.MsgMoreResultsAvailable);
+            YahooSymbolSearch.Result item = new YahooSymbolSearch.Result(Messages.MsgMoreResultsAvailable);
             answer.add(item);
         }
 
         return answer;
     }
 
-    /* protected */List<ResultItem> extractFrom(Document document) throws IOException
+    private void addSymbolSearchResults(List<ResultItem> answer, String query) throws IOException
     {
-        List<ResultItem> answer = new ArrayList<ResultItem>();
+        Set<String> existingSymbols = answer.stream().map(ResultItem::getSymbol).collect(Collectors.toSet());
 
-        Elements tables = document.getElementsByAttribute("SUMMARY"); //$NON-NLS-1$
-
-        for (Element table : tables)
-        {
-            if (!"YFT_SL_TABLE_SUMMARY".equals(table.attr("SUMMARY"))) //$NON-NLS-1$ //$NON-NLS-2$
-                continue;
-
-            Elements rows = table.select("> tbody > tr"); //$NON-NLS-1$
-
-            for (Element row : rows)
-            {
-                Elements cells = row.select("> td"); //$NON-NLS-1$
-
-                if (cells.size() != 6)
-                    continue;
-
-                ResultItem item = new YahooResultItem();
-
-                item.setSymbol(cells.get(0).text());
-                item.setName(cells.get(1).text());
-                item.setIsin(cells.get(2).text());
-
-                // last trace
-                String lastTrade = cells.get(3).text();
-                if (!"NaN".equals(lastTrade)) //$NON-NLS-1$
-                    item.setLastTrade(parseIndex(lastTrade));
-
-                item.setType(cells.get(4).text());
-                item.setExchange(cells.get(5).text());
-
-                answer.add(item);
-            }
-        }
-
-        return answer;
+        new YahooSymbolSearch().search(query)//
+                        .filter(r -> !existingSymbols.contains(r.getSymbol())).forEach(answer::add);
     }
 
-    /* protected */ResultItem searchCSV(String query) throws IOException
+    private void addSearchPage(List<ResultItem> answer, String query) throws IOException
     {
-        String csv = String.format(LOOKUP_URL, URLEncoder.encode(query.toUpperCase(), StandardCharsets.UTF_8.name()));
+        String templateURL = "/_finance_doubledown/api/resource/searchassist;searchTerm={0}"; //$NON-NLS-1$
 
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new URL(csv).openStream()));
+        String url = MessageFormat.format(templateURL, URLEncoder.encode(query, StandardCharsets.UTF_8.name()));
 
-        String line = reader.readLine();
+        @SuppressWarnings("nls")
+        String html = new WebAccess("de.finance.yahoo.com", url) //
+                        .addParameter("bkt", "finance-DE-de-DE-def").addParameter("device", "desktop")
+                        .addParameter("intl", "de") //
+                        .addParameter("lang", "de-DE") //
+                        .addParameter("partner", "none") //
+                        .addParameter("region", "DE") //
+                        .addParameter("site", "finance") //
+                        .addParameter("tz", "Europe%2FBerlin") //
+                        .addParameter("ver", "0.102.1312") //
+                        .addParameter("returnMeta", "true") //
+                        .get();
 
-        if (line != null)
-        {
-            String[] values = line.split(","); //$NON-NLS-1$
-
-            // result must have 3 values -> otherwise error message
-            if (values.length != 3)
-                return null;
-
-            // Yahoo always returns a value if query is a syntactically correct
-            // symbol even if it does not exist -> filter
-            String symbol = stripQuotes(values[0]);
-            String name = stripQuotes(values[1]);
-            if (symbol.equals(name))
-                return null;
-
-            try
-            {
-                ResultItem answer = new ResultItem();
-                answer.setSymbol(symbol);
-                answer.setName(name);
-                answer.setLastTrade(asPrice(values[2]));
-                return answer;
-            }
-            catch (ParseException e)
-            {
-                throw new IOException(e);
-            }
-        }
-        else
-        {
-            return null;
-        }
+        extractFrom(answer, html);
     }
 
-    private long parseIndex(String text) throws IOException
+    /* protected */void extractFrom(List<ResultItem> answer, String html)
     {
-        try
+        JSONObject response = (JSONObject) JSONValue.parse(html);
+        if (response != null)
         {
-            Number q = FMT_INDEX.get().parse(text);
-            return (long) (q.doubleValue() * Values.Quote.factor());
-        }
-        catch (ParseException e)
-        {
-            throw new IOException(e);
+            JSONObject data = (JSONObject) response.get("data"); //$NON-NLS-1$
+            if (data != null)
+            {
+                JSONArray items = (JSONArray) data.get("items"); //$NON-NLS-1$
+                if (items != null)
+                {
+                    for (int ii = 0; ii < items.size(); ii++)
+                    {
+                        JSONObject item = (JSONObject) items.get(ii);
+                        answer.add(YahooSymbolSearch.Result.from(item));
+                    }
+                }
+            }
         }
     }
 }

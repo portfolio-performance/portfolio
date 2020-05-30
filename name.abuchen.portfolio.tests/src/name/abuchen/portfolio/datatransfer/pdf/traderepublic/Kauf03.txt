@@ -1,0 +1,33 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+<vorname> <name> SEITE 1 von 1
+<adresse> DATUM 17.06.2019
+D <PLZ> Tespe ORDER fd98-0283
+AUSFÜHRUNG 51cb-50a8
+DEPOT <depotnummer>
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 17.06.2019, um 12:27 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Tesla Inc. 1 Stk. 192,08 EUR 192,08 EUR
+Registered Shares DL-,001
+US88160R1014
+GESAMT 192,08 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,00 EUR
+GESAMT -193,08 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE32110101008889504147 19.06.2019 -193,08 EUR
+Tesla Inc. Registered Shares DL-,001 in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 17.06.2019 / 23675468 / af69-b0d8

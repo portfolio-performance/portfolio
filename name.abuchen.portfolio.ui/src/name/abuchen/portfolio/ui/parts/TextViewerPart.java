@@ -9,14 +9,15 @@ import java.nio.file.Paths;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.ui.UIConstants;
-
 import org.eclipse.e4.core.services.log.Logger;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.ui.UIConstants;
+
+@SuppressWarnings("restriction")
 public class TextViewerPart
 {
     @Inject
@@ -25,7 +26,7 @@ public class TextViewerPart
     @PostConstruct
     public void createComposite(Composite parent, MPart part)
     {
-        String filename = part.getPersistedState().get(UIConstants.Parameter.FILE);
+        String filename = part.getPersistedState().get(UIConstants.PersistedState.FILENAME);
 
         Text text = new Text(parent, SWT.READ_ONLY | SWT.H_SCROLL | SWT.V_SCROLL);
         part.setLabel(filename);

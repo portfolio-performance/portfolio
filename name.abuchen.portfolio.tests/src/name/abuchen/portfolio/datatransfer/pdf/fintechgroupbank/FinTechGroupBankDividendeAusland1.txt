@@ -1,0 +1,31 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+XXXXXXXXXXXXXXXXXXX
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: XXXXXXXXXX
+Depotinhaber    : XXXXX, XXXXX
+Nr.111111111                  STARBUCKS CORP.           (US8552441094/884437)
+St.             :         105          Bruttodividende
+                                       pro Stück       :       0,2500 USD
+Extag           :  08.08.2017          Bruttodividende :        26,25 USD
+Zahlungstag     :  25.08.2017          Bemessungs-
+Valuta          :  25.08.2017          grundlage       :         X,XX EUR
+Devisenkurs     :    1,180800         *Einbeh. Steuer  :         1,11 EUR
+Quellenst.-satz :       30,00 %        Gez. Quellenst. :         7,88 USD
+                                       Endbetrag       :        14,45 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                  Kapitalertragsteuer  :         X,XX EUR
+                                  Solidaritätszuschlag :         X,XX EUR
+                                  Kirchensteuer        :         X,XX EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+  finden Sie im Steuerreport unter der Transaktion-Nr.: XXXXXXXX
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.:  XXXXXXXXXX
+Anrechenbare Quellensteuer**           15,00 % =                 3,94 USD
+Rückforderbare Quellensteuer**         15,00 % =                 3,94 USD
+** nur relevant für Steuerinländer

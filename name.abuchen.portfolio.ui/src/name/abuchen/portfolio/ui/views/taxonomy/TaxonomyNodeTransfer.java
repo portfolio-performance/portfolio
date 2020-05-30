@@ -1,34 +1,38 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.util.List;
+
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 
 public class TaxonomyNodeTransfer extends ByteArrayTransfer
 {
-    private static final String TYPE_NAME = "local-taxonomy-node-transfer-format" + (new Long(System.currentTimeMillis())).toString(); //$NON-NLS-1$;
+    private static final String TYPE_NAME = "local-taxonomy-node-transfer-format" //$NON-NLS-1$
+                    + (Long.valueOf(System.currentTimeMillis())).toString();
 
     private static final int TYPEID = registerType(TYPE_NAME);
 
     private static final TaxonomyNodeTransfer INSTANCE = new TaxonomyNodeTransfer();
 
-    private TaxonomyNode taxonomyNode;
+    private List<TaxonomyNode> nodes;
 
     protected TaxonomyNodeTransfer()
-    {}
+    {
+    }
 
     public static TaxonomyNodeTransfer getTransfer()
     {
         return INSTANCE;
     }
 
-    public TaxonomyNode getTaxonomyNode()
+    public List<TaxonomyNode> getTaxonomyNodes()
     {
-        return taxonomyNode;
+        return nodes;
     }
 
-    public void setTaxonomyNode(TaxonomyNode security)
+    public void setTaxonomyNodes(List<TaxonomyNode> nodes)
     {
-        this.taxonomyNode = security;
+        this.nodes = nodes;
     }
 
     @Override
@@ -55,7 +59,7 @@ public class TaxonomyNodeTransfer extends ByteArrayTransfer
     {
         Object result = super.nativeToJava(transferData);
         if (result instanceof byte[] && TYPE_NAME.equals(new String((byte[]) result)))
-            return taxonomyNode;
+            return nodes;
         return null;
     }
 

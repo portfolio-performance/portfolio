@@ -1,0 +1,36 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift ADRESSZEILE1=Herr
+aus Wertpapieren ADRESSZEILE2=Max MUSTERMANNADRESSZEILE3=Musterstrasse 2
+Reinvestierung ADRESSZEILE4=54321 Musterhausen
+Dividende für
+Herr ADRESSZEILE5=01.01.2012 - 31.12.2012
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 2 BELEGNUMMER=1266
+54321 Musterhausen 173458000 17299829 / 17.05.2013 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Dividendengutschrift Frankfurt am Main, 17.05.2013
+Gattungsbezeichnung ISIN
+Deutsche Telekom AG Namens-Aktien o.N. DE0005557508
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 25,000 17.05.2013 17.05.2013 EUR 0,700000
+Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 17,50
+Zahlungstag 17.05.2013
+Die Dividende wurde wie folgt in neue Aktien reinvestiert:
+Gattungsbezeichnung ISIN
+Deutsche Telekom AG Dividend in Kind-Cash Line DE000A1TNRX5
+Nominal Reinvestierungspreis
+STK 25,000 EUR 0,700000
+Diese Buchung stellt die Einbuchung der Dividendenrechte dar. Bitte beachten Sie hierzu unser zusätzliches Anschreiben.
+Verwahrart: Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIREIN/GDBREINV/001266/170513/234907

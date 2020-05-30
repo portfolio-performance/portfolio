@@ -19,6 +19,7 @@ public abstract class AbstractChartToolTip implements Listener
     private Chart chart = null;
     private Shell tip = null;
     private Object focus = null;
+    private boolean isAltPressed = false;
 
     public AbstractChartToolTip(Chart chart)
     {
@@ -45,6 +46,11 @@ public abstract class AbstractChartToolTip implements Listener
         return focus;
     }
 
+    protected boolean isAltPressed()
+    {
+        return isAltPressed;
+    }
+
     @Override
     public void handleEvent(Event event)
     {
@@ -58,8 +64,11 @@ public abstract class AbstractChartToolTip implements Listener
                 moveToolTip(event);
                 break;
             case SWT.MouseDown:
-                if (event.button == 1 && event.stateMask != SWT.MOD1)
+                if (event.button == 1 && (event.stateMask & SWT.MOD1) != SWT.MOD1)
+                {
+                    isAltPressed = (event.stateMask & SWT.MOD3) == SWT.MOD3;
                     showToolTip(event);
+                }
                 break;
             default:
                 break;
@@ -120,7 +129,6 @@ public abstract class AbstractChartToolTip implements Listener
             focus = newTipDate;
             Point size = createAndMeasureTooltip();
 
-            size = tip.computeSize(SWT.DEFAULT, SWT.DEFAULT);
             Rectangle bounds = calculateBounds(event, size);
             tip.setBounds(bounds);
         }

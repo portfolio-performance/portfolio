@@ -1,17 +1,12 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.Iterator;
-import java.util.stream.Collectors;
 
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
+import javax.inject.Inject;
 
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
@@ -25,17 +20,23 @@ import de.engehausen.treemap.IColorProvider;
 import de.engehausen.treemap.ILabelProvider;
 import de.engehausen.treemap.IRectangle;
 import de.engehausen.treemap.IRectangleRenderer;
-import de.engehausen.treemap.ISelectionChangeListener;
 import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.IWeightedTreeModel;
 import de.engehausen.treemap.impl.SquarifiedLayout;
 import de.engehausen.treemap.swt.TreeMap;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.views.SecurityDetailsViewer;
 
 /* package */class TreeMapViewer extends AbstractChartPage
 {
     private TreeMap<TaxonomyNode> treeMap;
     private TreeMapLegend legend;
 
+    @Inject
     public TreeMapViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
@@ -43,11 +44,13 @@ import de.engehausen.treemap.swt.TreeMap;
 
     @Override
     public void beforePage()
-    {}
+    {
+    }
 
     @Override
     public void afterPage()
-    {}
+    {
+    }
 
     @Override
     public void nodeChange(TaxonomyNode node)
@@ -59,41 +62,28 @@ import de.engehausen.treemap.swt.TreeMap;
     public void onConfigChanged()
     {
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getRootNode());
+        legend.setRootItem(getModel().getVirtualRootNode());
     }
 
     @Override
     public Control createControl(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
-        sash.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
+        Composite sash = new Composite(parent, SWT.NONE);
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         Composite container = new Composite(sash, SWT.NONE);
         container.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
 
-        treeMap = new TreeMap<TaxonomyNode>(container);
+        treeMap = new TreeMap<>(container);
         treeMap.setTreeMapLayout(new SquarifiedLayout<TaxonomyNode>(10));
-        treeMap.setLabelProvider(new ILabelProvider<TaxonomyNode>()
-        {
-            @Override
-            public String getLabel(ITreeModel<IRectangle<TaxonomyNode>> model, IRectangle<TaxonomyNode> rectangle)
-            {
-                return rectangle.getNode().getName();
-            }
-        });
+        treeMap.setLabelProvider((model, rectangle) -> rectangle.getNode().getName());
 
         legend = new TreeMapLegend(container, treeMap, getModel(), getRenderer());
 
         final SecurityDetailsViewer details = new SecurityDetailsViewer(sash, SWT.NONE, getModel().getClient(), true);
-        treeMap.addSelectionChangeListener(new ISelectionChangeListener<TaxonomyNode>()
-        {
-            @Override
-            public void selectionChanged(ITreeModel<IRectangle<TaxonomyNode>> model,
-                            IRectangle<TaxonomyNode> rectangle, String label)
-            {
-                TaxonomyNode node = rectangle.getNode();
-                details.setInput(node.getBackingSecurity());
-            }
+        treeMap.addSelectionChangeListener((model, rectangle, label) -> {
+            TaxonomyNode node = rectangle.getNode();
+            details.setInput(node.getBackingSecurity());
         });
 
         // layout tree map + legend
@@ -102,11 +92,11 @@ import de.engehausen.treemap.swt.TreeMap;
         GridDataFactory.fillDefaults().grab(true, false).applyTo(legend);
 
         // layout sash
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), details.getControl());
+        details.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(details.getControl())));
 
         treeMap.setRectangleRenderer(new ClassificationRectangleRenderer(getModel(), getRenderer()));
         treeMap.setTreeModel(new Model(getModel()));
-        legend.setRootItem(getModel().getRootNode());
+        legend.setRootItem(getModel().getChartRenderingRootNode());
 
         return sash;
     }
@@ -123,28 +113,22 @@ import de.engehausen.treemap.swt.TreeMap;
         @Override
         public Iterator<TaxonomyNode> getChildren(TaxonomyNode item)
         {
-            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
-            {
-                return item.getChildren().stream() //
-                                .filter(n -> !n.isUnassignedCategory())//
-                                .collect(Collectors.toList()).iterator();
-            }
-            else
-            {
-                return item.getChildren().iterator();
-            }
+            return item.getChildren().iterator();
         }
 
         @Override
         public TaxonomyNode getParent(TaxonomyNode item)
         {
-            return item.getParent();
+            if (getRoot().equals(item))
+                return null;
+            else
+                return item.getParent();
         }
 
         @Override
         public TaxonomyNode getRoot()
         {
-            return model.getRootNode();
+            return model.getChartRenderingRootNode();
         }
 
         @Override
@@ -156,10 +140,7 @@ import de.engehausen.treemap.swt.TreeMap;
         @Override
         public long getWeight(TaxonomyNode item)
         {
-            if (model.isUnassignedCategoryInChartsExcluded() && item.isRoot())
-                return item.getActual() - model.getUnassignedNode().getActual();
-            else
-                return item.getActual();
+            return item.getActual().getAmount();
         }
     }
 
@@ -188,17 +169,16 @@ import de.engehausen.treemap.swt.TreeMap;
             Color oldForeground = event.gc.getForeground();
             Color oldBackground = event.gc.getBackground();
 
-            Rectangle r = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(), rectangle.getHeight());
+            Rectangle r = new Rectangle(rectangle.getX(), rectangle.getY(), rectangle.getWidth(),
+                            rectangle.getHeight());
             this.colorProvider.drawRectangle(model.getRoot().getNode(), item, event.gc, r);
 
             String label = item.getName();
 
-            double total = this.model.getRootNode().getActual();
-            if (this.model.isUnassignedCategoryInChartsExcluded())
-                total -= this.model.getUnassignedNode().getActual();
+            double total = this.model.getChartRenderingRootNode().getActual().getAmount();
 
-            String info = String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format(item.getActual() / total));
+            String info = String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
+                            Values.Percent.format(item.getActual().getAmount() / total));
 
             event.gc.setForeground(Colors.getTextColor(event.gc.getBackground()));
 

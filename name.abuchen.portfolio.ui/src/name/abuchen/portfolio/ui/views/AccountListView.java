@@ -1,57 +1,86 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.text.MessageFormat;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.AccountTransaction.Type;
+import name.abuchen.portfolio.model.AccountTransferEntry;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.Quote;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.ListEditingSupport;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransferDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.handlers.ImportCSVHandler;
+import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.DateTimeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.TransactionTypeEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.actions.ConvertTransferToDepositRemovalAction;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn;
+import name.abuchen.portfolio.ui.views.columns.CurrencyColumn.CurrencyEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
 
 public class AccountListView extends AbstractListView implements ModificationListener
 {
@@ -59,6 +88,17 @@ public class AccountListView extends AbstractListView implements ModificationLis
 
     private TableViewer accounts;
     private TableViewer transactions;
+    private AccountBalanceChart accountBalanceChart;
+
+    @Inject
+    private ExchangeRateProviderFactory exchangeRateProviderFactory;
+
+    /**
+     * Store current balance of account after given transaction has been
+     * applied. See {@link #updateBalance(Account)}. Do not store transient
+     * balance in persistent AccountTransaction object.
+     */
+    private Map<AccountTransaction, Money> transaction2balance = new HashMap<>();
 
     private AccountContextMenu accountMenu = new AccountContextMenu(this);
 
@@ -68,17 +108,21 @@ public class AccountListView extends AbstractListView implements ModificationLis
     private boolean isFiltered = false;
 
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
         return Messages.LabelAccounts;
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @PostConstruct
+    public void setup()
     {
-        super.init(part, parameter);
+        isFiltered = getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+    }
 
-        isFiltered = part.getPreferenceStore().getBoolean(FILTER_INACTIVE_ACCOUNTS);
+    @Override
+    protected int getSashStyle()
+    {
+        return SWT.VERTICAL | SWT.BEGINNING;
     }
 
     private void resetInput()
@@ -87,70 +131,66 @@ public class AccountListView extends AbstractListView implements ModificationLis
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager manager)
     {
-        addNewAccountButton(toolBar);
-        addFilterButton(toolBar);
-        addConfigButton(toolBar);
+        addNewButton(manager);
+        addFilterButton(manager);
+        addConfigButton(manager);
     }
 
-    private void addNewAccountButton(ToolBar toolBar)
+    private void addNewButton(ToolBarManager manager)
     {
-        Action action = new Action()
-        {
-            @Override
-            public void run()
-            {
-                Account account = new Account();
-                account.setName(Messages.LabelNoName);
+        SimpleAction.Runnable newAccountAction = a -> {
+            Account account = new Account();
+            account.setName(Messages.LabelNoName);
+            account.setCurrencyCode(getClient().getBaseCurrency());
 
-                getClient().addAccount(account);
-                markDirty();
+            getClient().addAccount(account);
+            markDirty();
 
-                resetInput();
-                accounts.editElement(account, 0);
-            }
+            resetInput();
+            accounts.editElement(account, 0);
         };
-        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-        action.setToolTipText(Messages.AccountMenuAdd);
-        new ActionContributionItem(action).fill(toolBar, -1);
+
+        manager.add(new DropDown(Messages.MenuCreateAccountOrTransaction, Images.PLUS, SWT.NONE, menuListener -> {
+            menuListener.add(new SimpleAction(Messages.AccountMenuAdd, newAccountAction));
+
+            menuListener.add(new Separator());
+
+            Account account = (Account) accounts.getStructuredSelection().getFirstElement();
+            new AccountContextMenu(AccountListView.this).menuAboutToShow(menuListener, account, null);
+        }));
     }
 
-    private void addFilterButton(ToolBar toolBar)
+    private void addFilterButton(ToolBarManager manager)
     {
         Action filter = new Action()
         {
             @Override
             public void run()
             {
-                isFiltered = isChecked();
+                isFiltered = !isFiltered;
                 getPart().getPreferenceStore().setValue(FILTER_INACTIVE_ACCOUNTS, isFiltered);
+                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
                 resetInput();
             }
         };
-        filter.setChecked(isFiltered);
-        filter.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_FILTER));
+        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
         filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
-        new ActionContributionItem(filter).fill(toolBar, -1);
+        manager.add(filter);
     }
 
-    private void addConfigButton(final ToolBar toolBar)
+    private void addConfigButton(final ToolBarManager manager)
     {
-        new AbstractDropDown(toolBar, Messages.MenuShowHideColumns, //
-                        PortfolioPlugin.image(PortfolioPlugin.IMG_CONFIG), SWT.NONE)
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                MenuManager m = new MenuManager(Messages.LabelAccounts);
-                accountColumns.menuAboutToShow(m);
-                manager.add(m);
+        manager.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE, mm -> {
+            MenuManager m = new MenuManager(Messages.LabelAccounts);
+            accountColumns.menuAboutToShow(m);
+            mm.add(m);
 
-                m = new MenuManager(Messages.LabelTransactions);
-                transactionsColumns.menuAboutToShow(m);
-                manager.add(m);
-            }
-        };
+            m = new MenuManager(Messages.LabelTransactions);
+            transactionsColumns.menuAboutToShow(m);
+            mm.add(m);
+        }));
     }
 
     @Override
@@ -174,6 +214,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
             if (t.getCrossEntry() != null)
                 t.getCrossEntry().updateFrom(t);
             accounts.refresh(true);
+
+            updateOnAccountSelected((Account) transactions.getData(Account.class.toString()));
         }
 
         markDirty();
@@ -193,12 +235,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accounts = new TableViewer(container, SWT.FULL_SELECTION);
 
         ColumnEditingSupport.prepare(accounts);
+        ColumnViewerToolTipSupport.enableFor(accounts, ToolTip.NO_RECREATE);
 
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
 
         Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider()
+        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
         {
             @Override
             public Color getForeground(Object e)
@@ -210,116 +253,147 @@ public class AccountListView extends AbstractListView implements ModificationLis
         column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnBalance, SWT.RIGHT, 80);
+        column = new Column("1", Messages.ColumnBalance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnBalance_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                return Values.Amount.format(((Account) e).getCurrentAmount());
+                return Values.Amount.format(((Account) e).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)));
             }
         });
-        ColumnViewerSorter.create(Account.class, "currentAmount").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(o -> ((Account) o).getCurrentAmount(LocalDateTime.now().with(LocalTime.MAX)))
+                        .attachTo(column);
+        accountColumns.addColumn(column);
+
+        column = new CurrencyColumn();
+        column.setEditingSupport(new CurrencyEditingSupport()
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return ((Account) element).getTransactions().isEmpty();
+            }
+        });
         accountColumns.addColumn(column);
 
         column = new NoteColumn();
         column.getEditingSupport().addListener(this);
         accountColumns.addColumn(column);
 
+        addAttributeColumns(accountColumns);
+
         accountColumns.createColumns();
 
         accounts.getTable().setHeaderVisible(true);
         accounts.getTable().setLinesVisible(true);
 
-        for (Account account : getClient().getAccounts())
-        {
-            Collections.sort(account.getTransactions(), new Transaction.ByDate());
-        }
-
-        accounts.setContentProvider(new SimpleListContentProvider());
+        accounts.setContentProvider(ArrayContentProvider.getInstance());
         resetInput();
         accounts.refresh();
-        ViewerHelper.pack(accounts);
 
-        accounts.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                transactions.setData(Account.class.toString(), account);
-                transactions.setInput(account != null ? account.getTransactions()
-                                : new ArrayList<AccountTransaction>(0));
-                transactions.refresh();
-            }
-        });
-
-        hookContextMenu(accounts.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillAccountsContextMenu(manager);
-            }
-        });
+        hookContextMenu(accounts.getTable(), this::fillAccountsContextMenu);
     }
 
-    private void fillAccountsContextMenu(IMenuManager manager)
+    private void addAttributeColumns(ShowHideColumnHelper support)
+    {
+        AttributeColumn.createFor(getClient(), Account.class) //
+                        .forEach(column -> {
+                            column.getEditingSupport().addListener(this);
+                            support.addColumn(column);
+                        });
+    }
+
+    private void fillAccountsContextMenu(IMenuManager manager) // NOSONAR
     {
         final Account account = (Account) ((IStructuredSelection) accounts.getSelection()).getFirstElement();
         if (account == null)
             return;
 
-        accountMenu.menuAboutToShow(manager, account);
+        accountMenu.menuAboutToShow(manager, account, null);
         manager.add(new Separator());
 
-        manager.add(new Action(account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate)
-        {
-            @Override
-            public void run()
-            {
-                account.setRetired(!account.isRetired());
-                markDirty();
-                resetInput();
-            }
+        manager.add(new SimpleAction(Messages.AccountMenuImportCSV, a -> ImportCSVHandler.runImport(getPart(),
+                        Display.getDefault().getActiveShell(), getContext(), null, null, getClient(), account, null)));
 
-        });
+        manager.add(new SimpleAction(Messages.AccountMenuImportPDF, a -> ImportPDFHandler.runImport(getPart(),
+                        Display.getDefault().getActiveShell(), getClient(), account, null)));
 
-        manager.add(new Action(Messages.AccountMenuDelete)
-        {
-            @Override
-            public void run()
-            {
-                getClient().removeAccount(account);
-                markDirty();
-                resetInput();
-            }
-        });
+        manager.add(new SimpleAction(
+                        account.isRetired() ? Messages.AccountMenuActivate : Messages.AccountMenuDeactivate, a -> {
+                            account.setRetired(!account.isRetired());
+                            markDirty();
+                            resetInput();
+                        }));
+
+        manager.add(new ConfirmAction(Messages.AccountMenuDelete,
+                        MessageFormat.format(Messages.AccountMenuDeleteConfirm, account.getName()), //
+                        a -> {
+                            getClient().removeAccount(account);
+                            markDirty();
+                            resetInput();
+                        }));
     }
 
     // //////////////////////////////////////////////////////////////
     // bottom table: transactions
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createBottomTable(Composite parent)
+    {
+        // folder
+        CTabFolder folder = new CTabFolder(parent, SWT.BORDER);
+
+        CTabItem item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.TabTransactions);
+        item.setControl(createTransactionTable(folder));
+
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.TabAccountBalanceChart);
+        accountBalanceChart = new AccountBalanceChart(folder);
+        folder.addSelectionListener(SelectionListener.widgetSelectedAdapter(event -> accountBalanceChart.updateChart(
+                        (Account) accounts.getStructuredSelection().getFirstElement(), exchangeRateProviderFactory)));
+        item.setControl(accountBalanceChart);
+
+        accounts.addSelectionChangedListener(event -> {
+            Account account = (Account) ((IStructuredSelection) event.getSelection()).getFirstElement();
+
+            updateOnAccountSelected(account);
+
+            transactions.setData(Account.class.toString(), account);
+            transactions.setInput(account != null ? account.getTransactions() : new ArrayList<AccountTransaction>(0));
+            transactions.refresh();
+        });
+
+        folder.setSelection(0);
+
+        if (accounts.getTable().getItemCount() > 0)
+            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+    }
+
+    protected Control createTransactionTable(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
         transactions = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+        ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
         ColumnEditingSupport.prepare(transactions);
 
         transactionsColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@bottom5", //$NON-NLS-1$
                         getPreferenceStore(), transactions, layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column("0", Messages.ColumnDate, SWT.None, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                AccountTransaction t = (AccountTransaction) e;
-                return Values.Date.format(t.getDate());
+                return Values.DateTime.format(((AccountTransaction) e).getDateTime());
             }
 
             @Override
@@ -328,11 +402,11 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        ColumnViewerSorter.create(AccountTransaction.class, "date").attachTo(column, SWT.DOWN); //$NON-NLS-1$
-        new DateEditingSupport(AccountTransaction.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(new AccountTransaction.ByDateAmountTypeAndHashCode()).attachTo(column, SWT.DOWN);
+        new DateTimeEditingSupport(AccountTransaction.class, "dateTime").addListener(this).attachTo(column); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnTransactionType, SWT.None, 100);
+        column = new Column("1", Messages.ColumnTransactionType, SWT.None, 100); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -349,9 +423,10 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "type")); //$NON-NLS-1$
+        new TransactionTypeEditingSupport(getClient()).addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
+        column = new Column("2", Messages.ColumnAmount, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -359,9 +434,9 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 AccountTransaction t = (AccountTransaction) e;
                 long v = t.getAmount();
-                if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
+                if (t.getType().isDebit())
                     v = -v;
-                return Values.Amount.format(v);
+                return Values.Money.format(Money.of(t.getCurrencyCode(), v), getClient().getBaseCurrency());
             }
 
             @Override
@@ -370,11 +445,38 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
-        column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "amount")); //$NON-NLS-1$
-        new ValueEditingSupport(AccountTransaction.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            AccountTransaction accountTransaction1 = (AccountTransaction) o1;
+            long transactionAmount1 = accountTransaction1.getAmount();
+            if (accountTransaction1.getType().isDebit())
+                transactionAmount1 = -transactionAmount1;
+            AccountTransaction accountTransaction2 = (AccountTransaction) o2;
+            long transactionAmount2 = accountTransaction2.getAmount();
+            if (accountTransaction2.getType().isDebit())
+                transactionAmount2 = -transactionAmount2;
+            return Long.compare(transactionAmount1, transactionAmount2);
+        }));
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnSecurity, SWT.None, 250);
+        column = new Column("3", Messages.Balance, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Money balance = transaction2balance.get(e);
+                return balance != null ? Values.Money.format(balance, getClient().getBaseCurrency()) : null;
+            }
+        });
+
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            Money m1 = transaction2balance.get(o1);
+            Money m2 = transaction2balance.get(o2);
+            return m1.compareTo(m2);
+        }));
+        transactionsColumns.addColumn(column);
+
+        column = new Column("4", Messages.ColumnSecurity, SWT.None, 250); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -391,32 +493,24 @@ public class AccountListView extends AbstractListView implements ModificationLis
             }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
-        List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
-        Collections.sort(securities, new Security.ByName());
-        new ListEditingSupport(AccountTransaction.class, "security", securities) //$NON-NLS-1$
-        {
-            @Override
-            public boolean canEdit(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-
-                return t.getType() == AccountTransaction.Type.BUY //
-                                || t.getType() == AccountTransaction.Type.SELL //
-                                || t.getType() == AccountTransaction.Type.DIVIDENDS //
-                                || t.getType() == AccountTransaction.Type.TAX_REFUND;
-            }
-
-            @Override
-            public boolean canBeNull(Object element)
-            {
-                AccountTransaction t = (AccountTransaction) element;
-                return t.getType() == AccountTransaction.Type.TAX_REFUND;
-            }
-
-        }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
+        column = new IsinColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new SymbolColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new WknColumn();
+        column.setVisible(false);
+        column.getEditingSupport().addListener(this);
+        transactionsColumns.addColumn(column);
+
+        column = new Column("5", Messages.ColumnShares, SWT.RIGHT, 80); //$NON-NLS-1$
         column.setLabelProvider(new SharesLabelProvider()
         {
             @Override
@@ -454,7 +548,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         }.addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnPurchasePrice, SWT.RIGHT, 80);
+        column = new Column("6", Messages.ColumnPerShare, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnPerShare_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -463,13 +558,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 AccountTransaction t = (AccountTransaction) e;
                 if (t.getCrossEntry() instanceof BuySellEntry)
                 {
-                    PortfolioTransaction portfolioTransaction = ((BuySellEntry) t.getCrossEntry())
-                                    .getPortfolioTransaction();
-                    return Values.Amount.format(portfolioTransaction.getActualPurchasePrice());
+                    PortfolioTransaction pt = ((BuySellEntry) t.getCrossEntry()).getPortfolioTransaction();
+                    return Values.Quote.format(pt.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else if (t.getType() == Type.DIVIDENDS && t.getShares() != 0)
                 {
-                    return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / t.getShares()));
+                    long perShare = Math.round(t.getGrossValueAmount() * Values.Share.divider()
+                                    * Values.Quote.factorToMoney() / t.getShares());
+                    return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare), getClient().getBaseCurrency());
                 }
                 else
                 {
@@ -485,14 +581,14 @@ public class AccountListView extends AbstractListView implements ModificationLis
         });
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnOffsetAccount, SWT.None, 120);
+        column = new Column("7", Messages.ColumnOffsetAccount, SWT.None, 120); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
                 AccountTransaction t = (AccountTransaction) e;
-                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
             }
 
             @Override
@@ -501,32 +597,12 @@ public class AccountListView extends AbstractListView implements ModificationLis
                 return colorFor((AccountTransaction) element);
             }
         });
+        new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)
+                        .addListener(this).attachTo(column);
         transactionsColumns.addColumn(column);
 
-        column = new Column(Messages.ColumnNote, SWT.None, 200);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((AccountTransaction) e).getNote();
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return colorFor((AccountTransaction) element);
-            }
-
-            @Override
-            public Image getImage(Object e)
-            {
-                String note = ((AccountTransaction) e).getNote();
-                return note != null && note.length() > 0 ? PortfolioPlugin.image(PortfolioPlugin.IMG_NOTE) : null;
-            }
-        });
-        ColumnViewerSorter.create(AccountTransaction.class, "note").attachTo(column); //$NON-NLS-1$
-        new StringEditingSupport(AccountTransaction.class, "note").addListener(this).attachTo(column); //$NON-NLS-1$
+        column = new NoteColumn("8"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         transactionsColumns.addColumn(column);
 
         transactionsColumns.createColumns();
@@ -534,42 +610,68 @@ public class AccountListView extends AbstractListView implements ModificationLis
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setContentProvider(new SimpleListContentProvider());
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
 
-        hookContextMenu(transactions.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillTransactionsContextMenu(manager);
-            }
-        });
+        hookContextMenu(transactions.getTable(), this::fillTransactionsContextMenu);
 
-        if (!getClient().getAccounts().isEmpty())
-            accounts.setSelection(new StructuredSelection(accounts.getElementAt(0)), true);
+        hookKeyListener();
 
-        ViewerHelper.pack(transactions);
+        return container;
     }
 
     private Color colorFor(AccountTransaction t)
     {
-        if (EnumSet.of(Type.REMOVAL, Type.FEES, Type.TAXES, Type.BUY, Type.TRANSFER_OUT).contains(t.getType()))
-            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
-        else
-            return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+        return t.getType().isDebit() ? Colors.DARK_RED : Colors.DARK_GREEN;
     }
 
-    private void fillTransactionsContextMenu(IMenuManager manager)
+    private void hookKeyListener()
+    {
+        transactions.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                {
+                    Account account = (Account) transactions.getData(Account.class.toString());
+                    AccountTransaction transaction = (AccountTransaction) ((IStructuredSelection) transactions
+                                    .getSelection()).getFirstElement();
+
+                    if (account != null && transaction != null)
+                        createEditAction(account, transaction).run();
+                }
+            }
+        });
+    }
+
+    private void fillTransactionsContextMenu(IMenuManager manager) // NOSONAR
     {
         Account account = (Account) transactions.getData(Account.class.toString());
         if (account == null)
             return;
+        
+        IStructuredSelection selection = (IStructuredSelection) transactions.getSelection();
+        AccountTransaction transaction = (AccountTransaction) selection.getFirstElement();
 
-        accountMenu.menuAboutToShow(manager, account);
+        if (transaction != null)
+        {
+            Action action = createEditAction(account, transaction);
+            action.setAccelerator(SWT.MOD1 | 'E');
+            manager.add(action);
+            manager.add(new Separator());
+        }
 
-        boolean hasTransactionSelected = ((IStructuredSelection) transactions.getSelection()).getFirstElement() != null;
-        if (hasTransactionSelected)
+        accountMenu.menuAboutToShow(manager, account, transaction != null ? transaction.getSecurity() : null);
+
+        if(!selection.isEmpty())
+        {
+            fillTransactionsContextMenuList(manager, selection);
+        }
+        
+        if (transaction != null)
         {
             manager.add(new Separator());
+            
             manager.add(new Action(Messages.AccountMenuDeleteTransaction)
             {
                 @Override
@@ -585,10 +687,108 @@ public class AccountListView extends AbstractListView implements ModificationLis
                         account.deleteTransaction((AccountTransaction) transaction, getClient());
 
                     markDirty();
+                    transaction2balance.clear();
+                    updateBalance(account);
                     accounts.refresh();
                     transactions.setInput(account.getTransactions());
                 }
             });
+        }
+    }
+    
+    private void fillTransactionsContextMenuList(IMenuManager manager, IStructuredSelection selection)
+    {
+        // create collection with all selected transactions
+        Collection<AccountTransaction> accountTxCollection = new ArrayList<>(selection.size());
+        Iterator<?> it = selection.iterator();
+        while (it.hasNext())
+        {
+            accountTxCollection.add((AccountTransaction) it.next());
+        }
+
+        // check if all transaction are transfer actions
+        boolean allTransfer = true;
+        for (AccountTransaction tx : accountTxCollection)
+        {
+
+            allTransfer &= tx.getType() == AccountTransaction.Type.TRANSFER_IN
+                            || tx.getType() == AccountTransaction.Type.TRANSFER_OUT;
+        }
+
+        // create action to split transfer action into deposit/removal
+        if (allTransfer)
+        {
+            manager.add(new Separator());
+            manager.add(new ConvertTransferToDepositRemovalAction(getClient(), accountTxCollection));
+        }
+    }
+
+    private Action createEditAction(Account account, AccountTransaction transaction)
+    {
+        // buy / sell
+        if (transaction.getCrossEntry() instanceof BuySellEntry)
+        {
+            BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transaction.getCrossEntry() instanceof AccountTransferEntry)
+        {
+            AccountTransferEntry entry = (AccountTransferEntry) transaction.getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransferDialog.class, d -> d.setEntry(entry));
+        }
+        else
+        {
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransactionDialog.class, d -> d.setTransaction(account, transaction)) //
+                            .parameters(transaction.getType());
+        }
+    }
+
+    private void updateOnAccountSelected(Account account)
+    {
+        updateBalance(account);
+        accountBalanceChart.updateChart(account, exchangeRateProviderFactory);
+    }
+
+    private void updateBalance(Account account)
+    {
+        transaction2balance.clear();
+        if (account == null)
+            return;
+
+        List<AccountTransaction> tx = new ArrayList<>(account.getTransactions());
+        Collections.sort(tx, new AccountTransaction.ByDateAmountTypeAndHashCode());
+
+        MutableMoney balance = MutableMoney.of(account.getCurrencyCode());
+        for (AccountTransaction t : tx)
+        {
+            switch (t.getType())
+            {
+                case DEPOSIT:
+                case INTEREST:
+                case DIVIDENDS:
+                case TAX_REFUND:
+                case SELL:
+                case TRANSFER_IN:
+                case FEES_REFUND:
+                    balance.add(t.getMonetaryAmount());
+                    break;
+                case REMOVAL:
+                case FEES:
+                case INTEREST_CHARGE:
+                case TAXES:
+                case BUY:
+                case TRANSFER_OUT:
+                    balance.subtract(t.getMonetaryAmount());
+                    break;
+                default:
+                    throw new IllegalArgumentException();
+            }
+
+            transaction2balance.put(t, balance.toMoney());
         }
     }
 }

@@ -6,8 +6,11 @@ public class Messages extends NLS
 {
     private static final String BUNDLE_NAME = "name.abuchen.portfolio.bootstrap.messages"; //$NON-NLS-1$
     public static String LabelCancel;
+    public static String LabelCloneWindow;
+    public static String LabelCloseWindow;
     public static String LabelNo;
     public static String LabelSaveAll;
+    public static String LabelSaveNone;
     public static String LabelYes;
     public static String MsgMinimumRequiredVersion;
     public static String SaveHandlerMsgSelectFileToSave;
@@ -21,5 +24,6 @@ public class Messages extends NLS
     }
 
     private Messages()
-    {}
+    {
+    }
 }

@@ -1,11 +1,5 @@
 package name.abuchen.portfolio.ui.wizards.client;
 
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
@@ -23,6 +17,12 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Text;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
 
 public class NewAccountPage extends AbstractWizardPage
 {
@@ -78,6 +78,7 @@ public class NewAccountPage extends AbstractWizardPage
                 {
                     Account currentAccount = new Account();
                     currentAccount.setName(acnName);
+                    currentAccount.setCurrencyCode(client.getBaseCurrency());
                     client.addAccount(currentAccount);
                     tViewer.refresh();
 
@@ -107,7 +108,7 @@ public class NewAccountPage extends AbstractWizardPage
             @Override
             public Image getImage(Object element)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                return Images.ACCOUNT.image();
             }
         });
         container.pack();

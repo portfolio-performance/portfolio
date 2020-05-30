@@ -1,9 +1,12 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.Comparator;
 
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
 
 public class AssetPosition
 {
@@ -12,46 +15,61 @@ public class AssetPosition
         @Override
         public int compare(AssetPosition p1, AssetPosition p2)
         {
-            return p1.getDescription().compareTo(p2.getDescription());
+            return p1.getDescription().compareToIgnoreCase(p2.getDescription());
         }
     }
 
-    private final InvestmentVehicle investmentVehicle;
     private final SecurityPosition position;
-    private final long valuation;
-    private final long totalAssets;
+    private final CurrencyConverter converter;
+    private final LocalDate date;
+    private final Money totalAssets;
+    private final Money valuation;
 
-    /* package */AssetPosition(InvestmentVehicle investmentVehicle, SecurityPosition position, long totalAssets)
+    /* package */ AssetPosition(SecurityPosition position, CurrencyConverter converter, LocalDate date,
+                    Money totalAssets)
     {
         this.position = position;
-        this.investmentVehicle = investmentVehicle;
+        this.converter = converter;
+        this.date = date;
         this.totalAssets = totalAssets;
         this.valuation = position.calculateValue();
     }
 
-    public long getValuation()
+    public Money getValuation()
     {
-        return this.valuation;
+        return converter.convert(date, valuation);
     }
 
     public double getShare()
     {
-        return (double) getValuation() / (double) this.totalAssets;
+        return (double) getValuation().getAmount() / (double) this.totalAssets.getAmount();
     }
 
-    public long getFIFOPurchaseValue()
+    public Money getFIFOPurchaseValue()
     {
-        return position.getFIFOPurchaseValue();
+        return position.getFIFOPurchaseValue(converter.getTermCurrency());
     }
 
-    public long getProfitLoss()
+    public Money getMovingAveragePurchaseValue()
     {
-        return position.getProfitLoss();
+        return position.getMovingAveragePurchaseValue(converter.getTermCurrency());
+    }
+
+    public Money getProfitLoss()
+    {
+        // calculate profit/loss on the converted values to avoid rounding
+        // differences that can happen when converting the profit/loss value
+        // from the base currency
+
+        if (position.getInvestmentVehicle() instanceof Security)
+            return getValuation().subtract(getFIFOPurchaseValue());
+        else
+            return Money.of(converter.getTermCurrency(), 0);
     }
 
     public String getDescription()
     {
-        return investmentVehicle != null ? investmentVehicle.getName() : position.getSecurity().getName();
+        return position.getInvestmentVehicle().getName();
     }
 
     public Security getSecurity()
@@ -66,6 +84,15 @@ public class AssetPosition
 
     public InvestmentVehicle getInvestmentVehicle()
     {
-        return investmentVehicle;
+        return position.getInvestmentVehicle();
     }
+
+    @SuppressWarnings("nls")
+    @Override
+    public String toString()
+    {
+        return "AssetPosition [" + position.getInvestmentVehicle() + ", date=" + date + ", valuation=" + valuation
+                        + "]";
+    }
+
 }

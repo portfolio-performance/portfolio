@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.ResourceBundle;
 
 public class SecurityEvent
@@ -11,13 +11,14 @@ public class SecurityEvent
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
+        @Override
         public String toString()
         {
             return RESOURCES.getString("event." + name()); //$NON-NLS-1$
         }
     }
 
-    private Date date;
+    private LocalDate date;
     private Type type;
     private String details;
 
@@ -26,14 +27,14 @@ public class SecurityEvent
         // xstream
     }
 
-    public SecurityEvent(Date date, Type type, String details)
+    public SecurityEvent(LocalDate date, Type type, String details)
     {
         this.date = date;
         this.type = type;
         this.details = details;
     }
 
-    public Date getDate()
+    public LocalDate getDate()
     {
         return date;
     }

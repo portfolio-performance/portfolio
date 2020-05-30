@@ -1,8 +1,9 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
+import name.abuchen.portfolio.money.Money;
 
 public class BuySellEntry implements CrossEntry, Annotated
 {
@@ -32,15 +33,25 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.portfolio = portfolio;
     }
 
+    public Portfolio getPortfolio()
+    {
+        return this.portfolio;
+    }
+
     public void setAccount(Account account)
     {
         this.account = account;
     }
 
-    public void setDate(Date date)
+    public Account getAccount()
     {
-        this.portfolioTransaction.setDate(date);
-        this.accountTransaction.setDate(date);
+        return this.account;
+    }
+
+    public void setDate(LocalDateTime date)
+    {
+        this.portfolioTransaction.setDateTime(date);
+        this.accountTransaction.setDateTime(date);
     }
 
     public void setType(Type type)
@@ -66,14 +77,16 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setAmount(amount);
     }
 
-    public void setFees(long fees)
+    public void setCurrencyCode(String currencyCode)
     {
-        this.portfolioTransaction.setFees(fees);
+        this.portfolioTransaction.setCurrencyCode(currencyCode);
+        this.accountTransaction.setCurrencyCode(currencyCode);
     }
 
-    public void setTaxes(long taxes)
+    public void setMonetaryAmount(Money amount)
     {
-        this.portfolioTransaction.setTaxes(taxes);
+        this.portfolioTransaction.setMonetaryAmount(amount);
+        this.accountTransaction.setMonetaryAmount(amount);
     }
 
     @Override
@@ -89,6 +102,7 @@ public class BuySellEntry implements CrossEntry, Annotated
         this.accountTransaction.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         portfolio.addTransaction(portfolioTransaction);
@@ -100,18 +114,14 @@ public class BuySellEntry implements CrossEntry, Annotated
     {
         if (t == accountTransaction)
         {
-            portfolioTransaction.setDate(accountTransaction.getDate());
+            portfolioTransaction.setDateTime(accountTransaction.getDateTime());
             portfolioTransaction.setSecurity(accountTransaction.getSecurity());
-            portfolioTransaction.setAmount(accountTransaction.getAmount());
-            portfolioTransaction.setType(PortfolioTransaction.Type.valueOf(accountTransaction.getType().name()));
             portfolioTransaction.setNote(accountTransaction.getNote());
         }
         else if (t == portfolioTransaction)
         {
-            accountTransaction.setDate(portfolioTransaction.getDate());
+            accountTransaction.setDateTime(portfolioTransaction.getDateTime());
             accountTransaction.setSecurity(portfolioTransaction.getSecurity());
-            accountTransaction.setAmount(portfolioTransaction.getAmount());
-            accountTransaction.setType(AccountTransaction.Type.valueOf(portfolioTransaction.getType().name()));
             accountTransaction.setNote(portfolioTransaction.getNote());
         }
         else
@@ -121,7 +131,7 @@ public class BuySellEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getOwner(Transaction t)
     {
         if (t.equals(portfolioTransaction))
             return portfolio;
@@ -130,6 +140,17 @@ public class BuySellEntry implements CrossEntry, Annotated
         else
             throw new UnsupportedOperationException();
 
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (t.equals(portfolioTransaction) && owner instanceof Portfolio)
+            portfolio = (Portfolio) owner;
+        else if (t.equals(accountTransaction) && owner instanceof Account)
+            account = (Account) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override
@@ -144,7 +165,7 @@ public class BuySellEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossOwner(Transaction t)
     {
         if (t.equals(portfolioTransaction))
             return account;

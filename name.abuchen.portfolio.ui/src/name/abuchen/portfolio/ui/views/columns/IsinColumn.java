@@ -2,16 +2,16 @@ package name.abuchen.portfolio.ui.views.columns;
 
 import java.text.MessageFormat;
 
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.swt.SWT;
+
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.util.Isin;
-
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.swt.SWT;
 
 public class IsinColumn extends Column
 {
@@ -21,14 +21,14 @@ public class IsinColumn extends Column
         public boolean canEdit(Object element)
         {
             Security s = Adaptor.adapt(Security.class, element);
-            return s != null;
+            return s != null && !s.isExchangeRate() && s.getOnlineId() == null;
         }
 
         @Override
         public Object getValue(Object element)
         {
             Security s = Adaptor.adapt(Security.class, element);
-            return s.getIsin();
+            return s.getIsin() != null ? s.getIsin() : ""; //$NON-NLS-1$
         }
 
         @Override

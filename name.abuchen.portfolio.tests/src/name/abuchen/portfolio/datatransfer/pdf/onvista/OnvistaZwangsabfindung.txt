@@ -1,0 +1,39 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Zwangsabfindung ADRESSZEILE1=Herr
+Abrechnung ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstr. 2
+ADRESSZEILE4=54321 Musterhausen
+Herr ADRESSZEILE5=
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstr. 2 BELEGNUMMER=56
+54321 Musterhausen 173458000 79573870 / 21.09.2015 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Frankfurt am Main, 21.09.2015
+Ausbuchung:
+Gattungsbezeichnung ISIN
+Sky Deutschland AG Namens-Aktien o.N. DE000SKYD000
+Nominal Ex-Tag
+STK 25,000 22.09.2015
+Verwahrart
+Girosammelverwahrung
+Barausgleich:
+Abfindung zu:
+EUR 6,680000
+Barausgleich EUR 167,00 
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+22.09.2015 172306238 EUR 167,00
+Zwangsabfindung gemäß Hauptversammlungsbeschluss vom 22. Juli 2015. Der Übertragungsbeschluss wurde am 15.
+September 2015 in das Handelsregister eingetragen. Weitere Informationen erhalten Sie im elektronischen Bundesanzeiger
+vom 18.09.2015.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.18/ABREEREIABZWUB/GDBVKAPU/000056/210915/235546

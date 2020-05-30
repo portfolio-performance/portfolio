@@ -1,0 +1,43 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Kapitalerhöhung ADRESSZEILE2=Max MustermannADRESSZEILE3=Musterstr. 2
+gegen Bareinzahlung ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+Durchführungsanzeige  ADRESSZEILE6=
+Herr BELEGNUMMER=878SEITENNUMMER=1
+Max Mustermann
+Depot-Nr. Ausführungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 173458000 93853107 / 06.04.2011
+Depotinhaber
+Max Mustermann
+  
+ Frankfurt am Main, 06.04.2011
+ 
+Ihr Depotbestand:    
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE0008032004
+Nominal
+STK 25,000
+Verwahrart
+Girosammelverwahrung
+ 
+Einbuchung:   
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Erwerbsrechte DE000A1KRJ01
+Nominal
+STK 25,000
+Verwahrart
+Girosammelverwahrung
+ 
+    
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.30/DUANDEREEREIKAPMKPEB/GDBVKAPU/000878/060411/230217

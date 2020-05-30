@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class MissingBuySellPortfolioIssue extends AbstractAccountIssue
 {
@@ -40,13 +41,12 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
         public void execute()
         {
             BuySellEntry entry = new BuySellEntry(portfolio, account);
-            entry.setDate(transaction.getDate());
+            entry.setDate(transaction.getDateTime());
             entry.setType(PortfolioTransaction.Type.valueOf(transaction.getType().name()));
             entry.setSecurity(transaction.getSecurity());
-            entry.setShares(1);
-            entry.setFees(0);
-            entry.setTaxes(0);
+            entry.setShares(Values.Share.factor());
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
             entry.insert();
 
             account.getTransactions().remove(transaction);

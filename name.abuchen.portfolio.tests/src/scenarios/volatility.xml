@@ -587,12 +587,6 @@
         <price t="2014-12-30" v="5826"/>
         <price t="2014-12-31" v="5826"/>
       </prices>
-      <latest t="2015-02-20" v="6093">
-        <high>6116</high>
-        <low>6026</low>
-        <volume>4509824</volume>
-        <previousClose>6077</previousClose>
-      </latest>
       <events/>
       <isRetired>false</isRetired>
     </security>

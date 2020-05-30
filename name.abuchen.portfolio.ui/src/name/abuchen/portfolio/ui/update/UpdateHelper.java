@@ -1,285 +1,180 @@
 package name.abuchen.portfolio.ui.update;
 
-import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.List;
-
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.IniFileManipulator;
+import java.util.Arrays;
+import java.util.Locale;
 
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.OperationCanceledException;
-import org.eclipse.core.runtime.Platform;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.core.runtime.SubMonitor;
-import org.eclipse.e4.ui.workbench.IWorkbench;
-import org.eclipse.e4.ui.workbench.modeling.EPartService;
 import org.eclipse.equinox.p2.core.IProvisioningAgent;
+import org.eclipse.equinox.p2.core.ProvisionException;
 import org.eclipse.equinox.p2.engine.IProfile;
 import org.eclipse.equinox.p2.engine.IProfileRegistry;
 import org.eclipse.equinox.p2.operations.ProvisioningJob;
 import org.eclipse.equinox.p2.operations.ProvisioningSession;
 import org.eclipse.equinox.p2.operations.Update;
 import org.eclipse.equinox.p2.operations.UpdateOperation;
+import org.eclipse.equinox.p2.repository.IRepositoryManager;
 import org.eclipse.equinox.p2.repository.artifact.IArtifactRepositoryManager;
 import org.eclipse.equinox.p2.repository.metadata.IMetadataRepositoryManager;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.ErrorDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.StyleRange;
-import org.eclipse.swt.custom.StyledText;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 
-public class UpdateHelper
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.ui.UIConstants;
+
+public final class UpdateHelper
 {
-    private class NewVersion
+    private interface Task
     {
-        private String version;
-        private String description;
-        private String minimumJavaVersionRequired;
-        private String updateNotSupportedOSList;
-        private String updateNotSupportedOSMessage;
-
-        public NewVersion(String version)
-        {
-            this.version = version;
-        }
-
-        public String getVersion()
-        {
-            return version;
-        }
-
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public void setDescription(String description)
-        {
-            this.description = description;
-        }
-
-        public void setMinimumJavaVersionRequired(String minimumJavaVersionRequired)
-        {
-            this.minimumJavaVersionRequired = minimumJavaVersionRequired;
-        }
-
-        public void setUpdateNotSupportedOSList(String updateNotSupportedOSList)
-        {
-            this.updateNotSupportedOSList = updateNotSupportedOSList;
-        }
-
-        public void setUpdateNotSupportedOSMessage(String updateNotSupportedOSMessage)
-        {
-            this.updateNotSupportedOSMessage = updateNotSupportedOSMessage;
-        }
-
-        public String getUpdateNotSupportedOSMessage()
-        {
-            return updateNotSupportedOSMessage;
-        }
-
-        public boolean requiresNewJavaVersion()
-        {
-            if (minimumJavaVersionRequired == null)
-                return false;
-
-            double current = parseJavaVersion(System.getProperty("java.version")); //$NON-NLS-1$
-            double required = parseJavaVersion(minimumJavaVersionRequired);
-
-            return required > current;
-        }
-
-        private double parseJavaVersion(String version)
-        {
-            int pos = 0;
-            for (int count = 0; pos < version.length() && count < 2; pos++)
-                if (version.charAt(pos) == '.')
-                    count++;
-
-            if (pos < version.length()) // exclude second dot from parsing
-                pos--;
-
-            return Double.parseDouble(version.substring(0, pos));
-        }
-
-        public boolean isUpdateOnOSSupported()
-        {
-            if (updateNotSupportedOSList == null)
-                return true;
-
-            String[] list = updateNotSupportedOSList.split(","); //$NON-NLS-1$
-            String currentOS = Platform.getOS();
-            for (String os : list)
-                if (currentOS.equals(os))
-                    return false;
-
-            return true;
-        }
+        public void run(IProgressMonitor monitor) throws CoreException;
     }
 
-    private final IWorkbench workbench;
-    private final EPartService partService;
-    private final IProvisioningAgent agent;
+    private static final String VERSION_HISTORY = "version.history"; //$NON-NLS-1$
+    private static final String HEADER = "header"; //$NON-NLS-1$
+    private static final String PREVENT_UPDATE_CONDITION_PREFIX = "latest.changes.preventUpdate."; //$NON-NLS-1$
+
+    private IProvisioningAgent agent;
     private UpdateOperation operation;
 
-    public UpdateHelper(IWorkbench workbench, EPartService partService) throws CoreException
+    public void runUpdateWithUIMonitor()
     {
-        this.workbench = workbench;
-        this.partService = partService;
-        this.agent = (IProvisioningAgent) getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
-
-        IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
-
-        IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
-        if (profile == null)
-        {
-            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
-            throw new CoreException(status);
-        }
+        runWithUIMonitor(monitor -> runUpdate(monitor, false));
     }
 
-    public void runUpdate(IProgressMonitor monitor, boolean silent) throws OperationCanceledException, CoreException
+    public void runUpdate(IProgressMonitor monitor, boolean silent) throws CoreException
     {
         SubMonitor sub = SubMonitor.convert(monitor, Messages.JobMsgCheckingForUpdates, 200);
+
+        checkForLetsEncryptRootCertificate(silent);
+
+        configureProvisioningAgent();
 
         final NewVersion newVersion = checkForUpdates(sub.newChild(100));
         if (newVersion != null)
         {
             final boolean[] doUpdate = new boolean[1];
-            Display.getDefault().syncExec(new Runnable()
-            {
-                public void run()
-                {
-                    Dialog dialog = new ExtendedMessageDialog(Display.getDefault().getActiveShell(),
-                                    Messages.LabelUpdatesAvailable, //
-                                    MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
-                                    newVersion);
+            Display.getDefault().syncExec(() -> {
+                Dialog dialog = new UpdateMessageDialog(Display.getDefault().getActiveShell(),
+                                Messages.LabelUpdatesAvailable, //
+                                MessageFormat.format(Messages.MsgConfirmInstall, newVersion.getVersion()), //
+                                newVersion);
 
-                    doUpdate[0] = dialog.open() == 0;
-                }
+                doUpdate[0] = dialog.open() == 0;
             });
 
             if (doUpdate[0])
             {
-                // update operation must
-                // * remember the current local setting (as it will be reset by
-                // the update operation to the default configuration)
-                // * update the bundles using p2
-                // * set the -clearPersistedState flag so that (possible)
-                // changes to the Application.e4xmi are applied
-                // * update the locale setting to what the user previously
-                // selected
-                // * prompt for restart
+                if (silent)
+                {
+                    // if the update check was started silently in the
+                    // background, but the user has chosen to update, show a
+                    // meaningful progress monitor
 
-                String currentLocale = getCurrentLocaleSetting();
-                runUpdateOperation(sub.newChild(100));
-                updateIniFile(currentLocale);
-                promptForRestart();
+                    runWithUIMonitor(m -> {
+                        runUpdateOperation(m);
+                        promptForRestart();
+                    });
+                }
+                else
+                {
+                    runUpdateOperation(sub.newChild(100));
+                    promptForRestart();
+                }
             }
         }
         else
         {
             if (!silent)
             {
-                Display.getDefault().asyncExec(new Runnable()
-                {
-                    public void run()
-                    {
-                        MessageDialog.openInformation(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                        Messages.MsgNoUpdatesAvailable);
-                    }
-                });
+                Display.getDefault()
+                                .asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                                                Messages.LabelInfo, Messages.MsgNoUpdatesAvailable));
             }
         }
+    }
+
+    private void checkForLetsEncryptRootCertificate(boolean silent) throws CoreException
+    {
+        // if the java version is too old, the Let's Encrypt certificate is not
+        // trusted. Unfortunately, the exception is only printed to the log and
+        // propagated up. This checks upfront. As PP does not run on 1.7, we do
+        // not check for the 1.7 version with the certificate.
+
+        try
+        {
+            String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
+
+            int p = javaVersion.indexOf('-');
+            if (p >= 0)
+                javaVersion = javaVersion.substring(0, p);
+
+            String[] digits = javaVersion.split("[\\._]"); //$NON-NLS-1$
+            if (digits.length < 4)
+                return;
+
+            int majorVersion = Integer.parseInt(digits[0]);
+            if (majorVersion > 1)
+                return;
+
+            int minorVersion = Integer.parseInt(digits[1]);
+            if (minorVersion > 8)
+                return;
+
+            int patchVersion = Integer.parseInt(digits[2]);
+            if (patchVersion > 0)
+                return;
+
+            int updateNumber = Integer.parseInt(digits[3]);
+            if (updateNumber >= 101)
+                return;
+
+            CoreException exception = new CoreException(new Status(IStatus.ERROR,
+                            PortfolioPlugin.PLUGIN_ID,
+                            MessageFormat.format(Messages.MsgJavaVersionTooOldForLetsEncrypt, javaVersion)));
+
+            if (silent)
+                PortfolioPlugin.log(exception);
+            else
+                throw exception;
+
+        }
+        catch (NumberFormatException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+
     }
 
     private void promptForRestart()
     {
-        Display.getDefault().asyncExec(new Runnable()
-        {
-            public void run()
-            {
-                MessageDialog dialog = new MessageDialog(Display.getDefault().getActiveShell(), Messages.LabelInfo,
-                                null, Messages.MsgRestartRequired, MessageDialog.INFORMATION, //
-                                new String[] { Messages.BtnLabelRestartNow, Messages.BtnLabelRestartLater }, 0);
+        // automatic restarting seems to have to many problems with users out
+        // there in the wild. Instead, we just open a dialog to inform the user
+        // that a restart is required.
 
-                int returnCode = dialog.open();
-
-                if (returnCode == 0)
-                {
-                    boolean successful = partService.saveAll(true);
-
-                    if (successful)
-                        workbench.restart();
-                }
-            }
-        });
+        Display.getDefault().asyncExec(() -> MessageDialog.openInformation(Display.getDefault().getActiveShell(),
+                        Messages.LabelInfo, Messages.MsgRestartRequired));
     }
 
-    private String getCurrentLocaleSetting()
+    private NewVersion checkForUpdates(IProgressMonitor monitor) throws CoreException
     {
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-            return m.getLanguage();
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-            return null;
-        }
-    }
-
-    private void updateIniFile(String locale)
-    {
-        try
-        {
-            IniFileManipulator m = new IniFileManipulator();
-            m.load();
-            m.setClearPersistedState();
-
-            if (locale == null)
-                m.clearLanguage();
-            else
-                m.setLanguage(locale);
-
-            if (m.isDirty())
-                m.save();
-
-            PortfolioPlugin.log("Set -clearPersistedState flag to " + m.getIniFile().toAbsolutePath().toString()); //$NON-NLS-1$
-        }
-        catch (IOException ignore)
-        {
-            PortfolioPlugin.log(ignore);
-        }
-    }
-
-    private NewVersion checkForUpdates(IProgressMonitor monitor) throws OperationCanceledException, CoreException
-    {
-        loadRepository(agent);
-
         ProvisioningSession session = new ProvisioningSession(agent);
         operation = new UpdateOperation(session);
+
+        configureRepositories(monitor);
 
         IStatus status = operation.resolveModal(monitor);
 
@@ -302,25 +197,109 @@ public class UpdateHelper
         else
         {
             NewVersion v = new NewVersion(update.replacement.getVersion().toString());
-            v.setDescription(update.replacement.getProperty("latest.changes.description", null)); //$NON-NLS-1$
-            v.setMinimumJavaVersionRequired(update.replacement.getProperty(
-                            "latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
-            v.setUpdateNotSupportedOSList(update.replacement.getProperty("latest.changes.notSupportedOSList", null)); //$NON-NLS-1$
-            v.setUpdateNotSupportedOSMessage(update.replacement.getProperty("latest.changes.notSupportedOSMessage", //$NON-NLS-1$
-                            null));
+            v.setMinimumJavaVersionRequired(
+                            update.replacement.getProperty("latest.changes.minimumJavaVersionRequired", null)); //$NON-NLS-1$
+
+            // try for locale first
+            String history = update.replacement.getProperty( //
+                            VERSION_HISTORY + "_" + Locale.getDefault().getLanguage(), null); //$NON-NLS-1$
+            if (history == null)
+                history = update.replacement.getProperty(VERSION_HISTORY, null);
+            if (history != null)
+                v.setVersionHistory(history);
+
+            // header
+            String header = update.replacement.getProperty(HEADER + "_" + Locale.getDefault().getLanguage(), null); //$NON-NLS-1$
+            if (header == null)
+                header = update.replacement.getProperty(HEADER, null);
+            if (header != null)
+                v.setHeader(header);
+
+            int index = 0;
+            while (true)
+            {
+                String condition = update.replacement.getProperty(PREVENT_UPDATE_CONDITION_PREFIX + index);
+                if (condition == null)
+                    break;
+                v.addPreventUpdateCondition(condition);
+
+                index++;
+            }
+
             return v;
         }
     }
 
-    private void runUpdateOperation(IProgressMonitor monitor) throws OperationCanceledException, CoreException
+    private void configureProvisioningAgent() throws CoreException
+    {
+        this.agent = getService(IProvisioningAgent.class, IProvisioningAgent.SERVICE_NAME);
+        if (agent == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
+
+        IProfileRegistry profileRegistry = (IProfileRegistry) agent.getService(IProfileRegistry.SERVICE_NAME);
+
+        IProfile profile = profileRegistry.getProfile(IProfileRegistry.SELF);
+        if (profile == null)
+        {
+            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, Messages.MsgNoProfileFound);
+            throw new CoreException(status);
+        }
+    }
+
+    private void configureRepositories(IProgressMonitor monitor)
+    {
+        try
+        {
+            String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
+                            .getString(UIConstants.Preferences.UPDATE_SITE);
+            URI uri = new URI(updateSite);
+
+            IMetadataRepositoryManager manager = (IMetadataRepositoryManager) agent
+                            .getService(IMetadataRepositoryManager.SERVICE_NAME);
+            IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent
+                            .getService(IArtifactRepositoryManager.SERVICE_NAME);
+
+            // remove all repos, this is important if the update site in
+            // preferences has been changed
+            final URI[] metaReposToClean = manager.getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
+            Arrays.stream(metaReposToClean).forEach(manager::removeRepository);
+            final URI[] artifactReposToClean = artifactManager
+                            .getKnownRepositories(IRepositoryManager.REPOSITORIES_ALL);
+            Arrays.stream(artifactReposToClean).forEach(artifactManager::removeRepository);
+
+            manager.addRepository(uri);
+            artifactManager.addRepository(uri);
+
+            // Working around bug
+            // https://bugs.eclipse.org/bugs/show_bug.cgi?id=520461
+            // by forcing a refresh of the repositories.
+            // p2 never tries to reconnect if a connection timeout happened like
+            // described in
+            // https://github.com/buchen/portfolio/issues/578#issuecomment-251653225
+            manager.refreshRepository(uri, monitor);
+            artifactManager.refreshRepository(uri, monitor);
+        }
+        catch (final URISyntaxException | ProvisionException e)
+        {
+            PortfolioPlugin.log(e);
+        }
+    }
+
+    private void runUpdateOperation(IProgressMonitor monitor) throws CoreException
     {
         if (operation == null)
             checkForUpdates(monitor);
 
         ProvisioningJob job = operation.getProvisioningJob(null);
         IStatus status = job.runModal(monitor);
+
         if (status.getSeverity() == IStatus.CANCEL)
             throw new OperationCanceledException();
+        if (status.getSeverity() != IStatus.OK)
+            throw new CoreException(status);
     }
 
     private <T> T getService(Class<T> type, String name)
@@ -334,129 +313,34 @@ public class UpdateHelper
         return type.cast(result);
     }
 
-    private void loadRepository(IProvisioningAgent agent) throws CoreException
+    private void runWithUIMonitor(Task task)
     {
-        IMetadataRepositoryManager repositoryManager = (IMetadataRepositoryManager) agent
-                        .getService(IMetadataRepositoryManager.SERVICE_NAME);
-
-        IArtifactRepositoryManager artifactManager = (IArtifactRepositoryManager) agent
-                        .getService(IArtifactRepositoryManager.SERVICE_NAME);
-
-        // first: remove existing repositories (preferences might have changed)
-        for (URI r : repositoryManager.getKnownRepositories(IMetadataRepositoryManager.REPOSITORIES_ALL))
-            repositoryManager.removeRepository(r);
-
-        for (URI r : artifactManager.getKnownRepositories(IArtifactRepositoryManager.REPOSITORIES_ALL))
-            artifactManager.removeRepository(r);
-
-        // second: add repository as configured in preferences
-        try
-        {
-            String updateSite = PortfolioPlugin.getDefault().getPreferenceStore()
-                            .getString(PortfolioPlugin.Preferences.UPDATE_SITE);
-            URI repoLocation = new URI(updateSite);
-            repositoryManager.loadRepository(repoLocation, null);
-            artifactManager.loadRepository(repoLocation, null);
-        }
-        catch (URISyntaxException e)
-        {
-            IStatus status = new Status(IStatus.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
-            throw new CoreException(status);
-        }
-    }
-
-    private static class ExtendedMessageDialog extends MessageDialog
-    {
-        private Button checkOnUpdate;
-        private NewVersion newVersion;
-
-        public ExtendedMessageDialog(Shell parentShell, String title, String message, NewVersion newVersion)
-        {
-            super(parentShell, title, null, message, CONFIRM, new String[] { IDialogConstants.OK_LABEL,
-                            IDialogConstants.CANCEL_LABEL }, 0);
-            this.newVersion = newVersion;
-        }
-
-        @Override
-        protected Control createCustomArea(Composite parent)
-        {
-            Composite container = new Composite(parent, SWT.NONE);
-            GridDataFactory.fillDefaults().grab(true, false).applyTo(container);
-            GridLayoutFactory.fillDefaults().numColumns(1).applyTo(container);
-
-            createText(container);
-
-            checkOnUpdate = new Button(container, SWT.CHECK);
-            checkOnUpdate.setSelection(PortfolioPlugin.getDefault().getPreferenceStore()
-                            .getBoolean(PortfolioPlugin.Preferences.AUTO_UPDATE));
-            checkOnUpdate.setText(Messages.PrefCheckOnStartup);
-            checkOnUpdate.addSelectionListener(new SelectionAdapter()
+        Display.getDefault().syncExec(() -> {
+            try
             {
-                @Override
-                public void widgetSelected(SelectionEvent e)
-                {
-                    PortfolioPlugin.getDefault().getPreferenceStore()
-                                    .setValue(PortfolioPlugin.Preferences.AUTO_UPDATE, checkOnUpdate.getSelection());
-                }
-            });
-            GridDataFactory.fillDefaults().grab(true, false);
-
-            return container;
-        }
-
-        @Override
-        protected Control createButtonBar(Composite parent)
-        {
-            Control control = super.createButtonBar(parent);
-
-            if (!newVersion.isUpdateOnOSSupported())
-            {
-                Button okButton = getButton(IDialogConstants.OK_ID);
-                if (okButton != null)
-                    okButton.setEnabled(false);
+                new ProgressMonitorDialog(Display.getDefault().getActiveShell()).run(true, true, m -> {
+                    try
+                    {
+                        task.run(m);
+                    }
+                    catch (CoreException e)
+                    {
+                        PortfolioPlugin.log(e);
+                        Display.getDefault()
+                                        .asyncExec(() -> ErrorDialog.openError(Display.getDefault().getActiveShell(),
+                                                        Messages.LabelError, Messages.MsgErrorUpdating, e.getStatus()));
+                    }
+                });
             }
-
-            return control;
-        }
-
-        private void createText(Composite container)
-        {
-            StyledText text = new StyledText(container, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY | SWT.BORDER);
-
-            List<StyleRange> ranges = new ArrayList<StyleRange>();
-
-            StringBuilder buffer = new StringBuilder();
-            if (!newVersion.isUpdateOnOSSupported())
+            catch (InvocationTargetException e)
             {
-                String message = newVersion.getUpdateNotSupportedOSMessage();
-                StyleRange style = new StyleRange();
-                style.start = buffer.length();
-                style.length = message.length();
-                style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
-                style.fontStyle = SWT.BOLD;
-                ranges.add(style);
-
-                buffer.append(message);
-                buffer.append("\n\n"); //$NON-NLS-1$
+                PortfolioPlugin.log(e);
             }
-
-            if (newVersion.requiresNewJavaVersion())
+            catch (InterruptedException e)
             {
-                StyleRange style = new StyleRange();
-                style.start = buffer.length();
-                style.length = Messages.MsgUpdateRequiresLatestJavaVersion.length();
-                style.foreground = Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED);
-                style.fontStyle = SWT.BOLD;
-                ranges.add(style);
-
-                buffer.append(Messages.MsgUpdateRequiresLatestJavaVersion);
-                buffer.append("\n\n"); //$NON-NLS-1$
+                PortfolioPlugin.log(e);
+                Thread.currentThread().interrupt();
             }
-
-            buffer.append(newVersion.getDescription());
-            text.setText(buffer.toString());
-            text.setStyleRanges(ranges.toArray(new StyleRange[0]));
-            GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
-        }
+        });
     }
 }

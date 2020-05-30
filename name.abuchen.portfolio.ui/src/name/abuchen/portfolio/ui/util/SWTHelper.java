@@ -1,8 +1,11 @@
 package name.abuchen.portfolio.ui.util;
 
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.graphics.Drawable;
+import org.eclipse.swt.graphics.FontMetrics;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
@@ -16,7 +19,8 @@ public final class SWTHelper
     public static final String EMPTY_LABEL = ""; //$NON-NLS-1$
 
     private SWTHelper()
-    {}
+    {
+    }
 
     /**
      * Returns the widest control. Used when layouting dialogs.
@@ -28,6 +32,9 @@ public final class SWTHelper
 
         for (int ii = 0; ii < widgets.length; ii++)
         {
+            if (widgets[ii] == null)
+                continue;
+
             int w = widgets[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
             if (w >= width)
             {
@@ -40,6 +47,26 @@ public final class SWTHelper
     }
 
     /**
+     * Returns the widest control. Used when layouting dialogs.
+     */
+    public static int widest(Control... widgets)
+    {
+        int width = 0;
+
+        for (int ii = 0; ii < widgets.length; ii++)
+        {
+            if (widgets[ii] == null)
+                continue;
+
+            int w = widgets[ii].computeSize(SWT.DEFAULT, SWT.DEFAULT).x;
+            if (w >= width)
+                width = w;
+        }
+
+        return width;
+    }
+
+    /**
      * Returns the width needed to display a date. Used when layouting dialogs.
      */
     public static int dateWidth(Drawable drawable)
@@ -48,6 +75,46 @@ public final class SWTHelper
         Point extentText = gc.stringExtent("YYYY-MM-DD"); //$NON-NLS-1$
         gc.dispose();
         return extentText.x;
+    }
+
+    /**
+     * Returns the width needed to display the sample string. Used when
+     * layouting dialogs.
+     */
+    public static int stringWidth(Drawable drawable, String sample)
+    {
+        GC gc = new GC(drawable);
+        Point extentText = gc.stringExtent(sample);
+        gc.dispose();
+        return extentText.x;
+    }
+
+    /**
+     * Returns the number of pixels needed to render one character.
+     */
+    public static int lineHeight(Control drawable)
+    {
+        GC gc = new GC(drawable);
+        gc.setFont(drawable.getFont());
+        FontMetrics fontMetrics = gc.getFontMetrics();
+        gc.dispose();
+        return fontMetrics.getHeight();
+    }
+
+    /**
+     * Returns the width needed to display a currency.
+     */
+    public static int amountWidth(Drawable drawable)
+    {
+        return stringWidth(drawable, "12345678,00"); //$NON-NLS-1$
+    }
+
+    /**
+     * Returns the width needed to display a currency.
+     */
+    public static int currencyWidth(Drawable drawable)
+    {
+        return stringWidth(drawable, "XXXX"); //$NON-NLS-1$
     }
 
     /**
@@ -90,33 +157,17 @@ public final class SWTHelper
             label.setText(EMPTY_LABEL);
     }
 
-    /**
-     * Sets the weights of the sash in such a way that the item (for example a
-     * details viewer) initially takes its actual size. In order to do that, we
-     * need to determine the size of the parent. The size of the parent might be
-     * zero if it never has been rendered before.
-     * 
-     * @param sash
-     *            the sash on which to set the weights
-     * @param parent
-     *            the parent composite that determines the full width available
-     * @param item
-     *            the item that shall be placed on the right
-     */
-    public static void setSashWeights(SashForm sash, Composite parent, Control item)
+    public static int getPackedWidth(Control item)
     {
         item.pack();
-        int childWidth = item.getBounds().width;
-
-        int parentWidth = parent.getBounds().width;
-        if (parentWidth == 0)
-        {
-            // #pack is required if parent has never been rendered before
-            parent.pack();
-            parentWidth = parent.getBounds().width;
-        }
-
-        sash.setWeights(new int[] { parentWidth - childWidth, childWidth });
+        return item.getBounds().width;
     }
 
+    public static ComboViewer createComboViewer(Composite parent)
+    {
+        if (Platform.OS_WIN32.equals(Platform.getOS()))
+            return new ComboViewer(new CCombo(parent, SWT.READ_ONLY | SWT.FLAT | SWT.BORDER));
+        else
+            return new ComboViewer(parent, SWT.READ_ONLY);
+    }
 }

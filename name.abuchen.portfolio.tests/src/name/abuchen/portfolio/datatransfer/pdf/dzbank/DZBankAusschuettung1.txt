@@ -1,0 +1,54 @@
+﻿PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+NIBC Direct Depotservice · Postfach 41 07 40 · 76207 Karlsruhe    Seite 1
+Depotnummer
+ 7000000000
+ Kundennummer 1000000
+Vornamen Nachnamen
+ Abrechnungsnr. 12345678900
+Vornamen Nachnamen Datum 30.12.2019
+Straße 5
+12345 Wohnort
+Ausschüttung Investmentfonds
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 100 VANGUARD FTSE ALL-WORLD U.ETF IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON
+Zahlbarkeitstag 27.12.2019 Ausschüttung pro St. 0,297309000 USD
+Bestandsstichtag 11.12.2019 mit Teilfreistellung (Aktien-
+Ex-Tag 12.12.2019 fonds) 0,208116300 USD
+Geschäftsjahr 01.07.2019 - 30.06.2020 Herkunftsland Irland
+Devisenkurs EUR / USD  1,1227
+Devisenkursdatum 30.12.2019
+Ausschüttung 29,73 USD 26,48+ EUR
+davon steuerfreier Anteil wg. Teilfreistellung 8,91 USD
+Kapitalertragsteuerpfl. Ertrag nach Teilfreistellung 20,82 USD
+Umrechnung in EUR 18,54 EUR
+Verrechneter Sparer-Pauschbetrag 9,68 - EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 8,86 EUR
+Kapitalertragsteuer 24,51 % auf 8,86 EUR 2,17- EUR
+Solidaritätszuschlag 5,5 % auf 2,17 EUR 0,11- EUR
+Kirchensteuer 8 % auf 2,17 EUR 0,17- EUR
+Ausmachender Betrag 24,03+ EUR
+Lagerstelle CBL w/12345 w/DZ Bank (234567 / 34567)
+Den Betrag buchen wir mit Wertstellung 31.12.2019 zu Gunsten des Kontos 8000000000 (IBAN DE12 0000 0000 8000
+0000 00), BLZ 512 107 00 (BIC NZFMDEF1XXX). 
+Keine Steuerbescheinigung. 
+Bitte ggf. Rückseite beachten.
+1234.12345678.0000123AB12
+
+Seite 2
+Depotnummer 7000000000
+Kundennummer 1000000
+Abrechnungsnr. 80000000000
+Datum 30.12.2019
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2019 Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 9,68 0,00 0,00
+Ertrag 0,00 0,00 9,68- 0,00 8,86
+Nachher 0,00 0,00 0,00 0,00 8,86
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.0000123AB12

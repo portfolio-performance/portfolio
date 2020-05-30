@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.checks.impl;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.model.Account;
@@ -21,9 +21,9 @@ import name.abuchen.portfolio.model.Client;
     }
 
     @Override
-    public Date getDate()
+    public LocalDate getDate()
     {
-        return transaction.getDate();
+        return transaction.getDateTime().toLocalDate();
     }
 
     @Override

@@ -1,0 +1,36 @@
+PDF Author: 'ING-DiBa'
+PDFBox Version: 1.8.16
+-----------------------------------------
+ING-DiBa AG · 60628 Frankfurt am Main
+Depotinhaber: Max Mustermann
+Frau Direkt-Depot Nr.: 0123456789
+Marta Mustermann Datum: 02.01.2019
+z. Hd. Eheleute Mustermann Seite: 1 von 2
+Musterstraße 20
+12345 Musterstadt
+Dividendengutschrift b. NV-Bescheinigung Nr. 1111111111111111
+ISIN (WKN) GB0007980591 (850517)
+Wertpapierbezeichnung BP PLC Registered Shares DL -,25
+Nominale 700,00 Stück
+Zins-/Dividendensatz 0,080251 GBP
+Ex-Tag 08.11.2018
+Zahltag 21.12.2018
+Brutto GBP 56,18
+Zwischensumme GBP 56,18
+Umg. z. Dev.-Kurs (0,908365) EUR 61,85
+Gesamtbetrag zu Ihren Gunsten EUR 61,85
+Abrechnungs-IBAN DE27 5001 0517 5551 9859 93
+Valuta 21.12.2018
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+ING-DiBa AG · Theodor-Heuss-Allee 2 · 60486 Frankfurt am Main · Vorsitzender des Aufsichtsrates: Dr. Claus Dieter Hoffmann · Vorstand: Nick Jue (Vorsitzender),
+Bernd Geilen (stellv. Vorsitzender), Zeljko Kaurin, Remco Nieland, Dr. Joachim von Schorlemer · Sitz: Frankfurt am Main · AG Frankfurt am Main HRB 7727,
+Steuernummer: 047 220 2800 4 · USt-IdNr.: DE 114 103 475 · Internet: www.ing.de · E-Mail: info@ing.de · BIC: INGDDEFFXXX · Mitglied im Einlagensicherungsfonds
+Depotinhaber: Marta Mustermann
+Direkt-Depot Nr.: 0123456789
+Datum: 02.01.2019
+Seite: 2 von 2
+ISIN (WKN) GB0007980591 (850517)
+KapSt-pflichtiger Kapitalertrag 61,85 EUR
+Die Abrechnung ist aus steuerlicher Sicht im Vorjahr einzuordnen
+Bei Fragen besuchen Sie uns einfach unter www.ing.de/wertpapierwissen - da gibt es viele schnelle
+Antworten. Oder senden Sie uns eine E-Mail an info@ing.de .

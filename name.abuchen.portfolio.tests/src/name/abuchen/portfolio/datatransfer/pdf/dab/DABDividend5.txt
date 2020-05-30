@@ -1,0 +1,19 @@
+DAB Bank
+Dividendengutschrift München, 28.03.2015
+Gattungsbezeichnung ISIN
+MTN Group Ltd. Registered Shares RC -,0001 ZAE000042164
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 1.300,000 23.03.2015 30.03.2015 ZAR 8,000000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+30.03.2015 0000000000 EUR/ZAR 13,195 EUR 586,80
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausländische Dividende EUR 788,18
+ausländische Quellensteuer 15% ZAR 1.560,00
+davon anrechenbare Quellensteuer 15% ZAR 1.560,00
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR 0,00 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 315,26
+einbehaltene Kapitalertragsteuer EUR 78,81
+einbehaltener Solidaritätszuschlag EUR 4,34

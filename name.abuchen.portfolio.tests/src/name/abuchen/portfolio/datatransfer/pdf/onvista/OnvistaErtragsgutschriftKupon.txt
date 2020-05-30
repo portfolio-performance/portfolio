@@ -1,0 +1,50 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+ EMAILVERSAND=N
+DEPOTNUMMER=173458000
+       DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+       ADRESSZEILE1=Herr
+Erträgnisgutschrift ADRESSZEILE2=Max MUSTERMANNADRESSZEILE3=Musterstr. 2
+aus Wertpapieren ADRESSZEILE4=54321 Musterhausen
+ADRESSZEILE5=
+Zinsen für ADRESSZEILE6=
+Herr  17.05.2010 - 16.11.2010 BELEGNUMMER=31SEITENNUMMER=1
+Max MUSTERMANN
+Depot-Nr. Abrechnungs-Nr. STEUERERSTATTUNG=N
+Musterstr. 2
+54321 Musterhausen 173458000 63302459 / 17.11.2010
+Depotinhaber
+Max MUSTERMANN
+  
+Kupongutschrift Frankfurt am Main, 17.11.2010
+  
+Gattungsbezeichnung Fälligkeit Zinstermin ISIN
+5,5% TUI AG Wandelanl.v.2009(2014) 17.11.2014 17.11.2010 DE000TUAG117
+Nominal Zahltag Zinssatz
+STK 1,000 17.11.2010 EUR 1,548250
+ 
+Wert  Konto-Nr. Betrag zu Ihren Gunsten  
+17.11.2010 172306238 EUR 1,14
+ 
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Aktienverlusttopf EUR              0,00                  0,00     
+allgemeiner Verlusttopf EUR              0,00                  0,00     
+Quellensteuertopf EUR              0,00                  0,00     
+zu versteuern  EUR              1,55     
+einbehaltene Kapitalertragsteuer EUR              0,39     
+einbehaltener Solidaritätszuschlag  EUR              0,02     
+ 
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR              0,39     
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR              0,02     
+ 
+Zahlungstag 17.11.2010
+ 
+Jahressteuerbescheinigung folgt  
+ 
+Verwahrart: Girosammelverwahrung
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.30/ABREEREIERTR/GDBERTRG/000031/171110/222807

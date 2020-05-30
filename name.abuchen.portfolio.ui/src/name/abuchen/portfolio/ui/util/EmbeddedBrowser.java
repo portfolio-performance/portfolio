@@ -6,14 +6,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
+import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.function.Consumer;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.util.TokenReplacingReader;
-
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.core.runtime.FileLocator;
 import org.eclipse.core.runtime.Path;
 import org.eclipse.core.runtime.Platform;
@@ -28,6 +24,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 import org.osgi.framework.Bundle;
+
+import com.google.common.base.Throwables;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.PortfolioPlugin;
+import name.abuchen.portfolio.util.TokenReplacingReader;
 
 public class EmbeddedBrowser
 {
@@ -54,6 +56,7 @@ public class EmbeddedBrowser
                 functions.accept(browser);
 
             browser.setText(loadHTML(htmlpage));
+            browser.addTraverseListener(event -> event.doit = true);
 
             Menu menu = new Menu(browser);
             browser.setMenu(menu);
@@ -63,7 +66,7 @@ public class EmbeddedBrowser
             // if creation of embedded browser fails, provide some hints
             PortfolioPlugin.log(e);
 
-            String stacktrace = ExceptionUtils.getStackTrace(e);
+            String stacktrace = Throwables.getStackTraceAsString(e);
 
             Text text = new Text(container, SWT.WRAP);
             GridDataFactory.fillDefaults().grab(true, true).applyTo(text);
@@ -82,16 +85,35 @@ public class EmbeddedBrowser
 
     private String loadHTML(String htmlpage)
     {
-        try (InputStream h = FileLocator.openStream(PortfolioPlugin.getDefault().getBundle(), //
-                        new Path(htmlpage), false))
+        Scanner scanner = null;
+
+        try (InputStream h = FileLocator.openStream(PortfolioPlugin.getDefault().getBundle(), new Path(htmlpage),
+                        false))
         {
-            return new Scanner(new TokenReplacingReader(new InputStreamReader(h, StandardCharsets.UTF_8),
-                            new PathResolver())).useDelimiter("\\Z").next(); //$NON-NLS-1$
+            try // NOSONAR
+            {
+                scanner = new Scanner(new TokenReplacingReader(new InputStreamReader(h, StandardCharsets.UTF_8),
+                                new PathResolver()));
+                return scanner.useDelimiter("\\Z").next(); //$NON-NLS-1$
+            }
+            finally
+            {
+                if (scanner != null)
+                    scanner.close();
+            }
         }
-        catch (IOException e)
+        catch (NoSuchElementException | IOException e)
         {
-            PortfolioPlugin.log(e);
-            return "<html><body><h1>Error: " + e.getMessage() + "</h1></body></html>"; //$NON-NLS-1$ //$NON-NLS-2$
+            // problem: the Scanner only throws a NoSuchElementException but
+            // hides the IOException that might hint to permission issues
+
+            Exception error = e;
+
+            if (scanner != null && scanner.ioException() != null)
+                error = scanner.ioException();
+
+            PortfolioPlugin.log(error);
+            return "<html><body><h1>" + error.getMessage() + "</h1></body></html>"; //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 
@@ -100,17 +122,16 @@ public class EmbeddedBrowser
         private Bundle bundle = PortfolioPlugin.getDefault().getBundle();
 
         @Override
-        public String resolveToken(String tokenName)
+        public String resolveToken(String tokenName) throws IOException
         {
             try
             {
                 URL fileURL = FileLocator.toFileURL(bundle.getEntry(tokenName));
                 return Platform.OS_WIN32.equals(Platform.getOS()) ? fileURL.getPath().substring(1) : fileURL.getPath();
             }
-            catch (NullPointerException | IOException e)
+            catch (NullPointerException e)
             {
-                PortfolioPlugin.log(e);
-                return tokenName;
+                throw new IOException(e);
             }
         }
     }

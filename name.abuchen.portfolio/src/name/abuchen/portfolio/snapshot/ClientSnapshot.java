@@ -1,71 +1,66 @@
 package name.abuchen.portfolio.snapshot;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.snapshot.filter.ReadOnlyAccount;
 
 public class ClientSnapshot
 {
-    // //////////////////////////////////////////////////////////////
-    // factory methods
-    // //////////////////////////////////////////////////////////////
+    private final CurrencyConverter converter;
+    private final LocalDate date;
 
-    public static ClientSnapshot create(Client client, Date time)
+    private List<AccountSnapshot> accounts = new ArrayList<>();
+    private List<PortfolioSnapshot> portfolios = new ArrayList<>();
+
+    private PortfolioSnapshot jointPortfolio;
+    private Money assets;
+
+    public static ClientSnapshot create(Client client, CurrencyConverter converter, LocalDate date)
     {
-        ClientSnapshot snapshot = new ClientSnapshot(client, time);
+        ClientSnapshot snapshot = new ClientSnapshot(converter, date);
 
         for (Account account : client.getAccounts())
-            snapshot.accounts.add(AccountSnapshot.create(account, time));
+            snapshot.accounts.add(AccountSnapshot.create(account, converter, date));
 
         for (Portfolio portfolio : client.getPortfolios())
-            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, time));
-
-        if (snapshot.portfolios.isEmpty())
-            snapshot.jointPortfolio = PortfolioSnapshot.create(new Portfolio(), time);
-        else if (snapshot.portfolios.size() == 1)
-            snapshot.jointPortfolio = snapshot.portfolios.get(0);
-        else
-            snapshot.jointPortfolio = PortfolioSnapshot.merge(snapshot.portfolios);
+            snapshot.portfolios.add(PortfolioSnapshot.create(portfolio, converter, date));
 
         return snapshot;
     }
 
-    // //////////////////////////////////////////////////////////////
-    // instance impl
-    // //////////////////////////////////////////////////////////////
-
-    private Client client;
-    private Date time;
-
-    private List<AccountSnapshot> accounts = new ArrayList<AccountSnapshot>();
-    private List<PortfolioSnapshot> portfolios = new ArrayList<PortfolioSnapshot>();
-    private PortfolioSnapshot jointPortfolio = null;
-
-    private ClientSnapshot(Client client, Date time)
+    private ClientSnapshot(CurrencyConverter converter, LocalDate date)
     {
-        this.client = client;
-        this.time = time;
+        this.converter = converter;
+        this.date = date;
     }
 
-    public Client getClient()
+    public String getCurrencyCode()
     {
-        return client;
+        return converter.getTermCurrency();
     }
 
-    public Date getTime()
+    public CurrencyConverter getCurrencyConverter()
     {
-        return time;
+        return converter;
+    }
+
+    public LocalDate getTime()
+    {
+        return date;
     }
 
     public List<AccountSnapshot> getAccounts()
@@ -80,20 +75,45 @@ public class ClientSnapshot
 
     public PortfolioSnapshot getJointPortfolio()
     {
-        return jointPortfolio;
+        if (this.jointPortfolio == null)
+        {
+            if (portfolios.isEmpty())
+            {
+                Portfolio portfolio = new Portfolio();
+                portfolio.setName(Messages.LabelJointPortfolio);
+                portfolio.setReferenceAccount(new Account(Messages.LabelJointPortfolio));
+                this.jointPortfolio = PortfolioSnapshot.create(portfolio, converter, date);
+            }
+            else if (portfolios.size() == 1)
+            {
+                this.jointPortfolio = portfolios.get(0);
+            }
+            else
+            {
+                this.jointPortfolio = PortfolioSnapshot.merge(portfolios, converter);
+            }
+        }
+
+        return this.jointPortfolio;
     }
 
-    public long getAssets()
+    public Money getMonetaryAssets()
     {
-        long assets = 0;
+        if (this.assets == null)
+        {
+            MutableMoney sum = MutableMoney.of(getCurrencyCode());
 
-        for (AccountSnapshot account : accounts)
-            assets += account.getFunds();
+            for (AccountSnapshot account : accounts)
+                sum.add(account.getFunds());
 
-        for (PortfolioSnapshot portfolio : portfolios)
-            assets += portfolio.getValue();
+            // use joint portfolio to reduce rounding errors if a security is
+            // split across multiple portfolio
+            sum.add(getJointPortfolio().getValue());
 
-        return assets;
+            this.assets = sum.toMoney();
+        }
+
+        return this.assets;
     }
 
     public GroupByTaxonomy groupByTaxonomy(Taxonomy taxonomy)
@@ -103,24 +123,26 @@ public class ClientSnapshot
 
     public Map<InvestmentVehicle, AssetPosition> getPositionsByVehicle()
     {
-        return getAssetPositions().collect(Collectors.toMap(AssetPosition::getInvestmentVehicle, v -> v));
+        return getAssetPositions().collect(Collectors.toMap(p -> {
+            InvestmentVehicle v = p.getInvestmentVehicle();
+            if (v instanceof ReadOnlyAccount)
+                return ((ReadOnlyAccount) v).unwrap();
+            else
+                return v;
+        }, v -> v));
     }
 
     public Stream<AssetPosition> getAssetPositions()
     {
-        List<AssetPosition> answer = new ArrayList<AssetPosition>();
+        List<AssetPosition> answer = new ArrayList<>();
 
-        long assets = getAssets();
+        Money monetaryAssets = getMonetaryAssets();
 
-        for (SecurityPosition p : jointPortfolio.getPositions())
-            answer.add(new AssetPosition(p.getSecurity(), p, assets));
+        for (SecurityPosition p : getJointPortfolio().getPositions())
+            answer.add(new AssetPosition(p, converter, date, monetaryAssets));
 
         for (AccountSnapshot a : accounts)
-        {
-            SecurityPosition sp = new SecurityPosition(new SecurityPrice(getTime(), a.getFunds()),
-                            Values.Share.factor());
-            answer.add(new AssetPosition(a.getAccount(), sp, assets));
-        }
+            answer.add(new AssetPosition(new SecurityPosition(a), converter, date, monetaryAssets));
 
         return answer.stream();
     }

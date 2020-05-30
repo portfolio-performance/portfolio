@@ -2,8 +2,10 @@ package name.abuchen.portfolio.model;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+
+import java.time.LocalDate;
+
 import name.abuchen.portfolio.SecurityBuilder;
-import name.abuchen.portfolio.util.Dates;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -26,67 +28,67 @@ public class SecurityPriceLookupTest
     @Test
     public void testLookupOfSecurityPrice()
     {
-        security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-05"), 5));
+        security.setLatest(new LatestSecurityPrice(LocalDate.parse("2014-11-05"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(2L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-04")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-05")).getValue(), is(5L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-06")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-10-31")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-01")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(2L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-04")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-05")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-06")).getValue(), is(5L));
     }
 
     @Test
     public void testLookupIfHistoricQuotesContainGaps()
     {
-        security.removePrice(security.getSecurityPrice(Dates.date("2014-11-02")));
+        security.removePrice(security.getSecurityPrice(LocalDate.parse("2014-11-02")));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-10-31")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-04")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-10-31")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-01")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-04")).getValue(), is(3L));
     }
 
     @Test
     public void preferLatestOverHistoricPrice()
     {
-        security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-03"), 5));
+        security.setLatest(new LatestSecurityPrice(LocalDate.parse("2014-11-03"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(2L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(5L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-04")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(2L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-04")).getValue(), is(5L));
     }
 
     @Test
     public void preferHistoricOverLatestIfLatestIsTooOld()
     {
-        security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-02"), 5));
+        security.setLatest(new LatestSecurityPrice(LocalDate.parse("2014-11-02"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(1L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(2L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-04")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-01")).getValue(), is(1L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(2L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-04")).getValue(), is(3L));
     }
 
     @Test
     public void preferHistoricOverLatestIfLatestIsTooOldDespiteGaps()
     {
-        security.addPrice(new SecurityPrice(Dates.date("2014-11-05"), 10));
-        security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-03"), 5));
+        security.addPrice(new SecurityPrice(LocalDate.parse("2014-11-05"), 10));
+        security.setLatest(new LatestSecurityPrice(LocalDate.parse("2014-11-03"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(2L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-04")).getValue(), is(3L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-05")).getValue(), is(10L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(2L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-04")).getValue(), is(3L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-05")).getValue(), is(10L));
     }
 
     @Test
     public void testZeroQuoteIfNoQuotesExist()
     {
         security.removeAllPrices();
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(0L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-01")).getValue(), is(0L));
     }
 
     @Test
@@ -94,11 +96,11 @@ public class SecurityPriceLookupTest
     {
         security.removeAllPrices();
 
-        security.setLatest(new LatestSecurityPrice(Dates.date("2014-11-02"), 5));
+        security.setLatest(new LatestSecurityPrice(LocalDate.parse("2014-11-02"), 5));
 
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-01")).getValue(), is(5L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-02")).getValue(), is(5L));
-        assertThat(security.getSecurityPrice(Dates.date("2014-11-03")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-01")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-02")).getValue(), is(5L));
+        assertThat(security.getSecurityPrice(LocalDate.parse("2014-11-03")).getValue(), is(5L));
     }
 
 }

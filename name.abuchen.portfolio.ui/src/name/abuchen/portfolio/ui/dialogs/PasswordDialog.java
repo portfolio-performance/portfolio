@@ -1,8 +1,5 @@
 package name.abuchen.portfolio.ui.dialogs;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.BindingHelper.Model;
-
 import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.MultiValidator;
 import org.eclipse.core.databinding.validation.ValidationStatus;
@@ -10,6 +7,9 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
+
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper.Model;
 
 public class PasswordDialog extends AbstractDialog
 {
@@ -40,7 +40,8 @@ public class PasswordDialog extends AbstractDialog
 
         @Override
         public void applyChanges()
-        {}
+        {
+        }
     }
 
     public PasswordDialog(Shell parentShell)
@@ -51,9 +52,9 @@ public class PasswordDialog extends AbstractDialog
     @Override
     protected void createFormElements(Composite editArea)
     {
-        final IObservableValue password = bindings().bindStringInput(editArea, Messages.LabelPassword,
+        final IObservableValue<String> password = bindings().bindStringInput(editArea, Messages.LabelPassword,
                         "password", SWT.PASSWORD); //$NON-NLS-1$
-        final IObservableValue repeat = bindings().bindStringInput(editArea, Messages.LabelPasswordRepeat,
+        final IObservableValue<String> repeat = bindings().bindStringInput(editArea, Messages.LabelPasswordRepeat,
                         "repeat", SWT.PASSWORD); //$NON-NLS-1$
 
         // multi validator (passwords must be identical)
@@ -63,14 +64,14 @@ public class PasswordDialog extends AbstractDialog
             @Override
             protected IStatus validate()
             {
-                String pwd = (String) password.getValue();
-                String rpt = (String) repeat.getValue();
+                String pwd = password.getValue();
+                String rpt = repeat.getValue();
 
                 if (pwd.length() < 6)
                     return ValidationStatus.error(Messages.MsgPasswordMinCharacters);
 
-                return pwd.equals(rpt) ? ValidationStatus.ok() : ValidationStatus
-                                .error(Messages.MsgPasswordNotIdentical);
+                return pwd.equals(rpt) ? ValidationStatus.ok()
+                                : ValidationStatus.error(Messages.MsgPasswordNotIdentical);
             }
 
         };

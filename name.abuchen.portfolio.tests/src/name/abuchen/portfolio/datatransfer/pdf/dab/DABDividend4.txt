@@ -1,0 +1,12 @@
+DAB-Dividende in Fremdwährung (2016):
+=====================================
+
+DAB Bank
+Dividendengutschrift München, 29.07.2016
+
+Gattungsbezeichnung ISIN
+Patterson Companies Inc. Registered Shares DL -,01 US7033951036
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 500,000 13.07.2016 29.07.2016 USD 0,240000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+29.07.2016 0000000000 EUR/USD 1,1041 EUR 80,92

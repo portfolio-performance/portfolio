@@ -1,0 +1,33 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRADE REPUBLIC BANK GMBH  KASTANIENALLEE 32  10435 BERLIN
+Max Mustermann SEITE 1 von 1
+Muster Straße 1 DATUM 05.11.2019
+D 12345 Musterstadt ORDER a1b2-3456
+AUSFÜHRUNG 1234-56bb
+DEPOT 112233445
+WERTPAPIERABRECHNUNG
+ÜBERSICHT
+Market-Order Kauf am 05.11.2019, um 15:16 Uhr an der Lang & Schwarz Exchange.
+Der Kontrahent der Transaktion ist Lang & Schwarz TradeCenter AG & Co. KG.
+POSITION ANZAHL KURS BETRAG
+Wirecard AG 4 Stk. 121,20 EUR 484,80 EUR
+Inhaber-Aktien o.N.
+ISIN: DE0007472060
+GESAMT 484,80 EUR
+ABRECHNUNG
+POSITION BETRAG
+Fremdkostenzuschlag -1,000 EUR
+GESAMT -485,80 EUR
+BUCHUNG
+VERRECHNUNGSKONTO VALUTA BETRAG
+DE12345687984536541568 07.11.2019 -485,80 EUR
+Wirecard AG Inhaber-Aktien o.N. in Girosammelverwahrung.
+Diese Abrechnung wird maschinell erstellt und daher nicht unterschrieben.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich gem. § 4 Nr. 8 UStG um eine umsatzsteuerfreie 
+Leistung.
+Trade Republic Bank GmbH www.traderepublic.com Sitz der Gesellschaft: Düsseldorf Geschäftsführer
+Kastanienallee 32 service@traderepublic.com AG Düsseldorf HRB 85864 Ingo Hillen
+10435 Berlin USt-ID DE307510626 Karsten Müller
+ABRE / 2019-11-05 / 9876543 / 98ff-65aa

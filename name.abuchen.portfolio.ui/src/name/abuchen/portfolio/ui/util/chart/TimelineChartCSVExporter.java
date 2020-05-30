@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
@@ -14,12 +13,12 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.csv.CSVPrinter;
+import org.eclipse.swt.widgets.Shell;
+import org.swtchart.ISeries;
+
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-
-import org.apache.commons.csv.CSVPrinter;
-import org.eclipse.swt.widgets.Control;
-import org.swtchart.ISeries;
 
 public class TimelineChartCSVExporter extends AbstractCSVExporter
 {
@@ -51,19 +50,17 @@ public class TimelineChartCSVExporter extends AbstractCSVExporter
     }
 
     @Override
-    protected Control getControl()
+    protected Shell getShell()
     {
-        return chart;
+        return chart.getShell();
     }
 
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             ISeries[] series = chart.getSeriesSet().getSeries();
 
             // write header

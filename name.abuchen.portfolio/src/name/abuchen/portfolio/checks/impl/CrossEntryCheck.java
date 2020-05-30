@@ -151,7 +151,7 @@ public class CrossEntryCheck implements Check
                     if (candidate.transaction.getType() != neededType)
                         continue;
 
-                    if (!candidate.transaction.getDate().equals(suspect.transaction.getDate()))
+                    if (!candidate.transaction.getDateTime().equals(suspect.transaction.getDateTime()))
                         continue;
 
                     if (candidate.transaction.getSecurity() != suspect.transaction.getSecurity())
@@ -172,13 +172,13 @@ public class CrossEntryCheck implements Check
                 else
                 {
                     BuySellEntry entry = new BuySellEntry(match.portfolio, suspect.account);
+                    entry.setCurrencyCode(match.transaction.getCurrencyCode());
                     entry.setType(match.transaction.getType());
-                    entry.setDate(match.transaction.getDate());
+                    entry.setDate(match.transaction.getDateTime());
                     entry.setSecurity(match.transaction.getSecurity());
                     entry.setShares(match.transaction.getShares());
-                    entry.setFees(match.transaction.getFees());
-                    entry.setTaxes(match.transaction.getTaxes());
                     entry.setAmount(match.transaction.getAmount());
+                    entry.getPortfolioTransaction().addUnits(match.transaction.getUnits());
                     entry.insert();
 
                     match.portfolio.getTransactions().remove(match.transaction);
@@ -234,7 +234,7 @@ public class CrossEntryCheck implements Check
                     if (candidate.transaction.getType() != neededType)
                         continue;
 
-                    if (!candidate.transaction.getDate().equals(suspect.transaction.getDate()))
+                    if (!candidate.transaction.getDateTime().equals(suspect.transaction.getDateTime()))
                         continue;
 
                     if (candidate.transaction.getAmount() != suspect.transaction.getAmount())
@@ -258,8 +258,9 @@ public class CrossEntryCheck implements Check
                     else
                         crossentry = new AccountTransferEntry(suspect.account, match.account);
 
-                    crossentry.setDate(match.transaction.getDate());
+                    crossentry.setDate(match.transaction.getDateTime());
                     crossentry.setAmount(match.transaction.getAmount());
+                    crossentry.setCurrencyCode(match.transaction.getCurrencyCode());
                     crossentry.insert();
 
                     suspect.account.getTransactions().remove(suspect.transaction);
@@ -303,7 +304,7 @@ public class CrossEntryCheck implements Check
                     if (possibleMatch.transaction.getType() != neededType)
                         continue;
 
-                    if (!possibleMatch.transaction.getDate().equals(suspect.transaction.getDate()))
+                    if (!possibleMatch.transaction.getDateTime().equals(suspect.transaction.getDateTime()))
                         continue;
 
                     if (!possibleMatch.transaction.getSecurity().equals(suspect.transaction.getSecurity()))
@@ -333,10 +334,11 @@ public class CrossEntryCheck implements Check
                     else
                         crossentry = new PortfolioTransferEntry(suspect.portfolio, match.portfolio);
 
-                    crossentry.setDate(match.transaction.getDate());
+                    crossentry.setDate(match.transaction.getDateTime());
                     crossentry.setSecurity(match.transaction.getSecurity());
                     crossentry.setShares(match.transaction.getShares());
                     crossentry.setAmount(match.transaction.getAmount());
+                    crossentry.setCurrencyCode(match.transaction.getCurrencyCode());
                     crossentry.insert();
 
                     suspect.portfolio.getTransactions().remove(suspect.transaction);

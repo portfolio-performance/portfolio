@@ -1,0 +1,38 @@
+PDF Author: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+   
+NIBC Direct Depotservice · Postfach 41 07 40 · 76207 Karlsruhe
+Depotnummer
+ 7000000000
+ Kundennummer 1000000
+Vornamen Nachnamen
+ Auftragsnummer 123456/12.00
+Vornamen Nachnamen Datum 14.01.2020
+XStrasse 5 Rechnungsnummer W12345-0000001234/12
+12345 Wohnort Umsatzsteuer-ID DE123456786   
+ 
+Wertpapier Abrechnung Kauf 
+Auftrag vom 13.01.2020 11:42:56 Uhr
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 13 VANGUARD FTSE ALL-WORLD U.ETF      IE00B3RBWM25 (A1JX52)
+REGISTERED SHARES USD DIS.ON       
+Handels-/Ausführungsplatz Quotrix (gemäß Weisung)
+Börsensegment DUSD
+Limit-Order
+Limit 79,23 EUR 
+Schlusstag/-Zeit 13.01.2020 11:42:59 Auftraggeber Vornamen Nachnamen
+Ausführungskurs 79,23 EUR Auftragserteilung/ -ort Online-Banking
+Wertpapierrechnung Lagerland Grossbritannien
+Kurswert 1.029,99- EUR
+Provision 12,34- EUR
+Übertragungs-/Liefergebühr 0,01- EUR
+Ausmachender Betrag 1.042,34- EUR
+ 
+Den Gegenwert buchen wir mit Valuta 15.01.2020 zu Lasten des Kontos 8000001234
+(IBAN DE11 5121 0700 8000 0012 34), BLZ 51210700 (BIC NZFMDEF1XXX).
+Die Wertpapiere schreiben wir Ihrem Depotkonto gut.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung. 
+ 
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+1234.12345678.0000123AB12

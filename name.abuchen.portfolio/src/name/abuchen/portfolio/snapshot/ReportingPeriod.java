@@ -2,31 +2,47 @@ package name.abuchen.portfolio.snapshot;
 
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.function.Predicate;
+
+import com.google.common.base.Objects;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.util.Dates;
-
-import org.joda.time.Interval;
+import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public abstract class ReportingPeriod
 {
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofLocalizedDate(FormatStyle.MEDIUM);
+
+    private ReportingPeriod()
+    {
+    }
+
     public static final ReportingPeriod from(String code) throws IOException
     {
         char type = code.charAt(0);
 
         if (type == LastX.CODE)
             return new LastX(code);
+        else if (type == LastXDays.CODE)
+            return new LastXDays(code);
+        else if (type == LastXTradingDays.CODE)
+            return new LastXTradingDays(code);
         else if (type == FromXtoY.CODE)
             return new FromXtoY(code);
         else if (type == SinceX.CODE)
             return new SinceX(code);
+        else if (type == YearX.CODE)
+            return new YearX(code);
+        else if (type == CurrentMonth.CODE)
+            return new CurrentMonth();
+        else if (type == YearToDate.CODE)
+            return new YearToDate();
 
         // backward compatible
         if (code.charAt(code.length() - 1) == 'Y')
@@ -35,37 +51,23 @@ public abstract class ReportingPeriod
         throw new IOException(code);
     }
 
-    protected static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
-
-    protected Date startDate;
-    protected Date endDate;
-
-    public final Date getStartDate()
+    public final Predicate<Transaction> containsTransaction(LocalDate relativeTo)
     {
-        return startDate;
+        Interval interval = toInterval(relativeTo);
+        return t -> t.getDateTime().toLocalDate().isAfter(interval.getStart())
+                        && !t.getDateTime().toLocalDate().isAfter(interval.getEnd());
     }
 
-    public final Date getEndDate()
-    {
-        return endDate;
-    }
-
-    public final Predicate<Transaction> containsTransaction()
-    {
-        return t -> t.getDate().getTime() > startDate.getTime() && t.getDate().getTime() <= endDate.getTime();
-    }
-
-    public final Interval toInterval()
-    {
-        // reported via forum: if the user selects as 'since' date something in
-        // the future
-        if (endDate.before(startDate))
-            return new Interval(endDate.getTime(), startDate.getTime());
-        else
-            return new Interval(startDate.getTime(), endDate.getTime());
-    }
+    public abstract Interval toInterval(LocalDate relativeTo);
 
     public abstract void writeTo(StringBuilder buffer);
+
+    public String getCode()
+    {
+        StringBuilder buf = new StringBuilder();
+        writeTo(buf);
+        return buf.toString();
+    }
 
     public static class LastX extends ReportingPeriod
     {
@@ -74,7 +76,7 @@ public abstract class ReportingPeriod
         private final int years;
         private final int months;
 
-        /* package */LastX(String code)
+        /* package */ LastX(String code)
         {
             this(Integer.parseInt(code.substring(1, code.indexOf('Y'))), //
                             Integer.parseInt(code.substring(code.indexOf('Y') + 1)));
@@ -84,17 +86,12 @@ public abstract class ReportingPeriod
         {
             this.years = years;
             this.months = months;
+        }
 
-            Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.YEAR, -years);
-            cal.add(Calendar.MONTH, -months);
-            cal.set(Calendar.HOUR_OF_DAY, 0);
-            cal.set(Calendar.MINUTE, 0);
-            cal.set(Calendar.SECOND, 0);
-            cal.set(Calendar.MILLISECOND, 0);
-
-            startDate = cal.getTime();
-            endDate = Dates.today();
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo.minusYears(years).minusMonths(months), relativeTo);
         }
 
         @Override
@@ -120,43 +117,216 @@ public abstract class ReportingPeriod
 
             return buf.toString();
         }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(years, months);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastX other = (LastX) obj;
+            return years == other.years && months == other.months;
+        }
+    }
+
+    public static class LastXDays extends ReportingPeriod
+    {
+        private static final char CODE = 'D';
+
+        private final int days;
+
+        /* package */ LastXDays(String code)
+        {
+            this(Integer.parseInt(code.substring(1)));
+        }
+
+        public LastXDays(int days)
+        {
+            this.days = days;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(relativeTo.minusDays(days), relativeTo);
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(days);
+        }
+
+        @Override
+        public String toString()
+        {
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXDays, days);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(days);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastXDays other = (LastXDays) obj;
+            return days == other.days;
+        }
+    }
+
+    public static class LastXTradingDays extends ReportingPeriod
+    {
+        private static final char CODE = 'T';
+
+        private final int tradingDays;
+
+        /* package */ LastXTradingDays(String code)
+        {
+            this(Integer.parseInt(code.substring(1)));
+        }
+
+        public LastXTradingDays(int tradingDays)
+        {
+            this.tradingDays = tradingDays;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(tradingDaysUntil(relativeTo, tradingDays), relativeTo);
+        }
+
+        public static final LocalDate tradingDaysUntil(LocalDate referenceDate, int tradingDays)
+        {
+            TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
+
+            LocalDate date = referenceDate;
+            int daysToGo = tradingDays;
+
+            while (daysToGo > 0)
+            {
+                if (!calendar.isHoliday(date))
+                    daysToGo--;
+
+                date = date.minusDays(1);
+            }
+
+            while (calendar.isHoliday(date))
+                date = date.minusDays(1);
+
+            return date;
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(tradingDays);
+        }
+
+        @Override
+        public String toString()
+        {
+            return MessageFormat.format(Messages.LabelReportingPeriodLastXTradingDays, tradingDays);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(tradingDays);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            LastXTradingDays other = (LastXTradingDays) obj;
+            return tradingDays == other.tradingDays;
+        }
     }
 
     public static class FromXtoY extends ReportingPeriod
     {
         private static final char CODE = 'F';
 
-        /* package */FromXtoY(String code)
+        private final LocalDate startDate;
+        private final LocalDate endDate;
+
+        /* package */ FromXtoY(String code)
         {
-            try
-            {
-                int u = code.indexOf('_');
-                this.startDate = DATE_FORMAT.parse(code.substring(1, u));
-                this.endDate = DATE_FORMAT.parse(code.substring(u + 1));
-            }
-            catch (ParseException e)
-            {
-                throw new RuntimeException(e);
-            }
+            this(LocalDate.parse(code.substring(1, code.indexOf('_'))),
+                            LocalDate.parse(code.substring(code.indexOf('_') + 1)));
         }
 
-        public FromXtoY(Date startDate, Date endDate)
+        public FromXtoY(LocalDate startDate, LocalDate endDate)
         {
             this.startDate = startDate;
             this.endDate = endDate;
         }
 
+        public FromXtoY(Interval interval)
+        {
+            this(interval.getStart(), interval.getEnd());
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(startDate, endDate);
+        }
+
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(Values.Date.format(getStartDate())).append('_')
-                            .append(Values.Date.format(getEndDate()));
+            buffer.append(CODE).append(startDate.toString()).append('_').append(endDate.toString());
         }
 
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, getStartDate(), getEndDate());
+            return MessageFormat.format(Messages.LabelReportingPeriodFromXtoY, startDate.format(DATE_FORMATTER),
+                            endDate.format(DATE_FORMATTER));
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(startDate, endDate);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            FromXtoY other = (FromXtoY) obj;
+            return startDate.equals(other.startDate) && endDate.equals(other.endDate);
         }
     }
 
@@ -164,37 +334,200 @@ public abstract class ReportingPeriod
     {
         private static final char CODE = 'S';
 
-        /* package */SinceX(String code)
+        private final LocalDate startDate;
+
+        /* package */ SinceX(String code)
         {
-            try
-            {
-                this.startDate = DATE_FORMAT.parse(code.substring(1));
-                this.endDate = Dates.today();
-            }
-            catch (ParseException e)
-            {
-                throw new RuntimeException(e);
-            }
+            this(LocalDate.parse(code.substring(1)));
         }
 
-        public SinceX(Date startDate)
+        public SinceX(LocalDate startDate)
         {
             this.startDate = startDate;
-            this.endDate = Dates.today();
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
         }
 
         @Override
         public void writeTo(StringBuilder buffer)
         {
-            buffer.append(CODE).append(Values.Date.format(getStartDate()));
+            buffer.append(CODE).append(startDate.toString());
         }
 
         @Override
         public String toString()
         {
-            return MessageFormat.format(Messages.LabelReportingPeriodSince, getStartDate());
+            return MessageFormat.format(Messages.LabelReportingPeriodSince, startDate.format(DATE_FORMATTER));
         }
 
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(startDate);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            SinceX other = (SinceX) obj;
+            return startDate.equals(other.startDate);
+        }
     }
 
+    public static class YearX extends ReportingPeriod
+    {
+        private static final char CODE = 'Y';
+
+        private final int year;
+
+        /* package */ YearX(String code)
+        {
+            this(Integer.parseInt(code.substring(1)));
+        }
+
+        public YearX(int year)
+        {
+            this.year = year;
+        }
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            return Interval.of(LocalDate.of(year - 1, 12, 31), LocalDate.of(year, 12, 31));
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE).append(year);
+        }
+
+        @Override
+        public String toString()
+        {
+            return String.valueOf(year);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(year);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            YearX other = (YearX) obj;
+            return year == other.year;
+        }
+    }
+
+    public static class CurrentMonth extends ReportingPeriod
+    {
+        private static final char CODE = 'M';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).minusDays(1);
+
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodCurrentMonth;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
+
+    public static class YearToDate extends ReportingPeriod
+    {
+        private static final char CODE = 'X';
+
+        @Override
+        public Interval toInterval(LocalDate relativeTo)
+        {
+            // a reporting period is half-open, i.e. it excludes the first day
+            // but includes the last day
+            LocalDate startDate = LocalDate.now().withDayOfMonth(1).withMonth(1).minusDays(1);
+
+            if (startDate.isBefore(relativeTo))
+                return Interval.of(startDate, relativeTo);
+            else
+                return Interval.of(startDate, startDate); // FIXME
+        }
+
+        @Override
+        public void writeTo(StringBuilder buffer)
+        {
+            buffer.append(CODE);
+        }
+
+        @Override
+        public String toString()
+        {
+            return Messages.LabelReportingPeriodYTD;
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return Objects.hashCode(CODE);
+        }
+
+        @Override
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            return getClass() == obj.getClass();
+        }
+    }
 }

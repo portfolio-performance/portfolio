@@ -2,39 +2,61 @@ package name.abuchen.portfolio.model;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.crypto.SecretKey;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Client
 {
     /* package */static final int MAJOR_VERSION = 1;
-    /* package */static final int CURRENT_VERSION = 28;
 
-    private transient PropertyChangeSupport propertyChangeSupport;
+    public static final int CURRENT_VERSION = 45;
+    public static final int VERSION_WITH_CURRENCY_SUPPORT = 29;
 
+    private transient PropertyChangeSupport propertyChangeSupport; // NOSONAR
+
+    /**
+     * The (minor) version of the file format. If it is lower than the current
+     * version, then {@link ClientFactory#upgradeModel} will upgrade the model
+     * and set the version number to the current version.
+     */
     private int version = CURRENT_VERSION;
 
-    private List<Security> securities = new ArrayList<Security>();
+    /**
+     * The (minor) version of the file format as it has been read from file.
+     */
+    private transient int fileVersionAfterRead = CURRENT_VERSION; // NOSONAR
+
+    private String baseCurrency = CurrencyUnit.EUR;
+
+    private List<Security> securities = new ArrayList<>();
     private List<Watchlist> watchlists;
 
     // keep typo -> xstream deserialization
+    @Deprecated
     private List<ConsumerPriceIndex> consumerPriceIndeces;
 
-    private List<Account> accounts = new ArrayList<Account>();
-    private List<Portfolio> portfolios = new ArrayList<Portfolio>();
+    private List<Account> accounts = new ArrayList<>();
+    private List<Portfolio> portfolios = new ArrayList<>();
     private List<InvestmentPlan> plans;
     private List<Taxonomy> taxonomies;
+    private List<Dashboard> dashboards;
 
-    private Map<String, String> properties; // old versions!
+    private Map<String, String> properties;
     private ClientSettings settings;
 
     @Deprecated
@@ -43,7 +65,7 @@ public class Client
     @Deprecated
     private Category rootCategory;
 
-    private transient SecretKey secret;
+    private transient SecretKey secret; // NOSONAR
 
     public Client()
     {
@@ -56,37 +78,61 @@ public class Client
         // persisted in that version are not initialized
 
         if (watchlists == null)
-            watchlists = new ArrayList<Watchlist>();
+            watchlists = new ArrayList<>();
 
         if (consumerPriceIndeces == null)
-            consumerPriceIndeces = new ArrayList<ConsumerPriceIndex>();
+            consumerPriceIndeces = new ArrayList<>();
 
         if (properties == null)
-            properties = new HashMap<String, String>();
+            properties = new HashMap<>();
 
         if (propertyChangeSupport == null)
             propertyChangeSupport = new PropertyChangeSupport(this);
 
         if (plans == null)
-            plans = new ArrayList<InvestmentPlan>();
+            plans = new ArrayList<>();
 
         if (taxonomies == null)
-            taxonomies = new ArrayList<Taxonomy>();
-        
+            taxonomies = new ArrayList<>();
+
+        if (dashboards == null)
+            dashboards = new ArrayList<>();
+
         if (settings == null)
             settings = new ClientSettings();
         else
             settings.doPostLoadInitialization();
     }
 
-    public int getVersion()
+    /* package */int getVersion()
     {
         return version;
     }
 
-    public void setVersion(int version)
+    /* package */void setVersion(int version)
     {
         this.version = version;
+    }
+
+    public int getFileVersionAfterRead()
+    {
+        return fileVersionAfterRead;
+    }
+
+    /* package */
+    void setFileVersionAfterRead(int fileVersionAfterRead)
+    {
+        this.fileVersionAfterRead = fileVersionAfterRead;
+    }
+
+    public String getBaseCurrency()
+    {
+        return baseCurrency;
+    }
+
+    public void setBaseCurrency(String baseCurrency)
+    {
+        propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$ //NOSONAR
     }
 
     public List<InvestmentPlan> getPlans()
@@ -109,14 +155,26 @@ public class Client
         return Collections.unmodifiableList(securities);
     }
 
-    public void addSecurity(Security security)
+    /**
+     * Returns a sorted list of active securities, i.e. securities that are not
+     * marked as retired.
+     */
+    public List<Security> getActiveSecurities()
     {
-        securities.add(security);
+        return securities.stream() //
+                        .filter(s -> s.getCurrencyCode() != null) //
+                        .filter(s -> !s.isRetired()) //
+                        .sorted(new Security.ByName()) //
+                        .collect(Collectors.toList());
     }
 
-    public void addSecurities(Collection<Security> sec)
+    public void addSecurity(Security security)
     {
-        securities.addAll(sec);
+        Objects.requireNonNull(security);
+
+        securities.add(security);
+
+        propertyChangeSupport.firePropertyChange("securities", null, security); //$NON-NLS-1$
     }
 
     public void removeSecurity(final Security security)
@@ -127,7 +185,53 @@ public class Client
         deleteTaxonomyAssignments(security);
         deleteAccountTransactions(security);
         deletePortfolioTransactions(security);
+
         securities.remove(security);
+
+        propertyChangeSupport.firePropertyChange("securities", security, null); //$NON-NLS-1$
+    }
+
+    /**
+     * Gets a list of used {@link CurrencyUnit}s.
+     * 
+     * @return list
+     */
+    public List<CurrencyUnit> getUsedCurrencies()
+    {
+        // collect all used currency codes
+        HashSet<String> hsUsedCodes = new HashSet<>();
+        // first client and all accounts
+        hsUsedCodes.add(baseCurrency);
+        for (Account account : accounts)
+        {
+            hsUsedCodes.add(account.getCurrencyCode());
+        }
+        // then portfolios
+        for (Portfolio portfolio : portfolios)
+        {
+            for (PortfolioTransaction t : portfolio.getTransactions())
+            {
+                hsUsedCodes.add(t.getCurrencyCode());
+            }
+        }
+        // then from all securities
+        for (Security security : securities)
+        {
+            hsUsedCodes.add(security.getCurrencyCode());
+        }
+        // now get the currency units
+        List<CurrencyUnit> lUnits = new ArrayList<>();
+        for (String code : hsUsedCodes)
+        {
+            CurrencyUnit unit = CurrencyUnit.getInstance(code);
+            if (unit != null)
+            {
+                lUnits.add(unit);
+            }
+        }
+        // sort list to allow using it as a favorite list
+        Collections.sort(lUnits);
+        return lUnits;
     }
 
     public List<Watchlist> getWatchlists()
@@ -135,46 +239,10 @@ public class Client
         return watchlists;
     }
 
-    public List<ConsumerPriceIndex> getConsumerPriceIndices()
+    @Deprecated
+    /* package */ List<ConsumerPriceIndex> getConsumerPriceIndices() // NOSONAR
     {
-        return Collections.unmodifiableList(consumerPriceIndeces);
-    }
-
-    /**
-     * Sets the consumer price indices.
-     * 
-     * @return true if the indices are modified.
-     */
-    public boolean setConsumerPriceIndices(List<ConsumerPriceIndex> indices)
-    {
-        if (indices == null)
-            throw new IllegalArgumentException();
-
-        List<ConsumerPriceIndex> newValues = new ArrayList<ConsumerPriceIndex>(indices);
-        Collections.sort(newValues, new ConsumerPriceIndex.ByDate());
-
-        if (consumerPriceIndeces == null || !consumerPriceIndeces.equals(newValues))
-        {
-            // only assign list if indices have actually changed because UI
-            // elements keep a reference which is not updated if no 'dirty'
-            // event is fired
-            this.consumerPriceIndeces = newValues;
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void addConsumerPriceIndex(ConsumerPriceIndex record)
-    {
-        consumerPriceIndeces.add(record);
-    }
-
-    public void removeConsumerPriceIndex(ConsumerPriceIndex record)
-    {
-        consumerPriceIndeces.remove(record);
+        return Collections.unmodifiableList(consumerPriceIndeces); // NOSONAR
     }
 
     public void addAccount(Account account)
@@ -184,6 +252,7 @@ public class Client
 
     public void removeAccount(Account account)
     {
+        deleteReferenceAccount(account);
         deleteTransactions(account);
         deleteInvestmentPlans(account);
         deleteTaxonomyAssignments(account);
@@ -237,25 +306,29 @@ public class Client
     }
 
     @Deprecated
-    /* package */Category getRootCategory()
+    /* package */
+    Category getRootCategory()
     {
         return this.rootCategory;
     }
 
     @Deprecated
-    /* package */void setRootCategory(Category rootCategory)
+    /* package */
+    void setRootCategory(Category rootCategory)
     {
         this.rootCategory = rootCategory;
     }
 
     @Deprecated
-    /* package */String getIndustryTaxonomy()
+    /* package */
+    String getIndustryTaxonomy()
     {
         return industryTaxonomyId;
     }
 
     @Deprecated
-    /* package */void setIndustryTaxonomy(String industryTaxonomyId)
+    /* package */
+    void setIndustryTaxonomy(String industryTaxonomyId)
     {
         this.industryTaxonomyId = industryTaxonomyId;
     }
@@ -270,6 +343,11 @@ public class Client
         taxonomies.add(taxonomy);
     }
 
+    public void addTaxonomy(int index, Taxonomy taxonomy)
+    {
+        taxonomies.add(index, taxonomy);
+    }
+
     public void removeTaxonomy(Taxonomy taxonomy)
     {
         taxonomies.remove(taxonomy);
@@ -281,7 +359,27 @@ public class Client
                         .filter(t -> id.equals(t.getId())) //
                         .findAny().orElse(null);
     }
-    
+
+    public Stream<Dashboard> getDashboards()
+    {
+        return dashboards.stream();
+    }
+
+    public void addDashboard(Dashboard dashboard)
+    {
+        this.dashboards.add(dashboard);
+    }
+
+    public void addDashboard(int index, Dashboard dashboard)
+    {
+        this.dashboards.add(index, dashboard);
+    }
+
+    public void removeDashboard(Dashboard dashboard)
+    {
+        this.dashboards.remove(dashboard);
+    }
+
     public ClientSettings getSettings()
     {
         return settings;
@@ -305,14 +403,92 @@ public class Client
         return properties.get(key);
     }
 
-    /* package */SecretKey getSecret()
+    /**
+     * Returns the current value of the integer-valued state with the given
+     * name. Returns the value <code>0</code> if there is no value with the
+     * given name, or if the current value cannot be treated as an integer.
+     */
+    public int getPropertyInt(String key)
+    {
+        try
+        {
+            String v = properties.get(key);
+            return v == null ? 0 : Integer.parseInt(v);
+        }
+        catch (NumberFormatException e)
+        {
+            return 0;
+        }
+    }
+
+    /* package */void clearProperties()
+    {
+        properties.clear();
+    }
+
+    /**
+     * Returns all transactions. Transactions are "de-duplicated", i.e. the list
+     * only includes the PortfolioTransaction of buy and sell transactions and
+     * it includes only the outbound transactions of cash or security transfers.
+     */
+    public List<TransactionPair<?>> getAllTransactions()
+    {
+        List<TransactionPair<?>> transactions = new ArrayList<>();
+
+        for (Portfolio portfolio : portfolios)
+            portfolio.getTransactions().stream().filter(t -> t.getType() != PortfolioTransaction.Type.TRANSFER_IN)
+                            .map(t -> new TransactionPair<>(portfolio, t)).forEach(transactions::add);
+
+        EnumSet<AccountTransaction.Type> exclude = EnumSet.of(AccountTransaction.Type.TRANSFER_IN,
+                        AccountTransaction.Type.BUY, AccountTransaction.Type.SELL);
+
+        for (Account account : accounts)
+        {
+            account.getTransactions().stream().filter(t -> !exclude.contains(t.getType()))
+                            .map(t -> new TransactionPair<>(account, t)).forEach(transactions::add);
+        }
+
+        return transactions;
+    }
+
+    /* package */
+    SecretKey getSecret()
     {
         return secret;
     }
 
-    /* package */void setSecret(SecretKey secret)
+    /* package */
+    void setSecret(SecretKey secret)
     {
         this.secret = secret;
+    }
+
+    /**
+     * Removes the given account as reference account from any portfolios. As
+     * the model expects that there is always a reference account, an arbitrary
+     * other account is picked as reference account instead. Or, if no other
+     * account exists, a new account is created and used as reference account.
+     */
+    private void deleteReferenceAccount(Account account)
+    {
+        for (Portfolio portfolio : portfolios)
+        {
+            if (account.equals(portfolio.getReferenceAccount()))
+            {
+                portfolio.setReferenceAccount(null);
+
+                accounts.stream().filter(a -> !account.equals(a)).findAny().ifPresent(portfolio::setReferenceAccount);
+
+                if (portfolio.getReferenceAccount() == null)
+                {
+                    Account referenceAccount = new Account();
+                    referenceAccount.setName(MessageFormat.format(Messages.LabelDefaultReferenceAccountName,
+                                    portfolio.getName()));
+                    addAccount(referenceAccount);
+                    portfolio.setReferenceAccount(referenceAccount);
+                }
+            }
+        }
     }
 
     /**
@@ -399,9 +575,23 @@ public class Client
         }
     }
 
+    /**
+     * Marks the client as dirty and triggers a re-calculation of all views.
+     * Consider using {@link Client#touch} if only properties changed that are
+     * not relevant for calculations - such as preferences.
+     */
     public void markDirty()
     {
         propertyChangeSupport.firePropertyChange("dirty", false, true); //$NON-NLS-1$
+    }
+
+    /**
+     * Touches the client, i.e. marks it as dirty but does <strong>not</strong>
+     * trigger a re-calculation of views.
+     */
+    public void touch()
+    {
+        propertyChangeSupport.firePropertyChange("touch", false, true); //$NON-NLS-1$
     }
 
     public void addPropertyChangeListener(PropertyChangeListener listener)
@@ -418,4 +608,31 @@ public class Client
     {
         propertyChangeSupport.removePropertyChangeListener(listener);
     }
+
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
+    {
+        propertyChangeSupport.removePropertyChangeListener(propertyName, listener);
+    }
+
+    public String debugTransactionsToString()
+    {
+        StringBuilder answer = new StringBuilder();
+
+        for (Portfolio portfolio : portfolios)
+        {
+            answer.append(portfolio.getName()).append('\n');
+            portfolio.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        for (Account account : accounts)
+        {
+            answer.append(account.getName()).append('\n');
+            account.getTransactions().stream().sorted(new Transaction.ByDate())
+                            .forEach(t -> answer.append(t).append('\n'));
+        }
+
+        return answer.toString();
+    }
+
 }

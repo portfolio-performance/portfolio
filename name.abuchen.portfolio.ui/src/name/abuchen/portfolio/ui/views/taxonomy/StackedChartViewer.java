@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -10,16 +11,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.snapshot.Aggregation;
-import name.abuchen.portfolio.snapshot.Aggregation.Period;
-import name.abuchen.portfolio.snapshot.AssetPosition;
-import name.abuchen.portfolio.snapshot.ClientSnapshot;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
+import javax.inject.Inject;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -32,17 +24,27 @@ import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.joda.time.DateMidnight;
-import org.joda.time.Interval;
 import org.swtchart.ISeries;
 import org.swtchart.Range;
+
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.snapshot.Aggregation;
+import name.abuchen.portfolio.snapshot.Aggregation.Period;
+import name.abuchen.portfolio.snapshot.AssetPosition;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.chart.StackedTimelineChart;
+import name.abuchen.portfolio.util.Interval;
 
 public class StackedChartViewer extends AbstractChartPage
 {
     private static class VehicleBuilder
     {
-        private List<Integer> weights = new ArrayList<Integer>();
-        private List<SeriesBuilder> series = new ArrayList<SeriesBuilder>();
+        private List<Integer> weights = new ArrayList<>();
+        private List<SeriesBuilder> series = new ArrayList<>();
 
         public void add(int weight, SeriesBuilder series)
         {
@@ -52,7 +54,7 @@ public class StackedChartViewer extends AbstractChartPage
 
         public void book(int index, AssetPosition pos)
         {
-            long value = pos.getValuation();
+            long value = pos.getValuation().getAmount();
 
             for (int ii = 0; ii < weights.size(); ii++)
                 series.get(ii).book(index, value * weights.get(ii) / Classification.ONE_HUNDRED_PERCENT);
@@ -94,7 +96,7 @@ public class StackedChartViewer extends AbstractChartPage
             double[] answer = new double[values.length];
             for (int ii = 0; ii < answer.length; ii++)
             {
-                if (totals[ii] == 0d)
+                if (totals[ii] == 0)
                     answer[ii] = 0d;
                 else
                     answer[ii] = values[ii] / (double) totals[ii];
@@ -115,21 +117,23 @@ public class StackedChartViewer extends AbstractChartPage
     private boolean isVisible = false;
     private boolean isDirty = true;
 
-    private List<DateMidnight> dates;
+    private List<LocalDate> dates;
 
+    @Inject
     public StackedChartViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
 
-        Interval interval = part.loadReportingPeriods().getFirst().toInterval();
+        Interval interval = part.getSelectedPeriod().toInterval(LocalDate.now());
 
         Period weekly = Aggregation.Period.WEEKLY;
 
-        final DateMidnight start = interval.getStart().toDateMidnight();
-        final DateMidnight end = interval.getEnd().toDateMidnight();
-        DateMidnight current = weekly.getStartDateFor(start);
+        final LocalDate start = interval.getStart();
+        final LocalDate now = LocalDate.now();
+        final LocalDate end = interval.getEnd().isAfter(now) ? now : interval.getEnd();
+        LocalDate current = weekly.getStartDateFor(start);
 
-        dates = new ArrayList<DateMidnight>();
+        dates = new ArrayList<>();
         while (current.isBefore(end))
         {
             dates.add(current);
@@ -138,6 +142,7 @@ public class StackedChartViewer extends AbstractChartPage
         dates.add(end);
     }
 
+    @Override
     public Control createControl(Composite container)
     {
         Composite composite = new Composite(container, SWT.NONE);
@@ -156,23 +161,17 @@ public class StackedChartViewer extends AbstractChartPage
     }
 
     @Override
-    protected void initializeConfigMenu(IMenuManager manager)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
-        super.initializeConfigMenu(manager);
-        Action action = new Action(Messages.LabelOrderByTaxonomy)
-        {
-            @Override
-            public void run()
-            {
-                getModel().setOrderByTaxonomyInStackChart(
-                                !getModel().isOrderByTaxonomyInStackChart());
-                onConfigChanged();
-            }
-        };
+        super.configMenuAboutToShow(manager);
+        Action action = new SimpleAction(Messages.LabelOrderByTaxonomy, a -> {
+            getModel().setOrderByTaxonomyInStackChart(!getModel().isOrderByTaxonomyInStackChart());
+            onConfigChanged();
+        });
         action.setChecked(getModel().isOrderByTaxonomyInStackChart());
         manager.add(action);
     }
-    
+
     @Override
     public void nodeChange(TaxonomyNode node)
     {
@@ -220,41 +219,37 @@ public class StackedChartViewer extends AbstractChartPage
 
     private void updateChart()
     {
-        final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<InvestmentVehicle, VehicleBuilder>();
+        final Map<InvestmentVehicle, VehicleBuilder> vehicle2builder = new HashMap<>();
         final Map<TaxonomyNode, SeriesBuilder> node2series = new LinkedHashMap<>();
 
-        getModel().visitAll(new NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
+        getModel().visitAll(node -> {
+            if (node.isClassification())
             {
-                if (node.isClassification())
-                {
-                    node2series.put(node, new SeriesBuilder(node, dates.size()));
-                }
-                else
-                {
-                    InvestmentVehicle vehicle = node.getAssignment().getInvestmentVehicle();
+                node2series.put(node, new SeriesBuilder(node, dates.size()));
+            }
+            else
+            {
+                InvestmentVehicle vehicle = node.getAssignment().getInvestmentVehicle();
 
-                    VehicleBuilder builder = vehicle2builder.get(vehicle);
-                    if (builder == null)
-                    {
-                        builder = new VehicleBuilder();
-                        vehicle2builder.put(vehicle, builder);
-                    }
-
-                    builder.add(node.getWeight(), node2series.get(node.getParent()));
+                VehicleBuilder builder = vehicle2builder.get(vehicle);
+                if (builder == null)
+                {
+                    builder = new VehicleBuilder();
+                    vehicle2builder.put(vehicle, builder);
                 }
+
+                builder.add(node.getWeight(), node2series.get(node.getParent()));
             }
         });
 
         final long[] totals = new long[dates.size()];
 
         int index = 0;
-        for (DateMidnight current : dates)
+        for (LocalDate current : dates)
         {
-            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getClient(), current.toDate());
-            totals[index] = snapshot.getAssets();
+            ClientSnapshot snapshot = ClientSnapshot.create(getModel().getFilteredClient(),
+                            getModel().getCurrencyConverter(), current);
+            totals[index] = snapshot.getMonetaryAssets().getAmount();
 
             Map<InvestmentVehicle, AssetPosition> p = snapshot.getPositionsByVehicle();
 
@@ -276,31 +271,30 @@ public class StackedChartViewer extends AbstractChartPage
                 totals[ii] -= unassigned.values[ii];
         }
 
-        Stream<SeriesBuilder> seriesStream = node2series
-                        .values()
-                        .stream()
-                        .filter(s -> s.hasValues());
+        Stream<SeriesBuilder> seriesStream = node2series.values().stream().filter(SeriesBuilder::hasValues);
         if (getModel().isUnassignedCategoryInChartsExcluded())
             seriesStream = seriesStream.filter(s -> !s.node.isUnassignedCategory());
-        
+
         List<SeriesBuilder> series = seriesStream.collect(Collectors.toList());
-        
-        if (getModel().isOrderByTaxonomyInStackChart()) 
+
+        if (getModel().isOrderByTaxonomyInStackChart())
         {
             // reverse because chart is stacked bottom-up
             Collections.reverse(series);
-        } 
-        else 
+        }
+        else
         {
             Collections.sort(series);
         }
-
 
         Display.getDefault().asyncExec(() -> rebuildChartSeries(totals, series));
     }
 
     private void rebuildChartSeries(long[] totals, List<SeriesBuilder> series)
     {
+        if (chart.isDisposed())
+            return;
+
         try
         {
             chart.suspendUpdate(true);

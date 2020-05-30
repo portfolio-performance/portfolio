@@ -1,0 +1,78 @@
+Consorsbank  90318 Nürnberg
+Depotnummer: 0123456789
+1111111111/00
+Vermerk der Bank: 1000
+2
+Max Mueller
+Maxi Mueller Datum: 29.11.2019
+Hauptstr. 3 Seite: 1 von 3
+10101 Stadt
+Dividendengutschrift
+Wertpapierbezeichnung WKN ISIN
+SAMSUNG ELECTRONICS CO. LTD. R.Shs(NV)Pf(GDR144A)/25 SW 100 881823 US7960502018
+Bestand
+3 Stück
+Dividende pro Stück 7,550421 USD Schlusstag 26.09.2019
+Brutto in USD 22,65 USD
+abzgl. Quellensteuer 22,00 % von 22,65 USD 4,98 USD
+abzgl. Fremde Spesen 0,07 USD
+Zwischensumme in USD 17,60 USD
+Devisenkurs 1,102700 USD / EUR
+Brutto in EUR 20,54 EUR
+Quellensteuer in EUR 4,52 EUR
+Zwischensumme in EUR 15,96 EUR
+abzgl. Kapitalertragsteuer 2,06 EUR
+abzgl. Solidaritätszuschlag 0,10 EUR
+Netto zugunsten IBAN DE11 2222 3333 4444 5555 66 13,80 EUR
+Valuta 27.11.2019 BIC CSDBDE71XXX
+Fremde Spesen enthalten 19,00 % MwSt 0,01 EUR
+Anrechenbare Quellensteuer 15,00 % von 22,65 USD 3,08 EUR
+Bitte beachten Sie die weiteren Informationen auf Seite 2.
+Consorsbank ist eine eingetragene Marke der BNP Paribas S.A. Niederlassung Deutschland (AG nach franz. Recht).
+Standort Nürnberg: Bahnhofstraße 55, 90402 Nürnberg, HRB Nürnberg 31129, USt-IdNr. DE191528929
+Fon +49 (0) 911 / 369-30 00, Fax +49 (0) 911 / 369-10 00, info@consorsbank.de, www.consorsbank.de
+Sitz der BNP Paribas S.A.: 16, boulevard des Italiens, 75009 Paris, Frankreich, Registergericht: R.C.S. Paris 662 042 449
+PrØsident du Conseil dAdministration (Präsident des Verwaltungsrates): Jean Lemierre, Directeur GØnØral (Generaldirektor): Jean-Laurent BonnafØ
+Depotnummer: 0123456789
+1111111111/00
+Vermerk der Bank: 1000
+2
+Datum: 29.11.2019
+Seite: 2 von 3
+Details zur Abrechnung
+Steuerpflichtiger Gesamtertrag 20,54 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Mit Quellensteuer verrechnet -12,32 EUR
+somit verrechnete Quellensteuer -3,08 EUR
+Bemessungsgrundlage für Kapitalertragsteuer 8,22 EUR
+Details zu den Verrechnungstöpfen
+Verrechnungstopf "Allgemein" vor der Abrechnung 0,00 EUR
+Mit Verrechnungstopf "Allgemein" verrechnet 0,00 EUR
+Verrechnungstopf "Allgemein" nach der Abrechnung 0,00 EUR
+Sparerpauschbetrag vor der Abrechnung 0,00 EUR
+Mit Sparerpauschbetrag verrechnet 0,00 EUR
+Sparerpauschbetrag nach der Abrechnung 0,00 EUR
+Verrechnungstopf "Quellensteuer" vor der Abrechnung 0,00 EUR
+Änderung Verrechnungstopf "Quellensteuer" 0,00 EUR
+Verrechnungstopf "Quellensteuer" nach der Abrechnung 0,00 EUR
+Depotnummer: 0123456789
+1111111111/00
+Vermerk der Bank: 1000
+2
+Datum: 29.11.2019
+Seite: 3 von 3
+Details zur Steuerberechnung
+Bemessungsgrundlage für Kapitalertragsteuer (Hälftige Aufteilung gem. § 51a Absatz 2c Satz 7 und § 2 Absatz 8 EStG)
+Inhaber 1 4,11 EUR
+Inhaber 2 4,11 EUR
+Bemessungsgrundlage für Kapitalertragsteuer gesamt 8,22 EUR
+Kapitalertragsteuer
+Inhaber 1 25,00 % von 4,11 EUR 1,03 EUR
+Inhaber 2 25,00 % von 4,11 EUR 1,03 EUR
+Kapitalertragsteuer gesamt 2,06 EUR
+Solidaritätszuschlag
+Inhaber 1 5,50 % von 1,03 EUR 0,05 EUR
+Inhaber 2 5,50 % von 1,03 EUR 0,05 EUR
+Solidaritätszuschlag gesamt 0,10 EUR
+Keine Kirchensteuerdaten hinterlegt bzw. keine Kirchensteuerpflicht

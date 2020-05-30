@@ -1,37 +1,21 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.StringJoiner;
 import java.util.UUID;
+import java.util.function.Predicate;
 
-import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.Classification.Assignment;
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.model.Named;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import javax.inject.Inject;
 
+import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
@@ -44,6 +28,7 @@ import org.eclipse.jface.viewers.TreeSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerDropAdapter;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
@@ -51,11 +36,44 @@ import org.eclipse.swt.dnd.DragSourceAdapter;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.dnd.TransferData;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Classification.Assignment;
+import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Named;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.ExchangeRate;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ContextMenu;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+
+@SuppressWarnings("restriction")
 /* package */abstract class AbstractNodeTreeViewer extends Page implements ModificationListener
 {
     private static class ItemContentProvider implements ITreeContentProvider
@@ -71,7 +89,7 @@ import org.eclipse.swt.widgets.Shell;
         @Override
         public Object[] getElements(Object inputElement)
         {
-            return new Object[] { model.getRootNode() };
+            return model.getVirtualRootNode().getChildren().toArray();
         }
 
         @Override
@@ -94,7 +112,9 @@ import org.eclipse.swt.widgets.Shell;
 
         @Override
         public void dispose()
-        {}
+        {
+            // no resources allocated
+        }
     }
 
     private static class NodeDragListener extends DragSourceAdapter
@@ -109,22 +129,37 @@ import org.eclipse.swt.widgets.Shell;
         @Override
         public void dragSetData(DragSourceEvent event)
         {
-            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-            TaxonomyNodeTransfer.getTransfer().setTaxonomyNode(selection);
-            Assignment assignment = selection.getAssignment();
-            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
-                SecurityTransfer.getTransfer().setSecurity((Security) assignment.getInvestmentVehicle());
-            else
-                SecurityTransfer.getTransfer().setSecurity(null);
+            @SuppressWarnings("unchecked")
+            List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+            TaxonomyNodeTransfer.getTransfer().setTaxonomyNodes(nodes);
 
-            event.data = selection;
+            // if only one node is dragged and the node is of type security,
+            // then also enable the drag and drop of securities into a watchlist
+
+            Assignment assignment = nodes.size() == 1 ? nodes.get(0).getAssignment() : null;
+            if (assignment != null && assignment.getInvestmentVehicle() instanceof Security)
+            {
+                List<Security> securities = new ArrayList<>();
+                securities.add((Security) assignment.getInvestmentVehicle());
+                SecurityTransfer.getTransfer().setSecurities(securities);
+            }
+            else
+            {
+                SecurityTransfer.getTransfer().setSecurities(null);
+            }
+
+            event.data = nodes;
         }
 
         @Override
         public void dragStart(DragSourceEvent event)
         {
-            TaxonomyNode selection = (TaxonomyNode) ((TreeSelection) treeViewer.getSelection()).getFirstElement();
-            event.doit = !selection.isRoot() && !selection.isUnassignedCategory();
+            // drag data must not include the two visible root nodes, i.e. the
+            // unassigned category and the root category of the classification
+            @SuppressWarnings("unchecked")
+            List<TaxonomyNode> nodes = ((TreeSelection) treeViewer.getSelection()).toList();
+
+            event.doit = nodes.stream().noneMatch(n -> n.getParent().isRoot());
         }
     }
 
@@ -139,50 +174,82 @@ import org.eclipse.swt.widgets.Shell;
         }
 
         @Override
-        public boolean performDrop(Object data)
+        public boolean performDrop(Object data) // NOSONAR
         {
-            TaxonomyNode droppedNode = TaxonomyNodeTransfer.getTransfer().getTaxonomyNode();
-            if (droppedNode == getCurrentTarget())
+            List<TaxonomyNode> droppedNodes = getSubtreeNodes(TaxonomyNodeTransfer.getTransfer().getTaxonomyNodes());
+
+            final TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+
+            // do not drop upon itself
+            if (droppedNodes.contains(target))
                 return false;
 
-            TaxonomyNode target = (TaxonomyNode) getCurrentTarget();
+            // do not allow dragging a parent into the child
+            for (TaxonomyNode n : target.getPath())
+            {
+                if (droppedNodes.contains(n))
+                    return false;
+            }
 
-            // no categories allowed below the unassigned category
-            if (target.isUnassignedCategory() && droppedNode.isClassification())
+            // do not allow dragging into virtual root
+            if (target.isRoot() || target.getParent().isRoot())
                 return false;
 
-            // save parent in order to refresh later
-            TaxonomyNode droppedParent = droppedNode.getParent();
+            // do not allow dragging of categories into the "unassigned
+            // category" (must be deleted via right-click instead)
+            if (target.getPath().stream().anyMatch(TaxonomyNode::isUnassignedCategory)
+                            && droppedNodes.stream().anyMatch(TaxonomyNode::isClassification))
+                return false;
 
             switch (getCurrentLocation())
             {
                 case ViewerDropAdapter.LOCATION_AFTER:
-                    droppedNode.insertAfter(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                    TaxonomyNode t = target;
+                    for (TaxonomyNode node : droppedNodes)
+                    {
+                        node.insertAfter(t);
+                        t = node;
+                    }
+
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_BEFORE:
-                    droppedNode.insertBefore(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                    for (TaxonomyNode node : droppedNodes)
+                        node.insertBefore(target);
+
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_ON:
-                    // parent must not be dropped into child
-                    if (target.getPath().contains(droppedNode))
-                        break;
+                    // do not drag parent into child
+                    if (target.getPath().stream().anyMatch(droppedNodes::contains))
+                        return false;
+                    // do not move node into its own parent
+                    droppedNodes.stream().filter(n -> !n.getParent().equals(target)).forEach(n -> n.moveTo(target));
 
-                    // target must not be dropped into same node
-                    if (droppedParent.equals(target))
-                        break;
-
-                    droppedNode.moveTo(target);
-                    viewer.onTaxnomyNodeEdited(droppedParent);
+                    viewer.onTaxnomyNodeEdited(viewer.getModel().getVirtualRootNode());
                     break;
                 case ViewerDropAdapter.LOCATION_NONE:
-                    break;
                 default:
                     break;
             }
 
             return true;
+        }
+
+        /**
+         * Returns the unique subtrees, e.g. removes the all nodes whose parent
+         * is already selected
+         */
+        private List<TaxonomyNode> getSubtreeNodes(List<TaxonomyNode> nodes)
+        {
+            List<TaxonomyNode> answer = new ArrayList<>();
+            for (TaxonomyNode node : nodes)
+            {
+                List<TaxonomyNode> path = node.getPath();
+                if (path.subList(0, path.size() - 1).stream().noneMatch(nodes::contains))
+                    answer.add(node);
+            }
+            return answer;
         }
 
         @Override
@@ -208,17 +275,37 @@ import org.eclipse.swt.widgets.Shell;
     protected static final String MENU_GROUP_CUSTOM_ACTIONS = "customActions"; //$NON-NLS-1$
     protected static final String MENU_GROUP_DELETE_ACTIONS = "deleteActions"; //$NON-NLS-1$
 
+    @Inject
+    private SelectionService selectionService;
+
+    @Inject
+    private PortfolioPart part;
+
+    private boolean useIndirectQuotation = false;
+
     private TreeViewer nodeViewer;
     private ShowHideColumnHelper support;
-    private PortfolioPart part;
 
     private boolean isFirstView = true;
 
-    public AbstractNodeTreeViewer(PortfolioPart part, TaxonomyModel model, TaxonomyNodeRenderer renderer)
+    public AbstractNodeTreeViewer(TaxonomyModel model, TaxonomyNodeRenderer renderer)
     {
         super(model, renderer);
-        this.part = part;
     }
+
+    @Inject
+    private void setUseIndirectQuotation(
+                    @Preference(value = UIConstants.Preferences.USE_INDIRECT_QUOTATION) boolean useIndirectQuotation)
+    {
+        this.useIndirectQuotation = useIndirectQuotation;
+
+        if (nodeViewer != null)
+            nodeViewer.refresh();
+    }
+
+    protected abstract String readExpansionState();
+
+    protected abstract void storeExpansionState(String expanded);
 
     protected final TreeViewer getNodeViewer()
     {
@@ -250,23 +337,31 @@ import org.eclipse.swt.widgets.Shell;
     }
 
     @Override
-    public void showConfigMenu(Shell shell)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
-        support.showHideShowColumnsMenu(shell);
+        support.menuAboutToShow(manager);
     }
 
+    @Override
+    public void exportMenuAboutToShow(IMenuManager manager)
+    {
+        manager.add(new SimpleAction(Messages.MenuExportData, action -> new TreeViewerCSVExporter(nodeViewer)
+                        .export(getModel().getTaxonomy().getName() + ".csv"))); //$NON-NLS-1$
+    }
+
+    @Override
     public final Control createControl(Composite parent)
     {
         Composite container = new Composite(parent, SWT.NONE);
         TreeColumnLayout layout = new TreeColumnLayout();
         container.setLayout(layout);
 
-        nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION);
+        nodeViewer = new TreeViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ColumnEditingSupport.prepare(nodeViewer);
         ColumnViewerToolTipSupport.enableFor(nodeViewer, ToolTip.NO_RECREATE);
 
-        support = new ShowHideColumnHelper(getClass().getSimpleName() + '#' + getModel().getTaxonomy().getId(),
+        support = new ShowHideColumnHelper(getClass().getSimpleName() + '-' + getModel().getTaxonomy().getId(),
                         getPreferenceStore(), nodeViewer, layout);
 
         addColumns(support);
@@ -277,23 +372,36 @@ import org.eclipse.swt.widgets.Shell;
         nodeViewer.getTree().setLinesVisible(true);
         nodeViewer.setContentProvider(new ItemContentProvider());
 
-        nodeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer(),
-                        SecurityTransfer.getTransfer() }, new NodeDragListener(nodeViewer));
+        nodeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
+                        new Transfer[] { TaxonomyNodeTransfer.getTransfer(), SecurityTransfer.getTransfer() },
+                        new NodeDragListener(nodeViewer));
         nodeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, new Transfer[] { TaxonomyNodeTransfer.getTransfer() },
                         new NodeDropListener(this));
 
-        nodeViewer.setInput(getModel());
-
-        ViewerHelper.pack(nodeViewer);
-
-        ViewerHelper.attachContextMenu(nodeViewer, new IMenuListener()
+        nodeViewer.addFilter(new ViewerFilter()
         {
             @Override
-            public void menuAboutToShow(IMenuManager manager)
+            public boolean select(Viewer viewer, Object parentElement, Object element)
             {
-                fillContextMenu(manager);
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                for (Predicate<TaxonomyNode> predicate : getModel().getNodeFilters())
+                    if (!predicate.test(node))
+                        return false;
+
+                return true;
             }
         });
+
+        nodeViewer.addSelectionChangedListener(event -> {
+            TaxonomyNode node = ((TaxonomyNode) ((IStructuredSelection) event.getSelection()).getFirstElement());
+            if (node != null && node.getBackingSecurity() != null)
+                selectionService.setSelection(new SecuritySelection(getModel().getClient(), node.getBackingSecurity()));
+        });
+
+        nodeViewer.setInput(getModel());
+
+        new ContextMenu(nodeViewer.getControl(), this::fillContextMenu).hook();
 
         return container;
     }
@@ -303,13 +411,13 @@ import org.eclipse.swt.widgets.Shell;
     protected void addDimensionColumn(ShowHideColumnHelper support)
     {
         Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider()
+        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
         {
             @Override
             public Image getImage(Object e)
             {
                 if (((TaxonomyNode) e).isUnassignedCategory())
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_UNASSIGNED_CATEGORY);
+                    return Images.UNASSIGNED_CATEGORY.image();
                 return super.getImage(e);
             }
         });
@@ -325,6 +433,8 @@ import org.eclipse.swt.widgets.Shell;
             }
         }.setMandatory(true).addListener(this).attachTo(column);
         column.setRemovable(false);
+        // drag & drop sorting does not work well with auto sorting
+        column.setSorter(null);
         support.addColumn(column);
 
         column = new IsinColumn();
@@ -337,6 +447,59 @@ import org.eclipse.swt.widgets.Shell;
         column.getEditingSupport().addListener(this);
         column.setSorter(null);
         column.setVisible(false);
+        support.addColumn(column);
+
+        addWeightColumn(support);
+    }
+
+    private void addWeightColumn(ShowHideColumnHelper support) // NOSONAR
+    {
+        Column column;
+        column = new Column("weight", Messages.ColumnWeight, SWT.RIGHT, 70); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnWeight_Description);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() ? Values.Weight.format(node.getWeight()) : null;
+            }
+
+            @Override
+            public Color getForeground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.BLACK : null;
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Colors.WARNING : null;
+            }
+
+            @Override
+            public Image getImage(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                return node.isAssignment() && getModel().hasWeightError(node) ? Images.QUICKFIX.image() : null;
+            }
+
+        });
+        new ValueEditingSupport(TaxonomyNode.class, "weight", Values.Weight) //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                if (((TaxonomyNode) element).isUnassignedCategory())
+                    return false;
+                if (((TaxonomyNode) element).isClassification())
+                    return false;
+                return super.canEdit(element);
+            }
+        }.addListener(this::onWeightModified).attachTo(column);
         support.addColumn(column);
     }
 
@@ -351,13 +514,37 @@ import org.eclipse.swt.widgets.Shell;
                 TaxonomyNode node = (TaxonomyNode) element;
                 // actual %
                 // --> root is compared to target = total assets
-                long actual = node.getActual();
-                long base = node.getParent() == null ? node.getActual() : node.getParent().getActual();
+                long actual = node.getActual().getAmount();
+                long base = node.getParent() == null ? node.getActual().getAmount()
+                                : node.getParent().getActual().getAmount();
 
-                if (base == 0d)
+                if (base == 0)
                     return Values.Percent.format(0d);
                 else
-                    return Values.Percent.format(((double) actual / (double) base));
+                    return Values.Percent.format((double) actual / (double) base);
+            }
+        });
+        support.addColumn(column);
+
+        // Column which shows percentage of this asset class in relationship to
+        // total assets
+        column = new Column("amGV%", Messages.ColumnPctOfTotal, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnPctOfTotal_MenuLabel);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                // Divide amount in this asset class by amount of total assets
+                // (root of asset class tree)
+                long actual = node.getActual().getAmount();
+                long total = node.getRoot().getActual().getAmount();
+
+                if (total == 0)
+                    return Values.Percent.format(0d);
+                else
+                    return Values.Percent.format((double) actual / (double) total);
             }
         });
         support.addColumn(column);
@@ -369,39 +556,129 @@ import org.eclipse.swt.widgets.Shell;
             public String getText(Object element)
             {
                 TaxonomyNode node = (TaxonomyNode) element;
-                return Values.Amount.format(node.getActual());
+                return Values.Money.format(node.getActual(), getModel().getCurrencyCode());
             }
         });
         support.addColumn(column);
     }
 
-    protected void addAdditionalColumns(ShowHideColumnHelper support)
+    protected void addAdditionalColumns(ShowHideColumnHelper support) // NOSONAR
     {
-        getModel().getClient() //
-                        .getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
-                            column.setSorter(null);
-                            column.getEditingSupport().addListener(this);
-                            support.addColumn(column);
+        Column column = new Column("exchangeRate", Messages.ColumnExchangeRate, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+                if (!node.isAssignment())
+                    return null;
+
+                String baseCurrency = node.getAssignment().getInvestmentVehicle().getCurrencyCode();
+                if (baseCurrency == null)
+                    return null;
+
+                CurrencyConverter converter = getModel().getCurrencyConverter();
+                ExchangeRate rate = converter.getRate(LocalDate.now(), baseCurrency);
+
+                if (useIndirectQuotation)
+                    rate = rate.inverse();
+
+                return Values.ExchangeRate.format(rate.getValue());
+            }
+
+            @Override
+            public String getToolTipText(Object e)
+            {
+                String text = getText(e);
+                if (text == null)
+                    return null;
+
+                String term = getModel().getCurrencyConverter().getTermCurrency();
+                String base = ((TaxonomyNode) e).getAssignment().getInvestmentVehicle().getCurrencyCode();
+
+                return text + ' ' + (useIndirectQuotation ? base + '/' + term : term + '/' + base);
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("actBaseCurrency", Messages.ColumnActualValue + Messages.BaseCurrencyCue, SWT.RIGHT, 100); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnActualValueBaseCurrency);
+        column.setGroupLabel(Messages.ColumnForeignCurrencies);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                TaxonomyNode node = (TaxonomyNode) element;
+
+                if (node.isClassification() || getModel().getCurrencyCode()
+                                .equals(node.getAssignment().getInvestmentVehicle().getCurrencyCode()))
+                {
+                    // if it is a classification
+                    // *or* it is an assignment, but currency code matches
+                    // then no currency conversion is needed
+
+                    return Values.Money.format(node.getActual(), getModel().getCurrencyCode());
+                }
+                else if (node.getAssignment().getInvestmentVehicle().getCurrencyCode() != null)
+                {
+                    // convert into target currency if investment vehicle has a
+                    // currency code (e.g. is not an stock market index)
+                    return Values.Money.format(
+                                    getModel().getCurrencyConverter()
+                                                    .with(node.getAssignment().getInvestmentVehicle().getCurrencyCode())
+                                                    .convert(LocalDate.now(), node.getActual()),
+                                    getModel().getCurrencyCode());
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        });
+        column.setVisible(false);
+        support.addColumn(column);
+
+        getModel().getAttachedModels().forEach(m -> m.addColumns(support));
+
+        AttributeColumn.createFor(getModel().getClient(), Security.class) //
+                        .forEach(c -> {
+                            c.setSorter(null);
+                            c.getEditingSupport().addListener(this);
+                            support.addColumn(c);
                         });
     }
 
     private void expandNodes()
     {
-        List<TaxonomyNode> expanded = new ArrayList<TaxonomyNode>();
-        LinkedList<TaxonomyNode> stack = new LinkedList<TaxonomyNode>();
-        stack.push(getModel().getRootNode());
-        while (!stack.isEmpty())
+        List<TaxonomyNode> expanded = new ArrayList<>();
+
+        // check if we have expansion state in preferences
+        String expansion = readExpansionState();
+        if (expansion != null && !expansion.isEmpty())
         {
-            TaxonomyNode node = stack.pop();
-            if (node.isClassification() && !node.getClassification().getChildren().isEmpty())
+            Set<String> uuid = new HashSet<>(Arrays.asList(expansion.split(","))); //$NON-NLS-1$
+            getModel().visitAll(node -> {
+                if (node.isClassification() && uuid.contains(node.getClassification().getId()))
+                    expanded.add(node);
+            });
+        }
+        else
+        {
+            // fall back -> expand all classification nodes with children
+            LinkedList<TaxonomyNode> stack = new LinkedList<>();
+            stack.push(getModel().getVirtualRootNode());
+            while (!stack.isEmpty())
             {
-                expanded.add(node);
-                stack.addAll(node.getChildren());
+                TaxonomyNode node = stack.pop();
+                if (node.isClassification() && !node.getClassification().getChildren().isEmpty())
+                {
+                    expanded.add(node);
+                    stack.addAll(node.getChildren());
+                }
             }
         }
 
@@ -420,6 +697,7 @@ import org.eclipse.swt.widgets.Shell;
     {
         getModel().recalculate();
         getModel().fireTaxonomyModelChange(node);
+        getModel().markDirty();
     }
 
     @Override
@@ -441,14 +719,34 @@ import org.eclipse.swt.widgets.Shell;
 
     @Override
     public void afterPage()
-    {}
-
-    protected void fillContextMenu(IMenuManager manager)
     {
-        final TaxonomyNode node = (TaxonomyNode) ((IStructuredSelection) nodeViewer.getSelection()).getFirstElement();
-        if (node == null)
+    }
+
+    @Override
+    public void dispose()
+    {
+        // store expansion state to model
+        StringJoiner expansionState = new StringJoiner(","); //$NON-NLS-1$
+        for (Object element : nodeViewer.getExpandedElements())
+        {
+            TaxonomyNode node = (TaxonomyNode) element;
+            if (!node.isClassification())
+                continue;
+            expansionState.add(node.getClassification().getId());
+        }
+        storeExpansionState(expansionState.toString());
+
+        super.dispose();
+    }
+
+    protected void fillContextMenu(IMenuManager manager) // NOSONAR
+    {
+        // do not show context menu if multiple nodes are selected
+        IStructuredSelection selection = (IStructuredSelection) nodeViewer.getSelection();
+        if (selection.isEmpty() || selection.size() > 1)
             return;
 
+        TaxonomyNode node = (TaxonomyNode) selection.getFirstElement();
         if (node.isUnassignedCategory())
             return;
 
@@ -459,73 +757,29 @@ import org.eclipse.swt.widgets.Shell;
 
         if (node.isClassification())
         {
-            manager.add(new Action(Messages.MenuTaxonomyClassificationCreate)
-            {
-                @Override
-                public void run()
-                {
-                    doAddClassification(node);
-                }
-            });
+            manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationCreate, a -> doAddClassification(node)));
 
             TaxonomyNode unassigned = getModel().getUnassignedNode();
             if (!unassigned.getChildren().isEmpty())
             {
                 MenuManager subMenu = new MenuManager(Messages.MenuTaxonomyMakeAssignment);
-                for (final TaxonomyNode assignment : unassigned.getChildren())
-                {
-                    String label = assignment.getName();
-
-                    if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
-                        label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
-
-                    subMenu.add(new Action(label)
-                    {
-                        @Override
-                        public void run()
-                        {
-                            assignment.moveTo(node);
-                            nodeViewer.setExpandedState(node, true);
-                            onTaxnomyNodeEdited(node);
-                        }
-                    });
-                }
+                addAvailableAssignments(subMenu, node);
                 manager.add(subMenu);
             }
 
             manager.add(new Separator());
 
             MenuManager sorting = new MenuManager(Messages.MenuTaxonomySortTreeBy);
-            sorting.add(new Action(Messages.MenuTaxonomySortByTypName)
-            {
-                @Override
-                public void run()
-                {
-                    doSort(node, true);
-                }
-            });
-            sorting.add(new Action(Messages.MenuTaxonomySortByName)
-            {
-                @Override
-                public void run()
-                {
-                    doSort(node, false);
-                }
-            });
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByTypName, a -> doSort(node, true)));
+            sorting.add(new SimpleAction(Messages.MenuTaxonomySortByName, a -> doSort(node, false)));
 
             manager.add(sorting);
 
             if (!node.isRoot())
             {
                 manager.add(new Separator(MENU_GROUP_DELETE_ACTIONS));
-                manager.add(new Action(Messages.MenuTaxonomyClassificationDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        doDeleteClassification(node);
-                    }
-                });
+                manager.add(new SimpleAction(Messages.MenuTaxonomyClassificationDelete,
+                                a -> doDeleteClassification(node)));
             }
         }
         else
@@ -533,17 +787,12 @@ import org.eclipse.swt.widgets.Shell;
             // node is assignment, but not in unassigned category
             if (!node.getParent().isUnassignedCategory())
             {
-                manager.add(new Action(Messages.MenuTaxonomyAssignmentRemove)
-                {
-                    @Override
-                    public void run()
-                    {
-                        int oldWeight = node.getWeight();
-                        node.setWeight(0);
-                        doChangeAssignmentWeight(node, oldWeight);
-                        onTaxnomyNodeEdited(getModel().getRootNode());
-                    }
-                });
+                manager.add(new SimpleAction(Messages.MenuTaxonomyAssignmentRemove, a -> {
+                    int oldWeight = node.getWeight();
+                    node.setWeight(0);
+                    doChangeAssignmentWeight(node, oldWeight);
+                    onTaxnomyNodeEdited(getModel().getVirtualRootNode());
+                }));
             }
 
             Security security = node.getBackingSecurity();
@@ -552,6 +801,28 @@ import org.eclipse.swt.widgets.Shell;
                 manager.add(new Separator());
                 manager.add(new BookmarkMenu(part, security));
             }
+        }
+    }
+
+    private void addAvailableAssignments(MenuManager manager, TaxonomyNode targetNode)
+    {
+        for (final TaxonomyNode assignment : getModel().getUnassignedNode().getChildren())
+        {
+            String label = assignment.getName();
+
+            if (assignment.getWeight() < Classification.ONE_HUNDRED_PERCENT)
+                label += " (" + Values.Weight.format(assignment.getWeight()) + "%)"; //$NON-NLS-1$ //$NON-NLS-2$
+
+            manager.add(new Action(label)
+            {
+                @Override
+                public void run()
+                {
+                    assignment.moveTo(targetNode);
+                    nodeViewer.setExpandedState(targetNode, true);
+                    onTaxnomyNodeEdited(targetNode);
+                }
+            });
         }
     }
 
@@ -574,17 +845,12 @@ import org.eclipse.swt.widgets.Shell;
 
         node.getParent().removeChild(node);
 
-        node.accept(new TaxonomyModel.NodeVisitor()
-        {
-            @Override
-            public void visit(TaxonomyNode node)
-            {
-                if (node.isAssignment())
-                    node.moveTo(getModel().getUnassignedNode());
-            }
+        node.accept(node1 -> {
+            if (node1.isAssignment())
+                node1.moveTo(getModel().getUnassignedNode());
         });
 
-        onTaxnomyNodeEdited(getModel().getRootNode());
+        onTaxnomyNodeEdited(getModel().getVirtualRootNode());
     }
 
     private void doChangeAssignmentWeight(TaxonomyNode node, int oldWeight)
@@ -644,32 +910,28 @@ import org.eclipse.swt.widgets.Shell;
         // do not fire model change -> called within modification listener
     }
 
-    private void doSort(TaxonomyNode node, final boolean byType)
+    private void doSort(TaxonomyNode node, final boolean byType) // NOSONAR
     {
-        Collections.sort(node.getChildren(), new Comparator<TaxonomyNode>()
-        {
-            @Override
-            public int compare(TaxonomyNode node1, TaxonomyNode node2)
-            {
-                // unassigned category always stays at the end of the list
-                if (node1.isUnassignedCategory())
-                    return 1;
-                if (node2.isUnassignedCategory())
-                    return -1;
+        Collections.sort(node.getChildren(), (node1, node2) -> { // NOSONAR
+            // unassigned category always stays at the end of the list
+            if (node1.isUnassignedCategory())
+                return 1;
+            if (node2.isUnassignedCategory())
+                return -1;
 
-                if (byType && node1.isClassification() && !node2.isClassification())
-                    return -1;
-                if (byType && !node1.isClassification() && node2.isClassification())
-                    return 1;
+            if (byType && node1.isClassification() && !node2.isClassification())
+                return -1;
+            if (byType && !node1.isClassification() && node2.isClassification())
+                return 1;
 
-                return node1.getName().compareToIgnoreCase(node2.getName());
-            }
+            return node1.getName().compareToIgnoreCase(node2.getName());
         });
 
         int rank = 0;
         for (TaxonomyNode child : node.getChildren())
             child.setRank(rank++);
 
+        getModel().markDirty();
         getModel().fireTaxonomyModelChange(node);
     }
 }

@@ -1,0 +1,27 @@
+﻿DAB Bank
+
+Dividendengutschrift München, 31.05.2013
+
+
+Gattungsbezeichnung ISIN
+Linde AG Inhaber-Aktien o.N. DE0006483001
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 100,000 30.05.2013 31.05.2013 EUR 2,700000
+
+Wert  Konto-Nr. Betrag zu Ihren Gunsten
+31.05.2013 0000000000 EUR 198,79
+
+
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+inländische Dividende EUR            270,00
+Aktienverlusttopf EUR          8.746,91              8.746,91
+allgemeiner Verlusttopf EUR              0,00                  0,00
+Freistellungsauftrag (eingereicht: EUR 801,00) EUR              0,00                  0,00
+Quellensteuertopf EUR              0,00                  0,00
+zu versteuern EUR            270,00
+
+einbehaltene Kapitalertragsteuer EUR             67,50
+einbehaltener Solidaritätszuschlag  EUR              3,71
+
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR         13.036,70
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR            717,01

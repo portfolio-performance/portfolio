@@ -5,9 +5,6 @@ import java.text.MessageFormat;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.UIConstants;
-
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.ui.internal.workbench.E4Workbench;
 import org.eclipse.e4.ui.model.application.MApplication;
@@ -21,6 +18,10 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.osgi.service.datalocation.Location;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+
+@SuppressWarnings("restriction")
 public class OpenErrorLogFileHandler
 {
 
@@ -39,7 +40,7 @@ public class OpenErrorLogFileHandler
         else
         {
             MPart part = partService.createPart(UIConstants.Part.TEXT_VIEWER);
-            part.getPersistedState().put(UIConstants.Parameter.FILE, logfile.getAbsolutePath());
+            part.getPersistedState().put(UIConstants.PersistedState.FILENAME, logfile.getAbsolutePath());
 
             MPartStack stack = (MPartStack) modelService.find(UIConstants.PartStack.MAIN, app);
             stack.getChildren().add(part);

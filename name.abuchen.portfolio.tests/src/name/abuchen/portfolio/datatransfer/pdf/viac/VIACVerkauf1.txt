@@ -1,0 +1,27 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag 2.222.222.222 Herr
+Portfolio 3.333.333.333.33 Vorname Nachname
+Strasse 11
+9999 Wohnort
+Basel, 05.12.2019
+Börsenabrechnung - Verkauf
+Wir haben für Sie folgenden Auftrag ausgeführt:
+Order: Verkauf
+0.03 Ant CSIF World ex CH
+ISIN: CH0032400670
+Kurs: USD 1'511.31
+Betrag USD 45.71
+Umrechnungskurs CHF/USD 0.9989 CHF 45.66
+Verrechneter Betrag: Valuta 05.12.2019 CHF 45.66
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift

@@ -1,9 +1,8 @@
 package name.abuchen.portfolio.math;
 
-import java.time.Instant;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Objects;
-import java.util.function.Predicate;
+import java.util.function.IntPredicate;
 
 import name.abuchen.portfolio.util.Interval;
 
@@ -17,12 +16,18 @@ public final class Risk
         private Interval intervalMaxDD;
         private Interval recoveryTime;
 
-        public Drawdown(double[] values, Date[] dates)
+        public Drawdown(double[] values, LocalDate[] dates, int startAt)
         {
-            double peak = values[0] + 1;
-            double bottom = values[0] + 1;
-            Instant lastPeakDate = dates[0].toInstant();
-            Instant lastBottomDate = dates[0].toInstant();
+            if (values.length != dates.length)
+                throw new IllegalArgumentException();
+
+            if (startAt >= values.length)
+                throw new IllegalArgumentException();
+
+            double peak = values[startAt] + 1;
+            double bottom = values[startAt] + 1;
+            LocalDate lastPeakDate = dates[startAt];
+            LocalDate lastBottomDate = dates[startAt];
 
             maxDD = 0;
             intervalMaxDD = Interval.of(lastPeakDate, lastPeakDate);
@@ -31,16 +36,16 @@ public final class Risk
             Interval currentDrawdownDuration = null;
             Interval currentRecoveryTime = null;
 
-            for (int ii = 0; ii < values.length; ii++)
+            for (int ii = startAt; ii < values.length; ii++)
             {
                 double value = values[ii] + 1;
-                currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii].toInstant());
-                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii].toInstant());
+                currentDrawdownDuration = Interval.of(lastPeakDate, dates[ii]);
+                currentRecoveryTime = Interval.of(lastBottomDate, dates[ii]);
 
                 if (value > peak)
                 {
                     peak = value;
-                    lastPeakDate = dates[ii].toInstant();
+                    lastPeakDate = dates[ii];
 
                     if (currentDrawdownDuration.isLongerThan(maxDDDuration))
                         maxDDDuration = currentDrawdownDuration;
@@ -49,7 +54,7 @@ public final class Risk
                         recoveryTime = currentRecoveryTime;
                     // Reset the recovery time calculation, as the recovery is
                     // now complete
-                    lastBottomDate = dates[ii].toInstant();
+                    lastBottomDate = dates[ii];
                     bottom = value;
                 }
                 else
@@ -58,13 +63,13 @@ public final class Risk
                     if (drawdown > maxDD)
                     {
                         maxDD = drawdown;
-                        intervalMaxDD = Interval.of(lastPeakDate, dates[ii].toInstant());
+                        intervalMaxDD = Interval.of(lastPeakDate, dates[ii]);
                     }
                 }
                 if (value < bottom)
                 {
                     bottom = value;
-                    lastBottomDate = dates[ii].toInstant();
+                    lastBottomDate = dates[ii];
                 }
             }
 
@@ -106,34 +111,44 @@ public final class Risk
         private final double stdDeviation;
         private final double semiDeviation;
 
-        public Volatility(double[] returns, Predicate<Integer> filter)
+        public Volatility(double[] returns, IntPredicate filter)
         {
             Objects.requireNonNull(returns);
 
-            double averageReturn = average(returns, filter);
             double tempStandard = 0;
             double tempSemi = 0;
             int count = 0;
+
+            double averageLogReturn = logAverage(returns, filter);
 
             for (int ii = 0; ii < returns.length; ii++)
             {
                 if (!filter.test(ii))
                     continue;
 
-                double add = Math.pow(returns[ii] - averageReturn, 2);
+                double logReturn = Math.log(1 + returns[ii]);
+                double add = Math.pow(logReturn - averageLogReturn, 2);
 
                 tempStandard = tempStandard + add;
                 count++;
 
-                if (returns[ii] < averageReturn)
+                if (logReturn < averageLogReturn)
                     tempSemi = tempSemi + add;
             }
 
-            stdDeviation = Math.sqrt(tempStandard / count);
-            semiDeviation = Math.sqrt(tempSemi / count);
+            if (count <= 1)
+            {
+                stdDeviation = 0d;
+                semiDeviation = 0d;
+            }
+            else
+            {
+                stdDeviation = Math.sqrt(tempStandard / (count - 1) * count);
+                semiDeviation = Math.sqrt(tempSemi / (count - 1) * count);
+            }
         }
 
-        private double average(double[] returns, Predicate<Integer> filter)
+        private double logAverage(double[] returns, IntPredicate filter)
         {
             double sum = 0;
             int count = 0;
@@ -143,9 +158,12 @@ public final class Risk
                 if (!filter.test(ii))
                     continue;
 
-                sum += returns[ii];
+                sum += Math.log(1 + returns[ii]);
                 count++;
             }
+
+            if (count == 0)
+                return 0;
 
             return sum / count;
         }
@@ -177,5 +195,6 @@ public final class Risk
     }
 
     private Risk()
-    {}
+    {
+    }
 }

@@ -1,0 +1,69 @@
+FinTech Group Bank AG
+Hausbroicher Str. 222
+47877 Willich
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+FinTech Group Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+Frankfurt,        19.06.2017
+0202272000000784320020
+Herr Auftragsdatum     15.06.2017n
+Max Mustermann Schlusstag        15.06.2017a
+Musterstr Ausführungszeit   00:00 Uhr. 3b
+88888 Musterstadt Valuta            20.06.2017
+Auftragsnummer    95768888/1
+Ausf.platz/-art   KAG/außerbörsl.
+Wertpapierabrechnung Kauf Fonds/Zertifikate
+Ihre Depotnummer  1000000000
+Depotinhaber      Mustermann, Max
+Nr.95768888/1  Kauf            DB X-TR.S.E.600U.E.(DR)1C (LU0328475792/DBX1A7)
+Ausgeführt     5,082011 St.            Kurswert       EUR               400,00
+Kurs           78,709000 EUR           Provision
+Devisenkurs                            Eigene Spesen
+Verwahrart     GS-Verwahrung          *Fremde Spesen
+Lagerstelle    Clearstream Nat.
+Lagerland      Deutschland
+                                       Bemessungs-
+Gewinn/Verlust 0,00 EUR                grundlage      EUR                 0,00
+                                     **Einbeh. Steuer EUR                 0,00
+                                       Endbetrag      EUR              -400,00
+* Enthalten sind folgende Gebühren     Courtage       EUR                 0,00
+                                       Tradinggebühr  EUR                 0,00
+                                       Regulierung    EUR                 0,00
+                                       Schlussnoten   EUR                 0,00
+                                       Sonstige       EUR                 0,00
+**  Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                 Kapitalertragsteuer  EUR                 0,00
+                                 Solidaritätszuschlag EUR                 0,00
+                                 Kirchensteuer        EUR                 0,00
+    Evtl. Details dazu finden Sie im Steuerreport unter der Transaktion-Nr.:
+    1233799247.
+Der Kurswert enthält 0,000% regulären Ausgabeaufschlag (AA).
+Rabattierung   keine                   gezahlter AA   EUR                 0,00
+Kurs           78,7090 EUR             Kurswert       EUR               400,00
+               Zwischengewinn je Anteil               EUR               0,0003
+               Zwischengewinn Gesamt                  EUR               0,0000
+               ausschüttungsgleiche Erträge je Anteil EUR         5,7954720000
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784320020 0113202270000102
+               ausschüttungsgleiche Erträge gesamt    EUR                29,45
+Die Verrechnung des Endbetrags erfolgt über Ihr Konto Nr.: 1009126575
+Die Wertpapiere sowie den Gegenwert werden wir entsprechend der Abrechnung mit
+dem angegebenen Valutatag buchen. Bitte prüfen Sie diese Abrechnung auf
+Richtigkeit und Vollständigkeit. Etwaige Einwendungen gegen diese Abrechnung
+müssen unverzüglich nach Zugang bei der Bank erhoben werden. Die
+Unterlassung rechtzeitiger Einwendung gilt als Genehmigung. Bitte beachten
+Sie mögliche Hinweise des Emittenten hinsichtlich vorzeitiger Fälligstellung,
+beispielsweise wegen Knock-Out, in den jeweiligen Optionsscheinbedingungen und
+informieren Sie sich rechtzeitig, welche spezielle Fälligkeitsregelung auf die
+von Ihnen gehaltenen Wertpapiere zutreffen. Kapitalerträge sind ESt-pflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+Viel Freiheit für wenig Zins - Ihr flatex flex-Kredit zu günstigen
+Konditionen: 3,90% p.a.
+Weitere Informationen finden Sie unter: www.flatex.de/kredit/
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Bernd Würfel
+2000000784320020 0113202270000202

@@ -3,23 +3,14 @@ package name.abuchen.portfolio.ui.wizards.splits;
 import java.util.Collections;
 import java.util.List;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
-
 import org.eclipse.core.databinding.DataBindingContext;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -33,10 +24,21 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.wizards.AbstractWizardPage;
+
 public class PreviewTransactionsPage extends AbstractWizardPage
 {
     private class TransactionLabelProvider extends LabelProvider implements ITableLabelProvider
     {
+        @Override
         public Image getColumnImage(Object element, int columnIndex)
         {
             if (columnIndex == 1)
@@ -44,13 +46,14 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
 
                 if (t instanceof AccountTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_ACCOUNT);
+                    return Images.ACCOUNT.image();
                 else if (t instanceof PortfolioTransaction)
-                    return PortfolioPlugin.image(PortfolioPlugin.IMG_PORTFOLIO);
+                    return Images.PORTFOLIO.image();
             }
             return null;
         }
 
+        @Override
         public String getColumnText(Object element, int columnIndex)
         {
             TransactionPair<?> pair = (TransactionPair<?>) element;
@@ -59,7 +62,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
             switch (columnIndex)
             {
                 case 0:
-                    return Values.Date.format(t.getDate());
+                    return Values.DateTime.format(t.getDateTime());
                 case 1:
                     if (t instanceof AccountTransaction)
                         return ((AccountTransaction) t).getType().toString();
@@ -69,7 +72,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
                 case 2:
                     return Values.Share.format(t.getShares());
                 case 3:
-                    if (model.isChangeTransactions() && t.getDate().before(model.getExDate()))
+                    if (model.isChangeTransactions() && t.getDateTime().toLocalDate().isBefore(model.getExDate()))
                     {
                         long shares = t.getShares() * model.getNewShares() / model.getOldShares();
                         return Values.Share.format(shares);
@@ -130,7 +133,7 @@ public class PreviewTransactionsPage extends AbstractWizardPage
 
         TableColumn column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnDate);
-        layout.setColumnData(column, new ColumnPixelData(80, true));
+        layout.setColumnData(column, new ColumnPixelData(100, true));
 
         column = new TableColumn(tableViewer.getTable(), SWT.None);
         column.setText(Messages.ColumnTransactionType);
@@ -149,14 +152,16 @@ public class PreviewTransactionsPage extends AbstractWizardPage
         layout.setColumnData(column, new ColumnPixelData(200, true));
 
         tableViewer.setLabelProvider(new TransactionLabelProvider());
-        tableViewer.setContentProvider(new SimpleListContentProvider());
+        tableViewer.setContentProvider(ArrayContentProvider.getInstance());
 
         // bindings
 
         DataBindingContext context = new DataBindingContext();
 
-        context.bindValue(SWTObservables.observeSelection(checkbox), //
-                        BeansObservables.observeValue(model, "changeTransactions")); //$NON-NLS-1$
+        IObservableValue<?> targetObservable = WidgetProperties.selection().observe(checkbox);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> modelObservable = BeanProperties.value("changeTransactions").observe(model); //$NON-NLS-1$
+        context.bindValue(targetObservable, modelObservable);
 
         checkbox.addSelectionListener(new SelectionAdapter()
         {

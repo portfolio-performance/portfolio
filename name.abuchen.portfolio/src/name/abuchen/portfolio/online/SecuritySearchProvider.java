@@ -3,88 +3,57 @@ package name.abuchen.portfolio.online;
 import java.io.IOException;
 import java.util.List;
 
+import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.Security;
 
 public interface SecuritySearchProvider
 {
-    public static class ResultItem
+    public interface ResultItem
     {
-        private String symbol;
-        private String name;
-        private String isin;
-        private long lastTrade;
-        private String type;
-        private String exchange;
+        String getName();
 
-        public String getSymbol()
+        String getSymbol();
+
+        String getIsin();
+
+        String getWkn();
+
+        String getType();
+
+        String getExchange();
+
+        default String getOnlineId()
         {
-            return symbol;
+            return null;
         }
 
-        public void setSymbol(String symbol)
+        default boolean hasPrices()
         {
-            this.symbol = symbol;
+            return false;
         }
 
-        public String getName()
+        Security create();
+    }
+
+    public enum Type
+    {
+        ALL(Messages.LabelSearchAll), SHARE(Messages.LabelSearchShare), BOND(Messages.LabelSearchBond);
+
+        private final String label;
+
+        private Type(String label)
         {
-            return name;
+            this.label = label;
         }
 
-        public void setName(String name)
+        @Override
+        public String toString()
         {
-            this.name = name;
-        }
-
-        public String getIsin()
-        {
-            return isin;
-        }
-
-        public void setIsin(String isin)
-        {
-            this.isin = isin;
-        }
-
-        public long getLastTrade()
-        {
-            return lastTrade;
-        }
-
-        public void setLastTrade(long lastTrade)
-        {
-            this.lastTrade = lastTrade;
-        }
-
-        public String getType()
-        {
-            return type;
-        }
-
-        public void setType(String type)
-        {
-            this.type = type;
-        }
-
-        public String getExchange()
-        {
-            return exchange;
-        }
-
-        public void setExchange(String exchange)
-        {
-            this.exchange = exchange;
-        }
-
-        public void applyTo(Security security)
-        {
-            security.setTickerSymbol(getSymbol());
-            security.setName(getName());
-            security.setIsin(getIsin());
+            return label;
         }
     }
 
     String getName();
 
-    List<ResultItem> search(String query) throws IOException;
+    List<ResultItem> search(String query, Type type) throws IOException;
 }

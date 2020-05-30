@@ -1,0 +1,30 @@
+comdirect bank
+
+
+Wertpapierkauf
+Geschäftsnummer   : 91 005135
+Ordernummer       : 072431554214-001  Rechnungsnummer   : 405700382215DA95
+Geschäftstag      : 08.11.2016        Abwicklung        : Live Trading
+Handelszeit       : 11:51 Uhr (MEZ/MESZ)
+
+Wertpapier-Bezeichnung                                               WPKNR/ISIN
+T. Rowe Price Group Inc.                                                 870967
+Registered Shares DL -,20                                          US74144T1088
+
+
+Nennwert                  Zum Preis von
+St.  25                   EUR  58,27            franco Courtage
+                          Kurswert                    : EUR            1.456,75
+
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Abwickl.entgelt Clearstream : EUR                2,90
+                          Provision                   : EUR                9,90
+                          Summe Entgelte              : EUR               12,80
+--------------------------------------------------------------------------------
+
+
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern
+DE00 0000 0000 0000 0000 00   EUR     10.11.2016        EUR            1.469,55
+
+Verwahrungs-Art: WERTPAPIERRECHNUNG USA/KANADA (AKV)

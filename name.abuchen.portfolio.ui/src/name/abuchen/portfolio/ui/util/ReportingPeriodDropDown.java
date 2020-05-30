@@ -1,101 +1,121 @@
 package name.abuchen.portfolio.ui.util;
 
-import java.util.LinkedList;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Objects;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.window.Window;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.snapshot.ReportingPeriod;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
+import name.abuchen.portfolio.ui.dialogs.EditReportingPeriodsDialog;
 import name.abuchen.portfolio.ui.dialogs.ReportingPeriodDialog;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.widgets.ToolBar;
-
-public final class ReportingPeriodDropDown extends AbstractDropDown
+public final class ReportingPeriodDropDown extends DropDown implements IMenuListener
 {
+    @FunctionalInterface
     public interface ReportingPeriodListener
     {
         void reportingPeriodUpdated();
     }
 
-    private ReportingPeriodListener listener;
-    // TODO: move reporting periods to kepler e4 application model?
-    private LinkedList<ReportingPeriod> periods = new LinkedList<ReportingPeriod>();
+    private final PortfolioPart part;
+    private final ReportingPeriodListener listener;
 
-    public ReportingPeriodDropDown(ToolBar toolBar, final PortfolioPart part, ReportingPeriodListener listener)
+    private ReportingPeriod selected;
+    private List<ReportingPeriod> periods;
+
+    public ReportingPeriodDropDown(final PortfolioPart part, ReportingPeriodListener listener)
     {
-        super(toolBar, "x"); //$NON-NLS-1$
-        this.periods = part.loadReportingPeriods();
-        this.listener = listener;
+        super("x", null, SWT.DROP_DOWN, null); //$NON-NLS-1$
+        this.part = part;
+        this.listener = Objects.requireNonNull(listener);
 
-        getToolItem().setText(periods.getFirst().toString());
+        this.selected = part.getSelectedPeriod();
+        this.periods = part.getReportingPeriods();
 
-        toolBar.addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                part.storeReportingPeriods(periods);
-            }
-        });
+        setMenuListener(this);
+        setLabel(selected.toString());
+        setToolTip(selected.toInterval(LocalDate.now()).toString());
     }
 
     @Override
     public void menuAboutToShow(IMenuManager manager)
     {
-        boolean isFirst = true;
-        for (final ReportingPeriod period : periods)
+        for (ReportingPeriod period : periods)
         {
-            Action action = new Action(period.toString())
-            {
-                @Override
-                public void run()
-                {
-                    periods.remove(period);
-                    periods.addFirst(period);
-                    setLabel(period.toString());
-
-                    if (listener != null)
-                        listener.reportingPeriodUpdated();
-                }
-            };
-            if (isFirst)
-                action.setChecked(true);
-            isFirst = false;
-
+            Action action = createActionFor(period);
+            action.setChecked(period.equals(selected));
             manager.add(action);
         }
 
         manager.add(new Separator());
-        manager.add(new Action(Messages.LabelReportingAddPeriod)
-        {
-            @Override
-            public void run()
+        manager.add(new SimpleAction(Messages.LabelReportingAddPeriod, a -> {
+            ReportingPeriodDialog dialog = new ReportingPeriodDialog(Display.getDefault().getActiveShell(),
+                            selected);
+
+            if (dialog.open() == Window.OK)
             {
-                ReportingPeriodDialog dialog = new ReportingPeriodDialog(getToolBar().getShell(), periods.getFirst());
+                ReportingPeriod period = dialog.getReportingPeriod();
 
-                if (dialog.open() == Dialog.OK)
+                doSelect(period);
+
+                periods.add(period);
+
+                if (listener != null)
+                    listener.reportingPeriodUpdated();
+            }
+        }));
+
+        manager.add(new SimpleAction(Messages.MenuReportingPeriodManage, a -> {
+            EditReportingPeriodsDialog dialog = new EditReportingPeriodsDialog(Display.getDefault().getActiveShell());
+            dialog.setReportingPeriods(periods);
+
+            if (dialog.open() == Window.OK)
+            {
+                periods.clear();
+                periods.addAll(dialog.getReportingPeriods());
+
+                // make sure at least one entry exists
+                if (periods.isEmpty())
+                    periods.add(selected);
+                
+                if (!periods.contains(selected))
                 {
-                    ReportingPeriod period = dialog.getReportingPeriod();
-                    periods.addFirst(period);
-                    setLabel(period.toString());
-
-                    if (listener != null)
-                        listener.reportingPeriodUpdated();
-
-                    if (periods.size() > 20)
-                        periods.removeLast();
+                    doSelect(periods.get(0));
+                    listener.reportingPeriodUpdated();
                 }
             }
+        }));
+    }
+
+    private void doSelect(ReportingPeriod period)
+    {
+        selected = period;
+        part.setSelectedPeriod(period);
+        setLabel(period.toString());
+        setToolTip(selected.toInterval(LocalDate.now()).toString());
+    }
+
+    private Action createActionFor(final ReportingPeriod period)
+    {
+        return new SimpleAction(period.toString(), a -> {
+            doSelect(period);
+
+            if (listener != null)
+                listener.reportingPeriodUpdated();
         });
     }
 
-    public LinkedList<ReportingPeriod> getPeriods()
+    public ReportingPeriod getSelectedPeriod()
     {
-        return periods;
+        return selected;
     }
 }

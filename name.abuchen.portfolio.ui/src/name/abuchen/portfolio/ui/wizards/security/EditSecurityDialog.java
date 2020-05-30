@@ -1,19 +1,17 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
 import java.text.MessageFormat;
+import java.util.Objects;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.BindingHelper;
+import javax.inject.Inject;
 
 import org.eclipse.core.databinding.UpdateValueStrategy;
-import org.eclipse.core.databinding.beans.BeansObservables;
-import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.databinding.beans.BeanProperties;
+import org.eclipse.core.databinding.observable.value.IObservableValue;
 import org.eclipse.core.databinding.validation.ValidationStatus;
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.jface.databinding.swt.SWTObservables;
+import org.eclipse.e4.core.services.events.IEventBroker;
+import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.GridDataFactory;
@@ -26,7 +24,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
-import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -36,8 +33,20 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import name.abuchen.portfolio.events.ChangeEventConstants;
+import name.abuchen.portfolio.events.SecurityChangeEvent;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.BindingHelper;
+import name.abuchen.portfolio.ui.util.FormDataFactory;
+
 public class EditSecurityDialog extends Dialog
 {
+    @Inject
+    private IEventBroker eventBroker;
+
     private CTabFolder tabFolder;
     private Label errorMessage;
 
@@ -46,6 +55,7 @@ public class EditSecurityDialog extends Dialog
 
     private boolean showQuoteConfigurationInitially = false;
 
+    @Inject
     public EditSecurityDialog(Shell parentShell, Client client, Security security)
     {
         super(parentShell);
@@ -109,7 +119,7 @@ public class EditSecurityDialog extends Dialog
     {
         Composite container = new Composite(parent, SWT.NONE);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(container);
-        GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).applyTo(container);
+        GridLayoutFactory.fillDefaults().numColumns(1).margins(0, 0).spacing(0, 0).applyTo(container);
 
         createUpperArea(container);
         createTabFolder(container);
@@ -120,49 +130,48 @@ public class EditSecurityDialog extends Dialog
     private void createUpperArea(Composite container)
     {
         Composite header = new Composite(container, SWT.NONE);
+        header.setBackground(container.getDisplay().getSystemColor(SWT.COLOR_WHITE));
         header.setLayout(new FormLayout());
         GridDataFactory.fillDefaults().grab(true, false).applyTo(header);
 
         Label lblName = new Label(header, SWT.NONE);
         lblName.setText(Messages.ColumnName);
+        lblName.setBackground(header.getBackground());
         Text name = new Text(header, SWT.BORDER);
+        name.setBackground(header.getBackground());
+
         errorMessage = new Label(header, SWT.NONE);
         errorMessage.setForeground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
+        errorMessage.setBackground(header.getBackground());
+
+        Label imageLabel = new Label(header, SWT.NONE);
+        imageLabel.setBackground(header.getBackground());
+        imageLabel.setImage(Images.BANNER.image());
 
         // form layout
 
-        FormData data = new FormData();
-        data.top = new FormAttachment(0, 10);
-        data.left = new FormAttachment(0, 5);
-        lblName.setLayoutData(data);
+        FormDataFactory.startingWith(imageLabel).right(new FormAttachment(100));
 
-        data = new FormData();
-        data.top = new FormAttachment(lblName, 0, SWT.CENTER);
-        data.left = new FormAttachment(lblName, 10);
-        data.right = new FormAttachment(100, -5);
-        name.setLayoutData(data);
+        FormDataFactory.startingWith(lblName) //
+                        .left(new FormAttachment(0, 5)).top(new FormAttachment(0, 10)) //
+                        .thenRight(name).right(new FormAttachment(imageLabel, -10));
 
-        data = new FormData();
-        data.top = new FormAttachment(lblName, 10);
-        data.left = new FormAttachment(0, 5);
-        data.right = new FormAttachment(100, 5);
-        errorMessage.setLayoutData(data);
+        FormDataFactory.startingWith(errorMessage) //
+                        .left(new FormAttachment(0, 5)).top(new FormAttachment(lblName, 10))
+                        .right(new FormAttachment(imageLabel, -10));
 
         // bind to model
 
-        bindings.getBindingContext().bindValue(SWTObservables.observeText(name, SWT.Modify), //
-                        BeansObservables.observeValue(model, "name"), //$NON-NLS-1$
-                        new UpdateValueStrategy().setAfterConvertValidator(new IValidator()
-                        {
-                            @Override
-                            public IStatus validate(Object value)
-                            {
-                                String v = (String) value;
-                                return v != null && v.trim().length() > 0 ? ValidationStatus.ok() : ValidationStatus
-                                                .error(MessageFormat.format(Messages.MsgDialogInputRequired,
-                                                                Messages.ColumnName));
-                            }
-                        }), //
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> targetName = WidgetProperties.text(SWT.Modify).observe(name);
+        @SuppressWarnings("unchecked")
+        IObservableValue<String> observable = BeanProperties.value("name").observe(model); //$NON-NLS-1$
+        bindings.getBindingContext().bindValue(targetName, observable,
+                        new UpdateValueStrategy<String, String>().setAfterConvertValidator(
+                                        v -> v != null && v.trim().length() > 0 ? ValidationStatus.ok()
+                                                        : ValidationStatus.error(MessageFormat.format(
+                                                                        Messages.MsgDialogInputRequired,
+                                                                        Messages.ColumnName))),
                         null);
     }
 
@@ -170,13 +179,13 @@ public class EditSecurityDialog extends Dialog
     {
         tabFolder = new CTabFolder(container, SWT.TOP | SWT.FLAT);
         tabFolder.setBorderVisible(true);
-        tabFolder.setTabHeight(20);
         GridDataFactory.fillDefaults().grab(true, true).applyTo(tabFolder);
 
         tabFolder.addSelectionListener(new SelectionAdapter()
         {
             private AbstractPage current = null;
 
+            @Override
             public void widgetSelected(SelectionEvent e)
             {
                 if (current != null)
@@ -187,7 +196,7 @@ public class EditSecurityDialog extends Dialog
             }
         });
 
-        addPage(new SecurityMasterDataPage(bindings), PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY));
+        addPage(new SecurityMasterDataPage(model, bindings), Images.SECURITY.image());
         addPage(new AttributesPage(model, bindings), null);
         addPage(new SecurityTaxonomyPage(model, bindings), null);
         addPage(new HistoricalQuoteProviderPage(model, bindings), null);
@@ -226,16 +235,16 @@ public class EditSecurityDialog extends Dialog
         // ask user what to do with existing quotes
         boolean hasQuotes = !security.getPrices().isEmpty();
 
-        boolean feedChanged = model.getFeed() != null ? !model.getFeed().equals(security.getFeed()) : security
-                        .getFeed() != null;
-        boolean tickerChanged = model.getTickerSymbol() != null ? !model.getTickerSymbol().equals(
-                        security.getTickerSymbol()) : security.getTickerSymbol() != null;
-        boolean feedURLChanged = model.getFeedURL() != null ? !model.getFeedURL().equals(security.getFeedURL())
-                        : security.getFeedURL() != null;
+        boolean feedChanged = !Objects.equals(model.getFeed(), security.getFeed());
+        boolean tickerChanged = !Objects.equals(model.getTickerSymbol(), security.getTickerSymbol());
+        boolean feedURLChanged = !Objects.equals(model.getFeedURL(), security.getFeedURL());
+        boolean currencyChanged = !Objects.equals(model.getCurrencyCode(), security.getCurrencyCode());
 
-        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged;
+        boolean quotesCanChange = feedChanged || tickerChanged || feedURLChanged || currencyChanged;
 
         model.applyChanges();
+
+        eventBroker.post(ChangeEventConstants.Security.EDITED, new SecurityChangeEvent(model.getClient(), security));
 
         if (hasQuotes && quotesCanChange)
         {
@@ -244,7 +253,8 @@ public class EditSecurityDialog extends Dialog
                             Messages.MessageDialogProviderChangedText, //
                             MessageDialog.QUESTION, //
                             new String[] { Messages.MessageDialogProviderAnswerKeep,
-                                            Messages.MessageDialogProviderAnswerReplace }, 0);
+                                            Messages.MessageDialogProviderAnswerReplace },
+                            0);
             if (dialog.open() == 1)
                 security.removeAllPrices();
         }

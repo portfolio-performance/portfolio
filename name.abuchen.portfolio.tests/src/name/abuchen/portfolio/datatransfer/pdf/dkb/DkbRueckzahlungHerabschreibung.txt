@@ -1,0 +1,52 @@
+﻿10919 Berlin Seite 1 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Max Muster
+Auftragsnummer 9796635900
+Herrn Datum 13.01.2016
+Max Muster
+Musterstr. 2
+54321 Musterhausen
+Teilrückzahlung mit Nennwertänderung
+Nominale Wertpapierbezeichnung ISIN (WKN)
+EUR 2.000,00 6,875 % MS DEUTSCHLAND GMBH DE000A1RE7V0 (A1RE7V)
+INH.-SCHV. V.2012(2017)
+Rückzahlungskurs 100 % Rückzahlungsdatum 13.01.2016
+Rückzahlungswährung EUR Fälligkeitstag 13.01.2016
+Bestandsstichtag 12.01.2016
+Rückzahlungsbetrag 2.000,00+ EUR
+Einnahmen Differenzmethode (§ 43a Abs. 2 S.2 EStG) 327,24 EUR
+Berechnungsgrundlage für die Kapitalertragsteuer 327,24 EUR
+Kapitalertragsteuer 24,45 % auf 327,24 EUR 80,01- EUR
+Solidaritätszuschlag 5,5 % auf 80,01 EUR 4,40- EUR
+Kirchensteuer 9 % auf 80,01 EUR 7,20- EUR
+Ausmachender Betrag 1.908,39+ EUR
+Den Betrag buchen wir mit Valuta 13.01.2016 zu Gunsten des Kontos 16765097 (IBAN DE30 1203 0000 0026 6741 97),
+BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Ein Freistellungsauftrag wurde nicht erteilt bzw. ist ausgeschöpft.
+Es wurde keine Steuerbescheinigung erstellt.
+Steuerliche Ausgleichrechnung
+Berechnungsgrundlage für die Kapitalertragsteuer 0,00 EUR
+0883.01132234.0000011FA02
+Seite 2 von 2
+Depotnummer 500229442
+Kundennummer 51812597
+Auftragsnummer 9796635900
+Datum 13.01.2016
+Nachrichtlich die Übersicht Ihrer Verrechnungs- und Steuertopfsalden zum Zeitpunkt der Erstellung der Abrechnung.
+Verrechnungstöpfe 2016 ohne Vorjahressaldo Berechnungsgrundlage
+der gezahlten Steuern
+Euro Aktien Sonstige Sparer- anrechenbare Aktien und Sonstige
+Pauschbetrag Quellensteuer
+Vorher 0,00 0,00 0,00 0,00 131,25
+Einnahmen 0,00 0,00 0,00 0,00 327,24
+Kapitalrückzahlung
+Nachher 0,00 0,00 0,00 0,00 458,49
+Berücksichtigte Anschaffungsgeschäfte (alle Beträge in EUR)
+Geschäftsart Auftragsnr. Ausführungstag Whr./St. Nennwert/Stück Anschaffungskosten ant. Erlös ant. Ergebnis
+/Unit
+Kauf 2956630200 02.07.2013 EUR 2.000,0000 1.672,76 2.000,00 327,24
+Summe Differenzmethode und Ersatzbemessungsgrundlage 327,24
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.01132234.0000012FA02

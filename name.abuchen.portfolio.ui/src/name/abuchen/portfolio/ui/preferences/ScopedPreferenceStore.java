@@ -1,19 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2004, 2008 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Eclipse Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/epl-v10.html
- *
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *     Yves YANG <yves.yang@soyatec.com> - 
- *          Initial Fix for Bug 138078 [Preferences] Preferences Store for i18n support
- *          
- *          
- * COPIED FROM ECLIPSE BECAUSE E4 PENDANT IS MISSING
+ * Copyright (c) 2004, 2008 IBM Corporation and others. All rights reserved.
+ * This program and the accompanying materials are made available under the
+ * terms of the Eclipse Public License v1.0 which accompanies this distribution,
+ * and is available at http://www.eclipse.org/legal/epl-v10.html Contributors:
+ * IBM Corporation - initial API and implementation Yves YANG
+ * <yves.yang@soyatec.com> - Initial Fix for Bug 138078 [Preferences]
+ * Preferences Store for i18n support COPIED FROM ECLIPSE BECAUSE E4 PENDANT IS
+ * MISSING
  * https://github.com/eclipse/eclipse.platform.ui/blob/7e26a4a0bc4b7b490bd7ed01366e5114230596ce/bundles/org.eclipse.ui.workbench/Eclipse%20UI/org/eclipse/ui/preferences/ScopedPreferenceStore.java
- * 
  *******************************************************************************/
 package name.abuchen.portfolio.ui.preferences;
 
@@ -201,7 +195,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 public void preferenceChange(PreferenceChangeEvent event)
                 {
 
-                    if (silentRunning) { return; }
+                    if (silentRunning)
+                        return;
 
                     Object oldValue = event.getOldValue();
                     Object newValue = event.getNewValue();
@@ -243,19 +238,19 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
         }
         else if (obj instanceof Integer)
         {
-            return new Integer(defaults.getInt(key, INT_DEFAULT_DEFAULT));
+            return Integer.valueOf(defaults.getInt(key, INT_DEFAULT_DEFAULT));
         }
         else if (obj instanceof Double)
         {
-            return new Double(defaults.getDouble(key, DOUBLE_DEFAULT_DEFAULT));
+            return Double.valueOf(defaults.getDouble(key, DOUBLE_DEFAULT_DEFAULT));
         }
         else if (obj instanceof Float)
         {
-            return new Float(defaults.getFloat(key, FLOAT_DEFAULT_DEFAULT));
+            return Float.valueOf(defaults.getFloat(key, FLOAT_DEFAULT_DEFAULT));
         }
         else if (obj instanceof Long)
         {
-            return new Long(defaults.getLong(key, LONG_DEFAULT_DEFAULT));
+            return Long.valueOf(defaults.getLong(key, LONG_DEFAULT_DEFAULT));
         }
         else if (obj instanceof Boolean)
         {
@@ -322,7 +317,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
         // this store was created on. (and optionally the default)
         if (searchContexts == null)
         {
-            if (includeDefault) { return new IEclipsePreferences[] { getStorePreferences(), getDefaultPreferences() }; }
+            if (includeDefault)
+                return new IEclipsePreferences[] { getStorePreferences(), getDefaultPreferences() };
             return new IEclipsePreferences[] { getStorePreferences() };
         }
         // otherwise the user specified a search order so return the appropriate
@@ -365,7 +361,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setSearchContexts(IScopeContext[] scopes)
     {
         this.searchContexts = scopes;
-        if (scopes == null) { return; }
+        if (scopes == null)
+            return;
 
         // Assert that the default was not included (we automatically add it to
         // the end)
@@ -386,7 +383,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     @Override
     public boolean contains(String name)
     {
-        if (name == null) { return false; }
+        if (name == null)
+            return false;
         return (Platform.getPreferencesService().get(name, null, getPreferenceNodes(true))) != null;
     }
 
@@ -402,12 +400,14 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
         // important: create intermediate array to protect against listeners
         // being added/removed during the notification
         final Object[] list = getListeners();
-        if (list.length == 0) { return; }
+        if (list.length == 0)
+            return;
         final PropertyChangeEvent event = new PropertyChangeEvent(this, name, oldValue, newValue);
         for (int i = 0; i < list.length; i++)
         {
             final IPropertyChangeListener listener = (IPropertyChangeListener) list[i];
-            SafeRunner.run(new SafeRunnable(JFaceResources.getString("PreferenceStore.changeError")) { //$NON-NLS-1$
+            SafeRunner.run(new SafeRunnable(JFaceResources.getString("PreferenceStore.changeError")) //$NON-NLS-1$
+            {
                 @Override
                 public void run()
                 {
@@ -511,7 +511,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public double getDouble(String name)
     {
         String value = internalGet(name);
-        if (value == null) { return DOUBLE_DEFAULT_DEFAULT; }
+        if (value == null)
+            return DOUBLE_DEFAULT_DEFAULT;
         try
         {
             return Double.parseDouble(value);
@@ -545,7 +546,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public float getFloat(String name)
     {
         String value = internalGet(name);
-        if (value == null) { return FLOAT_DEFAULT_DEFAULT; }
+        if (value == null)
+            return FLOAT_DEFAULT_DEFAULT;
         try
         {
             return Float.parseFloat(value);
@@ -565,7 +567,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public int getInt(String name)
     {
         String value = internalGet(name);
-        if (value == null) { return INT_DEFAULT_DEFAULT; }
+        if (value == null)
+            return INT_DEFAULT_DEFAULT;
         try
         {
             return Integer.parseInt(value);
@@ -585,7 +588,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public long getLong(String name)
     {
         String value = internalGet(name);
-        if (value == null) { return LONG_DEFAULT_DEFAULT; }
+        if (value == null)
+            return LONG_DEFAULT_DEFAULT;
         try
         {
             return Long.parseLong(value);
@@ -616,7 +620,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     @Override
     public boolean isDefault(String name)
     {
-        if (name == null) { return false; }
+        if (name == null)
+            return false;
         return (Platform.getPreferencesService().get(name, null, getPreferenceNodes(false))) == null;
     }
 
@@ -655,8 +660,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
 
     /*
      * (non-Javadoc)
-     * @see
-     * org.eclipse.jface.preference.IPreferenceStore#removePropertyChangeListener
+     * @see org.eclipse.jface.preference.IPreferenceStore#
+     * removePropertyChangeListener
      * (org.eclipse.jface.util.IPropertyChangeListener)
      */
     @Override
@@ -759,7 +764,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
             // removing a non-existing preference is a no-op so call the Core
             // API directly
             getStorePreferences().remove(name);
-            if (oldValue != defaultValue)
+            if (oldValue != defaultValue) // NOSONAR
             {
                 dirty = true;
                 firePropertyChangeEvent(name, oldValue, defaultValue);
@@ -783,7 +788,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setValue(String name, double value)
     {
         double oldValue = getDouble(name);
-        if (oldValue == value) { return; }
+        if (oldValue == value)
+            return;
         try
         {
             silentRunning = true;// Turn off updates from the store
@@ -796,7 +802,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 getStorePreferences().putDouble(name, value);
             }
             dirty = true;
-            firePropertyChangeEvent(name, new Double(oldValue), new Double(value));
+            firePropertyChangeEvent(name, Double.valueOf(oldValue), Double.valueOf(value));
         }
         finally
         {
@@ -814,7 +820,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setValue(String name, float value)
     {
         float oldValue = getFloat(name);
-        if (oldValue == value) { return; }
+        if (oldValue == value)
+            return;
         try
         {
             silentRunning = true;// Turn off updates from the store
@@ -827,7 +834,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 getStorePreferences().putFloat(name, value);
             }
             dirty = true;
-            firePropertyChangeEvent(name, new Float(oldValue), new Float(value));
+            firePropertyChangeEvent(name, Float.valueOf(oldValue), Float.valueOf(value));
         }
         finally
         {
@@ -845,7 +852,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setValue(String name, int value)
     {
         int oldValue = getInt(name);
-        if (oldValue == value) { return; }
+        if (oldValue == value)
+            return;
         try
         {
             silentRunning = true;// Turn off updates from the store
@@ -858,7 +866,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 getStorePreferences().putInt(name, value);
             }
             dirty = true;
-            firePropertyChangeEvent(name, new Integer(oldValue), new Integer(value));
+            firePropertyChangeEvent(name, Integer.valueOf(oldValue), Integer.valueOf(value));
         }
         finally
         {
@@ -876,7 +884,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setValue(String name, long value)
     {
         long oldValue = getLong(name);
-        if (oldValue == value) { return; }
+        if (oldValue == value)
+            return;
         try
         {
             silentRunning = true;// Turn off updates from the store
@@ -889,7 +898,7 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 getStorePreferences().putLong(name, value);
             }
             dirty = true;
-            firePropertyChangeEvent(name, new Long(oldValue), new Long(value));
+            firePropertyChangeEvent(name, Long.valueOf(oldValue), Long.valueOf(value));
         }
         finally
         {
@@ -928,7 +937,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
     public void setValue(String name, boolean value)
     {
         boolean oldValue = getBoolean(name);
-        if (oldValue == value) { return; }
+        if (oldValue == value)
+            return;
         try
         {
             silentRunning = true;// Turn off updates from the store
@@ -941,7 +951,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                 getStorePreferences().putBoolean(name, value);
             }
             dirty = true;
-            firePropertyChangeEvent(name, oldValue ? Boolean.TRUE : Boolean.FALSE, value ? Boolean.TRUE : Boolean.FALSE);
+            firePropertyChangeEvent(name, oldValue ? Boolean.TRUE : Boolean.FALSE,
+                            value ? Boolean.TRUE : Boolean.FALSE);
         }
         finally
         {
@@ -978,7 +989,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
                         .node(Plugin.PLUGIN_PREFERENCE_SCOPE);
         try
         {
-            if (!(root.nodeExists(nodeQualifier))) { return; }
+            if (!(root.nodeExists(nodeQualifier)))
+                return;
         }
         catch (BackingStoreException e)
         {
@@ -987,7 +999,8 @@ public class ScopedPreferenceStore extends EventManager implements IPreferenceSt
         }
 
         IEclipsePreferences preferences = getStorePreferences();
-        if (preferences == null) { return; }
+        if (preferences == null)
+            return;
         if (preferencesListener != null)
         {
             preferences.removePreferenceChangeListener(preferencesListener);

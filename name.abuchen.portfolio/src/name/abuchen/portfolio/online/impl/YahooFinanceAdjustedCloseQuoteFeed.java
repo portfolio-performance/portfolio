@@ -1,11 +1,11 @@
 package name.abuchen.portfolio.online.impl;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.io.IOException;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 
 import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.SecurityPrice;
 
 public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
 {
@@ -22,15 +22,20 @@ public class YahooFinanceAdjustedCloseQuoteFeed extends YahooFinanceQuoteFeed
     }
 
     @Override
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
-                    SimpleDateFormat dateFormat) throws ParseException
+    protected JSONArray extractQuotesArray(JSONObject indicators) throws IOException
     {
-        // Date,Open,High,Low,Close,Volume,Adj Close
-        super.fillValues(values, price, priceFormat, dateFormat);
+        JSONArray quotes = (JSONArray) indicators.get("adjclose"); //$NON-NLS-1$
+        if (quotes == null || quotes.isEmpty())
+            throw new IOException();
 
-        Number q = priceFormat.parse(values[6]);
-        long v = (long) (q.doubleValue() * 100);
-        price.setValue(v);
+        JSONObject quote = (JSONObject) quotes.get(0);
+        if (quote == null)
+            throw new IOException();
+
+        JSONArray adjclose = (JSONArray) quote.get("adjclose"); //$NON-NLS-1$
+        if (adjclose == null || adjclose.isEmpty())
+            throw new IOException();
+
+        return adjclose;
     }
-
 }

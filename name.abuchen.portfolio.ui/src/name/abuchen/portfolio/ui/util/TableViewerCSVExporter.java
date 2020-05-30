@@ -4,17 +4,17 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
-
-import name.abuchen.portfolio.model.Values;
 
 import org.apache.commons.csv.CSVPrinter;
 import org.eclipse.jface.viewers.CellLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 
 public class TableViewerCSVExporter extends AbstractCSVExporter
 {
@@ -26,19 +26,17 @@ public class TableViewerCSVExporter extends AbstractCSVExporter
     }
 
     @Override
-    protected Control getControl()
+    protected Shell getShell()
     {
-        return viewer.getTable();
+        return viewer.getTable().getShell();
     }
 
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             int columnCount = viewer.getTable().getColumnCount();
 
             // write header

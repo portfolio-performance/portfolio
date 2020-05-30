@@ -1,0 +1,41 @@
+ING-DiBa AG   60628 Frankfurt am Main
+Depotinhaber: VORNAME NACHNAME
+Herrn Direkt-Depot Nr.: DEPOTNUMME
+VORNAME NACHNAME Datum: 20.03.2012
+STRASSESTRASSE Seite: 1 von 2
+ORTORTORTORTOR
+Wertpapierabrechnung Kauf
+Ordernummer 60972506.001
+ISIN (WKN) US0378331005 (865985)
+Wertpapierbezeichnung Apple Inc. Registered Shares o.N.
+Nominale 11,00 Stück
+Kurs 454,293
+Handelsplatz Direkthandel
+Schlusstag / -zeit 20.03.2012 um 19:35:40 Uhr
+Kurswert EUR 4.997,22
+Provision EUR 12,49
+Endbetrag zu Ihren Lasten EUR 5.009,71
+Abrechnungskonto KONTONUMME
+Valuta 22.03.2012
+Wertpapiere zugunsten Girosammelverwahrung.
+Weitere steuerliche Informationen entnehmen Sie bitte der Rückseite.
+Einfach überall handeln - mit dem neuen Mobile Brokerage. Mehr unter www.ing-diba.de/mobilebanking .
+ING-DiBa AG Vorsitzender des Aufsichtsrates: Ben Tellings Sitz: Frankfurt am Main Internet www.ing-diba.de
+Theodor-Heuss-Allee 106 Vorstand: Roland Boekhout (Vorsitzender), AG Frankfurt am Main HRB 7727 E-Mail info@ing-diba.de
+60486 Frankfurt am Main Herbert Willius (stellv. Vorsitzender), Bas Brouwers, Steuernummer 047 220 2800 4 Bankleitzahl 500 105 17
+Bernd Geilen, Katharina Herrmann, Martin Krebs USt-IdNr. DE 114 103 475
+34WAAD8244141030_T
+Depotinhaber: VORNAME NACHNAME
+Direkt-Depot Nr.: DEPOTNUMME
+Datum: 20.03.2012
+Seite: 2 von 2
+Ordernummer 60972506.001
+ISIN (WKN) US0378331005 (865985)
+Verrechnungstopf Aktien vor Geschäft 0,00 EUR
+Verrechnungstopf Aktien nach Geschäft 0,00 EUR
+Verrechnungstopf Allgemein vor Geschäft 0,00 EUR
+Verrechnungstopf Allgemein nach Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer vor Geschäft 0,00 EUR
+Verrechnungstopf ausländ. Quellensteuer nach Geschäft 0,00 EUR
+Für Fragen stehen wir Ihnen gerne telefonisch 7 Tage die Woche von 7.30 bis 22 Uhr unter 069 / 50 60 30 50
+zur Verfügung.

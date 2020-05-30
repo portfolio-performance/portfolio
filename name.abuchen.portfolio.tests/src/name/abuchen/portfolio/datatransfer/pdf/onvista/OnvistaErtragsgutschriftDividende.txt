@@ -1,0 +1,33 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=173458000
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max MUSTERMANN
+ADRESSZEILE3=Musterstrasse 2
+ADRESSZEILE4=54321 Musterhausen
+Dividende für
+Herr ADRESSZEILE5=01.01.2015 - 31.12.2015
+Max MUSTERMANN ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 2 BELEGNUMMER=1108
+54321 Musterhausen 173458000 77110599 / 20.04.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max MUSTERMANN
+Dividendengutschrift Frankfurt am Main, 20.04.2016
+Gattungsbezeichnung ISIN
+Commerzbank AG Inhaber-Aktien o.N. DE000CBK1001
+Nominal Ex-Tag Zahltag Dividenden-Betrag pro Stück
+STK 50,000 21.04.2016 21.04.2016 EUR 0,200000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+21.04.2016 172306238 EUR 10,00
+Leistungen aus dem steuerlichen Einlagenkonto (§27 KStG) EUR 10,00
+Steuerlicher Stichtag 21.04.2016
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/001108/210416/001527

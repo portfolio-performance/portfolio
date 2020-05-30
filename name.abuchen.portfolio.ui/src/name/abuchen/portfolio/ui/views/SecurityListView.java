@@ -1,120 +1,332 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
-import name.abuchen.portfolio.model.TransactionPair;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.SWTHelper;
-import name.abuchen.portfolio.ui.util.SharesLabelProvider;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.ValueEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.util.chart.TimelineChart;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.util.Dates;
+import javax.inject.Inject;
+import javax.inject.Named;
 
+import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.layout.GridDataFactory;
-import org.eclipse.jface.layout.GridLayoutFactory;
-import org.eclipse.jface.layout.RowLayoutFactory;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
-import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
-import org.swtchart.ILineSeries;
-import org.swtchart.ILineSeries.PlotSymbolType;
-import org.swtchart.ISeries;
-import org.swtchart.ISeries.SeriesType;
+
+import com.ibm.icu.text.MessageFormat;
+
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.BuySellEntry;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.PortfolioTransferEntry;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionOwner;
+import name.abuchen.portfolio.model.TransactionPair;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Quote;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.impl.EurostatHICPQuoteFeed;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.SecurityPriceDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.selection.SecuritySelection;
+import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmAction;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.SWTHelper;
+import name.abuchen.portfolio.ui.util.SimpleAction;
+import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
+import name.abuchen.portfolio.ui.util.swt.SashLayout;
+import name.abuchen.portfolio.ui.util.swt.SashLayoutData;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.TransactionOwnerListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
+import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
+import name.abuchen.portfolio.util.TradeCalendar;
+import name.abuchen.portfolio.util.TradeCalendarManager;
 
 public class SecurityListView extends AbstractListView implements ModificationListener
 {
+    private class CreateSecurityDropDown extends DropDown implements IMenuListener
+    {
+        public CreateSecurityDropDown()
+        {
+            super(Messages.SecurityMenuAddNewSecurity, Images.PLUS, SWT.NONE);
+            setMenuListener(this);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(new SimpleAction(Messages.SecurityMenuNewSecurity, a -> {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setCurrencyCode(getClient().getBaseCurrency());
+                openEditDialog(newSecurity);
+            }));
+
+            manager.add(new SimpleAction(Messages.SecurityMenuNewExchangeRate, a -> {
+                Security newSecurity = new Security();
+                newSecurity.setFeed(QuoteFeed.MANUAL);
+                newSecurity.setCurrencyCode(getClient().getBaseCurrency());
+                newSecurity.setTargetCurrencyCode(getClient().getBaseCurrency());
+                openEditDialog(newSecurity);
+            }));
+
+            MenuManager newHICP = new MenuManager(Messages.SecurityMenuNewHICP);
+            manager.add(newHICP);
+
+            new EurostatHICPQuoteFeed().getExchanges(new Security(), new ArrayList<>()).stream()
+                            .forEach(region -> newHICP.add(new SimpleAction(region.getName(), a -> {
+                                Security newSecurity = new Security();
+                                newSecurity.setFeed(EurostatHICPQuoteFeed.ID);
+                                newSecurity.setLatestFeed(QuoteFeed.MANUAL);
+                                newSecurity.setCurrencyCode(null);
+                                newSecurity.setTickerSymbol(region.getId());
+                                newSecurity.setName(region.getName() + Messages.LabelSuffix_HICP);
+                                newSecurity.setCalendar(TradeCalendar.EMPTY_CODE);
+                                openEditDialog(newSecurity);
+                            })));
+
+            manager.add(new Separator());
+
+            manager.add(new SimpleAction(Messages.SecurityMenuSearch4Securities, a -> {
+                SearchSecurityWizardDialog dialog = new SearchSecurityWizardDialog(
+                                Display.getDefault().getActiveShell(), getClient());
+                if (dialog.open() == Dialog.OK)
+                    openEditDialog(dialog.getSecurity());
+            }));
+        }
+
+        private void openEditDialog(Security newSecurity)
+        {
+            Dialog dialog = make(EditSecurityDialog.class, newSecurity);
+
+            if (dialog.open() == Dialog.OK)
+            {
+                markDirty();
+                getClient().addSecurity(newSecurity);
+
+                if (watchlist != null)
+                    watchlist.getSecurities().add(newSecurity);
+
+                setSecurityTableInput();
+                securities.updateQuotes(newSecurity);
+            }
+        }
+    }
+
+    private class FilterDropDown extends DropDown implements IMenuListener
+    {
+        private final Predicate<Security> securityIsNotInactive = record -> !record.isRetired();
+        private final Predicate<Security> onlySecurities = record -> !record.isExchangeRate();
+        private final Predicate<Security> onlyExchangeRates = record -> record.isExchangeRate();
+        private final Predicate<Security> sharesGreaterZero = record -> getSharesHeld(getClient(), record) > 0;
+        private final Predicate<Security> sharesEqualZero = record -> getSharesHeld(getClient(), record) == 0;
+
+        public FilterDropDown(IPreferenceStore preferenceStore)
+        {
+            super(Messages.SecurityListFilter, Images.FILTER_OFF, SWT.NONE);
+            setMenuListener(this);
+
+            int savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettings"); //$NON-NLS-1$
+
+            if ((savedFilters & (1 << 1)) != 0)
+                filter.add(securityIsNotInactive);
+            if ((savedFilters & (1 << 2)) != 0)
+                filter.add(onlySecurities);
+            if ((savedFilters & (1 << 3)) != 0)
+                filter.add(onlyExchangeRates);
+            if ((savedFilters & (1 << 4)) != 0)
+                filter.add(sharesGreaterZero);
+            if ((savedFilters & (1 << 5)) != 0)
+                filter.add(sharesEqualZero);
+
+            if (!filter.isEmpty())
+                setImage(Images.FILTER_ON);
+
+            addDisposeListener(e -> {
+
+                int savedFilter = 0;
+                if (filter.contains(securityIsNotInactive))
+                    savedFilter += (1 << 1);
+                if (filter.contains(onlySecurities))
+                    savedFilter += (1 << 2);
+                if (filter.contains(onlyExchangeRates))
+                    savedFilter += (1 << 3);
+                if (filter.contains(sharesGreaterZero))
+                    savedFilter += (1 << 4);
+                if (filter.contains(sharesEqualZero))
+                    savedFilter += (1 << 5);
+
+                preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings", savedFilter); //$NON-NLS-1$
+            });
+        }
+
+        /**
+         * Collects all shares held for the given security.
+         * 
+         * @param client
+         *            {@link Client}
+         * @param security
+         *            {@link Security}
+         * @return shares held on success, else 0
+         */
+        private long getSharesHeld(Client client, Security security)
+        {
+            // collect all shares and return a value greater 0
+            return Math.max(security.getTransactions(client).stream()
+                            .filter(t -> t.getTransaction() instanceof PortfolioTransaction) //
+                            .map(t -> (PortfolioTransaction) t.getTransaction()) //
+                            .mapToLong(t -> {
+                                switch (t.getType())
+                                {
+                                    case BUY:
+                                    case DELIVERY_INBOUND:
+                                        return t.getShares();
+                                    case SELL:
+                                    case DELIVERY_OUTBOUND:
+                                        return -t.getShares();
+                                    default:
+                                        return 0L;
+                                }
+                            }).sum(), 0);
+        }
+
+        @Override
+        public void menuAboutToShow(IMenuManager manager)
+        {
+            manager.add(createAction(Messages.SecurityListFilterHideInactive, securityIsNotInactive));
+            manager.add(createAction(Messages.SecurityListFilterOnlySecurities, onlySecurities));
+            manager.add(createAction(Messages.SecurityListFilterOnlyExchangeRates, onlyExchangeRates));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldGreaterZero, sharesGreaterZero));
+            manager.add(createAction(Messages.SecurityFilterSharesHeldEqualZero, sharesEqualZero));
+        }
+
+        private Action createAction(String label, Predicate<Security> predicate)
+        {
+            Action action = new Action(label, Action.AS_CHECK_BOX)
+            {
+                @Override
+                public void run()
+                {
+                    boolean isChecked = filter.contains(predicate);
+
+                    if (isChecked)
+                        filter.remove(predicate);
+                    else
+                        filter.add(predicate);
+
+                    // uncheck mutually exclusive actions if new filter is added
+                    if (!isChecked)
+                    {
+                        if (predicate == onlySecurities)
+                            filter.remove(onlyExchangeRates);
+                        else if (predicate == onlyExchangeRates)
+                            filter.remove(onlySecurities);
+                        else if (predicate == sharesEqualZero)
+                            filter.remove(sharesGreaterZero);
+                        else if (predicate == sharesGreaterZero)
+                            filter.remove(sharesEqualZero);
+                    }
+
+                    setImage(filter.isEmpty() ? Images.FILTER_OFF : Images.FILTER_ON);
+                    securities.refresh(false);
+                }
+            };
+            action.setChecked(filter.contains(predicate));
+            return action;
+        }
+    }
+
+    @Inject
+    private SelectionService selectionService;
+
+    @Inject
+    private ExchangeRateProviderFactory factory;
+
     private SecuritiesTable securities;
     private TableViewer prices;
     private TableViewer transactions;
     private TableViewer events;
-    private TimelineChart chart;
+    private SecuritiesChart chart;
     private SecurityDetailsViewer latest;
+    private SecurityQuoteQualityMetricsViewer metrics;
 
-    private Date chartPeriod;
+    private List<Predicate<Security>> filter = new ArrayList<>();
 
     private Watchlist watchlist;
 
     private Pattern filterPattern;
 
-    public SecurityListView()
-    {
-        Calendar cal = Calendar.getInstance();
-        cal.add(Calendar.YEAR, -2);
-        chartPeriod = cal.getTime();
-    }
-
     @Override
-    protected String getTitle()
+    protected String getDefaultTitle()
     {
-        return watchlist == null ? Messages.LabelSecurities : Messages.LabelSecurities + " " + watchlist.getName(); //$NON-NLS-1$
-    }
+        StringBuilder title = new StringBuilder();
+        if (watchlist == null)
+            title.append(Messages.LabelSecurities);
+        else
+            title.append(Messages.LabelSecurities).append(' ').append(watchlist.getName());
 
-    @Override
-    protected int[] getDefaultWeights(Control[] children)
-    {
-        return new int[] { 50, 50 };
+        if (securities != null)
+            title.append(" (").append(securities.getColumnHelper().getConfigurationName()).append(")"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        return title.toString();
     }
 
     @Override
@@ -122,9 +334,22 @@ public class SecurityListView extends AbstractListView implements ModificationLi
     {
         if (securities != null && !securities.getTableViewer().getTable().isDisposed())
         {
-            securities.getTableViewer().refresh(true);
-            securities.getTableViewer().setSelection(securities.getTableViewer().getSelection());
+            updateTitle(getDefaultTitle());
+            securities.refresh(true);
         }
+    }
+
+    @Override
+    public void markDirty()
+    {
+        super.markDirty();
+
+        // see issue #448: if the note column is edited, the information area is
+        // not updated accordingly. #markDirty is called by the SecuritiesTable
+        // when any column is edited
+        Security security = (Security) ((IStructuredSelection) securities.getTableViewer().getSelection())
+                        .getFirstElement();
+        latest.setInput(security);
     }
 
     @Override
@@ -134,7 +359,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         Security security = (Security) prices.getData(Security.class.toString());
 
         // if the date changed, the prices must be reordered --> binary search
-        if (newValue instanceof Date)
+        if (newValue instanceof LocalDate)
         {
             SecurityPrice price = (SecurityPrice) element;
             security.removePrice(price);
@@ -144,96 +369,73 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         securities.refresh(security);
         prices.refresh(element);
         latest.setInput(security);
+        metrics.setInput(security);
         transactions.setInput(security.getTransactions(getClient()));
         events.setInput(security.getEvents());
-        updateChart(security);
+        chart.updateChart(security);
 
         markDirty();
     }
 
-    @Override
-    public void init(PortfolioPart part, Object parameter)
+    @Inject
+    @Optional
+    public void setup(@Named(UIConstants.Parameter.VIEW_PARAMETER) Watchlist parameter)
     {
-        super.init(part, parameter);
-
-        if (parameter instanceof Watchlist)
-            this.watchlist = (Watchlist) parameter;
+        this.watchlist = parameter;
     }
 
     @Override
-    protected void addButtons(ToolBar toolBar)
+    protected void addButtons(ToolBarManager toolBar)
     {
         addSearchButton(toolBar);
 
-        new ToolItem(toolBar, SWT.SEPARATOR | SWT.VERTICAL).setWidth(20);
+        toolBar.add(new Separator());
 
-        addCreateButton(toolBar);
+        toolBar.add(new CreateSecurityDropDown());
+        toolBar.add(new FilterDropDown(getPreferenceStore()));
         addExportButton(toolBar);
-        addSaveButton(toolBar);
-        addConfigButton(toolBar);
+
+        toolBar.add(new DropDown(Messages.MenuShowHideColumns, Images.CONFIG, SWT.NONE,
+                        manager -> securities.getColumnHelper().menuAboutToShow(manager)));
     }
 
-    private void addSearchButton(ToolBar toolBar)
+    private void addSearchButton(ToolBarManager toolBar)
     {
-        final Text search = new Text(toolBar, SWT.SEARCH | SWT.ICON_CANCEL);
-        search.setSize(100, SWT.DEFAULT);
-        search.setMessage(Messages.LabelSearch);
-
-        ToolItem toolItem = new ToolItem(toolBar, SWT.SEPARATOR);
-        toolItem.setWidth(search.getSize().x);
-        toolItem.setControl(search);
-
-        search.addModifyListener(new ModifyListener()
+        toolBar.add(new ControlContribution("searchbox") //$NON-NLS-1$
         {
             @Override
-            public void modifyText(ModifyEvent e)
+            protected Control createControl(Composite parent)
             {
-                String filter = search.getText().trim();
-                if (filter.length() == 0)
-                {
-                    filterPattern = null;
-                    securities.refresh();
-                }
-                else
-                {
-                    filterPattern = Pattern.compile(".*" + filter + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
-                    securities.refresh();
-                }
+                final Text search = new Text(parent, SWT.SEARCH | SWT.ICON_CANCEL);
+                search.setMessage(Messages.LabelSearch);
+                search.setSize(300, SWT.DEFAULT);
+
+                search.addModifyListener(e -> {
+                    String filterText = Pattern.quote(search.getText().trim());
+                    if (filterText.length() == 0)
+                    {
+                        filterPattern = null;
+                        securities.refresh(false);
+                    }
+                    else
+                    {
+                        filterPattern = Pattern.compile(".*" + filterText + ".*", Pattern.CASE_INSENSITIVE); //$NON-NLS-1$ //$NON-NLS-2$
+                        securities.refresh(false);
+                    }
+                });
+
+                return search;
+            }
+
+            @Override
+            protected int computeWidth(Control control)
+            {
+                return control.computeSize(100, SWT.DEFAULT, true).x;
             }
         });
     }
 
-    private void addCreateButton(ToolBar toolBar)
-    {
-        Action action = new Action(Messages.SecurityMenuNewSecurity)
-        {
-            @Override
-            public void run()
-            {
-                Security newSecurity = new Security();
-                newSecurity.setFeed(QuoteFeed.MANUAL);
-
-                Dialog dialog = new EditSecurityDialog(toolBar.getShell(), getClient(), newSecurity);
-
-                if (dialog.open() == Dialog.OK)
-                {
-                    markDirty();
-                    getClient().addSecurity(newSecurity);
-
-                    if (watchlist != null)
-                        watchlist.getSecurities().add(newSecurity);
-
-                    setSecurityTableInput();
-                    securities.updateQuotes(newSecurity);
-                }
-            }
-        };
-        action.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_PLUS));
-
-        new ActionContributionItem(action).fill(toolBar, -1);
-    }
-
-    private void addExportButton(ToolBar toolBar)
+    private void addExportButton(ToolBarManager toolBar)
     {
         Action export = new Action()
         {
@@ -244,57 +446,31 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                                 .export(getTitle() + ".csv"); //$NON-NLS-1$
             }
         };
-        export.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_EXPORT));
+        export.setImageDescriptor(Images.EXPORT.descriptor());
         export.setToolTipText(Messages.MenuExportData);
 
-        new ActionContributionItem(export).fill(toolBar, -1);
-    }
-
-    private void addSaveButton(ToolBar toolBar)
-    {
-        Action save = new Action()
-        {
-            @Override
-            public void run()
-            {
-                securities.getColumnHelper().showSaveMenu(getActiveShell());
-            }
-        };
-        save.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_SAVE));
-        save.setToolTipText(Messages.MenuConfigureChart);
-        new ActionContributionItem(save).fill(toolBar, -1);
-    }
-
-    private void addConfigButton(ToolBar toolBar)
-    {
-        Action config = new Action()
-        {
-            @Override
-            public void run()
-            {
-                securities.getColumnHelper().showHideShowColumnsMenu(getActiveShell());
-            }
-        };
-        config.setImageDescriptor(PortfolioPlugin.descriptor(PortfolioPlugin.IMG_CONFIG));
-        config.setToolTipText(Messages.MenuShowHideColumns);
-
-        new ActionContributionItem(config).fill(toolBar, -1);
+        toolBar.add(export);
     }
 
     // //////////////////////////////////////////////////////////////
     // top table: securities
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createTopTable(Composite parent)
     {
         securities = new SecuritiesTable(parent, this);
+        updateTitle(getDefaultTitle());
+        securities.getColumnHelper().addListener(() -> updateTitle(getDefaultTitle()));
+        securities.getColumnHelper().setToolBarManager(getViewToolBarManager());
 
-        securities.addSelectionChangedListener(new ISelectionChangedListener()
-        {
-            public void selectionChanged(SelectionChangedEvent event)
-            {
-                onSecurityChanged((Security) ((IStructuredSelection) event.getSelection()).getFirstElement());
-            }
+        securities.addSelectionChangedListener(event -> onSecurityChanged(
+                        (Security) ((IStructuredSelection) event.getSelection()).getFirstElement()));
+
+        securities.addSelectionChangedListener(event -> {
+            Security security = (Security) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            if (security != null)
+                selectionService.setSelection(new SecuritySelection(getClient(), security));
         });
 
         securities.addFilter(new ViewerFilter()
@@ -324,6 +500,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
 
+        securities.addFilter(new ViewerFilter()
+        {
+            @Override
+            public boolean select(Viewer viewer, Object parentElement, Object element)
+            {
+                for (Predicate<Security> predicate : filter)
+                {
+                    if (!predicate.test((Security) element))
+                        return false;
+                }
+
+                return true;
+            }
+        });
+
         setSecurityTableInput();
     }
 
@@ -342,68 +533,42 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices.refresh();
 
         latest.setInput(security);
+        metrics.setInput(security);
 
         transactions.setInput(security != null ? security.getTransactions(getClient()) : new ArrayList<Transaction>(0));
 
         events.setInput(security != null ? security.getEvents() : Collections.emptyList());
 
-        updateChart(security);
+        chart.updateChart(security);
     }
 
     // //////////////////////////////////////////////////////////////
     // bottom table: folder
     // //////////////////////////////////////////////////////////////
 
+    @Override
     protected void createBottomTable(Composite parent)
     {
-        SashForm sash = new SashForm(parent, SWT.HORIZONTAL);
+        Composite sash = new Composite(parent, SWT.NONE);
+
+        sash.setLayout(new SashLayout(sash, SWT.HORIZONTAL | SWT.END));
 
         // folder
         CTabFolder folder = new CTabFolder(sash, SWT.BORDER);
 
         // latest
         latest = new SecurityDetailsViewer(sash, SWT.BORDER, getClient());
-        SWTHelper.setSashWeights(sash, parent.getParent().getParent(), latest.getControl());
+        latest.getControl().setLayoutData(new SashLayoutData(SWTHelper.getPackedWidth(latest.getControl())));
 
         // tab 1: chart
         CTabItem item = new CTabItem(folder, SWT.NONE);
         item.setText(Messages.SecurityTabChart);
 
         Composite chartComposite = new Composite(folder, SWT.NONE);
-        GridLayoutFactory.fillDefaults().numColumns(2).spacing(0, 0).applyTo(chartComposite);
         item.setControl(chartComposite);
 
-        chart = new TimelineChart(chartComposite);
-        chart.getTitle().setText("..."); //$NON-NLS-1$
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(chart);
-
-        Composite buttons = new Composite(chartComposite, SWT.NONE);
-        buttons.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_WHITE));
-        GridDataFactory.fillDefaults().grab(false, true).applyTo(buttons);
-        RowLayoutFactory.fillDefaults().type(SWT.VERTICAL).spacing(2).fill(true).applyTo(buttons);
-
-        addButton(buttons, Messages.SecurityTabChart1M, Calendar.MONTH, -1);
-        addButton(buttons, Messages.SecurityTabChart2M, Calendar.MONTH, -2);
-        addButton(buttons, Messages.SecurityTabChart6M, Calendar.MONTH, -6);
-        addButton(buttons, Messages.SecurityTabChart1Y, Calendar.YEAR, -1);
-        addButton(buttons, Messages.SecurityTabChart2Y, Calendar.YEAR, -2);
-        addButton(buttons, Messages.SecurityTabChart3Y, Calendar.YEAR, -3);
-        addButton(buttons, Messages.SecurityTabChart5Y, Calendar.YEAR, -5);
-        addButton(buttons, Messages.SecurityTabChart10Y, Calendar.YEAR, -10);
-
-        Button button = new Button(buttons, SWT.FLAT);
-        button.setText(Messages.SecurityTabChartAll);
-        button.addSelectionListener(new SelectionAdapter()
-        {
-            @Override
-            public void widgetSelected(SelectionEvent e)
-            {
-                chartPeriod = null;
-
-                Security security = (Security) prices.getData(Security.class.toString());
-                updateChart(security);
-            }
-        });
+        chart = new SecuritiesChart(chartComposite, getClient(),
+                        new CurrencyConverterImpl(factory, getClient().getBaseCurrency()));
 
         // tab 2: historical quotes
         item = new CTabItem(folder, SWT.NONE);
@@ -420,41 +585,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         item.setText(Messages.SecurityTabEvents);
         item.setControl(createEventsTable(folder));
 
+        // tab 5: data quality
+        metrics = make(SecurityQuoteQualityMetricsViewer.class);
+        item = new CTabItem(folder, SWT.NONE);
+        item.setText(Messages.GroupLabelDataQuality);
+        item.setControl(metrics.createViewControl(folder));
+
         folder.setSelection(0);
-    }
-
-    private void addButton(Composite buttons, String label, final int field, final int amount)
-    {
-        Button b = new Button(buttons, SWT.FLAT);
-        b.setText(label);
-        b.addSelectionListener(new ChartPeriodSelectionListener()
-        {
-            @Override
-            protected void roll(Calendar cal)
-            {
-                cal.add(field, amount);
-            }
-        });
-    }
-
-    private abstract class ChartPeriodSelectionListener implements SelectionListener
-    {
-        @Override
-        public void widgetSelected(SelectionEvent e)
-        {
-            Calendar cal = Calendar.getInstance();
-            roll(cal);
-            chartPeriod = cal.getTime();
-
-            Security security = (Security) prices.getData(Security.class.toString());
-            updateChart(security);
-        }
-
-        protected abstract void roll(Calendar cal);
-
-        @Override
-        public void widgetDefaultSelected(SelectionEvent e)
-        {}
     }
 
     // //////////////////////////////////////////////////////////////
@@ -478,11 +615,37 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((SecurityPrice) element).getTime());
+                return Values.Date.format(((SecurityPrice) element).getDate());
+            }
+
+            @Override
+            public Color getBackground(Object element)
+            {
+                SecurityPrice current = (SecurityPrice) element;
+                List<?> all = (List<?>) prices.getInput();
+                int index = all.indexOf(current);
+
+                if (index == 0)
+                    return null;
+
+                SecurityPrice previous = (SecurityPrice) all.get(index - 1);
+
+                Security security = (Security) prices.getData(Security.class.toString());
+                TradeCalendar calendar = TradeCalendarManager.getInstance(security);
+
+                boolean hasMissing = false;
+                LocalDate date = current.getDate().minusDays(1);
+                while (!hasMissing && date.isAfter(previous.getDate()))
+                {
+                    hasMissing = !calendar.isHoliday(date);
+                    date = date.minusDays(1);
+                }
+
+                return hasMissing ? Colors.WARNING : null;
             }
         });
-        ColumnViewerSorter.create(SecurityPrice.class, "time").attachTo(column, SWT.UP); //$NON-NLS-1$
-        new DateEditingSupport(SecurityPrice.class, "time").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPrice.class, "date").attachTo(column, SWT.UP); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPrice.class, "date").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
@@ -491,11 +654,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return Values.Quote.format(((SecurityPrice) element).getValue());
+                Security security = (Security) prices.getData(Security.class.toString());
+                SecurityPrice price = (SecurityPrice) element;
+                return Values.Quote.format(security.getCurrencyCode(), price.getValue(), getClient().getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(SecurityPrice.class, "value").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPrice.class, "value", Values.Quote, number -> number.longValue() != 0) //$NON-NLS-1$
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
         support.createColumns();
@@ -503,17 +669,9 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         prices.getTable().setHeaderVisible(true);
         prices.getTable().setLinesVisible(true);
 
-        prices.setContentProvider(new SimpleListContentProvider(true));
+        prices.setContentProvider(ArrayContentProvider.getInstance());
 
-        ViewerHelper.pack(prices);
-
-        hookContextMenu(prices.getTable(), new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillPricesContextMenu(manager);
-            }
-        });
+        hookContextMenu(prices.getTable(), this::fillPricesContextMenu);
 
         return container;
     }
@@ -523,32 +681,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         Security security = (Security) prices.getData(Security.class.toString());
         if (security != null)
         {
-            manager.add(new Action(Messages.SecurityMenuAddPrice)
-            {
-                @Override
-                public void run()
-                {
-                    Security security = (Security) prices.getData(Security.class.toString());
-                    if (security == null)
-                        return;
+            manager.add(new SimpleAction(Messages.SecurityMenuAddPrice, a -> {
+                Dialog dialog = new SecurityPriceDialog(Display.getDefault().getActiveShell(), getClient(), security);
 
-                    SecurityPrice price = new SecurityPrice();
-                    price.setTime(Dates.today());
+                if (dialog.open() != Window.OK)
+                    return;
 
-                    security.addPrice(price);
+                markDirty();
 
-                    markDirty();
-
-                    prices.setInput(security.getPrices());
-                    latest.setInput(security);
-                    transactions.setInput(security.getTransactions(getClient()));
-                    events.setInput(security.getEvents());
-                    updateChart(security);
-
-                    prices.setSelection(new StructuredSelection(price), true);
-                    prices.editElement(price, 0);
-                }
-            });
+                prices.setInput(security.getPrices());
+                latest.setInput(security);
+                metrics.setInput(security);
+                transactions.setInput(security.getTransactions(getClient()));
+                events.setInput(security.getEvents());
+                chart.updateChart(security);
+            }));
             manager.add(new Separator());
         }
 
@@ -577,9 +724,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
+                    metrics.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
-                    updateChart(security);
+                    chart.updateChart(security);
                 }
             });
         }
@@ -601,9 +749,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
                     prices.setInput(security.getPrices());
                     latest.setInput(security);
+                    metrics.setInput(security);
                     transactions.setInput(security.getTransactions(getClient()));
                     events.setInput(security.getEvents());
-                    updateChart(security);
+                    chart.updateChart(security);
                 }
             });
         }
@@ -613,106 +762,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             manager.add(new Separator());
             new QuotesContextMenu(this).menuAboutToShow(manager, security);
         }
-    }
-
-    // //////////////////////////////////////////////////////////////
-    // tab item: chart
-    // //////////////////////////////////////////////////////////////
-
-    private void updateChart(Security security)
-    {
-        ISeries series = chart.getSeriesSet().getSeries(Messages.ColumnQuote);
-        if (series != null)
-            chart.getSeriesSet().deleteSeries(Messages.ColumnQuote);
-        chart.clearMarkerLines();
-
-        if (security == null || security.getPrices().isEmpty())
-        {
-            chart.getTitle().setText(security == null ? "..." : security.getName()); //$NON-NLS-1$
-            chart.redraw();
-            return;
-        }
-
-        chart.getTitle().setText(security.getName());
-
-        List<SecurityPrice> prices = security.getPrices();
-
-        int index;
-        Date[] dates;
-        double[] values;
-
-        if (chartPeriod == null)
-        {
-            index = 0;
-            dates = new Date[prices.size()];
-            values = new double[prices.size()];
-        }
-        else
-        {
-            index = Math.abs(Collections.binarySearch(prices, new SecurityPrice(chartPeriod, 0),
-                            new SecurityPrice.ByDate()));
-
-            if (index >= prices.size())
-            {
-                // no data available
-                chart.redraw();
-                return;
-            }
-
-            dates = new Date[prices.size() - index];
-            values = new double[prices.size() - index];
-        }
-
-        for (int ii = 0; index < prices.size(); index++, ii++)
-        {
-            SecurityPrice p = prices.get(index);
-            dates[ii] = p.getTime();
-            values[ii] = p.getValue() / Values.Quote.divider();
-        }
-
-        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet().createSeries(SeriesType.LINE, Messages.ColumnQuote);
-        lineSeries.setXDateSeries(dates);
-        lineSeries.setLineWidth(2);
-        lineSeries.enableArea(true);
-        lineSeries.setSymbolType(PlotSymbolType.NONE);
-        lineSeries.setYSeries(values);
-        lineSeries.setAntialias(SWT.ON);
-
-        chart.getAxisSet().adjustRange();
-
-        for (Portfolio portfolio : getClient().getPortfolios())
-        {
-            for (PortfolioTransaction t : portfolio.getTransactions())
-            {
-                if (t.getSecurity() == security && (chartPeriod == null || chartPeriod.before(t.getDate())))
-                {
-                    String label = Values.Share.format(t.getShares());
-                    switch (t.getType())
-                    {
-                        case BUY:
-                        case TRANSFER_IN:
-                        case DELIVERY_INBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(0, 128, 0), label);
-                            break;
-                        case SELL:
-                        case TRANSFER_OUT:
-                        case DELIVERY_OUTBOUND:
-                            chart.addMarkerLine(t.getDate(), new RGB(128, 0, 0), "-" + label); //$NON-NLS-1$
-                            break;
-                        default:
-                            throw new UnsupportedOperationException();
-                    }
-                }
-            }
-        }
-
-        for (SecurityEvent event : security.getEvents())
-        {
-            if (chartPeriod == null || chartPeriod.before(event.getDate()))
-                chart.addMarkerLine(event.getDate(), new RGB(255, 140, 0), event.getDetails());
-        }
-
-        chart.redraw();
     }
 
     // //////////////////////////////////////////////////////////////
@@ -728,27 +777,21 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions = new TableViewer(container, SWT.FULL_SELECTION);
         ColumnViewerToolTipSupport.enableFor(transactions, ToolTip.NO_RECREATE);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName()
-                        + "@transactions3", getPreferenceStore(), transactions, layout); //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(
+                        SecurityListView.class.getSimpleName() + "@transactions4", getPreferenceStore(), transactions, //$NON-NLS-1$
+                        layout);
 
-        Column column = new Column(Messages.ColumnDate, SWT.None, 80);
+        Column column = new Column(Messages.ColumnDate, SWT.None, 100);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return Values.Date.format(((TransactionPair<?>) element).getTransaction().getDate());
+                return Values.DateTime.format(((TransactionPair<?>) element).getTransaction().getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                return ((TransactionPair<?>) o1).getTransaction().getDate()
-                                .compareTo((((TransactionPair<?>) o2).getTransaction().getDate()));
-            }
-        }), SWT.UP);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> ((TransactionPair<?>) o1).getTransaction().getDateTime()
+                        .compareTo(((TransactionPair<?>) o2).getTransaction().getDateTime())), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -769,7 +812,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         support.addColumn(column);
 
         column = new Column(Messages.ColumnShares, SWT.RIGHT, 80);
-        column.setLabelProvider(new SharesLabelProvider()
+        column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
             public Long getValue(Object element)
@@ -786,13 +829,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 }
                 return null;
             }
-
-            @Override
-            public String getToolTipText(Object element)
-            {
-                Long v = getValue(element);
-                return v != null ? Values.Share.format(v) : null;
-            }
         });
         support.addColumn(column);
 
@@ -803,22 +839,18 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             public String getText(Object element)
             {
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
-                return Values.Amount.format(t.getAmount());
+                return Values.Money.format(t.getMonetaryAmount(), getClient().getBaseCurrency());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
-                long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
-                return a1 > a2 ? 1 : a1 < a2 ? -1 : 0;
-            }
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            long a1 = ((TransactionPair<?>) o1).getTransaction().getAmount();
+            long a2 = ((TransactionPair<?>) o2).getTransaction().getAmount();
+            return Long.compare(a1, a2);
         }));
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnQuote, SWT.RIGHT, 80);
+        column = new Column(Messages.ColumnPerShare, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnPerShare_Description);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -827,15 +859,46 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 Transaction t = ((TransactionPair<?>) element).getTransaction();
                 if (t instanceof PortfolioTransaction)
                 {
-                    return Values.Amount.format(((PortfolioTransaction) t).getActualPurchasePrice());
+                    return Values.Quote.format(((PortfolioTransaction) t).getGrossPricePerShare(),
+                                    getClient().getBaseCurrency());
                 }
                 else if (t instanceof AccountTransaction)
                 {
                     long shares = ((AccountTransaction) t).getShares();
                     if (shares != 0)
-                        return Values.Amount.format(Math.round(t.getAmount() * Values.Share.divider() / shares));
+                    {
+                        long perShare = Math.round(((AccountTransaction) t).getGrossValueAmount()
+                                        * Values.Share.divider() * Values.Quote.factorToMoney() / shares);
+                        return Values.Quote.format(Quote.of(t.getCurrencyCode(), perShare));
+                    }
                 }
                 return null;
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnFees_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.FEE), getClient().getBaseCurrency());
+            }
+        });
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnTaxes, SWT.RIGHT, 80);
+        column.setDescription(Messages.ColumnTaxes_Description);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                Transaction t = ((TransactionPair<?>) element).getTransaction();
+                return Values.Money.format(t.getUnitSum(Unit.Type.TAX), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -852,6 +915,8 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return null;
             }
         });
+        new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.OWNER)
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnOffsetAccount, SWT.NONE, 120);
@@ -863,11 +928,13 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 TransactionPair<?> pair = (TransactionPair<?>) element;
                 Transaction t = pair.getTransaction();
                 if (t instanceof PortfolioTransaction)
-                    return t.getCrossEntry() != null ? t.getCrossEntry().getCrossEntity(t).toString() : null;
+                    return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
                 else
                     return pair.getOwner().toString();
             }
         });
+        new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)
+                        .addListener(this).attachTo(column);
         support.addColumn(column);
 
         column = new NoteColumn();
@@ -879,44 +946,141 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         transactions.getTable().setHeaderVisible(true);
         transactions.getTable().setLinesVisible(true);
 
-        transactions.setContentProvider(new SimpleListContentProvider(true));
+        transactions.setContentProvider(ArrayContentProvider.getInstance());
 
-        hookContextMenu(transactions.getControl(), new IMenuListener()
-        {
-            @Override
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                Security security = (Security) prices.getData(Security.class.toString());
-                if (security != null)
-                    new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+        hookContextMenu(transactions.getControl(), this::transactionMenuAboutToShow);
 
-                manager.add(new Separator());
-
-                manager.add(new Action(Messages.MenuTransactionDelete)
-                {
-                    @Override
-                    public void run()
-                    {
-                        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions
-                                        .getSelection()).getFirstElement();
-                        if (pair == null)
-                            return;
-
-                        pair.deleteTransaction(getClient());
-                        getClient().markDirty();
-                    }
-                });
-            }
-        });
-
-        ViewerHelper.pack(transactions);
-
+        hookKeyListener();
         return container;
     }
 
-    // //////////////////////////////////////////////////////////////
-    // tab item: transactions
-    // //////////////////////////////////////////////////////////////
+    private void hookKeyListener()
+    {
+        transactions.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                {
+                    TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                                    .getFirstElement();
+                    if (pair != null)
+                        createEditAction(pair).run();
+                }
+            }
+        });
+    }
+
+    private void transactionMenuAboutToShow(IMenuManager manager) // NOSONAR
+    {
+        Security security = (Security) prices.getData(Security.class.toString());
+        if (security == null)
+            return;
+
+        TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                        .getFirstElement();
+        if (pair != null)
+        {
+            Action action = createEditAction(pair);
+            action.setAccelerator(SWT.MOD1 | 'E');
+            manager.add(action);
+            manager.add(new Separator());
+
+            if (pair.getTransaction() instanceof PortfolioTransaction)
+            {
+                Portfolio p = (Portfolio) pair.getOwner();
+                PortfolioTransaction t = (PortfolioTransaction) pair.getTransaction();
+
+                if (t.getType() == PortfolioTransaction.Type.BUY || t.getType() == PortfolioTransaction.Type.SELL)
+                {
+                    manager.add(new ConvertBuySellToDeliveryAction(getClient(), new TransactionPair<>(p, t)));
+                    manager.add(new Separator());
+                }
+
+                if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
+                                || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
+                {
+                    manager.add(new ConvertDeliveryToBuySellAction(getClient(), new TransactionPair<>(p, t)));
+                    manager.add(new Separator());
+                }
+            }
+        }
+
+        new SecurityContextMenu(SecurityListView.this).menuAboutToShow(manager, security);
+
+        manager.add(new Separator());
+
+        manager.add(new Action(Messages.MenuTransactionDelete)
+        {
+            @Override
+            public void run()
+            {
+                TransactionPair<?> pair = (TransactionPair<?>) ((IStructuredSelection) transactions.getSelection())
+                                .getFirstElement();
+                if (pair == null)
+                    return;
+
+                pair.deleteTransaction(getClient());
+                getClient().markDirty();
+            }
+        });
+
+        manager.add(new Separator());
+        manager.add(new ConfirmAction(Messages.MenuDeleteAllTransactions,
+                        MessageFormat.format(Messages.MenuConfirmDeleteAllTransactions, security.getName()), //
+                        a -> {
+
+                            List<TransactionPair<?>> txs = security.getTransactions(getClient());
+
+                            for (TransactionPair<?> tx : txs)
+                            {
+                                @SuppressWarnings("unchecked")
+                                TransactionPair<Transaction> t = (TransactionPair<Transaction>) tx;
+                                t.getOwner().deleteTransaction(t.getTransaction(), getClient());
+                            }
+
+                            getClient().markDirty();
+                        }));
+    }
+
+    private Action createEditAction(TransactionPair<?> transactionPair)
+    {
+        if (transactionPair.getTransaction().getCrossEntry() instanceof BuySellEntry)
+        {
+            BuySellEntry entry = (BuySellEntry) transactionPair.getTransaction().getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction)
+                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
+                            .parameters(entry.getPortfolioTransaction().getType());
+        }
+        else if (transactionPair.getTransaction().getCrossEntry() instanceof PortfolioTransferEntry)
+        {
+            PortfolioTransferEntry entry = (PortfolioTransferEntry) transactionPair.getTransaction().getCrossEntry();
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(SecurityTransferDialog.class, d -> d.setEntry(entry));
+        }
+        else if (transactionPair.getTransaction() instanceof PortfolioTransaction)
+        {
+            @SuppressWarnings("unchecked")
+            TransactionPair<PortfolioTransaction> pair = (TransactionPair<PortfolioTransaction>) transactionPair;
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(SecurityTransactionDialog.class, d -> d.setDeliveryTransaction(pair)) //
+                            .parameters(pair.getTransaction().getType());
+        }
+        else if (transactionPair.getTransaction() instanceof AccountTransaction)
+        {
+            @SuppressWarnings("unchecked")
+            TransactionPair<AccountTransaction> pair = (TransactionPair<AccountTransaction>) transactionPair;
+            return new OpenDialogAction(this, Messages.MenuEditTransaction) //
+                            .type(AccountTransactionDialog.class,
+                                            d -> d.setTransaction((Account) pair.getOwner(), pair.getTransaction())) //
+                            .parameters(pair.getTransaction().getType());
+        }
+        else
+        {
+            throw new IllegalArgumentException();
+        }
+    }
 
     protected Composite createEventsTable(Composite parent)
     {
@@ -938,6 +1102,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return Values.Date.format(((SecurityEvent) element).getDate());
             }
         });
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -967,9 +1132,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         events.getTable().setHeaderVisible(true);
         events.getTable().setLinesVisible(true);
 
-        events.setContentProvider(new SimpleListContentProvider(true));
-
-        ViewerHelper.pack(events);
+        events.setContentProvider(ArrayContentProvider.getInstance());
 
         return container;
     }

@@ -1,66 +1,49 @@
 package name.abuchen.portfolio.online.impl;
 
-import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_PRICE;
-import static name.abuchen.portfolio.online.impl.YahooHelper.FMT_QUOTE_DATE;
-import static name.abuchen.portfolio.online.impl.YahooHelper.asDate;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asNumber;
 import static name.abuchen.portfolio.online.impl.YahooHelper.asPrice;
-import static name.abuchen.portfolio.online.impl.YahooHelper.stripQuotes;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.text.MessageFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Scanner;
+import java.util.Set;
 import java.util.stream.Collectors;
-
-import name.abuchen.portfolio.Messages;
-import name.abuchen.portfolio.model.Exchange;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.online.QuoteFeed;
-import name.abuchen.portfolio.util.Dates;
+import java.util.stream.Stream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
+import name.abuchen.portfolio.model.Exchange;
+import name.abuchen.portfolio.model.LatestSecurityPrice;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.SecurityProperty;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.QuoteFeedData;
+import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.WebAccess;
+
 public class YahooFinanceQuoteFeed implements QuoteFeed
 {
     public static final String ID = "YAHOO"; //$NON-NLS-1$
-
-    private static final String LATEST_URL = "http://finance.yahoo.com/d/quotes.csv?s={0}&f=sl1d1hgpv"; //$NON-NLS-1$
-    // s = symbol
-    // l1 = last trade (price only)
-    // d1 = last trade date
-    // h = day's high
-    // g = day's low
-    // p = previous close
-    // v = volume
-    // Source = http://cliffngan.net/a/13
-
-    private static final String SEARCH_URL = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={0}&callback=YAHOO.Finance.SymbolSuggest.ssCallback"; //$NON-NLS-1$
-
-    @SuppressWarnings("nls")
-    private static final String HISTORICAL_URL = "http://ichart.finance.yahoo.com/table.csv?ignore=.csv" //
-                    + "&s={0}" // ticker symbol
-                    + "&a={1}&b={2}&c={3}" // begin
-                    + "&d={4}&e={5}&f={6}" // end
-                    + "&g=d"; // daily
 
     @Override
     public String getId()
@@ -74,297 +57,323 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         return Messages.LabelYahooFinance;
     }
 
-    @Override
-    public final boolean updateLatestQuotes(List<Security> securities, List<Exception> errors)
+    public String rpcLatestQuote(Security security) throws IOException
     {
-        Map<String, List<Security>> symbol2security = securities.stream()
-                        //
-                        .filter(s -> s.getTickerSymbol() != null)
-                        .collect(Collectors.groupingBy(s -> s.getTickerSymbol().toUpperCase(Locale.ROOT)));
-
-        String symbolString = symbol2security.keySet().stream().collect(Collectors.joining("+")); //$NON-NLS-1$
-
-        boolean isUpdated = false;
-
-        String url = MessageFormat.format(LATEST_URL, symbolString.toString());
-
-        try (BufferedReader reader = openReader(url, errors))
-        {
-            if (reader == null)
-                return false;
-
-            String line = null;
-            while ((line = reader.readLine()) != null)
-            {
-                String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line)));
-                    return false;
-                }
-
-                String symbol = stripQuotes(values[0]);
-                List<Security> forSymbol = symbol2security.remove(symbol);
-                if (forSymbol == null)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgUnexpectedSymbol, symbol, line)));
-                    continue;
-                }
-
-                try
-                {
-                    LatestSecurityPrice price = buildPrice(values);
-
-                    for (Security security : forSymbol)
-                    {
-                        boolean isAdded = security.setLatest(price);
-                        isUpdated = isUpdated || isAdded;
-                    }
-                }
-                catch (NumberFormatException | ParseException e)
-                {
-                    errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
-                }
-            }
-
-            for (String symbol : symbol2security.keySet())
-                errors.add(new IOException(MessageFormat.format(Messages.MsgMissingResponse, symbol)));
-        }
-        catch (IOException e)
-        {
-            errors.add(e);
-        }
-
-        return isUpdated;
-    }
-
-    private LatestSecurityPrice buildPrice(String[] values) throws ParseException
-    {
-        long lastTrade = asPrice(values[1]);
-
-        Date lastTradeDate = asDate(values[2]);
-        if (lastTradeDate == null) // can't work w/o date
-            lastTradeDate = Dates.today();
-
-        long daysHigh = asPrice(values[3]);
-
-        long daysLow = asPrice(values[4]);
-
-        long previousClose = asPrice(values[5]);
-
-        int volume = asNumber(values[6]);
-
-        LatestSecurityPrice price = new LatestSecurityPrice(lastTradeDate, lastTrade);
-        price.setHigh(daysHigh);
-        price.setLow(daysLow);
-        price.setPreviousClose(previousClose);
-        price.setVolume(volume);
-
-        return price;
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/quote") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addParameter("lang", "en-US").addParameter("region", "US") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        .addParameter("corsDomain", "finance.yahoo.com") //$NON-NLS-1$ //$NON-NLS-2$
+                        .addParameter("symbols", security.getTickerSymbol()).get(); //$NON-NLS-1$
     }
 
     @Override
-    public final boolean updateHistoricalQuotes(Security security, List<Exception> errors)
+    public Optional<LatestSecurityPrice> getLatestQuote(Security security)
     {
-        Calendar start = caculateStart(security);
-
-        List<SecurityPrice> quotes = internalGetQuotes(SecurityPrice.class, security, start.getTime(), errors);
-
-        boolean isUpdated = false;
-        if (quotes != null)
+        try
         {
-            for (SecurityPrice p : quotes)
+            String html = this.rpcLatestQuote(security);
+
+            int startIndex = html.indexOf("quoteResponse"); //$NON-NLS-1$
+            if (startIndex < 0)
+                return Optional.empty();
+
+            LatestSecurityPrice price = new LatestSecurityPrice();
+
+            Optional<String> time = extract(html, startIndex, "\"regularMarketTime\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (time.isPresent())
             {
-                boolean isAdded = security.addPrice(p);
-                isUpdated = isUpdated || isAdded;
+                long epoch = Long.parseLong(time.get());
+                price.setDate(Instant.ofEpochSecond(epoch).atZone(ZoneId.systemDefault()).toLocalDate());
+            }
+
+            Optional<String> value = extract(html, startIndex, "\"regularMarketPrice\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (value.isPresent())
+                price.setValue(asPrice(value.get()));
+
+            Optional<String> previousClose = extract(html, startIndex, "\"regularMarketPreviousClose\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (previousClose.isPresent())
+                price.setPreviousClose(asPrice(previousClose.get()));
+
+            Optional<String> high = extract(html, startIndex, "\"regularMarketDayHigh\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (high.isPresent())
+                price.setHigh(asPrice(high.get()));
+
+            Optional<String> low = extract(html, startIndex, "\"regularMarketDayLow\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (low.isPresent())
+                price.setLow(asPrice(low.get()));
+
+            Optional<String> volume = extract(html, startIndex, "\"regularMarketVolume\":", ","); //$NON-NLS-1$ //$NON-NLS-2$
+            if (volume.isPresent())
+                price.setVolume(asNumber(volume.get()));
+
+            if (price.getDate() == null || price.getValue() <= 0)
+            {
+                PortfolioLog.error(html);
+                return Optional.empty();
+            }
+            else
+            {
+                return Optional.of(price);
             }
         }
-        return isUpdated;
+        catch (IOException | ParseException e)
+        {
+            PortfolioLog.error(e);
+            return Optional.empty();
+        }
     }
 
-    /* package */final Calendar caculateStart(Security security)
+    private Optional<String> extract(String body, int startIndex, String startToken, String endToken)
     {
-        Calendar start = Calendar.getInstance();
-        start.setTime(Dates.today());
+        int begin = body.indexOf(startToken, startIndex);
 
+        if (begin < 0)
+            return Optional.empty();
+
+        int end = body.indexOf(endToken, begin + startToken.length());
+        if (end < 0)
+            return Optional.empty();
+
+        return Optional.of(body.substring(begin + startToken.length(), end));
+    }
+
+    @Override
+    public QuoteFeedData getHistoricalQuotes(Security security, boolean collectRawResponse)
+    {
+        LocalDate start = caculateStart(security);
+        return internalGetQuotes(security, start);
+    }
+
+    /**
+     * Calculate the first date to request historical quotes for.
+     */
+    /* package */final LocalDate caculateStart(Security security)
+    {
         if (!security.getPrices().isEmpty())
         {
             SecurityPrice lastHistoricalQuote = security.getPrices().get(security.getPrices().size() - 1);
-            start.setTime(lastHistoricalQuote.getTime());
+            return lastHistoricalQuote.getDate();
         }
         else
         {
-            start.set(1900, Calendar.JANUARY, 1, 0, 0);
+            return LocalDate.of(1900, 1, 1);
         }
-        return start;
     }
 
     @Override
-    public final List<LatestSecurityPrice> getHistoricalQuotes(Security security, Date start, List<Exception> errors)
+    public QuoteFeedData previewHistoricalQuotes(Security security)
     {
-        return internalGetQuotes(LatestSecurityPrice.class, security, start, errors);
+        return internalGetQuotes(security, LocalDate.now().minusMonths(2));
     }
 
-    @Override
-    public List<LatestSecurityPrice> getHistoricalQuotes(String response, List<Exception> errors)
-    {
-        throw new UnsupportedOperationException();
-    }
-
-    private <T extends SecurityPrice> List<T> internalGetQuotes(Class<T> klass, Security security, Date startDate,
-                    List<Exception> errors)
+    private QuoteFeedData internalGetQuotes(Security security, LocalDate startDate)
     {
         if (security.getTickerSymbol() == null)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
-            return Collections.emptyList();
+            return QuoteFeedData.withError(
+                            new IOException(MessageFormat.format(Messages.MsgMissingTickerSymbol, security.getName())));
         }
 
-        Calendar start = Calendar.getInstance();
-        start.setTime(startDate);
-        Calendar stop = Calendar.getInstance();
-
-        String wknUrl = MessageFormat.format(HISTORICAL_URL, //
-                        security.getTickerSymbol(), //
-                        start.get(Calendar.MONTH), //
-                        start.get(Calendar.DATE), //
-                        Integer.toString(start.get(Calendar.YEAR)), //
-                        stop.get(Calendar.MONTH), //
-                        stop.get(Calendar.DATE), //
-                        Integer.toString(stop.get(Calendar.YEAR)));
-
-        List<T> answer = new ArrayList<T>();
-
-        String line = null;
-        try (BufferedReader reader = openReader(wknUrl, errors))
+        try
         {
-            if (reader == null)
-                return answer;
-
-            line = reader.readLine();
-
-            // poor man's check
-            if (!"Date,Open,High,Low,Close,Volume,Adj Close".equals(line)) //$NON-NLS-1$
-                throw new IOException(MessageFormat.format(Messages.MsgUnexpectedHeader, line));
-
-            DecimalFormat priceFormat = FMT_PRICE.get();
-            SimpleDateFormat dateFormat = FMT_QUOTE_DATE.get();
-
-            while ((line = reader.readLine()) != null)
-            {
-                String[] values = line.split(","); //$NON-NLS-1$
-                if (values.length != 7)
-                    throw new IOException(MessageFormat.format(Messages.MsgUnexpectedValue, line));
-
-                T price = klass.newInstance();
-
-                fillValues(values, price, priceFormat, dateFormat);
-
-                answer.add(price);
-            }
+            String responseBody = requestData(security, startDate);
+            return extractQuotes(responseBody);
         }
-        catch (NumberFormatException | ParseException e)
+        catch (IOException e)
         {
-            errors.add(new IOException(MessageFormat.format(Messages.MsgErrorsConvertingValue, line), e));
+            return QuoteFeedData.withError(new IOException(MessageFormat.format(Messages.MsgErrorDownloadYahoo, 1,
+                            security.getTickerSymbol(), e.getMessage()), e));
         }
-        catch (InstantiationException | IllegalAccessException | IOException e)
-        {
-            errors.add(e);
-        }
-
-        return answer;
     }
 
-    protected <T extends SecurityPrice> void fillValues(String[] values, T price, DecimalFormat priceFormat,
-                    SimpleDateFormat dateFormat) throws ParseException
+    @SuppressWarnings("nls")
+    private String requestData(Security security, LocalDate startDate) throws IOException
     {
-        Date date = dateFormat.parse(values[0]);
+        int days = Dates.daysBetween(startDate, LocalDate.now());
 
-        Number q = priceFormat.parse(values[4]);
-        long v = (long) (q.doubleValue() * 100);
+        // "max" only returns a sample of quotes
+        String range = "10y"; //$NON-NLS-1$
 
-        price.setTime(date);
-        price.setValue(v);
+        if (days < 25)
+            range = "1mo"; //$NON-NLS-1$
+        else if (days < 75)
+            range = "3mo"; //$NON-NLS-1$
+        else if (days < 150)
+            range = "6mo"; //$NON-NLS-1$
+        else if (days < 300)
+            range = "1y"; //$NON-NLS-1$
+        else if (days < 600)
+            range = "2y"; //$NON-NLS-1$
+        else if (days < 1500)
+            range = "5y"; //$NON-NLS-1$
 
-        if (price instanceof LatestSecurityPrice)
+        return new WebAccess("query1.finance.yahoo.com", "/v7/finance/spark") //
+                        .addParameter("symbols", security.getTickerSymbol()).addParameter("range", range)
+                        .addParameter("interval", "1d").get();
+
+    }
+
+    /* package */ QuoteFeedData extractQuotes(String responseBody)
+    {
+        List<LatestSecurityPrice> answer = new ArrayList<>();
+
+        try
         {
-            LatestSecurityPrice latest = (LatestSecurityPrice) price;
+            JSONObject responseData = (JSONObject) JSONValue.parse(responseBody);
+            if (responseData == null)
+                throw new IOException("responseBody"); //$NON-NLS-1$
 
-            q = priceFormat.parse(values[5]);
-            latest.setVolume(q.intValue());
+            JSONObject resultSet = (JSONObject) responseData.get("spark"); //$NON-NLS-1$
+            if (resultSet == null)
+                throw new IOException("spark"); //$NON-NLS-1$
 
-            q = priceFormat.parse(values[2]);
-            latest.setHigh((long) (q.doubleValue() * 100));
+            JSONArray result = (JSONArray) resultSet.get("result"); //$NON-NLS-1$
+            if (result == null || result.isEmpty())
+                throw new IOException("result"); //$NON-NLS-1$
 
-            q = priceFormat.parse(values[3]);
-            latest.setLow((long) (q.doubleValue() * 100));
+            JSONObject result0 = (JSONObject) result.get(0);
+            if (result0 == null)
+                throw new IOException("result[0]"); //$NON-NLS-1$
+
+            JSONArray response = (JSONArray) result0.get("response"); //$NON-NLS-1$
+            if (response == null || response.isEmpty())
+                throw new IOException("response"); //$NON-NLS-1$
+
+            JSONObject response0 = (JSONObject) response.get(0);
+            if (response0 == null)
+                throw new IOException("response[0]"); //$NON-NLS-1$
+
+            JSONArray timestamp = (JSONArray) response0.get("timestamp"); //$NON-NLS-1$
+
+            JSONObject indicators = (JSONObject) response0.get("indicators"); //$NON-NLS-1$
+            if (indicators == null)
+                throw new IOException("indicators"); //$NON-NLS-1$
+
+            JSONArray quotes = extractQuotesArray(indicators);
+
+            int size = quotes.size();
+
+            for (int index = 0; index < size; index++)
+            {
+                Long ts = (Long) timestamp.get(index);
+                Double q = (Double) quotes.get(index);
+
+                if (ts != null && q != null && q.doubleValue() > 0)
+                {
+                    LatestSecurityPrice price = new LatestSecurityPrice();
+                    price.setDate(LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC).toLocalDate());
+                    price.setValue(Values.Quote.factorize(q));
+                    answer.add(price);
+                }
+            }
         }
+        catch (IOException | IndexOutOfBoundsException | IllegalArgumentException e)
+        {
+            return QuoteFeedData.withError(e);
+        }
+
+        QuoteFeedData data = new QuoteFeedData();
+        data.getLatestPrices().addAll(answer);
+        return data;
+    }
+
+    protected JSONArray extractQuotesArray(JSONObject indicators) throws IOException
+    {
+        JSONArray quotes = (JSONArray) indicators.get("quote"); //$NON-NLS-1$
+        if (quotes == null || quotes.isEmpty())
+            throw new IOException("quote"); //$NON-NLS-1$
+
+        JSONObject quote = (JSONObject) quotes.get(0);
+        if (quote == null)
+            throw new IOException();
+
+        JSONArray close = (JSONArray) quote.get("close"); //$NON-NLS-1$
+        if (close == null || close.isEmpty())
+            throw new IOException("close"); //$NON-NLS-1$
+
+        return close;
     }
 
     @Override
     public final List<Exchange> getExchanges(Security subject, List<Exception> errors)
     {
-        List<Exchange> answer = new ArrayList<Exchange>();
+        List<Exchange> answer = new ArrayList<>();
 
+        // This is not the best place to include the market information from
+        // portfolio-report.net, but for now the list of exchanges is only
+        // available for Yahoo search provider.
+
+        List<SecurityProperty> markets = subject.getProperties()
+                        .filter(p -> p.getType() == SecurityProperty.Type.MARKET).collect(Collectors.toList());
+
+        markets.stream().map(p -> {
+            Exchange exchange = new Exchange(p.getValue(), ExchangeLabels.getString("portfolio-report." + p.getName())); //$NON-NLS-1$
+            if ("XFRA".equals(p.getName())) //$NON-NLS-1$
+                exchange.setId(exchange.getId() + ".F"); //$NON-NLS-1$
+            return exchange;
+        }).forEach(answer::add);
+
+        Set<String> candidates = new HashSet<>();
+        answer.forEach(e -> candidates.add(e.getId()));
+
+        // add existing ticker symbol as well
         String symbol = subject.getTickerSymbol();
+        if (symbol != null && !symbol.isEmpty())
+            candidates.add(symbol);
 
-        // if symbol is null, return empty list
-        if (symbol == null || symbol.trim().length() == 0)
-            return answer;
-
-        // strip away exchange suffix to search for all available exchanges
-        int p = symbol.indexOf('.');
-        String prefix = p >= 0 ? symbol.substring(0, p + 1) : symbol + "."; //$NON-NLS-1$
-
-        // http://stackoverflow.com/questions/885456/stock-ticker-symbol-lookup-api
-        String searchUrl = MessageFormat.format(SEARCH_URL, prefix);
-
-        try (Scanner scanner = new Scanner(openStream(searchUrl)))
+        for (String candidate : candidates)
         {
-            String html = scanner.useDelimiter("\\A").next(); //$NON-NLS-1$
+            searchExchanges(candidate, answer, errors);
+        }
 
-            // strip away java script call back method
-            p = html.indexOf('(');
-            html = html.substring(p + 1, html.length() - 1);
+        if (symbol != null && !symbol.isEmpty())
+        {
+            // Issue #251
+            // sometimes Yahoo does not return the default exchange which
+            // prevents selecting this security (example: searching for GOOG
+            // does return only unimportant exchanges)
+            Optional<Exchange> defaultExchange = answer.stream() //
+                            .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
+            if (!defaultExchange.isPresent())
+                answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
 
-            JSONObject response = (JSONObject) JSONValue.parse(html);
-            if (response != null)
+            if (answer.isEmpty())
             {
-                JSONObject resultSet = (JSONObject) response.get("ResultSet"); //$NON-NLS-1$
-                if (resultSet != null)
-                {
-                    JSONArray result = (JSONArray) resultSet.get("Result"); //$NON-NLS-1$
-                    if (result != null)
-                    {
-                        for (int ii = 0; ii < result.size(); ii++)
-                            answer.add(createExchange(((JSONObject) result.get(ii)).get("symbol").toString())); //$NON-NLS-1$
-                    }
-                }
+                // Issue #29
+                // at least add the given ticker symbol if the search returns
+                // nothing (sometimes accidentally)
+                answer.add(createExchange(subject.getTickerSymbol()));
             }
+        }
+
+        Collections.sort(answer, (r, l) -> r.getId().compareTo(l.getId()));
+
+        return answer;
+    }
+
+    private void searchExchanges(String candidate, List<Exchange> answer, List<Exception> errors)
+    {
+        // strip away exchange suffix to search for all available exchanges
+        int p = candidate.indexOf('.');
+        String prefix = p >= 0 ? candidate.substring(0, p + 1) : candidate + "."; //$NON-NLS-1$
+
+        // ensure we do not add duplicates
+        Set<String> duplicates = new HashSet<>();
+        answer.forEach(e -> duplicates.add(e.getId()));
+
+        try
+        {
+            searchSymbols(prefix) //
+                            .filter(r -> !duplicates.contains(r.getSymbol())) //
+                            .map(r -> createExchange(r.getSymbol())).forEach(e -> {
+                                duplicates.add(e.getId());
+                                answer.add(e);
+                            });
         }
         catch (IOException e)
         {
             errors.add(e);
         }
 
-        // Issue #251
-        // sometimes Yahoo does not return the default exchange which prevents
-        // selecting this security (example: searching for GOOG does return only
-        // unimportant exchanges)
-        Optional<Exchange> defaultExchange = answer.stream() //
-                        .filter(e -> e.getId().equals(subject.getTickerSymbol())).findAny();
-        if (!defaultExchange.isPresent())
-            answer.add(new Exchange(subject.getTickerSymbol(), subject.getTickerSymbol()));
-
-        if (answer.isEmpty())
-        {
-            // Issue #29
-            // at least add the given ticker symbol if the search returns
-            // nothing (sometimes accidentally)
-            answer.add(createExchange(subject.getTickerSymbol()));
-        }
-
-        return answer;
     }
 
     private Exchange createExchange(String symbol)
@@ -372,7 +381,7 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
         int e = symbol.indexOf('.');
         String exchange = e >= 0 ? symbol.substring(e) : ".default"; //$NON-NLS-1$
         String label = ExchangeLabels.getString("yahoo" + exchange); //$NON-NLS-1$
-        return new Exchange(symbol, String.format("%s (%s)", label, symbol)); //$NON-NLS-1$
+        return new Exchange(symbol, label);
     }
 
     protected BufferedReader openReader(String url, List<Exception> errors)
@@ -392,5 +401,11 @@ public class YahooFinanceQuoteFeed implements QuoteFeed
     protected InputStream openStream(String wknUrl) throws IOException
     {
         return new URL(wknUrl).openStream();
+    }
+
+    /* enable testing */
+    protected Stream<YahooSymbolSearch.Result> searchSymbols(String query) throws IOException
+    {
+        return new YahooSymbolSearch().search(query);
     }
 }

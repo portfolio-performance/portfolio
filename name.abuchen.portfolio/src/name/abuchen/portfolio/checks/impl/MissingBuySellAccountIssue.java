@@ -11,7 +11,7 @@ import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class MissingBuySellAccountIssue extends AbstractPortfolioIssue
 {
@@ -46,12 +46,13 @@ import name.abuchen.portfolio.model.Values;
         {
             PortfolioTransaction t = new PortfolioTransaction();
             t.setType(target);
-            t.setDate(transaction.getDate());
+            t.setCurrencyCode(transaction.getCurrencyCode());
+            t.setDateTime(transaction.getDateTime());
             t.setSecurity(transaction.getSecurity());
             t.setShares(transaction.getShares());
-            t.setFees(transaction.getFees());
-            t.setTaxes(transaction.getTaxes());
             t.setAmount(transaction.getAmount());
+            t.addUnits(transaction.getUnits());
+
             portfolio.addTransaction(t);
 
             portfolio.getTransactions().remove(transaction);
@@ -83,13 +84,14 @@ import name.abuchen.portfolio.model.Values;
         public void execute()
         {
             BuySellEntry entry = new BuySellEntry(portfolio, account);
-            entry.setDate(transaction.getDate());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
+            entry.setDate(transaction.getDateTime());
             entry.setType(transaction.getType());
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
-            entry.setFees(transaction.getFees());
-            entry.setTaxes(transaction.getTaxes());
             entry.setAmount(transaction.getAmount());
+            entry.getPortfolioTransaction().addUnits(transaction.getUnits());
+
             entry.insert();
 
             portfolio.getTransactions().remove(transaction);
@@ -107,14 +109,14 @@ import name.abuchen.portfolio.model.Values;
         return MessageFormat.format(Messages.IssueMissingBuySellInAccount, //
                         transaction.getType().toString(), //
                         Values.Share.format(transaction.getShares()), //
-                        Values.Amount.format(transaction.getActualPurchasePrice()), //
+                        Values.Quote.format(transaction.getGrossPricePerShare()), //
                         transaction.getSecurity().getName());
     }
 
     @Override
     public List<QuickFix> getAvailableFixes()
     {
-        List<QuickFix> answer = new ArrayList<QuickFix>();
+        List<QuickFix> answer = new ArrayList<>();
 
         answer.add(new ConvertToDeliveryFix());
 

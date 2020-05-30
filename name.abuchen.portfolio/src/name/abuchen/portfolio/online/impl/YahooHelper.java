@@ -1,62 +1,60 @@
 package name.abuchen.portfolio.online.impl;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Locale;
+
+import name.abuchen.portfolio.money.Values;
 
 /* package */class YahooHelper
 {
     static final ThreadLocal<DecimalFormat> FMT_PRICE = new ThreadLocal<DecimalFormat>()
     {
+        @Override
         protected DecimalFormat initialValue()
         {
-            return new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
-        }
-    };
-
-    static final ThreadLocal<SimpleDateFormat> FMT_TRADE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("\"MM/dd/yyyy\""); //$NON-NLS-1$
-        }
-    };
-
-    static final ThreadLocal<SimpleDateFormat> FMT_QUOTE_DATE = new ThreadLocal<SimpleDateFormat>()
-    {
-        protected SimpleDateFormat initialValue()
-        {
-            return new SimpleDateFormat("yyyy-MM-dd"); //$NON-NLS-1$
+            DecimalFormat fmt = new DecimalFormat("0.###", new DecimalFormatSymbols(Locale.US)); //$NON-NLS-1$
+            fmt.setParseBigDecimal(true);
+            return fmt;
         }
     };
 
     static long asPrice(String s) throws ParseException
     {
-        if ("N/A".equals(s)) //$NON-NLS-1$
+        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
             return -1;
-        return (long) (FMT_PRICE.get().parse(s).doubleValue() * 100);
+        BigDecimal v = (BigDecimal) FMT_PRICE.get().parse(s);
+        return v.multiply(Values.Quote.getBigDecimalFactor()).setScale(0, RoundingMode.HALF_UP).longValue();
     }
 
     static int asNumber(String s) throws ParseException
     {
-        if ("N/A".equals(s)) //$NON-NLS-1$
+        if ("N/A".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
             return -1;
         return FMT_PRICE.get().parse(s).intValue();
     }
 
-    static Date asDate(String s) throws ParseException
+    static LocalDate asDate(String s)
     {
         if ("\"N/A\"".equals(s)) //$NON-NLS-1$
             return null;
-        return FMT_TRADE_DATE.get().parse(s);
+        return LocalDate.parse(s, DateTimeFormatter.ofPattern("\"M/d/yyyy\"")); //$NON-NLS-1$
+    }
+
+    static LocalDate fromISODate(String s)
+    {
+        if (s == null || "\"N/A\"".equals(s) || "null".equals(s)) //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        return LocalDate.parse(s);
     }
 
     static String stripQuotes(String s)
     {
         return s.substring(1, s.length() - 1);
     }
-
 }

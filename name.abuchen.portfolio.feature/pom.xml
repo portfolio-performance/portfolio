@@ -6,10 +6,23 @@
 	<parent>
 		<groupId>name.abuchen.portfolio</groupId>
 		<artifactId>portfolio-app</artifactId>
-		<version>0.20.2-SNAPSHOT</version>
+		<version>0.46.4-SNAPSHOT</version>
 		<relativePath>../portfolio-app</relativePath>
 	</parent>
 
 	<artifactId>name.abuchen.portfolio.feature</artifactId>
 	<packaging>eclipse-feature</packaging>
+
+	<properties>
+		<sonar.skip>true</sonar.skip>
+	</properties>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jarsigner-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
 </project>

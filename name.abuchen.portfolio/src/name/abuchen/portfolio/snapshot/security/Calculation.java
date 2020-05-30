@@ -4,50 +4,102 @@ import java.util.List;
 
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.money.CurrencyConverter;
 
 /* package */abstract class Calculation
 {
-    public void visit(DividendInitialTransaction t)
-    {}
+    private Security security;
+    private String termCurrency;
 
-    public void visit(DividendFinalTransaction t)
-    {}
+    /**
+     * Finish up all calculations.
+     */
+    public void finish()
+    {
+    }
 
-    public void visit(DividendTransaction t)
-    {}
+    /**
+     * Gets the underlying {@link Security}.
+     * 
+     * @return {@link Security} on success, else null
+     */
+    public Security getSecurity()
+    {
+        return this.security;
+    }
 
-    public void visit(PortfolioTransaction t)
-    {}
+    /**
+     * Sets the underlying {@link Security}.
+     * 
+     * @param security
+     *            {@link Security} (can be null)
+     */
+    public void setSecurity(Security security)
+    {
+        this.security = security;
+    }
 
-    public void visit(AccountTransaction t)
-    {}
+    public String getTermCurrency()
+    {
+        return termCurrency;
+    }
 
-    public final void visitAll(List<? extends Transaction> transactions)
+    public void setTermCurrency(String termCurrency)
+    {
+        this.termCurrency = termCurrency;
+    }
+
+    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    {
+    }
+
+    public void visit(CurrencyConverter converter, DividendFinalTransaction t)
+    {
+    }
+
+    public void visit(CurrencyConverter converter, DividendTransaction t)
+    {
+    }
+
+    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    {
+    }
+
+    public void visit(CurrencyConverter converter, AccountTransaction t)
+    {
+    }
+
+    /* package */ final void visitAll(CurrencyConverter converter, List<? extends Transaction> transactions)
     {
         for (Transaction t : transactions)
         {
             if (t instanceof DividendInitialTransaction)
-                visit((DividendInitialTransaction) t);
+                visit(converter, (DividendInitialTransaction) t);
             else if (t instanceof DividendFinalTransaction)
-                visit((DividendFinalTransaction) t);
+                visit(converter, (DividendFinalTransaction) t);
             else if (t instanceof DividendTransaction)
-                visit((DividendTransaction) t);
+                visit(converter, (DividendTransaction) t);
             else if (t instanceof PortfolioTransaction)
-                visit((PortfolioTransaction) t);
+                visit(converter, (PortfolioTransaction) t);
             else if (t instanceof AccountTransaction)
-                visit((AccountTransaction) t);
+                visit(converter, (AccountTransaction) t);
             else
                 throw new UnsupportedOperationException();
         }
     }
 
-    public static <T extends Calculation> T perform(Class<T> type, List<? extends Transaction> transactions)
+    public static <T extends Calculation> T perform(Class<T> type, CurrencyConverter converter, Security security,
+                    List<? extends Transaction> transactions)
     {
         try
         {
-            T thing = type.newInstance();
-            thing.visitAll(transactions);
+            T thing = type.getDeclaredConstructor().newInstance();
+            thing.setSecurity(security);
+            thing.setTermCurrency(converter.getTermCurrency());
+            thing.visitAll(converter, transactions);
+            thing.finish();
             return thing;
         }
         catch (Exception e)

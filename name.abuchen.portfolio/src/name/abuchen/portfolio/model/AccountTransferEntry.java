@@ -1,6 +1,6 @@
 package name.abuchen.portfolio.model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class AccountTransferEntry implements CrossEntry, Annotated
 {
@@ -27,6 +27,16 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.accountTo = accountTo;
     }
 
+    public void setSourceTransaction(AccountTransaction transaction)
+    {
+        this.transactionFrom = transaction;
+    }
+
+    public void setTargetTransaction(AccountTransaction transaction)
+    {
+        this.transactionTo = transaction;
+    }
+
     public AccountTransaction getSourceTransaction()
     {
         return this.transactionFrom;
@@ -42,21 +52,37 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.accountFrom = account;
     }
 
+    public Account getSourceAccount()
+    {
+        return accountFrom;
+    }
+
     public void setTargetAccount(Account account)
     {
         this.accountTo = account;
     }
 
-    public void setDate(Date date)
+    public Account getTargetAccount()
     {
-        this.transactionFrom.setDate(date);
-        this.transactionTo.setDate(date);
+        return accountTo;
+    }
+
+    public void setDate(LocalDateTime date)
+    {
+        this.transactionFrom.setDateTime(date);
+        this.transactionTo.setDateTime(date);
     }
 
     public void setAmount(long amount)
     {
         this.transactionFrom.setAmount(amount);
         this.transactionTo.setAmount(amount);
+    }
+
+    public void setCurrencyCode(String currencyCode)
+    {
+        this.transactionFrom.setCurrencyCode(currencyCode);
+        this.transactionTo.setCurrencyCode(currencyCode);
     }
 
     @Override
@@ -72,6 +98,7 @@ public class AccountTransferEntry implements CrossEntry, Annotated
         this.transactionTo.setNote(note);
     }
 
+    @Override
     public void insert()
     {
         accountFrom.addTransaction(transactionFrom);
@@ -91,13 +118,12 @@ public class AccountTransferEntry implements CrossEntry, Annotated
 
     private void copyAttributesOver(AccountTransaction source, AccountTransaction target)
     {
-        target.setDate(source.getDate());
-        target.setAmount(source.getAmount());
+        target.setDateTime(source.getDateTime());
         target.setNote(source.getNote());
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getOwner(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountFrom;
@@ -105,6 +131,20 @@ public class AccountTransferEntry implements CrossEntry, Annotated
             return accountTo;
         else
             throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void setOwner(Transaction t, TransactionOwner<? extends Transaction> owner)
+    {
+        if (!(owner instanceof Account))
+            throw new IllegalArgumentException();
+
+        if (t.equals(transactionFrom) && !accountTo.equals(owner))
+            accountFrom = (Account) owner;
+        else if (t.equals(transactionTo) && !accountFrom.equals(owner))
+            accountTo = (Account) owner;
+        else
+            throw new IllegalArgumentException();
     }
 
     @Override
@@ -119,7 +159,7 @@ public class AccountTransferEntry implements CrossEntry, Annotated
     }
 
     @Override
-    public TransactionOwner<? extends Transaction> getCrossEntity(Transaction t)
+    public TransactionOwner<? extends Transaction> getCrossOwner(Transaction t)
     {
         if (t.equals(transactionFrom))
             return accountTo;

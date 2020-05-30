@@ -2,10 +2,11 @@ package name.abuchen.portfolio.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 public class Attributes
 {
-    private Map<String, Object> map = new HashMap<String, Object>();
+    private Map<String, Object> map = new HashMap<>();
 
     public Object put(AttributeType attribute, Object value)
     {
@@ -25,6 +26,11 @@ public class Attributes
     public boolean exists(AttributeType attribute)
     {
         return map.containsKey(attribute.getId());
+    }
+
+    public Stream<Object> getAllValues()
+    {
+        return map.values().stream();
     }
 
 }

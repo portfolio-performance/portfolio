@@ -1,0 +1,72 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=1234567890
+Wertpapierabrechnung DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+Verkauf  ADRESSZEILE2=Vorname Nachname
+Kommissionsgeschäft ADRESSZEILE3=Straße 1b
+Herr ADRESSZEILE4=12345 Stadt
+Vorname Nachname Depot-Nr. Abrechnungs-Nr. ADRESSZEILE5=
+Straße 1b 1234567890 12345678 / 28.12.2015 ADRESSZEILE6=12345 Stadt BELEGNUMMER=5847
+SEITENNUMMER=1
+STEUERERSTATTUNG=N
+Depotinhaber
+Vorname Nachname
+München, 28.12.2015
+Wir haben für Sie verkauft
+Gattungsbezeichnung ISIN
+ComStage-MSCI USA TRN UCIT.ETF Inhaber-Anteile I o.N. LU0392495700
+Nominal Kurs
+STK 43,000 EUR 47,8310
+Handelstag 23.12.2015 Kurswert EUR 2.056,73
+Handelszeit 10:25* Provision EUR 10,09-
+Börse Sekunden-Handel Fonds L&S Kapitalertragsteuer EUR 45,88-
+Verwahrart Girosammelverwahrung Solidaritätszuschlag EUR 2,52-
+Kirchensteuer EUR 4,12-
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+28.12.2015 1234567890 EUR 1.994,12
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+Veräußerungsgewinn Sonstige EUR 188,55
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 1,00) EUR 0,92 0,00
+Quellensteuertopf EUR 0,00 0,00
+zu versteuern EUR 187,63
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 45,88
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 2,52
+im laufenden Jahr einbehaltene Kirchensteuer EUR 4,12
+Kapitalertragsteuer, Solidaritätszuschlag und ggf. Kirchensteuer nach gemeldetem Kirchensteuersatz verrechnet mit dem
+Finanzamt München für Körperschaften, Steuernummer 143/107/00585.
+Es folgt Seite 2
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 217504
+USt.-Ident.-Nr.: DE300737710 > Aufsichtsratsvorsitzende: Franciska Decuypere > Vorstand: Kai Friedrich (Vorstandsvorsitzender), Dr. Niklas Dieterich, Dr. Josef Zellner
+
+3.19/ABREABHNHANDVFDI/GABAUSBE/005847/281215/212919
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+Depot-Nr. Abrechnungs-Nr. Seite-Nr. EMAILVERSAND=N
+1234567890 12345678 2 DEPOTNUMMER=1234567890
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=DRUCK
+ADRESSZEILE1=Herr
+ADRESSZEILE2=Vorname Nachname
+Jahressteuerbescheinigung folgt ADRESSZEILE3=Straße 1b
+ADRESSZEILE4=12345 Stadt
+Die Höhe des von der KVG festgelegten Ausgabeauf- bzw. Rücknahmeabschlages sowie die jährlich zu zahlende Ver- ADRESSZEILE5=
+waltungsvergütung und die Gesamtkostenquote sind dem Verkaufsprospekt bzw. den Vertragsbedingungen zu entnehmen. ADRESSZEILE6=
+Wir werden in Ihrem Depot wie angegeben buchen. BELEGNUMMER=5847
+SEITENNUMMER=2
+* Die angegebene Zeit entspricht den Angaben der Handelspartner gemäß der lokalen Zeit in Deutschland (Mitteleuropäische Zeit bzw. Mitteleuropäische Sommerzeit).
+Widerrufsbelehrung für den Erwerb von Anteilen oder Aktien eines offenen Investmentvermögens: Ist der Käufer von Anteilen oder Aktien eines offenen Investmentvermögens STEUERERSTATTUNG=N
+durch mündliche Verhandlungen außerhalb der ständigen Geschäftsräume desjenigen, der die Anteile oder Aktien verkauft oder den Verkauf vermittelt hat, dazu bestimmt worden,
+eine auf den Kauf gerichtete Willenserklärung abzugeben, so ist er an diese Erklärung nur gebunden, wenn er sie nicht innerhalb einer Frist von zwei Wochen bei der
+Verwaltungsgesellschaft oder einem Repräsentanten im Sinne des § 319 KAGB schriftlich widerruft.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben. Kapitalerträge sind einkommensteuerpflichtig.
+DAB Bank AG > Landsberger Straße 300 > 80687 München > BLZ 701 204 00 > BIC (SWIFT-Code): DABBDEMMXXX > Tel. 0 89 / 88 95 - 60 00 > Sitz: München > AG München, HRB 217504
+USt.-Ident.-Nr.: DE300737710 > Aufsichtsratsvorsitzende: Franciska Decuypere > Vorstand: Kai Friedrich (Vorstandsvorsitzender), Dr. Niklas Dieterich, Dr. Josef Zellner
+
+3.19/ABREABHNHANDVFDI/GABAUSBE/005847/281215/212919

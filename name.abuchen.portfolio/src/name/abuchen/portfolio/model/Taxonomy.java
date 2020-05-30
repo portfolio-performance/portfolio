@@ -5,6 +5,7 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 
 import name.abuchen.portfolio.model.Classification.Assignment;
 
@@ -13,13 +14,17 @@ public class Taxonomy
     public static class Visitor
     {
         public void visit(Classification classification)
-        {}
+        {
+            // to be sub-classed
+        }
 
         public void visit(Classification classification, Assignment assignment)
-        {}
+        {
+            // to be sub-classed
+        }
     }
 
-    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
+    private transient PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this); // NOSONAR
 
     private String id;
     private String name;
@@ -32,7 +37,12 @@ public class Taxonomy
         // needed for xstream de-serialization
     }
 
-    public Taxonomy(String id, String name)
+    public Taxonomy(String name)
+    {
+        this(UUID.randomUUID().toString(), name);
+    }
+
+    /* package */ Taxonomy(String id, String name)
     {
         this.id = id;
         this.name = name;
@@ -83,7 +93,7 @@ public class Taxonomy
         if (id == null)
             return null;
 
-        LinkedList<Classification> stack = new LinkedList<Classification>();
+        LinkedList<Classification> stack = new LinkedList<>();
         stack.addAll(getRoot().getChildren());
 
         while (!stack.isEmpty())
@@ -99,7 +109,7 @@ public class Taxonomy
 
     public List<Classification> getClassifications(final InvestmentVehicle vehicle)
     {
-        final List<Classification> answer = new ArrayList<Classification>();
+        final List<Classification> answer = new ArrayList<>();
 
         foreach(new Visitor()
         {
@@ -116,7 +126,7 @@ public class Taxonomy
 
     public List<Classification> getAllClassifications()
     {
-        List<Classification> answer = new ArrayList<Classification>();
+        List<Classification> answer = new ArrayList<>();
 
         foreach(new Visitor()
         {
@@ -150,6 +160,19 @@ public class Taxonomy
         root.accept(visitor);
     }
 
+    /**
+     * Returns a full copy of the taxonomy including all assignments but with
+     * newly generated UUIDs.
+     */
+    public Taxonomy copy()
+    {
+        Taxonomy copy = new Taxonomy(this.name);
+        if (this.dimensions != null)
+            copy.setDimensions(new ArrayList<>(this.dimensions));
+        copy.setRootNode(this.root.copy());
+        return copy;
+    }
+
     private Object readResolve()
     {
         propertyChangeSupport = new PropertyChangeSupport(this);
@@ -169,5 +192,11 @@ public class Taxonomy
     public void removePropertyChangeListener(PropertyChangeListener listener)
     {
         propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    @Override
+    public String toString()
+    {
+        return name;
     }
 }

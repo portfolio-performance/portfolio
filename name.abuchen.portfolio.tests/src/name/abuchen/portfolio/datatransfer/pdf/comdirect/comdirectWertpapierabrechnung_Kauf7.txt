@@ -1,0 +1,34 @@
+comdirect bank
+
+
+
+Wertpapierkauf
+Geschäftsnummer   : 91 005002
+                    008608173100-004  Rechnungsnummer   : 151254420605DAB5
+Geschäftstag      : 16.10.2008        Ausführungsplatz  : XETRA
+Handelszeit       : 09:54 Uhr (MEZ/MESZ)
+
+Wertpapier-Bezeichnung                                              WPKNR/ISIN
+Allianz SE                                                               840400
+vink.Namens-Aktien o.N.                                            DE0008404005
+
+
+Nennwert                  Zum Kurs von
+St.  100                  EUR  75,609
+
+                          Kurswert                    : EUR            7.560,90
+--------------------------------------------------------------------------------
+Eigene Entgelte
+                          Provision                   : EUR               23,80
+                          Börsenplatzabhäng. Entgelt  : EUR                1,50
+                          Summe Entgelte              : EUR               25,30
+--------------------------------------------------------------------------------
+Fremde Kosten
+                          Umschreibeentgelt           : EUR                0,60
+--------------------------------------------------------------------------------
+
+
+Verrechnung über Konto         Valuta                   Zu Ihren Lasten
+    0000000 00  EUR            20.10.2008               EUR            7.586,80
+
+Verwahrungs-Art: GIROSAMMELDEPOT

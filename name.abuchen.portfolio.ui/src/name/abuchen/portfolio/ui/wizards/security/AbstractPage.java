@@ -23,10 +23,12 @@ public abstract class AbstractPage
     }
 
     public void beforePage()
-    {}
+    {
+    }
 
     public void afterPage()
-    {}
+    {
+    }
 
     public void setTitle(String title)
     {

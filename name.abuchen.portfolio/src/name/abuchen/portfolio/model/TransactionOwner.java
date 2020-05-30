@@ -32,7 +32,7 @@ public interface TransactionOwner<T extends Transaction>
             Transaction other = transaction.getCrossEntry().getCrossTransaction(transaction);
             @SuppressWarnings("unchecked")
             TransactionOwner<Transaction> owner = (TransactionOwner<Transaction>) transaction.getCrossEntry()
-                            .getEntity(other);
+                            .getOwner(other);
 
             owner.shallowDeleteTransaction(other, client);
         }

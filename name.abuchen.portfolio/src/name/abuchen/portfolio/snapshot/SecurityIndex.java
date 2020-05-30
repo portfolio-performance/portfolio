@@ -1,24 +1,33 @@
 package name.abuchen.portfolio.snapshot;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
-import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.math.IRR;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
-
-import org.joda.time.DateMidnight;
-import org.joda.time.Days;
-import org.joda.time.Interval;
+import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.util.Dates;
+import name.abuchen.portfolio.util.Interval;
 
 /* package */class SecurityIndex extends PerformanceIndex
 {
-    /* package */SecurityIndex(Client client, ReportingPeriod reportInterval)
+    private final PerformanceIndex clientIndex;
+    private final Security security;
+
+    /* package */ SecurityIndex(PerformanceIndex referenceIndex, Security security)
     {
-        super(client, reportInterval);
+        super(referenceIndex.getClient(), referenceIndex.getCurrencyConverter(), referenceIndex.getReportInterval());
+
+        this.clientIndex = referenceIndex;
+        this.security = security;
     }
 
-    /* package */void calculate(PerformanceIndex clientIndex, Security security)
+    /* package */void calculate()
     {
         List<SecurityPrice> prices = security.getPrices();
         if (prices.isEmpty())
@@ -27,55 +36,70 @@ import org.joda.time.Interval;
             return;
         }
 
+        // prices only include historical quotes, not the latest quote. Merge
+        // the latest quote into the list if necessary
+        prices = security.getPricesIncludingLatest();
+
         Interval actualInterval = clientIndex.getActualInterval();
 
-        DateMidnight firstPricePoint = new DateMidnight(prices.get(0).getTime());
-        if (firstPricePoint.isAfter(actualInterval.getEndMillis()))
+        LocalDate firstPricePoint = prices.get(0).getDate();
+        if (firstPricePoint.isAfter(actualInterval.getEnd()))
         {
             initEmpty(clientIndex);
             return;
         }
 
-        DateMidnight startDate = clientIndex.getFirstDataPoint().orElse(actualInterval.getEnd()).toDateMidnight();
+        LocalDate startDate = clientIndex.getFirstDataPoint().orElse(actualInterval.getEnd());
         if (firstPricePoint.isAfter(startDate))
             startDate = firstPricePoint;
 
-        DateMidnight endDate = new DateMidnight(actualInterval.getEndMillis());
-        DateMidnight lastPricePoint = new DateMidnight(prices.get(prices.size() - 1).getTime());
+        LocalDate endDate = actualInterval.getEnd();
+        LocalDate lastPricePoint = prices.get(prices.size() - 1).getDate();
 
         if (lastPricePoint.isBefore(endDate))
             endDate = lastPricePoint;
 
-        int size = Days.daysBetween(startDate, endDate).getDays() + 1;
+        int size = (int) ChronoUnit.DAYS.between(startDate, endDate) + 1;
         if (size <= 0)
         {
             initEmpty(clientIndex);
             return;
         }
 
-        dates = new Date[size];
+        // needs currency conversion if
+        // a) the currency of the security is not null
+        // (otherwise it is an index)
+        // b) the term currency differs from the currency of the security
+
+        CurrencyConverter converter = security.getCurrencyCode() != null
+                        && !security.getCurrencyCode().equals(clientIndex.getCurrencyConverter().getTermCurrency())
+                                        ? clientIndex.getCurrencyConverter()
+                                        : null;
+
+        dates = new LocalDate[size];
         delta = new double[size];
         accumulated = new double[size];
-        transferals = new long[size];
+        inboundTransferals = new long[size];
+        outboundTransferals = new long[size];
         totals = new long[size];
 
-        final double adjustment = clientIndex.getAccumulatedPercentage()[Days.daysBetween(
-                        new DateMidnight(actualInterval.getStartMillis()), startDate).getDays()];
+        final double adjustment = clientIndex.getAccumulatedPercentage()[Dates.daysBetween(actualInterval.getStart(),
+                        startDate)];
 
         // first value = reference value
-        dates[0] = startDate.toDate();
+        dates[0] = startDate;
         delta[0] = 0;
         accumulated[0] = adjustment;
-        long valuation = totals[0] = security.getSecurityPrice(startDate.toDate()).getValue();
+        long valuation = totals[0] = convert(converter, security, startDate);
 
         // calculate series
         int index = 1;
-        DateMidnight date = startDate.plusDays(1);
+        LocalDate date = startDate.plusDays(1);
         while (date.compareTo(endDate) <= 0)
         {
-            dates[index] = date.toDate();
+            dates[index] = date;
 
-            long thisValuation = totals[index] = security.getSecurityPrice(date.toDate()).getValue();
+            long thisValuation = totals[index] = convert(converter, security, date);
             long thisDelta = thisValuation - valuation;
 
             delta[index] = (double) thisDelta / (double) valuation;
@@ -87,15 +111,62 @@ import org.joda.time.Interval;
         }
     }
 
+    private long convert(CurrencyConverter converter, Security security, LocalDate date)
+    {
+        SecurityPrice price = security.getSecurityPrice(date);
+        if (converter == null)
+            return price.getValue();
+
+        // use the picked date for currency conversion, not the date of the
+        // quote. This could differ for example on weekends.
+        return converter.convert(date, Money.of(security.getCurrencyCode(), price.getValue())).getAmount();
+    }
+
     private void initEmpty(PerformanceIndex clientIndex)
     {
-        DateMidnight startDate = clientIndex.getFirstDataPoint().orElse(clientIndex.getActualInterval().getStart())
-                        .toDateMidnight();
+        LocalDate startDate = clientIndex.getFirstDataPoint().orElse(clientIndex.getActualInterval().getStart());
 
-        dates = new Date[] { startDate.toDate() };
+        dates = new LocalDate[] { startDate };
         delta = new double[] { 0d };
         accumulated = new double[] { 0d };
-        transferals = new long[] { 0 };
+        inboundTransferals = new long[] { 0 };
+        outboundTransferals = new long[] { 0 };
         totals = new long[] { 0 };
     }
+
+    @Override
+    public double getPerformanceIRR()
+    {
+        List<SecurityPrice> prices = security.getPricesIncludingLatest();
+        if (prices.isEmpty())
+            return 0d;
+
+        LocalDate start = getReportInterval().getStart();
+        LocalDate end = getReportInterval().getEnd();
+
+        if (prices.get(0).getDate().isAfter(end))
+            return 0d;
+
+        if (prices.get(0).getDate().isAfter(start))
+            start = prices.get(0).getDate();
+
+        String currency = security.getCurrencyCode() == null ? getClient().getBaseCurrency()
+                        : security.getCurrencyCode();
+
+        List<LocalDate> dates = new ArrayList<>();
+        List<Double> values = new ArrayList<>();
+
+        // start value
+        dates.add(start);
+        values.add(-getCurrencyConverter()
+                        .convert(start, Money.of(currency, security.getSecurityPrice(start).getValue())).getAmount()
+                        / Values.Amount.divider());
+
+        dates.add(end);
+        values.add(getCurrencyConverter().convert(end, Money.of(currency, security.getSecurityPrice(end).getValue()))
+                        .getAmount() / Values.Amount.divider());
+
+        return IRR.calculate(dates, values);
+    }
+
 }

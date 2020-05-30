@@ -1,16 +1,20 @@
 package name.abuchen.portfolio.ui.views.taxonomy;
 
-import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelChangeListener;
+import javax.inject.Inject;
 
+import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Shell;
 
-/* package */abstract class Page implements TaxonomyModelChangeListener
+import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.TaxonomyModelUpdatedListener;
+
+/* package */abstract class Page implements TaxonomyModelUpdatedListener
 {
-    private TaxonomyModel model;
-    private TaxonomyNodeRenderer renderer;
+    private final TaxonomyModel model;
+    private final TaxonomyNodeRenderer renderer;
+
+    @Inject
     private IPreferenceStore preferenceStore;
 
     protected Page(TaxonomyModel model, TaxonomyNodeRenderer renderer)
@@ -31,18 +35,18 @@ import org.eclipse.swt.widgets.Shell;
         return renderer;
     }
 
-    public IPreferenceStore getPreferenceStore()
+    public final IPreferenceStore getPreferenceStore()
     {
         return preferenceStore;
     }
 
-    public void setPreferenceStore(IPreferenceStore preferenceStore)
+    public void configMenuAboutToShow(IMenuManager manager)
     {
-        this.preferenceStore = preferenceStore;
     }
 
-    public void showConfigMenu(Shell shell)
-    {}
+    public void exportMenuAboutToShow(IMenuManager manager)
+    {
+    }
 
     public abstract Control createControl(Composite parent);
 
@@ -51,5 +55,6 @@ import org.eclipse.swt.widgets.Shell;
     public abstract void afterPage();
 
     public void dispose()
-    {}
+    {
+    }
 }

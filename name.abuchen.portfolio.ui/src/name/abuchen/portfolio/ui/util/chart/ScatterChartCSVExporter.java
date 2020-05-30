@@ -4,17 +4,16 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-import java.io.Writer;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.apache.commons.csv.CSVPrinter;
+import org.eclipse.swt.widgets.Shell;
+import org.swtchart.ISeries;
+
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.AbstractCSVExporter;
-
-import org.apache.commons.csv.CSVPrinter;
-import org.eclipse.swt.widgets.Control;
-import org.swtchart.ISeries;
 
 public class ScatterChartCSVExporter extends AbstractCSVExporter
 {
@@ -33,19 +32,17 @@ public class ScatterChartCSVExporter extends AbstractCSVExporter
     }
 
     @Override
-    protected Control getControl()
+    protected Shell getShell()
     {
-        return chart;
+        return chart.getShell();
     }
 
     @Override
     protected void writeToFile(File file) throws IOException
     {
-        try (Writer writer = new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8))
+        try (CSVPrinter printer = new CSVPrinter(
+                        new OutputStreamWriter(new FileOutputStream(file), StandardCharsets.UTF_8), STRATEGY))
         {
-            CSVPrinter printer = new CSVPrinter(writer);
-            printer.setStrategy(STRATEGY);
-
             // write header
             printer.print(Messages.ColumnDataSeries);
             printer.print(chart.getAxisSet().getXAxis(0).getTitle().getText());

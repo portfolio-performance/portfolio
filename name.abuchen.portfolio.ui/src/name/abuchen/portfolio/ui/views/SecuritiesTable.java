@@ -1,63 +1,41 @@
 package name.abuchen.portfolio.ui.views;
 
+import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.Comparator;
-import java.util.Date;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.LatestSecurityPrice;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Taxonomy;
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.ui.AbstractFinanceView;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UpdateQuotesJob;
-import name.abuchen.portfolio.ui.dialogs.BuySellSecurityDialog;
-import name.abuchen.portfolio.ui.dialogs.SecurityAccountTransactionDialog;
-import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
-import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
-import name.abuchen.portfolio.ui.util.BookmarkMenu;
-import name.abuchen.portfolio.ui.util.Column;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.SimpleListContentProvider;
-import name.abuchen.portfolio.ui.util.StringEditingSupport;
-import name.abuchen.portfolio.ui.util.ViewerHelper;
-import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
-import name.abuchen.portfolio.ui.views.columns.IsinColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
-import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
-import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
-import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
-import name.abuchen.portfolio.util.Dates;
+import java.util.Map;
+import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.window.ToolTip;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
@@ -65,14 +43,124 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
+import name.abuchen.portfolio.model.Taxonomy;
+import name.abuchen.portfolio.model.Watchlist;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.online.Factory;
+import name.abuchen.portfolio.online.QuoteFeed;
+import name.abuchen.portfolio.online.SecuritySearchProvider.ResultItem;
+import name.abuchen.portfolio.online.impl.PortfolioReportNet;
+import name.abuchen.portfolio.snapshot.QuoteQualityMetrics;
+import name.abuchen.portfolio.snapshot.ReportingPeriod;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransactionDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityTransferDialog;
+import name.abuchen.portfolio.ui.dnd.ImportFromFileDropAdapter;
+import name.abuchen.portfolio.ui.dnd.ImportFromURLDropAdapter;
+import name.abuchen.portfolio.ui.dnd.SecurityDragListener;
+import name.abuchen.portfolio.ui.dnd.SecurityTransfer;
+import name.abuchen.portfolio.ui.editor.AbstractFinanceView;
+import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
+import name.abuchen.portfolio.ui.util.BookmarkMenu;
+import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
+import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.AttributeColumn;
+import name.abuchen.portfolio.ui.views.columns.IsinColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
+import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
+import name.abuchen.portfolio.ui.views.columns.WknColumn;
+import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
+import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
+import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Pair;
+
 public final class SecuritiesTable implements ModificationListener
 {
+    private class LinkToPortfolioReport extends Action
+    {
+        private Security security;
+
+        public LinkToPortfolioReport(Security security)
+        {
+            super(Messages.LabelLinkToPortfolioReportNet);
+            this.security = security;
+        }
+
+        @Override
+        public void run()
+        {
+            InputDialog dlg = new InputDialog(Display.getCurrent().getActiveShell(), Messages.LabelInfo,
+                            "Portfolio Report URL", "https://www.portfolio-report.net/", //$NON-NLS-1$//$NON-NLS-2$
+                            newText -> ImportFromURLDropAdapter.URL_PATTERN.matcher(newText).matches() ? null
+                                            : MessageFormat.format(Messages.DesktopAPIIllegalURL, newText));
+            if (dlg.open() != Window.OK)
+                return;
+
+            String url = dlg.getValue();
+
+            Matcher matcher = ImportFromURLDropAdapter.URL_PATTERN.matcher(url);
+            if (!matcher.matches())
+                return;
+
+            String onlineId = matcher.group(1);
+
+            try
+            {
+                Optional<ResultItem> result = new PortfolioReportNet().getUpdatedValues(onlineId);
+                if (!result.isPresent())
+                {
+                    MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError,
+                                    MessageFormat.format(Messages.MsgErrorNoInvestmentVehicleFoundAtURL, url));
+                }
+                else
+                {
+                    security.setOnlineId(onlineId);
+                    PortfolioReportNet.updateWith(security, result.get());
+                }
+            }
+            catch (IOException e)
+            {
+                MessageDialog.openError(Display.getDefault().getActiveShell(), Messages.LabelError, e.getMessage());
+            }
+        }
+    }
+
     private AbstractFinanceView view;
 
     private Watchlist watchlist;
 
-    private Menu contextMenu;
     private TableViewer securities;
+
+    private Map<Security, QuoteQualityMetrics> metricsCache = new HashMap<Security, QuoteQualityMetrics>()
+    {
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public QuoteQualityMetrics get(Object key)
+        {
+            return super.computeIfAbsent((Security) key, QuoteQualityMetrics::new);
+        }
+    };
 
     private ShowHideColumnHelper support;
 
@@ -84,9 +172,13 @@ public final class SecuritiesTable implements ModificationListener
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        this.securities = new TableViewer(container, SWT.FULL_SELECTION);
+        this.securities = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
+
+        ImportFromURLDropAdapter.attach(this.securities.getControl(), view.getPart());
+        ImportFromFileDropAdapter.attach(this.securities.getControl(), view.getPart());
 
         ColumnEditingSupport.prepare(securities);
+        ColumnViewerToolTipSupport.enableFor(securities, ToolTip.NO_RECREATE);
 
         support = new ShowHideColumnHelper(SecuritiesTable.class.getName(), getClient(), view.getPreferenceStore(),
                         securities, layout);
@@ -96,6 +188,7 @@ public final class SecuritiesTable implements ModificationListener
         addDeltaColumn();
         addColumnDateOfLatestPrice();
         addColumnDateOfLatestHistoricalPrice();
+        addQuoteDeltaColumn();
 
         for (Taxonomy taxonomy : getClient().getTaxonomies())
         {
@@ -105,19 +198,22 @@ public final class SecuritiesTable implements ModificationListener
         }
 
         addAttributeColumns();
+        addQuoteFeedColumns();
+        addDataQualityColumns();
 
         support.createColumns();
 
         securities.getTable().setHeaderVisible(true);
         securities.getTable().setLinesVisible(true);
 
-        securities.setContentProvider(new SimpleListContentProvider());
+        securities.setContentProvider(ArrayContentProvider.getInstance());
 
         securities.addDragSupport(DND.DROP_MOVE, //
                         new Transfer[] { SecurityTransfer.getTransfer() }, //
                         new SecurityDragListener(securities));
 
-        ViewerHelper.pack(securities);
+        hookKeyListener();
+
         securities.refresh();
 
         hookContextMenu();
@@ -137,7 +233,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Image getImage(Object e)
             {
-                return PortfolioPlugin.image(PortfolioPlugin.IMG_SECURITY);
+                return ((Security) e).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$
@@ -152,31 +248,38 @@ public final class SecuritiesTable implements ModificationListener
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
-        column = new Column("2", Messages.ColumnTicker, SWT.LEFT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                return ((Security) e).getTickerSymbol();
-            }
-        });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "tickerSymbol")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "tickerSymbol").addListener(this).attachTo(column); //$NON-NLS-1$
-
+        column = new SymbolColumn("2"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
         support.addColumn(column);
 
-        column = new Column("7", Messages.ColumnWKN, SWT.LEFT, 60); //$NON-NLS-1$
+        column = new WknColumn("7"); //$NON-NLS-1$
+        column.getEditingSupport().addListener(this);
+        support.addColumn(column);
+
+        column = new Column("currency", Messages.ColumnCurrency, SWT.LEFT, 60); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object e)
+            public String getText(Object element)
             {
-                return ((Security) e).getWkn();
+                return ((Security) element).getCurrencyCode();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Security.class, "wkn")); //$NON-NLS-1$
-        new StringEditingSupport(Security.class, "wkn").addListener(this).attachTo(column); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getCurrencyCode()));
+        column.setVisible(false);
+        support.addColumn(column);
+
+        column = new Column("targetCurrency", Messages.ColumnTargetCurrency, SWT.LEFT, 60); //$NON-NLS-1$
+        column.setDescription(Messages.ColumnTargetCurrencyToolTip);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return ((Security) element).getTargetCurrencyCode();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> ((Security) element).getTargetCurrencyCode()));
         column.setVisible(false);
         support.addColumn(column);
 
@@ -186,167 +289,167 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public String getText(Object e)
             {
-                return ((Security) e).isRetired() ? "\u2022" : null; //$NON-NLS-1$
+                return ""; //$NON-NLS-1$
+            }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                return ((Security) e).isRetired() ? Images.CHECK.image() : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(Security.class, "retired")); //$NON-NLS-1$
+        new BooleanEditingSupport(Security.class, "retired").addListener(this).attachTo(column); //$NON-NLS-1$
         column.setVisible(false);
         support.addColumn(column);
     }
 
-    private void addColumnLatestPrice()
+    private void addColumnLatestPrice() // NOSONAR
     {
-        Column column;
-        column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
+        Column column = new Column("4", Messages.ColumnLatest, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLatest_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object e)
             {
-                SecurityPrice latest = ((Security) e).getSecurityPrice(Dates.today());
-                return latest != null ? Values.Quote.format(latest.getValue()) : null;
+                Security security = (Security) e;
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest == null)
+                    return null;
+
+                if (security.getCurrencyCode() == null)
+                    return Values.Quote.format(latest.getValue());
+                else
+                    return Values.Quote.format(security.getCurrencyCode(), latest.getValue(),
+                                    getClient().getBaseCurrency());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                long v1 = p1.getValue();
-                long v2 = p2.getValue();
-                return v1 > v2 ? 1 : v1 == v2 ? 0 : -1;
-            }
+            return Long.compare(p1.getValue(), p2.getValue());
         }));
         support.addColumn(column);
     }
 
-    private void addDeltaColumn()
+    private void addDeltaColumn() // NOSONAR
     {
         Column column;
-        column = new Column("5", Messages.ColumnDelta, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
             {
-                SecurityPrice price = ((Security) e).getSecurityPrice(Dates.today());
-                if (!(price instanceof LatestSecurityPrice))
-                    return null;
-
-                LatestSecurityPrice latest = (LatestSecurityPrice) price;
-                return String.format("%,.2f %%", //$NON-NLS-1$
-                                ((double) (latest.getValue() - latest.getPreviousClose()) / (double) latest
-                                                .getPreviousClose()) * 100);
+                double latestQuote = previous.get().getLeft().getValue() / Values.Quote.divider();
+                double previousQuote = previous.get().getRight().getValue() / Values.Quote.divider();
+                return (latestQuote - previousQuote) / previousQuote;
             }
-
-            @Override
-            public Color getForeground(Object element)
+            else
             {
-                SecurityPrice price = ((Security) element).getSecurityPrice(Dates.today());
-                if (!(price instanceof LatestSecurityPrice))
-                    return null;
-
-                LatestSecurityPrice latest = (LatestSecurityPrice) price;
-                return latest.getValue() >= latest.getPreviousClose() ? Display.getCurrent().getSystemColor(
-                                SWT.COLOR_DARK_GREEN) : Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+                return null;
             }
-        });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((Security) element).getLatestTwoSecurityPrices();
+            if (previous.isPresent())
             {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
-
-                if (!(p1 instanceof LatestSecurityPrice))
-                    p1 = null;
-                if (!(p2 instanceof LatestSecurityPrice))
-                    p2 = null;
-
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
-
-                LatestSecurityPrice l1 = (LatestSecurityPrice) p1;
-                LatestSecurityPrice l2 = (LatestSecurityPrice) p2;
-
-                double v1 = (((double) (l1.getValue() - l1.getPreviousClose())) / l1.getPreviousClose() * 100);
-                double v2 = (((double) (l2.getValue() - l2.getPreviousClose())) / l2.getPreviousClose() * 100);
-                return Double.compare(v1, v2);
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
             }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((Security) o1).getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((Security) o2).getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue() / Values.Quote.divider();
+            double previousQuote1 = previous1.get().getRight().getValue() / Values.Quote.divider();
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
+
+            double latestQuote2 = previous2.get().getLeft().getValue() / Values.Quote.divider();
+            double previousQuote2 = previous2.get().getRight().getValue() / Values.Quote.divider();
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
+
+            return Double.compare(v1, v2);
         }));
         support.addColumn(column);
     }
 
-    private void addColumnDateOfLatestPrice()
+    private void addColumnDateOfLatestPrice() // NOSONAR
     {
         Column column;
         column = new Column("9", Messages.ColumnLatestDate, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnLatestDate_MenuLabel);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
-                return latest != null ? Values.Date.format(latest.getTime()) : null;
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
+                SecurityPrice latest = ((Security) element).getSecurityPrice(LocalDate.now());
+                return latest != null ? Values.Date.format(latest.getDate()) : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
-                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
-            }
-
-            private Color getColor(Object element, int colorId)
-            {
-                SecurityPrice latest = ((Security) element).getSecurityPrice(Dates.today());
-
-                Date sevenDaysAgo = new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS));
-                if (latest != null && latest.getTime().before(sevenDaysAgo))
-                    return Display.getDefault().getSystemColor(colorId);
-                else
+                Security security = (Security) element;
+                SecurityPrice latest = security.getSecurityPrice(LocalDate.now());
+                if (latest == null)
                     return null;
+
+                String feed = security.getLatestFeed() != null ? security.getLatestFeed() : security.getFeed();
+                if (QuoteFeed.MANUAL.equals(feed))
+                    return null;
+
+                LocalDate sevenDaysAgo = LocalDate.now().minusDays(7);
+                return latest.getDate().isBefore(sevenDaysAgo) ? Colors.WARNING : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                SecurityPrice p1 = ((Security) o1).getSecurityPrice(Dates.today());
-                SecurityPrice p2 = ((Security) o2).getSecurityPrice(Dates.today());
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            SecurityPrice p1 = ((Security) o1).getSecurityPrice(LocalDate.now());
+            SecurityPrice p2 = ((Security) o2).getSecurityPrice(LocalDate.now());
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getDate().compareTo(p2.getDate());
         }));
         support.addColumn(column);
     }
 
-    private void addColumnDateOfLatestHistoricalPrice()
+    private void addColumnDateOfLatestHistoricalPrice() // NOSONAR
     {
         Column column = new Column("10", Messages.ColumnLatestHistoricalDate, SWT.LEFT, 80); //$NON-NLS-1$
-        column.setLabelProvider(new ColumnLabelProvider()
+        column.setMenuLabel(Messages.ColumnLatestHistoricalDate_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
         {
             @Override
             public String getText(Object element)
@@ -356,66 +459,263 @@ public final class SecuritiesTable implements ModificationListener
                     return null;
 
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                return latest != null ? Values.Date.format(latest.getTime()) : null;
-            }
-
-            @Override
-            public Color getForeground(Object element)
-            {
-                return getColor(element, SWT.COLOR_INFO_FOREGROUND);
+                return latest != null ? Values.Date.format(latest.getDate()) : null;
             }
 
             @Override
             public Color getBackground(Object element)
             {
-                return getColor(element, SWT.COLOR_INFO_BACKGROUND);
-            }
-
-            private Color getColor(Object element, int colorId)
-            {
-                List<SecurityPrice> prices = ((Security) element).getPrices();
+                Security security = (Security) element;
+                List<SecurityPrice> prices = security.getPrices();
                 if (prices.isEmpty())
                     return null;
 
+                if (QuoteFeed.MANUAL.equals(security.getFeed()))
+                    return null;
+
                 SecurityPrice latest = prices.get(prices.size() - 1);
-                if (latest.getTime().before(new Date(System.currentTimeMillis() - (7 * Dates.DAY_IN_MS))))
-                    return Display.getDefault().getSystemColor(colorId);
+                if (!((Security) element).isRetired() && latest.getDate().isBefore(LocalDate.now().minusDays(7)))
+                    return Colors.WARNING;
                 else
                     return null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(new Comparator<Object>()
-        {
-            @Override
-            public int compare(Object o1, Object o2)
-            {
-                List<SecurityPrice> prices1 = ((Security) o1).getPrices();
-                SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
-                List<SecurityPrice> prices2 = ((Security) o2).getPrices();
-                SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            List<SecurityPrice> prices1 = ((Security) o1).getPrices();
+            SecurityPrice p1 = prices1.isEmpty() ? null : prices1.get(prices1.size() - 1);
+            List<SecurityPrice> prices2 = ((Security) o2).getPrices();
+            SecurityPrice p2 = prices2.isEmpty() ? null : prices2.get(prices2.size() - 1);
 
-                if (p1 == null)
-                    return p2 == null ? 0 : -1;
-                if (p2 == null)
-                    return 1;
+            if (p1 == null)
+                return p2 == null ? 0 : -1;
+            if (p2 == null)
+                return 1;
 
-                return p1.getTime().compareTo(p2.getTime());
-            }
+            return p1.getDate().compareTo(p2.getDate());
+        }));
+        support.addColumn(column);
+    }
+
+    private void addQuoteDeltaColumn() // NOSONAR
+    {
+        // create a modifiable copy as all menus share the same list of
+        // reporting periods
+        List<ReportingPeriod> options = new ArrayList<>(view.getPart().getReportingPeriods());
+
+        BiFunction<Object, ReportingPeriod, Double> valueProvider = (element, option) -> {
+
+            Interval interval = option.toInterval(LocalDate.now());
+
+            Security security = (Security) element;
+
+            SecurityPrice latest = security.getSecurityPrice(interval.getEnd());
+            SecurityPrice previous = security.getSecurityPrice(interval.getStart());
+
+            if (latest == null || previous == null)
+                return null;
+
+            if (previous.getValue() == 0)
+                return null;
+
+            if (previous.getDate().isAfter(interval.getStart()))
+                return null;
+
+            return Double.valueOf((latest.getValue() - previous.getValue()) / (double) previous.getValue());
+        };
+
+        Column column = new Column("delta-w-period", Messages.ColumnQuoteChange, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setOptions(new ReportingPeriodColumnOptions(Messages.ColumnQuoteChange_Option, options));
+        column.setDescription(Messages.ColumnQuoteChange_Description);
+        column.setLabelProvider(new QuoteReportingPeriodLabelProvider(valueProvider));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+            ReportingPeriod option = (ReportingPeriod) ColumnViewerSorter.SortingContext.getColumnOption();
+
+            Double v1 = valueProvider.apply(o1, option);
+            Double v2 = valueProvider.apply(o2, option);
+
+            if (v1 == null && v2 == null)
+                return 0;
+            else if (v1 == null)
+                return -1;
+            else if (v2 == null)
+                return 1;
+
+            return Double.compare(v1.doubleValue(), v2.doubleValue());
         }));
         support.addColumn(column);
     }
 
     private void addAttributeColumns()
     {
-        getClient().getSettings() //
-                        .getAttributeTypes() //
-                        .filter(a -> a.supports(Security.class)) //
-                        .forEach(attribute -> {
-                            Column column = new AttributeColumn(attribute);
-                            column.setVisible(false);
+        AttributeColumn.createFor(getClient(), Security.class) //
+                        .forEach(column -> {
                             column.getEditingSupport().addListener(this);
                             support.addColumn(column);
                         });
+    }
+
+    private void addQuoteFeedColumns()
+    {
+        Function<Object, String> quoteFeed = e -> {
+            String feedId = ((Security) e).getFeed();
+            if (feedId == null || feedId.isEmpty())
+                return null;
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
+            return feed != null ? feed.getName() : null;
+        };
+
+        Column column = new Column("qf-historic", Messages.ColumnQuoteFeedHistoric, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return quoteFeed.apply(e);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(quoteFeed::apply));
+        support.addColumn(column);
+
+        Function<Object, String> latestQuoteFeed = e -> {
+            Security security = (Security) e;
+            String feedId = security.getLatestFeed();
+            if (feedId == null || feedId.isEmpty())
+                return security.getFeed() != null ? Messages.EditWizardOptionSameAsHistoricalQuoteFeed : null;
+
+            QuoteFeed feed = Factory.getQuoteFeedProvider(feedId);
+            return feed != null ? feed.getName() : null;
+        };
+
+        column = new Column("qf-latest", Messages.ColumnQuoteFeedLatest, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return latestQuoteFeed.apply(e);
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(latestQuoteFeed::apply));
+        support.addColumn(column);
+
+        column = new Column("url-history", Messages.ColumnFeedURLHistoric, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Security security = (Security) e;
+                return security.getFeedURL();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "feedURL")); //$NON-NLS-1$
+        support.addColumn(column);
+
+        column = new Column("url-latest", Messages.ColumnFeedURLLatest, SWT.LEFT, 200); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelQuoteFeed);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                Security security = (Security) e;
+                return security.getLatestFeedURL();
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(Security.class, "latestFeedURL")); //$NON-NLS-1$
+        support.addColumn(column);
+    }
+
+    private void addDataQualityColumns()
+    {
+        // ColumnLatestHistoricalDate
+        Column column = new Column("q-date-first-historic", Messages.ColumnDateFirstHistoricalQuote, SWT.LEFT, 80); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnDateFirstHistoricalQuote_MenuLabel);
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setLabelProvider(new ColumnLabelProvider() // NOSONAR
+        {
+            @Override
+            public String getText(Object element)
+            {
+                List<SecurityPrice> prices = ((Security) element).getPrices();
+                return prices.isEmpty() ? null : Values.Date.format(prices.get(0).getDate());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(element -> {
+            List<SecurityPrice> prices = ((Security) element).getPrices();
+            return prices.isEmpty() ? null : prices.get(0).getDate();
+        }));
+        support.addColumn(column);
+
+        column = new Column("qqm-completeness", Messages.ColumnMetricCompleteness, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setDescription(Messages.ColumnMetricCompleteness_Description);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Values.Percent2.format(metricsCache.get((Security) e).getCompleteness());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getCompleteness()));
+        support.addColumn(column);
+
+        column = new Column("qqm-expected", Messages.ColumnMetricExpectedNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Integer.toString(metricsCache.get((Security) e).getExpectedNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getExpectedNumberOfQuotes()));
+        support.addColumn(column);
+
+        column = new Column("qqm-actual", Messages.ColumnMetricActualNumberOfQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                return Integer.toString(metricsCache.get((Security) e).getActualNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(o -> metricsCache.get((Security) o).getActualNumberOfQuotes()));
+        support.addColumn(column);
+
+        column = new Column("qqm-missing", Messages.ColumnMetricNumberOfMissingQuotes, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.GroupLabelDataQuality);
+        column.setVisible(false);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object e)
+            {
+                QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+                return Integer.toString(metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes());
+            }
+        });
+        column.setSorter(ColumnViewerSorter.create(e -> {
+            QuoteQualityMetrics metrics = metricsCache.get((Security) e);
+            return metrics.getExpectedNumberOfQuotes() - metrics.getActualNumberOfQuotes();
+        }));
+        support.addColumn(column);
     }
 
     public void addSelectionChangedListener(ISelectionChangedListener listener)
@@ -442,15 +742,21 @@ public final class SecuritiesTable implements ModificationListener
 
     public void refresh(Security security)
     {
+        this.metricsCache.remove(security);
         this.securities.refresh(security, true);
     }
 
-    public void refresh()
+    public void refresh(boolean updateLabels)
     {
         try
         {
             securities.getControl().setRedraw(false);
-            securities.refresh();
+
+            if (updateLabels)
+                metricsCache.clear();
+            securities.refresh(updateLabels);
+            securities.setSelection(securities.getSelection());
+
         }
         finally
         {
@@ -498,75 +804,115 @@ public final class SecuritiesTable implements ModificationListener
         view.markDirty();
     }
 
+    private void hookKeyListener()
+    {
+        securities.getControl().addKeyListener(new KeyAdapter()
+        {
+            @Override
+            public void keyPressed(KeyEvent e)
+            {
+                if (e.keyCode == 'e' && e.stateMask == SWT.MOD1)
+                    new EditSecurityAction().run();
+            }
+        });
+    }
+
     private void hookContextMenu()
     {
         MenuManager menuMgr = new MenuManager("#PopupMenu"); //$NON-NLS-1$
         menuMgr.setRemoveAllWhenShown(true);
-        menuMgr.addMenuListener(new IMenuListener()
-        {
-            public void menuAboutToShow(IMenuManager manager)
-            {
-                fillContextMenu(manager);
-            }
-        });
+        menuMgr.addMenuListener(this::fillContextMenu);
 
-        contextMenu = menuMgr.createContextMenu(securities.getTable());
+        Menu contextMenu = menuMgr.createContextMenu(securities.getTable());
         securities.getTable().setMenu(contextMenu);
 
-        securities.getTable().addDisposeListener(new DisposeListener()
-        {
-            @Override
-            public void widgetDisposed(DisposeEvent e)
-            {
-                if (contextMenu != null)
-                    contextMenu.dispose();
-            }
+        securities.getTable().addDisposeListener(e -> {
+            if (contextMenu != null)
+                contextMenu.dispose();
         });
     }
 
     private void fillContextMenu(IMenuManager manager)
     {
-        final Security security = (Security) ((IStructuredSelection) securities.getSelection()).getFirstElement();
-        if (security == null)
+        IStructuredSelection selection = (IStructuredSelection) securities.getSelection();
+
+        if (selection.isEmpty())
             return;
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuBuy)
+        if (selection.size() == 1)
         {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new BuySellSecurityDialog(getShell(), getClient(), security, PortfolioTransaction.Type.BUY);
-            }
-        });
+            Security security = (Security) selection.getFirstElement();
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuSell)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new BuySellSecurityDialog(getShell(), getClient(), security, PortfolioTransaction.Type.SELL);
-            }
-        });
+            // only if the security has a currency code, it can be bought
+            if (security.getCurrencyCode() != null)
+                fillTransactionContextMenu(manager, security);
 
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuDividends)
-        {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.DIVIDENDS, getClient(),
-                                null, security);
-            }
-        });
+            manager.add(new EditSecurityAction());
 
-        manager.add(new AbstractDialogAction(AccountTransaction.Type.TAX_REFUND.toString() + "...") //$NON-NLS-1$
-        {
-            @Override
-            Dialog createDialog(Security security)
+            manager.add(new Separator());
+            new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
+
+            manager.add(new Separator());
+            manager.add(new BookmarkMenu(view.getPart(), security));
+
+            if (security.getOnlineId() == null)
             {
-                return new SecurityAccountTransactionDialog(getShell(), AccountTransaction.Type.TAX_REFUND,
-                                getClient(), null, security);
+                manager.add(new Separator());
+                manager.add(new LinkToPortfolioReport(security));
             }
-        });
+        }
+
+        manager.add(new Separator());
+        if (watchlist == null)
+        {
+            manager.add(new ConfirmActionWithSelection(Messages.SecurityMenuDeleteSecurity,
+                            MessageFormat.format(Messages.SecurityMenuDeleteSingleSecurityConfirm,
+                                            selection.getFirstElement()),
+                            Messages.SecurityMenuDeleteMultipleSecurityConfirm, selection,
+                            (s, a) -> deleteSecurity(selection)));
+        }
+        else
+        {
+            manager.add(new Action(MessageFormat.format(Messages.SecurityMenuRemoveFromWatchlist, watchlist.getName()))
+            {
+                @Override
+                public void run()
+                {
+                    for (Object security : selection.toArray())
+                        watchlist.getSecurities().remove(security);
+
+                    markDirty();
+                    securities.setInput(watchlist.getSecurities());
+                }
+            });
+        }
+    }
+
+    private void fillTransactionContextMenu(IMenuManager manager, Security security)
+    {
+        new OpenDialogAction(view, Messages.SecurityMenuBuy + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.BUY) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuSell + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.SELL) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.SecurityMenuDividends + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.DIVIDENDS) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, AccountTransaction.Type.TAX_REFUND + "...") //$NON-NLS-1$
+                        .type(AccountTransactionDialog.class) //
+                        .parameters(AccountTransaction.Type.TAX_REFUND) //
+                        .with(security) //
+                        .addTo(manager);
 
         manager.add(new AbstractDialogAction(Messages.SecurityMenuStockSplit)
         {
@@ -578,67 +924,71 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
 
-        manager.add(new Separator());
-
-        manager.add(new AbstractDialogAction(Messages.SecurityMenuEditSecurity)
+        if (view.getClient().getActivePortfolios().size() > 1)
         {
-            @Override
-            Dialog createDialog(Security security)
-            {
-                return new EditSecurityDialog(getShell(), getClient(), security);
-            }
-
-            @Override
-            protected void performFinish(Security security)
-            {
-                super.performFinish(security);
-                updateQuotes(security);
-            }
-        });
-
-        manager.add(new Separator());
-        new QuotesContextMenu(this.view).menuAboutToShow(manager, security);
-
-        manager.add(new Separator());
-        manager.add(new BookmarkMenu(view.getPart(), security));
-
-        manager.add(new Separator());
-        if (watchlist == null)
-        {
-            manager.add(new Action(Messages.SecurityMenuDeleteSecurity)
-            {
-                @Override
-                public void run()
-                {
-                    if (!security.getTransactions(getClient()).isEmpty())
-                    {
-                        MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
-                                        MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, security.getName()));
-                    }
-                    else
-                    {
-
-                        getClient().removeSecurity(security);
-                        markDirty();
-
-                        securities.setInput(getClient().getSecurities());
-                    }
-                }
-            });
+            manager.add(new Separator());
+            new OpenDialogAction(view, Messages.SecurityMenuTransfer) //
+                            .type(SecurityTransferDialog.class) //
+                            .with(security) //
+                            .addTo(manager);
         }
-        else
-        {
-            manager.add(new Action(MessageFormat.format(Messages.SecurityMenuRemoveFromWatchlist, watchlist.getName()))
-            {
-                @Override
-                public void run()
-                {
-                    watchlist.getSecurities().remove(security);
-                    markDirty();
 
-                    securities.setInput(watchlist.getSecurities());
-                }
-            });
+        manager.add(new Separator());
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_INBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_INBOUND) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, PortfolioTransaction.Type.DELIVERY_OUTBOUND.toString() + "...") //$NON-NLS-1$
+                        .type(SecurityTransactionDialog.class) //
+                        .parameters(PortfolioTransaction.Type.DELIVERY_OUTBOUND) //
+                        .with(security) //
+                        .addTo(manager);
+
+        new OpenDialogAction(view, Messages.InvestmentPlanMenuCreate) //
+                        .type(InvestmentPlanDialog.class) //
+                        .parameters(PortfolioTransaction.class) //
+                        .with(security) //
+                        .addTo(manager);
+
+        manager.add(new Separator());
+    }
+
+    private void deleteSecurity(IStructuredSelection selection)
+    {
+        boolean isDirty = false;
+        List<Security> withTransactions = new ArrayList<>();
+
+        for (Object obj : selection.toArray())
+        {
+            Security security = (Security) obj;
+
+            if (!security.getTransactions(getClient()).isEmpty())
+            {
+                withTransactions.add(security);
+            }
+            else
+            {
+                getClient().removeSecurity(security);
+                isDirty = true;
+            }
+        }
+
+        if (!withTransactions.isEmpty())
+        {
+            String label = String.join(", ", //$NON-NLS-1$
+                            withTransactions.stream().map(Security::getName).collect(Collectors.toList()));
+
+            MessageDialog.openError(getShell(), Messages.MsgDeletionNotPossible,
+                            MessageFormat.format(Messages.MsgDeletionNotPossibleDetail, label));
+        }
+
+        if (isDirty)
+        {
+            markDirty();
+            securities.setInput(getClient().getSecurities());
         }
     }
 
@@ -659,7 +1009,7 @@ public final class SecuritiesTable implements ModificationListener
                 return;
 
             Dialog dialog = createDialog(security);
-            if (dialog.open() == Dialog.OK)
+            if (dialog.open() == Window.OK)
                 performFinish(security);
         }
 
@@ -668,11 +1018,96 @@ public final class SecuritiesTable implements ModificationListener
             markDirty();
             if (!securities.getControl().isDisposed())
             {
-                securities.refresh(security, true);
+                // the check if the security gets filtered after the change.
+                // Since it is unknown which property of the security has
+                // been changed, filter.isFilterProperty(...) can't be used.
+                boolean areFiltersAffected = false;
+                for (ViewerFilter filter : securities.getFilters())
+                {
+                    if (!filter.select(securities, security, security))
+                        areFiltersAffected = true;
+                }
+
+                if (areFiltersAffected)
+                    securities.refresh();
+                else
+                    securities.refresh(security, true);
+
                 securities.setSelection(securities.getSelection());
             }
         }
 
         abstract Dialog createDialog(Security security);
+    }
+
+    private final class EditSecurityAction extends AbstractDialogAction
+    {
+        private EditSecurityAction()
+        {
+            super(Messages.SecurityMenuEditSecurity);
+            setAccelerator(SWT.MOD1 | 'E');
+        }
+
+        @Override
+        Dialog createDialog(Security security)
+        {
+            return view.make(EditSecurityDialog.class, security);
+        }
+
+        @Override
+        protected void performFinish(Security security)
+        {
+            super.performFinish(security);
+            updateQuotes(security);
+        }
+    }
+
+    private static final class QuoteReportingPeriodLabelProvider extends OptionLabelProvider<ReportingPeriod>
+    {
+        private BiFunction<Object, ReportingPeriod, Double> valueProvider;
+
+        public QuoteReportingPeriodLabelProvider(BiFunction<Object, ReportingPeriod, Double> valueProvider)
+        {
+            this.valueProvider = valueProvider;
+        }
+
+        @Override
+        public String getText(Object e, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(e, option);
+            if (value == null)
+                return null;
+
+            return String.format("%,.2f %%", value * 100); //$NON-NLS-1$
+        }
+
+        @Override
+        public Color getForeground(Object e, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(e, option);
+            if (value == null)
+                return null;
+
+            if (value.doubleValue() < 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_RED);
+            else if (value.doubleValue() > 0)
+                return Display.getCurrent().getSystemColor(SWT.COLOR_DARK_GREEN);
+            else
+                return null;
+        }
+
+        @Override
+        public Image getImage(Object element, ReportingPeriod option)
+        {
+            Double value = valueProvider.apply(element, option);
+            if (value == null)
+                return null;
+
+            if (value.doubleValue() > 0)
+                return Images.GREEN_ARROW.image();
+            if (value.doubleValue() < 0)
+                return Images.RED_ARROW.image();
+            return null;
+        }
     }
 }

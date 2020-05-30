@@ -1,0 +1,18 @@
+comdirect bank
+
+
+
+15.12.2010
+G  u t s c h  ri f t fä  ll ig  e r W  e r t p a p i e r -E  r tr ä g e
+Dividendengutschrift
+Depotbestand                          Wertpapier-Bezeichnung               WKN/ISIN
+p e r  0 9  . 11 . 2 0 1 0                          U n il  e ve r  N . V  .                           A0  J M Z B
+S T K            1 . 9 0 0 , 0  0 0                C e r t . v .A a n d e  l e n  E  O -, 1 6            NL  0 00  0 00  9 3 5 5
+                                      Emissionsland: NIEDERLANDE
+EUR 0,208      Dividende pro Stück für Geschäftsjahr        01.01.10 bis 31.12.10
+zahlbar ab 15.12.2010                 Zwischendividende
+                         Abrechnung Dividendengutschrift
+Bruttobetrag:                                              EUR             395,20
+15,000 % Quellensteuer                                     EUR              59,28 -
+Verrechnung über Konto    BLZ           Valuta       Zu Ihren Gunsten vor Steuern
+000000000  EUR            00000000      15.12.2010         EUR             335,92

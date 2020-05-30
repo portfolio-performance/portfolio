@@ -1,0 +1,69 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2020-02-04",
+			"time": "08:00",
+			"currency": "EUR",
+			"amount": 9978.18,
+			"shares": 158.0,
+			"security": {
+				"name": "XTR.(IE) - MSCI WORLD",
+				"isin": "IE00BJ0KDQ92",
+				"wkn": "A1XB5U",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 39.95
+				},
+				{
+					"type": "FEE",
+					"amount": 0.04
+				},
+				{
+					"type": "FEE",
+					"amount": 11.82
+				},
+				{
+					"type": "FEE",
+					"amount": 0.65
+				}
+			]
+		},
+		{
+			"type": "PURCHASE",
+			"date": "2020-02-04",
+			"time": "08:00",
+			"currency": "EUR",
+			"amount": 6062.19,
+			"shares": 140.0,
+			"security": {
+				"name": "COMSTA.-MSCI EM.MKTS.TRN U.ETF",
+				"isin": "LU0635178014",
+				"wkn": "ETF127",
+				"currency": "EUR"
+			},
+			"units": [
+				{
+					"type": "FEE",
+					"amount": 39.95
+				},
+				{
+					"type": "FEE",
+					"amount": 0.04
+				},
+				{
+					"type": "FEE",
+					"amount": 7.15
+				},
+				{
+					"type": "FEE",
+					"amount": 0.65
+				}
+			]
+		}
+	]
+}

@@ -13,8 +13,16 @@
                value="Portfolio Performance">
          </property>
          <property
+               name="applicationCSS"
+               value="platform:/plugin/name.abuchen.portfolio.bootstrap/default.css">
+         </property>
+         <property
                name="lifeCycleURI"
                value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.LifeCycleManager">
+         </property>
+         <property
+               name="rendererFactoryUri"
+               value="bundleclass://name.abuchen.portfolio.bootstrap/name.abuchen.portfolio.bootstrap.swt.CustomRendererFactory">
          </property>
       </product>
    </extension>
@@ -28,6 +36,11 @@
          <element
                id="name.abuchen.portfolio.ui.window.mainwindow">
          </element>
+      </processor>
+      <processor
+            apply="always"
+            beforefragment="true"
+            class="name.abuchen.portfolio.bootstrap.MergeOldLayoutIntoCurrentApplicationModelProcessor">
       </processor>
    </extension>
 </plugin>

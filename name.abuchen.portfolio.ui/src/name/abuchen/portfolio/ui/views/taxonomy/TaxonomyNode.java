@@ -12,6 +12,7 @@ import name.abuchen.portfolio.model.Classification.Assignment;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.views.taxonomy.TaxonomyModel.NodeVisitor;
 
@@ -88,12 +89,30 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public Object setData(String key, Object object)
+        {
+            return classification.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return classification.getData(key);
+        }
+
+        @Override
         public <T> T adapt(Class<T> type)
         {
             if (type == Named.class || type == Annotated.class)
                 return type.cast(classification);
             else
                 return super.adapt(type);
+        }
+
+        @Override
+        public String toString()
+        {
+            return getName();
         }
     }
 
@@ -171,12 +190,24 @@ public abstract class TaxonomyNode implements Adaptable
         }
 
         @Override
+        public Object setData(String key, Object object)
+        {
+            return assignment.setData(key, object);
+        }
+
+        @Override
+        public Object getData(String key)
+        {
+            return assignment.getData(key);
+        }
+
+        @Override
         public String getColor()
         {
             if (assignment.getInvestmentVehicle() instanceof Security)
-                return Colors.EQUITY.asHex();
+                return Colors.toHex(Colors.EQUITY);
             else
-                return Colors.CASH.asHex();
+                return Colors.toHex(Colors.CASH);
         }
 
         @Override
@@ -194,7 +225,7 @@ public abstract class TaxonomyNode implements Adaptable
         public UnassignedContainerNode(TaxonomyNode parent, Classification classification)
         {
             super(parent, classification);
-            setWeight(0);
+            super.setWeight(0);
         }
 
         @Override
@@ -206,17 +237,17 @@ public abstract class TaxonomyNode implements Adaptable
         @Override
         public String getColor()
         {
-            return Colors.OTHER_CATEGORY.asHex();
+            return Colors.toHex(Colors.OTHER_CATEGORY);
         }
     }
 
     private TaxonomyNode parent;
 
-    private List<TaxonomyNode> children = new ArrayList<TaxonomyNode>();
-    private long actual;
-    private long target;
+    private List<TaxonomyNode> children = new ArrayList<>();
+    private Money actual;
+    private Money target;
 
-    /* package */TaxonomyNode(TaxonomyNode parent)
+    /* package */ TaxonomyNode(TaxonomyNode parent)
     {
         this.parent = parent;
     }
@@ -229,6 +260,11 @@ public abstract class TaxonomyNode implements Adaptable
     public boolean isRoot()
     {
         return parent == null;
+    }
+
+    public TaxonomyNode getRoot()
+    {
+        return parent == null ? this : parent.getRoot();
     }
 
     public List<TaxonomyNode> getChildren()
@@ -271,22 +307,22 @@ public abstract class TaxonomyNode implements Adaptable
         return false;
     }
 
-    public long getActual()
+    public Money getActual()
     {
         return actual;
     }
 
-    public void setActual(long actual)
+    public void setActual(Money actual)
     {
         this.actual = actual;
     }
 
-    public long getTarget()
+    public Money getTarget()
     {
         return target;
     }
 
-    public void setTarget(long target)
+    public void setTarget(Money target)
     {
         this.target = target;
     }
@@ -307,9 +343,13 @@ public abstract class TaxonomyNode implements Adaptable
 
     public abstract String getColor();
 
+    public abstract Object setData(String key, Object object);
+
+    public abstract Object getData(String key);
+
     public List<TaxonomyNode> getPath()
     {
-        LinkedList<TaxonomyNode> path = new LinkedList<TaxonomyNode>();
+        LinkedList<TaxonomyNode> path = new LinkedList<>();
 
         TaxonomyNode item = this;
         while (item != null)
@@ -344,6 +384,11 @@ public abstract class TaxonomyNode implements Adaptable
 
         TaxonomyNode newChild = new ClassificationNode(this, newClassification);
 
+        // set actuals and target; will be calculated later but must not be null
+        newChild.setActual(Money.of(actual.getCurrencyCode(), 0));
+        newChild.setTarget(Money.of(target.getCurrencyCode(), 0));
+
+        // unclassified node shall stay at the end
         int insertAt = isRoot() ? children.size() - 1 : children.size();
         children.add(insertAt, newChild);
         for (int ii = 0; ii < children.size(); ii++)

@@ -1,49 +1,41 @@
 package name.abuchen.portfolio.model;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import name.abuchen.portfolio.model.Taxonomy.Visitor;
+import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.util.ColorConversion;
 
 public class Classification implements Named
 {
-    public static final class ByRank implements Comparator<Classification>, Serializable
-    {
-        private static final long serialVersionUID = 1L;
-
-        @Override
-        public int compare(Classification c1, Classification c2)
-        {
-            return c1.getRank() > c2.getRank() ? -1 : c1.getRank() < c2.getRank() ? 1 : 0;
-        }
-    }
-
     public static class Assignment
     {
         private InvestmentVehicle investmentVehicle;
         private int weight;
         private int rank;
+        private Map<String, Object> data;
 
         public Assignment()
         {
             // needed for xstream de-serialization
         }
 
-        public Assignment(InvestmentVehicle account)
+        public Assignment(InvestmentVehicle vehicle)
         {
-            this(account, ONE_HUNDRED_PERCENT);
+            this(vehicle, ONE_HUNDRED_PERCENT);
         }
 
-        public Assignment(InvestmentVehicle investmentVehicle, int weight)
+        public Assignment(InvestmentVehicle vehicle, int weight)
         {
             this.weight = weight;
-            this.investmentVehicle = investmentVehicle;
+            this.investmentVehicle = vehicle;
         }
 
         public int getWeight()
@@ -70,11 +62,30 @@ public class Classification implements Named
         {
             this.rank = rank;
         }
+
+        public Object setData(String key, Object object)
+        {
+            if (data == null)
+                data = new HashMap<>();
+
+            return object == null ? data.remove(key) : data.put(key, object);
+        }
+
+        public Object getData(String key)
+        {
+            if (data == null)
+                return null;
+
+            return data.get(key);
+        }
     }
 
     public static final int ONE_HUNDRED_PERCENT = 100 * Values.Weight.factor();
 
     public static final String UNASSIGNED_ID = "$unassigned$"; //$NON-NLS-1$
+    public static final String VIRTUAL_ROOT = "$virtualroot$"; //$NON-NLS-1$
+
+    private static final Random RANDOM = new Random();
 
     private String id;
     private String name;
@@ -82,11 +93,13 @@ public class Classification implements Named
     private String color;
 
     private Classification parent;
-    private List<Classification> children = new ArrayList<Classification>();
-    private List<Assignment> assignments = new ArrayList<Assignment>();
+    private List<Classification> children = new ArrayList<>();
+    private List<Assignment> assignments = new ArrayList<>();
 
     private int weight;
     private int rank;
+
+    private Map<String, Object> data;
 
     public Classification()
     {
@@ -228,6 +241,22 @@ public class Classification implements Named
         this.rank = rank;
     }
 
+    public Object setData(String key, Object object)
+    {
+        if (data == null)
+            data = new HashMap<>();
+
+        return object == null ? data.remove(key) : data.put(key, object);
+    }
+
+    public Object getData(String key)
+    {
+        if (data == null)
+            return null;
+
+        return data.get(key);
+    }
+
     public String getPathName(boolean includeParent, int limit)
     {
         LinkedList<Classification> path = getPath();
@@ -309,7 +338,7 @@ public class Classification implements Named
 
     private LinkedList<Classification> getPath()
     {
-        LinkedList<Classification> path = new LinkedList<Classification>();
+        LinkedList<Classification> path = new LinkedList<>();
 
         Classification c = this;
         while (c != null)
@@ -323,9 +352,9 @@ public class Classification implements Named
 
     public List<Classification> getTreeElements()
     {
-        List<Classification> answer = new ArrayList<Classification>();
+        List<Classification> answer = new ArrayList<>();
 
-        LinkedList<Classification> stack = new LinkedList<Classification>();
+        LinkedList<Classification> stack = new LinkedList<>();
         stack.addAll(getChildren());
 
         while (!stack.isEmpty())
@@ -340,7 +369,7 @@ public class Classification implements Named
 
     public List<Classification> getPathToRoot()
     {
-        LinkedList<Classification> path = new LinkedList<Classification>();
+        LinkedList<Classification> path = new LinkedList<>();
 
         Classification item = this;
         while (item != null)
@@ -354,11 +383,9 @@ public class Classification implements Named
 
     public void assignRandomColors()
     {
-        Random random = new Random();
-
-        float hue = random.nextFloat() * 360f;
-        float saturation = (random.nextFloat() * 0.5f) + 0.3f;
-        float brightness = (random.nextFloat() * 0.4f) + 0.5f;
+        float hue = RANDOM.nextFloat() * 360f;
+        float saturation = (RANDOM.nextFloat() * 0.5f) + 0.3f;
+        float brightness = (RANDOM.nextFloat() * 0.4f) + 0.5f;
 
         assignRandomColors(hue, saturation, brightness);
     }
@@ -368,7 +395,7 @@ public class Classification implements Named
         if (children.isEmpty())
             return;
 
-        Collections.sort(children, new ByRank());
+        Collections.sort(children, (c1, c2) -> Integer.compare(c2.getRank(), c1.getRank()));
 
         int size = children.size();
         float step = 360f / (float) size;
@@ -423,5 +450,38 @@ public class Classification implements Named
     public String toString()
     {
         return name;
+    }
+
+    /**
+     * Recursively creates a copy of the classification including all
+     * assignments with newly generated UUIDs.
+     */
+    public Classification copy()
+    {
+        Classification copy = new Classification(null, UUID.randomUUID().toString(), this.name, this.color);
+        copy.rank = this.rank;
+        copy.weight = this.weight;
+
+        if (this.data != null)
+            copy.data = new HashMap<>(this.data);
+
+        for (Classification classification : children)
+        {
+            Classification c = classification.copy();
+            c.setParent(copy);
+            copy.addChild(c);
+        }
+
+        for (Assignment assignment : assignments)
+        {
+            Assignment a = new Assignment(assignment.getInvestmentVehicle());
+            a.setWeight(assignment.getWeight());
+            a.setRank(assignment.getRank());
+            if (assignment.data != null)
+                a.data = new HashMap<>(assignment.data);
+            copy.addAssignment(a);
+        }
+
+        return copy;
     }
 }

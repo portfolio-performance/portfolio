@@ -1,0 +1,129 @@
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstrasse 1
+ADRESSZEILE4=12345 Musterstadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.02.2016 - 31.01.2017
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 1 BELEGNUMMER=4436
+12345 Musterstadt 123456789 55746925 / 16.12.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Erträgnisgutschrift Frankfurt am Main, 16.12.2016
+Gattungsbezeichnung ISIN
+Lyxor ETF MSCI USA Actions au Porteur D-EUR o.N. FR0010296061
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 1,0545 14.12.2016 16.12.2016 EUR 1,710000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.12.2016 247281048 EUR 1,80
+Ertrag für 2016/17 EUR 1,80
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausl. Dividendenanteil (Ausschüttung) EUR 1,80
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 396,45 394,65
+Quellensteuertopf EUR 0,05 0,05
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag 16.12.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/004436/171216/002929
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstrasse 1
+ADRESSZEILE4=12345 Musterstadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.04.2016 - 31.03.2017
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 1 BELEGNUMMER=4437
+12345 Musterstadt 123456789 97603916 / 16.12.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Erträgnisgutschrift Frankfurt am Main, 16.12.2016
+Gattungsbezeichnung ISIN
+Lyxor ETF MSCI WORLD FCP Actions au Port.D-EUR o.N. FR0010315770
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 1,2879 14.12.2016 16.12.2016 EUR 1,400000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.12.2016 247281048 EUR 1,80
+Ertrag für 2016/17 EUR 1,80
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausl. Dividendenanteil (Ausschüttung) EUR 1,80
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 398,25 396,45
+Quellensteuertopf EUR 0,05 0,05
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag 16.12.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/004437/171216/002929
+BELEGDRUCK=J
+ORIGINAL=1
+FAXVERSAND=N
+EMAILVERSAND=N
+DEPOTNUMMER=123456789
+DEPOTUNTERBEZEICHNUNG=
+VERSANDARTENSCHLUESSEL=EBOX
+Erträgnisgutschrift aus Wertpapieren ADRESSZEILE1=Herr
+ADRESSZEILE2=Max Mustermann
+ADRESSZEILE3=Musterstrasse 1
+ADRESSZEILE4=12345 Musterstadt
+Ausschüttung für
+Herr ADRESSZEILE5=01.01.2016 - 31.12.2016
+Max Mustermann ADRESSZEILE6=
+Depot-Nr. Abrechnungs-Nr.
+Musterstrasse 1 BELEGNUMMER=4438
+12345 Musterstadt 123456789 33071326 / 16.12.2016 SEITENNUMMER=1STEUERERSTATTUNG=N
+Depotinhaber
+Max Mustermann
+Erträgnisgutschrift Frankfurt am Main, 16.12.2016
+Gattungsbezeichnung ISIN
+MUL-LYXOR S&P 500 UCITS ETF Inhaber-Anteile D-EUR o.N. LU0496786574
+Nominal Ex-Tag Zahltag Ausschüttungsbetrag pro Stück
+STK 9,9225 14.12.2016 16.12.2016 EUR 0,190000
+Wert Konto-Nr. Betrag zu Ihren Gunsten
+16.12.2016 247281048 EUR 1,89
+Ertrag für 2016 EUR 1,89
+Hinweise zur steuerlichen Verrechnung: vorher aktuell
+ausl. Dividendenanteil (Ausschüttung) EUR 1,89
+Aktienverlusttopf EUR 0,00 0,00
+allgemeiner Verlusttopf EUR 0,00 0,00
+Freistellungsauftrag (eingereicht: EUR 400,00) EUR 394,65 392,76
+Quellensteuertopf EUR 0,05 0,05
+zu versteuern EUR 0,00
+im laufenden Jahr einbehaltene Kapitalertragsteuer EUR 0,00
+im laufenden Jahr einbehaltener Solidaritätszuschlag EUR 0,00
+Steuerlicher Stichtag 16.12.2016
+Jahressteuerbescheinigung folgt
+Verwahrart: Girosammelverwahrung      
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und Vollständigkeit zu überprüfen und etwaige Einwendungen
+unverzüglich zu erheben.
+Dieser Beleg wird maschinell erstellt und daher nicht unterschrieben.
+3.20/ABREEREIERTR/GDBERTRG/004438/171216/002929

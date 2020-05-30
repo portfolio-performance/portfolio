@@ -7,17 +7,21 @@ import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import java.util.UUID;
 
+import name.abuchen.portfolio.money.Values;
+
 public final class TaxonomyTemplate
 {
-    /* package */static final String INDUSTRY_GICS = "industry-gics"; //$NON-NLS-1$
-    /* package */static final String INDUSTRY_SIMPLE2LEVEL = "industry-simple2level"; //$NON-NLS-1$
+    /* package */static final String INDUSTRY_GICS = "industry-gics";//$NON-NLS-1$
+    /* package */static final String INDUSTRY_SIMPLE2LEVEL = "industry-simple"; //$NON-NLS-1$
 
     private static final List<TaxonomyTemplate> TEMPLATES = Arrays.asList( //
                     new TaxonomyTemplate("assetclasses"), //$NON-NLS-1$
                     new TaxonomyTemplate(INDUSTRY_GICS), //
                     new TaxonomyTemplate(INDUSTRY_SIMPLE2LEVEL), //
                     new TaxonomyTemplate("kommer"), //$NON-NLS-1$
-                    new TaxonomyTemplate("regions")); //$NON-NLS-1$
+                    new TaxonomyTemplate("regions"), //$NON-NLS-1$
+                    new TaxonomyTemplate("regions-msci"), //$NON-NLS-1$
+                    new TaxonomyTemplate("security-type")); //$NON-NLS-1$
 
     private String id;
     private String name;
@@ -99,7 +103,10 @@ public final class TaxonomyTemplate
 
         Classification root = new Classification(id, name);
         taxonomy.setRootNode(root);
-        taxonomy.setDimensions(Arrays.asList(getString(bundle, "labels").split(","))); //$NON-NLS-1$ //$NON-NLS-2$
+        String labels = getString(bundle, "labels"); //$NON-NLS-1$
+        if (labels == null)
+            throw new IllegalArgumentException();
+        taxonomy.setDimensions(Arrays.asList(labels.split(","))); //$NON-NLS-1$
 
         readClassification(bundle, root);
 

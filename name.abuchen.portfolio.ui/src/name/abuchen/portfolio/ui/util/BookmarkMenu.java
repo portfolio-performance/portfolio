@@ -1,14 +1,18 @@
 package name.abuchen.portfolio.ui.util;
 
-import name.abuchen.portfolio.model.Bookmark;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
+import java.util.Collections;
+import java.util.List;
 
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+
+import name.abuchen.portfolio.model.Bookmark;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ClientSettings;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.views.settings.SettingsView;
 
 public class BookmarkMenu extends MenuManager
 {
@@ -37,24 +41,29 @@ public class BookmarkMenu extends MenuManager
             }
             else
             {
-                add(new Action(bookmark.getLabel())
-                {
-                    @Override
-                    public void run()
-                    {
-                        DesktopAPI.browse(bookmark.constructURL(security));
-                    }
-                });
+                add(new SimpleAction(bookmark.getLabel(),
+                                a -> DesktopAPI.browse(bookmark.constructURL(client, security))));
             }
         }
+
+        // check for urls in notes of security
         add(new Separator());
-        add(new Action(Messages.BookmarkMenu_EditBookmarks)
-        {
-            @Override
-            public void run()
-            {
-                editor.activateView("settings.Settings", Integer.valueOf(0)); //$NON-NLS-1$
-            }
-        });
+        security.getCustomBookmarks()
+                        .forEach(bm -> add(new SimpleAction(bm.getLabel(), a -> DesktopAPI.browse(bm.getPattern()))));
+
+        add(new Separator());
+
+        MenuManager templatesMenu = new MenuManager(Messages.LabelTaxonomyTemplates);
+        add(templatesMenu);
+
+        List<Bookmark> templates = ClientSettings.getDefaultBookmarks();
+        Collections.sort(templates, (r, l) -> r.getLabel().compareTo(l.getLabel()));
+        templates.forEach(bookmark -> templatesMenu.add(new SimpleAction(bookmark.getLabel(),
+                        a -> DesktopAPI.browse(bookmark.constructURL(client, security)))));
+
+        add(new Separator());
+        add(new SimpleAction(Messages.BookmarkMenu_EditBookmarks,
+                        a -> editor.activateView(SettingsView.class, Integer.valueOf(0))));
     }
+
 }

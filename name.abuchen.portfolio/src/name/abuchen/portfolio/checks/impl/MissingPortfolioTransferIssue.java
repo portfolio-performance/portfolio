@@ -10,7 +10,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
-import name.abuchen.portfolio.model.Values;
+import name.abuchen.portfolio.money.Values;
 
 /* package */class MissingPortfolioTransferIssue extends AbstractPortfolioIssue
 {
@@ -32,7 +32,7 @@ import name.abuchen.portfolio.model.Values;
         @Override
         public String getDoneLabel()
         {
-            PortfolioTransaction.Type target = null;
+            PortfolioTransaction.Type target;
             if (transaction.getType() == PortfolioTransaction.Type.TRANSFER_IN)
                 target = PortfolioTransaction.Type.TRANSFER_OUT;
             else
@@ -44,8 +44,8 @@ import name.abuchen.portfolio.model.Values;
         @Override
         public void execute()
         {
-            Portfolio from = null;
-            Portfolio to = null;
+            Portfolio from;
+            Portfolio to;
 
             if (transaction.getType() == PortfolioTransaction.Type.TRANSFER_IN)
             {
@@ -59,10 +59,11 @@ import name.abuchen.portfolio.model.Values;
             }
 
             PortfolioTransferEntry entry = new PortfolioTransferEntry(from, to);
-            entry.setDate(transaction.getDate());
+            entry.setDate(transaction.getDateTime());
             entry.setSecurity(transaction.getSecurity());
             entry.setShares(transaction.getShares());
             entry.setAmount(transaction.getAmount());
+            entry.setCurrencyCode(transaction.getCurrencyCode());
             entry.insert();
 
             portfolio.getTransactions().remove(transaction);
@@ -80,7 +81,7 @@ import name.abuchen.portfolio.model.Values;
         return MessageFormat.format(Messages.IssueMissingPortfolioTransfer, //
                         transaction.getType().toString(), //
                         Values.Share.format(transaction.getShares()), //
-                        Values.Amount.format(transaction.getActualPurchasePrice()), //
+                        Values.Quote.format(transaction.getGrossPricePerShare()), //
                         transaction.getSecurity().getName());
     }
 

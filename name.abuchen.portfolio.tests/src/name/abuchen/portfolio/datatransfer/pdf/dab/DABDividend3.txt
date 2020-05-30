@@ -1,0 +1,12 @@
+DAB-Dividende in Fremdwährung (2006):
+=====================================
+
+DAB Bank
+Dividendengutschrift München, 02.03.2006
+
+Gattungsbezeichnung ISIN
+Roche Holding AG Inhaber-Genußscheineo.N. CH0012032048
+Nominal Ex-Tag Zahltag Zinssatz
+STK 80,000 02.03.2006 02.03.2006 CHF 2,500000
+Wert Konto-Nr. Devisenkurs Betrag zu Ihren Gunsten
+02.03.2006 0000000000 EUR/CHF 1,5678 EUR 82,92

@@ -2,11 +2,7 @@ package name.abuchen.portfolio.ui.views.taxonomy;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-
-import name.abuchen.portfolio.model.Values;
-import name.abuchen.portfolio.ui.util.Colors;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -22,9 +18,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 
 import de.engehausen.treemap.IRectangle;
-import de.engehausen.treemap.ISelectionChangeListener;
 import de.engehausen.treemap.ITreeModel;
 import de.engehausen.treemap.swt.TreeMap;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.util.Colors;
 
 /* package */class TreeMapLegend extends Composite
 {
@@ -49,15 +46,8 @@ import de.engehausen.treemap.swt.TreeMap;
         layout.justify = false;
         setLayout(layout);
 
-        treeMap.addSelectionChangeListener(new ISelectionChangeListener<TaxonomyNode>()
-        {
-            @Override
-            public void selectionChanged(ITreeModel<IRectangle<TaxonomyNode>> model,
-                            IRectangle<TaxonomyNode> rectangle, String label)
-            {
-                TreeMapLegend.this.selectionChanged(model);
-            }
-        });
+        treeMap.addSelectionChangeListener(
+                        (treeModel, rectangle, label) -> TreeMapLegend.this.selectionChanged(treeModel));
     }
 
     public void setRootItem(TaxonomyNode rootItem)
@@ -67,13 +57,18 @@ import de.engehausen.treemap.swt.TreeMap;
         for (Control control : this.getChildren())
             control.dispose();
 
-        boolean hasParent = false;
+        TaxonomyNode root = model.getChartRenderingRootNode();
 
+        boolean hasParent = false;
         List<TaxonomyNode> path = rootItem.getPath();
-        for (int ii = 1; ii < path.size(); ii++)
+        for (int ii = 0; ii < path.size(); ii++)
         {
-            hasParent = true;
             TaxonomyNode item = path.get(ii);
+
+            if (!hasParent && !item.equals(root))
+                continue;
+
+            hasParent = true;
             new LegendItem(this, item);
         }
 
@@ -84,21 +79,11 @@ import de.engehausen.treemap.swt.TreeMap;
             l.setBackground(this.getBackground());
         }
 
-        List<TaxonomyNode> children = new ArrayList<TaxonomyNode>(rootItem.getChildren());
-        Collections.sort(children, new Comparator<TaxonomyNode>()
-        {
-            @Override
-            public int compare(TaxonomyNode o1, TaxonomyNode o2)
-            {
-                return o1.getActual() > o2.getActual() ? -1 : o1.getActual() == o2.getActual() ? 0 : 1;
-            }
-        });
+        List<TaxonomyNode> children = new ArrayList<>(rootItem.getChildren());
+        Collections.sort(children, (o1, o2) -> Long.compare(o2.getActual().getAmount(), o1.getActual().getAmount()));
+
         for (TaxonomyNode child : children)
-        {
-            if (model.isUnassignedCategoryInChartsExcluded() && child.isUnassignedCategory())
-                continue;
             new LegendItem(this, child);
-        }
 
         pack();
         getParent().layout();
@@ -126,6 +111,7 @@ import de.engehausen.treemap.swt.TreeMap;
             addListener(SWT.Resize, this);
         }
 
+        @Override
         public void handleEvent(Event event)
         {
             switch (event.type)
@@ -180,8 +166,9 @@ import de.engehausen.treemap.swt.TreeMap;
 
         private String getInfo()
         {
-            return String.format("%s (%s%%)", Values.Amount.format(item.getActual()), //$NON-NLS-1$
-                            Values.Percent.format((double) item.getActual() / (double) model.getRootNode().getActual()));
+            return String.format("%s (%s%%)", Values.Money.format(item.getActual()), //$NON-NLS-1$
+                            Values.Percent.format((double) item.getActual().getAmount()
+                                            / (double) model.getVirtualRootNode().getActual().getAmount()));
         }
 
     }

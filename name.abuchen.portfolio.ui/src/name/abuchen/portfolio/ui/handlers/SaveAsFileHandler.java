@@ -5,13 +5,6 @@ import java.text.MessageFormat;
 
 import javax.inject.Named;
 
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.ClientFactory;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPart;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.util.DesktopAPI;
-
 import org.eclipse.e4.core.di.annotations.CanExecute;
 import org.eclipse.e4.core.di.annotations.Execute;
 import org.eclipse.e4.core.di.annotations.Optional;
@@ -29,6 +22,12 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
+import name.abuchen.portfolio.model.ClientFactory;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
+import name.abuchen.portfolio.ui.util.DesktopAPI;
+
 public class SaveAsFileHandler
 {
     @CanExecute
@@ -43,8 +42,7 @@ public class SaveAsFileHandler
                     @Named(UIConstants.Parameter.EXTENSION) String extension,
                     @Named(UIConstants.Parameter.ENCRYPTION_METHOD) @Optional String encryptionMethod)
     {
-        Client client = MenuHelper.getActiveClient(part);
-        if (client == null)
+        if (!MenuHelper.getActiveClientInput(part).isPresent())
             return;
 
         if (extension == null)
@@ -58,7 +56,7 @@ public class SaveAsFileHandler
         }
 
         // trigger part to save file
-        ((PortfolioPart) part.getObject()).doSaveAs(part, shell, extension, encryptionMethod);
+        ((PortfolioPart) part.getObject()).doSaveAs(shell, extension, encryptionMethod);
     }
 
     private static class JurisdictionFilesDownloadDialog extends MessageDialog
@@ -80,11 +78,7 @@ public class SaveAsFileHandler
             // Policy Files Download URL
             String javaVersion = System.getProperty("java.version"); //$NON-NLS-1$
             String downloadURL = null;
-            if (javaVersion.startsWith("1.6")) //$NON-NLS-1$
-                downloadURL = "http://www.oracle.com/technetwork/java/javase/downloads/jce-6-download-429243.html"; //$NON-NLS-1$
-            else if (javaVersion.startsWith("1.7")) //$NON-NLS-1$
-                downloadURL = "http://www.oracle.com/technetwork/java/javase/downloads/jce-7-download-432124.html"; //$NON-NLS-1$
-            else if (javaVersion.startsWith("1.8")) //$NON-NLS-1$
+            if (javaVersion.startsWith("1.8")) //$NON-NLS-1$
                 downloadURL = "http://www.oracle.com/technetwork/java/javase/downloads/jce8-download-2133166.html"; //$NON-NLS-1$
             else
                 downloadURL = "http://www.oracle.com/technetwork/java/javase/downloads/"; //$NON-NLS-1$

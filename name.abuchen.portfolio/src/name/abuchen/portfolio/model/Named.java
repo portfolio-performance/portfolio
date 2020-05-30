@@ -17,7 +17,7 @@ public interface Named extends Annotated
         {
             if (n1 == null)
                 return n2 == null ? 0 : -1;
-            return n1.getName().compareTo(n2.getName());
+            return n1.getName().compareToIgnoreCase(n2.getName());
         }
     }
 

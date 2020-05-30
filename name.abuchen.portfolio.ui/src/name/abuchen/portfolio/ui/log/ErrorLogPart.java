@@ -7,11 +7,6 @@ import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.PortfolioPlugin;
-import name.abuchen.portfolio.ui.UIConstants;
-import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
-
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.ui.di.Focus;
@@ -20,8 +15,6 @@ import org.eclipse.e4.ui.di.UISynchronize;
 import org.eclipse.jface.layout.TreeColumnLayout;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.TreeViewer;
@@ -32,6 +25,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.UIConstants;
+import name.abuchen.portfolio.ui.dialogs.DisplayTextDialog;
+
 public class ErrorLogPart
 {
     public static class LogEntryContentProvider implements ITreeContentProvider
@@ -40,7 +38,8 @@ public class ErrorLogPart
 
         @Override
         public void dispose()
-        {}
+        {
+        }
 
         @Override
         public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
@@ -124,11 +123,11 @@ public class ErrorLogPart
                 switch (entry.getSeverity())
                 {
                     case IStatus.ERROR:
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_ERROR);
+                        return Images.ERROR.image();
                     case IStatus.WARNING:
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_WARNING);
+                        return Images.WARNING.image();
                     default:
-                        return PortfolioPlugin.image(PortfolioPlugin.IMG_INFO);
+                        return Images.INFO.image();
                 }
             }
         });
@@ -140,15 +139,10 @@ public class ErrorLogPart
 
         logViewer.setInput(entries);
 
-        logViewer.addDoubleClickListener(new IDoubleClickListener()
-        {
-            @Override
-            public void doubleClick(DoubleClickEvent event)
-            {
-                LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
-                DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
-                dialog.open();
-            }
+        logViewer.addDoubleClickListener(event -> {
+            LogEntry entry = (LogEntry) ((IStructuredSelection) event.getSelection()).getFirstElement();
+            DisplayTextDialog dialog = new DisplayTextDialog(Display.getCurrent().getActiveShell(), entry.getText());
+            dialog.open();
         });
     }
 

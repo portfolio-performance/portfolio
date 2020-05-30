@@ -1,0 +1,181 @@
+PDF Author: 'HAVI Solutions GmbH & Co. KG, phg'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Ihren Auftrag haben wir gemäß unseren produktbezogenen
+Geschäftsbedingungen "Trading" wie nachstehend ausgeführt.
+Die Wertpapiere haben wir der Abrechnung entsprechend gebucht.
+Wir bitten Sie, diese Abrechnung auf ihre Richtigkeit und
+Vollständigkeit zu überprüfen und etwaige Einwendungen
+25449 Quickborn unverzüglich zu erheben.
+fon   : 04106-708 25 00                                                  Tele   
+                                                                              
+                             
+                                       
+                             
+    1234 010
+Depotnr.:        12345678 00 
+            BLZ:             200 411 55
+Max Mustermann               
+                             
+                             
+Musterstraße. 1                                          
+12345 Musterhausen                                              
+                             
+                             
+                             
+                                                  
+                                                  
+GESCHÄFTSABRECHNUNG VOM 03.04.2018                                                   
+                                                                                                                                    
+*
+Wertpapierkauf                                                                                                                      
+Geschäftsnummer   : 12 4324324324                                                                                                       
+                    432432432432423      Rechnungsnummer   : 432432432432423A4324                                                          
+Geschäftstag      : 03.04.2018        Ausführungsplatz  : XETRA                                                                     
+                                                          (Kommissionsgeschäft)                                                     
+                                                                                                                                    
+Wertpapier-Bezeichnung                                               WPKNR/ISIN                                                     
+Fresenius SE & Co. KGaA                                                  578560                                                     
+Inhaber-Aktien o.N.                                                DE0005785604                                                     
+                                                                                                                                    
+                                                                                                                                    
+Nennwert                  Zum Kurs von                                                                                              
+St.  0,805                EUR  61,14                                                                                                
+                          Kurswert                    : EUR               49,22                                                     
+                                                                                                                                    
+--------------------------------------------------------------------------------                                                    
+Eigene Entgelte                                                                                                                     
+                          Provision                   : EUR                0,74                                                     
+--------------------------------------------------------------------------------                                                    
+                                                                                                                                    
+                                                                                                                                    
+IBAN                                  Valuta         Zu Ihren Lasten vor Steuern                                                    
+DE12 1234 1155 1234 5678 00   EUR     05.04.2018        EUR               49,96                                                     
+                                                                                                                                    
+Verwahrungs-Art: GIROSAMMELDEPOT                                                                                                    
+GLOBALURKUNDE, KEIN STUECKEAUSDRUCK                                                                                                 
+                                                                                                                                    
+                                                                                                                                    
+                                                                                                                                    
+Informationen zur steuerlichen Behandlung dieses Geschäftsvorgangs und den auf                                                      
+Ihrem Konto gebuchten Endbetrag finden Sie auf der separaten Steuermitteilung.                                                      
+                                                                                                                                    
+                                                                                                                                    
+comdirect bank AG                                                                                                                   
+                                                                                                                                    
+Diese Abrechnung wird von der Bank nicht unterschrieben                                                                             
+Die Leistung ist gemäß §4 Nr.8 UStG umsatzsteuerfrei. USt-Id-Nr.: DE 812 279 461                                                    
+A113
+DO15DD/16/04/2010
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Kundennr. /BLZ Bezeichnung
+1801794  Max Mustermann                                    
+                                                  
+            
+200 411 55 Musterstraße. 1                                  12345 Musterhausen                                      
+abweichend wirtschaftlich Berechtigter
+                              
+                                              ----                    
+c  o  m   d  i r e  c  t   b  a  n  k    A  G               
+               
+ 2  5  4  5  1   Q  u  i c  k  b  o  r n                   
+0  1   0  9  7818
+                                                  
+T   e  le  f o  n  :              0  4  1  0  6   -  7  0 8 25 00
+                              
+Herrn                         D   a  t u  m   :                       0   3  . 0  4  .2018         
+Max Mustermann                  D   e  p  o  t  n  u  m   m  er:        12345678 
+Musterstraße 1              
+ R   e  f e  r e  n  z  - N   u mmer:    0  Z  I D  6  Q   6  X  Y 0M001O3       61525 Musterhausen                   
+                                      
+                                                  
+                                                  
+                                                  
+Steuerliche Behandlung: Wertpapierkauf Nr. 92061377 vom 03.04.2018                                                                
+Stk.               0,805 FRESENIUS SE+CO.KGAA O.N. , WKN / ISIN: 578560  / DE0005785604                                           
+ Zu  Ih r e n L a s te n  v o r  S te u e r n:                                                                                                       E U R             -49,9 6   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+S  te u e rb e m  e ss u n g s g r u n d la g e                                                            E  U   R                                  0 , 0 0                          
+                                                                                                                                
+                                                                                                                                
+K  ap i ta le r tr a gs t e ue r                                                                        E  U   R                                  0 , 0 0                          
+ S ol id a ri tä t sz u s c hl a g                                                                      E  U   R                                  0 , 0 0                          
+K  irc h e n s te u e r                                                                              _E  _U   _R  _  _  _   _  _  _   _  _  _  _   _  _  _   _  0_ ,_ 0_ 0_                          
+ ab g e f ü h rt e S t e u er n                                                                                                                    _E _U R_ _ _ _ _ _ _ _ _ _ _ _ _ _  __0_,_0 0_   
+                                                                                                                                
+ Zu  Ih r e n L a s te n  n a ch  S te u e r n :                                                                                                    E U R             -49,9 6   
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+                                                                                                                                
+Die Belastung erfolgt mit Valuta 05.04.2018 auf Konto EUR mit der IBAN DE12 5638 1155 1234 7893 00                                                    
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+KEINE STEUERBESCHEINIGUNG ...
+Bisher einbehaltene bzw. angerechnete Steuer in EUR (4)
+in 2018 einbehaltene einbehaltener einbehaltene angerechneteKapitalertragsteuer Solidaritätszuschlag Kirchensteuer ausländische Quellensteuer
+vor Ermittlung
+                0,00                 0,00
+                0,00                 0,00
+nach Ermittlung
+                0,00 0,00                 0,00                 0,00                
+Verrechnungssalden in EUR (4)
+in 2018 Gewinne / Verluste sonstige anrechenbare verfügbareraus Aktien Gewinne / Verluste ausländische Quellensteuer Freistellungsauftrag
+vor Ermittlung
+               -3,42               -15,14                -0,36                 0,00
+nach Ermittlung
+               -3,42               -15,14
+               -0,36                 0,00
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                                                                                    
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+                                                                                                                        
+comdirect bank AG                                                                                                                                     
+Diese Abrechnung ist maschinell erstellt und wird nicht unterschrieben.                                                                               
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+                                                                                                                                                      
+(4) Die ausgewiesenen EUR-Beträge spiegeln den Stand zum Abrechnungszeitpunkt wider.                                                                  
+KEINE STEUERBESCHEINIGUNG

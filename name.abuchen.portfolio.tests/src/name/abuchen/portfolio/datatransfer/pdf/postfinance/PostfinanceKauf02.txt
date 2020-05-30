@@ -1,0 +1,29 @@
+PDF Author: 'Registered to: SWISQUOT'
+PDFBox Version: 1.8.16
+-----------------------------------------
+TRANSAKTIONSBELEG
+Kunde: 999999 - TRADING
+Herrn Vorname Nachname
+Strasse Hausnummer
+CH-2540 Grenchen
+Bern, 25.10.2018
+Börsentransaktion: Kauf Unsere Referenz: 155571206 
+Gemäss Ihrem Kaufauftrag vom 25.10.2018 haben wir folgende Transaktionen vorgenommen:
+Titel Ort der Ausführung
+LOGITECH N ISIN: CH0025751329 SIX Swiss Exchange (SIX-Europe)
+NKN: 2575132
+Anzahl Preis Betrag
+87 34.14 CHF 2'970.20
+Total CHF 2'970.20
+Kommission CHF 25.00
+Abgabe (Eidg. Stempelsteuer) CHF 2.25
+Börsengebühren CHF 1.50
+Zu Ihren Lasten CHF 2'998.95
+Betrag belastet auf Kontonummer 99999900, Valutadatum 29.10.2018
+Vielen Dank für Ihren Auftrag.
+Im Rahmen dieser Transaktion hat PostFinance als Kommissionär gehandelt.
+Bitte prüfen Sie dieses Dokument und benachrichtigen Sie uns bei Unstimmigkeiten innert Monatsfrist.
+PostFinance AG, Mingerstrasse 20, 3030 Bern
+Kontaktcenter E-Trading: 0848 800 000 (Mo-Fr: 08.00-22.00 Uhr, ab Festnetz CHF 0.08/Min.)
+Formular ohne Unterschrift S.E. & O.
+MwSt n° CHE-116.302.542

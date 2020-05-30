@@ -1,6 +1,7 @@
 package name.abuchen.portfolio.ui.util.chart;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -8,9 +9,6 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.joda.time.DateMidnight;
-import org.joda.time.Days;
-import org.joda.time.format.ISODateTimeFormat;
 import org.swtchart.Chart;
 import org.swtchart.IAxis;
 import org.swtchart.IAxis.Position;
@@ -22,13 +20,15 @@ import org.swtchart.ISeries.SeriesType;
 import org.swtchart.LineStyle;
 import org.swtchart.Range;
 
+import name.abuchen.portfolio.util.Dates;
+
 public class StackedTimelineChart extends Chart
 {
     private TimelineChartToolTip toolTip;
 
-    private List<DateMidnight> dates;
+    private List<LocalDate> dates;
 
-    public StackedTimelineChart(Composite parent, List<DateMidnight> dates)
+    public StackedTimelineChart(Composite parent, List<LocalDate> dates)
     {
         super(parent, SWT.NONE);
 
@@ -46,7 +46,7 @@ public class StackedTimelineChart extends Chart
 
         String[] categories = new String[dates.size()];
         for (int ii = 0; ii < categories.length; ii++)
-            categories[ii] = dates.get(ii).toString(ISODateTimeFormat.date());
+            categories[ii] = dates.get(ii).toString();
         xAxis.setCategorySeries(categories);
         xAxis.enableCategory(true);
 
@@ -75,6 +75,8 @@ public class StackedTimelineChart extends Chart
         toolTip.enableCategory(true);
         toolTip.reverseLabels(true);
         toolTip.setValueFormat(new DecimalFormat("#0.0%")); //$NON-NLS-1$
+
+        new ChartContextMenu(this);
     }
 
     public ILineSeries addSeries(String label, double[] values, Color color)
@@ -103,20 +105,26 @@ public class StackedTimelineChart extends Chart
         IAxis xAxis = getAxisSet().getXAxis(0);
         Range range = xAxis.getRange();
 
-        final DateMidnight start = dates.get(0);
-        final DateMidnight end = dates.get(dates.size() - 1);
+        final LocalDate start = dates.get(0);
+        final LocalDate end = dates.get(dates.size() - 1);
 
-        int totalDays = Days.daysBetween(start, end).getDays() + 1;
+        int totalDays = Dates.daysBetween(start, end) + 1;
 
-        DateMidnight current = start.plusYears(1).withMonthOfYear(1).withDayOfMonth(1);
+        LocalDate current = start.plusYears(1).withDayOfYear(1);
         while (current.isBefore(end))
         {
-            int days = Days.daysBetween(start, current).getDays();
+            int days = Dates.daysBetween(start, current);
             int y = xAxis.getPixelCoordinate((double) days * range.upper / (double) totalDays);
             e.gc.drawLine(y, 0, y, e.height);
             e.gc.drawText(String.valueOf(current.getYear()), y + 5, 5);
 
             current = current.plusYears(1);
         }
+    }
+
+    @Override
+    public void save(String filename, int format)
+    {
+        ChartUtil.save(this, filename, format);
     }
 }
