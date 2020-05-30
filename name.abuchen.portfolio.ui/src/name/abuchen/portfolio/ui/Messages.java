@@ -952,6 +952,7 @@ public class Messages extends NLS
     public static String SecurityMenuSearch4Securities;
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
+    public static String SecurityMenuAddEvent;
     public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;
@@ -981,6 +982,9 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String EventWizardTitle;
+    public static String EventWizardDescription;
+    public static String EventWizardLabelMessage;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuNewAndNoteworthy;

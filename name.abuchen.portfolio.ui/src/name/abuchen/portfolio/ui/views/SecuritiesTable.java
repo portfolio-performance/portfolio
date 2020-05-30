@@ -89,6 +89,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
+import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.splits.StockSplitWizard;
 import name.abuchen.portfolio.util.Interval;
@@ -920,6 +921,16 @@ public final class SecuritiesTable implements ModificationListener
             Dialog createDialog(Security security)
             {
                 StockSplitWizard wizard = new StockSplitWizard(getClient(), security);
+                return new WizardDialog(getShell(), wizard);
+            }
+        });
+
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuAddEvent)
+        {
+            @Override
+            Dialog createDialog(Security security)
+            {
+                CustomEventWizard wizard = new CustomEventWizard(getClient(), security);
                 return new WizardDialog(getShell(), wizard);
             }
         });
