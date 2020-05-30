@@ -65,6 +65,12 @@ public class PDFInputFile extends Extractor.InputFile
         return author;
     }
 
+    public String getAuthorAndText()
+    {
+        // support for pdf files where text does not contain bank name (e.g. only a logo inside the pdf)
+        return author + '\n' + text;
+    }
+
     public Version getPDFBoxVersion()
     {
         return FrameworkUtil.getBundle(PDDocument.class).getVersion();
