@@ -33,6 +33,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         addTaxAdjustmentTransaction();
         addFeesAssetManagerTransaction();
         addDepositTransaction();
+        addPeriodenauszugBuyTransaction();
         
     }
 
@@ -288,6 +289,74 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDepositTransaction()
     {
+        final DocumentType depositType = new DocumentType("Perioden-Kontoauszug", (context, lines) -> {
+            Pattern pCurrency = Pattern.compile("Perioden-Kontoauszug:[ ]+(\\w{3}+)-Konto");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = pCurrency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(depositType);
+
+        // deposit, add value to account
+        // 01.01.2020 Lastschrift aktiv 01.01.2020 123,45
+        Block depositBlock = new Block(
+                        "\\d+\\.\\d+\\.\\d{4}[ ]+Lastschrift aktiv[ ]+\\d+\\.\\d+\\.\\d{4}[ ]+[\\d.]+,\\d{2}");
+        depositType.addBlock(depositBlock);
+        depositBlock.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.DEPOSIT);
+            return t;
+        })
+
+                        .section("valuta", "amount")
+                        .match("\\d+\\.\\d+\\.\\d{4}[ ]+Lastschrift aktiv[ ]+(?<valuta>\\d+\\.\\d+\\.\\d{4})[ ]+(?<amount>[\\d.]+,\\d{2})")
+                        .assign((t, v) -> {
+                            Map<String, String> context = depositType.getCurrentContext();
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setDateTime(asDate(v.get("valuta")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            // t.setNote(v.get("text"));
+                        }).wrap(t -> new TransactionItem(t)));
+
+        DocumentType buyType = new DocumentType("Scalable-Perioden-Kontoauszug");
+        this.addDocumentTyp(buyType);
+
+        Block buyBlock = new Block("(\\d+.\\d+.\\d{4}+) Kauf (\\d+.\\d+.\\d{4}+).*");
+        buyType.addBlock(buyBlock);
+        buyBlock.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
+        })
+
+                        .section("isin", "name").match("(\\d+.\\d+.\\d{4}+) Kauf (\\d+.\\d+.\\d{4}+).*")
+                        .match("^(?<name>.*)$").match("^ISIN (?<isin>.{12})").assign((t, v) -> {
+                            Map<String, String> context = depositType.getCurrentContext();
+                            v.put("currency", context.get("currency"));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("amount", "date", "shares")
+                        .match("(\\d+.\\d+.\\d{4}+) Kauf (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
+                        .match("^(.*)$").match("^ISIN .{12}").match("^STK *(?<shares>[\\d.,]+).*").assign((t, v) -> {
+                            Map<String, String> context = depositType.getCurrentContext();
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        }).wrap(BuySellEntryItem::new));
+
+    }
+
+    @SuppressWarnings("nls")
+    private void addPeriodenauszugBuyTransaction()
+    {
         final DocumentType type = new DocumentType("Perioden-Kontoauszug", (context, lines) -> {
             Pattern pCurrency = Pattern.compile("Perioden-Kontoauszug:[ ]+(\\w{3}+)-Konto");
             // read the current context here
@@ -302,25 +371,30 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        // deposit, add value to account
-        // 01.01.2020 Lastschrift aktiv 01.01.2020 123,45
-        Block block = new Block("\\d+\\.\\d+\\.\\d{4}[ ]+Lastschrift aktiv[ ]+\\d+\\.\\d+\\.\\d{4}[ ]+[\\d.]+,\\d{2}");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.DEPOSIT);
-            return t;
+        Block buyBlock = new Block("(\\d+.\\d+.\\d{4}+) Kauf (\\d+.\\d+.\\d{4}+).*");
+        type.addBlock(buyBlock);
+        buyBlock.set(new Transaction<BuySellEntry>().subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.BUY);
+            return entry;
         })
 
-                        .section("valuta", "amount")
-                        .match("\\d+\\.\\d+\\.\\d{4}[ ]+Lastschrift aktiv[ ]+(?<valuta>\\d+\\.\\d+\\.\\d{4})[ ]+(?<amount>[\\d.]+,\\d{2})")
-                        .assign((t, v) -> {
-                                Map<String, String> context = type.getCurrentContext();
-                                t.setCurrencyCode(asCurrencyCode(context.get("currency")));
-                                t.setDateTime(asDate(v.get("valuta")));
-                                t.setAmount(asAmount(v.get("amount")));
-                                //t.setNote(v.get("text"));
-                        }).wrap(t -> new TransactionItem(t)));
+                        .section("isin", "name").match("(\\d+.\\d+.\\d{4}+) Kauf (\\d+.\\d+.\\d{4}+).*")
+                        .match("^(?<name>.*)$").match("^ISIN (?<isin>.{12})").assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            v.put("currency", context.get("currency"));
+                            t.setSecurity(getOrCreateSecurity(v));
+                        })
+
+                        .section("amount", "date", "shares")
+                        .match("(\\d+.\\d+.\\d{4}+) Kauf (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d.,]+).*")
+                        .match("^(.*)$").match("^ISIN .{12}").match("^STK *(?<shares>[\\d.,]+).*").assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        }).wrap(BuySellEntryItem::new));
     }
 
     @Override
