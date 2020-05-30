@@ -66,12 +66,12 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
 
     private void addDividendTransaction()
     {
-        DocumentType type = new DocumentType("E r t r a g s g u t s c h r i f t");
-        this.addDocumentTyp(type);
+        DocumentType type1 = new DocumentType("E r t r a g s g u t s c h r i f t");
+        this.addDocumentTyp(type1);
 
-        Block block = new Block("E r t r a g s g u t s c h r i f t");
-        type.addBlock(block);
-        block.set(new Transaction<AccountTransaction>()
+        Block block1 = new Block("E r t r a g s g u t s c h r i f t");
+        type1.addBlock(block1);
+        block1.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
                             AccountTransaction transaction = new AccountTransaction();
@@ -100,6 +100,42 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(stripBlanks(v.get("shares"))));
                         })
 
+                        .wrap(TransactionItem::new));
+
+        DocumentType type2 = new DocumentType("D i v i d e n d e n g u t s c h r i f t");
+        this.addDocumentTyp(type2);
+
+        Block block2 = new Block("D i v i d e n d e n g u t s c h r i f t");
+        type2.addBlock(block2);
+        block2.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
+                        })
+                       
+                        .section("date", "amount", "currency") //
+                        .match(".*Zu I h r e n Gunsten.*")
+                        .match("^.* (?<date>\\d \\d . \\d \\d . \\d \\d \\d \\d) (?<currency>\\w{3}+)(?<amount>( \\d)*( \\.)?( \\d)* ,( \\d)*)$")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(stripBlanks(v.get("date"))));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(stripBlanks(v.get("amount"))));
+                        })
+
+                        .section("wkn", "name", "shares", "isin")
+                        //
+                        .match(".*WKN/ISIN.*")                        
+                        .match("p e r \\d \\d . \\d \\d . \\d \\d \\d \\d.*(?<name>.*).*(?<wkn>\\S*)")
+                        .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
+                            // if necessary, create the security with the
+                            // currency of the transaction
+                            v.put("currency", t.getCurrencyCode());
+                            t.setSecurity(getOrCreateSecurity(v));
+                            t.setShares(asShares(stripBlanks(v.get("shares"))));
+                        })
+                        
                         .wrap(TransactionItem::new));
     }
 
