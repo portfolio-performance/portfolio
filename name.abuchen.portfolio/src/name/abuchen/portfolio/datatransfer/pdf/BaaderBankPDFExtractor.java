@@ -316,7 +316,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         .section("valuta", "amount")
                         .match("\\d+\\.\\d+\\.\\d{4}[ ]+Lastschrift aktiv[ ]+(?<valuta>\\d+\\.\\d+\\.\\d{4})[ ]+(?<amount>[\\d.]+,\\d{2})")
                         .assign((t, v) -> {
-                                Map<String, String> context = type.getCurrentContext();
+                            Map<String, String> context = type.getCurrentContext();
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                             t.setDateTime(asDate(v.get("valuta")));
                             t.setAmount(asAmount(v.get("amount")));
