@@ -223,6 +223,18 @@ public abstract class AbstractPDFExtractor implements Extractor
         }
     }
 
+    /* protected */long asAmount2(String value)
+    {
+        try
+        {
+            return Math.round(numberFormat.parse(value).doubleValue() * Values.Amount.factor());
+        }
+        catch (ParseException e)
+        {
+            throw new IllegalArgumentException(e);
+        }
+    }
+    
     /* protected */BigDecimal asExchangeRate(String value)
     {
         try
