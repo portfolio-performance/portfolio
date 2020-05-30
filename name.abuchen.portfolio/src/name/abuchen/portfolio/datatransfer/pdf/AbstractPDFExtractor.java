@@ -82,7 +82,7 @@ public abstract class AbstractPDFExtractor implements Extractor
         if (!(inputFile instanceof PDFInputFile))
             throw new IllegalArgumentException();
 
-        String text = ((PDFInputFile) inputFile).getText();
+        String text = ((PDFInputFile) inputFile).getAuthorAndText();
         results.addAll(extract(inputFile.getFile().getName(), text, errors));
 
         this.securityCache = null;
