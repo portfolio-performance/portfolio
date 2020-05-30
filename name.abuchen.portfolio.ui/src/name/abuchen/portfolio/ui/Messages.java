@@ -111,6 +111,7 @@ public class Messages extends NLS
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
+    public static String ColumnEventMessage;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -951,6 +952,7 @@ public class Messages extends NLS
     public static String SecurityMenuSearch4Securities;
     public static String SecurityMenuSell;
     public static String SecurityMenuStockSplit;
+    public static String SecurityMenuAddEvent;
     public static String SecurityMenuTransfer;
     public static String SecurityMenuUpdateQuotes;
     public static String SecurityTabChart;
