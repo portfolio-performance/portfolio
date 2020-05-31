@@ -341,7 +341,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         });
         this.addDocumentTyp(type);
 
-        Block buyBlock = new Block("(\\d+.\\d+.\\d{4}+) Kauf (\\d+.\\d+.\\d{4}+).*");
+        Block buyBlock = new Block("(\\d+.\\d+.\\d{4}+) (Kauf) (\\d+.\\d+.\\d{4}+).*");
         type.addBlock(buyBlock);
         buyBlock.set(new Transaction<BuySellEntry>().subject(() -> {
             BuySellEntry entry = new BuySellEntry();
