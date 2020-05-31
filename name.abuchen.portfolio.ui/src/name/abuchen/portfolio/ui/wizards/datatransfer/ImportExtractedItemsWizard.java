@@ -129,6 +129,7 @@ public final class ImportExtractedItemsWizard extends Wizard
 
                 InsertAction action = new InsertAction(client);
                 action.setConvertBuySellToDelivery(page.doConvertToDelivery());
+                action.setRemoveDividends(page.doRemoveDividends());
 
                 for (ExtractedEntry entry : page.getEntries())
                 {

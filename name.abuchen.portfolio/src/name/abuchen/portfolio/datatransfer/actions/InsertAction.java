@@ -16,6 +16,7 @@ public class InsertAction implements ImportAction
 {
     private final Client client;
     private boolean convertBuySellToDelivery = false;
+    private boolean removeDividends = false;
 
     public InsertAction(Client client)
     {
@@ -25,6 +26,11 @@ public class InsertAction implements ImportAction
     public void setConvertBuySellToDelivery(boolean flag)
     {
         this.convertBuySellToDelivery = flag;
+    }
+
+    public void setRemoveDividends(boolean flag)
+    {
+        this.removeDividends = flag;
     }
 
     @Override
@@ -51,6 +57,16 @@ public class InsertAction implements ImportAction
         if (transaction.getSecurity() != null)
             process(transaction.getSecurity());
         account.addTransaction(transaction);
+
+        if (removeDividends && transaction.getType() == AccountTransaction.Type.DIVIDENDS)
+        {
+            AccountTransaction removal = new AccountTransaction(transaction.getDateTime(),
+                            transaction.getCurrencyCode(), transaction.getAmount(), null,
+                            AccountTransaction.Type.REMOVAL);
+            removal.setNote(transaction.getNote());
+            account.addTransaction(removal);
+        }
+
         return Status.OK_STATUS;
     }
 
