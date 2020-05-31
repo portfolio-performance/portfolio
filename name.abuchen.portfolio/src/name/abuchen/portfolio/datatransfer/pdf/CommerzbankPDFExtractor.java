@@ -68,7 +68,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
     }
 
     private void addDividendTransaction()
-    {/*
+    {
         DocumentType type1 = new DocumentType("E r t r a g s g u t s c h r i f t");
         this.addDocumentTyp(type1);
 
@@ -130,7 +130,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                         .section("wkn", "name", "shares", "isin")
                         //
                         .match(".*WKN/ISIN.*")                        
-                        .match("p e r \\d \\d . \\d \\d . \\d \\d \\d \\d.*(?<name>.*).*(?<wkn>\\S*)")
+                        .match("p e r \\d \\d . \\d \\d . \\d \\d \\d \\d\\s*(?<name>.*) (?<wkn>\\S*)$")
                         .match("^STK (?<shares>(\\d )*(\\. )?(\\d )*, (\\d )*).* (?<isin>\\S*)$").assign((t, v) -> {
                             // if necessary, create the security with the
                             // currency of the transaction
@@ -139,7 +139,7 @@ public class CommerzbankPDFExtractor extends AbstractPDFExtractor
                             t.setShares(asShares(stripBlanks(v.get("shares"))));
                         })
                         
-                        .wrap(TransactionItem::new));*/
+                        .wrap(TransactionItem::new));
 
         DocumentType type3 = new DocumentType(".*Steuerliche Behandlung:.*Dividende.*");
         this.addDocumentTyp(type3);
