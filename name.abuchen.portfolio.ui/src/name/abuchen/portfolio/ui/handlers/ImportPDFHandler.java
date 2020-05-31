@@ -81,6 +81,11 @@ public class ImportPDFHandler
     public static void runImportWithFiles(PortfolioPart part, Shell shell, Client client, Account account,
                     Portfolio portfolio, List<File> files)
     {
+        files.sort((File lhs, File rhs) -> {
+            int modDiff = (int) (lhs.lastModified() - rhs.lastModified());
+            return modDiff == 0 ? lhs.getPath().compareTo(rhs.getPath()) : modDiff;
+        });
+
         IPreferenceStore preferences = part.getPreferenceStore();
 
         try
