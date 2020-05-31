@@ -190,7 +190,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-12-10T12:58")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
     }
-    
+
     @Test
     public void testGratisbrokerWertpapierKauf01()
     {
@@ -198,8 +198,8 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerKauf01.txt"),
-                        errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerKauf01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -228,7 +228,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-12T18:00")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(13)));
     }
-    
+
     @Test
     public void testGratisbrokerWertpapierKauf02()
     {
@@ -236,8 +236,8 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerKauf02.txt"),
-                        errors);
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerKauf02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -266,7 +266,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-01-29T15:49")));
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(12)));
     }
-    
+
     @Test
     public void testWertpapierVerkauf1()
     {
@@ -417,8 +417,8 @@ public class BaaderBankPDFExtractorTest
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "BaaderBankMonatlicherKontoauszug1.txt"), errors);
 
+        assertThat(results.size(), is(27));
         assertThat(errors, empty());
-        assertThat(results.size(), is(9));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
@@ -536,7 +536,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4.63))));
     }
-    
+
     @Test
     public void testDividende01()
     {
@@ -544,8 +544,8 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerDividende01.txt"), errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerDividende01.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -574,7 +574,7 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.27))));
     }
-    
+
     @Test
     public void testDividende02()
     {
@@ -582,8 +582,8 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor
-                        .extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerDividende02.txt"), errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "BaaderBankGratisbrokerDividende02.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
@@ -620,8 +620,8 @@ public class BaaderBankPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "BaaderBankScalablePeriodenauszug01.txt"),
-                        errors);
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "BaaderBankScalablePeriodenauszug01.txt"), errors);
 
         assertThat(results.size(), is(5));
         assertThat(errors, empty());
@@ -694,7 +694,134 @@ public class BaaderBankPDFExtractorTest
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(10000.00)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
 
-    
     }
 
+    @Test
+    public void testScalableCapitalPeriodenauszugKauf2()
+    {
+        BaaderBankPDFExtractor extractor = new BaaderBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "BaaderBankScalablePeriodenauszug02.txt"), errors);
+
+        assertThat(results.size(), is(12));
+        assertThat(errors, empty());
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Item item;
+        Iterator<Extractor.Item> iter;
+
+        // get securities
+        iter = results.stream().filter(i -> i instanceof SecurityItem).iterator();
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            Security security = item.getSecurity();
+
+            // assert security
+            assertThat(security.getIsin(), is("IE00B1FZS798"));
+            assertThat(security.getName(), is("ISHSII-DLT.BD7-10YR DLDIS"));
+            assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
+
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            Security security = item.getSecurity();
+
+            // assert security
+            assertThat(security.getIsin(), is("LU0908500753"));
+            assertThat(security.getName(), is("LY.I.-L.CO.ST.EO 600(DR)A"));
+            assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
+
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            Security security = item.getSecurity();
+
+            // assert security
+            assertThat(security.getIsin(), is("IE00B4WXJJ64"));
+            assertThat(security.getName(), is("ISHSIII-C.EO GOV. B.EODIS"));
+            assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
+
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            Security security = item.getSecurity();
+
+            // assert security
+            assertThat(security.getIsin(), is("IE00B3F81R35"));
+            assertThat(security.getName(), is("ISHSIII-C.EO CORP.B.EODIS"));
+            assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
+       
+        // get transactions
+        iter = results.stream().filter(i -> i instanceof BuySellEntryItem).iterator();
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+            // assert transaction
+            assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+            assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+            assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(642.40)));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
+        }
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+            // assert transaction
+            assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+            assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+            assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(304.92)));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(2)));
+        }
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+            // assert transaction
+            assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+            assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+            assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(488.72)));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
+        }
+        if (iter.hasNext())
+        {
+            item = iter.next();
+            BuySellEntry entry = (BuySellEntry) item.getSubject();
+
+            // assert transaction
+            assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+            assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+            assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(515.61)));
+            assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
+            assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
+        }
+
+        // check deposit (Lastschrift) transaction
+        Optional<Item> it = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+
+        // get transaction
+        AccountTransaction transaction = (AccountTransaction) it.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        // assert transaction
+        assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-06T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.97)));
+        assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+    }
 }
