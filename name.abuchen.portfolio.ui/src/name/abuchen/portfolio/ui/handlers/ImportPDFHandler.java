@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.handlers;
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -74,6 +75,11 @@ public class ImportPDFHandler
         List<File> files = new ArrayList<>();
         for (String filename : filenames)
             files.add(new File(fileDialog.getFilterPath(), filename));
+
+        files.sort((File lhs, File rhs) -> {
+            int modDiff = (int) (lhs.lastModified() - rhs.lastModified());
+            return modDiff == 0 ? lhs.getPath().compareTo(rhs.getPath()) : modDiff;
+        });
 
         runImportWithFiles(part, shell, client, account, portfolio, files);
     }
