@@ -706,7 +706,7 @@ public class BaaderBankPDFExtractorTest
         List<Item> results = extractor.extract(
                         PDFInputFile.loadTestCase(getClass(), "BaaderBankScalablePeriodenauszug02.txt"), errors);
 
-        assertThat(results.size(), is(12));
+        assertThat(results.size(), is(13));
         assertThat(errors, empty());
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
@@ -809,8 +809,9 @@ public class BaaderBankPDFExtractorTest
             assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2018-07-27T00:00")));
             assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(4)));
         }
+        
 
-        // check deposit (Lastschrift) transaction
+        // check transaction items - deposit (Lastschrift), fees, dividends, removal transactions
         Optional<Item> it = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
 
         // get transaction
@@ -819,8 +820,8 @@ public class BaaderBankPDFExtractorTest
 
         // assert transaction
         assertThat(transaction.getType(), is(AccountTransaction.Type.REMOVAL));
-        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-07-06T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(6.97)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2018-08-22T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(2000.0)));
         assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
 
     }

@@ -322,8 +322,11 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                             // t.setNote(v.get("text"));
                         }).wrap(t -> new TransactionItem(t)));
 
+
+        
+        
         Block removalBlock = new Block(
-                        "(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv) (\\d+\\.\\d+\\.\\d{4}) ([\\d.]+,\\d{2}) (-)");
+                        "(\\d+\\.\\d+\\.\\d{4}) (SEPA-Ueberweisung) (\\d+\\.\\d+\\.\\d{4}) ([\\d.]+,\\d{2}) (-)");
         type.addBlock(removalBlock);
         removalBlock.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
@@ -332,7 +335,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("valuta", "amount")
-                        .match("(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}) (-)")
+                        .match("(\\d+\\.\\d+\\.\\d{4}) (SEPA-Ueberweisung) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}) (-)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
@@ -341,7 +344,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                         }).wrap(t -> new TransactionItem(t)));
 
         Block feesBlock = new Block(
-                        "(\\d+\\.\\d+\\.\\d{4}) (Transaktionskostenpauschale o. MwSt.) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}).*");
+                        "(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv|Transaktionskostenpauschale o. MwSt.) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}) (-)");
         type.addBlock(feesBlock);
         feesBlock.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
@@ -350,7 +353,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
         })
 
                         .section("valuta", "amount")
-                        .match("(\\d+\\.\\d+\\.\\d{4}) (Transaktionskostenpauschale o. MwSt.) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}).*")
+                        .match("(\\d+\\.\\d+\\.\\d{4}) (Lastschrift aktiv|Transaktionskostenpauschale o. MwSt.) (?<valuta>\\d+\\.\\d+\\.\\d{4}) (?<amount>[\\d.]+,\\d{2}) (-)")
                         .assign((t, v) -> {
                             Map<String, String> context = type.getCurrentContext();
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));

@@ -93,7 +93,22 @@ STK              12
 01265831
 Vorgangs-Nr.: WWEK 00832506
 
+Konto-Nr.: 46820007 BLZ: 700 331 00 IBAN: DE53 7003 3100 0046 8200 07 BIC: BDWBDEMM
+Buchungstag Erläuterungen Valuta Belastung Gutschrift
+in EUR in EUR
+Übertrag: 2.074,93
+22.08.2018 SEPA-Ueberweisung 22.08.2018 2.000,00 -
+PHILLIP ****
+BEISPIEL STR  1
+12345 BESPIELSTADT
+DE86*************
+HYVEDEMM300
+******************
+Vorgangs-Nr.: 900532647
+
 Kontostand in EUR am 31.07.2018 158,43
+
+
 Bitte beachten Sie Ihre eventuelle Meldepflicht nach § 67 AWV.
 Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
 Baader Bank Aktiengesellschaft T 00800 00 222 337* Vorstand: Nico Baader (Vorsitzender), Amtsgericht München HRB 121537 
