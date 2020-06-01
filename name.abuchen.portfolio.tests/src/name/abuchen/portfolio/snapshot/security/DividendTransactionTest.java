@@ -136,7 +136,7 @@ public class DividendTransactionTest
         t1.setFifoCost(fifoCost);
 
         Money result = t1.getFifoCost();
-        Money expected = Money.of(CurrencyUnit.EUR, 1000L);
+        Money expected = Money.of(CurrencyUnit.EUR, 2000L);
 
         assertEquals(result, expected);
     }
