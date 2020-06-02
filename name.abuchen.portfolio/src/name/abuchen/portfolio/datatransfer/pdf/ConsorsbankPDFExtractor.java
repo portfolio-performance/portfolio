@@ -25,6 +25,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         addBankIdentifier("Consorsbank"); //$NON-NLS-1$
         addBankIdentifier("Cortal Consors"); //$NON-NLS-1$
+        addBankIdentifier(""); //$NON-NLS-1$
 
         addBuyTransaction();
         addPreemptiveBuyTransaction();
