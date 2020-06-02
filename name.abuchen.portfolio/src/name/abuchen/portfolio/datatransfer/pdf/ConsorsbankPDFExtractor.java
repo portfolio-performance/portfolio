@@ -749,7 +749,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), "05:00:00")))
 
                         .section("amount", "currency")
-                        .match("^ *WERT +\\d+.\\d+.\\d{4}+ +(?<currency>\\w{3}+) +(?<amount>[\\d.]+,\\d+).*$") //
+                        .match("^ *KURSWERT +(?<currency>\\w{3}+) +(?<amount>[\\d.]+,\\d+).*$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -757,6 +757,25 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .wrap(BuySellEntryItem::new);
 
-        addFeesSectionsTransaction(pdfTransaction);
+        addFeesSectionsTransaction2001(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeesSectionsTransaction2001(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction.section("currency", "stockfees").optional()
+                        .match("^ *COURTAGE +(?<currency>\\w{3}+) +(?<stockfees>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees"))))))
+
+                        .section("currency", "brokerage").optional()
+                        .match("^ *PROVISION +(?<currency>\\w{3}+) +(?<brokerage>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage"))))))
+
+                        .section("currency", "expenses").optional()
+                        .match("^ *EIG\\.SPESEN +(?<currency>\\w{3}+) +(?<expenses>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("expenses"))))));
     }
 }
