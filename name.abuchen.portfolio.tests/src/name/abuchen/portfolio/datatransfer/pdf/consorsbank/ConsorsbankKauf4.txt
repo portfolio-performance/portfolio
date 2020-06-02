@@ -1,6 +1,3 @@
-PDF Author: 'Consorsbank'
-PDFBox Version: 1.8.16
------------------------------------------
 Consorsbank • 90318 Nürnberg
 Depotnummer 12345
 123456789/00
