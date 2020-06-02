@@ -738,7 +738,6 @@ public class ConsorsbankPDFExtractorTest
 
     }
 
-    // @Ignore
     @Test
     public void testWertpapierKauf7_2001()
     {
@@ -763,15 +762,17 @@ public class ConsorsbankPDFExtractorTest
         BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
 
-        // check buy sell transaction
         assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
 
-        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1928_74L)));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 1917_50L)));
         assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2001, 9, 18, 5, 0, 0)));
         assertThat(entry.getPortfolioTransaction().getShares(), is(50_000000L));
-        // assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
-        // is(Money.of(CurrencyUnit.EUR, 0L)));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, 1_53L + 5_11L + 4_60L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, 0_00L)));
     }
 
     @Test
