@@ -27,6 +27,20 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
         addBuyTransaction();
     }
 
+    private String stripTrailing(String value)
+    {
+        int right = value.length();
+        if (value.endsWith(" ")) //$NON-NLS-1$
+        {
+            value = value.substring(0, right-1);
+        }
+        if (right == 0)
+        {
+            return ""; //$NON-NLS-1$
+        }
+        return value;
+    }
+    
     @Override
     public String getPDFAuthor()
     {
@@ -104,7 +118,7 @@ public class JustTradePDFExtractor extends AbstractPDFExtractor
                         .match("Orderausführung Datum\\/Zeit: (?<date>.{11}).*(?<time>.{8}).*").assign((t, v) -> {
                             // if length of date is 11, we need to strip the trailing blank
                             LocalDateTime dateTime = LocalDateTime.parse(
-                                            String.format("%s %s", v.get("date").stripTrailing(), v.get("time")), DATE_TIME_FORMAT);
+                                            String.format("%s %s", stripTrailing(v.get("date")), v.get("time")), DATE_TIME_FORMAT);
                             t.setDate(dateTime);
                         })
 
