@@ -15,6 +15,8 @@ public class Messages extends NLS
     public static String AttributesTERName;
     public static String AttributesVendorColumn;
     public static String AttributesVendorName;
+    public static String AttributesLogoName;
+    public static String AttributesLogoColumn;
     public static String ColumnCapitalGains;
     public static String ColumnCurrencyGains;
     public static String ColumnEarnings;

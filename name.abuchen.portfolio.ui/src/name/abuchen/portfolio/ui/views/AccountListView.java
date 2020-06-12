@@ -240,8 +240,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
 
-        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150, getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
         {
             @Override
             public Color getForeground(Object e)

@@ -4,10 +4,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Stream;
+
+import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.PercentConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
 
@@ -16,6 +20,7 @@ public class ClientSettings
     private List<Bookmark> bookmarks;
     private List<AttributeType> attributeTypes;
     private Map<String, ConfigurationSet> configurationSets;
+    private Optional<AttributeType> optionalLogoAttributeType;
 
     public ClientSettings()
     {
@@ -107,6 +112,14 @@ public class ClientSettings
         managementFee.setType(Double.class);
         managementFee.setConverter(PercentConverter.class);
         attributeTypes.add(managementFee);
+        
+        AttributeType logoType = new AttributeType("logo"); //$NON-NLS-1$
+        logoType.setName(Messages.AttributesLogoName);
+        logoType.setColumnLabel(Messages.AttributesLogoColumn);
+        logoType.setTarget(Security.class);
+        logoType.setType(String.class);
+        logoType.setConverter(ImageConverter.class);
+        attributeTypes.add(logoType);
     }
 
     public List<Bookmark> getBookmarks()
@@ -148,16 +161,19 @@ public class ClientSettings
     public void removeAttributeType(AttributeType type)
     {
         attributeTypes.remove(type);
+        optionalLogoAttributeType = null;
     }
 
     public void addAttributeType(AttributeType type)
     {
         attributeTypes.add(type);
+        optionalLogoAttributeType = null;
     }
 
     public void addAttributeType(int index, AttributeType type)
     {
         attributeTypes.add(index, type);
+        optionalLogoAttributeType = null;
     }
 
     public int getAttributeTypeIndexOf(AttributeType type)
@@ -168,5 +184,15 @@ public class ClientSettings
     public ConfigurationSet getConfigurationSet(String key)
     {
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
+    }
+    
+    public Optional<AttributeType> getOptionalLogoAttributeType() {
+        if(optionalLogoAttributeType == null) {
+            optionalLogoAttributeType = getAttributeTypes()
+                        .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter 
+                                        && t.getName().equalsIgnoreCase("LOGO"))
+                        .findFirst();
+        }
+        return optionalLogoAttributeType;
     }
 }

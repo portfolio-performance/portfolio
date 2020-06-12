@@ -1,5 +1,7 @@
 package name.abuchen.portfolio.model;
 
+import org.eclipse.swt.graphics.Image;
+
 public interface InvestmentVehicle extends Named
 {
     String getUUID();
@@ -11,4 +13,6 @@ public interface InvestmentVehicle extends Named
     boolean isRetired();
     
     void setRetired(boolean isRetired);
+    
+    Image getImage(AttributeType attribute, int width, int height);
 }

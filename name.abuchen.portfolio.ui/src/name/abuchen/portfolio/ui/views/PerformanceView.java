@@ -200,7 +200,7 @@ public class PerformanceView extends AbstractHistoricView
         ShowHideColumnHelper support = new ShowHideColumnHelper(getClass().getSimpleName() + "-calculation@v2", //$NON-NLS-1$
                         getPreferenceStore(), calculation, layout);
 
-        Column column = new NameColumn("label", Messages.ColumnLabel, SWT.NONE, 350); //$NON-NLS-1$
+        Column column = new NameColumn("label", Messages.ColumnLabel, SWT.NONE, 350, getClient()); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -259,7 +259,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         support.addColumn(column);
 
-        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new NameColumn("value", Messages.ColumnValue, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -301,7 +301,7 @@ public class PerformanceView extends AbstractHistoricView
         });
         support.addColumn(column);
 
-        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column = new NameColumn("forex", Messages.ColumnThereofForeignCurrencyGains, SWT.RIGHT, 80, getClient()); //$NON-NLS-1$
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override

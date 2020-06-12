@@ -199,8 +199,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
         portfolioColumns = new ShowHideColumnHelper(PortfolioListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), portfolios, layout);
 
-        Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        Column column = new NameColumn("0", Messages.ColumnPortfolio, SWT.None, 100, getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
         {
             @Override
             public Color getForeground(Object e)

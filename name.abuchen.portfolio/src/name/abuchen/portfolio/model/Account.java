@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.swt.graphics.Image;
+
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
@@ -97,11 +99,17 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
             attributes = new Attributes();
         return attributes;
     }
-
+    
     @Override
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+    }
+    
+    @Override
+    public Image getImage(AttributeType attr, int width, int height)
+    {       
+        return null;
     }
 
     @Override

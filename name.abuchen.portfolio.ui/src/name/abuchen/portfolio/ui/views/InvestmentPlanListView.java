@@ -38,6 +38,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.editor.PortfolioPart;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
@@ -60,6 +61,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     @Inject
     private ExchangeRateProviderFactory factory;
+    
+    @Inject
+    private PortfolioPart part;
 
     @Override
     protected String getDefaultTitle()
@@ -159,7 +163,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void addColumns(ShowHideColumnHelper support)
     {
-        Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100); //$NON-NLS-1$
+        Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100, part.getClient()); //$NON-NLS-1$
         column.getEditingSupport().addListener(this);
         support.addColumn(column);
 

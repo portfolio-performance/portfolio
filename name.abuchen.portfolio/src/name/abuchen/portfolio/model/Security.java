@@ -12,12 +12,16 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
+import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 
 /**
  * A <code>Security</code> is used for assets that have historical prices
@@ -653,6 +657,20 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
+    }
+    
+    @Override
+    public Image getImage(AttributeType attr, int width, int height)
+    {   
+        if(this.getAttributes().exists(attr)) {
+            if(attr.getConverter() instanceof ImageConverter) {
+                Image fullImage = (Image)attr.getConverter().fromString(this.getAttributes().get(attr).toString());
+                if(fullImage != null) {
+                    return ImageConverter.resize(fullImage, width, height);
+                }
+            }
+        }
+        return null;
     }
 
     /**

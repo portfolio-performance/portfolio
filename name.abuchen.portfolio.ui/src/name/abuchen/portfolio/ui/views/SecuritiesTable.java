@@ -37,13 +37,16 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -234,7 +237,14 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Image getImage(Object e)
             {
-                return ((Security) e).isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+                Security sec = ((Security) e);
+                if(getClient().getSettings().getOptionalLogoAttributeType().isPresent()) {
+                    Image img = sec.getImage(getClient().getSettings().getOptionalLogoAttributeType().get(), 16, 16);
+                    if(img != null) {
+                        return img;
+                    }
+                }
+                return sec.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$

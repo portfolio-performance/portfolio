@@ -1,13 +1,18 @@
 package name.abuchen.portfolio.ui.views.columns;
 
+import java.util.Optional;
+
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Classification;
+import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -22,6 +27,12 @@ public class NameColumn extends Column
 {
     public static class NameColumnLabelProvider extends ColumnLabelProvider
     {
+        private Client client;
+        public NameColumnLabelProvider(Client client)
+        {
+            this.client = client;
+        }
+        
         @Override
         public String getText(Object e)
         {
@@ -33,6 +44,15 @@ public class NameColumn extends Column
         public Image getImage(Object e)
         {
             Named n = Adaptor.adapt(Named.class, e);
+            
+            if(n instanceof InvestmentVehicle) {
+                Optional<AttributeType> logoAttr = client.getSettings().getOptionalLogoAttributeType();
+                if(logoAttr.isPresent()) {
+                    InvestmentVehicle iv = (InvestmentVehicle)n;
+                    Image logo = iv.getImage(logoAttr.get(), 16, 16);
+                    if(logo != null) return logo;
+                }
+            }
 
             if (n instanceof Security)
                 return Images.SECURITY.image();
@@ -60,22 +80,22 @@ public class NameColumn extends Column
                 return TextUtil.tooltip(element.getName());
         }
     }
-
-    public NameColumn()
+    
+    public NameColumn(Client client)
     {
-        this("name"); //$NON-NLS-1$
+        this(client, "name"); //$NON-NLS-1$
     }
 
-    public NameColumn(String id)
+    public NameColumn(Client client, String id)
     {
-        this(id, Messages.ColumnName, SWT.LEFT, 300);
+        this(id, Messages.ColumnName, SWT.LEFT, 300, client);
     }
 
-    public NameColumn(String id, String label, int style, int defaultWidth)
+    public NameColumn(String id, String label, int style, int defaultWidth, Client client)
     {
         super(id, label, style, defaultWidth);
 
-        setLabelProvider(new NameColumnLabelProvider());
+        setLabelProvider(new NameColumnLabelProvider(client));
         setSorter(ColumnViewerSorter.create(Named.class, "name")); //$NON-NLS-1$
         new StringEditingSupport(Named.class, "name").setMandatory(true).attachTo(this); //$NON-NLS-1$
     }
