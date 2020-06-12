@@ -12,7 +12,7 @@ import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Classification;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.InvestmentVehicle;
+import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -45,10 +45,10 @@ public class NameColumn extends Column
         {
             Named n = Adaptor.adapt(Named.class, e);
             
-            if(n instanceof InvestmentVehicle) {
-                Optional<AttributeType> logoAttr = client.getSettings().getOptionalLogoAttributeType();
+            if(n instanceof Attributable) {
+                Optional<AttributeType> logoAttr = client.getSettings().getOptionalLogoAttributeType(n.getClass());
                 if(logoAttr.isPresent()) {
-                    InvestmentVehicle iv = (InvestmentVehicle)n;
+                    Attributable iv = (Attributable)n;
                     Image logo = iv.getImage(logoAttr.get(), 16, 16);
                     if(logo != null) return logo;
                 }

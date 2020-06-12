@@ -16,7 +16,7 @@ import name.abuchen.portfolio.util.Dates;
 import name.abuchen.portfolio.util.TradeCalendar;
 import name.abuchen.portfolio.util.TradeCalendarManager;
 
-public class InvestmentPlan implements Named, Adaptable, Attributable
+public class InvestmentPlan extends AttributableBase implements Named, Adaptable, Attributable
 {
     private String name;
     private String note;

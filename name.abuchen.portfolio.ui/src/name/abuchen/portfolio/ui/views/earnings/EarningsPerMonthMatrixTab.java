@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
@@ -166,9 +167,11 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 
-                Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType();
-                Image logo = logoAttr.isPresent() && vehicle != null ? vehicle.getImage(logoAttr.get(), 16, 16) : null;
-                if(logo != null) return logo;
+                if(vehicle instanceof Attributable) {
+                    Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType(vehicle.getClass());
+                    Image logo = logoAttr.isPresent() && vehicle != null ? ((Attributable)vehicle).getImage(logoAttr.get(), 16, 16) : null;
+                    if(logo != null) return logo;
+                }
                 
                 if (vehicle instanceof Account)
                     return Images.ACCOUNT.image();

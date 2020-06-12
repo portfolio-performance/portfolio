@@ -13,6 +13,4 @@ public interface InvestmentVehicle extends Named
     boolean isRetired();
     
     void setRetired(boolean isRetired);
-    
-    Image getImage(AttributeType attribute, int width, int height);
 }

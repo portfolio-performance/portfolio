@@ -238,8 +238,9 @@ public final class SecuritiesTable implements ModificationListener
             public Image getImage(Object e)
             {
                 Security sec = ((Security) e);
-                if(getClient().getSettings().getOptionalLogoAttributeType().isPresent()) {
-                    Image img = sec.getImage(getClient().getSettings().getOptionalLogoAttributeType().get(), 16, 16);
+                Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(sec.getClass());
+                if(logoAttr.isPresent()) {
+                    Image img = sec.getImage(logoAttr.get(), 16, 16);
                     if(img != null) {
                         return img;
                     }

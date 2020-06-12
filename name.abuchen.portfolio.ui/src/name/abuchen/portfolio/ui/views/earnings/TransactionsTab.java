@@ -168,7 +168,7 @@ public class TransactionsTab implements EarningsTab
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
                 if(security != null) {
-                    Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType();
+                    Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType(security.getClass());
                     Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
                     if(logo != null) return logo;
                 }

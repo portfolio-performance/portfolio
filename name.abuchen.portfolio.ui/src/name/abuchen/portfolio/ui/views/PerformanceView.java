@@ -242,7 +242,7 @@ public class PerformanceView extends AbstractHistoricView
                                         .get(security) != null;
 
                         if(hasHoldings) {
-                            Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType();
+                            Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(security.getClass());
                             Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
                             return logo != null ? logo : Images.SECURITY.image();
                         }

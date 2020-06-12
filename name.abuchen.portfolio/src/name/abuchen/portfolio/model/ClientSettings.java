@@ -20,7 +20,6 @@ public class ClientSettings
     private List<Bookmark> bookmarks;
     private List<AttributeType> attributeTypes;
     private Map<String, ConfigurationSet> configurationSets;
-    private Optional<AttributeType> optionalLogoAttributeType;
 
     public ClientSettings()
     {
@@ -161,19 +160,16 @@ public class ClientSettings
     public void removeAttributeType(AttributeType type)
     {
         attributeTypes.remove(type);
-        optionalLogoAttributeType = null;
     }
 
     public void addAttributeType(AttributeType type)
     {
         attributeTypes.add(type);
-        optionalLogoAttributeType = null;
     }
 
     public void addAttributeType(int index, AttributeType type)
     {
         attributeTypes.add(index, type);
-        optionalLogoAttributeType = null;
     }
 
     public int getAttributeTypeIndexOf(AttributeType type)
@@ -186,13 +182,12 @@ public class ClientSettings
         return configurationSets.computeIfAbsent(key, k -> new ConfigurationSet());
     }
     
-    public Optional<AttributeType> getOptionalLogoAttributeType() {
-        if(optionalLogoAttributeType == null) {
-            optionalLogoAttributeType = getAttributeTypes()
+    @SuppressWarnings("unchecked")
+    public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type) {
+        return getAttributeTypes()
                         .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter 
-                                        && t.getName().equalsIgnoreCase("LOGO"))
+                                     && t.getName().equalsIgnoreCase("LOGO")
+                                     && t.supports((Class<? extends Attributable>) type))
                         .findFirst();
-        }
-        return optionalLogoAttributeType;
     }
 }

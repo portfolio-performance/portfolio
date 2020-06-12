@@ -9,7 +9,7 @@ import org.eclipse.swt.graphics.Image;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 
-public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
+public class Account extends AttributableBase implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
 {
     private String uuid;
     private String name;
@@ -104,12 +104,6 @@ public class Account implements TransactionOwner<AccountTransaction>, Investment
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
-    }
-    
-    @Override
-    public Image getImage(AttributeType attr, int width, int height)
-    {       
-        return null;
     }
 
     @Override

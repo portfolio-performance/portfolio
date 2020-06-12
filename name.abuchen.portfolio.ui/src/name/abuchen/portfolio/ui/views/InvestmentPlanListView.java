@@ -26,6 +26,8 @@ import org.eclipse.swt.widgets.Composite;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Attributable;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -161,6 +163,18 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         hookContextMenu(plans.getTable(), this::fillPlansContextMenu);
     }
 
+    private Image MaybeGetLogo(Attributable object) {
+        if(object != null) {
+            Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(object.getClass());
+            if(logoAttr.isPresent()) {
+                Attributable iv = (Attributable)object;
+                Image logo = iv.getImage(logoAttr.get(), 16, 16);
+                return logo;
+            }
+        }
+        return null;
+    }
+    
     private void addColumns(ShowHideColumnHelper support)
     {
         Column column = new NameColumn("0", Messages.ColumnName, SWT.None, 100, part.getClient()); //$NON-NLS-1$
@@ -181,7 +195,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return (plan.getSecurity() != null ? Images.SECURITY.image() : null);
+                Image logo = MaybeGetLogo(plan.getSecurity());
+                if(logo != null) return logo;
+                return plan.getSecurity() != null ? Images.SECURITY.image() : logo;
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
@@ -202,7 +218,9 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
-                return plan.getPortfolio() != null ? Images.PORTFOLIO.image() : null;
+                Image logo = MaybeGetLogo(plan.getPortfolio());
+                if(logo != null) return logo;
+                return plan.getPortfolio() != null ? Images.PORTFOLIO.image() : logo;
             }
         });
         ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
@@ -222,6 +240,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             public Image getImage(Object e)
             {
                 InvestmentPlan plan = (InvestmentPlan) e;
+                Image logo = MaybeGetLogo(plan.getAccount());
+                if(logo != null) return logo;
                 return plan.getAccount() != null ? Images.ACCOUNT.image() : null;
             }
         });

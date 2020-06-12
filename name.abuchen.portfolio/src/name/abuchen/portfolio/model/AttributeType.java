@@ -351,23 +351,34 @@ public class AttributeType
         {
             return object != null ? (String) object : ""; //$NON-NLS-1$
         }
-
+        
         @Override
         public Object fromString(String value)
         {
-            byte[] buff = Base64.getDecoder().decode(value);
-            ImageLoader loader = new ImageLoader();
+            return value;
+        }
+
+        public Image toImage(String value)
+        {
+            if(value == null || value.length() == 0) return null;
             
-            ByteArrayInputStream bis = new ByteArrayInputStream(buff);
-            ImageData[] imgArr = loader.load(bis);
-            try
-            {
-                bis.close();
+            try {
+                byte[] buff = Base64.getDecoder().decode(value);
+                ImageLoader loader = new ImageLoader();
+                
+                ByteArrayInputStream bis = new ByteArrayInputStream(buff);
+                ImageData[] imgArr = loader.load(bis);
+                try
+                {
+                    bis.close();
+                }
+                catch (IOException e)
+                {
+                }
+                return new Image(null, imgArr[0]);
+            } catch(Exception ex) {
+                return null;
             }
-            catch (IOException e)
-            {
-            }
-            return new Image(null, imgArr[0]);
         }
         
         public static Image resize(Image image, int width, int height) {

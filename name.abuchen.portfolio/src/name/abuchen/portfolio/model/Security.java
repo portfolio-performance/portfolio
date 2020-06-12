@@ -30,7 +30,7 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
  * <strong>Attributes</strong> are managed and edited by the user while
  * <strong>properties</strong> are managed by the program.
  */
-public final class Security implements Attributable, InvestmentVehicle
+public final class Security extends AttributableBase implements Attributable, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {
@@ -657,20 +657,6 @@ public final class Security implements Attributable, InvestmentVehicle
     public void setAttributes(Attributes attributes)
     {
         this.attributes = attributes;
-    }
-    
-    @Override
-    public Image getImage(AttributeType attr, int width, int height)
-    {   
-        if(this.getAttributes().exists(attr)) {
-            if(attr.getConverter() instanceof ImageConverter) {
-                Image fullImage = (Image)attr.getConverter().fromString(this.getAttributes().get(attr).toString());
-                if(fullImage != null) {
-                    return ImageConverter.resize(fullImage, width, height);
-                }
-            }
-        }
-        return null;
     }
 
     /**
