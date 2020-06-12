@@ -410,8 +410,8 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
     protected void addDimensionColumn(ShowHideColumnHelper support)
     {
-        Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        Column column = new NameColumn("txname", Messages.ColumnLevels, SWT.NONE, 400, part.getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(part.getClient()) // NOSONAR
         {
             @Override
             public Image getImage(Object e)

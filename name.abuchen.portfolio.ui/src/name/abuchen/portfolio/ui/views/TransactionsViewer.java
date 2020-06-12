@@ -42,7 +42,6 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Transaction;
-import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.model.TransactionPair;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -58,6 +57,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -82,10 +82,17 @@ public final class TransactionsViewer implements ModificationListener
     private class TransactionLabelProvider extends ColumnLabelProvider
     {
         private Function<Transaction, String> label;
+        private Function<TransactionPair<?>, Object> img;
 
         public TransactionLabelProvider(Function<Transaction, String> label)
         {
+            this(label, null);
+        }
+
+        public TransactionLabelProvider(Function<Transaction, String> label, Function<TransactionPair<?>, Object> img)
+        {
             this.label = Objects.requireNonNull(label);
+            this.img = img;
         }
 
         public TransactionLabelProvider(ColumnLabelProvider labelProvider)
@@ -119,6 +126,15 @@ public final class TransactionsViewer implements ModificationListener
             }
 
             throw new IllegalArgumentException();
+        }
+
+        @Override
+        public Image getImage(Object element)
+        {
+            if (img == null)
+                return null;
+            Object subject = img.apply((TransactionPair<?>) element);
+            return LogoManager.instance().getDefaultColumnImage(subject, owner.getClient().getSettings());
         }
 
         @Override
@@ -277,7 +293,8 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("2", Messages.ColumnSecurity, SWT.None, 250); //$NON-NLS-1$
         column.setLabelProvider(
-                        new TransactionLabelProvider(t -> t.getSecurity() != null ? t.getSecurity().getName() : null));
+                        new TransactionLabelProvider(t -> t.getSecurity() != null ? t.getSecurity().getName() : null,
+                                        t -> t.getTransaction().getSecurity()));
         ColumnViewerSorter.create(e -> {
             Security s = ((TransactionPair<?>) e).getTransaction().getSecurity();
             return s != null ? s.getName() : null;
@@ -386,25 +403,12 @@ public final class TransactionsViewer implements ModificationListener
         support.addColumn(column);
 
         column = new Column("account", Messages.ColumnAccount, SWT.None, 120); //$NON-NLS-1$
-        column.setLabelProvider(new TransactionLabelProvider(t -> null) // NOSONAR
+        column.setLabelProvider(new TransactionLabelProvider(t -> null, t -> t.getOwner()) // NOSONAR
         {
             @Override
             public String getText(Object element)
             {
                 return ((TransactionPair<?>) element).getOwner().toString();
-            }
-
-            @Override
-            public Image getImage(Object element)
-            {
-                TransactionOwner<?> txo = ((TransactionPair<?>) element).getOwner();
-
-                if (txo instanceof Portfolio)
-                    return Images.PORTFOLIO.image();
-                else if (txo instanceof Account)
-                    return Images.ACCOUNT.image();
-                else
-                    return null;
             }
         });
         new TransactionOwnerListEditingSupport(owner.getClient(), TransactionOwnerListEditingSupport.EditMode.OWNER)
@@ -414,7 +418,10 @@ public final class TransactionsViewer implements ModificationListener
 
         column = new Column("9", Messages.ColumnOffsetAccount, SWT.None, 120); //$NON-NLS-1$
         column.setLabelProvider(new TransactionLabelProvider(
-                        t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null));
+                        t -> t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null,
+                        t -> t.getTransaction().getCrossEntry() != null
+                                        ? t.getTransaction().getCrossEntry().getCrossOwner(t.getTransaction())
+                                        : null));
         new TransactionOwnerListEditingSupport(owner.getClient(),
                         TransactionOwnerListEditingSupport.EditMode.CROSSOWNER).addListener(this).attachTo(column);
         ColumnViewerSorter.create(e -> {
@@ -531,7 +538,7 @@ public final class TransactionsViewer implements ModificationListener
             TransactionPair<?> foo = (TransactionPair<?>) it.next();
             foo.withPortfolioTransaction().ifPresent(txCollection::add);
         }
-        
+
         if (txCollection.isEmpty())
             return;
 

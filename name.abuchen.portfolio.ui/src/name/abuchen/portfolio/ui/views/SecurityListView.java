@@ -38,6 +38,7 @@ import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -80,6 +81,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SWTHelper;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
@@ -925,6 +927,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return owner.toString();
                 return null;
             }
+            
+            @Override
+            public Image getImage(Object element)
+            {
+                TransactionOwner<?> owner = ((TransactionPair<?>) element).getOwner();
+                if (owner instanceof Portfolio)
+                    return LogoManager.instance().getDefaultColumnImage(owner, getClient().getSettings());
+                return null;
+            }
         });
         new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.OWNER)
                         .addListener(this).attachTo(column);
@@ -942,6 +953,17 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     return t.getCrossEntry() != null ? t.getCrossEntry().getCrossOwner(t).toString() : null;
                 else
                     return pair.getOwner().toString();
+            }
+            
+            @Override
+            public Image getImage(Object element)
+            {
+                TransactionPair<?> pair = (TransactionPair<?>) element;
+                Transaction t = pair.getTransaction();
+                if (t instanceof PortfolioTransaction)
+                    return t.getCrossEntry() != null ? LogoManager.instance().getDefaultColumnImage(t.getCrossEntry().getCrossOwner(t), getClient().getSettings()) : null;
+                else
+                    return LogoManager.instance().getDefaultColumnImage(pair.getOwner(), getClient().getSettings());
             }
         });
         new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)

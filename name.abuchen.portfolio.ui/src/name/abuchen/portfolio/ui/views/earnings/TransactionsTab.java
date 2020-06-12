@@ -34,6 +34,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -165,7 +166,7 @@ public class TransactionsTab implements EarningsTab
             public Image getImage(Object element)
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
-                return security != null ? Images.SECURITY.image() : null;
+                return LogoManager.instance().getDefaultColumnImage(security, model.getClient().getSettings());
             }
         });
         ColumnViewerSorter.create(e -> {

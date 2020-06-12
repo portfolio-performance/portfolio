@@ -371,7 +371,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
 
         // security name
-        column = new NameColumn();
+        column = new NameColumn(getClient());
         column.getEditingSupport().addListener(new TouchClientListener(getClient()));
         recordColumns.addColumn(column);
 

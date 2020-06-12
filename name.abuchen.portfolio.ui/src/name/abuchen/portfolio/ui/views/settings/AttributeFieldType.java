@@ -17,6 +17,7 @@ import name.abuchen.portfolio.model.AttributeType.PercentPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.QuoteConverter;
 import name.abuchen.portfolio.model.AttributeType.ShareConverter;
 import name.abuchen.portfolio.model.AttributeType.StringConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
@@ -33,7 +34,8 @@ public enum AttributeFieldType
     DATE(LocalDate.class, DateConverter.class), //
     BOOLEAN(Boolean.class, BooleanConverter.class), //
     LIMIT_PRICE(LimitPrice.class, LimitPriceConverter.class, Security.class), //
-    BOOKMARK(Bookmark.class, BookmarkConverter.class);
+    BOOKMARK(Bookmark.class, BookmarkConverter.class), //
+    IMAGE(String.class, ImageConverter.class);
 
     private static final ResourceBundle RESOURCES = ResourceBundle
                     .getBundle("name.abuchen.portfolio.ui.views.settings.labels"); //$NON-NLS-1$

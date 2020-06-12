@@ -34,6 +34,7 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -60,6 +61,7 @@ import name.abuchen.portfolio.ui.handlers.ImportPDFHandler;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmAction;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -240,8 +242,8 @@ public class AccountListView extends AbstractListView implements ModificationLis
         accountColumns = new ShowHideColumnHelper(AccountListView.class.getSimpleName() + "@top2", //$NON-NLS-1$
                         getPreferenceStore(), accounts, layout);
 
-        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        Column column = new NameColumn("0", Messages.ColumnAccount, SWT.None, 150, getClient()); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(getClient()) // NOSONAR
         {
             @Override
             public Color getForeground(Object e)
@@ -491,6 +493,13 @@ public class AccountListView extends AbstractListView implements ModificationLis
             {
                 return colorFor((AccountTransaction) element);
             }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return LogoManager.instance().getDefaultColumnImage(t.getSecurity(), getClient().getSettings());
+            }
         });
         column.setSorter(ColumnViewerSorter.create(AccountTransaction.class, "security")); //$NON-NLS-1$
         transactionsColumns.addColumn(column);
@@ -595,6 +604,15 @@ public class AccountListView extends AbstractListView implements ModificationLis
             public Color getForeground(Object element)
             {
                 return colorFor((AccountTransaction) element);
+            }
+            
+            @Override
+            public Image getImage(Object e)
+            {
+                AccountTransaction t = (AccountTransaction) e;
+                return t.getCrossEntry() != null 
+                                ? LogoManager.instance().getDefaultColumnImage(t.getCrossEntry().getCrossOwner(t), getClient().getSettings()) 
+                                : null;
             }
         });
         new TransactionOwnerListEditingSupport(getClient(), TransactionOwnerListEditingSupport.EditMode.CROSSOWNER)

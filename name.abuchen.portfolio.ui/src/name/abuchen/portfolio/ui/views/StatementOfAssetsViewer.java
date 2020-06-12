@@ -209,8 +209,8 @@ public class StatementOfAssetsViewer
                         e -> ((Element) e).isSecurity() ? ((Element) e).getSecurityPosition().getShares() : null)));
         support.addColumn(column);
 
-        column = new NameColumn("1"); //$NON-NLS-1$
-        column.setLabelProvider(new NameColumnLabelProvider() // NOSONAR
+        column = new NameColumn(client, "1"); //$NON-NLS-1$
+        column.setLabelProvider(new NameColumnLabelProvider(client) // NOSONAR
         {
             @Override
             public String getText(Object e)

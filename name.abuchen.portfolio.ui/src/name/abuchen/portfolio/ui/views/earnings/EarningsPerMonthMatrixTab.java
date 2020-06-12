@@ -30,14 +30,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -163,12 +162,7 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             public Image getImage(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
-                if (vehicle instanceof Account)
-                    return Images.ACCOUNT.image();
-                else if (vehicle instanceof Security)
-                    return Images.SECURITY.image();
-                else
-                    return null;
+                return LogoManager.instance().getDefaultColumnImage(vehicle, model.getClient().getSettings());
             }
 
             @Override
