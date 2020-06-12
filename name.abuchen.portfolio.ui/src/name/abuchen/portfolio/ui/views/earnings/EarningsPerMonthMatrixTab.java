@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
+import java.util.Optional;
 import java.util.function.ToLongFunction;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.TableColumn;
 
 import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.Values;
@@ -163,6 +165,11 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             public Image getImage(Object element)
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
+                
+                Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType();
+                Image logo = logoAttr.isPresent() && vehicle != null ? vehicle.getImage(logoAttr.get(), 16, 16) : null;
+                if(logo != null) return logo;
+                
                 if (vehicle instanceof Account)
                     return Images.ACCOUNT.image();
                 else if (vehicle instanceof Security)

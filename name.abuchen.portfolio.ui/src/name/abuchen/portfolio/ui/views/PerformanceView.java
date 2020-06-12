@@ -2,6 +2,7 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
@@ -230,15 +232,21 @@ public class PerformanceView extends AbstractHistoricView
                 {
                     ClientPerformanceSnapshot.Position position = (ClientPerformanceSnapshot.Position) element;
 
-                    if (position.getSecurity() != null)
+                    Security security = position.getSecurity();
+                    if (security != null)
                     {
                         ClientPerformanceSnapshot snapshot = ((PerformanceContentProvider) calculation
                                         .getContentProvider()).getSnapshot();
 
                         boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
-                                        .get(position.getSecurity()) != null;
+                                        .get(security) != null;
 
-                        return hasHoldings ? Images.SECURITY.image() : Images.SECURITY_RETIRED.image();
+                        if(hasHoldings) {
+                            Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType();
+                            Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
+                            return logo != null ? logo : Images.SECURITY.image();
+                        }
+                        return Images.SECURITY_RETIRED.image();
                     }
                     else
                     {
