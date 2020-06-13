@@ -111,7 +111,6 @@ public class Messages extends NLS
     public static String ColumnColumnLabel;
     public static String ColumnConvertedAmount;
     public static String ColumnCount;
-    public static String ColumnEventMessage;
     public static String ColumnLatest_MenuLabel;
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
@@ -982,6 +981,9 @@ public class Messages extends NLS
     public static String SplitWizardReviewQuotesTitle;
     public static String SplitWizardReviewTransactionsDescription;
     public static String SplitWizardReviewTransactionsTitle;
+    public static String EventWizardTitle;
+    public static String EventWizardDescription;
+    public static String EventWizardLabelMessage;
     public static String SystemMenuChangelog;
     public static String SystemMenuCheckForUpdates;
     public static String SystemMenuNewAndNoteworthy;

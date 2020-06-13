@@ -925,7 +925,7 @@ public final class SecuritiesTable implements ModificationListener
             }
         });
 
-        manager.add(new AbstractDialogAction("Add Custom Event") // Messages.SecurityMenuStockSplit)
+        manager.add(new AbstractDialogAction(Messages.SecurityMenuAddEvent)
         {
             @Override
             Dialog createDialog(Security security)

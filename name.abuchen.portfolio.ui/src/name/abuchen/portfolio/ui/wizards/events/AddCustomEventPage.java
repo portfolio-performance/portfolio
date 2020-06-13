@@ -18,7 +18,10 @@ import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
@@ -39,8 +42,8 @@ public class AddCustomEventPage extends AbstractWizardPage
     {
         super("add-custom-event"); //$NON-NLS-1$
 
-        setTitle("Add Custom Event"); // Messages.SplitWizardDefinitionTitle);
-        setDescription("enter a user-defined free text"); // Messages.SplitWizardDefinitionDescription);
+        setTitle(Messages.EventWizardTitle);
+        setDescription(Messages.EventWizardDescription);
 
         this.model = model;
 
@@ -64,6 +67,7 @@ public class AddCustomEventPage extends AbstractWizardPage
         container.setLayout(new FormLayout());
 
         Label labelSecurity = new Label(container, SWT.NONE);
+        labelSecurity.setLayoutData(new FormData());
         labelSecurity.setText(Messages.ColumnSecurity);
 
         List<Security> securities = model.getClient().getActiveSecurities();
@@ -71,6 +75,8 @@ public class AddCustomEventPage extends AbstractWizardPage
             securities.add(0, model.getSecurity());
 
         ComboViewer comboSecurity = new ComboViewer(container, SWT.READ_ONLY);
+        Combo combo = comboSecurity.getCombo();
+        combo.setLayoutData(new FormData());
         comboSecurity.setContentProvider(ArrayContentProvider.getInstance());
         comboSecurity.setLabelProvider(new LabelProvider()
         {
@@ -82,23 +88,28 @@ public class AddCustomEventPage extends AbstractWizardPage
         });
         comboSecurity.setInput(securities);
 
-        Label labelExDate = new Label(container, SWT.NONE);
-        labelExDate.setText(Messages.ColumnExDate);
+        Label labelDate = new Label(container, SWT.NONE);
+        labelDate.setLayoutData(new FormData());
+        labelDate.setText(Messages.ColumnDate);
 
-        DatePicker boxExDate = new DatePicker(container);
+        DatePicker boxDate = new DatePicker(container);
 
         Label labelMessage = new Label(container, SWT.NONE);
-        labelMessage.setText(Messages.ColumnEventMessage);
+        labelMessage.setLayoutData(new FormData());
+        labelMessage.setText(Messages.EventWizardLabelMessage);
 
         Text text = new Text(container, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        FormData fd_text = new FormData();
+        fd_text.right = new FormAttachment(0, 480);
+        text.setLayoutData(fd_text);
         text.setText("custom message"); //$NON-NLS-1$
 
         // form layout data
 
-        int labelWidth = widest(labelSecurity, labelExDate);
+        int labelWidth = widest(labelSecurity, labelDate);
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
-                        .thenBelow(boxExDate.getControl()).label(labelExDate) //
+                        .thenBelow(boxDate.getControl()).label(labelDate) //
                         .thenBelow(text).label(labelMessage);
 
         startingWith(labelSecurity).width(labelWidth);
@@ -113,7 +124,7 @@ public class AddCustomEventPage extends AbstractWizardPage
 
         @SuppressWarnings("unchecked")
         IObservableValue<Object> targetExDate = new SimpleDateTimeDateSelectionProperty()
-                        .observe(boxExDate.getControl());
+                        .observe(boxDate.getControl());
         @SuppressWarnings("unchecked")
         IObservableValue<Object> modelExDate = BeanProperties.value("exDate").observe(model); //$NON-NLS-1$
         context.bindValue(targetExDate, modelExDate, new UpdateValueStrategy<Object, Object>() //

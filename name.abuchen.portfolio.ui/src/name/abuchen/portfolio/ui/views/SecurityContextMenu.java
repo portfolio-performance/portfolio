@@ -100,7 +100,7 @@ public class SecurityContextMenu
             }
         });
 
-        manager.add(new Action("Add Custom Event") // Messages.SecurityMenuStockSplit)
+        manager.add(new Action(Messages.SecurityMenuAddEvent)
         {
             @Override
             public void run()
