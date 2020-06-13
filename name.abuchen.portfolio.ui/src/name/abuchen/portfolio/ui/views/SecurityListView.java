@@ -1114,6 +1114,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return ((SecurityEvent) element).getType().toString();
             }
         });
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()), SWT.UP);
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDetails, SWT.None, 80);
@@ -1125,6 +1126,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return ((SecurityEvent) element).getDetails();
             }
         });
+        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDetails().toLowerCase()), SWT.UP);
         support.addColumn(column);
 
         support.createColumns();
