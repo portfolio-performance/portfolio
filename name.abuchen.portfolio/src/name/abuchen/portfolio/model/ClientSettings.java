@@ -181,7 +181,8 @@ public class ClientSettings
     }
     
     @SuppressWarnings("unchecked")
-    public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type) {
+    public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type) 
+    {
         return getAttributeTypes()
                         .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter 
                                      && t.getName().equalsIgnoreCase("logo") //$NON-NLS-1$

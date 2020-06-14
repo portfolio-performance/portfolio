@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.eclipse.swt.graphics.Image;
-
 import name.abuchen.portfolio.money.CurrencyUnit;
 
 public class Account extends AttributableBase implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable

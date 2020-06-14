@@ -363,7 +363,8 @@ public class AttributeType
             if(value == null || value.length() == 0)
                 return null;
 
-            try {
+            try 
+            {
                 int splitPos = value.indexOf(',');
                 if(splitPos >= 0 && splitPos < value.length() - 1) value = value.substring(splitPos + 1);
                 byte[] buff = Base64.getDecoder().decode(value);
@@ -375,10 +376,14 @@ public class AttributeType
                 {
                     bis.close();
                 }
-                catch (IOException e) { }
+                catch (IOException e) 
+                { 
+                    
+                }
                 return new Image(null, imgArr[0]);
             }
-            catch (Exception ex) {
+            catch (Exception ex) 
+            {
                 return null;
             }
         }
