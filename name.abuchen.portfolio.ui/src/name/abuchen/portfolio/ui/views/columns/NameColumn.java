@@ -45,9 +45,11 @@ public class NameColumn extends Column
         {
             Named n = Adaptor.adapt(Named.class, e);
             
-            if(n instanceof Attributable) {
+            if(n instanceof Attributable) 
+            {
                 Optional<AttributeType> logoAttr = client.getSettings().getOptionalLogoAttributeType(n.getClass());
-                if(logoAttr.isPresent()) {
+                if(logoAttr.isPresent()) 
+                {
                     Attributable iv = (Attributable)n;
                     Image logo = iv.getImage(logoAttr.get(), 16, 16);
                     if(logo != null) return logo;

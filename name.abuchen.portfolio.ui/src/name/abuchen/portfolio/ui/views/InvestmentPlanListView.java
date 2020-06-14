@@ -163,10 +163,13 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         hookContextMenu(plans.getTable(), this::fillPlansContextMenu);
     }
 
-    private Image MaybeGetLogo(Attributable object) {
-        if(object != null) {
+    private Image MaybeGetLogo(Attributable object) 
+    {
+        if(object != null) 
+        {
             Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(object.getClass());
-            if(logoAttr.isPresent()) {
+            if(logoAttr.isPresent()) 
+            {
                 Attributable iv = (Attributable)object;
                 Image logo = iv.getImage(logoAttr.get(), 16, 16);
                 return logo;

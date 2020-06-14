@@ -241,7 +241,8 @@ public class PerformanceView extends AbstractHistoricView
                         boolean hasHoldings = snapshot.getEndClientSnapshot().getPositionsByVehicle()
                                         .get(security) != null;
 
-                        if(hasHoldings) {
+                        if(hasHoldings) 
+                        {
                             Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(security.getClass());
                             Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
                             return logo != null ? logo : Images.SECURITY.image();

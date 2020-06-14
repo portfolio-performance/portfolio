@@ -7,8 +7,6 @@ import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.ImageIcon;
-
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
@@ -200,13 +198,15 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                             .setConverter(input2model),
                             new UpdateValueStrategy<Object, String>()
                                             .setConverter(new ToAttributeStringConverter(attribute))
-                                            .setBeforeSetValidator(new IValidator<Object>() {
+                                            .setBeforeSetValidator(new IValidator<Object>() 
+                                            {
                                                 @Override
                                                 public IStatus validate(Object value)
                                                 {
                                                     String s = conv.toString(value);
                                                     Image img = null;
-                                                    if(s == null || s.length() == 0) {
+                                                    if(s == null || s.length() == 0) 
+                                                    {
                                                         updatePreview(null);
                                                         return Status.OK_STATUS;
                                                     }
@@ -215,21 +215,28 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                                     return img == null ? Status.CANCEL_STATUS : Status.OK_STATUS;
                                                 }
                                                 
-                                                private void updatePreview(Image img) {
+                                                private void updatePreview(Image img) 
+                                                {
                                                     preview.setImage(img);
                                                     if(img == null) preview.setText(previewPlaceholderText);
-                                                    else preview.setText("");
+                                                    else preview.setText(""); //$NON-NLS-1$
                                                     previewContainer.getParent().getParent().layout(true);
                                                 }
                                                 
                                             }));
-            preview.addMouseListener(new MouseListener( ) {
+            preview.addMouseListener(new MouseListener( ) 
+            {
+                @Override
+                public void mouseDoubleClick(MouseEvent e) 
+                {
+                    
+                }
 
                 @Override
-                public void mouseDoubleClick(MouseEvent e) {}
-
-                @Override
-                public void mouseUp(MouseEvent e) {}
+                public void mouseUp(MouseEvent e) 
+                {
+                    
+                }
 
                 @Override
                 public void mouseDown(MouseEvent e)

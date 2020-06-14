@@ -79,16 +79,19 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
-            if(attribute.getConverter() instanceof ImageConverter) {
-                return "";
+            if(attribute.getConverter() instanceof ImageConverter) 
+            {
+                return ""; //$NON-NLS-1$
             }
             Object value = getAttributeValue(element);            
             return attribute.getConverter().toString(value);
         }
         
         @Override
-        public Image getImage(Object element) {
-            if(attribute.getConverter() instanceof ImageConverter) {
+        public Image getImage(Object element) 
+        {
+            if(attribute.getConverter() instanceof ImageConverter) 
+            {
                 Object value = getAttributeValue(element);
                 ImageConverter conv = (ImageConverter)attribute.getConverter();
                 return conv.toImage(conv.toString(value));
@@ -96,7 +99,8 @@ public class AttributeColumn extends Column
             return null;
         }
         
-        private Object getAttributeValue(Object element) {
+        private Object getAttributeValue(Object element) 
+        {
             Attributable attributable = Adaptor.adapt(Attributable.class, element);
             if (attributable == null)
                 return null;

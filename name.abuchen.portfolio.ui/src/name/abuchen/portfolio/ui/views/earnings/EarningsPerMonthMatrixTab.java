@@ -167,9 +167,10 @@ public class EarningsPerMonthMatrixTab implements EarningsTab
             {
                 InvestmentVehicle vehicle = ((EarningsViewModel.Line) element).getVehicle();
                 
-                if(vehicle instanceof Attributable) {
+                if(vehicle instanceof Attributable) 
+                {
                     Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType(vehicle.getClass());
-                    Image logo = logoAttr.isPresent() && vehicle != null ? ((Attributable)vehicle).getImage(logoAttr.get(), 16, 16) : null;
+                    Image logo = logoAttr.isPresent() ? ((Attributable)vehicle).getImage(logoAttr.get(), 16, 16) : null;
                     if(logo != null) return logo;
                 }
                 
