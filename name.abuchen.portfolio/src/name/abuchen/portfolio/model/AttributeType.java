@@ -342,7 +342,7 @@ public class AttributeType
             throw new IllegalArgumentException(MessageFormat.format(Messages.MsgErrorInvalidURL, trimmed));
         }
     }
-    
+
     public static class ImageConverter implements Converter
     {
 
@@ -351,7 +351,7 @@ public class AttributeType
         {
             return object != null ? (String) object : ""; //$NON-NLS-1$
         }
-        
+
         @Override
         public Object fromString(String value)
         {
@@ -360,35 +360,37 @@ public class AttributeType
 
         public Image toImage(String value)
         {
-            if(value == null || value.length() == 0) return null;
-            
+            if(value == null || value.length() == 0)
+                return null;
+
             try {
+                int splitPos = value.indexOf(',');
+                if(splitPos >= 0 && splitPos < value.length() - 1) value = value.substring(splitPos + 1);
                 byte[] buff = Base64.getDecoder().decode(value);
                 ImageLoader loader = new ImageLoader();
-                
+
                 ByteArrayInputStream bis = new ByteArrayInputStream(buff);
                 ImageData[] imgArr = loader.load(bis);
                 try
                 {
                     bis.close();
                 }
-                catch (IOException e)
-                {
-                }
+                catch (IOException e) { }
                 return new Image(null, imgArr[0]);
-            } catch(Exception ex) {
+            }
+            catch (Exception ex) {
                 return null;
             }
         }
-        
+
         public static Image resize(Image image, int width, int height) {
             Image scaled = new Image(null, width, height);
             GC gc = new GC(scaled);
-            gc.drawImage(image, 0, 0,image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+            gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
             gc.dispose();
             image.dispose(); // don't forget about me!
             return scaled;
-          }
+        }
     }
 
     private final String id;
