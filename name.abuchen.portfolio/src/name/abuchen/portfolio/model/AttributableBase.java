@@ -6,6 +6,7 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 
 public abstract class AttributableBase implements Attributable {
 
+    @Override
     public Image getImage(AttributeType attr, int width, int height)
     {   
         if(this.getAttributes().exists(attr)) {

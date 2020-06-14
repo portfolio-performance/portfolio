@@ -12,16 +12,12 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import org.eclipse.swt.graphics.Image;
 
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.util.Pair;
-import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 
 /**
  * A <code>Security</code> is used for assets that have historical prices

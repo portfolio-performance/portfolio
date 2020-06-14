@@ -7,8 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.eclipse.swt.graphics.Image;
-
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.AttributeType.AmountPlainConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
@@ -186,7 +184,7 @@ public class ClientSettings
     public Optional<AttributeType> getOptionalLogoAttributeType(Class<? extends Object> type) {
         return getAttributeTypes()
                         .filter(t -> t.getConverter() instanceof AttributeType.ImageConverter 
-                                     && t.getName().equalsIgnoreCase("LOGO")
+                                     && t.getName().equalsIgnoreCase("logo") //$NON-NLS-1$
                                      && t.supports((Class<? extends Attributable>) type))
                         .findFirst();
     }
