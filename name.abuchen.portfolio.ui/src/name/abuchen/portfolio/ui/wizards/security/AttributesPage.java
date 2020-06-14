@@ -3,11 +3,16 @@ package name.abuchen.portfolio.ui.wizards.security;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.swing.ImageIcon;
+
 import org.eclipse.core.databinding.Binding;
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.conversion.IConverter;
 import org.eclipse.core.databinding.observable.value.IObservableValue;
+import org.eclipse.core.databinding.validation.IValidator;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
@@ -18,6 +23,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -26,6 +32,8 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
@@ -114,7 +122,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         attributeContainer = new Composite(composite, SWT.NULL);
         GridDataFactory.fillDefaults().grab(true, false).applyTo(attributeContainer);
-        GridLayoutFactory.fillDefaults().numColumns(3).margins(5, 5).applyTo(attributeContainer);
+        GridLayoutFactory.fillDefaults().numColumns(4).margins(5, 5).applyTo(attributeContainer);
 
         for (AttributeDesignation attribute : model.getAttributes())
             addAttributeBlock(attributeContainer, attribute);
@@ -147,6 +155,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         final Control value;
         final Binding binding;
+        final Label preview = new Label(container, SWT.BORDER);
 
         // input
         if (attribute.getType().getType() == Boolean.class)
@@ -159,6 +168,49 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             @SuppressWarnings("unchecked")
             IObservableValue<Button> attributeTarget = WidgetProperties.selection().observe(value);
             binding = bindings.getBindingContext().bindValue(attributeTarget, attributeModel);
+        }
+        else if (attribute.getType().getConverter() instanceof ImageConverter)
+        {
+            ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
+            
+            Image img = conv.toImage(conv.toString(attribute.getValue()));
+            if(img != null) preview.setImage(img);
+            
+            value = new Text(container, SWT.BORDER);
+            GridDataFactory.fillDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(value);
+
+            ToAttributeObjectConverter input2model = new ToAttributeObjectConverter(attribute);
+            @SuppressWarnings("unchecked")
+            IObservableValue<Object> attributeModel = BeanProperties.value("value").observe(attribute); //$NON-NLS-1$
+            @SuppressWarnings("unchecked")
+            IObservableValue<String> attributeTarget = WidgetProperties.text(SWT.Modify).observe(value);
+            binding = bindings.getBindingContext().bindValue( //
+                            attributeTarget, attributeModel,
+                            new UpdateValueStrategy<String, Object>().setAfterGetValidator(input2model)
+                                            .setConverter(input2model)
+                                            .setBeforeSetValidator(new IValidator<Object>() {
+                                                @Override
+                                                public IStatus validate(Object value)
+                                                {
+                                                    String s = conv.toString(value);
+                                                    Image img = null;
+                                                    if(s == null || s.length() == 0) {
+                                                        updatePreview(null);
+                                                        return Status.OK_STATUS;
+                                                    }
+                                                    else img = conv.toImage(s);
+                                                    updatePreview(img);
+                                                    return img == null ? Status.CANCEL_STATUS : Status.OK_STATUS;
+                                                }
+                                                
+                                                private void updatePreview(Image img) {
+                                                    preview.setImage(img);
+                                                    preview.getParent().getParent().layout(true);
+                                                }
+                                                
+                                            }),
+                            new UpdateValueStrategy<Object, String>()
+                                            .setConverter(new ToAttributeStringConverter(attribute)));
         }
         else
         {
@@ -194,6 +246,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 Composite parent = deleteButton.getParent();
                 label.dispose();
                 value.dispose();
+                preview.dispose();
                 deleteButton.dispose();
                 parent.getParent().layout(true);
             }
