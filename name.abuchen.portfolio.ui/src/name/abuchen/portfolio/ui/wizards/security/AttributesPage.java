@@ -1,8 +1,8 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
@@ -242,24 +242,17 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 public void mouseDown(MouseEvent e)
                 {
                     FileDialog dial = new FileDialog(container.getShell());
-                    String file = dial.open();
-                    if(file != null) {
-                        InputStream inputStream = null;
-                        try {
-                            inputStream = new FileInputStream(file);
-                            byte[] data = inputStream.readAllBytes();
+                    String filename = dial.open();
+                    if(filename != null) 
+                    {
+                        try 
+                        {
+                            byte[] data = Files.readAllBytes(Paths.get(filename));
                             String b64 = Base64.getEncoder().encodeToString(data);
                             attributeModel.setValue(b64);
-                        } catch(IOException ex) {
-                            
                         }
-                        finally {
-                            if(inputStream != null)
-                                try
-                                {
-                                    inputStream.close();
-                                }
-                                catch (IOException e1) {}
+                        catch (IOException ex)
+                        {
                         }
                     }
                 }
