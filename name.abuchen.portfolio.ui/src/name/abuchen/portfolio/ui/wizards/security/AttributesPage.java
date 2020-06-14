@@ -1,5 +1,9 @@
 package name.abuchen.portfolio.ui.wizards.security;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -21,6 +25,8 @@ import org.eclipse.jface.databinding.swt.WidgetProperties;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
@@ -28,11 +34,11 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.AttributeType;
-import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Images;
@@ -155,7 +161,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
 
         final Control value;
         final Binding binding;
-        final Label preview = new Label(container, SWT.BORDER);
+        Composite previewContainer = new Composite(container, SWT.PUSH);
 
         // input
         if (attribute.getType().getType() == Boolean.class)
@@ -171,8 +177,12 @@ public class AttributesPage extends AbstractPage implements IMenuListener
         }
         else if (attribute.getType().getConverter() instanceof ImageConverter)
         {
-            ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
+            GridLayoutFactory.fillDefaults().numColumns(1).applyTo(previewContainer);
+            final Button preview = new Button(previewContainer, SWT.PUSH);
+            final String previewPlaceholderText = "..."; //$NON-NLS-1$
+            preview.setText(previewPlaceholderText);
             
+            ImageConverter conv = (ImageConverter) attribute.getType().getConverter();
             Image img = conv.toImage(conv.toString(attribute.getValue()));
             if(img != null) preview.setImage(img);
             
@@ -187,7 +197,9 @@ public class AttributesPage extends AbstractPage implements IMenuListener
             binding = bindings.getBindingContext().bindValue( //
                             attributeTarget, attributeModel,
                             new UpdateValueStrategy<String, Object>().setAfterGetValidator(input2model)
-                                            .setConverter(input2model)
+                                            .setConverter(input2model),
+                            new UpdateValueStrategy<Object, String>()
+                                            .setConverter(new ToAttributeStringConverter(attribute))
                                             .setBeforeSetValidator(new IValidator<Object>() {
                                                 @Override
                                                 public IStatus validate(Object value)
@@ -205,12 +217,47 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                                                 
                                                 private void updatePreview(Image img) {
                                                     preview.setImage(img);
-                                                    preview.getParent().getParent().layout(true);
+                                                    if(img == null) preview.setText(previewPlaceholderText);
+                                                    else preview.setText("");
+                                                    previewContainer.getParent().getParent().layout(true);
                                                 }
                                                 
-                                            }),
-                            new UpdateValueStrategy<Object, String>()
-                                            .setConverter(new ToAttributeStringConverter(attribute)));
+                                            }));
+            preview.addMouseListener(new MouseListener( ) {
+
+                @Override
+                public void mouseDoubleClick(MouseEvent e) {}
+
+                @Override
+                public void mouseUp(MouseEvent e) {}
+
+                @Override
+                public void mouseDown(MouseEvent e)
+                {
+                    FileDialog dial = new FileDialog(container.getShell());
+                    String file = dial.open();
+                    if(file != null) {
+                        InputStream inputStream = null;
+                        try {
+                            inputStream = new FileInputStream(file);
+                            byte[] data = inputStream.readAllBytes();
+                            String b64 = Base64.getEncoder().encodeToString(data);
+                            attributeModel.setValue(b64);
+                        } catch(IOException ex) {
+                            
+                        }
+                        finally {
+                            if(inputStream != null)
+                                try
+                                {
+                                    inputStream.close();
+                                }
+                                catch (IOException e1) {}
+                        }
+                    }
+                }
+                
+            });
         }
         else
         {
@@ -246,7 +293,7 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                 Composite parent = deleteButton.getParent();
                 label.dispose();
                 value.dispose();
-                preview.dispose();
+                previewContainer.dispose();
                 deleteButton.dispose();
                 parent.getParent().layout(true);
             }
