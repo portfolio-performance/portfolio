@@ -19,6 +19,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Attributable;
 import name.abuchen.portfolio.model.AttributeType;
+import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
@@ -78,14 +79,31 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
+            if(attribute.getConverter() instanceof ImageConverter) {
+                return "";
+            }
+            Object value = getAttributeValue(element);            
+            return attribute.getConverter().toString(value);
+        }
+        
+        @Override
+        public Image getImage(Object element) {
+            if(attribute.getConverter() instanceof ImageConverter) {
+                Object value = getAttributeValue(element);
+                ImageConverter conv = (ImageConverter)attribute.getConverter();
+                return conv.toImage(conv.toString(value));
+            }
+            return null;
+        }
+        
+        private Object getAttributeValue(Object element) {
             Attributable attributable = Adaptor.adapt(Attributable.class, element);
             if (attributable == null)
                 return null;
 
             Attributes attributes = attributable.getAttributes();
 
-            Object value = attributes.get(attribute);
-            return attribute.getConverter().toString(value);
+            return attributes.get(attribute);
         }
     }
 
