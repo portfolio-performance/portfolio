@@ -50,6 +50,15 @@ import name.abuchen.portfolio.util.Interval;
         }
 
         LocalDate startDate = clientIndex.getFirstDataPoint().orElse(actualInterval.getEnd());
+        
+        // start date is set to date of first data point minus 1 day to have the
+        // same logic as for non-benchmark items to get the first day's delta,
+        // total and accumulated calculated correctly
+        if (startDate.isAfter(actualInterval.getStart()))
+        {
+            startDate = startDate.minusDays(1);
+        }
+
         if (firstPricePoint.isAfter(startDate))
             startDate = firstPricePoint;
 
