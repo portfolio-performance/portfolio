@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.BindingHelper;
 import name.abuchen.portfolio.ui.util.DatePicker;
@@ -94,6 +95,16 @@ public class AddCustomEventPage extends AbstractWizardPage
 
         DatePicker boxDate = new DatePicker(container);
 
+        Label labelType = new Label(container, SWT.NONE);
+        labelType.setLayoutData(new FormData());
+        labelType.setText(Messages.ColumnSecurityType);
+
+        ComboViewer comboType = new ComboViewer(container, SWT.READ_ONLY);
+        Combo combo2 = comboType.getCombo();
+        combo2.setLayoutData(new FormData());
+        comboType.setContentProvider(ArrayContentProvider.getInstance());
+        comboType.setInput(SecurityEvent.Type.values());
+
         Label labelMessage = new Label(container, SWT.NONE);
         labelMessage.setLayoutData(new FormData());
         labelMessage.setText(Messages.EventWizardLabelMessage);
@@ -110,6 +121,7 @@ public class AddCustomEventPage extends AbstractWizardPage
 
         startingWith(comboSecurity.getControl(), labelSecurity) //
                         .thenBelow(boxDate.getControl()).label(labelDate) //
+                        .thenBelow(comboType.getControl()).label(labelType)
                         .thenBelow(text).label(labelMessage);
 
         startingWith(labelSecurity).width(labelWidth);
@@ -132,6 +144,11 @@ public class AddCustomEventPage extends AbstractWizardPage
                                         : ValidationStatus.error(MessageFormat.format(Messages.MsgDialogInputRequired,
                                                         Messages.ColumnExDate))),
                         null);
+
+        IObservableValue<?> typeTargetObservable = ViewersObservables.observeSingleSelection(comboType);
+        @SuppressWarnings("unchecked")
+        IObservableValue<?> typeModelObservable = BeanProperties.value("type").observe(model); //$NON-NLS-1$
+        context.bindValue(typeTargetObservable, typeModelObservable);
 
         IObservableValue<?> messageTargetObservable = WidgetProperties.text(SWT.Modify).observe(text);
         @SuppressWarnings("unchecked")
