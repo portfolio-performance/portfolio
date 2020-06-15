@@ -207,6 +207,7 @@ public final class QuandlQuoteFeed implements QuoteFeed
             switch (name)
             {
                 case "Date":
+                case "DATE":
                     mapping[0] = index;
                     break;
 
