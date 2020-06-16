@@ -256,6 +256,7 @@ public class Messages extends NLS
     public static String ColumnRebalancingIndicatorRelativeThreshold;
     public static String ColumnReferenceAccount;
     public static String ColumnRetired;
+    public static String ColumnReturn;
     public static String ColumnSecurity;
     public static String ColumnSecurityExchange;
     public static String ColumnSecurityType;

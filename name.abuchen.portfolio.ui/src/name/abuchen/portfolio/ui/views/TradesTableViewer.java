@@ -202,6 +202,12 @@ public class TradesTableViewer
         column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getIRR()));
         support.addColumn(column);
 
+        column = new Column("return", Messages.ColumnReturn, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, t -> ((Trade) t).getReturn()));
+        column.setSorter(ColumnViewerSorter.create(e -> ((Trade) e).getReturn()));
+        column.setVisible(false);
+        support.addColumn(column);
+
         column = new Column("portfolio", Messages.ColumnPortfolio, SWT.LEFT, 100); //$NON-NLS-1$
         column.setMenuLabel(Messages.ColumnPortfolio);
         column.setLabelProvider(new ColumnLabelProvider()
