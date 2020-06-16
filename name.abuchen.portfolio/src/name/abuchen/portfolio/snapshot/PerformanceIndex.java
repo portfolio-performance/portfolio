@@ -287,14 +287,14 @@ public class PerformanceIndex
         long startValue = 0;
         Interval interval = getActualInterval();
 
-        LocalDateTime intervalStart = interval.getStart().atStartOfDay();
+        LocalDate intervalStart = interval.getStart();
 
         for (Account account : getClient().getAccounts())
             startValue += account.getTransactions() //
                             .stream() //
                             .filter(t -> t.getType() == AccountTransaction.Type.DEPOSIT
                                             || t.getType() == AccountTransaction.Type.REMOVAL)
-                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
+                            .filter(t -> !t.getDateTime().toLocalDate().isAfter(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == AccountTransaction.Type.DEPOSIT)
                                     return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
@@ -309,7 +309,7 @@ public class PerformanceIndex
                             .stream() //
                             .filter(t -> t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND
                                             || t.getType() == PortfolioTransaction.Type.DELIVERY_OUTBOUND)
-                            .filter(t -> t.getDateTime().isBefore(intervalStart)) //
+                            .filter(t -> !t.getDateTime().toLocalDate().isAfter(intervalStart)) //
                             .mapToLong(t -> {
                                 if (t.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
                                     return convertIfNecessary.applyAsLong(t.getMonetaryAmount(), t.getDateTime());
