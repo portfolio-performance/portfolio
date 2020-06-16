@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?pde version="3.8"?>
-<target name="portfolio-target-definition" sequenceNumber="25">
+<target name="portfolio-target-definition" sequenceNumber="26">
 <locations>
 	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
 		<unit id="org.eclipse.e4.rcp.feature.group" version="1.6.200.v20180906-1121"/>
@@ -50,6 +50,7 @@
 		<unit id="org.eclipse.babel.nls_eclipse_nl.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_de.feature.group" version="4.8.0.v20190713101254"/>
 		<unit id="org.eclipse.babel.nls_eclipse_pt.feature.group" version="4.8.0.v20190713101254"/>
+		<unit id="org.eclipse.babel.nls_eclipse_fr.feature.group" version="4.8.0.v20190713101254"/>
 	</location>
 </locations>
 </target>
