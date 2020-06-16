@@ -55,7 +55,7 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 
     private Composite createTrailTable(Composite parent, Trail trail)
     {
-        int depth = depth(1, trail.getRecord());
+        int depth = trail.getDepth();
 
         Composite composite = new Composite(parent, SWT.NONE);
         composite.setBackground(Colors.INFO_TOOLTIP_BACKGROUND);
@@ -101,18 +101,5 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
                 column.setText(trail.getValue() != null ? Values.Money.format(trail.getValue())
                                 : Messages.LabelNotAvailable);
         }
-    }
-
-    private int depth(int level, TrailRecord t)
-    {
-        if (t.getInputs().isEmpty())
-            return level;
-
-        int d = level;
-
-        for (TrailRecord child : t.getInputs())
-            d = Math.max(d, depth(level + 1, child));
-
-        return d;
     }
 }
