@@ -10,6 +10,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
@@ -20,6 +21,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 {
     private static class LineItem
     {
+        private TransactionOwner<?> owner;
         private long shares;
         private long grossAmount;
         private long netAmount;
@@ -33,8 +35,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
          */
         private final long originalShares;
 
-        public LineItem(long shares, long grossAmount, long netAmount, TrailRecord trail)
+        public LineItem(TransactionOwner<?> owner, long shares, long grossAmount, long netAmount, TrailRecord trail)
         {
+            this.owner = owner;
             this.shares = shares;
             this.grossAmount = grossAmount;
             this.netAmount = netAmount;
@@ -66,7 +69,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
             trail = trail.convert(Money.of(getTermCurrency(), amount),
                             converter.getRate(item.getDateTime(), valuation.getCurrencyCode()));
 
-        fifo.add(new LineItem(position.getShares(), amount, amount, trail));
+        fifo.add(new LineItem(item.getOwner(), position.getShares(), amount, amount, trail));
         movingRelativeCost += amount;
         movingRelativeNetCost += amount;
         heldShares += position.getShares();
@@ -92,11 +95,12 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     trail = trail.convert(Money.of(getTermCurrency(), grossAmount),
                                     converter.getRate(t.getDateTime(), t.getCurrencyCode()));
 
-                fifo.add(new LineItem(t.getShares(), grossAmount, netAmount, trail));
+                fifo.add(new LineItem(item.getOwner(), t.getShares(), grossAmount, netAmount, trail));
                 movingRelativeCost += grossAmount;
                 movingRelativeNetCost += netAmount;
                 heldShares += t.getShares();
                 break;
+
             case SELL:
             case DELIVERY_OUTBOUND:
                 long sold = t.getShares();
@@ -117,11 +121,14 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                 for (LineItem entry : fifo)
                 {
-                    if (entry.shares == 0)
-                        continue;
-
                     if (sold <= 0)
                         break;
+
+                    if (!entry.owner.equals(item.getOwner()))
+                        continue;
+
+                    if (entry.shares == 0)
+                        continue;
 
                     long n = Math.min(sold, entry.shares);
 
@@ -130,7 +137,6 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                     entry.shares -= n;
 
                     sold -= n;
-
                 }
 
                 if (sold > 0)
@@ -142,9 +148,68 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 }
 
                 break;
+
             case TRANSFER_IN:
+                long moved = t.getShares();
+
+                TransactionOwner<?> source = t.getCrossEntry().getCrossOwner(t);
+
+                // iterate on copy b/c underlying list can be changed
+                for (LineItem entry : new ArrayList<>(fifo))
+                {
+                    if (moved <= 0)
+                        break;
+
+                    if (!entry.owner.equals(source))
+                        continue;
+
+                    if (entry.shares == 0)
+                        continue;
+
+                    long n = Math.min(moved, entry.shares);
+
+                    if (n == entry.shares)
+                    {
+                        // if all shares are moved, simply re-assign owner of
+                        // the shares
+                        entry.owner = item.getOwner();
+                    }
+                    else
+                    {
+                        long transferredGrossAmount = Math.round(n / (double) entry.shares * entry.grossAmount);
+                        long transferredNetAmount = Math.round(n / (double) entry.shares * entry.netAmount);
+
+                        LineItem transfer = new LineItem(item.getOwner(), //
+                                        n, //
+                                        transferredGrossAmount, //
+                                        transferredNetAmount, //
+                                        entry.trail.fraction(Money.of(getTermCurrency(), transferredGrossAmount), n,
+                                                        entry.originalShares) //
+                                                        .transfer(item.getDateTime().toLocalDate(), entry.owner,
+                                                                        item.getOwner()));
+
+                        entry.grossAmount -= transferredGrossAmount;
+                        entry.netAmount -= transferredNetAmount;
+                        entry.shares -= n;
+
+                        fifo.add(fifo.indexOf(entry) + 1, transfer);
+                    }
+
+                    moved -= n;
+                }
+
+                if (moved > 0)
+                {
+                    // FIXME Oops. More moved than available.
+                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                                    Values.Share.format(moved), t.getSecurity().getName(),
+                                    Values.DateTime.format(t.getDateTime())));
+                }
+
+                break;
+
             case TRANSFER_OUT:
-                // do nothing
+                // ignore -> handled via TRANSFER_IN
                 break;
             default:
                 throw new UnsupportedOperationException();
