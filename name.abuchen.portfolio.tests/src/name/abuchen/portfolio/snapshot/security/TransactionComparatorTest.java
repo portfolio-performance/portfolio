@@ -5,6 +5,9 @@ import static org.junit.Assert.assertThat;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import org.junit.Test;
 
 import name.abuchen.portfolio.PortfolioBuilder;
 import name.abuchen.portfolio.SecurityBuilder;
@@ -13,8 +16,6 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Security;
-
-import org.junit.Test;
 
 @SuppressWarnings("nls")
 public class TransactionComparatorTest
@@ -32,12 +33,13 @@ public class TransactionComparatorTest
                         .buy(security, "2010-01-01", 100, 100) //
                         .addTo(client);
 
-        List<PortfolioTransaction> list = portfolio.getTransactions();
+        List<CalculationLineItem> list = portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList());
 
-        Collections.sort(list, new TransactionComparator());
+        Collections.sort(list, new CalculationLineItemComparator());
 
-        assertThat(list.get(0).getType(), is(Type.BUY));
-        assertThat(list.get(1).getType(), is(Type.SELL));
+        assertThat(unwrapTx(list.get(0)).getType(), is(Type.BUY));
+        assertThat(unwrapTx(list.get(1)).getType(), is(Type.SELL));
     }
 
     @Test
@@ -48,12 +50,13 @@ public class TransactionComparatorTest
                         .sell(security, "2010-01-01", 100, 100) //
                         .addTo(client);
 
-        List<PortfolioTransaction> list = portfolio.getTransactions();
+        List<CalculationLineItem> list = portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList());
 
-        Collections.sort(list, new TransactionComparator());
+        Collections.sort(list, new CalculationLineItemComparator());
 
-        assertThat(list.get(0).getType(), is(Type.BUY));
-        assertThat(list.get(1).getType(), is(Type.SELL));
+        assertThat(unwrapTx(list.get(0)).getType(), is(Type.BUY));
+        assertThat(unwrapTx(list.get(1)).getType(), is(Type.SELL));
     }
 
     @Test
@@ -64,12 +67,13 @@ public class TransactionComparatorTest
                         .buy(security, "2010-01-01", 2, 100) //
                         .addTo(client);
 
-        List<PortfolioTransaction> list = portfolio.getTransactions();
+        List<CalculationLineItem> list = portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList());
 
-        Collections.sort(list, new TransactionComparator());
+        Collections.sort(list, new CalculationLineItemComparator());
 
-        assertThat(list.get(0).getShares(), is(1L));
-        assertThat(list.get(1).getShares(), is(2L));
+        assertThat(unwrapTx(list.get(0)).getShares(), is(1L));
+        assertThat(unwrapTx(list.get(1)).getShares(), is(2L));
     }
 
     @Test
@@ -80,12 +84,17 @@ public class TransactionComparatorTest
                         .buy(security, "2010-01-02", 100, 100) //
                         .addTo(client);
 
-        List<PortfolioTransaction> list = portfolio.getTransactions();
+        List<CalculationLineItem> list = portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList());
 
-        Collections.sort(list, new TransactionComparator());
+        Collections.sort(list, new CalculationLineItemComparator());
 
-        assertThat(list.get(0).getType(), is(Type.SELL));
-        assertThat(list.get(1).getType(), is(Type.BUY));
+        assertThat(unwrapTx(list.get(0)).getType(), is(Type.SELL));
+        assertThat(unwrapTx(list.get(1)).getType(), is(Type.BUY));
     }
 
+    private PortfolioTransaction unwrapTx(CalculationLineItem data)
+    {
+        return (PortfolioTransaction) data.getTransaction().orElseThrow(IllegalArgumentException::new);
+    }
 }

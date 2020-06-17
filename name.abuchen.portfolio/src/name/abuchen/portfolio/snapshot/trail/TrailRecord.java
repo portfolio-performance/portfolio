@@ -21,6 +21,11 @@ public interface TrailRecord
                         position.calculateValue());
     }
 
+    public static TrailRecord ofPosition(LocalDate time, SecurityPosition position)
+    {
+        return new DefaultTrail(time, Messages.LabelStatementOfAssets, position.getShares(), position.calculateValue());
+    }
+
     public static TrailRecord ofTransaction(Transaction t)
     {
         return new TransactionTrail(t);

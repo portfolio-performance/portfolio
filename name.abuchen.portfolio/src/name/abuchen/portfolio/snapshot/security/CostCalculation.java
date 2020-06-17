@@ -13,6 +13,7 @@ import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
 /* package */class CostCalculation extends Calculation
@@ -52,22 +53,27 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     private long taxes;
 
     @Override
-    public void visit(CurrencyConverter converter, DividendInitialTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.ValuationAtStart item)
     {
-        long amount = converter.convert(t.getDateTime(), t.getMonetaryAmount()).getAmount();
-        TrailRecord trail = TrailRecord.ofTransaction(t);
-        if (!getTermCurrency().equals(t.getCurrencyCode()))
-            trail = trail.convert(Money.of(getTermCurrency(), amount),
-                            converter.getRate(t.getDateTime(), t.getCurrencyCode()));
+        Money valuation = item.getValue();
+        SecurityPosition position = item.getSecurityPosition().orElseThrow(IllegalArgumentException::new);
 
-        fifo.add(new LineItem(t.getPosition().getShares(), amount, amount, trail));
+        long amount = converter.convert(item.getDateTime(), valuation).getAmount();
+
+        TrailRecord trail = TrailRecord.ofPosition(item.getDateTime().toLocalDate(), position);
+
+        if (!getTermCurrency().equals(valuation.getCurrencyCode()))
+            trail = trail.convert(Money.of(getTermCurrency(), amount),
+                            converter.getRate(item.getDateTime(), valuation.getCurrencyCode()));
+
+        fifo.add(new LineItem(position.getShares(), amount, amount, trail));
         movingRelativeCost += amount;
         movingRelativeNetCost += amount;
-        heldShares += t.getPosition().getShares();
+        heldShares += position.getShares();
     }
 
     @Override
-    public void visit(CurrencyConverter converter, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, PortfolioTransaction t)
     {
         long fee = t.getUnitSum(Unit.Type.FEE, converter).getAmount();
         long tax = t.getUnitSum(Unit.Type.TAX, converter).getAmount();
@@ -146,7 +152,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, AccountTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem item, AccountTransaction t)
     {
         switch (t.getType())
         {
@@ -167,9 +173,10 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, DividendTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.DividendPayment t)
     {
-        taxes += t.getUnitSum(Unit.Type.TAX, converter).getAmount();
+        taxes += t.getTransaction().orElseThrow(IllegalArgumentException::new).getUnitSum(Unit.Type.TAX, converter)
+                        .getAmount();
 
         t.setFifoCost(getFifoCost());
         t.setMovingAverageCost(getMovingAverageCost());

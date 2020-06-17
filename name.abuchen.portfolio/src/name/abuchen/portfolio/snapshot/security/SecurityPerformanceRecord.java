@@ -22,7 +22,7 @@ import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.MutableMoney;
+import name.abuchen.portfolio.money.MoneyCollectors;
 import name.abuchen.portfolio.money.Quote;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.snapshot.PerformanceIndex;
@@ -53,9 +53,36 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         String FIFO_COST = "fifoCost"; //$NON-NLS-1$
     }
 
-    private final Client client;
+    /* package */ static final class Builder
+    {
+        private final Security security;
+        private final List<CalculationLineItem> lineItems = new ArrayList<>();
+
+        public Builder(Security security)
+        {
+            this.security = security;
+        }
+
+        public void addLineItem(CalculationLineItem item)
+        {
+            this.lineItems.add(item);
+        }
+
+        public boolean isEmpty()
+        {
+            return this.lineItems.isEmpty();
+        }
+
+        public SecurityPerformanceRecord build(Client client, CurrencyConverter converter, Interval interval)
+        {
+            SecurityPerformanceRecord record = new SecurityPerformanceRecord(security, lineItems);
+            record.calculate(client, converter, interval);
+            return record;
+        }
+    }
+
     private final Security security;
-    private List<Transaction> transactions = new ArrayList<>();
+    private final List<CalculationLineItem> lineItems;
 
     /**
      * internal rate of return of security {@link #calculateIRR()}
@@ -187,10 +214,10 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
      */
     private double capitalGainsOnHoldingsMovingAveragePercent;
 
-    /* package */ SecurityPerformanceRecord(Client client, Security security)
+    private SecurityPerformanceRecord(Security security, List<CalculationLineItem> lineItems)
     {
-        this.client = client;
         this.security = security;
+        this.lineItems = lineItems;
     }
 
     public Security getSecurity()
@@ -364,9 +391,9 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) movingAverageCost.getAmount() : 0;
     }
 
-    public List<Transaction> getTransactions()
+    public List<CalculationLineItem> getLineItems()
     {
-        return transactions;
+        return lineItems;
     }
 
     @Override
@@ -399,17 +426,11 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     }
 
     /* package */
-    void addTransaction(Transaction t)
-    {
-        transactions.add(t);
-    }
-
-    /* package */
     void calculate(Client client, CurrencyConverter converter, Interval interval)
     {
-        Collections.sort(transactions, new TransactionComparator());
+        Collections.sort(lineItems, new CalculationLineItemComparator());
 
-        if (!transactions.isEmpty())
+        if (!lineItems.isEmpty())
         {
             calculateSharesHeld(converter);
             calculateMarketValue(converter, interval);
@@ -418,30 +439,29 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
             calculateDelta(converter);
             calculateFifoAndMovingAverageCosts(converter);
             calculateDividends(converter);
-            calculatePeriodicity(converter);
+            calculatePeriodicity(client, converter);
         }
     }
 
     private void calculateSharesHeld(CurrencyConverter converter)
     {
-        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, transactions)
+        this.sharesHeld = Calculation.perform(SharesHeldCalculation.class, converter, security, lineItems)
                         .getSharesHeld();
     }
 
     private void calculateMarketValue(CurrencyConverter converter, Interval interval)
     {
-        MutableMoney mv = MutableMoney.of(converter.getTermCurrency());
-        for (Transaction t : transactions)
-            if (t instanceof DividendFinalTransaction)
-                mv.add(t.getMonetaryAmount().with(converter.at(t.getDateTime())));
+        this.marketValue = this.lineItems.stream() //
+                        .filter(data -> data instanceof CalculationLineItem.ValuationAtEnd)
+                        .map(data -> data.getValue().with(converter.at(data.getDateTime())))
+                        .collect(MoneyCollectors.sum(converter.getTermCurrency()));
 
-        this.marketValue = mv.toMoney();
         this.quote = security.getSecurityPrice(interval.getEnd());
     }
 
     private void calculateIRR(CurrencyConverter converter)
     {
-        this.irr = Calculation.perform(IRRCalculation.class, converter, security, transactions).getIRR();
+        this.irr = Calculation.perform(IRRCalculation.class, converter, security, lineItems).getIRR();
     }
 
     private void calculateTTWROR(Client client, CurrencyConverter converter, Interval interval)
@@ -455,14 +475,14 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 
     private void calculateDelta(CurrencyConverter converter)
     {
-        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, security, transactions);
+        DeltaCalculation calculation = Calculation.perform(DeltaCalculation.class, converter, security, lineItems);
         this.delta = calculation.getDelta();
         this.deltaPercent = calculation.getDeltaPercent();
     }
 
     private void calculateFifoAndMovingAverageCosts(CurrencyConverter converter)
     {
-        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, transactions);
+        CostCalculation cost = Calculation.perform(CostCalculation.class, converter, security, lineItems);
         this.fifoCost = cost.getFifoCost();
         this.fifoCostTrail = cost.getFifoCostTrail();
         this.movingAverageCost = cost.getMovingAverageCost();
@@ -495,30 +515,29 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
 
     private void calculateDividends(CurrencyConverter converter)
     {
-        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security,
-                        transactions);
+        DividendCalculation dividends = Calculation.perform(DividendCalculation.class, converter, security, lineItems);
         this.sumOfDividends = dividends.getSum();
         this.dividendEventCount = dividends.getNumOfEvents();
         this.lastDividendPayment = dividends.getLastDividendPayment();
         this.rateOfReturnPerYear = dividends.getRateOfReturnPerYear();
     }
 
-    private void calculatePeriodicity(CurrencyConverter converter)
+    private void calculatePeriodicity(Client client, CurrencyConverter converter)
     {
         // periodicity is calculated by looking at all dividend transactions, so
         // collect all of them instead of using just a fraction in the current
         // filter
-        List<Transaction> allTransactions = security.getTransactions(client).stream()
+        List<CalculationLineItem> allDividendPayments = security.getTransactions(client).stream()
                         .filter(t -> t.getTransaction() instanceof AccountTransaction) //
                         .filter(t -> {
                             AccountTransaction.Type type = ((AccountTransaction) t.getTransaction()).getType();
-                            return type == Type.DIVIDENDS || type == Type.INTEREST;
+                            return type == Type.DIVIDENDS;
                         }) //
-                        .map(t -> DividendTransaction.from((AccountTransaction) t.getTransaction()))
+                        .map(CalculationLineItem::of) //
                         .collect(Collectors.toList());
 
         DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security,
-                        allTransactions);
+                        allDividendPayments);
         this.periodicity = allDividends.getPeriodicity();
     }
 }

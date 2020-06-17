@@ -1,9 +1,9 @@
 package name.abuchen.portfolio.snapshot.security;
 
 import java.util.Comparator;
+import java.util.Optional;
 
 import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.PortfolioTransaction.Type;
 import name.abuchen.portfolio.model.Transaction;
 
 /**
@@ -12,10 +12,10 @@ import name.abuchen.portfolio.model.Transaction;
  * (sell, transfer out, outbound delivery). Needed to support FIFO based
  * calculations.
  */
-/* package */final class TransactionComparator implements Comparator<Transaction>
+/* package */final class CalculationLineItemComparator implements Comparator<CalculationLineItem>
 {
     @Override
-    public int compare(Transaction t1, Transaction t2)
+    public int compare(CalculationLineItem t1, CalculationLineItem t2)
     {
         int compare = t1.getDateTime().compareTo(t2.getDateTime());
         if (compare != 0)
@@ -30,16 +30,14 @@ import name.abuchen.portfolio.model.Transaction;
             return 0;
     }
 
-    private boolean isInbound(Transaction t)
+    private boolean isInbound(CalculationLineItem data)
     {
-        if (t instanceof DividendInitialTransaction)
+        if (data instanceof CalculationLineItem.ValuationAtStart)
             return true;
 
-        if (t instanceof PortfolioTransaction)
-        {
-            Type type = ((PortfolioTransaction) t).getType();
-            return type == Type.BUY || type == Type.DELIVERY_INBOUND || type == Type.TRANSFER_IN;
-        }
+        Optional<Transaction> transaction = data.getTransaction();
+        if (transaction.isPresent() && transaction.get() instanceof PortfolioTransaction)
+            return ((PortfolioTransaction) transaction.get()).getType().isPurchase();
 
         return false;
     }

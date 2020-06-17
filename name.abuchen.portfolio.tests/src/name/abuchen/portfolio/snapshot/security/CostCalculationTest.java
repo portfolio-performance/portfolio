@@ -6,6 +6,7 @@ import static org.junit.Assert.assertThat;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -45,7 +46,8 @@ public class CostCalculationTest
 
         CostCalculation cost = new CostCalculation();
         cost.setTermCurrency(CurrencyUnit.EUR);
-        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
         // expected:
         // 3149,20 - round(3149,20 * 15/109) + 1684,92 + 959,30 = 5360,04385
@@ -77,7 +79,8 @@ public class CostCalculationTest
 
         CostCalculation cost = new CostCalculation();
         cost.setTermCurrency(CurrencyUnit.EUR);
-        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
         // expected:
         // 3149,20 + 1684,92 - round(3149,20 * 15/109) = 4400,743853211009174
@@ -158,7 +161,8 @@ public class CostCalculationTest
 
         CostCalculation cost = new CostCalculation();
         cost.setTermCurrency(CurrencyUnit.EUR);
-        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
         assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(cost.getFifoCostTrail(), is(TrailRecord.empty()));
@@ -182,7 +186,8 @@ public class CostCalculationTest
 
         CostCalculation cost = new CostCalculation();
         cost.setTermCurrency(CurrencyUnit.EUR);
-        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions());
+        cost.visitAll(new TestCurrencyConverter(), portfolio.getTransactions().stream()
+                        .map(t -> CalculationLineItem.of(portfolio, t)).collect(Collectors.toList()));
 
         assertThat(cost.getFifoCost(), is(Money.of(CurrencyUnit.EUR, 0L)));
         assertThat(cost.getFifoCostTrail(), is(TrailRecord.empty()));

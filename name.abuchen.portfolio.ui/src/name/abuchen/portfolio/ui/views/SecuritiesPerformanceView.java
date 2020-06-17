@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -41,20 +42,21 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
 
-import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
-import name.abuchen.portfolio.snapshot.security.DividendFinalTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendInitialTransaction;
-import name.abuchen.portfolio.snapshot.security.DividendTransaction;
+import name.abuchen.portfolio.snapshot.security.CalculationLineItem;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.snapshot.trades.TradeCollector;
@@ -293,7 +295,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
 
             if (record != null)
             {
-                transactions.setInput(record.getTransactions());
+                transactions.setInput(record.getLineItems());
                 transactions.refresh();
                 chart.updateChart(record.getSecurity());
                 Client filteredClient = clientFilter.filter(getClient());
@@ -918,8 +920,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             @Override
             public String getText(Object e)
             {
-                Transaction t = (Transaction) e;
-                return Values.DateTime.format(t.getDateTime());
+                return Values.DateTime.format(((CalculationLineItem) e).getDateTime());
             }
         });
         column.setSorter(ColumnViewerSorter.create(Transaction.class, "dateTime"), SWT.DOWN); //$NON-NLS-1$
@@ -930,16 +931,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                    return ((PortfolioTransaction) t).getType().toString();
-                else if (t instanceof AccountTransaction)
-                    return ((AccountTransaction) t).getType().toString();
-                else if (t instanceof DividendTransaction)
-                    return AccountTransaction.Type.DIVIDENDS.toString();
-                else
-                    return Messages.LabelQuote;
+                return ((CalculationLineItem) e).getLabel();
             }
         });
         support.addColumn(column);
@@ -949,18 +943,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new SharesLabelProvider() // NOSONAR
         {
             @Override
-            public Long getValue(Object t) // NOSONAR
+            public Long getValue(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                    return ((PortfolioTransaction) t).getShares();
-                else if (t instanceof DividendInitialTransaction)
-                    return ((DividendInitialTransaction) t).getPosition().getShares();
-                else if (t instanceof DividendFinalTransaction)
-                    return ((DividendFinalTransaction) t).getPosition().getShares();
-                else if (t instanceof DividendTransaction)
-                    return ((DividendTransaction) t).getShares() != 0L ? ((DividendTransaction) t).getShares() : null;
-                else
-                    return null;
+                CalculationLineItem data = (CalculationLineItem) e;
+
+                Optional<SecurityPosition> position = data.getSecurityPosition();
+                if (position.isPresent())
+                    return position.get().getShares();
+
+                Optional<Transaction> transaction = data.getTransaction();
+                if (transaction.isPresent() && transaction.get().getShares() != 0L)
+                    return transaction.get().getShares();
+
+                return null;
             }
         });
         support.addColumn(column);
@@ -971,10 +966,11 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Money.format(((DividendTransaction) t).getGrossValue(),
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Money.format(((CalculationLineItem.DividendPayment) item).getGrossValue(),
                                     getClient().getBaseCurrency());
                 else
                     return null;
@@ -987,10 +983,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.AmountFraction.formatNonZero(((DividendTransaction) t).getDividendPerShare());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.AmountFraction
+                                    .formatNonZero(((CalculationLineItem.DividendPayment) item).getDividendPerShare());
                 else
                     return null;
             }
@@ -1003,10 +1001,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Percent2.formatNonZero(((DividendTransaction) t).getPersonalDividendYield());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Percent2.formatNonZero(
+                                    ((CalculationLineItem.DividendPayment) item).getPersonalDividendYield());
                 else
                     return null;
             }
@@ -1019,11 +1019,12 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
-                    return Values.Percent2
-                                    .formatNonZero(((DividendTransaction) t).getPersonalDividendYieldMovingAverage());
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
+                    return Values.Percent2.formatNonZero(((CalculationLineItem.DividendPayment) item)
+                                    .getPersonalDividendYieldMovingAverage());
                 else
                     return null;
             }
@@ -1035,12 +1036,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof DividendTransaction)
+                CalculationLineItem item = (CalculationLineItem) e;
+                if (item instanceof CalculationLineItem.DividendPayment)
                     return null;
                 else
-                    return Values.Money.format(((Transaction) t).getMonetaryAmount(), getClient().getBaseCurrency());
+                    return Values.Money.format(item.getValue(), getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -1050,15 +1052,19 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
+                Optional<Transaction> tx = ((CalculationLineItem) e).getTransaction();
+
+                if (tx.isPresent() && tx.get() instanceof PortfolioTransaction)
                 {
-                    PortfolioTransaction p = (PortfolioTransaction) t;
-                    return Values.Quote.format(p.getGrossPricePerShare(), getClient().getBaseCurrency());
+                    PortfolioTransaction ptx = (PortfolioTransaction) tx.get();
+                    return Values.Quote.format(ptx.getGrossPricePerShare(), getClient().getBaseCurrency());
                 }
                 else
+                {
                     return null;
+                }
             }
         });
         support.addColumn(column);
@@ -1068,22 +1074,24 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object t)
+            public String getText(Object e)
             {
-                if (t instanceof PortfolioTransaction)
-                {
-                    PortfolioTransaction p = (PortfolioTransaction) t;
-                    return p.getCrossEntry() != null ? p.getCrossEntry().getCrossOwner(p).toString() : null;
-                }
-                else if (t instanceof DividendTransaction)
-                {
-                    return ((DividendTransaction) t).getAccount().getName();
-                }
-                else
-                {
-                    return null;
-                }
+                return String.valueOf(((CalculationLineItem) e).getOwner());
             }
+
+            @Override
+            public Image getImage(Object e)
+            {
+                TransactionOwner<?> owner = ((CalculationLineItem) e).getOwner();
+
+                if (owner instanceof Portfolio)
+                    return Images.PORTFOLIO.image();
+                else if (owner instanceof Account)
+                    return Images.ACCOUNT.image();
+                else
+                    return null;
+            }
+
         });
         support.addColumn(column);
 
@@ -1092,15 +1100,16 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
-            public String getText(Object r)
+            public String getText(Object e)
             {
-                return ((Transaction) r).getNote();
+                Optional<Transaction> transaction = ((CalculationLineItem) e).getTransaction();
+                return transaction.isPresent() ? transaction.get().getNote() : null;
             }
 
             @Override
-            public Image getImage(Object r)
+            public Image getImage(Object e)
             {
-                String note = ((Transaction) r).getNote();
+                String note = getText(e);
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
