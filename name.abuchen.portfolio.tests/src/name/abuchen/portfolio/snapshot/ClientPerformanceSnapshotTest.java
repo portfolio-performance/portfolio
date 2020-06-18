@@ -137,17 +137,23 @@ public class ClientPerformanceSnapshotTest
         Security security = new Security();
         client.addSecurity(security);
 
+        Account account = new Account();
+        client.addAccount(account);
+
         Portfolio portfolio = new Portfolio();
-        portfolio.setReferenceAccount(new Account());
-        portfolio.addTransaction(
-                        new PortfolioTransaction(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0), CurrencyUnit.EUR, 1_00,
-                                        security, Values.Share.factorize(10), PortfolioTransaction.Type.BUY, 0, 0));
+        portfolio.setReferenceAccount(account);
         client.addPortfolio(portfolio);
 
-        Account account = new Account();
+        BuySellEntry purchase = new BuySellEntry(portfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setDate(LocalDateTime.of(2010, Month.JANUARY, 1, 0, 0));
+        purchase.setSecurity(security);
+        purchase.setMonetaryAmount(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1.00)));
+        purchase.setShares(Values.Share.factorize(10));
+        purchase.insert();
+
         account.addTransaction(new AccountTransaction(LocalDateTime.of(2011, Month.JANUARY, 31, 0, 0), CurrencyUnit.EUR,
-                        50_00, security, AccountTransaction.Type.INTEREST));
-        client.addAccount(account);
+                        50_00, security, AccountTransaction.Type.DIVIDENDS));
 
         CurrencyConverter converter = new TestCurrencyConverter();
         ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, startDate, endDate);
@@ -422,7 +428,8 @@ public class ClientPerformanceSnapshotTest
         Client client = new Client();
 
         Security security = new SecurityBuilder().addTo(client);
-        Portfolio portfolio = new PortfolioBuilder().addTo(client);
+        Account account = new AccountBuilder().addTo(client);
+        Portfolio portfolio = new PortfolioBuilder(account).addTo(client);
 
         PortfolioTransaction delivery = new PortfolioTransaction();
         delivery.setDateTime(LocalDateTime.parse("2011-03-01T00:00"));

@@ -11,6 +11,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverter;
+import name.abuchen.portfolio.snapshot.ClientSnapshot;
 import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
 import name.abuchen.portfolio.snapshot.SecurityPosition;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
@@ -23,7 +24,10 @@ public class SecurityPerformanceSnapshot
         Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
 
         for (Account account : client.getAccounts())
+        {
             extractSecurityRelatedAccountTransactions(account, interval, transactions);
+        }
+
         for (Portfolio portfolio : client.getPortfolios())
         {
             extractSecurityRelatedPortfolioTransactions(portfolio, interval, transactions);
@@ -37,6 +41,38 @@ public class SecurityPerformanceSnapshot
                     Interval interval)
     {
         return create(new PortfolioClientFilter(portfolio).filter(client), converter, interval);
+    }
+
+    public static SecurityPerformanceSnapshot create(Client client, CurrencyConverter converter, Interval interval,
+                    ClientSnapshot valuationAtStart, ClientSnapshot valuationAtEnd)
+    {
+        Map<Security, SecurityPerformanceRecord.Builder> transactions = initRecords(client);
+
+        for (Account account : client.getAccounts())
+            extractSecurityRelatedAccountTransactions(account, interval, transactions);
+
+        for (Portfolio portfolio : client.getPortfolios())
+            extractSecurityRelatedPortfolioTransactions(portfolio, interval, transactions);
+
+        for (PortfolioSnapshot snapshot : valuationAtStart.getPortfolios())
+        {
+            for (SecurityPosition position : snapshot.getPositions())
+            {
+                transactions.get(position.getSecurity()).addLineItem(CalculationLineItem
+                                .atStart(snapshot.getPortfolio(), position, interval.getStart().atStartOfDay()));
+            }
+        }
+
+        for (PortfolioSnapshot snapshot : valuationAtEnd.getPortfolios())
+        {
+            for (SecurityPosition position : snapshot.getPositions())
+            {
+                transactions.get(position.getSecurity()).addLineItem(CalculationLineItem.atEnd(snapshot.getPortfolio(),
+                                position, interval.getEnd().atStartOfDay()));
+            }
+        }
+
+        return doCreateSnapshot(client, converter, transactions, interval);
     }
 
     private static Map<Security, SecurityPerformanceRecord.Builder> initRecords(Client client)

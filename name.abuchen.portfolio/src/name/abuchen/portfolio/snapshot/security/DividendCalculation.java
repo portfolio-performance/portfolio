@@ -88,7 +88,7 @@ import name.abuchen.portfolio.util.Dates;
     private double rateOfReturnPerYear;
 
     @Override
-    public void finish()
+    public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
         // no payments result in no periodicity
         if (payments.isEmpty())

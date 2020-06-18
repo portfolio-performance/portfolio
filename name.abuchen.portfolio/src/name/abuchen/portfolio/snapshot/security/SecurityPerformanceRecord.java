@@ -214,6 +214,9 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
      */
     private double capitalGainsOnHoldingsMovingAveragePercent;
 
+    private CapitalGainsRecord realizedCapitalGains;
+    private CapitalGainsRecord unrealizedCapitalGains;
+
     private SecurityPerformanceRecord(Security security, List<CalculationLineItem> lineItems)
     {
         this.security = security;
@@ -391,6 +394,16 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         return sharesHeld > 0 ? (double) sumOfDividends.getAmount() / (double) movingAverageCost.getAmount() : 0;
     }
 
+    public CapitalGainsRecord getRealizedCapitalGains()
+    {
+        return realizedCapitalGains;
+    }
+
+    public CapitalGainsRecord getUnrealizedCapitalGains()
+    {
+        return unrealizedCapitalGains;
+    }
+
     public List<CalculationLineItem> getLineItems()
     {
         return lineItems;
@@ -440,6 +453,7 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
             calculateFifoAndMovingAverageCosts(converter);
             calculateDividends(converter);
             calculatePeriodicity(client, converter);
+            calculateCapitalGains(converter);
         }
     }
 
@@ -539,5 +553,13 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         DividendCalculation allDividends = Calculation.perform(DividendCalculation.class, converter, security,
                         allDividendPayments);
         this.periodicity = allDividends.getPeriodicity();
+    }
+
+    private void calculateCapitalGains(CurrencyConverter converter)
+    {
+        CapitalGainsCalculation calculation = Calculation.perform(CapitalGainsCalculation.class, converter, security,
+                        lineItems);
+        this.realizedCapitalGains = calculation.getRealizedCapitalGains();
+        this.unrealizedCapitalGains = calculation.getUnrealizedCapitalGains();
     }
 }

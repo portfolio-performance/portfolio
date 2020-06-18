@@ -14,9 +14,16 @@ import name.abuchen.portfolio.money.CurrencyConverter;
     private String termCurrency;
 
     /**
+     * Prepare calculations.
+     */
+    public void prepare()
+    {
+    }
+
+    /**
      * Finish up all calculations.
      */
-    public void finish()
+    public void finish(CurrencyConverter converter, List<CalculationLineItem> lineItems)
     {
     }
 
@@ -105,8 +112,9 @@ import name.abuchen.portfolio.money.CurrencyConverter;
             T thing = type.getDeclaredConstructor().newInstance();
             thing.setSecurity(security);
             thing.setTermCurrency(converter.getTermCurrency());
+            thing.prepare();
             thing.visitAll(converter, lineItems);
-            thing.finish();
+            thing.finish(converter, lineItems);
             return thing;
         }
         catch (Exception e)

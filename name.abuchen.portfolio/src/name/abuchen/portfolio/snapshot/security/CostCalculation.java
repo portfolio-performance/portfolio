@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.AccountTransaction;
+import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -63,7 +64,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         long amount = converter.convert(item.getDateTime(), valuation).getAmount();
 
-        TrailRecord trail = TrailRecord.ofPosition(item.getDateTime().toLocalDate(), position);
+        TrailRecord trail = TrailRecord.ofPosition(item.getDateTime().toLocalDate(), (Portfolio) item.getOwner(),
+                        position);
 
         if (!getTermCurrency().equals(valuation.getCurrencyCode()))
             trail = trail.convert(Money.of(getTermCurrency(), amount),
