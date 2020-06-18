@@ -12,6 +12,7 @@ import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.TransactionOwner;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.MoneyCollectors;
@@ -79,7 +80,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
     }
 
     @Override
-    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem transactionItem, PortfolioTransaction t)
+    public void visit(CurrencyConverter converter, CalculationLineItem.TransactionItem transactionItem,
+                    PortfolioTransaction t)
     {
         String termCurrency = getTermCurrency();
         Money grossValue = t.getGrossValue();
@@ -87,8 +89,8 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
         TrailRecord txTrail = TrailRecord.ofTransaction(t).asGrossValue(grossValue);
         if (!grossValue.getCurrencyCode().equals(converter.getTermCurrency()))
-            txTrail = txTrail.convert(convertedGrossValue,
-                            converter.getRate(transactionItem.getDateTime().toLocalDate(), grossValue.getCurrencyCode()));
+            txTrail = txTrail.convert(convertedGrossValue, converter
+                            .getRate(transactionItem.getDateTime().toLocalDate(), grossValue.getCurrencyCode()));
 
         switch (t.getType())
         {
@@ -108,6 +110,9 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
                 for (LineItem item : fifo) // NOSONAR
                 {
                     if (item.shares == 0)
+                        continue;
+
+                    if (!item.source.getOwner().equals(transactionItem.getOwner()))
                         continue;
 
                     if (sold <= 0)
@@ -167,9 +172,69 @@ import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 
                 break;
 
-            case TRANSFER_OUT:
             case TRANSFER_IN:
-                // do nothing
+                long moved = t.getShares();
+
+                TransactionOwner<?> source = t.getCrossEntry().getCrossOwner(t);
+
+                // iterate on copy b/c underlying list can be changed
+                for (LineItem entry : new ArrayList<>(fifo))
+                {
+                    if (moved <= 0)
+                        break;
+
+                    if (!entry.source.getOwner().equals(source))
+                        continue;
+
+                    if (entry.shares == 0)
+                        continue;
+
+                    long n = Math.min(moved, entry.shares);
+
+                    if (n == entry.shares)
+                    {
+                        LineItem transfer = new LineItem(entry.shares, entry.date, entry.value,
+                                        entry.trail.transfer(t.getDateTime().toLocalDate(), entry.source.getOwner(),
+                                                        transactionItem.getOwner()),
+                                        transactionItem);
+
+                        fifo.add(fifo.indexOf(entry) + 1, transfer);
+                        fifo.remove(entry);
+                    }
+                    else
+                    {
+                        long transferredValue = Math.round(n / (double) entry.shares * entry.value);
+
+                        LineItem transfer = new LineItem(n, //
+                                        t.getDateTime().toLocalDate(), transferredValue, //
+                                        entry.trail.fraction(Money.of(getTermCurrency(), transferredValue), n,
+                                                        entry.originalShares) //
+                                                        .transfer(t.getDateTime().toLocalDate(),
+                                                                        entry.source.getOwner(),
+                                                                        transactionItem.getOwner()),
+                                        transactionItem);
+
+                        entry.value -= transferredValue;
+                        entry.shares -= n;
+
+                        fifo.add(fifo.indexOf(entry) + 1, transfer);
+                    }
+
+                    moved -= n;
+                }
+
+                if (moved > 0)
+                {
+                    // FIXME Oops. More moved than available.
+                    PortfolioLog.warning(MessageFormat.format(Messages.MsgNegativeHoldingsDuringFIFOCostCalculation,
+                                    Values.Share.format(moved), t.getSecurity().getName(),
+                                    Values.DateTime.format(t.getDateTime())));
+                }
+
+                break;
+
+            case TRANSFER_OUT:
+                // ignore -> handled via TRANSFER_IN
                 break;
             default:
                 throw new UnsupportedOperationException();

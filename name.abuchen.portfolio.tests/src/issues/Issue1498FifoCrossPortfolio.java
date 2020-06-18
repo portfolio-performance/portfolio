@@ -16,6 +16,8 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot;
+import name.abuchen.portfolio.snapshot.ClientPerformanceSnapshot.CategoryType;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceRecord;
 import name.abuchen.portfolio.snapshot.security.SecurityPerformanceSnapshot;
 import name.abuchen.portfolio.util.Interval;
@@ -45,5 +47,20 @@ public class Issue1498FifoCrossPortfolio
         SecurityPerformanceRecord securityRecord = securitySnapshot.getRecords().get(0);
         assertThat(securityRecord.getSecurity(), is(lufthansa));
         assertThat(securityRecord.getFifoCost(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1150))));
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter, period);
+
+        // losses:
+        // purchase #1 10 shares à 15 -> 50 EUR loss
+        // purchase #2 50 shares à 20 -> 500 EUR loss
+
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(-550))));
+
+        // realized
+        // purchase 20 à 8,73 - sale 20 à 9,40 = 13,40 EUR realized profit
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(13.4))));
     }
 }
