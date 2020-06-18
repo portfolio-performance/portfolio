@@ -51,6 +51,10 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
     public interface Trails // NOSONAR
     {
         String FIFO_COST = "fifoCost"; //$NON-NLS-1$
+        String REALIZED_CAPITAL_GAINS = "realizedCapitalGains"; //$NON-NLS-1$
+        String REALIZED_CAPITAL_GAINS_FOREX = "realizedCapitalGainsForex"; //$NON-NLS-1$
+        String UNREALIZED_CAPITAL_GAINS = "unrealizedCapitalGains"; //$NON-NLS-1$
+        String UNREALIZED_CAPITAL_GAINS_FOREX = "unrealizedCapitalGainsForex"; //$NON-NLS-1$
     }
 
     /* package */ static final class Builder
@@ -433,6 +437,14 @@ public final class SecurityPerformanceRecord implements Adaptable, TrailProvider
         {
             case Trails.FIFO_COST:
                 return Trail.of(getSecurityName(), fifoCostTrail);
+            case Trails.REALIZED_CAPITAL_GAINS:
+                return Trail.of(getSecurityName(), getRealizedCapitalGains().getCapitalGainsTrail());
+            case Trails.REALIZED_CAPITAL_GAINS_FOREX:
+                return Trail.of(getSecurityName(), getRealizedCapitalGains().getForexCapitalGainsTrail());
+            case Trails.UNREALIZED_CAPITAL_GAINS:
+                return Trail.of(getSecurityName(), getUnrealizedCapitalGains().getCapitalGainsTrail());
+            case Trails.UNREALIZED_CAPITAL_GAINS_FOREX:
+                return Trail.of(getSecurityName(), getUnrealizedCapitalGains().getForexCapitalGainsTrail());
             default:
                 return Optional.empty();
         }

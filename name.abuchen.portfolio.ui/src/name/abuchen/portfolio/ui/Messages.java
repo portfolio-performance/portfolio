@@ -115,6 +115,7 @@ public class Messages extends NLS
     public static String ColumnLatestDate_MenuLabel;
     public static String ColumnLatestHistoricalDate_MenuLabel;
     public static String ColumnCurrency;
+    public static String ColumnCurrencyGains;
     public static String ColumnCurrencyProvider;
     public static String ColumnCurrentQuote;
     public static String ColumnCurrentShares;

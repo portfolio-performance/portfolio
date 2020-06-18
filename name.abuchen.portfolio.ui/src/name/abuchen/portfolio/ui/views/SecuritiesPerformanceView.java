@@ -93,6 +93,7 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
+import name.abuchen.portfolio.util.BasicMessages;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -273,6 +274,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         createCommonColumns();
         createDividendColumns();
         addPerformanceColumns();
+        addCapitalGainsColumns();
         createRiskColumns();
         createAdditionalColumns();
 
@@ -623,6 +625,55 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                         r -> ((SecurityPerformanceRecord) r).getDeltaPercent()));
         column.setSorter(ColumnViewerSorter.create(SecurityPerformanceRecord.class, "deltaPercent")); //$NON-NLS-1$
         column.setVisible(false);
+        recordColumns.addColumn(column);
+    }
+
+    private void addCapitalGainsColumns()
+    {
+        Column column = new Column("cg", //$NON-NLS-1$
+                        BasicMessages.LabelRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains(),
+                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("cgforex", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + BasicMessages.LabelRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains()
+                                        .getForexCaptialGains(),
+                        element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(
+                        element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucg", //$NON-NLS-1$
+                        BasicMessages.ColumnCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains().getCapitalGains(),
+                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().getCapitalGains()));
+        recordColumns.addColumn(column);
+
+        column = new Column("ucgforex", //$NON-NLS-1$
+                        Messages.ColumnCurrencyGains + " / " + BasicMessages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+        column.setLabelProvider(new MoneyColorLabelProvider(
+                        element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains()
+                                        .getForexCaptialGains(),
+                        element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS_FOREX, getClient()));
+        column.setVisible(false);
+        column.setSorter(ColumnViewerSorter.create(element -> ((SecurityPerformanceRecord) element)
+                        .getUnrealizedCapitalGains().getCapitalGains()));
         recordColumns.addColumn(column);
     }
 
