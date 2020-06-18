@@ -108,7 +108,7 @@ public class TradesTableViewer
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
             Optional<LocalDateTime> date = ((Trade) e).getEnd();
-            return date.isPresent() ? date.get() : null;
+            return date.isPresent() ? date.get() : LocalDateTime.now().plusYears(1);
         }));
         support.addColumn(column);
 
