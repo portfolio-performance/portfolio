@@ -93,7 +93,6 @@ import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
-import name.abuchen.portfolio.util.BasicMessages;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
@@ -631,8 +630,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
     private void addCapitalGainsColumns()
     {
         Column column = new Column("cg", //$NON-NLS-1$
-                        BasicMessages.LabelRealizedCapitalGains, SWT.RIGHT, 80);
-        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+                        Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains().getCapitalGains(),
                         element -> SecurityPerformanceRecord.Trails.REALIZED_CAPITAL_GAINS, getClient()));
@@ -642,8 +641,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
 
         column = new Column("cgforex", //$NON-NLS-1$
-                        Messages.ColumnCurrencyGains + " / " + BasicMessages.LabelRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnRealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getRealizedCapitalGains()
                                         .getForexCaptialGains(),
@@ -654,8 +653,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
 
         column = new Column("ucg", //$NON-NLS-1$
-                        BasicMessages.ColumnCapitalGains, SWT.RIGHT, 80);
-        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+                        Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80);
+        column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains().getCapitalGains(),
                         element -> SecurityPerformanceRecord.Trails.UNREALIZED_CAPITAL_GAINS, getClient()));
@@ -665,8 +664,8 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         recordColumns.addColumn(column);
 
         column = new Column("ucgforex", //$NON-NLS-1$
-                        Messages.ColumnCurrencyGains + " / " + BasicMessages.ColumnCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
-        column.setGroupLabel(BasicMessages.ColumnCapitalGains);
+                        Messages.ColumnCurrencyGains + " / " + Messages.ColumnUnrealizedCapitalGains, SWT.RIGHT, 80); //$NON-NLS-1$
+        column.setGroupLabel(Messages.LabelCapitalGains);
         column.setLabelProvider(new MoneyColorLabelProvider(
                         element -> ((SecurityPerformanceRecord) element).getUnrealizedCapitalGains()
                                         .getForexCaptialGains(),
