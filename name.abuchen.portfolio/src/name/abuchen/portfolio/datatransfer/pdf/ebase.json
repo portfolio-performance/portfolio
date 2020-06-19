@@ -313,6 +313,51 @@
 					}
 				}
 			]
+		},
+		{
+			"comment": "Verkauf",
+			"type": "SALE",
+			"startsWith": "^Verkauf [0-9,]* Anteile mit Kursdatum .*",
+			"sections": [
+				{
+					"context": "SECURITY",
+					"pattern": [
+						"^Verkauf [0-9,]* Anteile mit Kursdatum .*",
+						"^(?<name>.*)$",
+						".*",
+						"^ISIN .*",
+						"^(?<isin>[^ ]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^Verkauf [0-9,]* Anteile mit Kursdatum (?<date>\\d+.\\d+.\\d{4}+) .*"
+					]
+				},
+				{
+					"pattern": [
+						"^ISIN .*",
+						"^.*-(?<shares>[\\d+,.]*).*"
+					]
+				},
+				{
+					"pattern": [
+						"^.* Zahlungsbetrag$",
+						"^.* (?<amount>[\\d.,]+) (?<currency>\\w{3}+)$"
+					]
+				},
+				{
+					"context": "UNIT",
+					"isOptional": true,
+					"pattern": [
+						"^(Kapitalertragsteuer Solidaritätszuschlag Kirchensteuer abzgl. Steuern)$",
+						"^([\\d,.]* \\w{3} ){3}(?<amount>[\\d,.]*) (?<currency>\\w{3})$"
+					],
+					"attributes": {
+						"type": "TAX"
+					}
+				}
+			]
 		}
 	]
 }
