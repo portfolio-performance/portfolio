@@ -23,6 +23,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import name.abuchen.portfolio.datatransfer.Extractor;
+import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.json.JClient;
 import name.abuchen.portfolio.json.JTransaction;
 import name.abuchen.portfolio.model.Client;
@@ -85,6 +86,8 @@ public class JSONPDFTestCase
         List<Extractor.Item> result = assistant.runWithPlainText(new File(path + EXT_TXT), errors);
 
         assertThat(errors, empty());
+
+        new AssertImportActions().check(result);
 
         List<JTransaction> actualTransactions = result.stream().filter(i -> i.getData() instanceof JTransaction)
                         .map(i -> (JTransaction) i.getData()).collect(Collectors.toList());
