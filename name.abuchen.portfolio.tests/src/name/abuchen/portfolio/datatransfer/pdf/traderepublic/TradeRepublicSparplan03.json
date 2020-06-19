@@ -1,0 +1,17 @@
+{
+	"version": 1,
+	"transactions": [
+		{
+			"type": "PURCHASE",
+			"date": "2020-05-20",
+			"currency": "EUR",
+			"amount": 150.0,
+			"shares": 5.5520,
+			"security": {
+				"name": "iShs Core S&P 500 UC.ETF USDD",
+				"isin": "IE0031442068",
+				"currency": "EUR"
+			}
+		}
+	]
+}
