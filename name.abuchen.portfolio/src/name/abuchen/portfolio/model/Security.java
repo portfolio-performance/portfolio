@@ -554,6 +554,13 @@ public final class Security implements Attributable, InvestmentVehicle
         this.events.add(event);
     }
 
+    public void removeEvent(SecurityEvent event)
+    {
+        if (this.events == null)
+            this.events = new ArrayList<>();
+        this.events.remove(event);
+    }
+
     public Stream<SecurityProperty> getProperties()
     {
         if (properties == null)

@@ -39,9 +39,19 @@ public class SecurityEvent
         return date;
     }
 
+    public void setDate(LocalDate date)
+    {
+        this.date = date;
+    }
+    
     public Type getType()
     {
         return type;
+    }
+
+    public void setType(Type type)
+    {
+        this.type= type ;
     }
 
     public String getDetails()
