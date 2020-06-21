@@ -7,9 +7,21 @@ public class SecurityEvent
 {
     public enum Type
     {
-        STOCK_SPLIT, CUSTOM, PLACED_ORDER, CHART_SIGNAL, STOCK_NEWS, WORLD_EVENT;
+        STOCK_SPLIT(false), NOTE(true);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
+
+        private boolean isUserEditable;
+
+        private Type(boolean isUserEditable)
+        {
+            this.isUserEditable = isUserEditable;
+        }
+
+        public boolean isUserEditable()
+        {
+            return isUserEditable;
+        }
 
         @Override
         public String toString()

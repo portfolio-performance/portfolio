@@ -573,12 +573,14 @@ public class ClientFactory
             case 41:
                 // added tax units to interest transaction
             case 42:
-                // added data map to classification and assignemnt
+                // added data map to classification and assignment
             case 43:
                 // added LimitPrice as attribute type
             case 44:
                 // added weights to dashboard columns
                 fixDashboardColumnWeights(client);
+            case 45:
+                // added custom security type NOTE
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;

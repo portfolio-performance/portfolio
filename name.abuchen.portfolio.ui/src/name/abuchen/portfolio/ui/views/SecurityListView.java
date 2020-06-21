@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -32,6 +31,7 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.window.Window;
+import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -89,7 +89,6 @@ import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
@@ -98,6 +97,7 @@ import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 import name.abuchen.portfolio.ui.views.actions.ConvertBuySellToDeliveryAction;
 import name.abuchen.portfolio.ui.views.actions.ConvertDeliveryToBuySellAction;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+import name.abuchen.portfolio.ui.wizards.events.CustomEventWizard;
 import name.abuchen.portfolio.ui.wizards.security.EditSecurityDialog;
 import name.abuchen.portfolio.ui.wizards.security.SearchSecurityWizardDialog;
 import name.abuchen.portfolio.util.TradeCalendar;
@@ -1053,17 +1053,45 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         if (security == null)
             return;
 
+        manager.add(new Action(Messages.SecurityMenuAddEvent)
+        {
+            @Override
+            public void run()
+            {
+                CustomEventWizard wizard = new CustomEventWizard(getClient(), security);
+                WizardDialog dialog = new WizardDialog(getActiveShell(), wizard);
+                if (dialog.open() == Window.OK)
+                {
+                    markDirty();
+                    notifyModelUpdated();
+                }
+            }
+        });
+
+        IStructuredSelection selection = events.getStructuredSelection();
+        if (selection.isEmpty())
+            return;
+
+        manager.add(new Separator());
+
         manager.add(new Action(Messages.MenuTransactionDelete)
         {
             @Override
             public void run()
             {
-                SecurityEvent event = (SecurityEvent) ((IStructuredSelection) events.getSelection()).getFirstElement();
-                if (event == null)
-                    return;
+                IStructuredSelection selection = events.getStructuredSelection();
 
-                security.removeEvent(event);
-                getClient().markDirty();
+                // allow deletion (but not creation) of stock split events.
+                // Background: once we refactor stock splits, we might want to
+                // rely on the fact that a stock split was created technically
+                // in the program, but deletion should be possible anyway
+
+                Iterator<?> iter = selection.iterator();
+                while (iter.hasNext())
+                    security.removeEvent((SecurityEvent) iter.next());
+
+                markDirty();
+                notifyModelUpdated();
             }
         });
     }
@@ -1112,7 +1140,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         TableColumnLayout layout = new TableColumnLayout();
         container.setLayout(layout);
 
-        events = new TableViewer(container, SWT.FULL_SELECTION);
+        events = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
         ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
                         getPreferenceStore(), events, layout);
@@ -1127,7 +1155,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDate()), SWT.UP);
-        column.setEditingSupport(new DateEditingSupport(SecurityEvent.class, "date")); //$NON-NLS-1$
+        column.setEditingSupport(new DateEditingSupport(SecurityEvent.class, "date") //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return ((SecurityEvent) element).getType().isUserEditable();
+            }
+        });
         support.addColumn(column);
 
         column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
@@ -1140,8 +1175,6 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()), SWT.UP);
-        column.setEditingSupport(new ListEditingSupport(SecurityEvent.class, "type", //$NON-NLS-1$
-                        Arrays.asList(SecurityEvent.Type.values())));
         support.addColumn(column);
 
         column = new Column(Messages.ColumnDetails, SWT.None, 80);
@@ -1154,7 +1187,14 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDetails().toLowerCase()), SWT.UP);
-        column.setEditingSupport(new StringEditingSupport(SecurityEvent.class, "details")); //$NON-NLS-1$
+        column.setEditingSupport(new StringEditingSupport(SecurityEvent.class, "details") //$NON-NLS-1$
+        {
+            @Override
+            public boolean canEdit(Object element)
+            {
+                return ((SecurityEvent) element).getType().isUserEditable();
+            }
+        });
         support.addColumn(column);
 
         support.createColumns();
