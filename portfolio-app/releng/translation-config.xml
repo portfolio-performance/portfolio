@@ -38,6 +38,7 @@
 			<filename>messages</filename>
 			<excludes>
 				<string>AboutText</string>
+				<string>AboutTextContributions</string>
 			</excludes>
 		</artifact>
 		<artifact>

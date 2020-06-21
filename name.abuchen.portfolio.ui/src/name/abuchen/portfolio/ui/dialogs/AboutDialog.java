@@ -52,7 +52,6 @@ public class AboutDialog extends Dialog
     private Composite container;
     private StackLayout layout;
 
-    private StyledText aboutTextBox;
     private Text infoTextBox;
 
     @Inject
@@ -99,17 +98,28 @@ public class AboutDialog extends Dialog
 
         Collections.sort(styles, (o1, o2) -> Integer.compare(o1.start, o2.start));
 
-        aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        StyledText aboutTextBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
         aboutTextBox.setText(aboutText);
         aboutTextBox.setStyleRanges(styles.toArray(new StyleRange[0]));
 
-        aboutTextBox.addListener(SWT.MouseDown, this::openBrowser);
+        aboutTextBox.addListener(SWT.MouseDown, e -> openBrowser(e, aboutTextBox));
+
+        String contributionsText = Messages.AboutTextContributions;
+        styles = new ArrayList<>();
+        contributionsText = addMarkdownLikeHyperlinks(contributionsText, styles);
+
+        StyledText contributionsBox = new StyledText(area, SWT.MULTI | SWT.WRAP | SWT.READ_ONLY);
+        contributionsBox.setText(contributionsText);
+        contributionsBox.setStyleRanges(styles.toArray(new StyleRange[0]));
+
+        contributionsBox.addListener(SWT.MouseDown, e -> openBrowser(e, contributionsBox));
 
         // layout
 
-        GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 3).applyTo(area);
+        GridLayoutFactory.fillDefaults().numColumns(2).margins(10, 10).spacing(10, 10).applyTo(area);
         GridDataFactory.fillDefaults().grab(false, false).align(SWT.CENTER, SWT.TOP).applyTo(imageLabel);
-        GridDataFactory.fillDefaults().grab(true, true).applyTo(aboutTextBox);
+        GridDataFactory.fillDefaults().grab(true, false).applyTo(aboutTextBox);
+        GridDataFactory.fillDefaults().grab(true, true).span(2, 1).applyTo(contributionsBox);
 
         return area;
     }
@@ -169,9 +179,9 @@ public class AboutDialog extends Dialog
         {
             int start = matcher.start();
             int end = matcher.end();
-            
+
             answer.append(aboutText.substring(pointer, start));
-            
+
             String text = matcher.group("text"); //$NON-NLS-1$
             String link = matcher.group("link"); //$NON-NLS-1$
 
@@ -204,13 +214,13 @@ public class AboutDialog extends Dialog
         ranges.add(styleRange);
     }
 
-    private void openBrowser(Event event)
+    private void openBrowser(Event event, StyledText textBox)
     {
-        int offset = aboutTextBox.getOffsetAtPoint(new Point(event.x, event.y));
+        int offset = textBox.getOffsetAtPoint(new Point(event.x, event.y));
         if (offset == -1)
             return;
 
-        StyleRange style = aboutTextBox.getStyleRangeAtOffset(offset);
+        StyleRange style = textBox.getStyleRangeAtOffset(offset);
         if (style != null && style.data != null)
             DesktopAPI.browse(String.valueOf(style.data));
     }
