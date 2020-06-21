@@ -988,6 +988,8 @@ public class Messages extends NLS
     public static String TabTransactions;
     public static String TitlePasswordDialog;
     public static String TooltipAverageHoldingPeriod;
+    public static String ToolTipCorrelationData;
+    public static String ToolTipCorrelationNotAvailable;
     public static String TooltipDateOfExchangeRate;
     public static String TooltipHintPressAlt;
     public static String TooltipMaxDrawdown;

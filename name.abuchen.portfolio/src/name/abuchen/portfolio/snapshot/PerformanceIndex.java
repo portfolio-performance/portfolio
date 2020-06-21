@@ -227,7 +227,7 @@ public class PerformanceIndex
      * <li>on weekends or public holidays</li>
      * </ul>
      */
-    private IntPredicate filterReturnsForVolatilityCalculation()
+    public IntPredicate filterReturnsForVolatilityCalculation()
     {
         TradeCalendar calendar = TradeCalendarManager.getDefaultInstance();
         return index -> index > 0 && totals[index] != 0 && totals[index - 1] != 0 && !calendar.isHoliday(dates[index]);

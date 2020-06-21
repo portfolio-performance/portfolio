@@ -1,133 +1,84 @@
 package name.abuchen.portfolio.ui.views;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
+import java.util.function.IntPredicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
-import javax.inject.Inject;
-
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.ToolBarManager;
 import org.eclipse.jface.layout.TableColumnLayout;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ColumnLabelProvider;
 import org.eclipse.jface.viewers.ColumnPixelData;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.TableViewerColumn;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.Control;
 
-import name.abuchen.portfolio.model.InvestmentVehicle;
-import name.abuchen.portfolio.model.Portfolio;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
-import name.abuchen.portfolio.model.Watchlist;
-import name.abuchen.portfolio.money.CurrencyConverter;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import com.ibm.icu.text.MessageFormat;
+
+import name.abuchen.portfolio.math.CorrelationMatrix;
+import name.abuchen.portfolio.math.CorrelationMatrix.Correlation;
+import name.abuchen.portfolio.math.CorrelationMatrix.DataFrame;
 import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.snapshot.PortfolioSnapshot;
-import name.abuchen.portfolio.snapshot.SecurityPosition;
+import name.abuchen.portfolio.snapshot.PerformanceIndex;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.util.Colors;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
-import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
+import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
-import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeries;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesCache;
+import name.abuchen.portfolio.ui.views.dataseries.DataSeriesConfigurator;
 import name.abuchen.portfolio.util.Interval;
 import name.abuchen.portfolio.util.TextUtil;
 
-public class CorrelationListView extends AbstractListView implements ModificationListener, ReportingPeriodListener
+public class CorrelationListView extends AbstractHistoricView
 {
-    private static final String FILTER_INACTIVE_SECURITIES = "filter-retired-securities"; //$NON-NLS-1$
-
-    private TableViewer correlationAccount;
-    private TableViewer correlationMatrix;
-    private ShowHideColumnHelper accountColumns;
-    private CurrencyConverter converter;
-    private Interval period1st;
-    private Interval period2nd;
-    private int noOfSecurities = 0;
-    private List<Line> lines;
-    private TableColumnLayout tableLayout = new TableColumnLayout();
-    private boolean isFiltered = false;
-    private ReportingPeriodDropDown periodDropDown1;
-    private ReportingPeriodDropDown periodDropDown2;
-    @SuppressWarnings("all")
-    List correlationAccounts = new ArrayList<>();
-    List<Security> correlationSecurities = new ArrayList<>();
-
-    public static class Line
+    private static class Data implements DataFrame
     {
-        private InvestmentVehicle vehicle;
-        private long[] values;
+        DataSeries series;
+        PerformanceIndex index;
 
-        public Line(InvestmentVehicle vehicle, int length)
+        public Data(DataSeries series, PerformanceIndex index)
         {
-            this.vehicle = vehicle;
-            this.values = new long[length];
+            this.series = series;
+            this.index = index;
         }
 
-        public InvestmentVehicle getVehicle()
+        @Override
+        public LocalDate[] dates()
         {
-            return vehicle;
+            return index.getDates();
         }
 
-        public long getValue(int index)
+        @Override
+        public double[] values()
         {
-            return values[index];
+            return index.getDeltaPercentage();
         }
 
-        public int getNoOfSecurities()
+        @Override
+        public IntPredicate filter()
         {
-            return values.length;
+            return index.filterReturnsForVolatilityCalculation();
         }
     }
 
-    public List<Line> getLines()
-    {
-        return lines;
-    }
+    private DataSeriesConfigurator configurator;
 
-    public static class securityPricesContainer
-    {
-        private InvestmentVehicle vehicle;
-        private Map<LocalDate, Long> securityPrices;
+    private CorrelationMatrix<Data> matrix;
+    private DataSeriesCache cache;
 
-        public securityPricesContainer(InvestmentVehicle vehicle, Map<LocalDate, Long> securityPrices)
-        {
-            this.vehicle = vehicle;
-            this.securityPrices = securityPrices;
-        }
-
-        public InvestmentVehicle getVehicle()
-        {
-            return vehicle;
-        }
-
-        public Map<LocalDate, Long> getPrices()
-        {
-            return securityPrices;
-        }
-    }
-
-    @Inject
-    private ExchangeRateProviderFactory factory;
+    private TableViewer matrixViewer;
+    private TableColumnLayout matrixLayout;
 
     @Override
     protected String getDefaultTitle()
@@ -136,423 +87,181 @@ public class CorrelationListView extends AbstractListView implements Modificatio
     }
 
     @Override
-    protected int getSashStyle()
-    {
-        return SWT.VERTICAL | SWT.BEGINNING;
-    }
-
-    @Override
     public void notifyModelUpdated()
     {
-        correlationAccount.setInput(getAccounts());
-        correlationAccount.setSelection(correlationAccount.getSelection());
+        updateMatrix();
     }
 
     @Override
-    public void onModified(Object element, Object newValue, Object oldValue)
+    public void reportingPeriodUpdated()
     {
-        markDirty();
+        updateMatrix();
     }
 
     @Override
     protected void addButtons(ToolBarManager toolBar)
     {
-        periodDropDown1 = new ReportingPeriodDropDown(getPart(), this);
-        toolBar.add(periodDropDown1);
-        periodDropDown2 = new ReportingPeriodDropDown(getPart(), this);
-        toolBar.add(periodDropDown2);
         super.addButtons(toolBar);
-        addFilterButton(toolBar);
         addExportButton(toolBar);
-
-    }
-
-    private void addFilterButton(ToolBarManager manager)
-    {
-        Action filter = new Action()
-        {
-            @Override
-            public void run()
-            {
-                isFiltered = !isFiltered;
-                getPart().getPreferenceStore().setValue(FILTER_INACTIVE_SECURITIES, isFiltered);
-                setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
-                getSecurities(((IStructuredSelection) correlationAccount.getSelection()).getFirstElement());
-                calculateCorrelationMatrix();
-                updateBottomTableColumns(correlationMatrix, tableLayout);
-
-            }
-        };
-        filter.setImageDescriptor(isFiltered ? Images.FILTER_ON.descriptor() : Images.FILTER_OFF.descriptor());
-        filter.setToolTipText(Messages.AccountFilterRetiredAccounts);
-        manager.add(filter);
+        toolBar.add(new DropDown(Messages.MenuConfigureChart, Images.CONFIG, SWT.NONE, manager -> {
+            manager.add(new LabelOnly(Messages.LabelDataSeries));
+            configurator.configMenuAboutToShow(manager);
+        }));
     }
 
     private void addExportButton(ToolBarManager manager)
     {
-        Action export = new Action()
-        {
-            @Override
-            public void run()
-            {
-                new TableViewerCSVExporter(correlationMatrix).export(getTitle() + ".csv"); //$NON-NLS-1$
-            }
-        };
-        export.setImageDescriptor(Images.EXPORT.descriptor());
-        export.setToolTipText(Messages.MenuExportData);
-
-        manager.add(new ActionContributionItem(export));
+        manager.add(new SimpleAction(Messages.MenuExportData, Images.EXPORT.descriptor(),
+                        a -> new TableViewerCSVExporter(matrixViewer).export(getTitle() + ".csv"))); //$NON-NLS-1$
     }
 
     @Override
-    protected void createTopTable(Composite parent)
+    protected Control createBody(Composite parent)
     {
+        cache = make(DataSeriesCache.class);
+
+        configurator = new DataSeriesConfigurator(this, DataSeries.UseCase.RETURN_VOLATILITY);
+        configurator.addListener(this::updateMatrix);
+        configurator.setToolBarManager(getViewToolBarManager());
+
+        updateTitle(Messages.LabelCorrelationMatrix + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+
         Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(tableLayout);
 
-        correlationAccount = new TableViewer(container, SWT.FULL_SELECTION);
+        matrixLayout = new TableColumnLayout();
+        container.setLayout(matrixLayout);
 
-        accountColumns = new ShowHideColumnHelper(CorrelationListView.class.getSimpleName() + "@top", //$NON-NLS-1$
-                        getPreferenceStore(), correlationAccount, tableLayout);
+        matrixViewer = new TableViewer(container, SWT.FULL_SELECTION);
+        ColumnViewerToolTipSupport.enableFor(matrixViewer, ToolTip.NO_RECREATE);
 
-        createTopTableColumns(accountColumns);
+        matrixViewer.getTable().setHeaderVisible(true);
+        matrixViewer.getTable().setLinesVisible(true);
 
-        accountColumns.createColumns();
-        correlationAccount.getTable().setHeaderVisible(true);
-        correlationAccount.getTable().setLinesVisible(true);
-        correlationAccount.setContentProvider(ArrayContentProvider.getInstance());
-        correlationAccount.setInput(getAccounts());
-        correlationAccount.addSelectionChangedListener(event -> {
-            getSecurities(((IStructuredSelection) event.getSelection()).getFirstElement());
-            calculateCorrelationMatrix();
-            updateBottomTableColumns(correlationMatrix, tableLayout);
+        matrixViewer.setContentProvider(ArrayContentProvider.getInstance());
 
-            correlationMatrix.refresh();
-        });
+        updateMatrix();
+
+        return container;
     }
 
-    private void createTopTableColumns(ShowHideColumnHelper support)
+    private void updateMatrix()
     {
-        Column column = new Column(Messages.ColumnName, SWT.NONE, 250);
-        column.setLabelProvider(new ColumnLabelProvider()
-        {
-            @Override
-            public String getText(Object e)
-            {
-                if (e instanceof String)
-                    return e.toString();
-                else if (e instanceof Portfolio)
-                {
-                    Portfolio pt = (Portfolio) e;
-                    return pt.getName();
-                }
-                else if (e instanceof Watchlist)
-                {
-                    Watchlist wl = (Watchlist) e;
-                    return wl.getName();
-                }
-                else
-                    return null;
-            }
+        Interval interval = getReportingPeriod().toInterval(LocalDate.now());
 
-            @Override
-            public Image getImage(Object e)
-            {
-                if (e instanceof String)
-                    return Images.SECURITY.image();
-                else if (e instanceof Portfolio)
-                    return Images.PORTFOLIO.image();
-                else if (e instanceof Watchlist)
-                    return Images.WATCHLIST.image();
-                else
-                    return null;
-            }
-        });
-        support.addColumn(column);
+        List<Data> data = configurator.getSelectedDataSeries().stream().map(series -> {
+            PerformanceIndex index = cache.lookup(series, interval);
+            return new Data(series, index);
+        }).collect(Collectors.toList());
+
+        matrix = new CorrelationMatrix<>(data);
+
+        updateTitle(Messages.LabelCorrelationMatrix + " (" + configurator.getConfigurationName() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+
+        updateBottomTableColumns();
     }
 
-    @Override
-    protected void createBottomTable(Composite parent)
+    private void createBottomTableColumns()
     {
-        Composite container = new Composite(parent, SWT.NONE);
-        container.setLayout(tableLayout);
+        createBottomTableVehicleColumn();
 
-        correlationMatrix = new TableViewer(container, SWT.FULL_SELECTION);
-        ColumnViewerToolTipSupport.enableFor(correlationMatrix, ToolTip.NO_RECREATE);
-
-        createBottomTableColumns(correlationMatrix, tableLayout);
-
-        correlationMatrix.getTable().setHeaderVisible(true);
-        correlationMatrix.getTable().setLinesVisible(true);
-
-        correlationMatrix.setContentProvider(ArrayContentProvider.getInstance());
-
-        correlationMatrix.setInput(null);
-
-        for (TableColumn c : correlationMatrix.getTable().getColumns())
-            c.pack();
-
+        for (int index = 0; index < matrix.getDataFrames().size(); index++)
+            createBottomTableCorrelationColumn(index);
     }
 
-    protected void createBottomTableColumns(TableViewer records, TableColumnLayout layout)
+    private void createBottomTableVehicleColumn()
     {
-        createBottomTableVehicleColumn(records, layout);
-        for (int index = 0; index < noOfSecurities; index++)
-            createBottomTableCorrelationColumn(records, layout, correlationSecurities.get(index), index);
-    }
-
-    protected void createBottomTableVehicleColumn(TableViewer records, TableColumnLayout layout)
-    {
-        TableViewerColumn column = new TableViewerColumn(records, SWT.NONE);
+        TableViewerColumn column = new TableViewerColumn(matrixViewer, SWT.NONE);
         column.getColumn().setText(Messages.ColumnSecurity);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public Image getImage(Object element)
             {
-                return ((Line) element).getVehicle().isRetired() ? Images.SECURITY_RETIRED.image()
-                                : Images.SECURITY.image();
+                return matrix.getDataFrames().get((Integer) element).series.getImage();
             }
 
             @Override
             public String getText(Object element)
             {
-                return ((Line) element).getVehicle().getName();
+                return matrix.getDataFrames().get((Integer) element).series.getLabel();
             }
         });
 
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(200));
+        matrixLayout.setColumnData(column.getColumn(), new ColumnPixelData(200));
     }
 
-    private void createBottomTableCorrelationColumn(TableViewer records, TableColumnLayout layout, Security security,
-                    int index)
+    private void createBottomTableCorrelationColumn(int index)
     {
-        TableViewerColumn column = new TableViewerColumn(records, SWT.RIGHT);
-        column.getColumn().setText(security.getName());
+        TableViewerColumn column = new TableViewerColumn(matrixViewer, SWT.RIGHT);
+        column.getColumn().setText(matrix.getDataFrames().get(index).series.getLabel());
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                Line line = (Line) element;
-                if (line.getVehicle().equals(correlationSecurities.get(index)))
-                    return null;
+                Integer x = (Integer) element;
+                Optional<Correlation> data = matrix.getCorrelation(x, index);
+                if (!data.isPresent())
+                    return "-"; //$NON-NLS-1$
+                else if (Double.isNaN(data.get().getR()))
+                    return "n/a"; //$NON-NLS-1$
                 else
-                    return line.getVehicle() != null ? Values.Amount.formatNonZero(line.getValue(index))
-                                    : Values.Amount.format(line.getValue(index));
+                    return Values.PercentPlain.format(data.get().getR());
             }
 
             @Override
             public String getToolTipText(Object element)
             {
-                InvestmentVehicle vehicle1 = ((Line) element).getVehicle();
-                InvestmentVehicle vehicle2 = ((Line) element).getVehicle();
-                return TextUtil.tooltip(vehicle1 != null && vehicle2 != null
-                                && !vehicle1.equals(correlationSecurities.get(index))
-                                                ? "\u00AB <p>" + vehicle1.getName() + " \u00BB vs. \u00AB " //$NON-NLS-1$ //$NON-NLS-2$
-                                                                + vehicle2.getName() + " \u00BB" //$NON-NLS-1$
-                                                : null);
-            }
+                Integer x = (Integer) element;
+                Optional<Correlation> data = matrix.getCorrelation(x, index);
 
-            @Override
-            public Color getBackground(Object element)
-            {
-                return ((Line) element).getVehicle().equals(correlationSecurities.get(index)) ? Colors.BLACK : null;
+                if (!data.isPresent())
+                    return null;
+
+                Data frame1 = matrix.getDataFrames().get(x);
+                DataSeries vehicle1 = frame1.series;
+                Data frame2 = matrix.getDataFrames().get(index);
+                DataSeries vehicle2 = frame2.series;
+
+                if (Double.isNaN(data.get().getR()))
+                    return TextUtil.tooltip(MessageFormat.format(Messages.ToolTipCorrelationNotAvailable,
+                                    vehicle1.getLabel(), vehicle2.getLabel()));
+
+                return TextUtil.tooltip(MessageFormat.format(Messages.ToolTipCorrelationData,
+                                Values.PercentPlain.format(data.get().getR()), //
+                                vehicle1.getLabel(), vehicle2.getLabel(), //
+                                Values.Id.format(data.get().getCount()), //
+                                Values.Date.format(data.get().getFirstDate()),
+                                Values.Date.format(data.get().getLastDate())));
             }
         });
 
-        layout.setColumnData(column.getColumn(), new ColumnPixelData(50));
+        matrixLayout.setColumnData(column.getColumn(), new ColumnPixelData(60));
     }
 
-    private void updateBottomTableColumns(TableViewer records, TableColumnLayout layout)
+    private void updateBottomTableColumns()
     {
         try
         {
             // first add, then remove columns
             // (otherwise rendering of first column is broken)
-            records.getTable().setRedraw(false);
+            matrixViewer.getTable().setRedraw(false);
 
-            int count = records.getTable().getColumnCount();
+            int count = matrixViewer.getTable().getColumnCount();
 
-            createBottomTableColumns(records, layout);
+            createBottomTableColumns();
 
             for (int ii = 0; ii < count; ii++)
-                records.getTable().getColumn(0).dispose();
+                matrixViewer.getTable().getColumn(0).dispose();
 
-            records.setInput(this.getLines());
-
-            for (TableColumn c : records.getTable().getColumns())
-                c.pack();
+            matrixViewer.setInput(IntStream.range(0, matrix.getDataFrames().size()).mapToObj(i -> Integer.valueOf(i))
+                            .collect(Collectors.toList()));
         }
         finally
         {
-            records.refresh();
-            records.getTable().setRedraw(true);
+            matrixViewer.getTable().getParent().layout(true);
+            matrixViewer.getTable().setRedraw(true);
         }
     }
 
-    @SuppressWarnings("all")
-    private List<?> getAccounts()
-    {
-
-        converter = new CurrencyConverterImpl(factory, getClient().getBaseCurrency());
-
-        correlationAccounts = new ArrayList<>();
-        correlationAccounts.add(Messages.LabelAllSecurities);
-
-        // collect watchlists with securities
-        for (Watchlist watchlist : getClient().getWatchlists())
-            if (!watchlist.getSecurities().isEmpty())
-                correlationAccounts.add((Watchlist) watchlist);
-
-        // collect portfolio with security holdings
-        List<Portfolio> portfolios = getClient().getPortfolios();
-        for (Portfolio portfolio : portfolios)
-        {
-            PortfolioSnapshot snapshot = PortfolioSnapshot.create(portfolio, converter, LocalDate.now());
-            if (!snapshot.getPositions().isEmpty())
-                correlationAccounts.add(portfolio);
-        }
-
-        return correlationAccounts;
-    }
-
-    private List<Security> getSecurities(Object object)
-    {
-        this.correlationSecurities = new ArrayList<>();
-        if (object instanceof String)
-        {
-            for (Security security : getClient().getSecurities())
-                if (!isFiltered || isFiltered && !security.isRetired())
-                    this.correlationSecurities.add(security);
-        }
-        else if (object instanceof Watchlist)
-        {
-            for (Security security : ((Watchlist) object).getSecurities())
-                if (!isFiltered || isFiltered && !security.isRetired())
-                    this.correlationSecurities.add(security);
-        }
-        else if (object instanceof Portfolio)
-        {
-            PortfolioSnapshot snapshot = PortfolioSnapshot.create(((Portfolio) object), converter, LocalDate.now());
-            for (SecurityPosition security : snapshot.getPositions())
-                this.correlationSecurities.add(security.getSecurity());
-        }
-        Collections.sort(this.correlationSecurities, new MySecuritySort());
-        return correlationSecurities;
-    }
-
-    class MySecuritySort implements Comparator<Security>
-    {
-
-        @Override
-        public int compare(Security e1, Security e2)
-        {
-            if (e1 == null)
-                return e2 == null ? 0 : -1;
-            return e1.getName().compareToIgnoreCase(e2.getName());
-        }
-    }
-
-    private void calculateCorrelationMatrix()
-    {
-        period1st = periodDropDown1.getSelectedPeriod().toInterval(LocalDate.now());
-        period2nd = periodDropDown2.getSelectedPeriod().toInterval(LocalDate.now());
-        boolean onlyOnePeriod = period1st.equals(period2nd);
-
-        Map<InvestmentVehicle, Line> vehicle2line = new LinkedHashMap<>();
-
-        // Preload all scecurity prices to avoide multiple reloads
-        Map<Security, securityPricesContainer> securityPrices2container1st = new LinkedHashMap<>();
-        Map<Security, securityPricesContainer> securityPrices2container2nd = new LinkedHashMap<>();
-        for (Security security : this.correlationSecurities)
-        {
-            Map<LocalDate, Long> prices = getPricesIncludingLatestByInterval(security, period1st);
-            securityPrices2container1st.computeIfAbsent(security, s -> new securityPricesContainer(s, prices));
-            if (!onlyOnePeriod)
-                securityPrices2container2nd.computeIfAbsent(security, s -> new securityPricesContainer(s,
-                                getPricesIncludingLatestByInterval(security, period2nd)));
-        }
-
-        noOfSecurities = this.correlationSecurities.size();
-        for (Security security1st : this.correlationSecurities)
-        {
-            Map<Security, securityPricesContainer> securityPrices2container = securityPrices2container1st;
-            Line line = vehicle2line.computeIfAbsent(security1st, s -> new Line(s, noOfSecurities));
-            int counter = 0;
-            for (Security security2nd : this.correlationSecurities)
-            {
-                if (security1st.equals(security2nd))
-                {
-                    if (onlyOnePeriod)
-                        break;
-                    securityPrices2container = securityPrices2container2nd;
-                    counter += 1;
-                    continue;
-                }
-                if (!securityPrices2container.get(security1st).getPrices().isEmpty()
-                                && !securityPrices2container.get(security2nd).getPrices().isEmpty()
-                                && (Math.min(securityPrices2container.get(security1st).getPrices().size(),
-                                                securityPrices2container.get(security2nd).getPrices().size())
-                                                * 100
-                                                / Math.max(securityPrices2container.get(security1st).getPrices().size(),
-                                                                securityPrices2container.get(security2nd).getPrices()
-                                                                                .size()) > 80))
-                    line.values[counter] = calculateCorrelation(securityPrices2container.get(security1st).getPrices(),
-                                    securityPrices2container.get(security2nd).getPrices());
-                counter += 1;
-            }
-        }
-        this.lines = new ArrayList<>(vehicle2line.values());
-    }
-
-    private long calculateCorrelation(Map<LocalDate, Long> securityPrice1st, Map<LocalDate, Long> securityPrice2nd)
-    {
-        double sx = 0.0;
-        double sy = 0.0;
-        double sxx = 0.0;
-        double syy = 0.0;
-        double sxy = 0.0;
-        int n = 0;
-
-        for (LocalDate key : securityPrice1st.keySet())
-        {
-            if (securityPrice2nd.get(key) != null)
-            {
-                n++;
-                double x = securityPrice1st.get(key) / Values.Quote.divider();
-                double y = securityPrice2nd.get(key) / Values.Quote.divider();
-
-                sx += x;
-                sy += y;
-                sxx += x * x;
-                syy += y * y;
-                sxy += x * y;
-            }
-        }
-        // covariation
-        double cov = sxy / n - sx * sy / n / n;
-        // standard error of x
-        double sigmax = Math.sqrt(sxx / n - sx * sx / n / n);
-        // standard error of y
-        double sigmay = Math.sqrt(syy / n - sy * sy / n / n);
-
-        // correlation is just a normalized covariation
-        return (long) ((cov / sigmax / sigmay) * Values.Quote.divider()) / 100;
-    }
-
-    private Map<LocalDate, Long> getPricesIncludingLatestByInterval(Security security, Interval interval)
-    {
-        return security.getPricesIncludingLatest().stream() //
-                        .filter(t -> !t.getDate().isBefore(interval.getStart())
-                                        && !t.getDate().isAfter(interval.getEnd()))
-                        .collect(Collectors.toMap(SecurityPrice::getDate, SecurityPrice::getValue));
-    }
-
-    @Override
-    public void reportingPeriodUpdated()
-    {
-        calculateCorrelationMatrix();
-        updateBottomTableColumns(correlationMatrix, tableLayout);
-    }
 }
