@@ -813,6 +813,36 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testDividendeAusland4()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = checkSecurity(results, "US5949181045", "870747", "MICROSOFT    DL-,00000625", CurrencyUnit.USD);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(16.73)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.74))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+    }
+
+    @Test
     public void testZinsgutschriftInland()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());

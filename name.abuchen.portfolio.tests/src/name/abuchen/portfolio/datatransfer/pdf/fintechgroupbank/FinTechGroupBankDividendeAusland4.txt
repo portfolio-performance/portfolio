@@ -1,0 +1,49 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0102382000001551111111
+Herrn
+Max Mustermann
+X Str. 64
+12345 Stadt
+             Frankfurt, 15.06.2020
+Dividendengutschrift für ausländische Wertpapiere
+Ihre Depotnummer: 1111111111
+Depotinhaber    : Mustermann, Max
+Nr.1111111111  MICROSOFT    DL-,00000625               (US5949181045/870747)  
+St.             :           50,00      Bruttodividende
+                                       pro Stück       :          0,5100 USD
+Extag           :      20.05.2020      Bruttodividende :           25,50 USD
+Zahlungstag     :      11.06.2020      Bemessungs-
+Valuta          :      11.06.2020      grundlage       :            8,99 EUR
+                                      *Einbeh. Steuer  :            2,37 EUR
+Devisenkurs     :        1,134800
+Quellenst.-satz :           15,00 %    Gez. Quellenst. :            3,82 USD
+                                       Endbetrag       :           16,73 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                  Kapitalertragsteuer  :            2,25 EUR
+                                  Solidaritätszuschlag :            0,12 EUR
+                                  Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer
+  finden Sie im Steuerreport unter der Transaktion-Nr. : 1111111111
+Die Verrechnung des Endbetrages erfolgt über Ihr Konto Nr.: 1111111111
+Anrechenbare Quellensteuer**                  15,00 %  =            3,83 USD
+** nur relevant für Steuerinländer
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001557168950 0113102380000101

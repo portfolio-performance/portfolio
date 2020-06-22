@@ -451,7 +451,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
                         // Nr.111111111 STARBUCKS CORP. (US8552441094/884437)
                         .section("wkn", "isin", "name") //
-                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\).*") //
                         .assign((t, v) -> {
 
                             Map<String, String> context = type.getCurrentContext();
