@@ -87,7 +87,7 @@ public class PortfolioSnapshot
         referenceAccount.setCurrencyCode(converter.getTermCurrency());
         portfolio.setReferenceAccount(referenceAccount);
 
-        snapshots.forEach(s -> portfolio.addAllTransaction(s.getSource().getTransactions()));
+        snapshots.forEach(s -> portfolio.addAllTransaction(s.getPortfolio().getTransactions()));
 
         return create(portfolio, snapshots.get(0).getCurrencyConverter(), snapshots.get(0).getTime());
     }
@@ -110,12 +110,16 @@ public class PortfolioSnapshot
         this.positions = positions;
     }
 
-    Portfolio getSource()
+    public Portfolio getPortfolio()
     {
         return portfolio;
     }
 
-    public Portfolio getPortfolio()
+    /**
+     * Returns the underlying portfolio which was the basis for the data even if
+     * the portfolio was filtered.
+     */
+    public Portfolio unwrapPortfolio()
     {
         return portfolio instanceof ReadOnlyPortfolio ? ((ReadOnlyPortfolio) portfolio).unwrap() : portfolio;
     }

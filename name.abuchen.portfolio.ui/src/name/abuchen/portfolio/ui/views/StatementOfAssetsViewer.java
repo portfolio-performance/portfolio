@@ -818,7 +818,7 @@ public class StatementOfAssetsViewer
         }
         else if (element.isSecurity())
         {
-            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.getPortfolio() : null;
+            Portfolio portfolio = portfolioSnapshot != null ? portfolioSnapshot.unwrapPortfolio() : null;
             new SecurityContextMenu(view).menuAboutToShow(manager, element.getSecurity(), portfolio);
         }
     }
