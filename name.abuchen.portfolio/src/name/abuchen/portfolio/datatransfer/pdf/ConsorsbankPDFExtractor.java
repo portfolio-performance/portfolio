@@ -634,7 +634,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("tax", "currency").optional() //
-                        .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$").assign((t, v) -> {
+                        .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                         })
@@ -667,7 +668,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("tax", "currency", "date").optional()
                         .match("Netto zulasten .* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
-                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*").assign((t, v) -> {
+                        .match("Valuta (?<date>\\d+\\.\\d+\\.\\d{4}+) .*")
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("tax")));
                             t.setDateTime(asDate(v.get("date")));
