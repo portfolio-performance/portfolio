@@ -82,7 +82,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
-                        
+
                         .section("forex", "exchangeRate", "currency", "amount").optional()
                         .match("umger. zum Devisenkurs *(?<forex>\\w{3}+) *(?<exchangeRate>[\\d.]+,\\d+) *(?<currency>\\w{3}+) *(?<amount>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
@@ -100,7 +100,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 long amount = asAmount(v.get("amount"));
                                 long fxAmount = exchangeRate.multiply(BigDecimal.valueOf(amount))
                                                 .setScale(0, RoundingMode.HALF_DOWN).longValue();
-                                
+
                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE,
                                                 Money.of(asCurrencyCode(v.get("currency")), amount),
                                                 Money.of(forex, fxAmount), reverseRate);
@@ -108,7 +108,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 t.getPortfolioTransaction().addUnit(grossValue);
                             }
                         })
-                       
+
                         .wrap(BuySellEntryItem::new);
 
         addFeesSectionsTransaction(pdfTransaction);
@@ -368,7 +368,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                                 asAmount(v.get("tax")))));
                             }
                         })
-                        
+
                         .section("solz", "currency").optional().multipleTimes()
                         .match("SOLZ .*(?<currency>\\w{3}+) *(?<solz>[\\d.]+,\\d+) *") //
                         .assign((t, v) -> {
@@ -447,7 +447,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))));
     }
-    
+
     @SuppressWarnings("nls")
     private void addTaxAdjustmentTransaction()
     {
@@ -605,7 +605,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                                 BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                                t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, exchangeRate));
+                                // store tax value in both currencies, if
+                                // security's currency
+                                // is different to transaction currency
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                                }
+                                else
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, exchangeRate));
+                                }
                             }
                         })
 
@@ -669,7 +679,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         block.set(vorabpauschaleTransaction);
     }
-    
+
     @Override
     public String getLabel()
     {
