@@ -1,0 +1,40 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0101111000001111011110
+Herrn
+Max Mustermann
+Muster Str. 3
+01234 FlatEx
+              Frankfurt, 01.01.2020
+Sammelabrechnung aus Sparplan
+Ihre Depotnummer: 9876543210
+Sehr geehrter Herr Mustermann,
+wir haben in 2019 folgende Transaktionen aus Ihrem/n Sparplan
+ausgeführt:
+Auftrags-Nr : 0001111111
+ISIN        : IE00B4L5Y983
+Bezeichnung : ISHSIII-CORE MSCI WLD DLA
+------------------------------------------------------------------------------
+K/V     Buchtag     Valuta         Stücke/Nom.      Ausf.-Kurs          Betrag
+------------------------------------------------------------------------------
+Kauf    18.11.2019  21.11.2019        0,877841     55,2492 EUR       50,00 EUR
+------------------------------------------------------------------------------
+Die Wertpapiere sowie den Gegenwert  haben/werden wir für Sie entsprechend der
+Abrechnung mit dem angegebenen Valutatag gebucht/buchen.  Bitte überprüfen Sie
+die vorliegenden Informationen anhand Ihres Auftrags bezüglich Richtigkeit und
+Vollständigkeit. Etwaige Einwendungen gegen die Abrechnung müssen unverzüglich
+nach Zugang bei der Bank erhoben werden. Kapitalerträge sind ESt-pflichtig.
+______________________________________________________________________________
+                                                                     Seite 1/1
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001111011110 0111101110000101

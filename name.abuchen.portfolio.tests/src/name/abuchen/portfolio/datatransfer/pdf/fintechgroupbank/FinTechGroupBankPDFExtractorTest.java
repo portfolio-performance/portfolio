@@ -526,6 +526,36 @@ public class FinTechGroupBankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierKauf16_SammelabrechnungSparplan() // NOSONAR
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexKauf16SammelabrechnungSparplan.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        checkSecurity(results, "IE00B4L5Y983", null, "ISHSIII-CORE MSCI WLD DLA", CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getAmount(), is(Values.Amount.factorize(50.00)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2019-11-21T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.877841)));
+    }
+
+    
+    
+    @Test
     public void testKontoauszug()
     {
         FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
@@ -718,6 +748,37 @@ public class FinTechGroupBankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.86 + (1.15 / 1.1137)))));
         assertThat(transaction.getShares(), is(Values.Share.factorize(15)));
+    }
+
+    @Test
+    public void testErtragsgutschrift6()
+    {
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "FlatexErtragsgutschrift6.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Security security = checkSecurity(results, "IE00B8GKDB10", "A1T8FV", "VA.FTSE A.W.H.D.Y.UETFDLD",
+                        CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(11.42)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(0.00))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(31.89)));
     }
 
     @Test

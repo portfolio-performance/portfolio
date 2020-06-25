@@ -1,0 +1,52 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+flatex Bank AG
+Postfach 100551
+41405 Neuss
+USt-IdNr.: DE 246 786 363
+Kundenservice:
+Tel.: +49 (0)9221 - 7035898
+E-Mail: kunden@flatex.de
+flatex Bank AG -  Rotfeder-Ring 7 - 60327 Frankfurt am Main
+0102262000000123456789
+Herrn
+Max Mustermann
+Muster Str. 3
+01234 FlatEx
+             Frankfurt, 25.06.2020
+Ertragsmitteilung - ausschüttender/teilthesaurierender Fonds
+Ihre Depotnummer: 0123456789
+Depotinhaber    : Mustermann, Max
+Nr.1946707042                VA.FTSE A.W.H.D.Y.UETFDLD (IE00B8GKDB10/A1T8FV)  
+St.             :            31,89    Bruttoausschüttung
+                                      pro Stück          :       0,4037950 USD
+Extag           :       11.06.2020    Bruttoausschüttung :           12,88 USD
+Valuta          :       24.06.2020
+                                      Bemessungsgrundlage:            0,00 EUR
+Devisenkurs     :         1,128000   *Einbeh. Steuer     :            0,00 EUR
+Teilfreist.-satz:            30,00 %  Teilfreistellung   :            3,43 EUR
+                                      Endbetrag          :           11,42 EUR
+* Enthalten sind folgende Steuern (negative Werte bedeuten Steuererstattung)
+                                    Kapitalertragsteuer  :            0,00 EUR
+                                    Solidaritätszuschlag :            0,00 EUR
+                                    Kirchensteuer        :            0,00 EUR
+  Details dazu inkl. evtl. angerechneter ausländischer Quellensteuer finden
+  Sie im Steuerreport unter der Transaktion-Nr.: 2222222222.
+Die Verrechnung des Endbetrag erfolgt über Ihr Konto Nr.: 1111111111.
+Fondsinformationen:
+steuerpflichtiger Ertrag                                 :            9,02 USD
+   davon ausländische Erträge mit anrechenb. QSt         :            0,00 USD
+         ausländische Erträge mit anrechenb. fikt. QSt   :            0,00 USD
+anrechenbare ausländische Quellensteuer**                :            0,00 USD
+**  ggf. mit einbeh. Steuer verrechnet und/oder Quellensteuer-Topf zugeführt
+Die  Gutschrift erfolgt  unter Vorbehalt  des  Eingangs.  Einwendungen  müssen
+unverzüglich  nach  Zugang  erhoben  werden.  Die  Unterlassung  rechtzeitiger
+Einwendung gilt als Genehmigung.
+Dieser   Beleg   ist    keine   Steuerbescheinigung.    Kapitalerträge   sind
+einkommensteuerpflichtig.
+Diese Mitteilung ist maschinell erstellt und wird nicht unterschrieben.
+Für weitergehende Fragen wenden Sie sich bitte an Ihr flatex-Service-Team.
+BLZ 101 308 00 / BIC: BIWBDE33XXX  -  Aktiengesellschaft, Sitz Frankfurt  -  Amtsgericht Frankfurt am Main (HRB 105687)
+Vorsitzender des Aufsichtsrats: Martin Korbmacher  -  Vorstand: Frank Niehage (Vorsitzender), Jörn Engelmann
+2000001565290330 0113102260000101
