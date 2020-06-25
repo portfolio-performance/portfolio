@@ -30,6 +30,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
 
         addBuySellTransaction();
         addBuyTransaction();
+        addBuyfromSavingsplanTransaction();
         addDepositAndWithdrawalTransaction();
         addDividendTransaction();
         addForeignDividendTransaction();
@@ -272,6 +273,40 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .wrap(BuySellEntryItem::new));
     }
 
+    
+    @SuppressWarnings("nls")
+    private void addBuyfromSavingsplanTransaction()
+    {
+        DocumentType type = new DocumentType("Sammelabrechnung aus Sparplan");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Auftrags-Nr :.*");
+        type.addBlock(block);
+        block.set(new Transaction<BuySellEntry>()
+
+                        .subject(() -> {
+                            BuySellEntry entry = new BuySellEntry();
+                            entry.setType(PortfolioTransaction.Type.BUY);
+                            return entry;
+                        })
+                        
+                        .section("isin", "name")
+                        .match("ISIN *: (?<isin>[^/]*)") //
+                        .match("Bezeichnung *: (?<name>.*)")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("date", "shares", "amount") //
+                        .match("^Kauf *(\\d+.\\d+.\\d{4}) *(?<date>\\d+.\\d+.\\d{4}) *(?<shares>[\\.\\d]+(,\\d*)?) *([\\d.-]+,\\d+) *(\\w{3}+) *(?<amount>[\\d.-]+,\\d+) *(?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+                            t.setDate(asDate(v.get("date")));
+                            t.setShares(asShares(v.get("shares")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
+
+                        .wrap(BuySellEntryItem::new));
+    }
+
+    
     @SuppressWarnings("nls")
     private void addDepositAndWithdrawalTransaction()
     {
@@ -383,7 +418,7 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("wkn", "isin", "name")
-                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\)") //
+                        .match("Nr\\.(\\d*) * (?<name>.*) *\\((?<isin>[^/]*)/(?<wkn>[^)]*)\\).*") //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
