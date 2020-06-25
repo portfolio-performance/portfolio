@@ -973,7 +973,13 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return Values.DateTime.format(((CalculationLineItem) e).getDateTime());
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "dateTime"), SWT.DOWN); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+
+            CalculationLineItem c1 = (CalculationLineItem) o1;
+            CalculationLineItem c2 = (CalculationLineItem) o2;
+
+            return c1.getDateTime().compareTo(c2.getDateTime());
+        }));
         support.addColumn(column);
 
         // transaction type
@@ -1163,7 +1169,15 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
                 return note != null && note.length() > 0 ? Images.NOTE.image() : null;
             }
         });
-        column.setSorter(ColumnViewerSorter.create(Transaction.class, "note")); //$NON-NLS-1$
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> {
+
+            Optional<Transaction> t1 = ((CalculationLineItem) o1).getTransaction();
+            String s1 = t1.isPresent() ? t1.get().getNote() : ""; //$NON-NLS-1$
+            Optional<Transaction> t2 = ((CalculationLineItem) o2).getTransaction();
+            String s2 = t2.isPresent() ? t2.get().getNote() : ""; //$NON-NLS-1$
+            
+            return s1.compareTo(s2);
+        }));
         support.addColumn(column);
     }
 
