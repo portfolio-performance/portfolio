@@ -573,16 +573,17 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("Devisenkurs (?<exchangeRate>[\\d.]+,\\d+) (\\w{3}+) / (\\w{3}+)") //
                         .match("Brutto in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> {
-                            BigDecimal rate = asExchangeRate(v.get("exchangeRate"));
-                            BigDecimal inverseRate = BigDecimal.ONE.divide(rate, 10, RoundingMode.HALF_DOWN);
-
-                            type.getCurrentContext().put("exchangeRate", inverseRate.toPlainString());
-
-                            Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")), asAmount(v.get("fxAmount")));
-                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                             if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                             {
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                asAmount(v.get("fxAmount")));
+                                Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+
                                 Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                                 t.addUnit(grossValue);
                             }
@@ -600,9 +601,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                             else if (type.getCurrentContext().containsKey("exchangeRate"))
                             {
                                 BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
                                 Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(exchangeRate)
+                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
                                                                 .setScale(0, RoundingMode.HALF_UP).longValue());
 
                                 // store tax value in both currencies, if
@@ -614,7 +616,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 }
                                 else
                                 {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, exchangeRate));
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
                                 }
                             }
                         })

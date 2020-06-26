@@ -448,18 +448,12 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
     private void addForeignDividendTransaction()
     {
         DocumentType type = new DocumentType("Dividendengutschrift für ausländische Wertpapiere", (context, lines) -> {
-            Pattern pCurrency = Pattern.compile(".* Endbetrag .* (?<currency>\\w{3})$");
             Pattern pCurrencyFx = Pattern.compile(".* Bruttodividende *: *[.\\d]+,\\d{2} (?<currencyFx>\\w{3})");
             Pattern pExchangeRate = Pattern.compile(".*Devisenkurs *: *(?<exchangeRate>[.\\d]+,\\d+).*");
             // read the current context here
             for (String line : lines)
             {
-                Matcher m = pCurrency.matcher(line);
-                if (m.matches())
-                {
-                    context.put("currency", m.group(1));
-                }
-                m = pCurrencyFx.matcher(line);
+                Matcher m = pCurrencyFx.matcher(line);
                 if (m.matches())
                 {
                     context.put("currencyFx", m.group(1));
@@ -501,39 +495,52 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         // St. : 105 Bruttodividende
                         .section("shares") //
                         .match("^St\\.[^:]+: *(?<shares>[\\.\\d]+(,\\d*)?).*") //
-                        .assign((t, v) ->
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        t.setShares(asShares(v.get("shares"))))
+                        .section("amount", "currency") //
+                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
+                        .assign((t, v) -> {
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                            t.setAmount(asAmount(v.get("amount")));
+                        })
 
                         // Extag : 08.08.2017 Bruttodividende : 26,25 USD
                         .section("amountGrossFx", "currencyFx") //
                         .match(".* Bruttodividende *: *(?<amountGrossFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
                         .assign((t, v) -> {
-
                             Map<String, String> context = type.getCurrentContext();
                             // set currency of transaction (should be in EUR)
-                            String currencyCode = asCurrencyCode(context.get("currency"));
-                            t.setCurrencyCode(currencyCode);
+                            String currencyCode = t.getCurrencyCode();
 
-                            // get foreign currency (should be in Fx)
-                            String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                            // create a Unit only, if security and transaction currency are different
-                            if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
+                            // create gross value unit only, if transaction
+                            // currency is different to security currency
+                            if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                             {
-                                // get exchange rate (in Fx/EUR) and calculate
-                                // inverse exchange rate (in EUR/Fx)
-                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
-                                                RoundingMode.HALF_DOWN);
 
-                                // get gross amount and calculate equivalent in
-                                // EUR
-                                Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
-                                BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
-                                                .divide(exchangeRate, 10, RoundingMode.HALF_DOWN).setScale(0, RoundingMode.HALF_DOWN);
-                                Money mAmountGrossFxInEUR = Money.of(currencyCode, amountGrossFxInEUR.longValue());
-                                t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
-                                                inverseRate));
+                                // get foreign currency (should be in Fx)
+                                String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
+                                // create a Unit only, if security and
+                                // transaction currency are different
+                                if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
+                                {
+                                    // get exchange rate (in Fx/EUR) and
+                                    // calculate
+                                    // inverse exchange rate (in EUR/Fx)
+                                    BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                    BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
+                                                    RoundingMode.HALF_DOWN);
+
+                                    // get gross amount and calculate equivalent
+                                    // in
+                                    // EUR
+                                    Money mAmountGrossFx = Money.of(currencyCodeFx, asAmount(v.get("amountGrossFx")));
+                                    BigDecimal amountGrossFxInEUR = BigDecimal.valueOf(mAmountGrossFx.getAmount())
+                                                    .divide(exchangeRate, 10, RoundingMode.HALF_DOWN)
+                                                    .setScale(0, RoundingMode.HALF_DOWN);
+                                    Money mAmountGrossFxInEUR = Money.of(currencyCode, amountGrossFxInEUR.longValue());
+                                    t.addUnit(new Unit(Unit.Type.GROSS_VALUE, mAmountGrossFxInEUR, mAmountGrossFx,
+                                                    inverseRate));
+                                }
                             }
                         })
 
@@ -542,40 +549,34 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         .match(".* Gez. Quellenst. *: *(?<amountFx>[.\\d]+,\\d{2}) (?<currencyFx>\\w{3})") //
                         .assign((t, v) -> {
 
-                            Map<String, String> context = type.getCurrentContext();
-                            // get foreign currency (should be in Fx) and
-                            // transaction currency (should be in EUR)
-                            String currencyCode = asCurrencyCode(context.get("currency"));
-                            String currencyCodeFx = asCurrencyCode(v.get("currencyFx"));
-                            if (!currencyCode.equalsIgnoreCase(currencyCodeFx))
+                            Money tax = Money.of(asCurrencyCode(v.get("currencyFx")), asAmount(v.get("amountFx")));
+
+                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
                             {
-                                // get exchange rate (in Fx/EUR) and calculate
-                                // inverse exchange rate (in EUR/Fx)
-                                BigDecimal exchangeRate = asExchangeRate(context.get("exchangeRate"));
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+                            else if (type.getCurrentContext().containsKey("exchangeRate"))
+                            {
+                                BigDecimal exchangeRate = asExchangeRate(type.getCurrentContext().get("exchangeRate"));
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10,
                                                 RoundingMode.HALF_DOWN);
 
-                                // get foreign taxes and calculate equivalent in
-                                // EUR
-                                Money mTaxesFx = Money.of(currencyCodeFx, asAmount(v.get("amountFx")));
-                                BigDecimal taxesFxInEUR = BigDecimal.valueOf(mTaxesFx.getAmount()).divide(exchangeRate,
-                                                10, RoundingMode.HALF_DOWN).setScale(0, RoundingMode.HALF_DOWN);
-                                Money mTaxesFxInEUR = Money.of(currencyCode, taxesFxInEUR.longValue());
-                                t.addUnit(new Unit(Unit.Type.TAX, mTaxesFxInEUR, mTaxesFx, inverseRate));
-                            }
-                            else
-                            { // but if not in Fx but Euro already...
-                                t.addUnit(new Unit(Unit.Type.TAX,
-                                                Money.of(currencyCodeFx, asAmount(v.get("amountFx")))));
-                            }
+                                Money txTax = Money.of(t.getCurrencyCode(),
+                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
+                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
 
-                        })
-
-                        .section("amount", "currency") //
-                        .match(".* Endbetrag *: *(?<amount>[\\d.-]+,\\d+) (?<currency>\\w{3}+)") //
-                        .assign((t, v) -> {
-                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                            t.setAmount(asAmount(v.get("amount")));
+                                // store tax value in both currencies, if
+                                // security's currency
+                                // is different to transaction currency
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                                }
+                                else
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
+                                }
+                            }
                         })
 
                         .section("tax", "currency").optional() //

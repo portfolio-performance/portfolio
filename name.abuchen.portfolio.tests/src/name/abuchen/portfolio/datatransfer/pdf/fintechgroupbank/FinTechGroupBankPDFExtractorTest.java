@@ -21,9 +21,12 @@ import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
 import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
+import name.abuchen.portfolio.datatransfer.ImportAction.Status;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
+import name.abuchen.portfolio.datatransfer.actions.CheckCurrenciesAction;
 import name.abuchen.portfolio.datatransfer.pdf.FinTechGroupBankPDFExtractor;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
+import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.Client;
@@ -894,8 +897,51 @@ public class FinTechGroupBankPDFExtractorTest
         AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
                         .getSubject();
 
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+
         assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
         assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(16.73)));
+        assertThat(transaction.getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(5.74))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(50)));
+    }
+
+    @Test
+    public void testDividendeAusland4WithSecurity()
+    {
+        Client client = new Client();
+        FinTechGroupBankPDFExtractor extractor = new FinTechGroupBankPDFExtractor(client);
+
+        Security existingSecurity = new Security("MICROSOFT    DL-,00000625", CurrencyUnit.EUR);
+        existingSecurity.setIsin("US5949181045");
+        existingSecurity.setWkn("870747");
+        client.addSecurity(existingSecurity);
+        
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "FinTechGroupBankDividendeAusland4.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        AccountTransaction transaction = (AccountTransaction) item.orElseThrow(IllegalArgumentException::new)
+                        .getSubject();
+        
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getSecurity(), is(existingSecurity));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-11T00:00")));
         assertThat(transaction.getAmount(), is(Values.Amount.factorize(16.73)));
         assertThat(transaction.getUnitSum(Unit.Type.TAX),
