@@ -246,16 +246,26 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         block.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            AccountTransaction transaction = new AccountTransaction();
-                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
-                            return transaction;
+                            return new AccountTransaction();
+                        })
+
+                        .section("type") //
+                        .match("Dividendenart: (?<type>.+)") //
+                        .assign((t, v) -> {
+                            String dividendType = v.get("type");
+                            if (dividendType.matches("Ordentliche Dividende")) {
+                                t.setType(AccountTransaction.Type.DIVIDENDS);
+                            } else if (dividendType.matches("R.ckerstattung Quellensteuer")) {
+                                t.setType(AccountTransaction.Type.TAX_REFUND);
+                            } else {
+                                throw new IllegalArgumentException("Unknown dividend type: " + dividendType);
+                            }
                         })
 
                         .section("shares", "name", "isin", "currency") //
-                        .find("Dividendenart: Ordentliche Dividende") //
                         .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
                         .match("ISIN: (?<isin>\\S*)") //
-                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*")
+                        .match("Aussch.ttung: (?<currency>\\w{3}+) .*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
