@@ -551,13 +551,84 @@ public class ClientPerformanceSnapshotTest
 
         assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
-                                        // price at start w/
+                                        // price at start USD w/
                                         // exchange rate at end
                                         (100.0 * 5 / 1.1813)
-                                                        // price at start w/
+                                                        // price at start USD w/
                                                         // exchange rate at
                                                         // start
                                                         - (100.0 * 5 / 1.1915)))));
+
+        assertThat(snapshot.getAbsoluteDelta(),
+                        is(snapshot.getValue(CategoryType.FINAL_VALUE)
+                                        .subtract(snapshot.getValue(CategoryType.TRANSFERS))
+                                        .subtract(snapshot.getValue(CategoryType.INITIAL_VALUE))));
+
+        assertThatCalculationWorksOut(snapshot, converter);
+    }
+
+    @Test
+    public void testRealizedAndUnrealizedForexCapitalGainsWithMultiplePortfolios()
+    {
+        CurrencyConverter converter = new TestCurrencyConverter();
+
+        Client client = buildClientWithSaleAndPurchaseInForex(converter, 10, 5);
+
+        // add a new portfolio + a new purchase *before* purchase. Because the
+        // new purchase is in a different securities account, the realized
+        // capital gains must not change compared to test method
+        // #testRealizedAndUnrealizedForexCapitalGains (see above)
+
+        Security security = client.getSecurities().get(0);
+        Account account = client.getAccounts().get(0);
+        Portfolio secondPortfolio = new PortfolioBuilder(account).addTo(client);
+
+        LocalDate purchaseDate = LocalDate.parse("2015-01-01");
+        Money purchaseAmount = Money.of(CurrencyUnit.EUR, Values.Amount.factorize(80.0 * 10));
+        BuySellEntry purchase = new BuySellEntry(secondPortfolio, account);
+        purchase.setType(PortfolioTransaction.Type.BUY);
+        purchase.setSecurity(security);
+        purchase.setDate(purchaseDate.atStartOfDay());
+        purchase.setShares(Values.Share.factorize(10));
+        purchase.setMonetaryAmount(purchaseAmount);
+        purchase.getPortfolioTransaction()
+                        .addUnit(new Unit(Unit.Type.GROSS_VALUE, purchaseAmount,
+                                        purchaseAmount.with(converter.with(CurrencyUnit.USD).at(purchaseDate)),
+                                        converter.getRate(purchaseDate, CurrencyUnit.USD).getValue()));
+        purchase.insert();
+
+        // code under test
+
+        ClientPerformanceSnapshot snapshot = new ClientPerformanceSnapshot(client, converter,
+                        LocalDate.parse("2014-12-31"), LocalDate.parse("2016-01-01"));
+
+        // assertions - unrealized gains
+
+        assertThat(snapshot.getValue(CategoryType.CAPITAL_GAINS), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                        // price at end * exchange rate at end
+                        (120.0 * (5 + 10) / 1.1588)
+                                        // purchase price
+                                        - (90.0 * 5) //
+                                        - (80.0 * 10)))));
+
+        // assertions - realized gains
+
+        assertThat(snapshot.getValue(CategoryType.REALIZED_CAPITAL_GAINS),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(
+                                        // EUR transaction value at sale (is
+                                        // realized!)
+                                        (100.0 * 5)
+                                                        // price at start *
+                                                        // exchange rate at
+                                                        // start of period
+                                                        - (90.0 * 5)))));
+
+        assertThat(snapshot.getCategoryByType(CategoryType.REALIZED_CAPITAL_GAINS).getPositions().get(0).getForexGain(),
+                        is(Money.of(CurrencyUnit.EUR,
+                                        // value at start -> to USD with rate at
+                                        // start -> back to EUR with rate at end
+                                        // -> minus start value
+                                        Values.Amount.factorize((90.0 * 5 * 1.2043 / 1.1813) - (90.0 * 5)))));
 
         assertThat(snapshot.getAbsoluteDelta(),
                         is(snapshot.getValue(CategoryType.FINAL_VALUE)
