@@ -1,0 +1,28 @@
+PDF author: 'VIAC'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Terzo Vorsorgestiftung der WIR Bank
+Auberg 1
+4002 Basel
+Internet www.viac.ch
+E-Mail info@viac.ch
+Telefon 0800 80 40 40
+Vertrag Vertragnummer Anrede
+Portfolio Portfolionummer Vorname Nachname
+Strasse Hausnummer
+PLZ Ort
+Basel, 27.02.2020
+Dividendenausschüttung
+Wir haben für Sie folgende Ausschüttung verbucht:
+Dividendenart: Rückerstattung Quellensteuer
+0.353 Ant CSIF Emerging Markets
+ISIN: CH0017844686
+Ausschüttung: CHF 16.25
+Betrag CHF 5.73
+ 
+Gutgeschriebener Betrag: Valuta 27.02.2020 CHF 5.73
+S. E. & O.
+Freundliche Grüsse
+Terzo Vorsorgestiftung
+Anzeige ohne Unterschrift
+
