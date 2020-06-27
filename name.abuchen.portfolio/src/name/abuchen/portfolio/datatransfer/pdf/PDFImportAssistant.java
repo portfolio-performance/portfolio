@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.eclipse.core.runtime.IProgressMonitor;
 
 import name.abuchen.portfolio.Messages;
+import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
@@ -106,6 +107,8 @@ public class PDFImportAssistant
 
                     errors.put(inputFile.getFile(), meaningfulExceptions.isEmpty() ? warnings : meaningfulExceptions);
                 }
+
+                PortfolioLog.warning(String.format("PDF import %s. file: %s", extracted ? "success" : "failed", inputFile.getName()));
             }
             catch (IOException e)
             {
