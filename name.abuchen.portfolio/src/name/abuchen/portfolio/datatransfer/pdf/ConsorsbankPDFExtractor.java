@@ -41,6 +41,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
         // old documents look very different
         addBuyTransaction2001();
+        addSellTransaction2008();
     }
 
     @Override
@@ -778,4 +779,61 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("expenses"))))));
     }
+
+    @SuppressWarnings("nls")
+    private void addSellTransaction2008()
+    {
+        DocumentType type = new DocumentType("Verkauf");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("^Verkauf AM .*$");
+        type.addBlock(block);
+        Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
+        block.set(pdfTransaction);
+        pdfTransaction.subject(() -> {
+            BuySellEntry entry = new BuySellEntry();
+            entry.setType(PortfolioTransaction.Type.SELL);
+            return entry;
+        });
+
+        pdfTransaction.section("wkn", "name", "currency") //
+                        .match("^.*WKN: (?<wkn>[^ ]*)$") //
+                        .match("^(?<name>.*)$") //
+                        .match("^Kurs ([\\d.]+,\\d+) (?<currency>\\w{3}+) .*")
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
+
+                        .section("shares") //
+                        .match("^ST (?<shares>[\\d.]+(,\\d+)?).*$") //
+                        .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
+
+                        .section("date", "time")
+                        .match("Verkauf AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+UM (?<time>\\d+:\\d+:\\d+).*.*")
+                        .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
+
+                        .section("amount", "currency")
+                        .match("WERT \\d+.\\d+.\\d{4}+ (?<currency>\\w{3}+) (?<amount>[\\d.]+,\\d+)") //
+                        .assign((t, v) -> {
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
+
+                        .wrap(BuySellEntryItem::new);
+
+        addFeesSectionsTransaction2008(pdfTransaction);
+    }
+
+    @SuppressWarnings("nls")
+    private void addFeesSectionsTransaction2008(Transaction<BuySellEntry> pdfTransaction)
+    {
+        pdfTransaction.section("currency", "stockfees").optional()
+                        .match("^ *GRUNDGEBUEHR +(?<currency>\\w{3}+) +(?<stockfees>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("stockfees"))))))
+
+                        .section("currency", "brokerage").optional()
+                        .match("^ *PROVISION +(?<currency>\\w{3}+) +(?<brokerage>[\\d.]+,\\d+).*$") //
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("brokerage"))))));
+    }
+
 }

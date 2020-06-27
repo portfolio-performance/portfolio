@@ -643,6 +643,36 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf3_2008() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankVerkauf3_2008.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("A0MZBE"));
+        assertThat(security.getName(), is("AHOLD, KON. EO-,30"));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 3290_05L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 13_21L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 16, 4, 3)));
+        assertThat(t.getShares(), is(Values.Share.factorize(334)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.89))));
+    }
+    
+    @Test
     public void testWertpapierKauf1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
