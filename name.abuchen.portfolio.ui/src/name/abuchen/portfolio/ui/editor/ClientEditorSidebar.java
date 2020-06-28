@@ -103,8 +103,9 @@ import name.abuchen.portfolio.ui.editor.Navigation.Tag;
                             .forEach(this::setupWatchlistDnD);
 
             scrolledComposite.setMinSize(sidebar.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-            sidebar.layout();
+            sidebar.layout(true);
             sidebar.redraw();
+            sidebar.update();
         };
         editor.getClientInput().getNavigation().addListener(listener);
         sidebar.addDisposeListener(e -> editor.getClientInput().getNavigation().removeListener(listener));

@@ -120,6 +120,7 @@ public final class Sidebar<I> extends Composite
         data.top = targetList.isEmpty() ? new FormAttachment(0, 5)
                         : new FormAttachment(targetList.get(targetList.size() - 1), offset);
         entry.setLayoutData(data);
+        entry.redraw();
 
         existingList.remove(entry);
         targetList.add(entry);
