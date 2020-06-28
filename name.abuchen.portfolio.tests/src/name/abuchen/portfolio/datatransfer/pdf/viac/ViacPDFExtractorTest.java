@@ -404,7 +404,7 @@ public class ViacPDFExtractorTest
     }
     
     @Test
-    public void testDividend03()
+    public void testTaxRefund01()
     {
         Client client = new Client();
 
@@ -412,15 +412,11 @@ public class ViacPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend03.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacTaxRefund01.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
-
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
-        assertThat(security.getIsin(), is("CH0017844686"));
-        assertThat(security.getName(), is("CSIF Emerging Markets"));
 
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
@@ -428,7 +424,7 @@ public class ViacPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(5.73))));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.353)));
+        assertThat(transaction.getNote(), is("CSIF Emerging Markets"));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
@@ -436,7 +432,38 @@ public class ViacPDFExtractorTest
     }
 
     @Test
-    public void testDividend04()
+    public void testTaxRefund01WithExistingSecurity()
+    {
+        Security security = new Security("CSIF Emerging Markets", "USD");
+        security.setIsin("CH0017844686");
+        Client client = new Client();
+        client.addSecurity(security);
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacTaxRefund01.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(5.73))));
+        assertThat(transaction.getNote(), is("CSIF Emerging Markets"));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+
+        assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));
+        assertThat(transaction.getGrossValue(), is(Money.of("CHF", Values.Amount.factorize(5.73))));
+    }
+
+    @Test
+    public void testTaxRefund02()
     {
         Client client = new Client();
 
@@ -444,15 +471,11 @@ public class ViacPDFExtractorTest
 
         List<Exception> errors = new ArrayList<>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend04.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacTaxRefund02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(2));
+        assertThat(results.size(), is(1));
         new AssertImportActions().check(results, "CHF");
-
-        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
-        assertThat(security.getIsin(), is("CH0037606552"));
-        assertThat(security.getName(), is("CSIF Europe ex CH"));
 
         AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
                         .orElseThrow(IllegalArgumentException::new).getSubject();
@@ -460,7 +483,7 @@ public class ViacPDFExtractorTest
         assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
         assertThat(transaction.getMonetaryAmount(),
                         is(Money.of("CHF", Values.Amount.factorize(1.36))));
-        assertThat(transaction.getShares(), is(Values.Share.factorize(0.154)));
+        assertThat(transaction.getNote(), is("CSIF Europe ex CH"));
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX), is(Money.of("CHF", Values.Amount.factorize(0))));

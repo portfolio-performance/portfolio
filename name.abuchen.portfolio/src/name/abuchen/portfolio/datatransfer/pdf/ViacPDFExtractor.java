@@ -26,6 +26,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         addInterestTransaction();
         addFeeTransaction();
         addDividendsTransaction();
+        addTaxRefundTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -241,27 +242,16 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
         DocumentType type = new DocumentType("Dividendenaussch");
         this.addDocumentTyp(type);
 
-        Block block = new Block("Dividendenaussch.ttung");
+        Block block = new Block("Dividendenart: Ordentliche Dividende");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
                         .subject(() -> {
-                            return new AccountTransaction();
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.DIVIDENDS);
+                            return transaction;
                         })
-
-                        .section("type") //
-                        .match("Dividendenart: (?<type>.+)") //
-                        .assign((t, v) -> {
-                            String dividendType = v.get("type");
-                            if (dividendType.matches("Ordentliche Dividende")) {
-                                t.setType(AccountTransaction.Type.DIVIDENDS);
-                            } else if (dividendType.matches("R.ckerstattung Quellensteuer")) {
-                                t.setType(AccountTransaction.Type.TAX_REFUND);
-                            } else {
-                                throw new IllegalArgumentException("Unknown dividend type: " + dividendType);
-                            }
-                        })
-
+                        
                         .section("shares", "name", "isin", "currency") //
                         .match("(?<shares>[\\d+,.]*) Ant (?<name>.*)$") //
                         .match("ISIN: (?<isin>\\S*)") //
@@ -275,6 +265,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                         .match("Gutgeschriebener Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
                         .assign((t, v) -> {
                             t.setDateTime(asDate(v.get("date")));
+
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
@@ -299,6 +290,39 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             }
                         })
 
+                        .wrap(TransactionItem::new));
+    }
+
+    @SuppressWarnings("nls")
+    private void addTaxRefundTransaction()
+    {
+        DocumentType type = new DocumentType("Dividendenaussch");
+        this.addDocumentTyp(type);
+
+        Block block = new Block("Dividendenart: R.ckerstattung Quellensteuer");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction transaction = new AccountTransaction();
+                            transaction.setType(AccountTransaction.Type.TAX_REFUND);
+                            return transaction;
+                        })
+
+                        .section("name") //
+                        .match(".* Ant (?<name>.*)$") //
+                        .assign((t, v) -> {
+                            t.setNote(v.get("name"));
+                        })
+
+                        .section("date", "amount", "currency") //
+                        .match("Gutgeschriebener Betrag: Valuta (?<date>\\d+.\\d+.\\d{4}+) (?<currency>\\w{3}+) (?<amount>-?[\\d+',.]*)") //
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(v.get("currency")));
+                        })
                         .wrap(TransactionItem::new));
     }
 

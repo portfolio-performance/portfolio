@@ -20,6 +20,7 @@ import name.abuchen.portfolio.PortfolioLog;
 import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.SecurityCache;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
+import name.abuchen.portfolio.model.Annotated;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyUnit;
@@ -105,8 +106,15 @@ public abstract class AbstractPDFExtractor implements Extractor
             }
 
             for (Item item : items)
-                item.getSubject().setNote(filename);
-
+            {   
+                // Don't overwrite note set by the PDF extractor
+                Annotated subject = item.getSubject();
+                String note = subject.getNote();
+                if (note == null || note.isEmpty())
+                {
+                    subject.setNote(filename);
+                }
+            }
             return items;
         }
         catch (IllegalArgumentException e)
