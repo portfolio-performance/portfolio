@@ -218,7 +218,7 @@ public class BaaderBankPDFExtractor extends AbstractPDFExtractor
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
                         .section("tax", "currency").optional()
-                        .match("US-Quellensteuer (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
+                        .match("(US-Quellensteuer|Quellensteuer) (?<currency>\\w{3}) (?<tax>[\\d.]+,\\d{2}) -")
                         .assign((t, v) -> t.addUnit(new Unit(Unit.Type.TAX,
                                         Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax"))))))
 
