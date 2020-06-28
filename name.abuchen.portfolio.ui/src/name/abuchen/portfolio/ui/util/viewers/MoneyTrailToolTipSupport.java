@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.ui.util.viewers;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.eclipse.jface.layout.GridDataFactory;
@@ -8,6 +11,8 @@ import org.eclipse.jface.viewers.ColumnViewer;
 import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
 import org.eclipse.jface.viewers.ViewerCell;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseTrackListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -18,6 +23,7 @@ import name.abuchen.portfolio.snapshot.trail.TrailProvider;
 import name.abuchen.portfolio.snapshot.trail.TrailRecord;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.util.TextUtil;
 
 public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 {
@@ -71,10 +77,12 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
         return composite;
     }
 
-    private void addRow(Composite composite, TrailRecord trail, int level, int depth)
+    private Label addRow(Composite composite, TrailRecord trail, int level, int depth)
     {
+        List<Label> inputs = new ArrayList<>();
+
         for (TrailRecord child : trail.getInputs())
-            addRow(composite, child, level - 1, depth);
+            inputs.add(addRow(composite, child, level - 1, depth));
 
         Label date = new Label(composite, SWT.NONE);
         date.setBackground(composite.getBackground());
@@ -83,13 +91,15 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
 
         Label label = new Label(composite, SWT.NONE);
         label.setBackground(composite.getBackground());
-        label.setText(trail.getLabel());
+        label.setText(TextUtil.pad(trail.getLabel()));
 
         Label shares = new Label(composite, SWT.RIGHT);
         shares.setBackground(composite.getBackground());
         GridDataFactory.fillDefaults().applyTo(shares);
         if (trail.getShares() != null)
             shares.setText(Values.Share.format(trail.getShares()));
+
+        Label answer = null;
 
         for (int index = 0; index < depth; index++)
         {
@@ -98,8 +108,43 @@ public class MoneyTrailToolTipSupport extends ColumnViewerToolTipSupport
             GridDataFactory.fillDefaults().applyTo(column);
 
             if (index == level)
-                column.setText(trail.getValue() != null ? Values.Money.format(trail.getValue())
-                                : Messages.LabelNotAvailable);
+            {
+                answer = column;
+                column.setText(TextUtil.pad(trail.getValue() != null ? Values.Money.format(trail.getValue())
+                                : Messages.LabelNotAvailable));
+
+                highlight(Arrays.asList(label, column), inputs);
+            }
         }
+
+        return answer;
+    }
+
+    private void highlight(List<Label> outputs, List<Label> inputs)
+    {
+        if (inputs.isEmpty())
+            return;
+
+        outputs.forEach(label -> label.addMouseTrackListener(new MouseTrackListener()
+        {
+            @Override
+            public void mouseHover(MouseEvent e)
+            {
+            }
+
+            @Override
+            public void mouseExit(MouseEvent e)
+            {
+                outputs.forEach(l -> l.setBackground(Colors.INFO_TOOLTIP_BACKGROUND));
+                inputs.forEach(l -> l.setBackground(Colors.INFO_TOOLTIP_BACKGROUND));
+            }
+
+            @Override
+            public void mouseEnter(MouseEvent e)
+            {
+                outputs.forEach(l -> l.setBackground(Colors.ICON_ORANGE));
+                inputs.forEach(l -> l.setBackground(Colors.ICON_GREEN));
+            }
+        }));
     }
 }
