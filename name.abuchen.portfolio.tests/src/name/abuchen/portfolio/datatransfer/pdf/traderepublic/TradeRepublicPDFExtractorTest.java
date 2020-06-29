@@ -221,7 +221,7 @@ public class TradeRepublicPDFExtractorTest
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
         assertThat(security.getIsin(), is("DE000TR95XU9"));
-        assertThat(security.getName(), is("HSBCTrinkaus &Burkhardt AG"));
+        assertThat(security.getName(), is("HSBC Trinkaus & Burkhardt AG"));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check transaction

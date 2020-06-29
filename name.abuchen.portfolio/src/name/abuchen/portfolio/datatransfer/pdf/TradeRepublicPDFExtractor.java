@@ -106,7 +106,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("date", "time") //
-                        .match(".*Order Verkauf am (?<date>\\d+.\\d+.\\d{4}+),.*um (?<time>\\d+:\\d+) Uhr.*")
+                        .match(".*Order Verkauf am (?<date>\\d+.\\d+.\\d{4}+), um (?<time>\\d+:\\d+) Uhr.*")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), v.get("time"))))
 
                         .section("fee", "currency") //
