@@ -720,10 +720,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addBuyTransaction2001()
     {
-        DocumentType type = new DocumentType("KAUF");
+        DocumentType type = new DocumentType("WERTPAPIERABRECHNUNG");
         this.addDocumentTyp(type);
 
-        Block block = new Block("^      KAUF +AM .*$");
+        Block block = new Block("^      (KAUF|BEZUG) +AM .*$");
         type.addBlock(block);
         Transaction<BuySellEntry> pdfTransaction = new Transaction<>();
         block.set(pdfTransaction);
@@ -746,7 +746,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("^ *ST *(?<shares>[\\d.]+(,\\d+)?).*$") //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
-                        .section("date").match("^ *KAUF +AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+.*$")
+                        .section("date").match("^ *(KAUF|BEZUG) +AM (?<date>\\d+\\.\\d+\\.\\d{4}+)\\s+.*$")
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), "05:00:00")))
 
                         .section("amount", "currency")
@@ -783,7 +783,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addSellTransaction2008()
     {
-        DocumentType type = new DocumentType("Verkauf");
+        DocumentType type = new DocumentType("WERTPAPIERABRECHNUNG");
         this.addDocumentTyp(type);
 
         Block block = new Block("^Verkauf AM .*$");
