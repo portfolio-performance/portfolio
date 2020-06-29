@@ -6,14 +6,17 @@ import static org.junit.Assert.assertThat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 
+import name.abuchen.portfolio.datatransfer.Extractor;
 import name.abuchen.portfolio.datatransfer.Extractor.BuySellEntryItem;
 import name.abuchen.portfolio.datatransfer.Extractor.Item;
 import name.abuchen.portfolio.datatransfer.Extractor.SecurityItem;
+import name.abuchen.portfolio.datatransfer.Extractor.TransactionItem;
 import name.abuchen.portfolio.datatransfer.actions.AssertImportActions;
 import name.abuchen.portfolio.datatransfer.pdf.PDFInputFile;
 import name.abuchen.portfolio.datatransfer.pdf.TradeRepublicPDFExtractor;
@@ -199,6 +202,66 @@ public class TradeRepublicPDFExtractorTest
         assertThat(tx.getShares(), is(Values.Share.factorize(80)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
         assertThat(tx.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(30.63 + 1.68))));
+    }
+
+    @Test
+    public void testVerkauf02()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(4));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE000TR95XU9"));
+        assertThat(security.getName(), is("HSBCTrinkaus &Burkhardt AG"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3615.63))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-06-10T11:42")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(500)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        if (iter.hasNext())
+        {
+            Item i = iter.next();
+            
+            AccountTransaction transaction = (AccountTransaction) i.getSubject();
+
+            // assert transaction
+            assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.5)));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
+        if (iter.hasNext())
+        {
+            Item i = iter.next();
+            
+            AccountTransaction transaction = (AccountTransaction) i.getSubject();
+
+            // assert transaction
+            assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.13)));
+            assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
+        }
     }
 
 }
