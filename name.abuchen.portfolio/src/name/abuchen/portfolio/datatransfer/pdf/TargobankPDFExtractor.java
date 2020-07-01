@@ -72,14 +72,20 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name", "wkn", "isin").optional().match(regexName).match(regexWknAndIsin)
+                        .section("name", "wkn", "isin").optional()
+                        .match(regexName)
+                        .match(regexWknAndIsin)
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("time").optional().match(regexTime).assign((t, v) -> {
+                        .section("time").optional()
+                        .match(regexTime)
+                        .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
 
-                        .section("date").optional().match(regexDate).assign((t, v) -> {
+                        .section("date").optional()
+                        .match(regexDate)
+                        .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
                                 t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -90,18 +96,22 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("amount", "currency").match(regexAmountAndCurrency).assign((t, v) -> {
+                        .section("amount", "currency")
+                        .match(regexAmountAndCurrency)
+                        .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("fee", "currency").optional().match(regexFees)
+                        .section("fee", "currency").optional()
+                        .match(regexFees)
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("shares").optional().match(regexShares)
+                        .section("shares").optional()
+                        .match(regexShares)
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .wrap(t -> {
@@ -130,14 +140,20 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name", "wkn", "isin").match(regexName).match(regexWknAndIsin)
+                        .section("name", "wkn", "isin")
+                        .match(regexName)
+                        .match(regexWknAndIsin)
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("time").optional().match(regexTime).assign((t, v) -> {
+                        .section("time").optional()
+                        .match(regexTime)
+                        .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
 
-                        .section("date").optional().match(regexDate).assign((t, v) -> {
+                        .section("date").optional()
+                        .match(regexDate)
+                        .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
                                 t.setDate(asDate(v.get("date"), type.getCurrentContext().get("time")));
@@ -148,25 +164,30 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("amount", "currency").optional().match(regexAmountAndCurrency).assign((t, v) -> {
+                        .section("amount", "currency").optional()
+                        .match(regexAmountAndCurrency)
+                        .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("fee", "currency").optional().match(regexFees)
+                        .section("fee", "currency").optional()
+                        .match(regexFees)
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("tax", "currency").optional() //
-                        .match(regexTaxes).assign((t, v) -> {
+                        .match(regexTaxes)
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
-                        .section("shares").optional().match(regexShares)
+                        .section("shares").optional()
+                        .match(regexShares)
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .wrap(t -> {
