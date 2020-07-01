@@ -353,7 +353,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // context
                                 t.setDateTime(asDate(date + context.get("year")));
                             }
-                            t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                             // check for withdrawals
@@ -366,6 +365,32 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .wrap(TransactionItem::new));
+
+        // somedevelopment
+        // Added "Lastschrift" as DEPOSIT option
+        block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+.Lastschrift[ ]+[\\d.-]+,\\d+[+-]");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>().subject(() -> {
+            AccountTransaction t = new AccountTransaction();
+            t.setType(AccountTransaction.Type.DEPOSIT);
+            return t;
+        })
+
+                        .section("valuta", "amount", "sign")
+                        .match("\\d+.\\d+.[ ]+(?<valuta>\\d+.\\d+.)[ ]+Lastschrift[ ]+(?<amount>[\\d.-]+,\\d+)(?<sign>[+-])")
+                        .assign((t, v) -> {
+                            Map<String, String> context = type.getCurrentContext();
+                            String date = v.get("valuta");
+                            if (date != null)
+                            {
+                                // create a long date from the year in the
+                                // context
+                                t.setDateTime(asDate(date + context.get("year")));
+                            }
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(context.get("currency")));
+                        }).wrap(t -> new TransactionItem(t)));
+        // somedevelopment
 
         // fees for foreign dividends, subtract value from account
         block = new Block("\\d+\\.\\d+\\.[ ]+\\d+\\.\\d+\\.[ ]+Geb.hr Kapitaltransaktion Ausland[ ]+[\\d.-]+,\\d+[-]");
@@ -389,7 +414,6 @@ public class FinTechGroupBankPDFExtractor extends AbstractPDFExtractor
                                 // context
                                 t.setDateTime(asDate(date + context.get("year")));
                             }
-                            t.setNote(v.get("text"));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(context.get("currency")));
                         }).wrap(TransactionItem::new));
