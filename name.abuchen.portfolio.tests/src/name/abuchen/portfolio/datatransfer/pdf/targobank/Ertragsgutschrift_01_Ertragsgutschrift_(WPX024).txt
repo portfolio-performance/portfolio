@@ -1,0 +1,38 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTERSTRASSE 5
+12345 MUSTERSTADT
+Depotnummer 123456789123
+........................................................................................................................................................................................................
+Ertragsgutschrift 25.06.2020
+Rechnungsnummer: CPS-2020-0223620062-0002485
+MAX MUSTERMANN
+Wir informieren Sie über die folgende Ausschüttung:
+Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
+WKN / ISIN A12CX1 / IE00BKX55T58
+Stück 81
+Ausschüttung pro Stück 0,293466 USD
+Ex-Tag 11.06.2020
+Zahlbar 24.06.2020
+Ursprungsland Irland
+Geschäftsjahr 2019 / 2020
+Geschäftsnummer 17720CG001598O00
+Bruttoertrag 23,77 USD
+Devisenkurs zur Handelswährung USD/EUR 1,1223
+Bruttoertrag in EUR 21,18 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 24. Juni 2020
+Konto-Nr. 5310515690 21,18 EUR
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200626.043619.5011.0007.6698 X 0 R

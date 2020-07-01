@@ -1,0 +1,45 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTERSTRASSE 5
+12345 MUSTERSTADT
+Depotnummer 123456789123
+........................................................................................................................................................................................................
+Ertragsgutschrift (Steuerbeilage) 26.06.2020
+MAX MUSTERMANN
+Wertpapier Vang.FTSE Dev.Eur.ex UK U.ETF - Registered Shares EUR Dis. o
+WKN / ISIN A12CXZ / IE00BKX55S42
+Stück 61
+Ex-Tag 11.06.2020
+Ursprungsland Irland
+Kapitalertragsteuer Solidaritätszuschlag
+25,00 % * 5,50 %
+Transaktionsreferenz INDTBK17620CA000449O00
+Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
+Teilfreistellung (§ 20 InvStG) 30,00 % - 4,59 EUR
+Erträge/Verluste 10,70 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+Nutzung des Sparerpauschbetrages/Freistellungsauftrages - 10,70 EUR
+Anrechnung ausländischer Quellensteuer ** 0,00 EUR
+Bemessungsgrundlage 0,00 EUR
+Kapitalertragsteuer (KESt): 0,00 EUR
+Solidaritätszuschlag auf KESt: 0,00 EUR
+Kirchensteuer auf KESt: 0,00 EUR
+Gesamtsumme Steuern 0,00 EUR
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+** Quellensteuer multipliziert mit 4 als Ertragsäquivalent
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200625.080247.5006.0006.1643 X 0 R
