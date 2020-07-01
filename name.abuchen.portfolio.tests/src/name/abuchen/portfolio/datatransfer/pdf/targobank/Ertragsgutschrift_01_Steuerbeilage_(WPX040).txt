@@ -1,0 +1,46 @@
+PDF Autor: ''
+PDFBox Version: 1.8.16
+-----------------------------------------
+TARGOBANK AG
+Postfach 10 02 30
+47002 Duisburg
+TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
+HERR
+MAX MUSTERMANN
+MUSTERSTRASSE 5
+12345 MUSTERSTADT
+Depotnummer 123456789123
+........................................................................................................................................................................................................
+Ertragsgutschrift (Steuerbeilage) 25.06.2020
+MAX MUSTERMANN
+Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
+WKN / ISIN A12CX1 / IE00BKX55T58
+Stück 81
+Ex-Tag 11.06.2020
+Ursprungsland Irland
+Kapitalertragsteuer Solidaritätszuschlag
+25,00 % * 5,50 %
+Transaktionsreferenz INDTBK17720CG001598O00
+Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
+Teilfreistellung (§ 20 InvStG) 30,00 % - 6,35 EUR
+Erträge/Verluste 14,83 EUR
+Auf- oder Abbau von steuerlichen Verrechnungsmöglichkeiten
+Verlustverrechnung aus Aktienhandel: 0,00 EUR
+Verlustverrechnung aus sonstigen Geschäften: 0,00 EUR
+Nutzung des Sparerpauschbetrages/Freistellungsauftrages 0,00 EUR
+Anrechnung ausländischer Quellensteuer ** 0,00 EUR
+Bemessungsgrundlage 0,00 EUR
+Kapitalertragsteuer (KESt): 5,30 EUR
+Solidaritätszuschlag auf KESt: 0,29 EUR
+Kirchensteuer auf KESt: 0,00 EUR
+Gesamtsumme Steuern 5,59 EUR
+Belastung Ihres Kontos NUMMER mit Wertstellung zum 24. Juni 2020.
+* KESt grundsätzlich 25%. Bei Einbehalt von Kirchensteuer ändert sich der KESt-Satz entsprechend Ihres Kirchensteuersatzes.
+** Quellensteuer multipliziert mit 4 als Ertragsäquivalent
+Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
+Seite 1
+TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
+Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
+Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
+USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
+GH.20200626.080237.5007.0006.6402 X 0 R
