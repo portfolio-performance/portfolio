@@ -51,7 +51,7 @@ public class TargobankPDFExtractorTest
         Optional<Item> securityItem;
         Optional<Item> entryItem;
 
-        // SecurityItem
+        // SecurityItem 
         securityItem = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(securityItem.isPresent(), is(true));
         Security security = ((SecurityItem) securityItem.get()).getSecurity();

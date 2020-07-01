@@ -42,7 +42,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private static final DateTimeFormatter SPECIAL_DATE_FORMAT = DateTimeFormatter.ofPattern("d. MMMM yyyy", //$NON-NLS-1$
                     Locale.GERMANY);
 
-    public TargobankPDFExtractor(Client client)
+    public TargobankPDFExtractor(Client client) 
     {
         super(client);
 
