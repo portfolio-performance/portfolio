@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -74,6 +73,7 @@ import name.abuchen.portfolio.ui.jobs.UpdateQuotesJob;
 import name.abuchen.portfolio.ui.util.BookmarkMenu;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.ConfirmActionWithSelection;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.BooleanEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -235,17 +235,7 @@ public final class SecuritiesTable implements ModificationListener
             @Override
             public Image getImage(Object e)
             {
-                Security sec = ((Security) e);
-                Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(sec.getClass());
-                if(logoAttr.isPresent()) 
-                {
-                    Image img = sec.getImage(logoAttr.get(), 16, 16);
-                    if(img != null) 
-                    {
-                        return img;
-                    }
-                }
-                return sec.isRetired() ? Images.SECURITY_RETIRED.image() : Images.SECURITY.image();
+                return LogoManager.instance().getDefaultColumnImage(e, getClient().getSettings());
             }
         });
         ColumnViewerSorter.create(Security.class, "name").attachTo(column, SWT.DOWN); //$NON-NLS-1$

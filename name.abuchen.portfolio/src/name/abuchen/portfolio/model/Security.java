@@ -26,7 +26,7 @@ import name.abuchen.portfolio.util.Pair;
  * <strong>Attributes</strong> are managed and edited by the user while
  * <strong>properties</strong> are managed by the program.
  */
-public final class Security extends AttributableBase implements Attributable, InvestmentVehicle
+public final class Security implements Attributable, InvestmentVehicle
 {
     public static final class ByName implements Comparator<Security>, Serializable
     {

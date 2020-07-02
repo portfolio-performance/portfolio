@@ -23,6 +23,7 @@ import name.abuchen.portfolio.model.AttributeType.ImageConverter;
 import name.abuchen.portfolio.model.Attributes;
 import name.abuchen.portfolio.model.Bookmark;
 import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.ImageManager;
 import name.abuchen.portfolio.model.LimitPrice;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -83,7 +84,14 @@ public class AttributeColumn extends Column
             {
                 return ""; //$NON-NLS-1$
             }
-            Object value = getAttributeValue(element);            
+            
+            Attributable attributable = Adaptor.adapt(Attributable.class, element);
+            if (attributable == null)
+                return null;
+
+            Attributes attributes = attributable.getAttributes();
+
+            Object value = attributes.get(attribute);     
             return attribute.getConverter().toString(value);
         }
         
@@ -92,22 +100,10 @@ public class AttributeColumn extends Column
         {
             if(attribute.getConverter() instanceof ImageConverter) 
             {
-                Object value = getAttributeValue(element);
-                ImageConverter conv = (ImageConverter)attribute.getConverter();
-                return conv.toImage(conv.toString(value));
+                Attributable attributable = Adaptor.adapt(Attributable.class, element);
+                return ImageManager.instance().getImage(attributable, attribute);
             }
             return null;
-        }
-        
-        private Object getAttributeValue(Object element) 
-        {
-            Attributable attributable = Adaptor.adapt(Attributable.class, element);
-            if (attributable == null)
-                return null;
-
-            Attributes attributes = attributable.getAttributes();
-
-            return attributes.get(attribute);
         }
     }
 

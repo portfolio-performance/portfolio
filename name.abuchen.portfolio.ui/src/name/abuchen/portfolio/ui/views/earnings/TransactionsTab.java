@@ -1,7 +1,6 @@
 package name.abuchen.portfolio.ui.views.earnings;
 
 import java.text.MessageFormat;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -23,7 +22,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
@@ -36,6 +34,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.Colors;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
@@ -167,13 +166,7 @@ public class TransactionsTab implements EarningsTab
             public Image getImage(Object element)
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
-                if(security != null) 
-                {
-                    Optional<AttributeType> logoAttr = model.getClient().getSettings().getOptionalLogoAttributeType(security.getClass());
-                    Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
-                    if(logo != null) return logo;
-                }
-                return security != null ? Images.SECURITY.image() : null;
+                return LogoManager.instance().getDefaultColumnImage(security, model.getClient().getSettings());
             }
         });
         ColumnViewerSorter.create(e -> {

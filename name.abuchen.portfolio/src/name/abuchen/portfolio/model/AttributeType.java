@@ -22,6 +22,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
+import org.eclipse.swt.graphics.Rectangle;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
@@ -388,11 +389,20 @@ public class AttributeType
             }
         }
 
-        public static Image resize(Image image, int width, int height) 
+        public static Image resize(Image image, int maxWidth, int maxHeight) 
         {
-            Image scaled = new Image(null, width, height);
+            Rectangle bounds = image.getBounds();
+            int newHeight = maxHeight;
+            int newWidth = (bounds.width * newHeight) / bounds.height;
+            if (newWidth > maxWidth)
+             {
+               newWidth = maxWidth;
+               newHeight = (bounds.height * newWidth) / bounds.width;
+             }
+            
+            Image scaled = new Image(null, newWidth, newHeight);
             GC gc = new GC(scaled);
-            gc.drawImage(image, 0, 0, image.getBounds().width, image.getBounds().height, 0, 0, width, height);
+            gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, newWidth, newHeight);
             gc.dispose();
             image.dispose(); // don't forget about me!
             return scaled;

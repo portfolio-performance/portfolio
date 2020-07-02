@@ -2,7 +2,6 @@ package name.abuchen.portfolio.ui.views;
 
 import java.text.MessageFormat;
 import java.time.LocalDate;
-import java.util.Optional;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -32,7 +31,6 @@ import org.eclipse.swt.widgets.Control;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.AccountTransaction;
-import name.abuchen.portfolio.model.AttributeType;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
@@ -55,6 +53,7 @@ import name.abuchen.portfolio.ui.selection.SecuritySelection;
 import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterDropDown;
 import name.abuchen.portfolio.ui.util.DropDown;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.SimpleAction;
 import name.abuchen.portfolio.ui.util.TableViewerCSVExporter;
 import name.abuchen.portfolio.ui.util.TreeViewerCSVExporter;
@@ -243,9 +242,7 @@ public class PerformanceView extends AbstractHistoricView
 
                         if(hasHoldings) 
                         {
-                            Optional<AttributeType> logoAttr = getClient().getSettings().getOptionalLogoAttributeType(security.getClass());
-                            Image logo = logoAttr.isPresent() ? security.getImage(logoAttr.get(), 16, 16) : null;
-                            return logo != null ? logo : Images.SECURITY.image();
+                            return LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings());
                         }
                         return Images.SECURITY_RETIRED.image();
                     }
@@ -540,7 +537,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Security security = ((TransactionPair<?>) element).getTransaction().getSecurity();
-                return security != null ? Images.SECURITY.image() : null;
+                return security != null ? LogoManager.instance().getDefaultColumnImage(security, getClient().getSettings()) : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -570,7 +567,7 @@ public class PerformanceView extends AbstractHistoricView
                 Portfolio portfolio = ((TransactionPair<?>) element).getOwner() instanceof Portfolio
                                 ? (Portfolio) ((TransactionPair<?>) element).getOwner()
                                 : null;
-                return portfolio != null ? Images.PORTFOLIO.image() : null;
+                return portfolio != null ? LogoManager.instance().getDefaultColumnImage(portfolio, getClient().getSettings()) : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -613,7 +610,7 @@ public class PerformanceView extends AbstractHistoricView
             public Image getImage(Object element)
             {
                 Account account = getAccount.apply(element);
-                return account != null ? Images.ACCOUNT.image() : null;
+                return account != null ? LogoManager.instance().getDefaultColumnImage(account, getClient().getSettings()) : null;
             }
         });
         column.setSorter(ColumnViewerSorter.create(e -> {
@@ -648,7 +645,8 @@ public class PerformanceView extends AbstractHistoricView
             @Override
             public Image getImage(Object element)
             {
-                return Images.ACCOUNT.image();
+                GroupEarningsByAccount.Item item = (GroupEarningsByAccount.Item) element;
+                return LogoManager.instance().getDefaultColumnImage(item.getAccount(), getClient().getSettings());
             }
         });
         column.setSorter(ColumnViewerSorter.create(GroupEarningsByAccount.Item.class, "account")); //$NON-NLS-1$

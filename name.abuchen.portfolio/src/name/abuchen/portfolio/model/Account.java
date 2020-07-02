@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import name.abuchen.portfolio.money.CurrencyUnit;
 
-public class Account extends AttributableBase implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
+public class Account implements TransactionOwner<AccountTransaction>, InvestmentVehicle, Attributable
 {
     private String uuid;
     private String name;
