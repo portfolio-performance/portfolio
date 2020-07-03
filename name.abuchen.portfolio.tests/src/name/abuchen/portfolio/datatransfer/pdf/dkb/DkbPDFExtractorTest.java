@@ -69,7 +69,7 @@ public class DkbPDFExtractorTest
         return security;
     }
 
-    private Security assertSecuritySell(List<Item> results)
+    private Security assertSecuritySell1(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -81,7 +81,7 @@ public class DkbPDFExtractorTest
         return security;
     }
 
-    private Security assertSecuritySellAktien(List<Item> results)
+    private Security assertSecuritySell2(List<Item> results)
     {
         Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(item.isPresent(), is(true));
@@ -89,6 +89,18 @@ public class DkbPDFExtractorTest
         assertThat(security.getIsin(), is("DE0005140008"));
         assertThat(security.getWkn(), is("514000"));
         assertThat(security.getName(), is("DEUTSCHE BANK AG"));
+
+        return security;
+    }
+
+    private Security assertSecuritySell3(List<Item> results)
+    {
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.get()).getSecurity();
+        assertThat(security.getIsin(), is("DE000A2YN900"));
+        assertThat(security.getWkn(), is("A2YN90"));
+        assertThat(security.getName(), is("TEAMVIEWER AG"));
 
         return security;
     }
@@ -720,18 +732,18 @@ public class DkbPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkauf() throws IOException
+    public void testWertpapierVerkauf1() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf1.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        assertSecuritySell(results);
+        assertSecuritySell1(results);
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -754,18 +766,18 @@ public class DkbPDFExtractorTest
     }
 
     @Test
-    public void testWertpapierVerkaufAktien() throws IOException
+    public void testWertpapierVerkauf2() throws IOException
     {
         DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
 
         List<Exception> errors = new ArrayList<Exception>();
 
-        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkaufAktien.txt"), errors);
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf2.txt"), errors);
 
         assertThat(errors, empty());
         assertThat(results.size(), is(2));
 
-        assertSecuritySellAktien(results);
+        assertSecuritySell2(results);
 
         // check buy sell transaction
         Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
@@ -783,6 +795,40 @@ public class DkbPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(200)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(10.00))));
+    }
+
+    @Test
+    public void testWertpapierVerkauf3() throws IOException
+    {
+        DkbPDFExtractor extractor = new DkbPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "DkbVerkauf3.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        assertSecuritySell3(results);
+
+        // check buy sell transaction
+        Optional<Item> item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        assertThat(item.get().getSubject(), instanceOf(BuySellEntry.class));
+        BuySellEntry entry = (BuySellEntry) item.get().getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getCurrencyCode(), is(CurrencyUnit.EUR));
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(4123.12))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-05-06T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(100)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(7.00))));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(109.37 + 6.01))));
     }
 
     @Test
