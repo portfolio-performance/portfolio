@@ -475,6 +475,79 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschrift13withUSDAccount() throws IOException
+    {
+        Client client = new Client();
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+        
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+        
+        assertThat(t.getSecurity().getName(), is("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN"));
+        assertThat(t.getSecurity().getIsin(), is("IE00B0M62Q58"));
+        assertThat(t.getSecurity().getWkn(), is("A0HGV0"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.USD));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.46))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.50 + 0.90 + 0.13))));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
+    public void testErtragsgutschrift13withUSDAccountAndSecurityInEUR() throws IOException
+    {
+        Client client = new Client();
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(client);
+        
+        Security existingSecurity = new Security("iShs-MSCI World UCITS ETF Registered Shares USD (Dist)oN", CurrencyUnit.EUR);
+        existingSecurity.setIsin("IE00B0M62Q58");
+        existingSecurity.setWkn("A0HGV0");
+        client.addSecurity(existingSecurity);
+
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift13.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+        
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-01-01T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(20)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(6.46))));
+        assertThat(t.getUnitSum(Unit.Type.TAX), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(2.50 + 0.90 + 0.13))));
+        assertThat(t.getUnit(Unit.Type.GROSS_VALUE).get().getForex(), is(Money.of(CurrencyUnit.EUR, 8_93)));
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        account.setCurrencyCode(CurrencyUnit.USD);
+        Status s = c.process(t, account);
+        assertThat(s, is(Status.OK_STATUS));
+    }
+
+    @Test
     public void testBezug1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
