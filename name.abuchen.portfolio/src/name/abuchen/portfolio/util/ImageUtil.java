@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -65,7 +64,7 @@ public class ImageUtil
         ImageLoader loader = new ImageLoader();
         loader.data = new ImageData[] {image.getImageData()};
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        loader.save(bos, SWT.IMAGE_PNG);
+        loader.save(bos, 5); //org.eclipse.swt.SWT.IMAGE_PNG;
         
         return bos.toByteArray();
     }
@@ -95,8 +94,8 @@ public class ImageUtil
         
         Image scaled = new Image(null, newWidth, newHeight);
         GC gc = new GC(scaled);
-        gc.setAntialias(SWT.ON);
-        gc.setInterpolation(SWT.HIGH);
+        gc.setAntialias(1); //org.eclipse.swt.SWT.ON
+        gc.setInterpolation(2); //org.eclipse.swt.SWT.HIGH
         gc.setAlpha(image.getImageData().alpha);
         gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, newWidth, newHeight);
         gc.dispose();
