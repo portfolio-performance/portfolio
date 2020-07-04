@@ -3,7 +3,7 @@
 	"transactions": [
 		{
 			"type": "PURCHASE",
-			"date": "2020-05-20",
+			"date": "2020-05-18",
 			"currency": "EUR",
 			"amount": 150.0,
 			"shares": 5.5520,
