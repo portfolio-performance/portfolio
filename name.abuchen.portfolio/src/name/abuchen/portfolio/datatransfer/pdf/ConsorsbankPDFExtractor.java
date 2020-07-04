@@ -554,7 +554,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("Netto zugunsten IBAN (.*) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
+                        .match("Netto.* zugunsten IBAN (.*) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -573,18 +573,37 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("Devisenkurs (?<exchangeRate>[\\d.]+,\\d+) (\\w{3}+) / (\\w{3}+)") //
                         .match("Brutto in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> {
+                            
+                            // Example: Devisenkurs 1,12000 USD / EUR
+                            // check which currency is transaction currency and use exchange rate accordingly
+                            // if transaction currency is e.g. USD, we need to inverse the rate
                             BigDecimal exchangeRate = asExchangeRate(v.get("exchangeRate"));
+                            if (t.getCurrencyCode().contentEquals(asCurrencyCode(v.get("fxCurrency")))) 
+                            {
+                                exchangeRate  = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+                            }
                             type.getCurrentContext().put("exchangeRate", exchangeRate.toPlainString());
 
                             if (!t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                             {
                                 BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
-                                Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
-                                                asAmount(v.get("fxAmount")));
-                                Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
-
-                                Unit grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                // check, if forex currency is transaction currency or not and swap amount, if necessary
+                                Unit grossValue;
+                                if (!asCurrencyCode(v.get("fxCurrency")).equals(t.getCurrencyCode())) 
+                                {
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                } 
+                                else 
+                                {
+                                    Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
+                                                    asAmount(v.get("fxAmount")));
+                                    Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                                    grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
+                                }
                                 t.addUnit(grossValue);
                             }
                         })
@@ -593,57 +612,62 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .match("abzgl. Quellensteuer .* (\\w{3}+) (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-
-                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-                            {
-                                t.addUnit(new Unit(Unit.Type.TAX, tax));
-                            }
-                            else if (type.getCurrentContext().containsKey("exchangeRate"))
-                            {
-                                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
-                                BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
-
-                                Money txTax = Money.of(t.getCurrencyCode(),
-                                                BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
-                                                                .setScale(0, RoundingMode.HALF_UP).longValue());
-
-                                // store tax value in both currencies, if
-                                // security's currency
-                                // is different to transaction currency
-                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
-                                }
-                                else
-                                {
-                                    t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-                                }
-                            }
+                            checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Kapitalertragsteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Solidaritätszuschlag.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            checkAndSetTax(tax, t, type);
                         })
 
                         .section("tax", "currency").optional() //
                         .match("abzgl. Kirchensteuer.* (?<tax>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
                         .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
-                            t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            checkAndSetTax(tax, t, type);
                         })
 
                         .wrap(t -> t.getAmount() != 0 ? new TransactionItem(t) : null);
 
+    }
+    
+    @SuppressWarnings("nls")
+    private void checkAndSetTax(Money tax, AccountTransaction t, DocumentType type) 
+    {
+        if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
+        {
+            t.addUnit(new Unit(Unit.Type.TAX, tax));
+        }
+        else if (type.getCurrentContext().containsKey("exchangeRate"))
+        {
+            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+            BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
+
+            Money txTax = Money.of(t.getCurrencyCode(),
+                            BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
+                                            .setScale(0, RoundingMode.HALF_UP).longValue());
+
+            // store tax value in both currencies, if
+            // security's currency
+            // is different to transaction currency
+            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+            {
+                t.addUnit(new Unit(Unit.Type.TAX, txTax));
+            }
+            else
+            {
+                t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
+            }
+        }
     }
 
     @SuppressWarnings("nls")
