@@ -3,6 +3,7 @@ package name.abuchen.portfolio.ui.util;
 import java.util.Optional;
 
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Attributable;
@@ -17,6 +18,7 @@ import name.abuchen.portfolio.ui.Images;
 
 public final class LogoManager
 {
+    public static final int DPI_CURRENT = Display.getDefault().getDPI().x;
     private static LogoManager instance = new LogoManager();
     public static LogoManager instance() 
     {
@@ -40,7 +42,7 @@ public final class LogoManager
         {
             Attributable target = (Attributable)object;
             Optional<AttributeType> logoAttr = settings.getOptionalLogoAttributeType(target.getClass());
-            Image logo = logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get()) : null;
+            Image logo = logoAttr.isPresent() ? ImageManager.instance().getImage(target, logoAttr.get(), DPI_CURRENT) : null;
             return logo;
         }
         return null;

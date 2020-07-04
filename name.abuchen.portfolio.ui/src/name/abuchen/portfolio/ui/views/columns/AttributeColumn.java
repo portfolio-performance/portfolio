@@ -31,6 +31,7 @@ import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.Colors;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.AttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
@@ -113,7 +114,7 @@ public class AttributeColumn extends Column
             if(attribute.getConverter() instanceof ImageConverter) 
             {
                 Attributable attributable = Adaptor.adapt(Attributable.class, element);
-                return ImageManager.instance().getImage(attributable, attribute);
+                return ImageManager.instance().getImage(attributable, attribute, LogoManager.DPI_CURRENT);
             }
             return null;
         }
