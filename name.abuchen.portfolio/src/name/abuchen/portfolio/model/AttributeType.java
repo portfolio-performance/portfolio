@@ -1,7 +1,5 @@
 package name.abuchen.portfolio.model;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -12,17 +10,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.format.FormatStyle;
-import java.util.Base64;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.graphics.Rectangle;
 
 import name.abuchen.portfolio.Messages;
 import name.abuchen.portfolio.model.LimitPrice.RelationalOperator;
@@ -359,54 +350,6 @@ public class AttributeType
             return value;
         }
 
-        public Image toImage(String value)
-        {
-            if(value == null || value.length() == 0)
-                return null;
-
-            try 
-            {
-                int splitPos = value.indexOf(',');
-                if(splitPos >= 0 && splitPos < value.length() - 1) value = value.substring(splitPos + 1);
-                byte[] buff = Base64.getDecoder().decode(value);
-                ImageLoader loader = new ImageLoader();
-
-                ByteArrayInputStream bis = new ByteArrayInputStream(buff);
-                ImageData[] imgArr = loader.load(bis);
-                try
-                {
-                    bis.close();
-                }
-                catch (IOException e) 
-                { 
-                    
-                }
-                return new Image(null, imgArr[0]);
-            }
-            catch (Exception ex) 
-            {
-                return null;
-            }
-        }
-
-        public static Image resize(Image image, int maxWidth, int maxHeight) 
-        {
-            Rectangle bounds = image.getBounds();
-            int newHeight = maxHeight;
-            int newWidth = (bounds.width * newHeight) / bounds.height;
-            if (newWidth > maxWidth)
-             {
-               newWidth = maxWidth;
-               newHeight = (bounds.height * newWidth) / bounds.width;
-             }
-            
-            Image scaled = new Image(null, newWidth, newHeight);
-            GC gc = new GC(scaled);
-            gc.drawImage(image, 0, 0, bounds.width, bounds.height, 0, 0, newWidth, newHeight);
-            gc.dispose();
-            image.dispose(); // don't forget about me!
-            return scaled;
-        }
     }
 
     private final String id;

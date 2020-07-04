@@ -6,6 +6,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 
 import name.abuchen.portfolio.model.AttributeType.ImageConverter;
+import name.abuchen.portfolio.util.ImageUtil;
 
 public final class ImageManager
 {
@@ -38,14 +39,13 @@ public final class ImageManager
                     Image img = imageCache.getOrDefault(imgString, null);
                     if(img != null) return img;
                     
-                    ImageConverter imgConv = (ImageConverter)attr.getConverter();
-                    Image fullImage = imgConv.toImage(imgString);
+                    Image fullImage = ImageUtil.toImage(imgString);
                     if(fullImage != null) 
                     {
                         Rectangle bounds = fullImage.getBounds();
                         if(bounds.height != height || bounds.width != width) 
                         {
-                            img = ImageConverter.resize(fullImage, width, height);
+                            img = ImageUtil.resize(fullImage, width, height);
                         }
                         else
                         {
