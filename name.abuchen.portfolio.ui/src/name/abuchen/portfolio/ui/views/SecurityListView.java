@@ -54,6 +54,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
+import name.abuchen.portfolio.model.SecurityEvent.DividendPayment;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -1142,7 +1143,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
         events = new TableViewer(container, SWT.FULL_SELECTION | SWT.MULTI);
 
-        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events", //$NON-NLS-1$
+        ShowHideColumnHelper support = new ShowHideColumnHelper(SecurityListView.class.getSimpleName() + "@events2", //$NON-NLS-1$
                         getPreferenceStore(), events, layout);
 
         Column column = new Column(Messages.ColumnDate, SWT.None, 80);
@@ -1165,7 +1166,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         });
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnTransactionType, SWT.None, 80);
+        column = new Column(Messages.ColumnTransactionType, SWT.None, 120);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -1177,7 +1178,41 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()), SWT.UP);
         support.addColumn(column);
 
-        column = new Column(Messages.ColumnDetails, SWT.None, 80);
+        column = new Column("Zahltag", SWT.NONE, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return element instanceof DividendPayment ? Values.Date.format(((DividendPayment) element).getPayDate())
+                                : null;
+            }
+        });
+        column.setSorter(
+                        ColumnViewerSorter.create(
+                                        e -> e instanceof DividendPayment ? ((DividendPayment) e).getPayDate() : null),
+                        SWT.UP);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnAmount, SWT.NONE, 80);
+        column.setLabelProvider(new ColumnLabelProvider()
+        {
+            @Override
+            public String getText(Object element)
+            {
+                return element instanceof DividendPayment
+                                ? Values.Money.format(((DividendPayment) element).getAmount(),
+                                                getClient().getBaseCurrency())
+                                : null;
+            }
+        });
+        column.setSorter(
+                        ColumnViewerSorter.create(
+                                        e -> e instanceof DividendPayment ? ((DividendPayment) e).getAmount() : null),
+                        SWT.UP);
+        support.addColumn(column);
+
+        column = new Column(Messages.ColumnDetails, SWT.None, 300);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
@@ -1186,7 +1221,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                 return ((SecurityEvent) element).getDetails();
             }
         });
-        column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getDetails().toLowerCase()), SWT.UP);
+        column.setSorter(ColumnViewerSorter.createIgnoreCase(e -> ((SecurityEvent) e).getDetails()), SWT.UP);
         column.setEditingSupport(new StringEditingSupport(SecurityEvent.class, "details") //$NON-NLS-1$
         {
             @Override

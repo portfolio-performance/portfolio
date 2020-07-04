@@ -3,11 +3,13 @@ package name.abuchen.portfolio.model;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
+import name.abuchen.portfolio.money.Money;
+
 public class SecurityEvent
 {
     public enum Type
     {
-        STOCK_SPLIT(false), NOTE(true);
+        STOCK_SPLIT(false), NOTE(true), DIVIDEND_PAYMENT(false);
 
         private static final ResourceBundle RESOURCES = ResourceBundle.getBundle("name.abuchen.portfolio.model.labels"); //$NON-NLS-1$
 
@@ -27,6 +29,63 @@ public class SecurityEvent
         public String toString()
         {
             return RESOURCES.getString("event." + name()); //$NON-NLS-1$
+        }
+    }
+
+    public static class DividendPayment extends SecurityEvent
+    {
+        private LocalDate payDate;
+        private Money amount;
+        private String source;
+
+        public DividendPayment()
+        {
+            super(null, Type.DIVIDEND_PAYMENT, null);
+        }
+
+        public DividendPayment(LocalDate exDate, LocalDate payDate, Money amount, String source)
+        {
+            super(exDate, Type.DIVIDEND_PAYMENT, null);
+            this.payDate = payDate;
+            this.amount = amount;
+            this.source = source;
+        }
+
+        @Override
+        public void setType(Type type)
+        {
+            if (type != Type.DIVIDEND_PAYMENT)
+                throw new IllegalArgumentException();
+        }
+
+        public LocalDate getPayDate()
+        {
+            return payDate;
+        }
+
+        public void setPayDate(LocalDate payDate)
+        {
+            this.payDate = payDate;
+        }
+
+        public Money getAmount()
+        {
+            return amount;
+        }
+
+        public void setAmount(Money amount)
+        {
+            this.amount = amount;
+        }
+
+        public String getSource()
+        {
+            return source;
+        }
+
+        public void setSource(String source)
+        {
+            this.source = source;
         }
     }
 
