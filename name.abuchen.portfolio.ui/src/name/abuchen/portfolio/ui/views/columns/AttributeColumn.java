@@ -36,6 +36,7 @@ import name.abuchen.portfolio.ui.util.viewers.BooleanAttributeEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.CellItemImageClickedListener;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.ImageAttributeEditingSupport;
 
 public class AttributeColumn extends Column
 {
@@ -80,11 +81,6 @@ public class AttributeColumn extends Column
         @Override
         public String getText(Object element)
         {
-            if(attribute.getConverter() instanceof ImageConverter) 
-            {
-                return ""; //$NON-NLS-1$
-            }
-            
             Attributable attributable = Adaptor.adapt(Attributable.class, element);
             if (attributable == null)
                 return null;
@@ -93,6 +89,22 @@ public class AttributeColumn extends Column
 
             Object value = attributes.get(attribute);     
             return attribute.getConverter().toString(value);
+        }
+    }
+    
+    private static final class ImageLabelProvider extends ColumnLabelProvider
+    {
+        private final AttributeType attribute;
+
+        private ImageLabelProvider(AttributeType attribute)
+        {
+            this.attribute = attribute;
+        }
+
+        @Override
+        public String getText(Object element)
+        {
+            return ""; //$NON-NLS-1$
         }
         
         @Override
@@ -267,6 +279,11 @@ public class AttributeColumn extends Column
         {
             setLabelProvider(new BookmarkLabelProvider(attribute));
             new AttributeEditingSupport(attribute).attachTo(this);
+        }
+        else if (attribute.getConverter() instanceof ImageConverter)
+        {
+            setLabelProvider(new ImageLabelProvider(attribute));
+            new ImageAttributeEditingSupport(attribute).attachTo(this);
         }
         else
         {
