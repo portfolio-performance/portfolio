@@ -77,7 +77,7 @@ public class TargobankPDFExtractorTest
         assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(actualShares)));
     }
 
-    // @Test
+    @Test
     public void testWertpapierKauf01()
     {
         String testCaseFilename = "Kauf (WPX007) TARGO 000000kontonummer am 2020-01-04.txt";
@@ -210,7 +210,7 @@ public class TargobankPDFExtractorTest
 
     }
 
-    // @Test
+    @Test
     public void testDividende01()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -251,7 +251,7 @@ public class TargobankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.18)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getNote(), is(
                         "Ertragsgutschrift_01_Ertragsgutschrift_(WPX024).txt; Ertragsgutschrift_01_Steuerbeilage_(WPX040).txt"));
@@ -263,7 +263,7 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(5.59)));
     }
 
-    // @Test
+    @Test
     public void testDividende01TaxDocOnly()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -303,13 +303,13 @@ public class TargobankPDFExtractorTest
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
         assertThat(transaction.getSecurity(), is(security));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.18)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
         assertThat(transaction.getNote(), is("Ertragsgutschrift_01_Steuerbeilage_(WPX040).txt"));
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(5.59)));
     }
 
-    // @Test
+    @Test
     public void testDividende01WithSecurityInEuro()
     {
         Client client = new Client();
@@ -348,13 +348,13 @@ public class TargobankPDFExtractorTest
         assertThat(s, is(Status.OK_STATUS));
 
         assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-24T00:00")));
-        assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.18)));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(15.59)));
         assertThat(transaction.getShares(), is(Values.Share.factorize(81)));
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(5.59)));
     }
 
-    // @Test
+    @Test
     public void testDividende02()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -401,7 +401,7 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.0)));
     }
 
-    // @Test
+    @Test
     public void testDividende02DivDocOnly()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -447,7 +447,7 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.0)));
     }
 
-    // @Test
+    @Test
     public void testDividende02TaxDocOnly()
     {
         TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
@@ -494,5 +494,58 @@ public class TargobankPDFExtractorTest
 
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(0.0)));
     }
+
+    @Test
+    public void testDividende03()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Ertragsgutschrift_03_Ertragsgutschrift_(WPX024).txt",
+                                        "Ertragsgutschrift_03_Steuerbeilage_(WPX040).txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("LU0875160326"));
+        assertThat(security.getName(), is("Xtrackers Harvest CSI300 - Inhaber-Anteile 1D o.N."));
+        assertThat(security.getWkn(), is("DBX0NK"));
+
+        List<AccountTransaction> items = results.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .map(i -> (AccountTransaction) i.getSubject()).collect(Collectors.toList());
+        assertThat(items.size(), is(1));
+
+        // dividend
+        Optional<AccountTransaction> oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        AccountTransaction transaction = oTransaction.orElseThrow(IllegalArgumentException::new);
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-27T00:00")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(228.01)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1700)));
+
+        // gross value 304,81 USD
+        Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
+        assertThat(grossValue.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(279.64))));
+        assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(304.81))));
+        
+        assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(51.63)));
+    }
+
 
 }
