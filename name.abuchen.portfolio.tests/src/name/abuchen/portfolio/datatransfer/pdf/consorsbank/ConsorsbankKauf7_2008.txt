@@ -1,0 +1,26 @@
+PDF Autor: 'Consorsbank'
+PDFBox Version: 1.8.16
+-----------------------------------------
+Cortal Consors S.A. • Postfach 17 43 • 90006 Nürnberg
+Peter Power Depotnummer: 0546 956 988
+Germaniastraße 18 1000341111/00
+31275 Lehrte
+Vermerk der Bank: 4000
+02
+WERTPAPIERABRECHNUNG
+Kauf AM 15.01.2008 UM 00:01:11 IN SPARPLAN NR.24248801.001
+ST 11,87891 WKN: 625952
+GARTMORE-CONT. EUROP. A
+Preis pro Anteil 6,467700 EUR
+Ges. Preis inkl. Ausgabegeb. 3,66 EUR EUR 76,83
+abz. CortalConsors Discount 2,38100 % EUR 1,83
+EUR 75,00
+WERT 21.01.2008
+zulasten Konto-Nr. 0546956980
+Wertpapiere zugunsten Wertpapierrechnung Luxemburg
+Zwischengewinn je Anteil EUR 0,020000
+Thes.Gewinn je Anteil EUR 0,11620000
+In Stückzinstopf eingestellt EUR 0,24
+0008097553
+Ausgabegebühr regulär 5,00000%
+CLEARSTREAM BK 62126

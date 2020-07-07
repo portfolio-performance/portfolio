@@ -898,7 +898,7 @@ public class ConsorsbankPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new).getSecurity();
         assertNull(security.getIsin()); // not in PDF, manual lookup: "US3696041033"
         assertThat(security.getWkn(), is("851144"));
-        assertThat(security.getName(), is("GENERAL ELECTRIC CO. SHARES DL -,06"));
+        assertThat(security.getName(), is("GENERAL ELECTRIC CO."));
         assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
 
         // check buy sell transaction
@@ -914,6 +914,80 @@ public class ConsorsbankPDFExtractorTest
 
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
                         is(Money.of(CurrencyUnit.EUR, 1_53L + 5_11L + 4_60L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
+    public void testWertpapierKauf7_2005()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf7_2005.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup: "US3696041033"
+        assertThat(security.getWkn(), is("625952"));
+        assertThat(security.getName(), is("GARTMORE - CONT. EUROP. FUND"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 76_83L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2005, 10, 17, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(15_752430L));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, 0_00L)));
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
+                        is(Money.of(CurrencyUnit.EUR, 0_00L)));
+    }
+
+    @Test
+    public void testWertpapierKauf7_2008()
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKauf7_2008.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSecurity();
+        assertNull(security.getIsin()); // not in PDF, manual lookup: "US3696041033"
+        assertThat(security.getWkn(), is("625952"));
+        assertThat(security.getName(), is("GARTMORE-CONT. EUROP. A"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check buy sell transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findAny()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.BUY));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.BUY));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 75_00L)));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.of(2008, 1, 15, 5, 0, 0)));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(11_878910L));
+
+        assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.FEE),
+                        is(Money.of(CurrencyUnit.EUR, 0_00L)));
         assertThat(entry.getPortfolioTransaction().getUnitSum(Unit.Type.TAX),
                         is(Money.of(CurrencyUnit.EUR, 0_00L)));
     }

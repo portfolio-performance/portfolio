@@ -734,11 +734,12 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         });
 
         // note: PDF/txt contains no ISIN
-        pdfTransaction.section("wkn", "name", "nameContinued", "currency") //
+        pdfTransaction.section("wkn", "name", /*"nameContinued",*/ "currency") //
                         // .find(" WERTPAPIERABRECHNUNG") //
                         .match("^.+WKN: (?<wkn>[0-9a-zA-Z]{6}).*$") //
-                        .match("^ *(?<name>.*)$").match("^ *(?<nameContinued>.*)$")
-                        .match("^ *KURSWERT *(?<currency>\\w{3}+) .*$")
+                        .match("^ *(?<name>.*)$")
+// optional line:       .match("^ *(?<nameContinued>.*)$")
+                        .match("^ *(KURSWERT|) *(?<currency>\\w{3}+) .*$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares") //
@@ -750,7 +751,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .assign((t, v) -> t.setDate(asDate(v.get("date"), "05:00:00")))
 
                         .section("amount", "currency")
-                        .match("^ *KURSWERT +(?<currency>\\w{3}+) +(?<amount>[\\d.]+,\\d+).*$") //
+                        .match("^ *(KURSWERT *|)(?<currency>\\w{3}+) +(?<amount>[\\d.]+,\\d+).*$") //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
