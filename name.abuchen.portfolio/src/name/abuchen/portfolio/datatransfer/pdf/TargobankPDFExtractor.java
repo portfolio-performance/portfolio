@@ -226,7 +226,9 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("Konto-Nr. \\d* (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$").assign((t, v) -> {
+//                      .match("Konto-Nr. \\d* (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$").assign((t, v) -> {
+                        .match(regexAmountAndCurrency) //
+                        .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
                         })
@@ -312,6 +314,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         .match(regexTaxes).assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            t.setAmount(t.getAmount() - asAmount(v.get("tax")));
                         })
 
                         // use document date to having matching dates from
