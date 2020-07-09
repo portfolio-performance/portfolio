@@ -78,7 +78,7 @@ public class ComdirectPDFExtractor extends AbstractPDFExtractor
                         .section("isin", "name", "wkn", "nameContinued") //
                         .find("Wertpapier-Bezeichnung *WPKNR/ISIN *") //
                         .match("^(?<name>(\\S{1,} )*) *(?<wkn>\\S*) *$") //
-                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") //assume 3 whitespaces as separator between name ans isin
+                        .match("^(?<nameContinued>.*?)\\s{3,} *(?<isin>\\S*) *$") //assume 3 whitespaces as separator between name and isin
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("shares").optional() //

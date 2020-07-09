@@ -136,14 +136,15 @@ public abstract class AbstractPDFExtractor implements Extractor
         List<Item> items = new ArrayList<>();
         for (DocumentType type : documentTypes)
         {
-            if (type.matches(text)) {
-                try {
-                type.parse(filename, items, text);
-                }catch(Exception e) {
+            if (type.matches(text))
+                try
+                {
+                    type.parse(filename, items, text);
+                }
+                catch (IllegalArgumentException e)
+                {
                     // just ignore to continue with other document types :)
                 }
-                //if(items.size()>0) break; // not working in case several document types shall be extracted from a file (e.g. Onvista-tests)
-            }
         }
         return items;
     }
