@@ -427,10 +427,8 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
 
                         .section("currency", "fee").optional()
                         .match("(^.*)(Transaktionsentgelt) (?<currency>\\w{3}+) (?<fee>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
-                        .assign((t, v) -> t.getPortfolioTransaction()
-                                        .addUnit(new Unit(Unit.Type.FEE,
-                                                        Money.of(asCurrencyCode(v.get("currency")),
-                                                                        asAmount(v.get("fee"))))))
+                        .assign((t, v) -> t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.FEE,
+                                        Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("fee"))))))
 
                         .section("currency", "basicfees").optional()
                         .match("(^.*)(Grundgeb\\Dhr) (?<currency>\\w{3}+) (?<basicfees>\\d{1,3}(\\.\\d{3})*(,\\d{2})?)")
@@ -554,9 +552,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .find("Wertpapierbezeichnung WKN ISIN") //
                         .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
                         .match("(Dividende pro Stück|Ertragsausschüttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
-                        .assign((t, v) -> {
-                            t.setSecurity(getOrCreateSecurity(v));
-                        })
+                        .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
                         .section("amount", "currency") //
                         .match("Netto.* zugunsten IBAN (.*) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$")
@@ -599,11 +595,11 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                                 {
                                     Money fxAmount = Money.of(asCurrencyCode(v.get("fxCurrency")),
                                                     asAmount(v.get("fxAmount")));
-                                    Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
+                            Money amount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
                                     grossValue = new Unit(Unit.Type.GROSS_VALUE, amount, fxAmount, inverseRate);
                                 } 
                                 else 
-                                {
+                            {
                                     Money amount = Money.of(asCurrencyCode(v.get("fxCurrency")),
                                                     asAmount(v.get("fxAmount")));
                                     Money fxAmount = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("amount")));
@@ -648,31 +644,31 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void checkAndSetTax(Money tax, AccountTransaction t, DocumentType type) 
     {
-        if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
-        {
-            t.addUnit(new Unit(Unit.Type.TAX, tax));
-        }
-        else if (type.getCurrentContext().containsKey("exchangeRate"))
-        {
-            BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
+                            if (tax.getCurrencyCode().equals(t.getCurrencyCode()))
+                            {
+                                t.addUnit(new Unit(Unit.Type.TAX, tax));
+                            }
+                            else if (type.getCurrentContext().containsKey("exchangeRate"))
+                            {
+                                BigDecimal exchangeRate = new BigDecimal(type.getCurrentContext().get("exchangeRate"));
             BigDecimal inverseRate = BigDecimal.ONE.divide(exchangeRate, 10, RoundingMode.HALF_DOWN);
 
             Money txTax = Money.of(t.getCurrencyCode(),
                             BigDecimal.valueOf(tax.getAmount()).multiply(inverseRate)
                                             .setScale(0, RoundingMode.HALF_UP).longValue());
 
-            // store tax value in both currencies, if
-            // security's currency
-            // is different to transaction currency
-            if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
-            {
-                t.addUnit(new Unit(Unit.Type.TAX, txTax));
-            }
-            else
-            {
+                                // store tax value in both currencies, if
+                                // security's currency
+                                // is different to transaction currency
+                                if (t.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
+                                {
+                                    t.addUnit(new Unit(Unit.Type.TAX, txTax));
+                                }
+                                else
+                                {
                 t.addUnit(new Unit(Unit.Type.TAX, txTax, tax, inverseRate));
-            }
-        }
+                                }
+                            }
     }
 
     @SuppressWarnings("nls")
@@ -734,11 +730,10 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
         });
 
         // note: PDF/txt contains no ISIN
-        pdfTransaction.section("wkn", "name", /*"nameContinued",*/ "currency") //
+        pdfTransaction.section("wkn", "name", "currency") //
                         // .find(" WERTPAPIERABRECHNUNG") //
                         .match("^.+WKN: (?<wkn>[^ ]{6}) *$") //
                         .match("^ *(?<name>.*)$")
-// optional line:       .match("^ *(?<nameContinued>.*)$")
                         .match("^ *(KURSWERT|Kurswert|) *(?<currency>\\w{3}+) .*$")
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
