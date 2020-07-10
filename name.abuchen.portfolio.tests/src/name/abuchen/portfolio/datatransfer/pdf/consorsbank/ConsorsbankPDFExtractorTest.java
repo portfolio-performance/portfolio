@@ -643,6 +643,66 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testWertpapierVerkauf3_2001() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankVerkauf3_2001.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("915771"));
+        assertThat(security.getName(), is("CYBERIAN OUTPOST INC."));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 56_68L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 9_90L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2001, 11, 19, 5, 0, 0)));
+        assertThat(t.getShares(), is(Values.Share.factorize(200)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(0.3329))));
+    }
+    
+    @Test
+    public void testWertpapierVerkauf3_2005() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<Exception>();
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankVerkauf3_2005.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // check security
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getWkn(), is("974433"));
+        assertThat(security.getName(), is("GARTMORE CSF-CONTIN.EUROPE FD"));
+
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check buy sell transaction
+        Item item = results.get(0);
+        BuySellEntry entry = (BuySellEntry) item.getSubject();
+        PortfolioTransaction t = entry.getPortfolioTransaction();
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 691_31L)));
+        assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 0L)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2005, 3, 24, 5, 0, 0)));
+        assertThat(t.getShares(), is(Values.Share.factorize(52.77908)));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(13.0982))));
+    }
+
+    @Test
     public void testWertpapierVerkauf3_2008() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
@@ -665,12 +725,13 @@ public class ConsorsbankPDFExtractorTest
         Item item = results.get(0);
         BuySellEntry entry = (BuySellEntry) item.getSubject();
         PortfolioTransaction t = entry.getPortfolioTransaction();
-        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 3290_05L)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 3303_26L)));
         assertThat(t.getUnitSum(Type.FEE), is(Money.of(CurrencyUnit.EUR, 13_21L)));
-        assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 16, 4, 3)));
+        assertThat(t.getDateTime(), is(LocalDateTime.of(2008, 5, 16, 5, 0, 0)));
         assertThat(t.getShares(), is(Values.Share.factorize(334)));
-        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.89))));
+        assertThat(t.getGrossPricePerShare(), is(Quote.of(CurrencyUnit.EUR, Values.Quote.factorize(9.9296))));
     }
+    
     
     @Test
     public void testWertpapierKauf1() throws IOException
