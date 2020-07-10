@@ -1057,7 +1057,7 @@ public class ConsorsbankPDFExtractorTest
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
 
-        List<Exception> errors = new ArrayList<>();
+        List<Exception> errors = new ArrayList<Exception>();
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankKaufSparplan.txt"),
                         errors);
 
