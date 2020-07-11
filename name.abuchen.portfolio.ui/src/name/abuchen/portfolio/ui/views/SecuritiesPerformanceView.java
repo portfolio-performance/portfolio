@@ -47,6 +47,7 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.TransactionOwner;
@@ -94,6 +95,7 @@ import name.abuchen.portfolio.ui.views.columns.SymbolColumn;
 import name.abuchen.portfolio.ui.views.columns.TaxonomyColumn;
 import name.abuchen.portfolio.ui.views.columns.WknColumn;
 import name.abuchen.portfolio.util.Interval;
+import name.abuchen.portfolio.util.Pair;
 import name.abuchen.portfolio.util.TextUtil;
 
 public class SecuritiesPerformanceView extends AbstractListView implements ReportingPeriodListener
@@ -476,6 +478,66 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
         });
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityPerformanceRecord) e).getQuote()));
         recordColumns.addColumn(column);
+        
+        
+        // change to previous day
+        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
+        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
+        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity().getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                double latestQuote = previous.get().getLeft().getValue() / Values.Quote.divider();
+                double previousQuote = previous.get().getRight().getValue() / Values.Quote.divider();
+                return (latestQuote - previousQuote) / previousQuote;
+            }
+            else
+            {
+                return null;
+            }
+        }, element -> {
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous = ((SecurityPerformanceRecord) element).getSecurity().getLatestTwoSecurityPrices();
+            if (previous.isPresent())
+            {
+                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getLeft().getValue()),
+                                                Values.Date.format(previous.get().getLeft().getDate()))
+                                + "\n" // //$NON-NLS-1$
+                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
+                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
+                                                Values.Quote.format(previous.get().getRight().getValue()),
+                                                Values.Date.format(previous.get().getRight().getDate()));
+            }
+            else
+            {
+                return null;
+            }
+        }));
+        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
+
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous1 = ((SecurityPerformanceRecord) o1).getSecurity().getLatestTwoSecurityPrices();
+            Optional<Pair<SecurityPrice, SecurityPrice>> previous2 = ((SecurityPerformanceRecord) o2).getSecurity().getLatestTwoSecurityPrices();
+
+            if (!previous1.isPresent() && !previous2.isPresent())
+                return 0;
+            if (!previous1.isPresent() && previous2.isPresent())
+                return -1;
+            if (previous1.isPresent() && !previous2.isPresent())
+                return 1;
+
+            double latestQuote1 = previous1.get().getLeft().getValue() / Values.Quote.divider();
+            double previousQuote1 = previous1.get().getRight().getValue() / Values.Quote.divider();
+            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
+
+            double latestQuote2 = previous2.get().getLeft().getValue() / Values.Quote.divider();
+            double previousQuote2 = previous2.get().getRight().getValue() / Values.Quote.divider();
+            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
+
+            return Double.compare(v1, v2);
+        }));
+        recordColumns.addColumn(column);
+
 
         // market value
         column = new Column("mv", Messages.ColumnMarketValue, SWT.RIGHT, 75); //$NON-NLS-1$
@@ -1175,6 +1237,9 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             String s1 = t1.isPresent() ? t1.get().getNote() : ""; //$NON-NLS-1$
             Optional<Transaction> t2 = ((CalculationLineItem) o2).getTransaction();
             String s2 = t2.isPresent() ? t2.get().getNote() : ""; //$NON-NLS-1$
+            // notes can be null
+            if (s1 == null) s1 = ""; //$NON-NLS-1$
+            if (s2 == null) s2 = ""; //$NON-NLS-1$
             
             return s1.compareTo(s2);
         }));
