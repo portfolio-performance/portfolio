@@ -1,0 +1,32 @@
+﻿PDF Autor: ''
+PDFBox Version: 1.8.16
+
+10919 Berlin
+Depotnummer 123456789
+Kundennummer 1234567890
+Max Mustermann
+Auftragsnummer 123456/06.00
+Herrn Datum 09.07.2020
+Max Mustermann Rechnungsnummer 00123 0003241004 20
+Musterstr. 12 Umsatzsteuer-ID DE137178746
+12345 Musterstadt
+Wertpapier Abrechnung Verkauf aus Kapitalmaßnahme
+Nominale Wertpapierbezeichnung ISIN (WKN)
+Stück 4 OSRAM LICHT AG DE000LED02V0 (LED02V)
+Z.VERKAUF EING.NAMENS-AKTIEN
+Handels-/Ausführungsplatz Außerbörslich
+Abrech.-Preis 41,00 EUR Auftragserteilung/ -ort Online-Banking
+Girosammelverwahrung - Sammel-Urkunden in Namensaktien
+Kurswert 164,00 EUR
+Ausmachender Betrag 164,00 EUR
+Den Gegenwert buchen wir mit Valuta 09.07.2020 zu Gunsten des Kontos 1053412345
+(IBAN DE29 1203 0000 1053 4123 45), BLZ 12030000 (BIC BYLADEM1001).
+Die Wertpapiere entnehmen wir Ihrem Depotkonto.
+Sofern keine Umsatzsteuer ausgewiesen ist, handelt es sich um eine umsatzsteuerbefreite Finanzdienstleistung.
+Diese Verkaufsabrechnung erfolgt gemäß Ihrem Auftrag zur Annahme des Abfindungsangebotes.
+Für das Geschäft wurde keine Anlageberatung erbracht.
+Berücksichtigte Anschaffungsgeschäfte (alle ermittelten Beträge in EUR)
+Geschäft Auftragsnr. Ausführ.-tag Whr./St. Nennwert/Stück AS-Kosten Erlös ant. Ergebnis
+Einbuchung 6926110700 vor 01.01.2004 Stück 4,0000 nicht relevant nicht relevant KapSt-frei ( )
+Dieses Dokument wurde maschinell erstellt und wird nicht unterschrieben.
+0883.07100059.0001078OR07
