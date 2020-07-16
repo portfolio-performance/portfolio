@@ -187,7 +187,12 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             super(Messages.SecurityListFilter, Images.FILTER_OFF, SWT.NONE);
             setMenuListener(this);
 
-            int savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettings"); //$NON-NLS-1$
+            int savedFilters;
+            if (watchlist != null)
+                savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName()); //$NON-NLS-1$ //$NON-NLS-2$
+            else
+                savedFilters = preferenceStore.getInt(this.getClass().getSimpleName() + "-filterSettings"); //$NON-NLS-1$
+                
 
             if ((savedFilters & (1 << 1)) != 0)
                 filter.add(securityIsNotInactive);
@@ -202,7 +207,7 @@ public class SecurityListView extends AbstractListView implements ModificationLi
 
             if (!filter.isEmpty())
                 setImage(Images.FILTER_ON);
-
+            
             addDisposeListener(e -> {
 
                 int savedFilter = 0;
@@ -216,8 +221,10 @@ public class SecurityListView extends AbstractListView implements ModificationLi
                     savedFilter += (1 << 4);
                 if (filter.contains(sharesEqualZero))
                     savedFilter += (1 << 5);
-
-                preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings", savedFilter); //$NON-NLS-1$
+                if (watchlist != null)
+                    preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings" + "-" + watchlist.getName(), savedFilter); //$NON-NLS-1$ //$NON-NLS-2$
+                else
+                    preferenceStore.setValue(this.getClass().getSimpleName() + "-filterSettings", savedFilter); //$NON-NLS-1$
             });
         }
 
