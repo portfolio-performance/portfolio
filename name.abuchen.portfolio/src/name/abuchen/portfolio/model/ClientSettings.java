@@ -62,6 +62,8 @@ public class ClientSettings
                         "https://extraetf.com/etf-profile/{isin}")); //$NON-NLS-1$
         answer.add(new Bookmark("Alle Aktien Kennzahlen", //$NON-NLS-1$
                         "https://www.alleaktien.de/quantitativ/{isin}/")); //$NON-NLS-1$
+        answer.add(new Bookmark("Comdirect (Aktien)", //$NON-NLS-1$
+                        "https://www.comdirect.de/inf/aktien/{isin}")); //$NON-NLS-1$
 
         return answer;
     }
