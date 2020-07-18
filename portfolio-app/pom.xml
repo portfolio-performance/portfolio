@@ -33,7 +33,6 @@
 		<module>../name.abuchen.portfolio.ui.tests</module>
 		<module>../name.abuchen.portfolio.feature</module>
 		<module>../name.abuchen.portfolio.bootstrap</module>
-		<module>../name.abuchen.portfolio.x86</module>
 		<module>../portfolio-product</module>
 	</modules>
 

@@ -1,8 +1,0 @@
-Manifest-Version: 1.0
-Bundle-ManifestVersion: 2
-Bundle-Name: X86
-Bundle-SymbolicName: name.abuchen.portfolio.x86
-Bundle-Version: 0.47.0.qualifier
-Automatic-Module-Name: name.abuchen.portfolio.x86
-Bundle-RequiredExecutionEnvironment: JavaSE-1.8
-Eclipse-PlatformFilter: (osgi.arch=x86)
