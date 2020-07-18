@@ -308,7 +308,9 @@ public class TimelineChart extends Chart // NOSONAR
         {
             int x = xAxis.getPixelCoordinate((double) marker.getTimeMillis());
 
-            Point textExtent = e.gc.textExtent(marker.label);
+            String label = marker.label != null ? marker.label : "";
+
+            Point textExtent = e.gc.textExtent(label);
             boolean flip = x + 5 + textExtent.x > e.width;
             int textX = flip ? x - 5 - textExtent.x : x + 5;
             labelStackY = labelExtentX > textX ? labelStackY + textExtent.y : 0;
@@ -318,7 +320,7 @@ public class TimelineChart extends Chart // NOSONAR
             e.gc.setForeground(marker.color);
             e.gc.setLineWidth(2);
             e.gc.drawLine(x, 0, x, e.height);
-            e.gc.drawText(marker.label, textX, e.height - 20 - labelStackY, true);
+            e.gc.drawText(label, textX, e.height - 20 - labelStackY, true);
 
             if (marker.value != null)
             {

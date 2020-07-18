@@ -83,6 +83,8 @@
         <children xsi:type="menu:HandledMenuItem" xmi:id="_BYocoApFEeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.menu.online.updatequotes" label="%command.updateQuotesCurrentSecurity.name" tooltip="" command="_tukxoBiQEeOR1rNFCzC82A">
           <parameters xmi:id="_Cco3UApFEeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.parameter.1" name="name.abuchen.portfolio.ui.param.only-current-security" value="true"/>
         </children>
+        <children xsi:type="menu:MenuSeparator" xmi:id="_OvJsIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.bootstrap.menuseparator.6"/>
+        <children xsi:type="menu:HandledMenuItem" xmi:id="_PV6KIL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.menu.online.uploadToDivvyDiary" label="Upload to DivvyDiary.com" iconURI="platform:/plugin/name.abuchen.portfolio.ui/icons/divvydiary.com-logo.png" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
       </children>
       <children xsi:type="menu:Menu" xmi:id="_6KeHEBiPEeOR1rNFCzC82A" elementId="name.abuchen.portfolio.ui.menu.help" label="%menu.help.label">
         <children xsi:type="menu:HandledMenuItem" xmi:id="_oALicB3VEeOYjJVcrtNJyA" elementId="name.abuchen.portfolio.ui.menu.help.about" label="%command.about.name" tooltip="%command.about.tooltip" command="_Vr7H8B3VEeOYjJVcrtNJyA"/>
@@ -152,6 +154,7 @@
   <handlers xmi:id="_XnhhkJkDEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.openWithLastView" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.OpenWithLastViewHandler" command="_ttUJcJkCEemdcMPaSHoNPw"/>
   <handlers xmi:id="_nh13gJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.handler.showHideSidebar" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.ShowHideSidebarHandler" command="_kGDGEJl3EemdcMPaSHoNPw"/>
   <handlers xmi:id="_VFcfMBM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.handler.saveErrorLog" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.SaveErrorLogHandler" command="_PZoy8BM9EeqsXLK6ns2Lug"/>
+  <handlers xmi:id="_QjA2cL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.handler.uploadToDivvyDiary" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.handlers.UploadToDivvyDiaryHandler" command="_ZWCyUL3OEeqoTtTaIzseTQ"/>
   <bindingTables xmi:id="_uK6dcBiSEeO8gYEHAOvLsA" elementId="" bindingContext="_7d8q4RjAEeO8gYEHAOvLsA">
     <bindings xmi:id="_yNkakBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+O" command="_3CjQwBfHEeOders_POVQHQ"/>
     <bindings xmi:id="_0WsqQBiSEeO8gYEHAOvLsA" elementId="" keySequence="M1+N" command="_LiZuIBiOEeOR1rNFCzC82A"/>
@@ -229,6 +232,7 @@
   <commands xmi:id="_ttUJcJkCEemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.openWithLastView" commandName="%command.openWithLastView.name"/>
   <commands xmi:id="_kGDGEJl3EemdcMPaSHoNPw" elementId="name.abuchen.portfolio.ui.command.showHideSidebar" commandName="showHideSidebar"/>
   <commands xmi:id="_PZoy8BM9EeqsXLK6ns2Lug" elementId="name.abuchen.portfolio.ui.command.saveErrorLog" commandName="saveErrorLog"/>
+  <commands xmi:id="_ZWCyUL3OEeqoTtTaIzseTQ" elementId="name.abuchen.portfolio.ui.command.uploadToDivvyDiary" commandName="uploadToDivvyDiary"/>
   <addons xmi:id="_4SwvYLOQEeWe1a5u3oOf1Q" elementId="name.abuchen.portfolio.ui.addon.proxy" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.ProxyAddon"/>
   <addons xmi:id="_B_-6cKH7EeO9F5tUX5UqjQ" elementId="name.abuchen.portfolio.ui.addon.log" contributionURI="bundleclass://name.abuchen.portfolio.ui/name.abuchen.portfolio.ui.addons.StartupAddon"/>
   <addons xmi:id="_D8SDoRfFEeOders_POVQHQ" elementId="org.eclipse.e4.core.commands.service" contributionURI="bundleclass://org.eclipse.e4.core.commands/org.eclipse.e4.core.commands.CommandServiceAddon"/>

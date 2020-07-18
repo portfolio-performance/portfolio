@@ -137,6 +137,8 @@ public interface UIConstants
 
         String FINNHUB_API_KEY = "FINNHUB_API_KEY"; //$NON-NLS-1$
 
+        String DIVVYDIARY_API_KEY = "DIVVYDIARY_API_KEY"; //$NON-NLS-1$
+
         /**
          * Preference key whether to store settings (standard calendar)
          */

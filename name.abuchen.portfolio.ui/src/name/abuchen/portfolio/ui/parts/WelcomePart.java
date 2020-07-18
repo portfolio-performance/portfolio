@@ -173,18 +173,25 @@ public class WelcomePart
 
     private void createTranslationInfo(Composite composite)
     {
-        Composite translation = new Composite(composite, SWT.None);
+        Composite translation = new Composite(composite, SWT.NONE);
         GridDataFactory.fillDefaults().align(SWT.FILL, SWT.BEGINNING).applyTo(translation);
-        translation.setBackground(Colors.SIDEBAR_BACKGROUND_SELECTED);
-        GridLayoutFactory.fillDefaults().margins(5, 5).applyTo(translation);
+        GridLayoutFactory.fillDefaults().margins(5, 5).numColumns(1).applyTo(translation);
 
         addSectionLabel(boldFont, translation, Messages.IntroLabelTranslation);
 
         StyledLabel text = new StyledLabel(translation, SWT.WRAP);
         text.setText(Messages.IntroLabelTranslationInfo);
-        GridDataFactory.fillDefaults().indent(3, 0).applyTo(text);
+        GridDataFactory.fillDefaults().indent(3, 0).hint(400, SWT.DEFAULT).applyTo(text);
 
         addLink(translation, "action:opensettings", Messages.IntroChangeLanguageInPreferences, null); //$NON-NLS-1$
+
+        addSectionLabel(boldFont, translation, Messages.PrefTitleDivvyDiary);
+
+        text = new StyledLabel(translation, SWT.WRAP);
+        text.setText(Messages.PrefDescriptionDivvyDiary);
+        GridDataFactory.fillDefaults().indent(3, 0).hint(400, SWT.DEFAULT).applyTo(text);
+
+        addLink(translation, "action:opensettings", Messages.LabelSettings + "...", null); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
     private void addSectionLabel(Font boldFont, Composite actions, String label)

@@ -581,6 +581,8 @@ public class ClientFactory
                 fixDashboardColumnWeights(client);
             case 45:
                 // added custom security type NOTE
+            case 46:
+                // added dividend payment security event
 
                 client.setVersion(Client.CURRENT_VERSION);
                 break;
@@ -1134,6 +1136,7 @@ public class ClientFactory
             xstream.useAttributeFor(Dashboard.Widget.class, "type");
 
             xstream.alias("event", SecurityEvent.class);
+            xstream.alias("dividendEvent", SecurityEvent.DividendEvent.class);
             xstream.alias("config-set", ConfigurationSet.class);
             xstream.alias("config", ConfigurationSet.Configuration.class);
 
