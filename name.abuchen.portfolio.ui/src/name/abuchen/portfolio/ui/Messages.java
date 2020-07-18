@@ -221,6 +221,7 @@ public class Messages extends NLS
     public static String ColumnNumberOfTransactions;
     public static String ColumnOffsetAccount;
     public static String ColumnOffsetPortfolio;
+    public static String ColumnPaymentDate;
     public static String ColumnPctOfTotal;
     public static String ColumnPctOfTotal_MenuLabel;
     public static String ColumnPeer;
@@ -350,6 +351,10 @@ public class Messages extends NLS
     public static String DividendsDialogLabelPortfolioSharesHeld;
     public static String DividendsDialogLabelSpecialDistribution;
     public static String DividendsDialogTitleShares;
+    public static String DivvyDiaryConfirmUpload;
+    public static String DivvyDiaryMissingAPIKey;
+    public static String DivvyDiaryMsgUploading;
+    public static String DivvyDiaryUploadSuccessfulMsg;
     public static String EditWizardAttributesTitle;
     public static String EditWizardLatestQuoteFeedTitle;
     public static String EditWizardMasterDataLinkNewCategory;
@@ -432,6 +437,7 @@ public class Messages extends NLS
     public static String JobLabelUpdateQuotes;
     public static String JobLabelUpdateStackedLineChart;
     public static String JobLabelUpdating;
+    public static String JobLabelUpdatingDividendEvents;
     public static String JobMsgCheckingForUpdates;
     public static String JobMsgErrorUpdatingIndices;
     public static String JobMsgErrorUpdatingQuotes;
@@ -892,9 +898,11 @@ public class Messages extends NLS
     public static String PrefCreateBackupBeforeSaving;
     public static String PrefAutoSaveFrequency;
     public static String PrefDescriptionAlphaVantage;
+    public static String PrefDescriptionDivvyDiary;
     public static String PrefDescriptionFinnhub;
     public static String PrefDescriptionProxy;
     public static String PrefDescriptionQuandl;
+    public static String PrefDivvyDiaryAPIKey;
     public static String PrefFinnhubAPIKey;
     public static String PrefLabelNote;
     public static String PrefLabelProxyHost;
@@ -917,6 +925,7 @@ public class Messages extends NLS
     public static String PrefTitlePresentation;
     public static String PrefTitleProxy;
     public static String PrefTitleCalendar;
+    public static String PrefTitleDivvyDiary;
     public static String PrefTitleFinnhub;
     public static String PrefTitleQuandl;
     public static String SecurityFilter;

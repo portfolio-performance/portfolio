@@ -8,6 +8,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Link;
 
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.util.DesktopAPI;
 
@@ -18,8 +20,9 @@ public class DivvyDiaryPreferencePage extends FieldEditorPreferencePage
     {
         super(GRID);
 
-        setTitle("DivvyDiary");
-        setDescription("Dein Dividendenkalender...");
+        setTitle(Messages.PrefTitleDivvyDiary);
+        setDescription(Messages.PrefDescriptionDivvyDiary);
+        setImageDescriptor(Images.DIVVYDIARY_LOGO.descriptor());
     }
 
     @Override
@@ -38,6 +41,6 @@ public class DivvyDiaryPreferencePage extends FieldEditorPreferencePage
         });
 
         addField(new StringFieldEditor(UIConstants.Preferences.DIVVYDIARY_API_KEY, //
-                        "DivvyDiary API Schlüssel", getFieldEditorParent()));
+                        Messages.PrefDivvyDiaryAPIKey, getFieldEditorParent()));
     }
 }

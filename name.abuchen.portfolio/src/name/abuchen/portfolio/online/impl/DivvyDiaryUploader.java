@@ -53,7 +53,7 @@ public class DivvyDiaryUploader
 
         String userId = String.valueOf(((JSONObject) JSONValue.parse(session)).get("id")); //$NON-NLS-1$
         if (Strings.isNullOrEmpty(userId))
-            throw new IOException("userId not found");
+            throw new IOException("DivvyDiary.com userId not found"); //$NON-NLS-1$
 
         WebAccess upload = new WebAccess("api.divvydiary.com", "/users/" + userId + "/depot/import"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         upload.addHeader("X-API-Key", apiKey); //$NON-NLS-1$
@@ -61,7 +61,6 @@ public class DivvyDiaryUploader
 
         JSONArray json = new JSONArray();
         json.addAll(payload);
-        System.err.println(JSONValue.toJSONString(json));
 
         upload.post(JSONValue.toJSONString(json));
     }

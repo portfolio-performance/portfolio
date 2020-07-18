@@ -54,7 +54,7 @@ import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.PortfolioTransferEntry;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
-import name.abuchen.portfolio.model.SecurityEvent.DividendPayment;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -1178,19 +1178,19 @@ public class SecurityListView extends AbstractListView implements ModificationLi
         column.setSorter(ColumnViewerSorter.create(e -> ((SecurityEvent) e).getType()), SWT.UP);
         support.addColumn(column);
 
-        column = new Column("Zahltag", SWT.NONE, 80);
+        column = new Column(Messages.ColumnPaymentDate, SWT.NONE, 80);
         column.setLabelProvider(new ColumnLabelProvider()
         {
             @Override
             public String getText(Object element)
             {
-                return element instanceof DividendPayment ? Values.Date.format(((DividendPayment) element).getPayDate())
+                return element instanceof DividendEvent ? Values.Date.format(((DividendEvent) element).getPaymentDate())
                                 : null;
             }
         });
         column.setSorter(
                         ColumnViewerSorter.create(
-                                        e -> e instanceof DividendPayment ? ((DividendPayment) e).getPayDate() : null),
+                                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getPaymentDate() : null),
                         SWT.UP);
         support.addColumn(column);
 
@@ -1200,15 +1200,15 @@ public class SecurityListView extends AbstractListView implements ModificationLi
             @Override
             public String getText(Object element)
             {
-                return element instanceof DividendPayment
-                                ? Values.Money.format(((DividendPayment) element).getAmount(),
+                return element instanceof DividendEvent
+                                ? Values.Money.format(((DividendEvent) element).getAmount(),
                                                 getClient().getBaseCurrency())
                                 : null;
             }
         });
         column.setSorter(
                         ColumnViewerSorter.create(
-                                        e -> e instanceof DividendPayment ? ((DividendPayment) e).getAmount() : null),
+                                        e -> e instanceof DividendEvent ? ((DividendEvent) e).getAmount() : null),
                         SWT.UP);
         support.addColumn(column);
 

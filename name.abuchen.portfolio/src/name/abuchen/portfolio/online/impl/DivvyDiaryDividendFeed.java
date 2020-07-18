@@ -13,7 +13,7 @@ import org.osgi.framework.FrameworkUtil;
 import com.google.common.base.Strings;
 
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityEvent.DividendPayment;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.online.DividendFeed;
@@ -32,7 +32,7 @@ public class DivvyDiaryDividendFeed implements DividendFeed
 
     @SuppressWarnings("unchecked")
     @Override
-    public List<DividendPayment> getDividendPayments(Security security) throws IOException
+    public List<DividendEvent> getDividendPayments(Security security) throws IOException
     {
         if (apiKey == null)
             return Collections.emptyList();
@@ -55,15 +55,15 @@ public class DivvyDiaryDividendFeed implements DividendFeed
 
         JSONArray dividends = (JSONArray) jsonObject.get("dividends"); //$NON-NLS-1$
 
-        List<DividendPayment> answer = new ArrayList<>();
+        List<DividendEvent> answer = new ArrayList<>();
 
         dividends.forEach(entry -> {
             JSONObject row = (JSONObject) entry;
 
-            DividendPayment payment = new DividendPayment();
+            DividendEvent payment = new DividendEvent();
 
             payment.setDate(YahooHelper.fromISODate((String) row.get("exDate"))); //$NON-NLS-1$
-            payment.setPayDate(YahooHelper.fromISODate((String) row.get("payDate"))); //$NON-NLS-1$
+            payment.setPaymentDate(YahooHelper.fromISODate((String) row.get("payDate"))); //$NON-NLS-1$
             payment.setAmount(Money.of((String) row.get("currency"), //$NON-NLS-1$
                             Values.Amount.factorize(((Number) row.get("amount")).doubleValue()))); //$NON-NLS-1$
 

@@ -13,14 +13,18 @@ import org.eclipse.e4.core.di.annotations.Optional;
 import org.eclipse.e4.core.di.extensions.Preference;
 import org.eclipse.e4.ui.model.application.ui.basic.MPart;
 import org.eclipse.e4.ui.services.IServiceConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
 import name.abuchen.portfolio.online.impl.DivvyDiaryUploader;
+import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.PortfolioPlugin;
 import name.abuchen.portfolio.ui.UIConstants;
 import name.abuchen.portfolio.ui.jobs.AbstractClientJob;
+import name.abuchen.portfolio.ui.util.swt.ActiveShell;
 
 @SuppressWarnings("restriction")
 public class UploadToDivvyDiaryHandler
@@ -29,7 +33,7 @@ public class UploadToDivvyDiaryHandler
     boolean isVisible(@Named(IServiceConstants.ACTIVE_PART) MPart part,
                     @Optional @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
     {
-        return MenuHelper.isClientPartActive(part) && divvyDiaryApiKey != null;
+        return MenuHelper.isClientPartActive(part);
     }
 
     @Execute
@@ -38,10 +42,16 @@ public class UploadToDivvyDiaryHandler
                     @Optional @Preference(value = UIConstants.Preferences.DIVVYDIARY_API_KEY) String divvyDiaryApiKey)
     {
         if (divvyDiaryApiKey == null)
+        {
+            MessageDialog.openInformation(shell, Messages.LabelInfo, Messages.DivvyDiaryMissingAPIKey);
+            return;
+        }
+
+        if (!MessageDialog.openConfirm(shell, Messages.LabelInfo, Messages.DivvyDiaryConfirmUpload))
             return;
 
         MenuHelper.getActiveClientInput(part).ifPresent(clientInput -> {
-            new AbstractClientJob(clientInput.getClient(), "Uploading holdings to DivvyDiary")
+            new AbstractClientJob(clientInput.getClient(), Messages.DivvyDiaryMsgUploading)
             {
                 @Override
                 protected IStatus run(IProgressMonitor monitor)
@@ -52,15 +62,24 @@ public class UploadToDivvyDiaryHandler
                                         clientInput.getExchangeRateProviderFacory(),
                                         clientInput.getClient().getBaseCurrency());
                         new DivvyDiaryUploader().upload(clientInput.getClient(), converter, divvyDiaryApiKey);
+
+                        Display.getDefault().asyncExec(() -> MessageDialog.openInformation(ActiveShell.get(),
+                                        Messages.LabelInfo, Messages.DivvyDiaryUploadSuccessfulMsg));
+
                         return Status.OK_STATUS;
                     }
                     catch (IOException e)
                     {
                         PortfolioPlugin.log(e);
+
+                        Display.getDefault().asyncExec(() -> MessageDialog.openError(ActiveShell.get(),
+                                        Messages.LabelError, e.getMessage()));
+
                         return new Status(Status.ERROR, PortfolioPlugin.PLUGIN_ID, e.getMessage(), e);
                     }
                 }
             }.schedule();
         });
+
     }
 }

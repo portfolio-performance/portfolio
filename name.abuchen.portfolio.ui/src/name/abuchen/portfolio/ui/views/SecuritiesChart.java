@@ -53,6 +53,7 @@ import name.abuchen.portfolio.model.AccountTransaction;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.model.SecurityEvent;
 import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Transaction;
 import name.abuchen.portfolio.model.Transaction.Unit;
@@ -1109,6 +1110,7 @@ public class SecuritiesChart
     {
         security.getEvents().stream() //
                         .filter(e -> chartInterval.contains(e.getDate())) //
+                        .filter(e -> e.getType() != SecurityEvent.Type.DIVIDEND_PAYMENT) //
                         .forEach(e -> chart.addMarkerLine(e.getDate(),
                                         Display.getDefault().getSystemColor(SWT.COLOR_DARK_GRAY), e.getDetails()));
     }

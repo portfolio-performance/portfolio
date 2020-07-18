@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.IStatus;
@@ -12,7 +13,7 @@ import org.eclipse.core.runtime.Status;
 import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityEvent;
-import name.abuchen.portfolio.model.SecurityEvent.DividendPayment;
+import name.abuchen.portfolio.model.SecurityEvent.DividendEvent;
 import name.abuchen.portfolio.online.DividendFeed;
 import name.abuchen.portfolio.online.Factory;
 import name.abuchen.portfolio.online.impl.DivvyDiaryDividendFeed;
@@ -36,7 +37,7 @@ public final class UpdateDividendsJob extends AbstractClientJob
 
     public UpdateDividendsJob(Client client, List<Security> securities)
     {
-        super(client, "Reading dividend payments");
+        super(client, Messages.JobLabelUpdatingDividendEvents);
 
         this.securities = new ArrayList<>(securities);
     }
@@ -44,7 +45,7 @@ public final class UpdateDividendsJob extends AbstractClientJob
     @Override
     protected IStatus run(IProgressMonitor monitor)
     {
-        monitor.beginTask(Messages.JobLabelUpdating, IProgressMonitor.UNKNOWN);
+        monitor.beginTask(Messages.JobLabelUpdatingDividendEvents, IProgressMonitor.UNKNOWN);
 
         DividendFeed feed = Factory.getDividendFeed(DivvyDiaryDividendFeed.class);
 
@@ -54,13 +55,30 @@ public final class UpdateDividendsJob extends AbstractClientJob
         {
             try
             {
-                List<DividendPayment> dividends = feed.getDividendPayments(security);
+                List<DividendEvent> dividends = feed.getDividendPayments(security);
 
                 if (!dividends.isEmpty())
                 {
-                    security.removeEventIf(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT);
-                    dividends.forEach(dividend -> security.addEvent(dividend));
-                    isDirty = true;
+                    List<DividendEvent> current = security.getEvents().stream()
+                                    .filter(event -> event.getType() == SecurityEvent.Type.DIVIDEND_PAYMENT)
+                                    .map(event -> (DividendEvent) event).collect(Collectors.toList());
+
+                    for (DividendEvent dividendEvent : dividends)
+                    {
+                        if (current.contains(dividendEvent))
+                        {
+                            current.remove(dividendEvent);
+                        }
+                        else
+                        {
+                            security.addEvent(dividendEvent);
+                            isDirty = true;
+                        }
+                    }
+
+                    security.removeEventIf(event -> current.contains(event));
+
+                    isDirty = isDirty || !current.isEmpty();
                 }
             }
             catch (IOException e)
