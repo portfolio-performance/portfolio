@@ -1,5 +1,8 @@
 package name.abuchen.portfolio.datatransfer.pdf;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Block;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.DocumentType;
 import name.abuchen.portfolio.datatransfer.pdf.PDFParser.Transaction;
@@ -20,6 +23,7 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
         addBuyTransaction();
         addSellTransaction();
+        addAccountStatementTransaction();
     }
 
     @SuppressWarnings("nls")
@@ -197,6 +201,44 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
 
     }
 
+    @SuppressWarnings("nls")
+    private void addAccountStatementTransaction()
+    {
+
+        DocumentType type = new DocumentType("KONTOAUSZUG", (context, lines) -> {
+            Pattern currency = Pattern.compile("BUCHUNGSTAG / BUCHUNGSTEXT BETRAG IN (?<currency>\\w{3}+)");
+            // read the current context here
+            for (String line : lines)
+            {
+                Matcher m = currency.matcher(line);
+                if (m.matches())
+                {
+                    context.put("currency", m.group(1));
+                }
+            }
+        });
+        this.addDocumentTyp(type);
+
+        Block block = new Block("\\d+.\\d+.\\d{4}+ Accepted PayIn.*");
+        type.addBlock(block);
+        block.set(new Transaction<AccountTransaction>()
+
+                        .subject(() -> {
+                            AccountTransaction t = new AccountTransaction();
+                            t.setType(AccountTransaction.Type.DEPOSIT);
+                            return t;
+                        })
+
+                        .section("date", "amount")
+                        .match("(?<date>\\d+.\\d+.\\d{4}+) Accepted PayIn:.* to .* (?<amount>[\\d+,.]*)")
+                        .assign((t, v) -> {
+                            t.setDateTime(asDate(v.get("date")));
+                            t.setAmount(asAmount(v.get("amount")));
+                            t.setCurrencyCode(asCurrencyCode(type.getCurrentContext().get("currency")));
+                        })
+
+                        .wrap(TransactionItem::new));
+    }
 
     @Override
     public String getLabel()
