@@ -62,8 +62,8 @@ public class ImageAttributeEditingSupport extends AttributeEditingSupport
             {
                 try
                 {
-                    String b64 = ImageUtil.loadAndPrepare(filename, 48, 48);
-                    return b64;
+                    return ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                                    ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
                 }
                 catch (IOException ex)
                 {

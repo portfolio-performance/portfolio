@@ -337,6 +337,7 @@ public class AttributeType
 
     public static class ImageConverter implements Converter
     {
+        public static final int MAXIMUM_SIZE_EMBEDDED_IMAGE = 64;
 
         @Override
         public String toString(Object object)

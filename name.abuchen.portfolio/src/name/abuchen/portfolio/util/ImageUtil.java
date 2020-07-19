@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.HashMap;
 
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageDataProvider;
@@ -16,6 +16,8 @@ import org.eclipse.swt.graphics.ImageLoader;
 
 public class ImageUtil
 {
+    private static final String BASE64PREFIX = "data:image/png;base64,"; //$NON-NLS-1$
+
     private static class ZoomingImageDataProvider implements ImageDataProvider
     {
         private int logicalWidth;
@@ -58,6 +60,9 @@ public class ImageUtil
         if (value == null || value.length() == 0)
             return null;
 
+        if (!value.startsWith(BASE64PREFIX))
+            return null;
+
         try
         {
             int splitPos = value.indexOf(',');
@@ -72,7 +77,7 @@ public class ImageUtil
         }
     }
 
-    public static Image toImage(byte[] value, int logicalWidth, int logicalHeight)
+    private static Image toImage(byte[] value, int logicalWidth, int logicalHeight)
     {
         if (value == null || value.length == 0)
             return null;
@@ -80,7 +85,7 @@ public class ImageUtil
         return new Image(null, new ZoomingImageDataProvider(value, logicalWidth, logicalHeight));
     }
 
-    public static ImageData toImageData(byte[] value)
+    private static ImageData toImageData(byte[] value)
     {
         if (value == null || value.length == 0)
             return null;
@@ -98,12 +103,12 @@ public class ImageUtil
         }
     }
 
-    public static byte[] encode(ImageData image)
+    private static byte[] encode(ImageData image)
     {
         ImageLoader loader = new ImageLoader();
         loader.data = new ImageData[] { image };
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        loader.save(bos, 5); // org.eclipse.swt.SWT.IMAGE_PNG;
+        loader.save(bos, SWT.IMAGE_PNG);
 
         return bos.toByteArray();
     }
@@ -117,11 +122,14 @@ public class ImageUtil
             imgData = ImageUtil.resize(imgData, maxWidth, maxHeight);
             data = ImageUtil.encode(imgData);
         }
-        return Base64.getEncoder().encodeToString(data);
+        return BASE64PREFIX + Base64.getEncoder().encodeToString(data);
     }
 
-    public static ImageData resize(ImageData image, int maxWidth, int maxHeight)
+    private static ImageData resize(ImageData image, int maxWidth, int maxHeight)
     {
+        if (image.width == maxWidth && image.height == maxHeight)
+            return image;
+
         int newHeight = maxHeight;
         int newWidth = (image.width * newHeight) / image.height;
         if (newWidth > maxWidth)
@@ -130,15 +138,6 @@ public class ImageUtil
             newHeight = (image.height * newWidth) / image.width;
         }
 
-        Image scaled = new Image(null, newWidth, newHeight);
-        GC gc = new GC(scaled);
-        gc.setAntialias(1); // org.eclipse.swt.SWT.ON
-        gc.setInterpolation(2); // org.eclipse.swt.SWT.HIGH
-        gc.setAlpha(image.alpha);
-        Image tmp = new Image(null, image);
-        gc.drawImage(tmp, 0, 0, image.width, image.height, 0, 0, newWidth, newHeight);
-        gc.dispose();
-        tmp.dispose();
-        return scaled.getImageData();
+        return image.scaledTo(newWidth, newHeight);
     }
 }

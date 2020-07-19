@@ -246,7 +246,8 @@ public class AttributesPage extends AbstractPage implements IMenuListener
                     {
                         try
                         {
-                            String b64 = ImageUtil.loadAndPrepare(filename, 48, 48);
+                            String b64 = ImageUtil.loadAndPrepare(filename, ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE,
+                                            ImageConverter.MAXIMUM_SIZE_EMBEDDED_IMAGE);
                             attributeModel.setValue(b64);
                         }
                         catch (IOException ex)
