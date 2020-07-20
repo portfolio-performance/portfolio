@@ -96,7 +96,7 @@ public class PerformanceChartView extends AbstractHistoricView
         chart.getTitle().setText(getTitle());
         chart.getTitle().setVisible(false);
         chart.getAxisSet().getYAxis(0).getTick().setFormat(new DecimalFormat("0.#%")); //$NON-NLS-1$
-        chart.getToolTip().setValueFormat(new DecimalFormat("0.##%")); //$NON-NLS-1$
+        chart.getToolTip().setValueFormat(new DecimalFormat("0.00%")); //$NON-NLS-1$
         chart.getToolTip().reverseLabels(true);
 
         DataSeriesCache cache = make(DataSeriesCache.class);
