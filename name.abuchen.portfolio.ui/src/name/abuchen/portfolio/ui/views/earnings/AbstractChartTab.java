@@ -21,9 +21,11 @@ import org.swtchart.IAxis.Position;
 import org.swtchart.ICustomPaintListener;
 import org.swtchart.IPlotArea;
 import org.swtchart.ISeries;
+import org.swtchart.Range;
 
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.util.chart.TimelineChartToolTip;
+import name.abuchen.portfolio.ui.util.chart.TimelineChart.ThousandsNumberFormat;
 
 public abstract class AbstractChartTab implements EarningsTab
 {
@@ -100,7 +102,7 @@ public abstract class AbstractChartTab implements EarningsTab
         yAxis.getTitle().setVisible(false);
         yAxis.getTick().setForeground(Display.getDefault().getSystemColor(SWT.COLOR_BLACK));
         yAxis.setPosition(Position.Secondary);
-
+        
         xAxis.enableCategory(true);
 
         // add paint listeners
@@ -113,6 +115,13 @@ public abstract class AbstractChartTab implements EarningsTab
         createSeries();
 
         chart.getAxisSet().adjustRange();
+
+        // if max/min value of range is more than 1000, formatting is #.#k
+        Range r = yAxis.getRange();
+        if (r.lower < -1000.0 || r.upper > 1000.0)
+        {
+            yAxis.getTick().setFormat(new ThousandsNumberFormat());
+        }
 
         attachTooltipTo(chart);
 
