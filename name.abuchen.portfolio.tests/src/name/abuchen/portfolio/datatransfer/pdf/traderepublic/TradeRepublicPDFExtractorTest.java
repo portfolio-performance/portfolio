@@ -170,6 +170,57 @@ public class TradeRepublicPDFExtractorTest
     }
 
     @Test
+    public void testKontoauszug()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "TradeRepublicKontoauszug01.txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(5));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        Optional<Item> item = results.stream().filter(i -> i instanceof TransactionItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
+        Item i = iter.next();
+        AccountTransaction transaction = (AccountTransaction) i.getSubject();
+
+        // assert transaction
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-15T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 150_00L)));
+
+        // assert transaction
+        transaction = (AccountTransaction) iter.next().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-04-27T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 50_00L)));
+
+        // assert transaction
+        transaction = (AccountTransaction) iter.next().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-05-11T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 50_00L)));
+
+        // assert transaction
+        transaction = (AccountTransaction) iter.next().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-02T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 50_00L)));
+
+        // assert transaction
+        transaction = (AccountTransaction) iter.next().getSubject();
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-10T00:00")));
+        assertThat(transaction.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, 50_00L)));
+
+    }
+
+    @Test
     public void testVerkauf01()
     {
         TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
@@ -241,7 +292,7 @@ public class TradeRepublicPDFExtractorTest
         if (iter.hasNext())
         {
             Item i = iter.next();
-            
+
             AccountTransaction transaction = (AccountTransaction) i.getSubject();
 
             // assert transaction
@@ -253,7 +304,7 @@ public class TradeRepublicPDFExtractorTest
         if (iter.hasNext())
         {
             Item i = iter.next();
-            
+
             AccountTransaction transaction = (AccountTransaction) i.getSubject();
 
             // assert transaction
