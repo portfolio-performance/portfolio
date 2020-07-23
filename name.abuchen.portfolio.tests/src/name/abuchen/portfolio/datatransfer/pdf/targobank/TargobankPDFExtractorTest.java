@@ -32,6 +32,7 @@ import name.abuchen.portfolio.money.CurrencyUnit;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
+@SuppressWarnings("nls")
 public class TargobankPDFExtractorTest
 {
     public void runWertpapierOrderTest(String testCaseFilename, int numberOfMatchingFiles, String actualShareName,
@@ -51,7 +52,7 @@ public class TargobankPDFExtractorTest
         Optional<Item> securityItem;
         Optional<Item> entryItem;
 
-        // SecurityItem 
+        // SecurityItem
         securityItem = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
         assertThat(securityItem.isPresent(), is(true));
         Security security = ((SecurityItem) securityItem.get()).getSecurity();
@@ -543,9 +544,8 @@ public class TargobankPDFExtractorTest
         Unit grossValue = transaction.getUnit(Unit.Type.GROSS_VALUE).get();
         assertThat(grossValue.getAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(279.64))));
         assertThat(grossValue.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(304.81))));
-        
+
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(51.63)));
     }
-
 
 }

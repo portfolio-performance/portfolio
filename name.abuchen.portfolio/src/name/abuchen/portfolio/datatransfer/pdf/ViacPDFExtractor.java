@@ -51,8 +51,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        .wrap(TransactionItem::new));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -121,7 +120,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addSellTransaction()
     {
@@ -179,7 +178,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
 
                         .wrap(BuySellEntryItem::new));
     }
-    
+
     @SuppressWarnings("nls")
     private void addInterestTransaction()
     {
@@ -204,8 +203,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        .wrap(TransactionItem::new));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -231,8 +229,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             t.setDateTime(asDate(v.get("date")));
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
-                        })
-                        .wrap(TransactionItem::new));
+                        }).wrap(TransactionItem::new));
     }
 
     @SuppressWarnings("nls")
@@ -253,13 +250,12 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                         .match("Dividendenart: (?<type>.+)") //
                         .assign((t, v) -> {
                             String dividendType = v.get("type");
-                            if (dividendType.matches("Ordentliche Dividende")) {
+                            if (dividendType.matches("Ordentliche Dividende"))
                                 t.setType(AccountTransaction.Type.DIVIDENDS);
-                            } else if (dividendType.matches("R.ckerstattung Quellensteuer")) {
+                            else if (dividendType.matches("R.ckerstattung Quellensteuer"))
                                 t.setType(AccountTransaction.Type.TAX_REFUND);
-                            } else {
+                            else
                                 throw new IllegalArgumentException("Unknown dividend type: " + dividendType);
-                            }
                         })
 
                         .section("shares", "name", "isin", "currency") //
@@ -292,8 +288,7 @@ public class ViacPDFExtractor extends SwissBasedPDFExtractor
                             // is actually denoted in the foreign currency
                             // (often users actually have the quotes in their
                             // home country currency)
-                            if (forex.getCurrencyCode()
-                                            .equals(t.getSecurity().getCurrencyCode()))
+                            if (forex.getCurrencyCode().equals(t.getSecurity().getCurrencyCode()))
                             {
                                 t.addUnit(new Unit(Unit.Type.GROSS_VALUE, gross, forex, exchangeRate));
                             }
