@@ -265,7 +265,7 @@ public class TradeRepublicPDFExtractorTest
         List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf02.txt"), errors);
 
         assertThat(errors, empty());
-        assertThat(results.size(), is(4));
+        assertThat(results.size(), is(3));
         new AssertImportActions().check(results, CurrencyUnit.EUR);
 
         // check security
@@ -283,7 +283,7 @@ public class TradeRepublicPDFExtractorTest
         assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
         assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
 
-        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3615.63))));
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(3594.00))));
         assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-06-10T11:42")));
         assertThat(tx.getShares(), is(Values.Share.factorize(500)));
         assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
@@ -298,9 +298,45 @@ public class TradeRepublicPDFExtractorTest
             // assert transaction
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
             assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(20.5)));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(21.63)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
+    }
+
+    @Test
+    public void testVerkauf03()
+    {
+        TradeRepublicPDFExtractor extractor = new TradeRepublicPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "Verkauf03.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(3));
+        new AssertImportActions().check(results, CurrencyUnit.EUR);
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0007100000"));
+        assertThat(security.getName(), is("Daimler AG"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        // check transaction
+        item = results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst();
+        BuySellEntry entry = (BuySellEntry) item.orElseThrow(IllegalArgumentException::new).getSubject();
+        PortfolioTransaction tx = entry.getPortfolioTransaction();
+
+        assertThat(tx.getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(tx.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1199.00))));
+        assertThat(tx.getDateTime(), is(LocalDateTime.parse("2020-07-21T09:30")));
+        assertThat(tx.getShares(), is(Values.Share.factorize(30)));
+        assertThat(tx.getUnitSum(Unit.Type.FEE), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(1))));
+
+        Iterator<Extractor.Item> iter = results.stream().filter(i -> i instanceof TransactionItem).iterator();
         if (iter.hasNext())
         {
             Item i = iter.next();
@@ -309,8 +345,8 @@ public class TradeRepublicPDFExtractorTest
 
             // assert transaction
             assertThat(transaction.getType(), is(AccountTransaction.Type.TAX_REFUND));
-            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-06-12T00:00")));
-            assertThat(transaction.getAmount(), is(Values.Amount.factorize(1.13)));
+            assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-23T00:00")));
+            assertThat(transaction.getAmount(), is(Values.Amount.factorize(139.58)));
             assertThat(transaction.getCurrencyCode(), is(CurrencyUnit.EUR));
         }
     }
