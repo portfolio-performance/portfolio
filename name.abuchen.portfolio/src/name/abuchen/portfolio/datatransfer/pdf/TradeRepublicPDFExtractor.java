@@ -128,6 +128,12 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                         .addUnit(new Unit(Unit.Type.TAX,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("tax"))))))
+                        // check for negative tax (optimization)
+                        .section("tax", "currency").optional() //
+                        .match("Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("tax")));
+                        })
 
                         .section("tax", "currency") //
                         .optional() //
@@ -137,64 +143,57 @@ public class TradeRepublicPDFExtractor extends AbstractPDFExtractor
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("tax"))))))
 
+                        // check for negative tax (optimization)
+                        .section("tax", "currency").optional() //
+                        .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("tax")));
+                        })
+
+                        // check for negative tax (optimization)
+                        .section("tax", "currency").optional() //
+                        .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .assign((t, v) -> {
+                            t.setAmount(t.getPortfolioTransaction().getAmount() - asAmount(v.get("tax")));
+                        })
+
                         .wrap(BuySellEntryItem::new));
 
-        Block witholdingTaxBlock = new Block("Kapitalertragssteuer Optimierung.*");
-        type.addBlock(witholdingTaxBlock);
-        witholdingTaxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
+        Block taxBlock = new Block("Kapitalertragssteuer Optimierung.*");
+        type.addBlock(taxBlock);
+        taxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
             AccountTransaction t = new AccountTransaction();
             t.setType(AccountTransaction.Type.TAX_REFUND);
             return t;
         })
 
                         // check for negative tax (optimization)
-                        .section("tax", "currency", "date") //
-                        .optional() //
-                        .match("Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (\\w{3}+)")
+                        .section("tax", "currency", "date").optional() //
+                        .match("Kapitalertragssteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
-                        }).wrap(t -> new TransactionItem(t)));
+                        })
 
-        Block solidarityTaxBlock = new Block("Solidaritätszuschlag Optimierung.*");
-        type.addBlock(solidarityTaxBlock);
-        solidarityTaxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
-
-                        // check for negative tax (optimization)
-                        .section("tax", "currency", "date") //
-                        .optional() //
-                        .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (\\w{3}+)")
+                        .section("tax", "currency", "date").optional() //
+                        .match("Solidaritätszuschlag Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("tax")));
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
-                        }).wrap(t -> new TransactionItem(t)));
+                        })
 
-        Block churchTaxBlock = new Block("Kirchensteuer Optimierung.*");
-        type.addBlock(churchTaxBlock);
-        churchTaxBlock.set(new Transaction<AccountTransaction>().subject(() -> {
-            AccountTransaction t = new AccountTransaction();
-            t.setType(AccountTransaction.Type.TAX_REFUND);
-            return t;
-        })
-
-                        // check for negative tax (optimization)
-                        .section("tax", "currency", "date") //
-                        .optional() //
-                        .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (\\w{3}+)")
+                        .section("tax", "currency", "date").optional() //
+                        .match("Kirchensteuer Optimierung (?<tax>[\\d+,.]*) (?<currency>\\w{3}+)")
                         .match("VERRECHNUNGSKONTO VALUTA BETRAG")
-                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (?<currency>\\w{3}+)")
+                        .match(".* (?<date>\\d+.\\d+.\\d{4}+) (?<amount>[\\d+,.]*) (\\w{3}+)")
                         .assign((t, v) -> {
-                            t.setAmount(asAmount(v.get("tax")));
+                            t.setAmount(t.getAmount() + asAmount(v.get("tax")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setDateTime(asDate(v.get("date")));
                         }).wrap(t -> new TransactionItem(t)));
