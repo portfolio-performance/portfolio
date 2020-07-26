@@ -312,7 +312,8 @@ public class TransactionsTab implements EarningsTab
             @Override
             public Image getImage(Object element)
             {
-                return Images.ACCOUNT.image();
+                Object owner = ((TransactionPair<?>) element).getOwner();
+                return LogoManager.instance().getDefaultColumnImage(owner, model.getClient().getSettings());
             }
         });
         ColumnViewerSorter.create(e -> ((TransactionPair<?>) e).getOwner().toString()).attachTo(column);
