@@ -39,12 +39,11 @@ import org.eclipse.swt.widgets.TableItem;
 import name.abuchen.portfolio.checks.Checker;
 import name.abuchen.portfolio.checks.Issue;
 import name.abuchen.portfolio.checks.QuickFix;
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
 
 public class ConsistencyChecksJob extends AbstractClientJob
@@ -181,14 +180,7 @@ public class ConsistencyChecksJob extends AbstractClientJob
                 public Image getImage(Object element)
                 {
                     ReportedIssue issue = (ReportedIssue) element;
-                    if (issue.getEntity() instanceof Account)
-                        return Images.ACCOUNT.image();
-                    else if (issue.getEntity() instanceof Portfolio)
-                        return Images.PORTFOLIO.image();
-                    else if (issue.getEntity() instanceof Client)
-                        return Images.LOGO_16.image();
-                    else
-                        return null;
+                    return LogoManager.instance().getDefaultColumnImage(issue.getEntity(), client.getSettings());
                 }
             });
             layout.setColumnData(col.getColumn(), new ColumnPixelData(100));

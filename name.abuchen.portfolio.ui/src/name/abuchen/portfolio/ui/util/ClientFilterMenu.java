@@ -33,7 +33,6 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.snapshot.filter.ClientFilter;
 import name.abuchen.portfolio.snapshot.filter.PortfolioClientFilter;
-import name.abuchen.portfolio.ui.Images;
 import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.EditClientFilterDialog;
 import name.abuchen.portfolio.ui.dialogs.ListSelectionDialog;
@@ -237,7 +236,7 @@ public final class ClientFilterMenu implements IMenuListener
             @Override
             public Image getImage(Object element)
             {
-                return element instanceof Account ? Images.ACCOUNT.image() : Images.PORTFOLIO.image();
+                return LogoManager.instance().getDefaultColumnImage(element, client.getSettings());
             }
         };
         ListSelectionDialog dialog = new ListSelectionDialog(Display.getDefault().getActiveShell(), labelProvider);

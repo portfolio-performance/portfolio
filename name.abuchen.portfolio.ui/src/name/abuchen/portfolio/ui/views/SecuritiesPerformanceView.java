@@ -42,9 +42,7 @@ import org.eclipse.swt.widgets.ToolBar;
 
 import com.ibm.icu.text.MessageFormat;
 
-import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.model.SecurityPrice;
@@ -72,6 +70,7 @@ import name.abuchen.portfolio.ui.selection.SelectionService;
 import name.abuchen.portfolio.ui.util.ClientFilterMenu;
 import name.abuchen.portfolio.ui.util.DropDown;
 import name.abuchen.portfolio.ui.util.LabelOnly;
+import name.abuchen.portfolio.ui.util.LogoManager;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown;
 import name.abuchen.portfolio.ui.util.ReportingPeriodDropDown.ReportingPeriodListener;
 import name.abuchen.portfolio.ui.util.SWTHelper;
@@ -1201,13 +1200,7 @@ public class SecuritiesPerformanceView extends AbstractListView implements Repor
             public Image getImage(Object e)
             {
                 TransactionOwner<?> owner = ((CalculationLineItem) e).getOwner();
-
-                if (owner instanceof Portfolio)
-                    return Images.PORTFOLIO.image();
-                else if (owner instanceof Account)
-                    return Images.ACCOUNT.image();
-                else
-                    return null;
+                return LogoManager.instance().getDefaultColumnImage(owner, getClient().getSettings());
             }
 
         });
