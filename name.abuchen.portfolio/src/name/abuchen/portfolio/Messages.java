@@ -107,6 +107,7 @@ public class Messages extends NLS
     public static String FixSetSecurityDone;
     public static String IBXML_Label;
     public static String InvestmentPlanAutoNoteLabel;
+    public static String InvestmentPlanItemImportToolTip;
     public static String IssueBuySellWithoutSecurity;
     public static String IssueDividendWithoutSecurity;
     public static String IssueInconsistentSharesHeld;
