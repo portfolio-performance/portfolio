@@ -1,5 +1,6 @@
 package name.abuchen.portfolio.datatransfer.actions;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
@@ -50,6 +51,21 @@ public class DetectDuplicatesAction implements ImportAction
         return check(entry.getTargetTransaction(), source.getTransactions());
     }
 
+    public Transaction findSavingsPlanTransaction(AccountTransaction subject, List<AccountTransaction> transactions)
+    {
+        for (AccountTransaction t : transactions)
+        {
+            if (t.getType() != AccountTransaction.Type.BUY)
+                continue;
+
+            // check for savings plan for potential duplicates and buy or
+            // inbound delivery transactions
+            if (isSavingsPlanDuplicate(subject, t))
+                return t;
+        }
+        return null;
+    }
+    
     private Status check(AccountTransaction subject, List<AccountTransaction> transactions)
     {
         for (AccountTransaction t : transactions)
@@ -57,8 +73,24 @@ public class DetectDuplicatesAction implements ImportAction
             if (subject.getType() != t.getType())
                 continue;
 
+            boolean isMatch = false;
             if (isPotentialDuplicate(subject, t))
-                return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
+            {
+                isMatch = true;
+            }
+
+            // check for savings plan for potential duplicates and buy or inbound delivery transactions
+            if (isMatch || subject.getType() == AccountTransaction.Type.BUY)
+            {
+                if (isSavingsPlanDuplicate(subject, t)) 
+                {
+                    return new Status(Status.Code.OK, IMPORT_SAVINGS_PLAN_ITEM); 
+                } 
+                else if (isMatch)
+                {
+                    return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
+                }
+            } 
         }
 
         return Status.OK_STATUS;
@@ -84,13 +116,30 @@ public class DetectDuplicatesAction implements ImportAction
                 equivalentTypes = t -> subject.getType() == t.getType();
         }
 
+        boolean isMatch = false;
         for (PortfolioTransaction t : transactions)
         {
             if (!equivalentTypes.test(t))
                 continue;
 
             if (isPotentialDuplicate(subject, t))
-                return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
+            {
+                isMatch = true;
+            }
+
+            // check for savings plan for potential duplicates and buy or inbound delivery transactions
+            if (isMatch || subject.getType() == PortfolioTransaction.Type.BUY
+                            || subject.getType() == PortfolioTransaction.Type.DELIVERY_INBOUND)
+            {
+                if (isSavingsPlanDuplicate(subject, t)) 
+                {
+                    return new Status(Status.Code.OK, IMPORT_SAVINGS_PLAN_ITEM); 
+                } 
+                else if (isMatch)
+                {
+                    return new Status(Status.Code.WARNING, Messages.LabelPotentialDuplicate);
+                }
+            } 
         }
 
         return Status.OK_STATUS;
@@ -112,7 +161,37 @@ public class DetectDuplicatesAction implements ImportAction
 
         if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
             return false;
-
+        
         return true;
+    }
+
+    private boolean isSavingsPlanDuplicate(Transaction subject, Transaction other)
+    {
+        if (!other.getCurrencyCode().equals(subject.getCurrencyCode()))
+            return false;
+
+        if (!Objects.equals(other.getSecurity(), subject.getSecurity())) // NOSONAR
+            return false;
+
+        if (other.getAmount() != subject.getAmount())
+            return false;
+
+        LocalDateTime date = subject.getDateTime();
+        // date can be up to three days after other's date (due to shifted executions on weekends)
+        if (date.isBefore(other.getDateTime()) || date.minusDays(3).isAfter(other.getDateTime()))
+            return false;
+        
+        // number of shares might differ due to differing prices per share used by savings plan
+        // accept a difference of 10%
+        long shares = subject.getShares();
+        if (shares * 1.1 < other.getShares() || shares * 0.9 > other.getShares())
+            return false;
+        
+        // use the behavior that savings plans get a specific note and check for it
+        if (other.getNote() == null || !other.getNote().startsWith(Messages.InvestmentPlanAutoNoteLabel.substring(0, 8)))
+            return false;
+        
+        return true;
+
     }
 }

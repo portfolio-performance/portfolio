@@ -291,6 +291,7 @@ public interface Extractor
     static class BuySellEntryItem extends Item
     {
         private final BuySellEntry entry;
+        private boolean savingsPlanItem = false;
 
         public BuySellEntryItem(BuySellEntry entry)
         {
@@ -332,6 +333,16 @@ public interface Extractor
         {
             return entry.getAccountTransaction().getSecurity();
         }
+        
+        public boolean isSavingsPlanItem()
+        {
+            return savingsPlanItem;
+        }
+
+        public void setSavingsPlanItem(boolean flag)
+        {
+            this.savingsPlanItem = flag;
+        }
 
         @Override
         public Status apply(ImportAction action, Context context)
@@ -344,7 +355,14 @@ public interface Extractor
             if (portfolio == null)
                 portfolio = context.getPortfolio();
 
-            return action.process(entry, account, portfolio);
+            Status status = action.process(entry, account, portfolio);
+
+            // check if message was set in DetectDuplicatesAction
+            if (status.getMessage() != null && status.getMessage().equals(ImportAction.IMPORT_SAVINGS_PLAN_ITEM))  
+            { 
+                this.savingsPlanItem = true;
+            }
+            return status;
         }
     }
 

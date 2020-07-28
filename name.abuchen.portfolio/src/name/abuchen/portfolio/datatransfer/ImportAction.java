@@ -13,6 +13,8 @@ import name.abuchen.portfolio.model.SecurityPrice;
 
 public interface ImportAction
 {
+    public static final String IMPORT_SAVINGS_PLAN_ITEM = "import-savings-plan-item"; //$NON-NLS-1$
+
     public interface Context
     {
         Account getAccount();

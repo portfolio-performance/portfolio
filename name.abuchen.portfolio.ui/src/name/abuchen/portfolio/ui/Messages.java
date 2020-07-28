@@ -420,6 +420,7 @@ public class Messages extends NLS
     public static String InvestmentPlanAutoCreationJob;
     public static String InvestmentPlanInfoNoTransactionsGenerated;
     public static String InvestmentPlanIntervalLabel;
+    public static String InvestmentPlanItemImportToolTip;
     public static String InvestmentPlanMenuCreate;
     public static String InvestmentPlanMenuDelete;
     public static String InvestmentPlanMenuGenerateTransactions;
