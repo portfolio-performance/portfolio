@@ -548,4 +548,49 @@ public class TargobankPDFExtractorTest
         assertThat(transaction.getUnitSum(Unit.Type.TAX).getAmount(), is(Values.Amount.factorize(51.63)));
     }
 
+    @Test
+    public void testDividende04()
+    {
+        TargobankPDFExtractor extractor = new TargobankPDFExtractor(new Client());
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(
+                        PDFInputFile.loadTestCase(getClass(), "Ertragsgutschrift_04_Dividendengutschrift (WPX020).txt",
+                                        "Ertragsgutschrift_04_Steuerbeilage (WPX040).txt"),
+                        errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        // security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("DE0123456789"));
+        assertThat(security.getName(), is("Aktiengesellschaft AG"));
+        assertThat(security.getWkn(), is("ABC0DE"));
+
+        List<AccountTransaction> items = results.stream()
+                        .filter(i -> i instanceof TransactionItem && i.getSubject() instanceof AccountTransaction)
+                        .map(i -> (AccountTransaction) i.getSubject()).collect(Collectors.toList());
+        assertThat(items.size(), is(1));
+
+        // dividend
+        Optional<AccountTransaction> oTransaction = items.stream()
+                        .filter(t -> AccountTransaction.Type.DIVIDENDS.equals(t.getType())).findFirst();
+        assertThat(oTransaction.isPresent(), is(true));
+        AccountTransaction transaction = oTransaction.orElseThrow(IllegalArgumentException::new);
+
+        CheckCurrenciesAction c = new CheckCurrenciesAction();
+        Account account = new Account();
+        Status s = c.process(transaction, account);
+        assertThat(s, is(Status.OK_STATUS));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-07-10T00:00")));
+        assertThat(transaction.getSecurity(), is(security));
+        assertThat(transaction.getAmount(), is(Values.Amount.factorize(17.90)));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(1790)));
+    }
+
 }

@@ -8,31 +8,29 @@ TARGOBANK AG - Postfach 10 02 30 - 47002 Duisburg www.targobank.de
 HERR
 MAX MUSTERMANN
 MUSTERSTRASSE 5
-12345 MUSTERSTADT
-Depotnummer 123456789123
+123456 MUSTERSTADT
+Depotnummer NUMMER
 ........................................................................................................................................................................................................
-Ertragsgutschrift 25.06.2020
-Rechnungsnummer: CPS-2020-0123456789-0001234
+Dividendengutschrift 10.07.2020
+Rechnungsnummer: NUMMER
 MAX MUSTERMANN
-Wir informieren Sie über die folgende Ausschüttung:
-Wertpapier Vang.FTSE Develop.World U.ETF - Registered Shares USD Dis.oN
-WKN / ISIN A12CX1 / IE00BKX55T58
-Stück 81
-Ausschüttung pro Stück 0,293466 USD
-Ex-Tag 11.06.2020
-Zahlbar 24.06.2020
-Ursprungsland Irland
+Wir informieren Sie über die folgende Dividendenzahlung:
+Wertpapier Aktiengesellschaft AG
+WKN / ISIN ABC0DE / DE0123456789
+Stück 1.790
+Dividende pro Stück 0,01 EUR
+Ex-Tag 08.07.2020
+Zahlbar 10.07.2020
+Ursprungsland Frankreich
 Geschäftsjahr 2019 / 2020
-Geschäftsnummer 12345CG001234O00
-Bruttoertrag 23,77 USD
-Devisenkurs zur Handelswährung USD/EUR 1,1223
-Bruttoertrag in EUR 21,18 EUR
-Gutschrift auf Ihrem Konto mit Wertstellung zum 24. Juni 2020
-Konto-Nr. 1234567890 21,18 EUR
+Geschäftsnummer NUMMER
+Bruttoertrag 17,90 EUR
+Gutschrift auf Ihrem Konto mit Wertstellung zum 10. Juli 2020
+Konto-Nr. NUMMER 17,90 EUR
 Dieser Beleg wurde maschinell erstellt und wird nicht unterschrieben. Irrtum vorbehalten.
 Seite 1
 TARGOBANK AG | Vorstand: Pascal Laugel (Vorsitzender); Berthold Rüsing; Maria Topaler
 Vorsitzender des Aufsichtsrates:  René Dangel | Sitz der Gesellschaft: Düsseldorf
 Handelsregister Amtsgericht Düsseldorf HRB 83351 | USt-ID-Nr.: DE 811 285 485
 USt-ID-Nr. des umsatzsteuerlichen Organträgers: DE 811 623 326
-GH.20200626.043619.5011.0007.6698 X 0 R
+GH.20200711.022038.5012.0013.18585 X 0 R
