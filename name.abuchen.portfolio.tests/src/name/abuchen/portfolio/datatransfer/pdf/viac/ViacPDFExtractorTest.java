@@ -431,6 +431,31 @@ public class ViacPDFExtractorTest
     }
 
     @Test
+    public void testCreditNote03()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacCreditNote03_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(1));
+        new AssertImportActions().check(results, "CHF");
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DEPOSIT));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(1000.00))));
+
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2019-12-17T00:00")));
+    }
+
+    @Test
     public void testDividend01()
     {
         Client client = new Client();
@@ -561,6 +586,41 @@ public class ViacPDFExtractorTest
     }
 
     @Test
+    public void testDividend05()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "ViacDividend05_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        Security security = results.stream().filter(i -> i instanceof SecurityItem).findFirst().get().getSecurity();
+        assertThat(security.getIsin(), is("IE00B1FZSF77"));
+        assertThat(security.getName(), is("iShares US Property Yield"));
+        assertThat(security.getCurrencyCode(), is(CurrencyUnit.USD));
+
+        AccountTransaction transaction = (AccountTransaction) results.stream().filter(i -> i instanceof TransactionItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+        
+        assertThat(transaction.getType(), is(AccountTransaction.Type.DIVIDENDS));
+        assertThat(transaction.getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(0.52))));
+        assertThat(transaction.getShares(), is(Values.Share.factorize(2.142)));
+        assertThat(transaction.getDateTime(), is(LocalDateTime.parse("2020-02-27T00:00")));
+
+        Unit gross = transaction.getUnit(Unit.Type.GROSS_VALUE)
+                        .orElseThrow(IllegalArgumentException::new);
+        assertThat(gross.getAmount(), is(Money.of("CHF", Values.Amount.factorize(0.52))));
+        assertThat(gross.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(0.54))));
+    }
+
+    @Test
     public void testVerkauf01()
     {
         Client client = new Client();
@@ -599,5 +659,40 @@ public class ViacPDFExtractorTest
                         .orElseThrow(IllegalArgumentException::new);
         assertThat(gross.getAmount(), is(Money.of("CHF", Values.Amount.factorize(45.66))));
         assertThat(gross.getForex(), is(Money.of(CurrencyUnit.USD, Values.Amount.factorize(45.71))));
+    }
+
+    @Test
+    public void testVerkauf02()
+    {
+        Client client = new Client();
+
+        ViacPDFExtractor extractor = new ViacPDFExtractor(client);
+
+        List<Exception> errors = new ArrayList<>();
+
+        List<Item> results = extractor.extract(PDFInputFile.loadTestCase(getClass(), "VIACVerkauf2_English.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+        new AssertImportActions().check(results, "CHF");
+
+        // check security
+        Optional<Item> item = results.stream().filter(i -> i instanceof SecurityItem).findFirst();
+        assertThat(item.isPresent(), is(true));
+        Security security = ((SecurityItem) item.orElseThrow(IllegalArgumentException::new)).getSecurity();
+        assertThat(security.getIsin(), is("CH0033782431"));
+        assertThat(security.getName(), is("CSIF SMI"));
+
+        // check transaction
+        BuySellEntry entry = (BuySellEntry) results.stream().filter(i -> i instanceof BuySellEntryItem).findFirst()
+                        .orElseThrow(IllegalArgumentException::new).getSubject();
+
+        assertThat(entry.getPortfolioTransaction().getType(), is(PortfolioTransaction.Type.SELL));
+        assertThat(entry.getAccountTransaction().getType(), is(AccountTransaction.Type.SELL));
+
+        assertThat(entry.getPortfolioTransaction().getMonetaryAmount(),
+                        is(Money.of("CHF", Values.Amount.factorize(48.24))));
+        assertThat(entry.getPortfolioTransaction().getDateTime(), is(LocalDateTime.parse("2020-02-05T00:00")));
+        assertThat(entry.getPortfolioTransaction().getShares(), is(Values.Share.factorize(0.035)));
     }
 }
