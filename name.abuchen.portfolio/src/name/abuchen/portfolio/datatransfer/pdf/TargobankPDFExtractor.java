@@ -42,7 +42,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private static final DateTimeFormatter SPECIAL_DATE_FORMAT = DateTimeFormatter.ofPattern("d. MMMM yyyy", //$NON-NLS-1$
                     Locale.GERMANY);
 
-    public TargobankPDFExtractor(Client client) 
+    public TargobankPDFExtractor(Client client)
     {
         super(client);
 
@@ -72,19 +72,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name", "wkn", "isin").optional()
-                        .match(regexName)
-                        .match(regexWknAndIsin)
+                        .section("name", "wkn", "isin").optional() //
+                        .match(regexName) //
+                        .match(regexWknAndIsin) //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("time").optional()
-                        .match(regexTime)
+                        .section("time").optional() //
+                        .match(regexTime) //
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
 
-                        .section("date").optional()
-                        .match(regexDate)
+                        .section("date").optional() //
+                        .match(regexDate) //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
@@ -96,22 +96,21 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("amount", "currency")
-                        .match(regexAmountAndCurrency)
-                        .assign((t, v) -> {
+                        .section("amount", "currency") //
+                        .match(regexAmountAndCurrency).assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("fee", "currency").optional()
-                        .match(regexFees)
+                        .section("fee", "currency").optional() //
+                        .match(regexFees) //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
-                        .section("shares").optional()
-                        .match(regexShares)
+                        .section("shares").optional() //
+                        .match(regexShares) //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .wrap(t -> {
@@ -140,19 +139,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             return entry;
                         })
 
-                        .section("name", "wkn", "isin")
-                        .match(regexName)
-                        .match(regexWknAndIsin)
+                        .section("name", "wkn", "isin") //
+                        .match(regexName) //
+                        .match(regexWknAndIsin) //
                         .assign((t, v) -> t.setSecurity(getOrCreateSecurity(v)))
 
-                        .section("time").optional()
-                        .match(regexTime)
+                        .section("time").optional() //
+                        .match(regexTime) //
                         .assign((t, v) -> {
                             type.getCurrentContext().put("time", v.get("time"));
                         })
 
-                        .section("date").optional()
-                        .match(regexDate)
+                        .section("date").optional() //
+                        .match(regexDate) //
                         .assign((t, v) -> {
                             if (type.getCurrentContext().get("time") != null)
                             {
@@ -164,30 +163,30 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                             }
                         })
 
-                        .section("amount", "currency").optional()
-                        .match(regexAmountAndCurrency)
+                        .section("amount", "currency").optional() //
+                        .match(regexAmountAndCurrency) //
                         .assign((t, v) -> {
                             t.setAmount(asAmount(v.get("amount")));
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                         })
 
-                        .section("fee", "currency").optional()
-                        .match(regexFees)
+                        .section("fee", "currency").optional() //
+                        .match(regexFees) //
                         .assign((t, v) -> t.getPortfolioTransaction()
                                         .addUnit(new Unit(Unit.Type.FEE,
                                                         Money.of(asCurrencyCode(v.get("currency")),
                                                                         asAmount(v.get("fee"))))))
 
                         .section("tax", "currency").optional() //
-                        .match(regexTaxes)
+                        .match(regexTaxes) //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.getPortfolioTransaction().addUnit(new Unit(Unit.Type.TAX, tax));
                         })
 
-                        .section("shares").optional()
-                        .match(regexShares)
+                        .section("shares").optional() //
+                        .match(regexShares) //
                         .assign((t, v) -> t.setShares(asShares(v.get("shares"))))
 
                         .wrap(t -> {
@@ -203,10 +202,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     @SuppressWarnings("nls")
     private void addDividendTransaction()
     {
-        DocumentType ertrag = new DocumentType("Ertragsgutschrift \\d.*");
+        DocumentType ertrag = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) \\d.*");
         this.addDocumentTyp(ertrag);
 
-        Block block = new Block("Ertragsgutschrift.*");
+        Block block = new Block("(Ertragsgutschrift|Dividendengutschrift).*");
         ertrag.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -218,15 +217,14 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                         .section("name", "wkn", "isin", "currency", "shares") //
                         .match("Wertpapier (?<name>.*)") //
-                        .match("WKN / ISIN (?<wkn>\\S*) / (?<isin>\\S*)").match("St.ck (?<shares>[\\d.]+(,\\d+)?)")
-                        .match("Aussch.ttung pro St.ck ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
+                        .match("WKN / ISIN (?<wkn>\\S*) / (?<isin>\\S*)").match("St.ck (?<shares>[\\d.]+(,\\d+)?)") //
+                        .match("(Aussch.ttung|Dividende) pro St.ck ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                             t.setShares(asShares(v.get("shares")));
                         })
 
                         .section("amount", "currency") //
-//                      .match("Konto-Nr. \\d* (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)$").assign((t, v) -> {
                         .match(regexAmountAndCurrency) //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
@@ -236,18 +234,19 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // use document date to having matching dates from
                         // dividend and tax document
                         .section("date") //
-                        .match("Ertragsgutschrift (?<date>\\d+.\\d+.\\d{4})$")
+                        .match("(Ertragsgutschrift|Dividendengutschrift) (?<date>\\d+.\\d+.\\d{4})$") //
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // store real date in attribute
                         .section("date") //
-                        .match("Zahlbar (?<date>\\d+.\\d+.\\d{4}+).*").assign((t, v) -> {
+                        .match("Zahlbar (?<date>\\d+.\\d+.\\d{4}+).*") //
+                        .assign((t, v) -> {
                             t.getSecurity().getAttributes().put(new AttributeType(ATTRIBUTE_PAY_DATE),
                                             asDate(v.get("date")));
                         })
 
                         .section("exchangeRate", "fxAmount", "fxCurrency", "amount", "currency").optional() //
-                        .match("Bruttoertrag (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}+)")
+                        .match("Bruttoertrag (?<fxAmount>[\\d.]+,\\d+) (?<fxCurrency>\\w{3}+)") //
                         .match("Devisenkurs zur Handelsw.hrung (\\w{3}+)/(\\w{3}+) (?<exchangeRate>[\\d.]+,\\d+)") //
                         .match("Bruttoertrag in (\\w{3}+) (?<amount>[\\d.]+,\\d+) (?<currency>\\w{3}+)") //
                         .assign((t, v) -> {
@@ -275,10 +274,10 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
     private void addDividendTransactionFromTaxDocument()
     {
 
-        DocumentType type = new DocumentType("Ertragsgutschrift \\(Steuerbeilage\\) .*");
+        DocumentType type = new DocumentType("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) .*");
 
         this.addDocumentTyp(type);
-        Block block = new Block("Ertragsgutschrift \\(Steuerbeilage\\) .*");
+        Block block = new Block("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) .*");
         type.addBlock(block);
         block.set(new Transaction<AccountTransaction>()
 
@@ -298,7 +297,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         })
 
                         .section("amount", "currency") //
-                        .match("Ertr.ge/Verluste (?<amount>[\\d.\\s]*,[\\d\\s]+) (?<currency>[A-Z\\s]*)$")
+                        .match("Ertr.ge/Verluste (?<amount>[\\d.\\s]*,[\\d\\s]+) (?<currency>[A-Z\\s]*)$") //
                         .assign((t, v) -> {
                             t.setCurrencyCode(asCurrencyCode(v.get("currency")));
                             t.setAmount(asAmount(v.get("amount")));
@@ -306,12 +305,14 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
 
                         // if it exists, add Teilfreistellungsbetrag to amount
                         .section("amount").optional() //
-                        .match("Teilfreistellung .* - (?<amount>[\\d.\\s]*,[\\d\\s]+) ([A-Z\\s]*)$").assign((t, v) -> {
+                        .match("Teilfreistellung .* - (?<amount>[\\d.\\s]*,[\\d\\s]+) ([A-Z\\s]*)$") //
+                        .assign((t, v) -> {
                             t.setAmount(t.getAmount() + asAmount(v.get("amount")));
                         })
 
                         .section("tax", "currency") //
-                        .match(regexTaxes).assign((t, v) -> {
+                        .match(regexTaxes) //
+                        .assign((t, v) -> {
                             Money tax = Money.of(asCurrencyCode(v.get("currency")), asAmount(v.get("tax")));
                             t.addUnit(new Unit(Unit.Type.TAX, tax));
                             t.setAmount(t.getAmount() - asAmount(v.get("tax")));
@@ -320,7 +321,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         // use document date to having matching dates from
                         // dividend and tax document
                         .section("date") //
-                        .match("Ertragsgutschrift \\(Steuerbeilage\\) (?<date>\\d+.\\d+.\\d{4}+)$")
+                        .match("(Ertragsgutschrift|Dividendengutschrift) \\(Steuerbeilage\\) (?<date>\\d+.\\d+.\\d{4}+)$")
                         .assign((t, v) -> t.setDateTime(asDate(v.get("date"))))
 
                         // store real date in attribute
@@ -431,7 +432,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         a2 = (BuySellEntry) transactions.get(0).getSubject();
                     }
 
-                    // copy tax unit from a1 over to a2 and mark a1 to be deleted
+                    // copy tax unit from a1 over to a2 and mark a1 to be
+                    // deleted
                     // subtract tax from amount to have correct net amount
                     Optional<Unit> unitTax = a1.getPortfolioTransaction().getUnit(Unit.Type.TAX);
                     if (unitTax.isPresent())
@@ -439,7 +441,7 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                         Money tax = unitTax.get().getAmount();
                         a2.setAmount(a2.getPortfolioTransaction().getAmount() - tax.getAmount());
                         a2.getPortfolioTransaction().addUnit(unitTax.get());
-                        
+
                     }
                     // combine document notes and mark transaction 1 to be
                     // deleted
@@ -448,11 +450,8 @@ public class TargobankPDFExtractor extends AbstractPDFExtractor
                 }
             });
         });
-        
-        // iterate list and remove items that are marked TO_BE_DELETED
-        // Iterator<Item> iter = items.stream().filter(i -> i instanceof
-        // BuySellEntryItem).iterator();
 
+        // iterate list and remove items that are marked TO_BE_DELETED
         Iterator<Item> iter = items.iterator();
         while (iter.hasNext())
         {
