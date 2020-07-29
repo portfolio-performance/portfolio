@@ -548,6 +548,33 @@ public class ConsorsbankPDFExtractorTest
     }
 
     @Test
+    public void testErtragsgutschrift14() throws IOException
+    {
+        ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());
+        List<Exception> errors = new ArrayList<Exception>();
+
+        List<Item> results = extractor
+                        .extract(PDFInputFile.loadTestCase(getClass(), "ConsorsbankErtragsgutschrift14.txt"), errors);
+
+        assertThat(errors, empty());
+        assertThat(results.size(), is(2));
+
+        AccountTransaction t = results.stream() //
+                        .filter(i -> i instanceof TransactionItem)
+                        .map(i -> (AccountTransaction) ((TransactionItem) i).getSubject()) //
+                        .findAny().get();
+
+        assertThat(t.getSecurity().getName(), is("Vonovia SE Dividende Cash"));
+        assertThat(t.getSecurity().getIsin(), is("DE000A2888C9"));
+        assertThat(t.getSecurity().getWkn(), is("A2888C"));
+        assertThat(t.getSecurity().getCurrencyCode(), is(CurrencyUnit.EUR));
+
+        assertThat(t.getDateTime(), is(LocalDateTime.parse("2020-07-28T00:00")));
+        assertThat(t.getShares(), is(Values.Share.factorize(125)));
+        assertThat(t.getMonetaryAmount(), is(Money.of(CurrencyUnit.EUR, Values.Amount.factorize(196.25))));
+    }
+
+    @Test
     public void testBezug1() throws IOException
     {
         ConsorsbankPDFExtractor extractor = new ConsorsbankPDFExtractor(new Client());

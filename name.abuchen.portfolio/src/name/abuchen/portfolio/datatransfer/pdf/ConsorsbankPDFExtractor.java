@@ -510,7 +510,7 @@ public class ConsorsbankPDFExtractor extends AbstractPDFExtractor
                         .section("name", "wkn", "isin", "currency") //
                         .find("Wertpapierbezeichnung WKN ISIN") //
                         .match("(?<name>.*) (?<wkn>[^ ]*) (?<isin>[^ ]*)$") //
-                        .match(".* (Dividende pro St.ck|Ertragsaussch.ttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
+                        .match(".*(Dividende pro St.ck|Ertragsaussch.ttung je Anteil) ([\\d.]+,\\d+) (?<currency>\\w{3}+).*") //
                         .assign((t, v) -> {
                             t.setSecurity(getOrCreateSecurity(v));
                         })
