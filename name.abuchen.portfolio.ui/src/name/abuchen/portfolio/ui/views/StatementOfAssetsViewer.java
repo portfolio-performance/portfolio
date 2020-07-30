@@ -1,6 +1,5 @@
 package name.abuchen.portfolio.ui.views;
 
-import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -56,7 +55,6 @@ import name.abuchen.portfolio.model.InvestmentVehicle;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.model.SecurityPrice;
 import name.abuchen.portfolio.model.Taxonomy;
 import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.ExchangeRate;
@@ -89,7 +87,6 @@ import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.TouchClientListener;
 import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.NumberColorLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.OptionLabelProvider;
 import name.abuchen.portfolio.ui.util.viewers.ReportingPeriodColumnOptions;
 import name.abuchen.portfolio.ui.util.viewers.SharesLabelProvider;
@@ -293,111 +290,6 @@ public class StatementOfAssetsViewer
             return Money.of(element.getSecurity().getCurrencyCode(),
                             element.getSecurityPosition().getPrice().getValue());
         })));
-        support.addColumn(column);
-
-        // delta to previous day
-        column = new Column("5", Messages.ColumnChangeOnPrevious, SWT.RIGHT, 60); //$NON-NLS-1$
-        column.setMenuLabel(Messages.ColumnChangeOnPrevious_MenuLabel);
-        column.setLabelProvider(new NumberColorLabelProvider<>(Values.Percent2, e -> {
-
-            Element element = (Element) e;
-            if (!element.isSecurity())
-                return null;
-
-            List<SecurityPrice> prices = element.getSecurity().getPricesIncludingLatest();
-            SecurityPrice price = element.getSecurityPosition().getPrice();
-            SecurityPrice previousPrice = null;
-            int position = prices.indexOf(price);
-            if (position != -1) 
-            {
-                previousPrice = prices.get(position - 1);
-            }
-            if (previousPrice != null)
-            {
-                double latestQuote = price.getValue();
-                double previousQuote = previousPrice.getValue();
-                return (latestQuote - previousQuote) / previousQuote;
-            }
-            else
-            {
-                return null;
-            }
-        }, e -> { // mouse-over text
-            Element element = (Element) e;
-            if (!element.isSecurity())
-                return null;
-
-            List<SecurityPrice> prices = element.getSecurity().getPricesIncludingLatest();
-            SecurityPrice price = element.getSecurityPosition().getPrice();
-            SecurityPrice previousPrice = null;
-            int position = prices.indexOf(price);
-            if (position != -1) 
-            {
-                previousPrice = prices.get(position - 1);
-            }
-            if (previousPrice != null)
-            {
-                return Messages.ColumnLatestPrice + ": " //$NON-NLS-1$
-                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(price.getValue()),
-                                                Values.Date.format(price.getDate()))
-                                + "\n" // //$NON-NLS-1$
-                                + Messages.ColumnPreviousPrice + ": " //$NON-NLS-1$
-                                + MessageFormat.format(Messages.TooltipQuoteAtDate,
-                                                Values.Quote.format(previousPrice.getValue()),
-                                                Values.Date.format(previousPrice.getDate()));
-            }
-            else
-            {
-                return null;
-            }
-        }));
-        column.setSorter(ColumnViewerSorter.create((o1, o2) -> { // NOSONAR
-            
-            Element e1 = (Element)o1;
-            Element e2 = (Element)o2;
-
-            if (!e1.isSecurity() && !e2.isSecurity())
-                return 0;
-            if (!e1.isSecurity() && e2.isSecurity())
-                return -1;
-            if (e1.isSecurity() && !e2.isSecurity())
-                return 1;
-
-            List<SecurityPrice> prices1 = e1.getSecurity().getPricesIncludingLatest();
-            List<SecurityPrice> prices2 = e2.getSecurity().getPricesIncludingLatest();
-            SecurityPrice price1 = e1.getSecurityPosition().getPrice();
-            SecurityPrice price2 = e2.getSecurityPosition().getPrice();
-            SecurityPrice previousPrice1 = null;
-            SecurityPrice previousPrice2 = null;
-            int position1 = prices1.indexOf(price1);
-            int position2 = prices2.indexOf(price2);
-            if (position1 != -1) 
-            {
-                previousPrice1 = prices1.get(position1 - 1);
-            }
-            if (position2 != -1) 
-            {
-                previousPrice2 = prices2.get(position2 - 1);
-            }
-            
-            if (previousPrice1 == null && previousPrice2 == null)
-                return 0;
-            if (previousPrice1 == null && previousPrice2 != null)
-                return -1;
-            if (previousPrice1 != null && previousPrice2 == null)
-                return 1;
-
-            double latestQuote1 = price1.getValue();
-            double previousQuote1 = previousPrice1.getValue();
-            double v1 = (latestQuote1 - previousQuote1) / previousQuote1 * 100;
-
-            double latestQuote2 = price2.getValue();
-            double previousQuote2 = previousPrice2.getValue();
-            double v2 = (latestQuote2 - previousQuote2) / previousQuote2 * 100;
-
-            return Double.compare(v1, v2);
-        }));
         support.addColumn(column);
 
         column = new Column("qdate", Messages.ColumnDateOfQuote, SWT.LEFT, 80); //$NON-NLS-1$
@@ -1460,7 +1352,7 @@ public class StatementOfAssetsViewer
             if (value instanceof Money)
                 return Values.Money.format((Money) value, client.getBaseCurrency());
             else if (value instanceof Double)
-                return Values.Percent.format((Double) value);
+                return Values.Percent2.format((Double) value);
 
             return null;
         }
