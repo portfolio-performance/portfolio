@@ -20,7 +20,7 @@ Ex-Tag 11.06.2020
 Ursprungsland Irland
 Kapitalertragsteuer Solidaritätszuschlag
 25,00 % * 5,50 %
-Transaktionsreferenz INDTBK17620CA000449O00
+Transaktionsreferenz INDTBK1234567890
 Steuerliche Bemessungsgrundlagen - keine Steuerbescheinigung
 Teilfreistellung (§ 20 InvStG) 30,00 % - 4,59 EUR
 Erträge/Verluste 10,70 EUR
